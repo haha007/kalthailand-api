@@ -12,7 +12,7 @@ import java.util.List;
 
 public class Product10EC {
 
-    public static Quote calculteQuote(Quote quote) {
+    public static Quote calculateQuote(Quote quote) {
         // Do we have enough to calculate anything
         if (!hasEnoughTocalculate(quote)) {
             return quote;
@@ -89,7 +89,7 @@ public class Product10EC {
     }
 
     private static Integer getRate(Integer age) {
-        if (age >= 0 || age <= 45) {
+        if (age >= 0 && age <= 45) {
             return 308;
         } else if (age >= 46 || age <= 50) {
             return 306;

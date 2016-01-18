@@ -61,7 +61,7 @@ public class QuoteService {
 
     public Quote updateQuote(Quote quote) throws Exception {
         // So far there is only one product
-        quote = Product10EC.calculteQuote(quote);
+        quote = Product10EC.calculateQuote(quote);
 
         return quoteRepository.save(quote);
     }

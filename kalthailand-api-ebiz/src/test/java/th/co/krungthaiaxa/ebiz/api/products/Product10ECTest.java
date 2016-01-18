@@ -12,36 +12,64 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class Product10ECTest {
     @Test
-    public void should_calculate_sum_insured_from_premium() {
-        Quote quote = getQuoteWithAgeAndPeriodicity();
+    public void should_calculate_sum_insured_from_premium_with_rate_308() {
+        Quote quote = getQuoteWithAgeAndPeriodicity(25);
 
         Amount amount = new Amount();
         amount.setCurrencyCode("THB");
         amount.setValue(308000.0);
         quote.getPremiumsData().getFinancialScheduler().setModalAmount(amount);
 
-        Amount result = Product10EC.calculteQuote(quote).getPremiumsData().getLifeInsuranceSumInsured();
+        Amount result = Product10EC.calculateQuote(quote).getPremiumsData().getLifeInsuranceSumInsured();
         assertThat(result.getCurrencyCode()).isEqualTo("THB");
         assertThat(result.getValue()).isEqualTo(1000000.0);
     }
 
     @Test
-    public void should_calculate_premium_from_sum_insured() {
-        Quote quote = getQuoteWithAgeAndPeriodicity();
+    public void should_calculate_sum_insured_from_premium_with_rate_306() {
+        Quote quote = getQuoteWithAgeAndPeriodicity(46);
+
+        Amount amount = new Amount();
+        amount.setCurrencyCode("THB");
+        amount.setValue(306000.0);
+        quote.getPremiumsData().getFinancialScheduler().setModalAmount(amount);
+
+        Amount result = Product10EC.calculateQuote(quote).getPremiumsData().getLifeInsuranceSumInsured();
+        assertThat(result.getCurrencyCode()).isEqualTo("THB");
+        assertThat(result.getValue()).isEqualTo(1000000.0);
+    }
+
+    @Test
+    public void should_calculate_premium_from_sum_insured_with_rate_308() {
+        Quote quote = getQuoteWithAgeAndPeriodicity(25);
 
         Amount amount = new Amount();
         amount.setCurrencyCode("THB");
         amount.setValue(1000000.0);
         quote.getPremiumsData().setLifeInsuranceSumInsured(amount);
 
-        Amount result = Product10EC.calculteQuote(quote).getPremiumsData().getFinancialScheduler().getModalAmount();
+        Amount result = Product10EC.calculateQuote(quote).getPremiumsData().getFinancialScheduler().getModalAmount();
         assertThat(result.getCurrencyCode()).isEqualTo("THB");
         assertThat(result.getValue()).isEqualTo(308000.0);
     }
 
     @Test
+    public void should_calculate_premium_from_sum_insured_with_rate_306() {
+        Quote quote = getQuoteWithAgeAndPeriodicity(46);
+
+        Amount amount = new Amount();
+        amount.setCurrencyCode("THB");
+        amount.setValue(1000000.0);
+        quote.getPremiumsData().setLifeInsuranceSumInsured(amount);
+
+        Amount result = Product10EC.calculateQuote(quote).getPremiumsData().getFinancialScheduler().getModalAmount();
+        assertThat(result.getCurrencyCode()).isEqualTo("THB");
+        assertThat(result.getValue()).isEqualTo(306000.0);
+    }
+
+    @Test
     public void should_calculate_minimum_yearly_returns_from_sum_insured() {
-        Quote quote = getQuoteWithAgeAndPeriodicity();
+        Quote quote = getQuoteWithAgeAndPeriodicity(25);
         LocalDate endDate = quote.getPremiumsData().getFinancialScheduler().getEndDate();
 
         Amount amount = new Amount();
@@ -49,7 +77,7 @@ public class Product10ECTest {
         amount.setValue(1000000.0);
         quote.getPremiumsData().setLifeInsuranceSumInsured(amount);
 
-        quote = Product10EC.calculteQuote(quote);
+        quote = Product10EC.calculateQuote(quote);
         List<DatedAmount> result = quote.getPremiumsData().getLifeInsuranceMinimumYearlyReturns();
         assertThat(result).hasSize(10);
 
@@ -89,7 +117,7 @@ public class Product10ECTest {
 
     @Test
     public void should_calculate_average_yearly_returns_from_sum_insured() {
-        Quote quote = getQuoteWithAgeAndPeriodicity();
+        Quote quote = getQuoteWithAgeAndPeriodicity(25);
         LocalDate endDate = quote.getPremiumsData().getFinancialScheduler().getEndDate();
 
         Amount amount = new Amount();
@@ -97,7 +125,7 @@ public class Product10ECTest {
         amount.setValue(1000000.0);
         quote.getPremiumsData().setLifeInsuranceSumInsured(amount);
 
-        quote = Product10EC.calculteQuote(quote);
+        quote = Product10EC.calculateQuote(quote);
         List<DatedAmount> result = quote.getPremiumsData().getLifeInsuranceAverageYearlyReturns();
         assertThat(result).hasSize(10);
 
@@ -137,7 +165,7 @@ public class Product10ECTest {
 
     @Test
     public void should_calculate_maximum_yearly_returns_from_sum_insured() {
-        Quote quote = getQuoteWithAgeAndPeriodicity();
+        Quote quote = getQuoteWithAgeAndPeriodicity(25);
         LocalDate endDate = quote.getPremiumsData().getFinancialScheduler().getEndDate();
 
         Amount amount = new Amount();
@@ -145,7 +173,7 @@ public class Product10ECTest {
         amount.setValue(1000000.0);
         quote.getPremiumsData().setLifeInsuranceSumInsured(amount);
 
-        quote = Product10EC.calculteQuote(quote);
+        quote = Product10EC.calculateQuote(quote);
         List<DatedAmount> result = quote.getPremiumsData().getLifeInsuranceMaximumYearlyReturns();
         assertThat(result).hasSize(10);
 
@@ -183,7 +211,7 @@ public class Product10ECTest {
         assertThat(result.get(9).getValue()).isEqualTo(2045764.0);
     }
 
-    private Quote getQuoteWithAgeAndPeriodicity() {
+    private Quote getQuoteWithAgeAndPeriodicity(int age) {
         Periodicity periodicity = new Periodicity();
         periodicity.setCode(PeriodicityCode.EVERY_YEAR);
 
@@ -197,7 +225,7 @@ public class Product10ECTest {
         insured.setMainInsuredIndicator(true);
         insured.setFatca(new Fatca());
         insured.setPerson(new Person());
-        insured.setAgeAtSubscription(25);
+        insured.setAgeAtSubscription(age);
 
         Quote quote = new Quote();
         quote.setCommonData(new QuoteCommonData());
