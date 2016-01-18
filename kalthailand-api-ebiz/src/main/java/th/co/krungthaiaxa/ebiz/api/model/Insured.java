@@ -1,6 +1,5 @@
 package th.co.krungthaiaxa.ebiz.api.model;
 
-import io.swagger.annotations.ApiModelProperty;
 import th.co.krungthaiaxa.ebiz.api.model.enums.InsuredType;
 
 import java.time.LocalDate;
@@ -11,6 +10,7 @@ public class Insured {
     private LocalDate startDate;
     private LocalDate endDate;
     private Integer ageAtSubscription;
+    private Integer declaredTaxPercentAtSubscription;
     private Person person;
     private Fatca fatca;
     private Boolean disableOrImmunoDeficient;
@@ -25,7 +25,7 @@ public class Insured {
         this.type = type;
     }
 
-    public Boolean isMainInsuredIndicator() {
+    public Boolean getMainInsuredIndicator() {
         return mainInsuredIndicator;
     }
 
@@ -41,7 +41,6 @@ public class Insured {
         this.startDate = startDate;
     }
 
-    @ApiModelProperty(value = "End date of coverage for the insured")
     public LocalDate getEndDate() {
         return endDate;
     }
@@ -56,6 +55,14 @@ public class Insured {
 
     public void setAgeAtSubscription(Integer ageAtSubscription) {
         this.ageAtSubscription = ageAtSubscription;
+    }
+
+    public Integer getDeclaredTaxPercentAtSubscription() {
+        return declaredTaxPercentAtSubscription;
+    }
+
+    public void setDeclaredTaxPercentAtSubscription(Integer declaredTaxPercentAtSubscription) {
+        this.declaredTaxPercentAtSubscription = declaredTaxPercentAtSubscription;
     }
 
     public Person getPerson() {
@@ -74,7 +81,7 @@ public class Insured {
         this.fatca = fatca;
     }
 
-    public Boolean isDisableOrImmunoDeficient() {
+    public Boolean getDisableOrImmunoDeficient() {
         return disableOrImmunoDeficient;
     }
 
@@ -82,7 +89,7 @@ public class Insured {
         this.disableOrImmunoDeficient = disableOrImmunoDeficient;
     }
 
-    public Boolean isHospitalizedInLast6Months() {
+    public Boolean getHospitalizedInLast6Months() {
         return hospitalizedInLast6Months;
     }
 
