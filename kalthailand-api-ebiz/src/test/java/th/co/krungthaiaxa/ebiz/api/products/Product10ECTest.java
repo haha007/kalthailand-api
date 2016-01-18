@@ -1,6 +1,7 @@
 package th.co.krungthaiaxa.ebiz.api.products;
 
 import org.junit.Test;
+import th.co.krungthaiaxa.ebiz.api.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.ebiz.api.model.*;
 import th.co.krungthaiaxa.ebiz.api.model.enums.PeriodicityCode;
 
@@ -26,10 +27,10 @@ public class Product10ECTest {
         quote.getPremiumsData().getFinancialScheduler().setModalAmount(amount);
 
         assertThatThrownBy(() -> calculateQuote(quote))
-                .isInstanceOf(Exception.class)
+                .isInstanceOf(QuoteCalculationException.class)
                 .hasMessage(sumInsuredTooHighException.getMessage());
     }
-x
+
     @Test
     public void should_return_error_when_sum_insured_is_less_than_200_thousand_baht() throws Exception {
         Quote quote = getQuoteWithAgeAndPeriodicity(25, EVERY_YEAR);
@@ -40,7 +41,7 @@ x
         quote.getPremiumsData().getFinancialScheduler().setModalAmount(amount);
 
         assertThatThrownBy(() -> calculateQuote(quote))
-                .isInstanceOf(Exception.class)
+                .isInstanceOf(QuoteCalculationException.class)
                 .hasMessage(sumInsuredTooLowException.getMessage());
     }
 
