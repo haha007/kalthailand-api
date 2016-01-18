@@ -91,15 +91,15 @@ public class Product10EC {
     private static Integer getRate(Integer age) {
         if (age >= 0 && age <= 45) {
             return 308;
-        } else if (age >= 46 || age <= 50) {
+        } else if (age >= 46 && age <= 50) {
             return 306;
-        } else if (age >= 51 || age <= 55) {
+        } else if (age >= 51 && age <= 55) {
             return 304;
-        } else if (age >= 56 || age <= 60) {
+        } else if (age >= 56 && age <= 60) {
             return 301;
-        } else if (age >= 61 || age <= 65) {
+        } else if (age >= 61 && age <= 65) {
             return 300;
-        } else if (age >= 66 || age <= 70) {
+        } else if (age >= 66 && age <= 70) {
             return 298;
         } else {
             return 0;

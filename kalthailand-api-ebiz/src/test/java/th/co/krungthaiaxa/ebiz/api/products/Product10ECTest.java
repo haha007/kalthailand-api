@@ -40,6 +40,62 @@ public class Product10ECTest {
     }
 
     @Test
+    public void should_calculate_sum_insured_from_premium_with_rate_304() {
+        Quote quote = getQuoteWithAgeAndPeriodicity(51);
+
+        Amount amount = new Amount();
+        amount.setCurrencyCode("THB");
+        amount.setValue(304000.0);
+        quote.getPremiumsData().getFinancialScheduler().setModalAmount(amount);
+
+        Amount result = Product10EC.calculateQuote(quote).getPremiumsData().getLifeInsuranceSumInsured();
+        assertThat(result.getCurrencyCode()).isEqualTo("THB");
+        assertThat(result.getValue()).isEqualTo(1000000.0);
+    }
+
+    @Test
+    public void should_calculate_sum_insured_from_premium_with_rate_301() {
+        Quote quote = getQuoteWithAgeAndPeriodicity(56);
+
+        Amount amount = new Amount();
+        amount.setCurrencyCode("THB");
+        amount.setValue(301000.0);
+        quote.getPremiumsData().getFinancialScheduler().setModalAmount(amount);
+
+        Amount result = Product10EC.calculateQuote(quote).getPremiumsData().getLifeInsuranceSumInsured();
+        assertThat(result.getCurrencyCode()).isEqualTo("THB");
+        assertThat(result.getValue()).isEqualTo(1000000.0);
+    }
+
+    @Test
+    public void should_calculate_sum_insured_from_premium_with_rate_300() {
+        Quote quote = getQuoteWithAgeAndPeriodicity(61);
+
+        Amount amount = new Amount();
+        amount.setCurrencyCode("THB");
+        amount.setValue(300000.0);
+        quote.getPremiumsData().getFinancialScheduler().setModalAmount(amount);
+
+        Amount result = Product10EC.calculateQuote(quote).getPremiumsData().getLifeInsuranceSumInsured();
+        assertThat(result.getCurrencyCode()).isEqualTo("THB");
+        assertThat(result.getValue()).isEqualTo(1000000.0);
+    }
+
+    @Test
+    public void should_calculate_sum_insured_from_premium_with_rate_298() {
+        Quote quote = getQuoteWithAgeAndPeriodicity(66);
+
+        Amount amount = new Amount();
+        amount.setCurrencyCode("THB");
+        amount.setValue(298000.0);
+        quote.getPremiumsData().getFinancialScheduler().setModalAmount(amount);
+
+        Amount result = Product10EC.calculateQuote(quote).getPremiumsData().getLifeInsuranceSumInsured();
+        assertThat(result.getCurrencyCode()).isEqualTo("THB");
+        assertThat(result.getValue()).isEqualTo(1000000.0);
+    }
+
+    @Test
     public void should_calculate_premium_from_sum_insured_with_rate_308() {
         Quote quote = getQuoteWithAgeAndPeriodicity(25);
 
@@ -65,6 +121,62 @@ public class Product10ECTest {
         Amount result = Product10EC.calculateQuote(quote).getPremiumsData().getFinancialScheduler().getModalAmount();
         assertThat(result.getCurrencyCode()).isEqualTo("THB");
         assertThat(result.getValue()).isEqualTo(306000.0);
+    }
+
+    @Test
+    public void should_calculate_premium_from_sum_insured_with_rate_304() {
+        Quote quote = getQuoteWithAgeAndPeriodicity(51);
+
+        Amount amount = new Amount();
+        amount.setCurrencyCode("THB");
+        amount.setValue(1000000.0);
+        quote.getPremiumsData().setLifeInsuranceSumInsured(amount);
+
+        Amount result = Product10EC.calculateQuote(quote).getPremiumsData().getFinancialScheduler().getModalAmount();
+        assertThat(result.getCurrencyCode()).isEqualTo("THB");
+        assertThat(result.getValue()).isEqualTo(304000.0);
+    }
+
+    @Test
+    public void should_calculate_premium_from_sum_insured_with_rate_301() {
+        Quote quote = getQuoteWithAgeAndPeriodicity(56);
+
+        Amount amount = new Amount();
+        amount.setCurrencyCode("THB");
+        amount.setValue(1000000.0);
+        quote.getPremiumsData().setLifeInsuranceSumInsured(amount);
+
+        Amount result = Product10EC.calculateQuote(quote).getPremiumsData().getFinancialScheduler().getModalAmount();
+        assertThat(result.getCurrencyCode()).isEqualTo("THB");
+        assertThat(result.getValue()).isEqualTo(301000.0);
+    }
+
+    @Test
+    public void should_calculate_premium_from_sum_insured_with_rate_300() {
+        Quote quote = getQuoteWithAgeAndPeriodicity(61);
+
+        Amount amount = new Amount();
+        amount.setCurrencyCode("THB");
+        amount.setValue(1000000.0);
+        quote.getPremiumsData().setLifeInsuranceSumInsured(amount);
+
+        Amount result = Product10EC.calculateQuote(quote).getPremiumsData().getFinancialScheduler().getModalAmount();
+        assertThat(result.getCurrencyCode()).isEqualTo("THB");
+        assertThat(result.getValue()).isEqualTo(300000.0);
+    }
+
+    @Test
+    public void should_calculate_premium_from_sum_insured_with_rate_298() {
+        Quote quote = getQuoteWithAgeAndPeriodicity(66);
+
+        Amount amount = new Amount();
+        amount.setCurrencyCode("THB");
+        amount.setValue(1000000.0);
+        quote.getPremiumsData().setLifeInsuranceSumInsured(amount);
+
+        Amount result = Product10EC.calculateQuote(quote).getPremiumsData().getFinancialScheduler().getModalAmount();
+        assertThat(result.getCurrencyCode()).isEqualTo("THB");
+        assertThat(result.getValue()).isEqualTo(298000.0);
     }
 
     @Test
