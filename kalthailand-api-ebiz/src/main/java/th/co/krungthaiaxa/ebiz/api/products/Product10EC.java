@@ -1,5 +1,6 @@
 package th.co.krungthaiaxa.ebiz.api.products;
 
+import th.co.krungthaiaxa.ebiz.api.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.ebiz.api.model.Amount;
 import th.co.krungthaiaxa.ebiz.api.model.DatedAmount;
 import th.co.krungthaiaxa.ebiz.api.model.Quote;
@@ -12,7 +13,7 @@ import java.util.List;
 
 public class Product10EC {
 
-    public static Quote calculateQuote(Quote quote) {
+    public static Quote calculateQuote(Quote quote) throws Exception {
         // Do we have enough to calculate anything
         if (!hasEnoughTocalculate(quote)) {
             return quote;
@@ -23,6 +24,14 @@ public class Product10EC {
             quote.getPremiumsData().getFinancialScheduler().setModalAmount(getPremiumFromSumInsured(quote));
         } else {
             quote.getPremiumsData().setLifeInsuranceSumInsured(getSumInsuredFromPremium(quote));
+        }
+
+        if (quote.getPremiumsData().getLifeInsuranceSumInsured().getCurrencyCode().equalsIgnoreCase("THB")
+                && quote.getPremiumsData().getLifeInsuranceSumInsured().getValue() > 1000000.0) {
+            throw QuoteCalculationException.sumInsuredTooHighException;
+        } else if (quote.getPremiumsData().getLifeInsuranceSumInsured().getCurrencyCode().equalsIgnoreCase("THB")
+                && quote.getPremiumsData().getLifeInsuranceSumInsured().getValue() < 200000.0) {
+            throw QuoteCalculationException.sumInsuredTooLowException;
         }
 
         // calculates yearly returns

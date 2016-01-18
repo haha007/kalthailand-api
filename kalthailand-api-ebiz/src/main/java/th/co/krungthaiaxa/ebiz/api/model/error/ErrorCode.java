@@ -1,9 +1,6 @@
 package th.co.krungthaiaxa.ebiz.api.model.error;
 
 public class ErrorCode {
-    // JSon error
-    public final static Error JSON_ERROR = new Error("00001", "Unable to get response from server", "There was an error while trying to create JSon response");
-
     // Line token decryption
     public static final Error UNABLE_TO_DECRYPT = new Error("10001", "Unable to get your user ID", "The provided text could not be decrypted");
     public static final Error INAVLID_LINE_ID = new Error("10002", "Unable to get your user ID", "Unable to get mid out of decrypted value");
