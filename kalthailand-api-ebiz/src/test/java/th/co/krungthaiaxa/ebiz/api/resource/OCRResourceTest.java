@@ -31,33 +31,33 @@ import static org.springframework.http.HttpStatus.OK;
 @ActiveProfiles("dev")
 @IntegrationTest({"server.port=0"})
 public class OCRResourceTest {
-	@Value("${local.server.port}")
-	private int port;
-	private URI base;
-	private RestTemplate template;
+    @Value("${local.server.port}")
+    private int port;
+    private URI base;
+    private RestTemplate template;
 
     @Value("${path.store.watermarked.image}")
     private String storePath;
 
-	@Before
-	public void setUp() throws Exception {
-		this.base = new URI("http://localhost:" + port + "/validate/id");
-		template = new TestRestTemplate();
-	}
+    @Before
+    public void setUp() throws Exception {
+        this.base = new URI("http://localhost:" + port + "/validate/id");
+        template = new TestRestTemplate();
+    }
 
-	@Test
+    @Test
     @Ignore
     public void should_return_error_when_no_parameters() throws IOException {
         ResponseEntity<String> response = template.postForEntity(base, null, String.class);
         assertThat(response.getStatusCode().value()).isEqualTo(BAD_REQUEST.value());
-	}
+    }
 
-	@Test
+    @Test
     @Ignore
     public void should_return_error_when_no_image_sent() throws IOException {
         ResponseEntity<String> response = template.postForEntity(base, null, String.class);
         assertThat(response.getStatusCode().value()).isEqualTo(BAD_REQUEST.value());
-	}
+    }
 
     @Test
     @Ignore

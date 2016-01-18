@@ -5,6 +5,8 @@ import th.co.krungthaiaxa.ebiz.api.model.DatedAmount;
 import th.co.krungthaiaxa.ebiz.api.model.Quote;
 import th.co.krungthaiaxa.ebiz.api.model.enums.PeriodicityCode;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,13 +36,14 @@ public class Product10EC {
     private static List<DatedAmount> calculateYearlyReturns(Quote quote, Integer percentRate) {
         List<DatedAmount> result = new ArrayList<>();
         Amount sumInsured = quote.getPremiumsData().getLifeInsuranceSumInsured();
+        LocalDate endDate = quote.getPremiumsData().getFinancialScheduler().getEndDate();
         Double latestAmout = 0.0;
         for (int i = 1; i <= 10; i++) {
             Double interest = sumInsured.getValue() * getDividendeRate(i) / 1000;
             latestAmout = (double) Math.round(interest + latestAmout + (latestAmout * percentRate) / 1000);
             DatedAmount datedAmount = new DatedAmount();
             datedAmount.setCurrencyCode(sumInsured.getCurrencyCode());
-            datedAmount.setDate(null);
+            datedAmount.setDate(endDate.minus(10 - i, ChronoUnit.YEARS));
             datedAmount.setValue(latestAmout);
             result.add(datedAmount);
         }
