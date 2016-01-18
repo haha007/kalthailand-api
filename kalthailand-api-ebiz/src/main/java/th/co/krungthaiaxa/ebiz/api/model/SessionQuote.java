@@ -8,7 +8,7 @@ public class SessionQuote {
     private String sessionQuoteId;
     private String sessionId;
     private SessionType sessionType;
-    private Quote quote;
+    private String quoteId;
 
     public String getSessionQuoteId() {
         return sessionQuoteId;
@@ -34,11 +34,11 @@ public class SessionQuote {
         this.sessionType = sessionType;
     }
 
-    public Quote getQuote() {
-        return quote;
+    public String getQuoteId() {
+        return quoteId;
     }
 
-    public void setQuote(Quote quote) {
-        this.quote = quote;
+    public void setQuoteId(String quoteId) {
+        this.quoteId = quoteId;
     }
 }

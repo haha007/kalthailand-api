@@ -22,6 +22,7 @@ import th.co.krungthaiaxa.ebiz.api.model.enums.SessionType;
 import th.co.krungthaiaxa.ebiz.api.KalApiApplication;
 import th.co.krungthaiaxa.ebiz.api.model.SessionQuote;
 import th.co.krungthaiaxa.ebiz.api.model.enums.GenderCode;
+import th.co.krungthaiaxa.ebiz.api.repository.QuoteRepository;
 import th.co.krungthaiaxa.ebiz.api.repository.SessionQuoteRepository;
 import th.co.krungthaiaxa.ebiz.api.utils.JsonUtil;
 
@@ -46,6 +47,8 @@ public class QuoteResourceTest {
 
     @Inject
     private SessionQuoteRepository sessionQuoteRepository;
+    @Inject
+    private QuoteRepository quoteRepository;
 
 	@Before
 	public void setUp() throws Exception {
@@ -84,6 +87,9 @@ public class QuoteResourceTest {
         Quote quote = ResourceTestUtil.getQuoteFromJSon(creationResponse.getBody());
         assertThat(quote).isNotNull();
 
+        String quoteId = quote.getQuoteId();
+        assertThat(quoteId).isNotNull();
+
         String jsonQuote = new String(JsonUtil.getJson(quote));
         jsonQuote = replace(jsonQuote, "\"periodicity\":{\"code\":null}", "\"periodicity\":{\"code\":\"EVERY_MONTH\"}");
         jsonQuote = replace(jsonQuote, "\"person\":{\"genderCode\":null}", "\"person\":{\"genderCode\":\"MALE\"}");
@@ -101,8 +107,10 @@ public class QuoteResourceTest {
 
         // check database values
         SessionQuote sessionQuote = sessionQuoteRepository.findBySessionIdAndSessionType(sessionId, SessionType.LINE);
-        assertThat(sessionQuote.getQuote().getPremiumsData().getFinancialScheduler().getPeriodicity().getCode()).isEqualTo(PeriodicityCode.EVERY_MONTH);
-        assertThat(sessionQuote.getQuote().getInsureds().get(0).getPerson().getGenderCode()).isEqualTo(GenderCode.MALE);
+        assertThat(sessionQuote.getQuoteId()).isEqualTo(quoteId);
+        Quote savedQuote = quoteRepository.findOne(quoteId);
+        assertThat(savedQuote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode()).isEqualTo(PeriodicityCode.EVERY_MONTH);
+        assertThat(savedQuote.getInsureds().get(0).getPerson().getGenderCode()).isEqualTo(GenderCode.MALE);
 
         //check returned JSon
         quote = ResourceTestUtil.getQuoteFromJSon(updateResponse.getBody());

@@ -58,7 +58,7 @@ public class QuoteResource {
 
         Quote updatedQuote;
         try {
-            updatedQuote = quoteService.updateQuote(sessionId, sessionType, quote);
+            updatedQuote = quoteService.updateQuote(quote);
         } catch (Exception e) {
             return new ResponseEntity<>(ErrorCode.NO_QUOTE_IN_SESSION, NOT_ACCEPTABLE);
         }
