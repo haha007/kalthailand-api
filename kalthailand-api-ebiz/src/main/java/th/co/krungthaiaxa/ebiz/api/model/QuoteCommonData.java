@@ -3,8 +3,8 @@ package th.co.krungthaiaxa.ebiz.api.model;
 public class QuoteCommonData {
     private String publicId;
     private String statusCode;
-    private String productId;
-    private String productName;
+    private String productId = "10EC";
+    private String productName = "10EC";
 
     public String getPublicId() {
         return publicId;

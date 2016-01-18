@@ -3,6 +3,7 @@ package th.co.krungthaiaxa.ebiz.api.service;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.ebiz.api.model.*;
 import th.co.krungthaiaxa.ebiz.api.model.enums.SessionType;
+import th.co.krungthaiaxa.ebiz.api.products.Product10EC;
 import th.co.krungthaiaxa.ebiz.api.repository.QuoteRepository;
 import th.co.krungthaiaxa.ebiz.api.repository.SessionQuoteRepository;
 
@@ -14,6 +15,7 @@ public class QuoteService {
     private final SessionQuoteRepository sessionQuoteRepository;
     private final QuoteRepository quoteRepository;
 
+
     @Inject
     public QuoteService(SessionQuoteRepository sessionQuoteRepository, QuoteRepository quoteRepository) {
         this.sessionQuoteRepository = sessionQuoteRepository;
@@ -24,8 +26,8 @@ public class QuoteService {
         SessionQuote sessionQuote = sessionQuoteRepository.findBySessionIdAndSessionType(sessionId, sessionType);
 
         boolean userHasSavedQuote = sessionQuote != null
-                        && sessionQuote.getQuoteId() != null
-                        && quoteRepository.findOne(sessionQuote.getQuoteId()) !=null;
+                && sessionQuote.getQuoteId() != null
+                && quoteRepository.findOne(sessionQuote.getQuoteId()) != null;
         Quote quote;
         if (!userHasSavedQuote) {
             FinancialScheduler financialScheduler = new FinancialScheduler();
@@ -50,8 +52,7 @@ public class QuoteService {
             sessionQuote.setSessionType(sessionType);
             sessionQuote.setQuoteId(quote.getQuoteId());
             sessionQuoteRepository.save(sessionQuote);
-        }
-        else {
+        } else {
             quote = quoteRepository.findOne(sessionQuote.getQuoteId());
         }
 
@@ -59,6 +60,10 @@ public class QuoteService {
     }
 
     public Quote updateQuote(Quote quote) throws Exception {
+        // So far there is only one product
+        quote = Product10EC.calculteQuote(quote);
+
         return quoteRepository.save(quote);
     }
+
 }

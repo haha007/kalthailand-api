@@ -8,12 +8,14 @@ import org.junit.Test;
 public class OCRUtilTest {
 
     @Test
+    @Ignore
     public void should_get_text_from_image_that_is_just_a_number() throws Exception {
         String result = OCRUtil.extractText(this.getClass().getResourceAsStream("/images/justNumber.png"), ImageStreamFormat.Png);
         Assertions.assertThat(result).contains("1 2345 67890 12 3");
     }
 
     @Test
+    @Ignore
     public void should_get_text_from_image_that_is_thai_text_and_a_number() throws Exception {
         String result = OCRUtil.extractText(this.getClass().getResourceAsStream("/images/thaiTextWithNumber.png"), ImageStreamFormat.Png);
         Assertions.assertThat(result).contains("1 2345 67890 12 3");

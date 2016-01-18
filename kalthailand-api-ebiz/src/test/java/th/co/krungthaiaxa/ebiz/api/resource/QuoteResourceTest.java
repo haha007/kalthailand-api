@@ -16,12 +16,12 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
-import th.co.krungthaiaxa.ebiz.api.model.Quote;
-import th.co.krungthaiaxa.ebiz.api.model.enums.PeriodicityCode;
-import th.co.krungthaiaxa.ebiz.api.model.enums.SessionType;
 import th.co.krungthaiaxa.ebiz.api.KalApiApplication;
+import th.co.krungthaiaxa.ebiz.api.model.Quote;
 import th.co.krungthaiaxa.ebiz.api.model.SessionQuote;
 import th.co.krungthaiaxa.ebiz.api.model.enums.GenderCode;
+import th.co.krungthaiaxa.ebiz.api.model.enums.PeriodicityCode;
+import th.co.krungthaiaxa.ebiz.api.model.enums.SessionType;
 import th.co.krungthaiaxa.ebiz.api.repository.QuoteRepository;
 import th.co.krungthaiaxa.ebiz.api.repository.SessionQuoteRepository;
 import th.co.krungthaiaxa.ebiz.api.utils.JsonUtil;
@@ -92,7 +92,7 @@ public class QuoteResourceTest {
 
         String jsonQuote = new String(JsonUtil.getJson(quote));
         jsonQuote = replace(jsonQuote, "\"periodicity\":{\"code\":null}", "\"periodicity\":{\"code\":\"EVERY_MONTH\"}");
-        jsonQuote = replace(jsonQuote, "\"person\":{\"genderCode\":null}", "\"person\":{\"genderCode\":\"MALE\"}");
+        jsonQuote = replace(jsonQuote, "\"genderCode\":null", "\"genderCode\":\"MALE\"");
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(base.toString())
                 .queryParam("sessionId", sessionId)
                 .queryParam("sessionType", SessionType.LINE.name())
