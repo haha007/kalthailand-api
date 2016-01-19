@@ -1,27 +1,15 @@
 package th.co.krungthaiaxa.ebiz.api.model;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
+@ApiModel(description = "Data common to all quotes commercial types")
 public class QuoteCommonData {
-    private String publicId;
-    private String statusCode;
     private String productId = "10EC";
     private String productName = "10EC";
 
-    public String getPublicId() {
-        return publicId;
-    }
-
-    public void setPublicId(String publicId) {
-        this.publicId = publicId;
-    }
-
-    public String getStatusCode() {
-        return statusCode;
-    }
-
-    public void setStatusCode(String statusCode) {
-        this.statusCode = statusCode;
-    }
-
+    @ApiModelProperty(required = true, value = "The unique identifier of the product specification the quote is " +
+            "based on")
     public String getProductId() {
         return productId;
     }
@@ -30,6 +18,7 @@ public class QuoteCommonData {
         this.productId = productId;
     }
 
+    @ApiModelProperty(required = true, value = "The name assigned to the product for marketing purposes")
     public String getProductName() {
         return productName;
     }

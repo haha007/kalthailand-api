@@ -1,13 +1,17 @@
 package th.co.krungthaiaxa.ebiz.api.model;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import th.co.krungthaiaxa.ebiz.api.model.enums.PartyType;
 
 import java.util.List;
 
+@ApiModel(description = "Data concerning everything common to any type of Party")
 public class Party {
     private PartyType type;
     private List<Registration> registrations;
 
+    @ApiModelProperty(value = "The party's type")
     public PartyType getType() {
         return type;
     }
@@ -16,6 +20,8 @@ public class Party {
         this.type = type;
     }
 
+    @ApiModelProperty(value = "A set of nationality-dependent registrations for the party. e.g. Social Security, " +
+            "passport, taxes identification number, insurance company registration, driver license")
     public List<Registration> getRegistrations() {
         return registrations;
     }

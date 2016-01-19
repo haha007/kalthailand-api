@@ -33,7 +33,7 @@ public class QuoteService {
             FinancialScheduler financialScheduler = new FinancialScheduler();
             financialScheduler.setPeriodicity(new Periodicity());
 
-            PremiumsData premiumsData = new PremiumsData();
+            PremiumsDataLifeInsurance premiumsData = new PremiumsDataLifeInsurance();
             premiumsData.setFinancialScheduler(financialScheduler);
 
             Insured insured = new Insured();
@@ -50,7 +50,7 @@ public class QuoteService {
             sessionQuote = new SessionQuote();
             sessionQuote.setSessionId(sessionId);
             sessionQuote.setSessionType(sessionType);
-            sessionQuote.setQuoteId(quote.getQuoteId());
+            sessionQuote.setQuoteId(quote.getTechnicalId());
             sessionQuoteRepository.save(sessionQuote);
         } else {
             quote = quoteRepository.findOne(sessionQuote.getQuoteId());

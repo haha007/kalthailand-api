@@ -3,6 +3,7 @@ package th.co.krungthaiaxa.ebiz.api.products;
 import th.co.krungthaiaxa.ebiz.api.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.ebiz.api.model.Amount;
 import th.co.krungthaiaxa.ebiz.api.model.DatedAmount;
+import th.co.krungthaiaxa.ebiz.api.model.PremiumsDataLifeInsurance;
 import th.co.krungthaiaxa.ebiz.api.model.Quote;
 import th.co.krungthaiaxa.ebiz.api.model.enums.PeriodicityCode;
 
@@ -83,29 +84,31 @@ public class Product10EC {
             return quote;
         }
 
+        PremiumsDataLifeInsurance premiumsData = quote.getPremiumsData();
+
         // calculates premium / sum insured
-        if (quote.getPremiumsData().getLifeInsuranceSumInsured() != null) {
-            quote.getPremiumsData().getFinancialScheduler().setModalAmount(getPremiumFromSumInsured(quote));
+        if (premiumsData.getLifeInsuranceSumInsured() != null) {
+            premiumsData.getFinancialScheduler().setModalAmount(getPremiumFromSumInsured(quote));
         } else {
-            quote.getPremiumsData().setLifeInsuranceSumInsured(getSumInsuredFromPremium(quote));
+            premiumsData.setLifeInsuranceSumInsured(getSumInsuredFromPremium(quote));
         }
 
-        if (quote.getPremiumsData().getLifeInsuranceSumInsured().getCurrencyCode().equalsIgnoreCase("THB")
-                && quote.getPremiumsData().getLifeInsuranceSumInsured().getValue() > 1000000.0) {
+        if (premiumsData.getLifeInsuranceSumInsured().getCurrencyCode().equalsIgnoreCase("THB")
+                && premiumsData.getLifeInsuranceSumInsured().getValue() > 1000000.0) {
             throw QuoteCalculationException.sumInsuredTooHighException;
-        } else if (quote.getPremiumsData().getLifeInsuranceSumInsured().getCurrencyCode().equalsIgnoreCase("THB")
-                && quote.getPremiumsData().getLifeInsuranceSumInsured().getValue() < 200000.0) {
+        } else if (premiumsData.getLifeInsuranceSumInsured().getCurrencyCode().equalsIgnoreCase("THB")
+                && premiumsData.getLifeInsuranceSumInsured().getValue() < 200000.0) {
             throw QuoteCalculationException.sumInsuredTooLowException;
         }
 
         // calculates yearly returns
-        quote.getPremiumsData().setLifeInsuranceMinimumYearlyReturns(calculateDatedAmount(quote, 20, dvdRate));
-        quote.getPremiumsData().setLifeInsuranceAverageYearlyReturns(calculateDatedAmount(quote, 40, dvdRate));
-        quote.getPremiumsData().setLifeInsuranceMaximumYearlyReturns(calculateDatedAmount(quote, 45, dvdRate));
+        premiumsData.setLifeInsuranceMinimumYearlyReturns(calculateDatedAmount(quote, 20, dvdRate));
+        premiumsData.setLifeInsuranceAverageYearlyReturns(calculateDatedAmount(quote, 40, dvdRate));
+        premiumsData.setLifeInsuranceMaximumYearlyReturns(calculateDatedAmount(quote, 45, dvdRate));
 
         // calculates yearly returns
-        quote.getPremiumsData().setLifeInsuranceAverageExtraDividende(calculateDatedAmount(quote, 40, averageExtraDvdRate));
-        quote.getPremiumsData().setLifeInsuranceMaximumExtraDividende(calculateDatedAmount(quote, 45, maximumExtraDvdRate));
+        premiumsData.setLifeInsuranceAverageExtraDividende(calculateDatedAmount(quote, 40, averageExtraDvdRate));
+        premiumsData.setLifeInsuranceMaximumExtraDividende(calculateDatedAmount(quote, 45, maximumExtraDvdRate));
 
         return quote;
     }
@@ -129,8 +132,8 @@ public class Product10EC {
 
     private static boolean hasEnoughTocalculate(Quote quote) {
         // Do we have enough to calculate things ?
-        return quote.getPremiumsData().getLifeInsuranceSumInsured() != null
-                || quote.getPremiumsData().getFinancialScheduler().getModalAmount() != null;
+        return (quote.getPremiumsData().getLifeInsuranceSumInsured() != null
+                || quote.getPremiumsData().getFinancialScheduler().getModalAmount() != null);
     }
 
     private static Amount getPremiumFromSumInsured(Quote quote) {

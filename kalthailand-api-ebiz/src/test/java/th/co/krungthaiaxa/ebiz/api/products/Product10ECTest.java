@@ -516,7 +516,7 @@ public class Product10ECTest {
         FinancialScheduler financialScheduler = new FinancialScheduler();
         financialScheduler.setPeriodicity(periodicity);
 
-        PremiumsData premiumsData = new PremiumsData();
+        PremiumsDataLifeInsurance premiumsData = new PremiumsDataLifeInsurance();
         premiumsData.setFinancialScheduler(financialScheduler);
 
         Insured insured = new Insured();

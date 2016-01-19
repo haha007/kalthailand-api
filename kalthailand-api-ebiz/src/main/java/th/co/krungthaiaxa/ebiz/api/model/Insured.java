@@ -1,22 +1,27 @@
 package th.co.krungthaiaxa.ebiz.api.model;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import th.co.krungthaiaxa.ebiz.api.model.enums.InsuredType;
 
 import java.time.LocalDate;
 
+@ApiModel(description = "Data concerning the insured user")
 public class Insured {
     private InsuredType type;
     private Boolean mainInsuredIndicator;
     private LocalDate startDate;
     private LocalDate endDate;
     private Integer ageAtSubscription;
-    private Integer declaredTaxPercentAtSubscription;
+    private String professionName;
     private Person person;
     private Fatca fatca;
+    private Integer declaredTaxPercentAtSubscription;
     private Boolean disableOrImmunoDeficient;
     private Boolean hospitalizedInLast6Months;
     private String additionalInformationFreeText;
 
+    @ApiModelProperty(value = "Insured's type")
     public InsuredType getType() {
         return type;
     }
@@ -25,6 +30,7 @@ public class Insured {
         this.type = type;
     }
 
+    @ApiModelProperty(value = "Indicates whether the Insured is the main insured on the policy (e.g. main Driver Insured or main Healthcare Insured")
     public Boolean getMainInsuredIndicator() {
         return mainInsuredIndicator;
     }
@@ -33,6 +39,7 @@ public class Insured {
         this.mainInsuredIndicator = mainInsuredIndicator;
     }
 
+    @ApiModelProperty(value = "Start date of coverage for the insured")
     public LocalDate getStartDate() {
         return startDate;
     }
@@ -41,6 +48,7 @@ public class Insured {
         this.startDate = startDate;
     }
 
+    @ApiModelProperty(value = "End date of coverage for the insured")
     public LocalDate getEndDate() {
         return endDate;
     }
@@ -49,6 +57,7 @@ public class Insured {
         this.endDate = endDate;
     }
 
+    @ApiModelProperty(value = "Insured person's at the time of the policy subscription")
     public Integer getAgeAtSubscription() {
         return ageAtSubscription;
     }
@@ -57,6 +66,16 @@ public class Insured {
         this.ageAtSubscription = ageAtSubscription;
     }
 
+    @ApiModelProperty(value = "Profession of the self-insured")
+    public String getProfessionName() {
+        return professionName;
+    }
+
+    public void setProfessionName(String professionName) {
+        this.professionName = professionName;
+    }
+
+    @ApiModelProperty(value = "Declared tax percentage the insured pays at subscription")
     public Integer getDeclaredTaxPercentAtSubscription() {
         return declaredTaxPercentAtSubscription;
     }
@@ -65,6 +84,7 @@ public class Insured {
         this.declaredTaxPercentAtSubscription = declaredTaxPercentAtSubscription;
     }
 
+    @ApiModelProperty(value = "Data concerning the insured details")
     public Person getPerson() {
         return person;
     }
@@ -73,6 +93,7 @@ public class Insured {
         this.person = person;
     }
 
+    @ApiModelProperty(value = "USA Fatca details of the insured")
     public Fatca getFatca() {
         return fatca;
     }
@@ -81,6 +102,7 @@ public class Insured {
         this.fatca = fatca;
     }
 
+    @ApiModelProperty(value = "Flag for insured disability and HIV status")
     public Boolean getDisableOrImmunoDeficient() {
         return disableOrImmunoDeficient;
     }
@@ -89,6 +111,7 @@ public class Insured {
         this.disableOrImmunoDeficient = disableOrImmunoDeficient;
     }
 
+    @ApiModelProperty(value = "Flag for insured being hospitalized in the last 6 months")
     public Boolean getHospitalizedInLast6Months() {
         return hospitalizedInLast6Months;
     }
@@ -97,6 +120,7 @@ public class Insured {
         this.hospitalizedInLast6Months = hospitalizedInLast6Months;
     }
 
+    @ApiModelProperty(value = "Free additional text the user may have included")
     public String getAdditionalInformationFreeText() {
         return additionalInformationFreeText;
     }
