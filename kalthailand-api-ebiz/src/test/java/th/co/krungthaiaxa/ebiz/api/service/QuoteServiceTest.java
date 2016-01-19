@@ -26,6 +26,13 @@ public class QuoteServiceTest {
     private QuoteService quoteService;
 
     @Test
+    public void should_return_empty_calculated_stuff_after_when_there_is_nothing_to_calculate() {
+        String sessionId = RandomStringUtils.randomNumeric(20);
+
+        Quote quote = quoteService.createQuote(sessionId, SessionType.LINE);
+    }
+
+    @Test
     public void should_return_empty_quote_object_with_every_object_set_to_null() {
         String sessionId = RandomStringUtils.randomNumeric(20);
 
