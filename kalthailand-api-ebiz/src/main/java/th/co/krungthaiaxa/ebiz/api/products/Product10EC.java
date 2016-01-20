@@ -1,10 +1,6 @@
 package th.co.krungthaiaxa.ebiz.api.products;
 
-import th.co.krungthaiaxa.ebiz.api.exception.QuoteCalculationException;
-import th.co.krungthaiaxa.ebiz.api.model.Amount;
-import th.co.krungthaiaxa.ebiz.api.model.DatedAmount;
-import th.co.krungthaiaxa.ebiz.api.model.PremiumsDataLifeInsurance;
-import th.co.krungthaiaxa.ebiz.api.model.Quote;
+import th.co.krungthaiaxa.ebiz.api.model.*;
 import th.co.krungthaiaxa.ebiz.api.model.enums.PeriodicityCode;
 
 import java.time.LocalDate;
@@ -12,6 +8,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
+
+import static th.co.krungthaiaxa.ebiz.api.exception.QuoteCalculationException.*;
 
 public class Product10EC {
 
@@ -81,12 +79,30 @@ public class Product10EC {
     public static Quote calculateQuote(Quote quote) throws Exception {
         // Do we have enough to calculate anything
         if (!hasEnoughTocalculate(quote)) {
+            // we need to delete what might have been calculated before
+            quote.getPremiumsData().setLifeInsuranceAverageExtraDividende(new ArrayList<>());
+            quote.getPremiumsData().setLifeInsuranceAverageYearlyReturns(new ArrayList<>());
+            quote.getPremiumsData().setLifeInsuranceMaximumExtraDividende(new ArrayList<>());
+            quote.getPremiumsData().setLifeInsuranceMaximumYearlyReturns(new ArrayList<>());
+            quote.getPremiumsData().setLifeInsuranceMinimumExtraDividende(new ArrayList<>());
+            quote.getPremiumsData().setLifeInsuranceMinimumYearlyReturns(new ArrayList<>());
+            quote.getPremiumsData().setLifeInsuranceYearlyCashBacks(new ArrayList<>());
             return quote;
         }
 
-        PremiumsDataLifeInsurance premiumsData = quote.getPremiumsData();
+        // cannot be too young or too old
+        for (Insured insured : quote.getInsureds()) {
+            if (insured.getMainInsuredIndicator()) {
+                if (insured.getAgeAtSubscription() > 70) {
+                    throw ageIsTooHighException;
+                } else if (insured.getAgeAtSubscription() < 20) {
+                    throw ageIsTooLowException;
+                }
+            }
+        }
 
         // calculates premium / sum insured
+        PremiumsDataLifeInsurance premiumsData = quote.getPremiumsData();
         if (premiumsData.getLifeInsuranceSumInsured() != null) {
             premiumsData.getFinancialScheduler().setModalAmount(getPremiumFromSumInsured(quote));
         } else {
@@ -95,10 +111,10 @@ public class Product10EC {
 
         if (premiumsData.getLifeInsuranceSumInsured().getCurrencyCode().equalsIgnoreCase("THB")
                 && premiumsData.getLifeInsuranceSumInsured().getValue() > 1000000.0) {
-            throw QuoteCalculationException.sumInsuredTooHighException;
+            throw sumInsuredTooHighException;
         } else if (premiumsData.getLifeInsuranceSumInsured().getCurrencyCode().equalsIgnoreCase("THB")
                 && premiumsData.getLifeInsuranceSumInsured().getValue() < 200000.0) {
-            throw QuoteCalculationException.sumInsuredTooLowException;
+            throw sumInsuredTooLowException;
         }
 
         // calculates yearly cash backs
@@ -138,9 +154,26 @@ public class Product10EC {
     }
 
     private static boolean hasEnoughTocalculate(Quote quote) {
-        // Do we have enough to calculate things ?
-        return (quote.getPremiumsData().getLifeInsuranceSumInsured() != null
-                || quote.getPremiumsData().getFinancialScheduler().getModalAmount() != null);
+        // Do we have a birth date to calculate the age of insured
+        boolean hasAnyDateOfBirth = quote.getInsureds().stream()
+                .filter(insured -> insured != null)
+                .filter(insured -> insured.getPerson() != null)
+                .filter(insured -> insured.getPerson().getBirthDate() != null)
+                .findFirst()
+                .isPresent();
+        if (!hasAnyDateOfBirth) {
+            return false;
+        }
+
+        // we need an amount
+        boolean hasAmount = quote.getPremiumsData().getLifeInsuranceSumInsured() != null
+                || quote.getPremiumsData().getFinancialScheduler().getModalAmount() != null;
+        if (!hasAmount) {
+            return false;
+        }
+
+        // We need a periodicity
+        return quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode() != null;
     }
 
     private static Amount getPremiumFromSumInsured(Quote quote) {

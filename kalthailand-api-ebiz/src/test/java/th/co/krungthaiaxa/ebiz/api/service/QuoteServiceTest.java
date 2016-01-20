@@ -9,10 +9,14 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.ebiz.api.KalApiApplication;
+import th.co.krungthaiaxa.ebiz.api.model.Amount;
 import th.co.krungthaiaxa.ebiz.api.model.Quote;
+import th.co.krungthaiaxa.ebiz.api.model.enums.PeriodicityCode;
 import th.co.krungthaiaxa.ebiz.api.model.enums.SessionType;
 
 import javax.inject.Inject;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -26,10 +30,37 @@ public class QuoteServiceTest {
     private QuoteService quoteService;
 
     @Test
-    public void should_return_empty_calculated_stuff_after_when_there_is_nothing_to_calculate() {
+    public void should_return_empty_calculated_stuff_after_when_there_is_nothing_to_calculate() throws Exception {
         String sessionId = RandomStringUtils.randomNumeric(20);
 
         Quote quote = quoteService.createQuote(sessionId, SessionType.LINE);
+        quote.getInsureds().get(0).getPerson().setBirthDate(LocalDate.now().minus(35, ChronoUnit.YEARS));
+        quote.getPremiumsData().getFinancialScheduler().getPeriodicity().setCode(PeriodicityCode.EVERY_YEAR);
+
+        Amount amount = new Amount();
+        amount.setCurrencyCode("THB");
+        amount.setValue(1000000.0);
+        quote.getPremiumsData().setLifeInsuranceSumInsured(amount);
+
+        quote = quoteService.updateQuote(quote);
+        assertThat(quote.getPremiumsData().getLifeInsuranceYearlyCashBacks()).hasSize(10);
+        assertThat(quote.getPremiumsData().getLifeInsuranceMinimumYearlyReturns()).hasSize(10);
+        assertThat(quote.getPremiumsData().getLifeInsuranceAverageYearlyReturns()).hasSize(10);
+        assertThat(quote.getPremiumsData().getLifeInsuranceMaximumYearlyReturns()).hasSize(10);
+        assertThat(quote.getPremiumsData().getLifeInsuranceMinimumExtraDividende()).isEmpty();
+        assertThat(quote.getPremiumsData().getLifeInsuranceMaximumExtraDividende()).hasSize(10);
+        assertThat(quote.getPremiumsData().getLifeInsuranceYearlyCashBacks()).hasSize(10);
+
+        quote.getPremiumsData().setLifeInsuranceSumInsured(null);
+        quote.getPremiumsData().getFinancialScheduler().setModalAmount(null);
+        quote = quoteService.updateQuote(quote);
+        assertThat(quote.getPremiumsData().getLifeInsuranceYearlyCashBacks()).isEmpty();
+        assertThat(quote.getPremiumsData().getLifeInsuranceMinimumYearlyReturns()).isEmpty();
+        assertThat(quote.getPremiumsData().getLifeInsuranceAverageYearlyReturns()).isEmpty();
+        assertThat(quote.getPremiumsData().getLifeInsuranceMaximumYearlyReturns()).isEmpty();
+        assertThat(quote.getPremiumsData().getLifeInsuranceMinimumExtraDividende()).isEmpty();
+        assertThat(quote.getPremiumsData().getLifeInsuranceMaximumExtraDividende()).isEmpty();
+        assertThat(quote.getPremiumsData().getLifeInsuranceYearlyCashBacks()).isEmpty();
     }
 
     @Test

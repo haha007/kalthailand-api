@@ -8,13 +8,14 @@ import th.co.krungthaiaxa.ebiz.api.repository.QuoteRepository;
 import th.co.krungthaiaxa.ebiz.api.repository.SessionQuoteRepository;
 
 import javax.inject.Inject;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 @Service
 public class QuoteService {
 
     private final SessionQuoteRepository sessionQuoteRepository;
     private final QuoteRepository quoteRepository;
-
 
     @Inject
     public QuoteService(SessionQuoteRepository sessionQuoteRepository, QuoteRepository quoteRepository) {
@@ -60,10 +61,28 @@ public class QuoteService {
     }
 
     public Quote updateQuote(Quote quote) throws Exception {
+        // common calculation
+        quote = basicCalculateQuote(quote);
+
+        // product specific calculation
         // So far there is only one product
         quote = Product10EC.calculateQuote(quote);
 
         return quoteRepository.save(quote);
     }
 
+    private Quote basicCalculateQuote(Quote quote) {
+        // calculate age
+        quote.getInsureds().stream()
+                .filter(insured -> insured != null)
+                .filter(insured -> insured.getPerson() != null)
+                .filter(insured -> insured.getPerson().getBirthDate() != null)
+                .forEach(insured -> insured.setAgeAtSubscription(getAge(insured.getPerson().getBirthDate())));
+
+        return quote;
+    }
+
+    private Integer getAge(LocalDate birthDate) {
+        return ((Long) ChronoUnit.YEARS.between(LocalDate.now(), birthDate)).intValue();
+    }
 }

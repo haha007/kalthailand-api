@@ -11,12 +11,40 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static th.co.krungthaiaxa.ebiz.api.exception.QuoteCalculationException.sumInsuredTooHighException;
-import static th.co.krungthaiaxa.ebiz.api.exception.QuoteCalculationException.sumInsuredTooLowException;
+import static th.co.krungthaiaxa.ebiz.api.exception.QuoteCalculationException.*;
 import static th.co.krungthaiaxa.ebiz.api.model.enums.PeriodicityCode.*;
 import static th.co.krungthaiaxa.ebiz.api.products.Product10EC.calculateQuote;
 
 public class Product10ECTest {
+
+    @Test
+    public void should_throw_error_if_age_at_subscription_is_less_than_20() throws Exception {
+        Quote quote = getQuoteWithAgeAndPeriodicity(19, EVERY_YEAR);
+
+        Amount amount = new Amount();
+        amount.setCurrencyCode("THB");
+        amount.setValue(1000000.0);
+        quote.getPremiumsData().setLifeInsuranceSumInsured(amount);
+
+        assertThatThrownBy(() -> calculateQuote(quote))
+                .isInstanceOf(QuoteCalculationException.class)
+                .hasMessage(ageIsTooLowException.getMessage());
+    }
+
+    @Test
+    public void should_throw_error_if_age_at_subscription_is_more_than_70() throws Exception {
+        Quote quote = getQuoteWithAgeAndPeriodicity(71, EVERY_YEAR);
+
+        Amount amount = new Amount();
+        amount.setCurrencyCode("THB");
+        amount.setValue(1000000.0);
+        quote.getPremiumsData().setLifeInsuranceSumInsured(amount);
+
+        assertThatThrownBy(() -> calculateQuote(quote))
+                .isInstanceOf(QuoteCalculationException.class)
+                .hasMessage(ageIsTooHighException.getMessage());
+    }
+
     @Test
     public void should_return_error_when_sum_insured_is_more_than_1_million_baht() throws Exception {
         Quote quote = getQuoteWithAgeAndPeriodicity(25, EVERY_YEAR);
@@ -615,11 +643,14 @@ public class Product10ECTest {
         PremiumsDataLifeInsurance premiumsData = new PremiumsDataLifeInsurance();
         premiumsData.setFinancialScheduler(financialScheduler);
 
+        Person person = new Person();
+        person.setBirthDate(LocalDate.now().minus(age, ChronoUnit.YEARS));
+
         Insured insured = new Insured();
         insured.setMainInsuredIndicator(true);
         insured.setFatca(new Fatca());
-        insured.setPerson(new Person());
         insured.setAgeAtSubscription(age);
+        insured.setPerson(person);
 
         Quote quote = new Quote();
         quote.setCommonData(new QuoteCommonData());
