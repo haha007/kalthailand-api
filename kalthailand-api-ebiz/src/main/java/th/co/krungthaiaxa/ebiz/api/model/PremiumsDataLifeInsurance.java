@@ -11,6 +11,7 @@ import java.util.List;
         "Life Insurance", parent = PremiumsData.class)
 public class PremiumsDataLifeInsurance extends PremiumsData {
     private Amount lifeInsuranceSumInsured;
+    private List<DatedAmount> lifeInsuranceYearlyCashBacks = new ArrayList<>();
     private List<DatedAmount> lifeInsuranceMinimumYearlyReturns = new ArrayList<>();
     private List<DatedAmount> lifeInsuranceAverageYearlyReturns = new ArrayList<>();
     private List<DatedAmount> lifeInsuranceMaximumYearlyReturns = new ArrayList<>();
@@ -25,6 +26,15 @@ public class PremiumsDataLifeInsurance extends PremiumsData {
 
     public void setLifeInsuranceSumInsured(Amount lifeInsuranceSumInsured) {
         this.lifeInsuranceSumInsured = lifeInsuranceSumInsured;
+    }
+
+    @ApiModelProperty(value = "Yearly cash backs if cash option is chosen")
+    public List<DatedAmount> getLifeInsuranceYearlyCashBacks() {
+        return Collections.unmodifiableList(lifeInsuranceYearlyCashBacks);
+    }
+
+    public void setLifeInsuranceYearlyCashBacks(List<DatedAmount> lifeInsuranceYearlyCashBacks) {
+        this.lifeInsuranceYearlyCashBacks = lifeInsuranceYearlyCashBacks;
     }
 
     @ApiModelProperty(value = "Yearly minimum returns")

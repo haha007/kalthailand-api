@@ -101,6 +101,9 @@ public class Product10EC {
             throw QuoteCalculationException.sumInsuredTooLowException;
         }
 
+        // calculates yearly cash backs
+        premiumsData.setLifeInsuranceYearlyCashBacks(calculateDatedAmount(quote, null, dvdRate));
+
         // calculates yearly returns
         premiumsData.setLifeInsuranceMinimumYearlyReturns(calculateDatedAmount(quote, 20, dvdRate));
         premiumsData.setLifeInsuranceAverageYearlyReturns(calculateDatedAmount(quote, 40, dvdRate));
@@ -120,11 +123,15 @@ public class Product10EC {
         Double latestAmout = 0.0;
         for (int i = 1; i <= 10; i++) {
             Double interest = sumInsured.getValue() * dvdFunction.apply(i) / 1000;
-            latestAmout = (double) Math.round(interest + latestAmout + (latestAmout * percentRate) / 1000);
             DatedAmount datedAmount = new DatedAmount();
             datedAmount.setCurrencyCode(sumInsured.getCurrencyCode());
             datedAmount.setDate(endDate.minus(10 - i, ChronoUnit.YEARS));
-            datedAmount.setValue(latestAmout);
+            if (percentRate != null) {
+                latestAmout = (double) Math.round(interest + latestAmout + (latestAmout * percentRate) / 1000);
+                datedAmount.setValue(latestAmout);
+            } else {
+                datedAmount.setValue(interest);
+            }
             result.add(datedAmount);
         }
         return result;
