@@ -43,7 +43,7 @@ public class QuoteService {
             insured.setPerson(new Person());
 
             quote = new Quote();
-            quote.setCommonData(new QuoteCommonData());
+            quote.setCommonData(new CommonData());
             quote.setPremiumsData(premiumsData);
             quote.addInsured(insured);
             quote = quoteRepository.save(quote);

@@ -653,7 +653,7 @@ public class Product10ECTest {
         insured.setPerson(person);
 
         Quote quote = new Quote();
-        quote.setCommonData(new QuoteCommonData());
+        quote.setCommonData(new CommonData());
         quote.setPremiumsData(premiumsData);
         quote.addInsured(insured);
 

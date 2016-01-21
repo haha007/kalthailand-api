@@ -4,9 +4,9 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(description = "Data common to all quotes commercial types")
-public class QuoteCommonData {
-    private String productId = "10EC";
-    private String productName = "10EC";
+public class CommonData {
+    private String productId;
+    private String productName;
 
     @ApiModelProperty(required = true, value = "The unique identifier of the product specification the quote is " +
             "based on")

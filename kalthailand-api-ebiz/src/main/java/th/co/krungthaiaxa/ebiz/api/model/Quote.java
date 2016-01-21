@@ -14,9 +14,10 @@ public class Quote {
     @Id
     private String technicalId;
     private String quoteId;
-    private QuoteCommonData commonData;
+    private CommonData commonData;
     private PremiumsDataLifeInsurance premiumsData;
     private List<Insured> insureds = new ArrayList<>();
+    private List<Coverage> coverages = new ArrayList<>();
 
     @ApiModelProperty(required = true, value = "Technical ID of the quote. This should not be displayed to user")
     public String getTechnicalId() {
@@ -37,11 +38,11 @@ public class Quote {
     }
 
     @ApiModelProperty(required = true, value = "Data common to all quotes commercial types")
-    public QuoteCommonData getCommonData() {
+    public CommonData getCommonData() {
         return commonData;
     }
 
-    public void setCommonData(QuoteCommonData commonData) {
+    public void setCommonData(CommonData commonData) {
         this.commonData = commonData;
     }
 
@@ -61,5 +62,13 @@ public class Quote {
 
     public void addInsured(Insured insured) {
         insureds.add(insured);
+    }
+
+    public List<Coverage> getCoverages() {
+        return coverages;
+    }
+
+    public void addCoverage(Coverage coverage) {
+        coverages.add(coverage);
     }
 }

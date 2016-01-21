@@ -47,7 +47,7 @@ public class QuoteServiceTest {
     }
 
     @Test
-    public void should_return_empty_calculated_stuff_after_when_there_is_nothing_to_calculate() throws Exception {
+    public void should_return_empty_calculated_stuff_when_there_is_nothing_to_calculate_anymore() throws Exception {
         String sessionId = RandomStringUtils.randomNumeric(20);
 
         Quote quote = quoteService.createQuote(sessionId, SessionType.LINE);
@@ -67,6 +67,9 @@ public class QuoteServiceTest {
         assertThat(quote.getPremiumsData().getLifeInsuranceMinimumExtraDividende()).isEmpty();
         assertThat(quote.getPremiumsData().getLifeInsuranceMaximumExtraDividende()).hasSize(10);
         assertThat(quote.getPremiumsData().getLifeInsuranceYearlyCashBacks()).hasSize(10);
+        assertThat(quote.getCoverages()).hasSize(1);
+        assertThat(quote.getCommonData().getProductId()).isNotNull();
+        assertThat(quote.getCommonData().getProductName()).isNotNull();
 
         quote.getPremiumsData().setLifeInsuranceSumInsured(null);
         quote.getPremiumsData().getFinancialScheduler().setModalAmount(null);
@@ -78,6 +81,9 @@ public class QuoteServiceTest {
         assertThat(quote.getPremiumsData().getLifeInsuranceMinimumExtraDividende()).isEmpty();
         assertThat(quote.getPremiumsData().getLifeInsuranceMaximumExtraDividende()).isEmpty();
         assertThat(quote.getPremiumsData().getLifeInsuranceYearlyCashBacks()).isEmpty();
+        assertThat(quote.getCoverages()).isEmpty();
+        assertThat(quote.getCommonData().getProductId()).isNull();
+        assertThat(quote.getCommonData().getProductName()).isNull();
     }
 
     @Test

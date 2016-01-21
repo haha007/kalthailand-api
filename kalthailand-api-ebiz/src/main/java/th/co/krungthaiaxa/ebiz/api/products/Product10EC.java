@@ -7,11 +7,13 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 
 import static th.co.krungthaiaxa.ebiz.api.exception.QuoteCalculationException.*;
 
 public class Product10EC {
+    private final static String PRODUCT_10_EC_NAME = "10 EC";
 
     private static Function<Integer, Integer> dvdRate = numberOfYearsOfContract -> {
         if (numberOfYearsOfContract >= 1 && numberOfYearsOfContract <= 9) {
@@ -77,6 +79,11 @@ public class Product10EC {
     };
 
     public static Quote calculateQuote(Quote quote) throws Exception {
+        Optional<Coverage> has10ECCoverage = quote.getCoverages()
+                .stream()
+                .filter(coverage -> coverage.getName().equalsIgnoreCase(PRODUCT_10_EC_NAME))
+                .findFirst();
+
         // Do we have enough to calculate anything
         if (!hasEnoughTocalculate(quote)) {
             // we need to delete what might have been calculated before
@@ -87,6 +94,11 @@ public class Product10EC {
             quote.getPremiumsData().setLifeInsuranceMinimumExtraDividende(new ArrayList<>());
             quote.getPremiumsData().setLifeInsuranceMinimumYearlyReturns(new ArrayList<>());
             quote.getPremiumsData().setLifeInsuranceYearlyCashBacks(new ArrayList<>());
+            quote.getCommonData().setProductId(null);
+            quote.getCommonData().setProductName(null);
+            if (has10ECCoverage.isPresent()) {
+                quote.getCoverages().remove(has10ECCoverage.get());
+            }
             return quote;
         }
 
@@ -128,6 +140,14 @@ public class Product10EC {
         // calculates yearly returns
         premiumsData.setLifeInsuranceAverageExtraDividende(calculateDatedAmount(quote, 40, averageExtraDvdRate));
         premiumsData.setLifeInsuranceMaximumExtraDividende(calculateDatedAmount(quote, 45, maximumExtraDvdRate));
+
+        if (!has10ECCoverage.isPresent()) {
+            Coverage coverage = new Coverage();
+            coverage.setName(PRODUCT_10_EC_NAME);
+            quote.getCommonData().setProductId(PRODUCT_10_EC_NAME);
+            quote.getCommonData().setProductName(PRODUCT_10_EC_NAME);
+            quote.addCoverage(coverage);
+        }
 
         return quote;
     }
