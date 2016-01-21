@@ -14,6 +14,9 @@ public class Insured {
     private LocalDate endDate;
     private Integer ageAtSubscription;
     private String professionName;
+    private String professionDescription;
+    private String employerName;
+    private String annualIncome;
     private Person person;
     private Fatca fatca;
     private Integer declaredTaxPercentAtSubscription;
@@ -73,6 +76,33 @@ public class Insured {
 
     public void setProfessionName(String professionName) {
         this.professionName = professionName;
+    }
+
+    @ApiModelProperty(value = "Job description")
+    public String getProfessionDescription() {
+        return professionDescription;
+    }
+
+    public void setProfessionDescription(String professionDescription) {
+        this.professionDescription = professionDescription;
+    }
+
+    @ApiModelProperty(value = "Employer's name")
+    public String getEmployerName() {
+        return employerName;
+    }
+
+    public void setEmployerName(String employerName) {
+        this.employerName = employerName;
+    }
+
+    @ApiModelProperty(value = "Annual Income")
+    public String getAnnualIncome() {
+        return annualIncome;
+    }
+
+    public void setAnnualIncome(String annualIncome) {
+        this.annualIncome = annualIncome;
     }
 
     @ApiModelProperty(value = "Declared tax percentage the insured pays at subscription")

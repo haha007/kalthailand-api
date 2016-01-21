@@ -83,6 +83,6 @@ public class QuoteService {
     }
 
     private Integer getAge(LocalDate birthDate) {
-        return ((Long) ChronoUnit.YEARS.between(LocalDate.now(), birthDate)).intValue();
+        return ((Long) ChronoUnit.YEARS.between(birthDate, LocalDate.now())).intValue();
     }
 }

@@ -12,6 +12,7 @@ public class FinancialScheduler {
     private Amount modalAmount;
     private LocalDate endDate = LocalDate.now(ZoneId.of(ZoneId.SHORT_IDS.get("VST")));
 
+    @ApiModelProperty(value = "The periodicity of the scheduled payment")
     public Periodicity getPeriodicity() {
         return periodicity;
     }
