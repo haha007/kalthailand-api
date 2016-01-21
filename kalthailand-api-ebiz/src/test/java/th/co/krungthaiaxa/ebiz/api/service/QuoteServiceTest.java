@@ -30,6 +30,23 @@ public class QuoteServiceTest {
     private QuoteService quoteService;
 
     @Test
+    public void should_calculate_age_of_insured() throws Exception {
+        String sessionId = RandomStringUtils.randomNumeric(20);
+
+        Quote quote = quoteService.createQuote(sessionId, SessionType.LINE);
+        quote.getInsureds().get(0).getPerson().setBirthDate(LocalDate.now().minus(35, ChronoUnit.YEARS));
+        quote.getPremiumsData().getFinancialScheduler().getPeriodicity().setCode(PeriodicityCode.EVERY_YEAR);
+
+        Amount amount = new Amount();
+        amount.setCurrencyCode("THB");
+        amount.setValue(1000000.0);
+        quote.getPremiumsData().setLifeInsuranceSumInsured(amount);
+
+        quote = quoteService.updateQuote(quote);
+        assertThat(quote.getInsureds().get(0).getAgeAtSubscription()).isEqualTo(35);
+    }
+
+    @Test
     public void should_return_empty_calculated_stuff_after_when_there_is_nothing_to_calculate() throws Exception {
         String sessionId = RandomStringUtils.randomNumeric(20);
 
