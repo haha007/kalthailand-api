@@ -13,6 +13,7 @@ public class Payment {
     private LocalDate dueDate;
     private LocalDate effectiveDate;
     private Amount amount;
+    private String registrationKey;
     private List<PaymentInformation> paymentInformations;
 
     @ApiModelProperty(required = true, value = "Status of the payment")
@@ -33,7 +34,7 @@ public class Payment {
         this.dueDate = dueDate;
     }
 
-    @ApiModelProperty(required = true, value = "The payment effective date. null if payment has not been done yet.")
+    @ApiModelProperty(value = "The payment effective date. null if payment has not been done yet.")
     public LocalDate getEffectiveDate() {
         return effectiveDate;
     }
@@ -51,7 +52,17 @@ public class Payment {
         this.amount = amount;
     }
 
-    @ApiModelProperty(required = true, value = "List of payment status done for the specific payment. If not empty, " +
+    @ApiModelProperty(value = "The payment's registration key in case of recurring payment. This is used by pay " +
+            "gateway like LINE Pay.")
+    public String getRegistrationKey() {
+        return registrationKey;
+    }
+
+    public void setRegistrationKey(String registrationKey) {
+        this.registrationKey = registrationKey;
+    }
+
+    @ApiModelProperty(value = "List of payment status done for the specific payment. If not empty, " +
             "should contain 0 to N payments with status SUCCESS for whcih the sum of the amounts is equal to " +
             "expected amount. May contain 0 to N unsuccessful payments.")
     public List<PaymentInformation> getPaymentInformations() {
