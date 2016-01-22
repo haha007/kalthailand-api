@@ -19,9 +19,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 import th.co.krungthaiaxa.ebiz.api.KalApiApplication;
 import th.co.krungthaiaxa.ebiz.api.model.Quote;
 import th.co.krungthaiaxa.ebiz.api.model.SessionQuote;
+import th.co.krungthaiaxa.ebiz.api.model.enums.ChannelType;
 import th.co.krungthaiaxa.ebiz.api.model.enums.GenderCode;
 import th.co.krungthaiaxa.ebiz.api.model.enums.PeriodicityCode;
-import th.co.krungthaiaxa.ebiz.api.model.enums.SessionType;
 import th.co.krungthaiaxa.ebiz.api.repository.QuoteRepository;
 import th.co.krungthaiaxa.ebiz.api.repository.SessionQuoteRepository;
 import th.co.krungthaiaxa.ebiz.api.utils.JsonUtil;
@@ -60,7 +60,7 @@ public class QuoteResourceTest {
     public void should_return_an_empty_quote_object() throws IOException {
         MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
         parameters.add("sessionId", RandomStringUtils.randomNumeric(20));
-        parameters.add("sessionType", SessionType.LINE.name());
+        parameters.add("channelType", ChannelType.LINE.name());
 
         ResponseEntity<String> response = template.postForEntity(base, parameters, String.class);
         assertThat(response.getStatusCode().value()).isEqualTo(OK.value());
@@ -80,7 +80,7 @@ public class QuoteResourceTest {
         String sessionId = RandomStringUtils.randomNumeric(20);
         MultiValueMap<String, String> creationParameters = new LinkedMultiValueMap<>();
         creationParameters.add("sessionId", sessionId);
-        creationParameters.add("sessionType", SessionType.LINE.name());
+        creationParameters.add("channelType", ChannelType.LINE.name());
 
         ResponseEntity<String> creationResponse = template.postForEntity(base, creationParameters, String.class);
         assertThat(creationResponse.getStatusCode().value()).isEqualTo(OK.value());
@@ -95,7 +95,7 @@ public class QuoteResourceTest {
         jsonQuote = replace(jsonQuote, "\"genderCode\":null", "\"genderCode\":\"MALE\"");
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(base.toString())
                 .queryParam("sessionId", sessionId)
-                .queryParam("sessionType", SessionType.LINE.name())
+                .queryParam("channelType", ChannelType.LINE.name())
                 .queryParam("jsonQuote", jsonQuote);
 
         HttpHeaders headers = new HttpHeaders();
@@ -106,7 +106,7 @@ public class QuoteResourceTest {
         assertThat(updateResponse.getStatusCode().value()).isEqualTo(OK.value());
 
         // check database values
-        SessionQuote sessionQuote = sessionQuoteRepository.findBySessionIdAndSessionType(sessionId, SessionType.LINE);
+        SessionQuote sessionQuote = sessionQuoteRepository.findBySessionIdAndChannelType(sessionId, ChannelType.LINE);
         assertThat(sessionQuote.getQuoteId()).isEqualTo(technicalQuoteId);
         Quote savedQuote = quoteRepository.findOne(technicalQuoteId);
         assertThat(savedQuote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode()).isEqualTo(PeriodicityCode.EVERY_MONTH);

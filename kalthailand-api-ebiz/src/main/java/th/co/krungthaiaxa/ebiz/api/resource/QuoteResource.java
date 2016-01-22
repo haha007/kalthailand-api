@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import th.co.krungthaiaxa.ebiz.api.model.Quote;
-import th.co.krungthaiaxa.ebiz.api.model.enums.SessionType;
+import th.co.krungthaiaxa.ebiz.api.model.enums.ChannelType;
 import th.co.krungthaiaxa.ebiz.api.model.error.Error;
 import th.co.krungthaiaxa.ebiz.api.model.error.ErrorCode;
 import th.co.krungthaiaxa.ebiz.api.service.QuoteService;
@@ -19,7 +19,8 @@ import th.co.krungthaiaxa.ebiz.api.utils.JsonUtil;
 import javax.inject.Inject;
 import java.io.IOException;
 
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.NOT_ACCEPTABLE;
+import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.springframework.web.bind.annotation.RequestMethod.PUT;
@@ -37,8 +38,8 @@ public class QuoteResource {
     @ApiOperation(value = "Creates an empty quote", notes = "Creates an empty quote, attached to the session ID", response = Quote.class)
     @RequestMapping(value = "/quote", produces = APPLICATION_JSON_VALUE, method = POST)
     @ResponseBody
-    public ResponseEntity createQuote(@RequestParam String sessionId, @RequestParam SessionType sessionType) {
-        Quote quote = quoteService.createQuote(sessionId, sessionType);
+    public ResponseEntity createQuote(@RequestParam String sessionId, @RequestParam ChannelType channelType) {
+        Quote quote = quoteService.createQuote(sessionId, channelType);
         return new ResponseEntity<>(JsonUtil.getJson(quote), OK);
     }
 
@@ -48,7 +49,7 @@ public class QuoteResource {
     })
     @RequestMapping(value = "/quote", produces = APPLICATION_JSON_VALUE, method = PUT)
     @ResponseBody
-    public ResponseEntity updateQuote(@RequestParam String sessionId, @RequestParam SessionType sessionType, @RequestParam String jsonQuote) {
+    public ResponseEntity updateQuote(@RequestParam String sessionId, @RequestParam ChannelType channelType, @RequestParam String jsonQuote) {
         Quote quote;
         try {
             quote = JsonUtil.mapper.readValue(jsonQuote, Quote.class);

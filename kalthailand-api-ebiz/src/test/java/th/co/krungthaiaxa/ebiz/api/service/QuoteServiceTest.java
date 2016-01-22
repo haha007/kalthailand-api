@@ -11,8 +11,8 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.ebiz.api.KalApiApplication;
 import th.co.krungthaiaxa.ebiz.api.model.Amount;
 import th.co.krungthaiaxa.ebiz.api.model.Quote;
+import th.co.krungthaiaxa.ebiz.api.model.enums.ChannelType;
 import th.co.krungthaiaxa.ebiz.api.model.enums.PeriodicityCode;
-import th.co.krungthaiaxa.ebiz.api.model.enums.SessionType;
 
 import javax.inject.Inject;
 import java.time.LocalDate;
@@ -33,7 +33,7 @@ public class QuoteServiceTest {
     public void should_calculate_age_of_insured() throws Exception {
         String sessionId = RandomStringUtils.randomNumeric(20);
 
-        Quote quote = quoteService.createQuote(sessionId, SessionType.LINE);
+        Quote quote = quoteService.createQuote(sessionId, ChannelType.LINE);
         quote.getInsureds().get(0).getPerson().setBirthDate(LocalDate.now().minus(35, ChronoUnit.YEARS));
         quote.getPremiumsData().getFinancialScheduler().getPeriodicity().setCode(PeriodicityCode.EVERY_YEAR);
 
@@ -50,7 +50,7 @@ public class QuoteServiceTest {
     public void should_return_empty_calculated_stuff_when_there_is_nothing_to_calculate_anymore() throws Exception {
         String sessionId = RandomStringUtils.randomNumeric(20);
 
-        Quote quote = quoteService.createQuote(sessionId, SessionType.LINE);
+        Quote quote = quoteService.createQuote(sessionId, ChannelType.LINE);
         quote.getInsureds().get(0).getPerson().setBirthDate(LocalDate.now().minus(35, ChronoUnit.YEARS));
         quote.getPremiumsData().getFinancialScheduler().getPeriodicity().setCode(PeriodicityCode.EVERY_YEAR);
 
@@ -90,7 +90,7 @@ public class QuoteServiceTest {
     public void should_return_empty_quote_object_with_every_object_set_to_null() {
         String sessionId = RandomStringUtils.randomNumeric(20);
 
-        Quote quote = quoteService.createQuote(sessionId, SessionType.LINE);
+        Quote quote = quoteService.createQuote(sessionId, ChannelType.LINE);
         assertThat(quote).isNotNull();
         assertThat(quote.getCommonData()).isNotNull();
         assertThat(quote.getInsureds()).hasSize(1);

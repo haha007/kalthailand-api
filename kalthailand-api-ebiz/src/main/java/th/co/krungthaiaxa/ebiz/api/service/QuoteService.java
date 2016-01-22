@@ -2,7 +2,7 @@ package th.co.krungthaiaxa.ebiz.api.service;
 
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.ebiz.api.model.*;
-import th.co.krungthaiaxa.ebiz.api.model.enums.SessionType;
+import th.co.krungthaiaxa.ebiz.api.model.enums.ChannelType;
 import th.co.krungthaiaxa.ebiz.api.products.Product10EC;
 import th.co.krungthaiaxa.ebiz.api.repository.QuoteRepository;
 import th.co.krungthaiaxa.ebiz.api.repository.SessionQuoteRepository;
@@ -23,8 +23,8 @@ public class QuoteService {
         this.quoteRepository = quoteRepository;
     }
 
-    public Quote createQuote(String sessionId, SessionType sessionType) {
-        SessionQuote sessionQuote = sessionQuoteRepository.findBySessionIdAndSessionType(sessionId, sessionType);
+    public Quote createQuote(String sessionId, ChannelType channelType) {
+        SessionQuote sessionQuote = sessionQuoteRepository.findBySessionIdAndChannelType(sessionId, channelType);
 
         boolean userHasSavedQuote = sessionQuote != null
                 && sessionQuote.getQuoteId() != null
@@ -50,7 +50,7 @@ public class QuoteService {
 
             sessionQuote = new SessionQuote();
             sessionQuote.setSessionId(sessionId);
-            sessionQuote.setSessionType(sessionType);
+            sessionQuote.setChannelType(channelType);
             sessionQuote.setQuoteId(quote.getTechnicalId());
             sessionQuoteRepository.save(sessionQuote);
         } else {

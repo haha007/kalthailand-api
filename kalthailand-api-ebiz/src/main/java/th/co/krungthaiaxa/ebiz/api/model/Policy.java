@@ -9,19 +9,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@ApiModel(description = "This is the description of a quote and only a quote. It holds all properties gathered from " +
-        "user before the quote got transformed into a Policy")
-public class Quote {
+@ApiModel(description = "Data concerning the policy")
+public class Policy {
     @Id
     private String technicalId;
     @Indexed
-    private String quoteId;
+    private String policyId;
     private CommonData commonData;
     private PremiumsDataLifeInsurance premiumsData;
     private List<Insured> insureds = new ArrayList<>();
     private List<Coverage> coverages = new ArrayList<>();
+    private List<Payment> payments = new ArrayList<>();
 
-    @ApiModelProperty(required = true, value = "Technical ID of the quote. This should not be displayed to user")
+    @ApiModelProperty(required = true, value = "Technical ID of the policy. This should not be displayed to user")
     public String getTechnicalId() {
         return technicalId;
     }
@@ -30,16 +30,16 @@ public class Quote {
         this.technicalId = technicalId;
     }
 
-    @ApiModelProperty(required = true, value = "Functional ID of the quote. This may be displayed to user")
-    public String getQuoteId() {
-        return quoteId;
+    @ApiModelProperty(required = true, value = "Functional ID of the policy. This may be displayed to user")
+    public String getPolicyId() {
+        return policyId;
     }
 
-    public void setQuoteId(String quoteId) {
-        this.quoteId = quoteId;
+    public void setPolicyId(String policyId) {
+        this.policyId = policyId;
     }
 
-    @ApiModelProperty(required = true, value = "Data common to all quotes commercial types")
+    @ApiModelProperty(required = true, value = "Data common to all policies commercial types")
     public CommonData getCommonData() {
         return commonData;
     }
@@ -48,7 +48,7 @@ public class Quote {
         this.commonData = commonData;
     }
 
-    @ApiModelProperty(value = "Data concerning premiums (price for the coverage and benefit agreed for the quote)")
+    @ApiModelProperty(value = "Data concerning premiums (price for the coverage and benefit agreed for the policy)")
     public PremiumsDataLifeInsurance getPremiumsData() {
         return premiumsData;
     }
@@ -57,7 +57,7 @@ public class Quote {
         this.premiumsData = premiumsData;
     }
 
-    @ApiModelProperty(value = "List of all insured parties stated on the quote")
+    @ApiModelProperty(value = "List of all insured parties stated on the policy")
     public List<Insured> getInsureds() {
         return Collections.unmodifiableList(insureds);
     }
@@ -66,12 +66,21 @@ public class Quote {
         insureds.add(insured);
     }
 
-    @ApiModelProperty(value = "List of all coverages of the quote")
+    @ApiModelProperty(value = "List of all coverages of the policy")
     public List<Coverage> getCoverages() {
         return coverages;
     }
 
     public void addCoverage(Coverage coverage) {
         coverages.add(coverage);
+    }
+
+    @ApiModelProperty(value = "List of all policy payments")
+    public List<Payment> getPayments() {
+        return Collections.unmodifiableList(payments);
+    }
+
+    public void addPayment(Payment payment) {
+        payments.add(payment);
     }
 }
