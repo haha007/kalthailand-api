@@ -8,7 +8,7 @@ public class SessionQuote {
     private String sessionQuoteId;
     private String sessionId;
     private ChannelType channelType;
-    private String quoteId;
+    private String quoteTechId;
 
     public String getSessionQuoteId() {
         return sessionQuoteId;
@@ -34,11 +34,11 @@ public class SessionQuote {
         this.channelType = channelType;
     }
 
-    public String getQuoteId() {
-        return quoteId;
+    public String getQuoteTechId() {
+        return quoteTechId;
     }
 
-    public void setQuoteId(String quoteId) {
-        this.quoteId = quoteId;
+    public void setQuoteTechId(String quoteTechId) {
+        this.quoteTechId = quoteTechId;
     }
 }

@@ -4,8 +4,11 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import th.co.krungthaiaxa.ebiz.api.model.enums.PhoneNumberType;
 
+import java.io.Serializable;
+import java.util.Objects;
+
 @ApiModel(description = "Data concerning Phone numbers")
-public class PhoneNumber {
+public class PhoneNumber implements Serializable {
     private PhoneNumberType type;
     private Integer countryCode;
     private Integer areaCode;
@@ -48,5 +51,21 @@ public class PhoneNumber {
 
     public void setNumber(Integer number) {
         this.number = number;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PhoneNumber that = (PhoneNumber) o;
+        return type == that.type &&
+                Objects.equals(countryCode, that.countryCode) &&
+                Objects.equals(areaCode, that.areaCode) &&
+                Objects.equals(number, that.number);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(type, countryCode, areaCode, number);
     }
 }

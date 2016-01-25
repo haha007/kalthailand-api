@@ -3,10 +3,12 @@ package th.co.krungthaiaxa.ebiz.api.model;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Objects;
 
 @ApiModel(description = "An amount at a specific date with its currency")
-public class DatedAmount {
+public class DatedAmount implements Serializable {
     private Double value;
     private String currencyCode;
     private LocalDate date;
@@ -36,5 +38,20 @@ public class DatedAmount {
 
     public void setDate(LocalDate date) {
         this.date = date;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DatedAmount that = (DatedAmount) o;
+        return Objects.equals(value, that.value) &&
+                Objects.equals(currencyCode, that.currencyCode) &&
+                Objects.equals(date, that.date);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value, currencyCode, date);
     }
 }

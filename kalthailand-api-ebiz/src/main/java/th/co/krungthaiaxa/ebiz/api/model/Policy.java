@@ -15,6 +15,8 @@ public class Policy {
     private String technicalId;
     @Indexed
     private String policyId;
+    @Indexed
+    private String quoteFunctionalId;
     private CommonData commonData;
     private PremiumsDataLifeInsurance premiumsData;
     private List<Insured> insureds = new ArrayList<>();
@@ -37,6 +39,15 @@ public class Policy {
 
     public void setPolicyId(String policyId) {
         this.policyId = policyId;
+    }
+
+    @ApiModelProperty(required = true, value = "Functional ID of the quote the policy is coming from")
+    public String getQuoteFunctionalId() {
+        return quoteFunctionalId;
+    }
+
+    public void setQuoteFunctionalId(String quoteId) {
+        this.quoteFunctionalId = quoteId;
     }
 
     @ApiModelProperty(required = true, value = "Data common to all policies commercial types")

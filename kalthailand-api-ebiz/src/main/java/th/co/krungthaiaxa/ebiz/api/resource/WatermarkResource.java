@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import th.co.krungthaiaxa.ebiz.api.exception.ImageTooSmallException;
 import th.co.krungthaiaxa.ebiz.api.exception.InputImageException;
 import th.co.krungthaiaxa.ebiz.api.exception.OutputImageException;
 import th.co.krungthaiaxa.ebiz.api.exception.UnsupportedImageException;
-import th.co.krungthaiaxa.ebiz.api.exception.ImageTooSmallException;
 import th.co.krungthaiaxa.ebiz.api.model.error.Error;
 import th.co.krungthaiaxa.ebiz.api.model.error.ErrorCode;
 import th.co.krungthaiaxa.ebiz.api.utils.WatermarkUtil;
@@ -28,7 +28,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @RestController
-@Api(value = "Watermarking", description = "Endpoints for watermarking")
+@Api(value = "Watermarking", description = "Watermark an image")
 public class WatermarkResource {
     @Value("${path.store.watermarked.image}")
     private String storePath;
@@ -39,7 +39,7 @@ public class WatermarkResource {
             @ApiResponse(code = 406, message = "If input image is too small", response = Error.class),
             @ApiResponse(code = 415, message = "If input image is not supported", response = Error.class)
     })
-    @RequestMapping(value = "/upload", produces = APPLICATION_JSON_VALUE, method = POST)
+    @RequestMapping(value = "/watermark/upload", produces = APPLICATION_JSON_VALUE, method = POST)
     @ResponseBody
     public ResponseEntity uploadImageForWatermark(@RequestParam String type, @RequestParam String base64Image) {
         byte[] inputImage;

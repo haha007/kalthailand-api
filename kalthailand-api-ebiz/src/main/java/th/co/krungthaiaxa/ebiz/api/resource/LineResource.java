@@ -16,7 +16,7 @@ import th.co.krungthaiaxa.ebiz.api.utils.Decrypt;
 import th.co.krungthaiaxa.ebiz.api.utils.JsonUtil;
 
 @RestController
-@Api(value = "Line", description = "Endpoints for line api")
+@Api(value = "Line", description = "Everything related to Line")
 public class LineResource {
 
     @Value("${line.secret.key}")

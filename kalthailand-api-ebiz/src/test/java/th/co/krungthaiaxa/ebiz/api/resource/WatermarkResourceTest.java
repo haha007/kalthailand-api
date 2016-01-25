@@ -32,19 +32,19 @@ import static org.springframework.http.HttpStatus.*;
 @ActiveProfiles("dev")
 @IntegrationTest({"server.port=0"})
 public class WatermarkResourceTest {
-	@Value("${local.server.port}")
-	private int port;
-	private URI base;
-	private RestTemplate template;
+    @Value("${local.server.port}")
+    private int port;
+    private URI base;
+    private RestTemplate template;
 
     @Value("${path.store.watermarked.image}")
     private String storePath;
 
-	@Before
-	public void setUp() throws Exception {
-		this.base = new URI("http://localhost:" + port + "/upload");
-		template = new TestRestTemplate();
-	}
+    @Before
+    public void setUp() throws Exception {
+        this.base = new URI("http://localhost:" + port + "/watermark/upload");
+        template = new TestRestTemplate();
+    }
 
     @Test
     public void should_return_error_when_no_parameters() throws IOException {
@@ -65,37 +65,37 @@ public class WatermarkResourceTest {
         assertThat(error.getCode()).isEqualTo(ErrorCode.WATERMARK_IMAGE_INPUT_NOT_READABLE.getCode());
     }
 
-	@Test
-	public void should_return_error_when_image_is_too_small() throws IOException {
-		MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
+    @Test
+    public void should_return_error_when_image_is_too_small() throws IOException {
+        MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
         map.add("base64Image", getBase64("/images/small.png"));
         map.add("type", "png");
 
-		ResponseEntity<String> response = template.postForEntity(base, map, String.class);
-		assertThat(response.getStatusCode().value()).isEqualTo(NOT_ACCEPTABLE.value());
-	}
+        ResponseEntity<String> response = template.postForEntity(base, map, String.class);
+        assertThat(response.getStatusCode().value()).isEqualTo(NOT_ACCEPTABLE.value());
+    }
 
-	@Test
-	public void should_return_error_when_sending_a_file_that_is_not_an_image() throws IOException {
-		MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
-		map.add("base64Image", getBase64("/texts/sampleTextFile.txt"));
+    @Test
+    public void should_return_error_when_sending_a_file_that_is_not_an_image() throws IOException {
+        MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
+        map.add("base64Image", getBase64("/texts/sampleTextFile.txt"));
         map.add("type", "png");
 
-		ResponseEntity<String> response = template.postForEntity(base, map, String.class);
-		assertThat(response.getStatusCode().value()).isEqualTo(UNSUPPORTED_MEDIA_TYPE.value());
-	}
+        ResponseEntity<String> response = template.postForEntity(base, map, String.class);
+        assertThat(response.getStatusCode().value()).isEqualTo(UNSUPPORTED_MEDIA_TYPE.value());
+    }
 
-	@Test
-	public void should_return_ok_and_create_file_in_store_path() throws IOException {
-		MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
-		map.add("base64Image", getBase64("/images/big.png"));
+    @Test
+    public void should_return_ok_and_create_file_in_store_path() throws IOException {
+        MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
+        map.add("base64Image", getBase64("/images/big.png"));
         map.add("type", "png");
 
-		ResponseEntity<String> response = template.postForEntity(base, map, String.class);
+        ResponseEntity<String> response = template.postForEntity(base, map, String.class);
         assertThat(response.getStatusCode().value()).isEqualTo(OK.value());
         assertThat(response.getBody()).isNotNull();
         assertThat(Base64.getDecoder().decode(response.getBody())).isNotNull();
-	}
+    }
 
     private String getBase64(String file) {
         try {

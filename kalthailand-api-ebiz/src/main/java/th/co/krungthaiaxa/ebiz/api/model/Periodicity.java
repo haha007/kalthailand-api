@@ -2,7 +2,10 @@ package th.co.krungthaiaxa.ebiz.api.model;
 
 import th.co.krungthaiaxa.ebiz.api.model.enums.PeriodicityCode;
 
-public class Periodicity {
+import java.io.Serializable;
+import java.util.Objects;
+
+public class Periodicity implements Serializable {
     private PeriodicityCode code;
 
     public PeriodicityCode getCode() {
@@ -11,5 +14,18 @@ public class Periodicity {
 
     public void setCode(PeriodicityCode code) {
         this.code = code;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Periodicity that = (Periodicity) o;
+        return code == that.code;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(code);
     }
 }

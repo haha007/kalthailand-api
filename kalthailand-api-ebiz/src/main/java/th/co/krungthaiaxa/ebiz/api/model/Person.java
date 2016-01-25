@@ -5,10 +5,12 @@ import io.swagger.annotations.ApiModelProperty;
 import th.co.krungthaiaxa.ebiz.api.model.enums.GenderCode;
 import th.co.krungthaiaxa.ebiz.api.model.enums.MaritalStatus;
 
+import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Objects;
 
 @ApiModel(description = "Data concerning specific properties to a Person")
-public class Person extends Party {
+public class Person extends Party implements Serializable {
     private String givenName;
     private String middleName;
     private String surName;
@@ -148,5 +150,31 @@ public class Person extends Party {
 
     public void setGeographicalAddress(GeographicalAddress geographicalAddress) {
         this.geographicalAddress = geographicalAddress;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Person person = (Person) o;
+        return Objects.equals(givenName, person.givenName) &&
+                Objects.equals(middleName, person.middleName) &&
+                Objects.equals(surName, person.surName) &&
+                Objects.equals(title, person.title) &&
+                Objects.equals(mobilePhoneNumber, person.mobilePhoneNumber) &&
+                Objects.equals(homePhoneNumber, person.homePhoneNumber) &&
+                Objects.equals(workPhoneNumber, person.workPhoneNumber) &&
+                Objects.equals(email, person.email) &&
+                maritalStatus == person.maritalStatus &&
+                Objects.equals(heightInCm, person.heightInCm) &&
+                Objects.equals(weightInKg, person.weightInKg) &&
+                Objects.equals(birthDate, person.birthDate) &&
+                genderCode == person.genderCode &&
+                Objects.equals(geographicalAddress, person.geographicalAddress);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(givenName, middleName, surName, title, mobilePhoneNumber, homePhoneNumber, workPhoneNumber, email, maritalStatus, heightInCm, weightInKg, birthDate, genderCode, geographicalAddress);
     }
 }

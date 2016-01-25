@@ -4,10 +4,12 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.springframework.data.annotation.Id;
 
+import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
 @ApiModel(description = "The coverage of the contract")
-public class Coverage {
+public class Coverage implements Serializable {
     @Id
     private String coverageId;
     private String name;
@@ -38,5 +40,20 @@ public class Coverage {
 
     public void setBeneficiaries(List<CoverageBeneficiary> beneficiaries) {
         this.beneficiaries = beneficiaries;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Coverage coverage = (Coverage) o;
+        return Objects.equals(coverageId, coverage.coverageId) &&
+                Objects.equals(name, coverage.name) &&
+                Objects.equals(beneficiaries, coverage.beneficiaries);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(coverageId, name, beneficiaries);
     }
 }

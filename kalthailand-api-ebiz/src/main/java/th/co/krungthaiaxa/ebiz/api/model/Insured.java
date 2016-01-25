@@ -4,10 +4,12 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import th.co.krungthaiaxa.ebiz.api.model.enums.InsuredType;
 
+import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Objects;
 
 @ApiModel(description = "Data concerning the insured user")
-public class Insured {
+public class Insured implements Serializable {
     private InsuredType type;
     private Boolean mainInsuredIndicator;
     private LocalDate startDate;
@@ -157,5 +159,32 @@ public class Insured {
 
     public void setAdditionalInformationFreeText(String additionalInformationFreeText) {
         this.additionalInformationFreeText = additionalInformationFreeText;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Insured insured = (Insured) o;
+        return type == insured.type &&
+                Objects.equals(mainInsuredIndicator, insured.mainInsuredIndicator) &&
+                Objects.equals(startDate, insured.startDate) &&
+                Objects.equals(endDate, insured.endDate) &&
+                Objects.equals(ageAtSubscription, insured.ageAtSubscription) &&
+                Objects.equals(professionName, insured.professionName) &&
+                Objects.equals(professionDescription, insured.professionDescription) &&
+                Objects.equals(employerName, insured.employerName) &&
+                Objects.equals(annualIncome, insured.annualIncome) &&
+                Objects.equals(person, insured.person) &&
+                Objects.equals(fatca, insured.fatca) &&
+                Objects.equals(declaredTaxPercentAtSubscription, insured.declaredTaxPercentAtSubscription) &&
+                Objects.equals(disableOrImmunoDeficient, insured.disableOrImmunoDeficient) &&
+                Objects.equals(hospitalizedInLast6Months, insured.hospitalizedInLast6Months) &&
+                Objects.equals(additionalInformationFreeText, insured.additionalInformationFreeText);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(type, mainInsuredIndicator, startDate, endDate, ageAtSubscription, professionName, professionDescription, employerName, annualIncome, person, fatca, declaredTaxPercentAtSubscription, disableOrImmunoDeficient, hospitalizedInLast6Months, additionalInformationFreeText);
     }
 }

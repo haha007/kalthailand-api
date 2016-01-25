@@ -4,8 +4,11 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import th.co.krungthaiaxa.ebiz.api.model.enums.USPermanentResident;
 
+import java.io.Serializable;
+import java.util.Objects;
+
 @ApiModel(description = "USA 'Foreign Account Tax Compliance Act' specific informations")
-public class Fatca {
+public class Fatca implements Serializable {
     private Boolean bornInUSA;
     private Boolean payTaxInUSA;
     private USPermanentResident permanentResidentOfUSA;
@@ -45,5 +48,21 @@ public class Fatca {
 
     public void setPermanentResidentOfUSAForTax(Boolean permanentResidentOfUSAForTax) {
         this.permanentResidentOfUSAForTax = permanentResidentOfUSAForTax;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Fatca fatca = (Fatca) o;
+        return Objects.equals(bornInUSA, fatca.bornInUSA) &&
+                Objects.equals(payTaxInUSA, fatca.payTaxInUSA) &&
+                permanentResidentOfUSA == fatca.permanentResidentOfUSA &&
+                Objects.equals(permanentResidentOfUSAForTax, fatca.permanentResidentOfUSAForTax);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(bornInUSA, payTaxInUSA, permanentResidentOfUSA, permanentResidentOfUSAForTax);
     }
 }

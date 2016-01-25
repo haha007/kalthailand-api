@@ -3,13 +3,15 @@ package th.co.krungthaiaxa.ebiz.api.model;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @ApiModel(description = "Data concerning premiums (price for the coverage and benefit agreed) specific to " +
         "Life Insurance", parent = PremiumsData.class)
-public class PremiumsDataLifeInsurance extends PremiumsData {
+public class PremiumsDataLifeInsurance extends PremiumsData implements Serializable {
     private Amount lifeInsuranceSumInsured;
     private List<DatedAmount> lifeInsuranceYearlyCashBacks = new ArrayList<>();
     private List<DatedAmount> lifeInsuranceMinimumYearlyReturns = new ArrayList<>();
@@ -89,5 +91,25 @@ public class PremiumsDataLifeInsurance extends PremiumsData {
 
     public void setLifeInsuranceMaximumExtraDividende(List<DatedAmount> lifeInsuranceMaximumExtraDividende) {
         this.lifeInsuranceMaximumExtraDividende = lifeInsuranceMaximumExtraDividende;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PremiumsDataLifeInsurance that = (PremiumsDataLifeInsurance) o;
+        return Objects.equals(lifeInsuranceSumInsured, that.lifeInsuranceSumInsured) &&
+                Objects.equals(lifeInsuranceYearlyCashBacks, that.lifeInsuranceYearlyCashBacks) &&
+                Objects.equals(lifeInsuranceMinimumYearlyReturns, that.lifeInsuranceMinimumYearlyReturns) &&
+                Objects.equals(lifeInsuranceAverageYearlyReturns, that.lifeInsuranceAverageYearlyReturns) &&
+                Objects.equals(lifeInsuranceMaximumYearlyReturns, that.lifeInsuranceMaximumYearlyReturns) &&
+                Objects.equals(lifeInsuranceMinimumExtraDividende, that.lifeInsuranceMinimumExtraDividende) &&
+                Objects.equals(lifeInsuranceAverageExtraDividende, that.lifeInsuranceAverageExtraDividende) &&
+                Objects.equals(lifeInsuranceMaximumExtraDividende, that.lifeInsuranceMaximumExtraDividende);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(lifeInsuranceSumInsured, lifeInsuranceYearlyCashBacks, lifeInsuranceMinimumYearlyReturns, lifeInsuranceAverageYearlyReturns, lifeInsuranceMaximumYearlyReturns, lifeInsuranceMinimumExtraDividende, lifeInsuranceAverageExtraDividende, lifeInsuranceMaximumExtraDividende);
     }
 }

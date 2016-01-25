@@ -17,9 +17,9 @@ import java.io.InputStream;
 import java.util.List;
 
 @RestController
-@Api(value = "OCR", description = "Endpoints for OCR")
+@Api(value = "OCR", description = "Automated recognition of Thai ID card")
 public class OCRResource {
-    @RequestMapping(value = "/validate/id", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
+    @RequestMapping(value = "/ocr/validate/id", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity validateId(@RequestParam String id, @RequestParam String type, HttpServletRequest request) {
         if (!(request instanceof MultipartHttpServletRequest)) {

@@ -3,8 +3,11 @@ package th.co.krungthaiaxa.ebiz.api.model;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import java.io.Serializable;
+import java.util.Objects;
+
 @ApiModel(description = "The definition of a geographical / physical address")
-public class GeographicalAddress {
+public class GeographicalAddress implements Serializable {
     private String streetAddress1;
     private String streetAddress2;
     private String postCode;
@@ -74,5 +77,24 @@ public class GeographicalAddress {
 
     public void setCountry(String country) {
         this.country = country;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        GeographicalAddress that = (GeographicalAddress) o;
+        return Objects.equals(streetAddress1, that.streetAddress1) &&
+                Objects.equals(streetAddress2, that.streetAddress2) &&
+                Objects.equals(postCode, that.postCode) &&
+                Objects.equals(district, that.district) &&
+                Objects.equals(subdistrict, that.subdistrict) &&
+                Objects.equals(subCountry, that.subCountry) &&
+                Objects.equals(country, that.country);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(streetAddress1, streetAddress2, postCode, district, subdistrict, subCountry, country);
     }
 }

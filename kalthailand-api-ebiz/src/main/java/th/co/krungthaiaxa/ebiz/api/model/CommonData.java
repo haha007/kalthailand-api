@@ -3,8 +3,10 @@ package th.co.krungthaiaxa.ebiz.api.model;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import java.io.Serializable;
+
 @ApiModel(description = "Data common to all quotes commercial types")
-public class CommonData {
+public class CommonData implements Serializable {
     private String productId;
     private String productName;
 
