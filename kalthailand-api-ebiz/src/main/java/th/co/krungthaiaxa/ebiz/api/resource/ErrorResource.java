@@ -29,8 +29,7 @@ public class ErrorResource implements ErrorController {
 
     @RequestMapping(value = "/error")
     public Map<String, Object> error(HttpServletRequest aRequest) {
-        Map<String, Object> body = getErrorAttributes(aRequest, getTraceParameter(aRequest));
-        return body;
+        return getErrorAttributes(aRequest, getTraceParameter(aRequest));
     }
 
     private boolean getTraceParameter(HttpServletRequest request) {
