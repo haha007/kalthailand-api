@@ -4,6 +4,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -28,6 +30,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 @RestController
 @Api(value = "quotes", description = "Everything for quote before getting a policy")
 public class QuoteResource {
+    private final static Logger logger = LoggerFactory.getLogger(QuoteResource.class);
     private final QuoteService quoteService;
 
     @Inject
@@ -54,6 +57,7 @@ public class QuoteResource {
         try {
             quote = JsonUtil.mapper.readValue(jsonQuote, Quote.class);
         } catch (IOException e) {
+            logger.error("Unable to get a quote out of [" + jsonQuote + "]", e);
             return new ResponseEntity<>(ErrorCode.INVALID_QUOTE_PROVIDED, NOT_ACCEPTABLE);
         }
 
@@ -61,6 +65,7 @@ public class QuoteResource {
         try {
             updatedQuote = quoteService.updateQuote(quote);
         } catch (Exception e) {
+            logger.error("Unable to update quote", e);
             return new ResponseEntity<>(ErrorCode.NO_QUOTE_IN_SESSION, NOT_ACCEPTABLE);
         }
 
