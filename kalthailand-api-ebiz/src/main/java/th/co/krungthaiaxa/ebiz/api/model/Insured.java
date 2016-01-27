@@ -11,7 +11,7 @@ import java.util.Objects;
 @ApiModel(description = "Data concerning the insured user")
 public class Insured implements Serializable {
     private InsuredType type;
-    private Boolean mainInsuredIndicator;
+    private Boolean mainInsuredIndicator = false;
     private LocalDate startDate;
     private LocalDate endDate;
     private Integer ageAtSubscription;

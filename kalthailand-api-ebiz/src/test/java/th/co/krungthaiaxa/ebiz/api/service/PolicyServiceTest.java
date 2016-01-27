@@ -21,8 +21,8 @@ import java.time.temporal.ChronoUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static th.co.krungthaiaxa.ebiz.api.exception.PolicyValidationException.policyCantBeCreatedFromEmptyQuoteException;
-import static th.co.krungthaiaxa.ebiz.api.exception.PolicyValidationException.policyCantBeCreatedFromNoneExistingQuoteException;
+import static th.co.krungthaiaxa.ebiz.api.exception.PolicyValidationException.emptyQuote;
+import static th.co.krungthaiaxa.ebiz.api.exception.PolicyValidationException.noneExistingQuote;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiApplication.class)
@@ -39,7 +39,7 @@ public class PolicyServiceTest {
     public void should_return_error_when_create_policy_if_quote_not_provided() throws Exception {
         assertThatThrownBy(() -> policyService.createPolicy(null))
                 .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(policyCantBeCreatedFromEmptyQuoteException.getMessage());
+                .hasMessage(emptyQuote.getMessage());
     }
 
     @Test
@@ -48,22 +48,7 @@ public class PolicyServiceTest {
         quote.setTechnicalId("123");
         assertThatThrownBy(() -> policyService.createPolicy(quote))
                 .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(policyCantBeCreatedFromNoneExistingQuoteException.getMessage());
-    }
-
-    @Test
-    public void should_copy_quote_details_into_policy() throws Exception {
-        Quote quote = quoteService.createQuote("123", ChannelType.LINE);
-        updateQuote(quote);
-        quote = quoteService.updateQuote(quote);
-
-        Policy policy = new Policy();
-        PolicyService.fillUpDateFromQuote(policy, quote);
-        assertThat(policy.getQuoteFunctionalId()).isEqualTo(quote.getQuoteId());
-        assertThat(policy.getCommonData()).isEqualToComparingFieldByField(quote.getCommonData());
-        assertThat(policy.getPremiumsData()).isEqualTo(quote.getPremiumsData());
-        assertThat(policy.getCoverages()).isEqualTo(quote.getCoverages());
-        assertThat(policy.getInsureds()).isEqualTo(quote.getInsureds());
+                .hasMessage(noneExistingQuote.getMessage());
     }
 
     @Test
