@@ -32,6 +32,7 @@ public class LineResource {
     @RequestMapping(value = "/decrypt", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
     @ResponseBody
     public ResponseEntity decryptLineId(@RequestParam String value) {
+        logger.info("Value [" + value + "] will be decrypted");
         String decrypted;
         try {
             decrypted = Decrypt.decrypt(value, secretkey);
@@ -45,7 +46,7 @@ public class LineResource {
             return new ResponseEntity<>(ErrorCode.INAVLID_LINE_ID, HttpStatus.BAD_REQUEST);
         }
 
-        logger.error("Value has been successfuly decrypted");
+        logger.info("Value has been successfuly decrypted");
         Mid result = new Mid(decrypted.substring(0, decrypted.indexOf(".")));
         return new ResponseEntity<>(JsonUtil.getJson(result), HttpStatus.OK);
     }
