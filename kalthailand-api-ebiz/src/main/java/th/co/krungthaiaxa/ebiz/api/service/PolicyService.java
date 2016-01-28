@@ -5,12 +5,11 @@ import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.ebiz.api.exception.PolicyValidationException;
 import th.co.krungthaiaxa.ebiz.api.model.Policy;
 import th.co.krungthaiaxa.ebiz.api.model.Quote;
+import th.co.krungthaiaxa.ebiz.api.products.Product10EC;
 import th.co.krungthaiaxa.ebiz.api.repository.PolicyRepository;
 import th.co.krungthaiaxa.ebiz.api.repository.QuoteRepository;
 
 import javax.inject.Inject;
-
-import static th.co.krungthaiaxa.ebiz.api.service.QuoteToPolicyUtils.getPolicyFromQuote;
 
 @Service
 public class PolicyService {
@@ -35,7 +34,8 @@ public class PolicyService {
         if (policy == null) {
             policy = new Policy();
             policy.setPolicyId(RandomStringUtils.randomNumeric(20));
-            getPolicyFromQuote(policy, quote);
+            // Only one product so far
+            Product10EC.getPolicyFromQuote(policy, quote);
             policyRepository.save(policy);
         }
 
