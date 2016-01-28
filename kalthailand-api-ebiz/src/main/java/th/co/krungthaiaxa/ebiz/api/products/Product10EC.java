@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static th.co.krungthaiaxa.ebiz.api.exception.QuoteCalculationException.*;
 
@@ -157,6 +158,9 @@ public class Product10EC {
     public static void getPolicyFromQuote(Policy policy, Quote quote) throws PolicyValidationException {
         checkInsured(quote);
         checkPerson(quote);
+        checkMainInsured(quote.getInsureds().stream().filter(Insured::getMainInsuredIndicator).findFirst().get());
+        checkAddress(quote.getInsureds().stream().filter(insured -> insured.getPerson().getGeographicalAddress() != null).collect(Collectors.toList()));
+        checkBeneficiaries(quote.getInsureds().stream().filter(insured -> !insured.getMainInsuredIndicator()).collect(Collectors.toList()));
 
         policy.setQuoteFunctionalId(quote.getQuoteId());
         policy.setCommonData(SerializationUtils.clone(quote.getCommonData()));
@@ -165,35 +169,64 @@ public class Product10EC {
         policy.setPremiumsData(SerializationUtils.clone(quote.getPremiumsData()));
     }
 
+    private static void checkBeneficiaries(List<Insured> beneficiaries) throws PolicyValidationException {
+        if (beneficiaries == null || beneficiaries.size() == 0) {
+            throw PolicyValidationException.beneficiariesNone;
+        } else if (beneficiaries.size() > 6) {
+            throw PolicyValidationException.beneficiariesTooMany;
+        }
+    }
+
+    private static void checkAddress(List<Insured> addresses) {
+    }
+
+    private static void checkMainInsured(Insured insured) throws PolicyValidationException {
+        if (insured.getDisableOrImmunoDeficient() == null) {
+            throw PolicyValidationException.mainInsuredWithNoDisableStatus;
+        } else if (insured.getHospitalizedInLast6Months() == null) {
+            throw PolicyValidationException.mainInsuredWithNoHospitalizedStatus;
+        } else if (insured.getDeclaredTaxPercentAtSubscription() == null) {
+            throw PolicyValidationException.mainInsuredWithNoDeclaredTax;
+        } else if (insured.getAgeAtSubscription() == null) {
+            throw PolicyValidationException.mainInsuredWithNoAge;
+        } else if (insured.getStartDate() == null) {
+            throw PolicyValidationException.mainInsuredWithNoStartDate;
+        } else if (insured.getEndDate() == null) {
+            throw PolicyValidationException.mainInsuredWithNoEndDate;
+        } else if (insured.getProfessionName() == null) {
+            throw PolicyValidationException.mainInsuredWithNoProfessionName;
+        } else if (insured.getPerson().getGenderCode() == null) {
+            throw PolicyValidationException.mainInsuredWithNoGenderCode;
+        } else if (insured.getPerson().getHeightInCm() == null) {
+            throw PolicyValidationException.mainInsuredWithNoHeight;
+        } else if (insured.getPerson().getMaritalStatus() == null) {
+            throw PolicyValidationException.mainInsuredWithNoMaritalStatus;
+        } else if (insured.getPerson().getWeightInKg() == null) {
+            throw PolicyValidationException.mainInsuredWithNoWeight;
+        } else if (insured.getPerson().getBirthDate() == null) {
+            throw PolicyValidationException.mainInsuredWithNoDOB;
+        } else if (insured.getPerson().getEmail() == null) {
+            throw PolicyValidationException.mainInsuredWithNoEmail;
+        } else if (insured.getPerson().getGeographicalAddress() == null) {
+            throw PolicyValidationException.mainInsuredWithNoGeographicalAddress;
+        } else if (insured.getPerson().getHomePhoneNumber() == null) {
+            throw PolicyValidationException.mainInsuredWithNoHomePhoneNumber;
+        } else if (insured.getPerson().getMobilePhoneNumber() == null) {
+            throw PolicyValidationException.mainInsuredWithNoMobilePhoneNumber;
+        }
+    }
+
     private static void checkPerson(Quote quote) throws PolicyValidationException {
         if (quote.getInsureds().stream().anyMatch(insured -> insured.getPerson() == null)) {
             throw PolicyValidationException.insuredWithNoPerson;
-        } else if (quote.getInsureds().stream().anyMatch(insured -> insured.getPerson().getBirthDate() == null)) {
-            throw PolicyValidationException.personWithNoDOB;
-        } else if (quote.getInsureds().stream().anyMatch(insured -> insured.getPerson().getEmail() == null)) {
-            throw PolicyValidationException.personWithNoEmail;
-        } else if (quote.getInsureds().stream().anyMatch(insured -> insured.getPerson().getGenderCode() == null)) {
-            throw PolicyValidationException.personWithNoGenderCode;
-        } else if (quote.getInsureds().stream().anyMatch(insured -> insured.getPerson().getGeographicalAddress() == null)) {
-            throw PolicyValidationException.personWithNoGeographicalAddress;
         } else if (quote.getInsureds().stream().anyMatch(insured -> insured.getPerson().getGivenName() == null)) {
             throw PolicyValidationException.personWithNoGivenName;
-        } else if (quote.getInsureds().stream().anyMatch(insured -> insured.getPerson().getHeightInCm() == null)) {
-            throw PolicyValidationException.personWithNoHeight;
-        } else if (quote.getInsureds().stream().anyMatch(insured -> insured.getPerson().getHomePhoneNumber() == null)) {
-            throw PolicyValidationException.personWithNoHomePhoneNumber;
-        } else if (quote.getInsureds().stream().anyMatch(insured -> insured.getPerson().getMaritalStatus() == null)) {
-            throw PolicyValidationException.personWithNoMaritalStatus;
         } else if (quote.getInsureds().stream().anyMatch(insured -> insured.getPerson().getMiddleName() == null)) {
             throw PolicyValidationException.personWithNoMiddleName;
-        } else if (quote.getInsureds().stream().anyMatch(insured -> insured.getPerson().getMobilePhoneNumber() == null)) {
-            throw PolicyValidationException.personWithNoMobilePhoneNumber;
         } else if (quote.getInsureds().stream().anyMatch(insured -> insured.getPerson().getSurName() == null)) {
             throw PolicyValidationException.personWithNoSurname;
         } else if (quote.getInsureds().stream().anyMatch(insured -> insured.getPerson().getTitle() == null)) {
             throw PolicyValidationException.personWithNoTitle;
-        } else if (quote.getInsureds().stream().anyMatch(insured -> insured.getPerson().getWeightInKg() == null)) {
-            throw PolicyValidationException.personWithNoWeight;
         }
     }
 
@@ -202,22 +235,8 @@ public class Product10EC {
             throw PolicyValidationException.noInsured;
         } else if (quote.getInsureds().stream().anyMatch(insured -> insured.getType() == null)) {
             throw PolicyValidationException.insuredWithNoType;
-        } else if (quote.getInsureds().stream().anyMatch(insured -> insured.getDisableOrImmunoDeficient() == null)) {
-            throw PolicyValidationException.insuredWithNoDisableStatus;
-        } else if (quote.getInsureds().stream().anyMatch(insured -> insured.getHospitalizedInLast6Months() == null)) {
-            throw PolicyValidationException.insuredWithNoHospitalizedStatus;
         } else if (quote.getInsureds().stream().anyMatch(insured -> insured.getMainInsuredIndicator() == null)) {
             throw PolicyValidationException.insuredWithNoMainInsured;
-        } else if (quote.getInsureds().stream().anyMatch(insured -> insured.getAgeAtSubscription() == null)) {
-            throw PolicyValidationException.insuredWithNoAge;
-        } else if (quote.getInsureds().stream().anyMatch(insured -> insured.getDeclaredTaxPercentAtSubscription() == null)) {
-            throw PolicyValidationException.insuredWithNoDeclaredTax;
-        } else if (quote.getInsureds().stream().anyMatch(insured -> insured.getStartDate() == null)) {
-            throw PolicyValidationException.insuredWithNoStartDate;
-        } else if (quote.getInsureds().stream().anyMatch(insured -> insured.getEndDate() == null)) {
-            throw PolicyValidationException.insuredWithNoEndDate;
-        } else if (quote.getInsureds().stream().anyMatch(insured -> insured.getProfessionName() == null)) {
-            throw PolicyValidationException.insuredWithNoProfessionName;
         } else if (!quote.getInsureds().stream().filter(Insured::getMainInsuredIndicator).findFirst().isPresent()) {
             throw PolicyValidationException.noMainInsured;
         } else if (quote.getInsureds().stream().filter(Insured::getMainInsuredIndicator).count() != 1) {

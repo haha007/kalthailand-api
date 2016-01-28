@@ -1,6 +1,5 @@
 package th.co.krungthaiaxa.ebiz.api.products;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import th.co.krungthaiaxa.ebiz.api.exception.PolicyValidationException;
 import th.co.krungthaiaxa.ebiz.api.exception.QuoteCalculationException;
@@ -680,76 +679,6 @@ public class Product10ECTest {
     }
 
     @Test
-    public void should_return_error_when_create_policy_with_at_least_one_insured_with_no_start_date() throws Exception {
-        final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), insured(35, FALSE));
-        quote.getInsureds().get(0).setStartDate(null);
-        Policy policy = new Policy();
-        assertThatThrownBy(() -> getPolicyFromQuote(policy, quote))
-                .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(insuredWithNoStartDate.getMessage());
-    }
-
-    @Test
-    public void should_return_error_when_create_policy_with_at_least_one_insured_with_no_end_date() throws Exception {
-        final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), insured(35, FALSE));
-        quote.getInsureds().get(0).setEndDate(null);
-        Policy policy = new Policy();
-        assertThatThrownBy(() -> getPolicyFromQuote(policy, quote))
-                .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(insuredWithNoEndDate.getMessage());
-    }
-
-    @Test
-    public void should_return_error_when_create_policy_with_at_least_one_insured_with_no_age() throws Exception {
-        final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), insured(35, FALSE));
-        quote.getInsureds().get(0).setAgeAtSubscription(null);
-        Policy policy = new Policy();
-        assertThatThrownBy(() -> getPolicyFromQuote(policy, quote))
-                .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(insuredWithNoAge.getMessage());
-    }
-
-    @Test
-    public void should_return_error_when_create_policy_with_at_least_one_insured_with_no_profession_name() throws Exception {
-        final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), insured(35, FALSE));
-        quote.getInsureds().get(0).setProfessionName(null);
-        Policy policy = new Policy();
-        assertThatThrownBy(() -> getPolicyFromQuote(policy, quote))
-                .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(insuredWithNoProfessionName.getMessage());
-    }
-
-    @Test
-    public void should_return_error_when_create_policy_with_at_least_one_insured_with_no_declaredTax() throws Exception {
-        final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), insured(35, FALSE));
-        quote.getInsureds().get(0).setDeclaredTaxPercentAtSubscription(null);
-        Policy policy = new Policy();
-        assertThatThrownBy(() -> getPolicyFromQuote(policy, quote))
-                .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(insuredWithNoDeclaredTax.getMessage());
-    }
-
-    @Test
-    public void should_return_error_when_create_policy_with_at_least_one_insured_with_no_disable_status() throws Exception {
-        final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), insured(35, FALSE));
-        quote.getInsureds().get(0).setDisableOrImmunoDeficient(null);
-        Policy policy = new Policy();
-        assertThatThrownBy(() -> getPolicyFromQuote(policy, quote))
-                .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(insuredWithNoDisableStatus.getMessage());
-    }
-
-    @Test
-    public void should_return_error_when_create_policy_with_at_least_one_insured_with_no_hospitalized_status() throws Exception {
-        final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), insured(35, FALSE));
-        quote.getInsureds().get(0).setHospitalizedInLast6Months(null);
-        Policy policy = new Policy();
-        assertThatThrownBy(() -> getPolicyFromQuote(policy, quote))
-                .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(insuredWithNoHospitalizedStatus.getMessage());
-    }
-
-    @Test
     public void should_return_error_when_create_policy_with_at_least_one_insured_with_no_person() throws Exception {
         final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), insured(35, FALSE));
         quote.getInsureds().get(0).setPerson(null);
@@ -760,16 +689,225 @@ public class Product10ECTest {
     }
 
     @Test
-    public void should_return_error_when_create_policy_with_at_least_one_person_with_no_dob() throws Exception {
+    public void should_return_error_when_create_policy_with_at_least_one_person_with_no_given_name() throws Exception {
+        final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), insured(35, FALSE));
+        quote.getInsureds().get(0).getPerson().setGivenName(null);
+        Policy policy = new Policy();
+        assertThatThrownBy(() -> getPolicyFromQuote(policy, quote))
+                .isInstanceOf(PolicyValidationException.class)
+                .hasMessage(personWithNoGivenName.getMessage());
+    }
+
+    @Test
+    public void should_return_error_when_create_policy_with_at_least_one_person_with_no_middle_name() throws Exception {
+        final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), insured(35, FALSE));
+        quote.getInsureds().get(0).getPerson().setMiddleName(null);
+        Policy policy = new Policy();
+        assertThatThrownBy(() -> getPolicyFromQuote(policy, quote))
+                .isInstanceOf(PolicyValidationException.class)
+                .hasMessage(personWithNoMiddleName.getMessage());
+    }
+
+    @Test
+    public void should_return_error_when_create_policy_with_at_least_one_person_with_no_surname() throws Exception {
+        final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), insured(35, FALSE));
+        quote.getInsureds().get(0).getPerson().setSurName(null);
+        Policy policy = new Policy();
+        assertThatThrownBy(() -> getPolicyFromQuote(policy, quote))
+                .isInstanceOf(PolicyValidationException.class)
+                .hasMessage(personWithNoSurname.getMessage());
+    }
+
+    @Test
+    public void should_return_error_when_create_policy_with_at_least_one_person_with_no_title() throws Exception {
+        final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), insured(35, FALSE));
+        quote.getInsureds().get(0).getPerson().setTitle(null);
+        Policy policy = new Policy();
+        assertThatThrownBy(() -> getPolicyFromQuote(policy, quote))
+                .isInstanceOf(PolicyValidationException.class)
+                .hasMessage(personWithNoTitle.getMessage());
+    }
+
+    @Test
+    public void should_return_error_when_create_policy_with_at_least_one_person_with_no_gender() throws Exception {
+        final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), insured(35, FALSE));
+        quote.getInsureds().get(0).getPerson().setGenderCode(null);
+        Policy policy = new Policy();
+        assertThatThrownBy(() -> getPolicyFromQuote(policy, quote))
+                .isInstanceOf(PolicyValidationException.class)
+                .hasMessage(mainInsuredWithNoGenderCode.getMessage());
+    }
+
+    @Test
+    public void should_return_error_when_create_policy_with_at_least_one_person_with_no_height() throws Exception {
+        final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), insured(35, FALSE));
+        quote.getInsureds().get(0).getPerson().setHeightInCm(null);
+        Policy policy = new Policy();
+        assertThatThrownBy(() -> getPolicyFromQuote(policy, quote))
+                .isInstanceOf(PolicyValidationException.class)
+                .hasMessage(mainInsuredWithNoHeight.getMessage());
+    }
+
+    @Test
+    public void should_return_error_when_create_policy_with_main_insured_with_no_marital_status() throws Exception {
+        final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), insured(35, FALSE));
+        quote.getInsureds().get(0).getPerson().setMaritalStatus(null);
+        Policy policy = new Policy();
+        assertThatThrownBy(() -> getPolicyFromQuote(policy, quote))
+                .isInstanceOf(PolicyValidationException.class)
+                .hasMessage(mainInsuredWithNoMaritalStatus.getMessage());
+    }
+
+    @Test
+    public void should_return_error_when_create_policy_with_main_insured_with_no_weight() throws Exception {
+        final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), insured(35, FALSE));
+        quote.getInsureds().get(0).getPerson().setWeightInKg(null);
+        Policy policy = new Policy();
+        assertThatThrownBy(() -> getPolicyFromQuote(policy, quote))
+                .isInstanceOf(PolicyValidationException.class)
+                .hasMessage(mainInsuredWithNoWeight.getMessage());
+    }
+
+    @Test
+    public void should_return_error_when_create_policy_with_main_insured_with_no_declaredTax() throws Exception {
+        final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), insured(35, FALSE));
+        quote.getInsureds().get(0).setDeclaredTaxPercentAtSubscription(null);
+        Policy policy = new Policy();
+        assertThatThrownBy(() -> getPolicyFromQuote(policy, quote))
+                .isInstanceOf(PolicyValidationException.class)
+                .hasMessage(mainInsuredWithNoDeclaredTax.getMessage());
+    }
+
+    @Test
+    public void should_return_error_when_create_policy_with_main_insured_with_no_disable_status() throws Exception {
+        final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), insured(35, FALSE));
+        quote.getInsureds().get(0).setDisableOrImmunoDeficient(null);
+        Policy policy = new Policy();
+        assertThatThrownBy(() -> getPolicyFromQuote(policy, quote))
+                .isInstanceOf(PolicyValidationException.class)
+                .hasMessage(mainInsuredWithNoDisableStatus.getMessage());
+    }
+
+    @Test
+    public void should_return_error_when_create_policy_with_main_insured_with_no_hospitalized_status() throws Exception {
+        final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), insured(35, FALSE));
+        quote.getInsureds().get(0).setHospitalizedInLast6Months(null);
+        Policy policy = new Policy();
+        assertThatThrownBy(() -> getPolicyFromQuote(policy, quote))
+                .isInstanceOf(PolicyValidationException.class)
+                .hasMessage(mainInsuredWithNoHospitalizedStatus.getMessage());
+    }
+
+    @Test
+    public void should_return_error_when_create_policy_with_at_least_one_insured_with_no_start_date() throws Exception {
+        final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), insured(35, FALSE));
+        quote.getInsureds().get(0).setStartDate(null);
+        Policy policy = new Policy();
+        assertThatThrownBy(() -> getPolicyFromQuote(policy, quote))
+                .isInstanceOf(PolicyValidationException.class)
+                .hasMessage(mainInsuredWithNoStartDate.getMessage());
+    }
+
+    @Test
+    public void should_return_error_when_create_policy_with_main_insured_with_no_end_date() throws Exception {
+        final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), insured(35, FALSE));
+        quote.getInsureds().get(0).setEndDate(null);
+        Policy policy = new Policy();
+        assertThatThrownBy(() -> getPolicyFromQuote(policy, quote))
+                .isInstanceOf(PolicyValidationException.class)
+                .hasMessage(mainInsuredWithNoEndDate.getMessage());
+    }
+
+    @Test
+    public void should_return_error_when_create_policy_with_main_insured_with_no_age() throws Exception {
+        final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), insured(35, FALSE));
+        quote.getInsureds().get(0).setAgeAtSubscription(null);
+        Policy policy = new Policy();
+        assertThatThrownBy(() -> getPolicyFromQuote(policy, quote))
+                .isInstanceOf(PolicyValidationException.class)
+                .hasMessage(mainInsuredWithNoAge.getMessage());
+    }
+
+    @Test
+    public void should_return_error_when_create_policy_with_main_insured_with_no_profession_name() throws Exception {
+        final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), insured(35, FALSE));
+        quote.getInsureds().get(0).setProfessionName(null);
+        Policy policy = new Policy();
+        assertThatThrownBy(() -> getPolicyFromQuote(policy, quote))
+                .isInstanceOf(PolicyValidationException.class)
+                .hasMessage(mainInsuredWithNoProfessionName.getMessage());
+    }
+
+    @Test
+    public void should_return_error_when_create_policy_with_main_insured_with_no_dob() throws Exception {
         final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), insured(35, FALSE));
         quote.getInsureds().get(0).getPerson().setBirthDate(null);
         Policy policy = new Policy();
         assertThatThrownBy(() -> getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(personWithNoDOB.getMessage());
+                .hasMessage(mainInsuredWithNoDOB.getMessage());
     }
 
-    @Ignore
+    @Test
+    public void should_return_error_when_create_policy_with_main_insured_with_no_email() throws Exception {
+        final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), insured(35, FALSE));
+        quote.getInsureds().get(0).getPerson().setEmail(null);
+        Policy policy = new Policy();
+        assertThatThrownBy(() -> getPolicyFromQuote(policy, quote))
+                .isInstanceOf(PolicyValidationException.class)
+                .hasMessage(mainInsuredWithNoEmail.getMessage());
+    }
+
+    @Test
+    public void should_return_error_when_create_policy_with_main_insured_with_no_geo_address() throws Exception {
+        final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), insured(35, FALSE));
+        quote.getInsureds().get(0).getPerson().setGeographicalAddress(null);
+        Policy policy = new Policy();
+        assertThatThrownBy(() -> getPolicyFromQuote(policy, quote))
+                .isInstanceOf(PolicyValidationException.class)
+                .hasMessage(mainInsuredWithNoGeographicalAddress.getMessage());
+    }
+
+    @Test
+    public void should_return_error_when_create_policy_with_main_insured_with_no_home_phone() throws Exception {
+        final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), insured(35, FALSE));
+        quote.getInsureds().get(0).getPerson().setHomePhoneNumber(null);
+        Policy policy = new Policy();
+        assertThatThrownBy(() -> getPolicyFromQuote(policy, quote))
+                .isInstanceOf(PolicyValidationException.class)
+                .hasMessage(mainInsuredWithNoHomePhoneNumber.getMessage());
+    }
+
+    @Test
+    public void should_return_error_when_create_policy_with_main_insured_with_no_mobile_phone() throws Exception {
+        final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), insured(35, FALSE));
+        quote.getInsureds().get(0).getPerson().setMobilePhoneNumber(null);
+        Policy policy = new Policy();
+        assertThatThrownBy(() -> getPolicyFromQuote(policy, quote))
+                .isInstanceOf(PolicyValidationException.class)
+                .hasMessage(mainInsuredWithNoMobilePhoneNumber.getMessage());
+    }
+
+    @Test
+    public void should_return_error_when_create_policy_with_no_beneficiary() throws Exception {
+        final Quote quote = quote(EVERY_YEAR, insured(25, TRUE));
+        Policy policy = new Policy();
+        assertThatThrownBy(() -> getPolicyFromQuote(policy, quote))
+                .isInstanceOf(PolicyValidationException.class)
+                .hasMessage(beneficiariesNone.getMessage());
+    }
+
+    @Test
+    public void should_return_error_when_create_policy_with_too_many_beneficiaries() throws Exception {
+        final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), insured(35, FALSE), insured(35, FALSE),
+                insured(35, FALSE), insured(35, FALSE), insured(35, FALSE), insured(35, FALSE), insured(35, FALSE));
+        Policy policy = new Policy();
+        assertThatThrownBy(() -> getPolicyFromQuote(policy, quote))
+                .isInstanceOf(PolicyValidationException.class)
+                .hasMessage(beneficiariesTooMany.getMessage());
+    }
+
+    @Test
     public void should_copy_quote_details_into_policy() throws Exception {
         final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), insured(35, FALSE));
         quote.getInsureds().get(0).setMainInsuredIndicator(TRUE);
