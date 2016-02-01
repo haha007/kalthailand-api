@@ -1065,8 +1065,6 @@ public class Product10ECTest {
         for (Insured insured : insureds) {
             quote.addInsured(insured);
         }
-//        quote.getPremiumsData().getFinancialScheduler().getPeriodicity().setCode(PeriodicityCode.EVERY_YEAR);
-//
 //        Amount amount = new Amount();
 //        amount.setCurrencyCode("THB");
 //        amount.setValue(1000000.0);

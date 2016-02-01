@@ -41,7 +41,7 @@ public class PolicyResource {
     @ApiResponses({
             @ApiResponse(code = 406, message = "If JSon of quote is invalid or if Policy could not be created", response = Error.class)
     })
-    @RequestMapping(value = "/policy", produces = APPLICATION_JSON_VALUE, method = POST)
+    @RequestMapping(value = "/policies", produces = APPLICATION_JSON_VALUE, method = POST)
     @ResponseBody
     public ResponseEntity createQuote(
             @ApiParam(value = "The json of the quote to create the policy from. This quote will go through maximum validations")
@@ -71,7 +71,7 @@ public class PolicyResource {
     @ApiResponses({
             @ApiResponse(code = 406, message = "If either JSon is invalid or there is no quote in the given session", response = Error.class)
     })
-    @RequestMapping(value = "/policy", produces = APPLICATION_JSON_VALUE, method = PUT)
+    @RequestMapping(value = "/policies", produces = APPLICATION_JSON_VALUE, method = PUT)
     @ResponseBody
     public ResponseEntity updateQuote(
             @ApiParam(value = "The json of the policy. This policy will be updated with given values")

@@ -47,8 +47,8 @@ public class KalApiApplication {
 
     private com.google.common.base.Predicate<String> paths() {
         return Predicates.or(
-                PathSelectors.regex("/quote.*"),
-                PathSelectors.regex("/policy.*"),
+                PathSelectors.regex("/quotes.*"),
+                PathSelectors.regex("/policies.*"),
                 PathSelectors.regex("/decrypt.*"),
                 PathSelectors.regex("/watermark.*"));
     }

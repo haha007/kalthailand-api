@@ -36,7 +36,7 @@ public class QuoteResource {
     }
 
     @ApiOperation(value = "Creates an empty quote", notes = "Creates an empty quote, attached to the session ID", response = Quote.class)
-    @RequestMapping(value = "/quote", produces = APPLICATION_JSON_VALUE, method = POST)
+    @RequestMapping(value = "/quotes", produces = APPLICATION_JSON_VALUE, method = POST)
     @ResponseBody
     public ResponseEntity createQuote(
             @ApiParam(value = "The session id. Must be unique through the Channel. This is used to recover unfinished quotes throught the channel")
@@ -51,7 +51,7 @@ public class QuoteResource {
     @ApiResponses({
             @ApiResponse(code = 406, message = "If either JSon is invalid or there is no quote in the given session", response = Error.class)
     })
-    @RequestMapping(value = "/quote", produces = APPLICATION_JSON_VALUE, method = PUT)
+    @RequestMapping(value = "/quotes", produces = APPLICATION_JSON_VALUE, method = PUT)
     @ResponseBody
     public ResponseEntity updateQuote(
             @ApiParam(value = "The session id. Must be unique through the Channel. This is used to recover unfinished quotes throught the channel")

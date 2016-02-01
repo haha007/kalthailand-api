@@ -52,7 +52,7 @@ public class QuoteResourceTest {
 
 	@Before
 	public void setUp() throws Exception {
-		base = new URI("http://localhost:" + port + "/quote");
+		base = new URI("http://localhost:" + port + "/quotes");
 		template = new TestRestTemplate();
 	}
 
