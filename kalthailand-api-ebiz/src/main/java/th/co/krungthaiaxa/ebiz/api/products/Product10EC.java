@@ -159,7 +159,6 @@ public class Product10EC {
         checkInsured(quote);
         checkPerson(quote);
         checkMainInsured(quote.getInsureds().stream().filter(Insured::getMainInsuredIndicator).findFirst().get());
-        checkAddress(quote.getInsureds().stream().filter(insured -> insured.getPerson().getGeographicalAddress() != null).collect(Collectors.toList()));
         checkBeneficiaries(quote.getInsureds().stream().filter(insured -> !insured.getMainInsuredIndicator()).collect(Collectors.toList()));
 
         policy.setQuoteFunctionalId(quote.getQuoteId());
@@ -175,9 +174,6 @@ public class Product10EC {
         } else if (beneficiaries.size() > 6) {
             throw PolicyValidationException.beneficiariesTooMany;
         }
-    }
-
-    private static void checkAddress(List<Insured> addresses) {
     }
 
     private static void checkMainInsured(Insured insured) throws PolicyValidationException {
@@ -209,10 +205,13 @@ public class Product10EC {
             throw PolicyValidationException.mainInsuredWithNoEmail;
         } else if (insured.getPerson().getGeographicalAddress() == null) {
             throw PolicyValidationException.mainInsuredWithNoGeographicalAddress;
-        } else if (insured.getPerson().getHomePhoneNumber() == null) {
-            throw PolicyValidationException.mainInsuredWithNoHomePhoneNumber;
-        } else if (insured.getPerson().getMobilePhoneNumber() == null) {
-            throw PolicyValidationException.mainInsuredWithNoMobilePhoneNumber;
+        }
+
+        if (insured.getPerson().getHomePhoneNumber() == null && insured.getPerson().getMobilePhoneNumber() == null) {
+            throw PolicyValidationException.mainInsuredWithNoPhoneNumber;
+        }
+        if (!isValidEmailAddress(insured.getPerson().getEmail())) {
+            throw PolicyValidationException.mainInsuredWithInvalidEmail;
         }
     }
 
@@ -308,5 +307,12 @@ public class Product10EC {
         result.setValue(value);
         result.setCurrencyCode(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getCurrencyCode());
         return result;
+    }
+
+    private static boolean isValidEmailAddress(String email) {
+        String ePattern = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+        java.util.regex.Pattern p = java.util.regex.Pattern.compile(ePattern);
+        java.util.regex.Matcher m = p.matcher(email);
+        return m.matches();
     }
 }

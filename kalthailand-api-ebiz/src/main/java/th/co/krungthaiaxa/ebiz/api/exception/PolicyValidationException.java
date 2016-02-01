@@ -30,8 +30,8 @@ public class PolicyValidationException extends Exception {
     public static PolicyValidationException mainInsuredWithNoDOB = new PolicyValidationException("Date of birth of main insured is empty.");
     public static PolicyValidationException mainInsuredWithNoEmail = new PolicyValidationException("Email of main insured is empty.");
     public static PolicyValidationException mainInsuredWithNoGeographicalAddress = new PolicyValidationException("Address of main insured is empty.");
-    public static PolicyValidationException mainInsuredWithNoHomePhoneNumber = new PolicyValidationException("Home phone number of main insured is empty.");
-    public static PolicyValidationException mainInsuredWithNoMobilePhoneNumber = new PolicyValidationException("Mobile phone number of main insured is empty.");
+    public static PolicyValidationException mainInsuredWithNoPhoneNumber = new PolicyValidationException("At least one phone number for main insured has to be provided.");
+    public static PolicyValidationException mainInsuredWithInvalidEmail = new PolicyValidationException("Main insured email is not valid.");
 
     public static PolicyValidationException beneficiariesNone = new PolicyValidationException("There must be at least one beneficiary.");
     public static PolicyValidationException beneficiariesTooMany = new PolicyValidationException("There are too many beneficiaries.");

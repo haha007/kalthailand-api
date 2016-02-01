@@ -859,6 +859,48 @@ public class Product10ECTest {
     }
 
     @Test
+    public void should_return_error_when_create_policy_with_main_insured_invalid_emails() throws Exception {
+        final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), insured(35, FALSE));
+        quote.getInsureds().get(0).getPerson().setEmail("me");
+        Policy policy = new Policy();
+        assertThatThrownBy(() -> getPolicyFromQuote(policy, quote))
+                .isInstanceOf(PolicyValidationException.class)
+                .hasMessage(mainInsuredWithInvalidEmail.getMessage());
+        quote.getInsureds().get(0).getPerson().setEmail("me.com");
+        assertThatThrownBy(() -> getPolicyFromQuote(policy, quote))
+                .isInstanceOf(PolicyValidationException.class)
+                .hasMessage(mainInsuredWithInvalidEmail.getMessage());
+        quote.getInsureds().get(0).getPerson().setEmail("me@me");
+        assertThatThrownBy(() -> getPolicyFromQuote(policy, quote))
+                .isInstanceOf(PolicyValidationException.class)
+                .hasMessage(mainInsuredWithInvalidEmail.getMessage());
+        quote.getInsureds().get(0).getPerson().setEmail("me@me.");
+        assertThatThrownBy(() -> getPolicyFromQuote(policy, quote))
+                .isInstanceOf(PolicyValidationException.class)
+                .hasMessage(mainInsuredWithInvalidEmail.getMessage());
+        quote.getInsureds().get(0).getPerson().setEmail("me@.com");
+        assertThatThrownBy(() -> getPolicyFromQuote(policy, quote))
+                .isInstanceOf(PolicyValidationException.class)
+                .hasMessage(mainInsuredWithInvalidEmail.getMessage());
+        quote.getInsureds().get(0).getPerson().setEmail("me@me.c");
+        assertThatThrownBy(() -> getPolicyFromQuote(policy, quote))
+                .isInstanceOf(PolicyValidationException.class)
+                .hasMessage(mainInsuredWithInvalidEmail.getMessage());
+        quote.getInsureds().get(0).getPerson().setEmail("me@*.com");
+        assertThatThrownBy(() -> getPolicyFromQuote(policy, quote))
+                .isInstanceOf(PolicyValidationException.class)
+                .hasMessage(mainInsuredWithInvalidEmail.getMessage());
+        quote.getInsureds().get(0).getPerson().setEmail("me..@me.com");
+        assertThatThrownBy(() -> getPolicyFromQuote(policy, quote))
+                .isInstanceOf(PolicyValidationException.class)
+                .hasMessage(mainInsuredWithInvalidEmail.getMessage());
+        quote.getInsureds().get(0).getPerson().setEmail("me.@me.1a");
+        assertThatThrownBy(() -> getPolicyFromQuote(policy, quote))
+                .isInstanceOf(PolicyValidationException.class)
+                .hasMessage(mainInsuredWithInvalidEmail.getMessage());
+    }
+
+    @Test
     public void should_return_error_when_create_policy_with_main_insured_with_no_geo_address() throws Exception {
         final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), insured(35, FALSE));
         quote.getInsureds().get(0).getPerson().setGeographicalAddress(null);
@@ -869,23 +911,14 @@ public class Product10ECTest {
     }
 
     @Test
-    public void should_return_error_when_create_policy_with_main_insured_with_no_home_phone() throws Exception {
+    public void should_return_error_when_create_policy_with_main_insured_with_no_phone() throws Exception {
         final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), insured(35, FALSE));
         quote.getInsureds().get(0).getPerson().setHomePhoneNumber(null);
-        Policy policy = new Policy();
-        assertThatThrownBy(() -> getPolicyFromQuote(policy, quote))
-                .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(mainInsuredWithNoHomePhoneNumber.getMessage());
-    }
-
-    @Test
-    public void should_return_error_when_create_policy_with_main_insured_with_no_mobile_phone() throws Exception {
-        final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), insured(35, FALSE));
         quote.getInsureds().get(0).getPerson().setMobilePhoneNumber(null);
         Policy policy = new Policy();
         assertThatThrownBy(() -> getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(mainInsuredWithNoMobilePhoneNumber.getMessage());
+                .hasMessage(mainInsuredWithNoPhoneNumber.getMessage());
     }
 
     @Test
@@ -972,7 +1005,6 @@ public class Product10ECTest {
         person.setSurName("Surname");
         person.setTitle("M");
         person.setWeightInKg(100);
-        person.setWorkPhoneNumber(new PhoneNumber());
         insured.setPerson(person);
         return insured;
     }
