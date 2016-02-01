@@ -1,6 +1,9 @@
 package th.co.krungthaiaxa.ebiz.api.exception;
 
 public class PolicyValidationException extends Exception {
+
+    public static PolicyValidationException product10ECExpected = new PolicyValidationException("Product 10 EC is expected to do validation.");
+
     public static PolicyValidationException emptyQuote = new PolicyValidationException("Policy needs a quote to be created.");
     public static PolicyValidationException noneExistingQuote = new PolicyValidationException("The quote to create the policy from does not exist.");
 
@@ -26,7 +29,6 @@ public class PolicyValidationException extends Exception {
     public static PolicyValidationException mainInsuredWithNoStartDate = new PolicyValidationException("Start date of main insured is empty.");
     public static PolicyValidationException mainInsuredWithNoEndDate = new PolicyValidationException("End date of main insured is empty.");
     public static PolicyValidationException mainInsuredWithNoProfessionName = new PolicyValidationException("Profession name of main insured is empty.");
-    public static PolicyValidationException mainInsuredWithNoAge = new PolicyValidationException("Age of main insured is empty.");
     public static PolicyValidationException mainInsuredWithNoDOB = new PolicyValidationException("Date of birth of main insured is empty.");
     public static PolicyValidationException mainInsuredWithNoEmail = new PolicyValidationException("Email of main insured is empty.");
     public static PolicyValidationException mainInsuredWithNoGeographicalAddress = new PolicyValidationException("Address of main insured is empty.");

@@ -20,8 +20,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static th.co.krungthaiaxa.ebiz.api.exception.PolicyValidationException.*;
 import static th.co.krungthaiaxa.ebiz.api.exception.QuoteCalculationException.*;
 import static th.co.krungthaiaxa.ebiz.api.model.enums.PeriodicityCode.*;
-import static th.co.krungthaiaxa.ebiz.api.products.Product10EC.calculateQuote;
-import static th.co.krungthaiaxa.ebiz.api.products.Product10EC.getPolicyFromQuote;
+import static th.co.krungthaiaxa.ebiz.api.products.Product10EC.*;
 
 public class Product10ECTest {
 
@@ -824,8 +823,8 @@ public class Product10ECTest {
         quote.getInsureds().get(0).setAgeAtSubscription(null);
         Policy policy = new Policy();
         assertThatThrownBy(() -> getPolicyFromQuote(policy, quote))
-                .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(mainInsuredWithNoAge.getMessage());
+                .isInstanceOf(QuoteCalculationException.class)
+                .hasMessage(ageIsEmptyException.getMessage());
     }
 
     @Test
@@ -1011,6 +1010,28 @@ public class Product10ECTest {
     }
 
     @Test
+    public void should_return_error_when_create_policy_with_main_insured_too_young() throws Exception {
+        final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), insured(35, FALSE));
+        quote.getInsureds().get(0).setAgeAtSubscription(19);
+
+        Policy policy = new Policy();
+        assertThatThrownBy(() -> getPolicyFromQuote(policy, quote))
+                .isInstanceOf(QuoteCalculationException.class)
+                .hasMessage(ageIsTooLowException.getMessage());
+    }
+
+    @Test
+    public void should_return_error_when_create_policy_with_main_insured_too_old() throws Exception {
+        final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), insured(35, FALSE));
+        quote.getInsureds().get(0).setAgeAtSubscription(71);
+
+        Policy policy = new Policy();
+        assertThatThrownBy(() -> getPolicyFromQuote(policy, quote))
+                .isInstanceOf(QuoteCalculationException.class)
+                .hasMessage(ageIsTooHighException.getMessage());
+    }
+
+    @Test
     public void should_copy_quote_details_into_policy() throws Exception {
         final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), insured(35, FALSE));
         quote.getInsureds().get(0).setMainInsuredIndicator(TRUE);
@@ -1034,8 +1055,12 @@ public class Product10ECTest {
         PremiumsDataLifeInsurance premiumsData = new PremiumsDataLifeInsurance();
         premiumsData.setFinancialScheduler(financialScheduler);
 
+        CommonData commonData = new CommonData();
+        commonData.setProductId(PRODUCT_10_EC_NAME);
+        commonData.setProductName(PRODUCT_10_EC_NAME);
+
         Quote quote = new Quote();
-        quote.setCommonData(new CommonData());
+        quote.setCommonData(commonData);
         quote.setPremiumsData(premiumsData);
         for (Insured insured : insureds) {
             quote.addInsured(insured);

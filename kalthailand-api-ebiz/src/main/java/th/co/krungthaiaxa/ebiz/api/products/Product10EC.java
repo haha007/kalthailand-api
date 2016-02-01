@@ -2,6 +2,7 @@ package th.co.krungthaiaxa.ebiz.api.products;
 
 import org.apache.commons.lang3.SerializationUtils;
 import th.co.krungthaiaxa.ebiz.api.exception.PolicyValidationException;
+import th.co.krungthaiaxa.ebiz.api.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.ebiz.api.model.*;
 import th.co.krungthaiaxa.ebiz.api.model.enums.PeriodicityCode;
 
@@ -16,7 +17,7 @@ import java.util.stream.Collectors;
 import static th.co.krungthaiaxa.ebiz.api.exception.QuoteCalculationException.*;
 
 public class Product10EC {
-    private final static String PRODUCT_10_EC_NAME = "10 EC";
+    public final static String PRODUCT_10_EC_NAME = "10 EC";
 
     private static Function<Integer, Integer> dvdRate = numberOfYearsOfContract -> {
         if (numberOfYearsOfContract >= 1 && numberOfYearsOfContract <= 9) {
@@ -106,15 +107,7 @@ public class Product10EC {
         }
 
         // cannot be too young or too old
-        for (Insured insured : quote.getInsureds()) {
-            if (insured.getMainInsuredIndicator()) {
-                if (insured.getAgeAtSubscription() > 70) {
-                    throw ageIsTooHighException;
-                } else if (insured.getAgeAtSubscription() < 20) {
-                    throw ageIsTooLowException;
-                }
-            }
-        }
+        checkMainInsuredAge(quote);
 
         // calculates premium / sum insured
         PremiumsDataLifeInsurance premiumsData = quote.getPremiumsData();
@@ -155,8 +148,10 @@ public class Product10EC {
         return quote;
     }
 
-    public static void getPolicyFromQuote(Policy policy, Quote quote) throws PolicyValidationException {
+    public static void getPolicyFromQuote(Policy policy, Quote quote) throws PolicyValidationException, QuoteCalculationException {
+        checkCommonData(quote.getCommonData());
         checkInsured(quote);
+        checkMainInsuredAge(quote);
         checkPerson(quote);
         checkMainInsured(quote.getInsureds().stream().filter(Insured::getMainInsuredIndicator).findFirst().get());
         checkBeneficiaries(quote.getInsureds().stream().filter(insured -> !insured.getMainInsuredIndicator()).collect(Collectors.toList()));
@@ -168,11 +163,33 @@ public class Product10EC {
         policy.setPremiumsData(SerializationUtils.clone(quote.getPremiumsData()));
     }
 
+    private static void checkCommonData(CommonData commonData) throws PolicyValidationException {
+        if (!commonData.getProductId().equals(PRODUCT_10_EC_NAME)) {
+            throw PolicyValidationException.product10ECExpected;
+        } else if (!commonData.getProductName().equals(PRODUCT_10_EC_NAME)) {
+            throw PolicyValidationException.product10ECExpected;
+        }
+    }
+
     private static void checkBeneficiaries(List<Insured> beneficiaries) throws PolicyValidationException {
         if (beneficiaries == null || beneficiaries.size() == 0) {
             throw PolicyValidationException.beneficiariesNone;
         } else if (beneficiaries.size() > 6) {
             throw PolicyValidationException.beneficiariesTooMany;
+        }
+    }
+
+    private static void checkMainInsuredAge(Quote quote) throws QuoteCalculationException {
+        for (Insured insured : quote.getInsureds()) {
+            if (insured.getMainInsuredIndicator()) {
+                if (insured.getAgeAtSubscription() == null) {
+                    throw ageIsEmptyException;
+                } else if (insured.getAgeAtSubscription() > 70) {
+                    throw ageIsTooHighException;
+                } else if (insured.getAgeAtSubscription() < 20) {
+                    throw ageIsTooLowException;
+                }
+            }
         }
     }
 
@@ -183,8 +200,6 @@ public class Product10EC {
             throw PolicyValidationException.mainInsuredWithNoHospitalizedStatus;
         } else if (insured.getDeclaredTaxPercentAtSubscription() == null) {
             throw PolicyValidationException.mainInsuredWithNoDeclaredTax;
-        } else if (insured.getAgeAtSubscription() == null) {
-            throw PolicyValidationException.mainInsuredWithNoAge;
         } else if (insured.getStartDate() == null) {
             throw PolicyValidationException.mainInsuredWithNoStartDate;
         } else if (insured.getEndDate() == null) {

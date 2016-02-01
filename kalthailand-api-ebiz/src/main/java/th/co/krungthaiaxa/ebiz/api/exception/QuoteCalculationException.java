@@ -5,6 +5,7 @@ public class QuoteCalculationException extends Exception {
     public static QuoteCalculationException sumInsuredTooLowException = new QuoteCalculationException("Sum Insured is too low.");
     public static QuoteCalculationException ageIsTooLowException = new QuoteCalculationException("Cannot insured when younger than 20 years old.");
     public static QuoteCalculationException ageIsTooHighException = new QuoteCalculationException("Cannot insured when older than 70 years old.");
+    public static QuoteCalculationException ageIsEmptyException = new QuoteCalculationException("Age of main insured is empty.");
 
     private QuoteCalculationException(String message) {
         super(message);
