@@ -911,6 +911,76 @@ public class Product10ECTest {
     }
 
     @Test
+    public void should_return_error_when_create_policy_with_main_insured_with_address_but_no_country() throws Exception {
+        final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), insured(35, FALSE));
+        quote.getInsureds().get(0).getPerson().getGeographicalAddress().setCountry(null);
+        Policy policy = new Policy();
+        assertThatThrownBy(() -> getPolicyFromQuote(policy, quote))
+                .isInstanceOf(PolicyValidationException.class)
+                .hasMessage(addressWithNoCountry.getMessage());
+    }
+
+    @Test
+    public void should_return_error_when_create_policy_with_main_insured_with_address_but_no_district() throws Exception {
+        final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), insured(35, FALSE));
+        quote.getInsureds().get(0).getPerson().getGeographicalAddress().setDistrict(null);
+        Policy policy = new Policy();
+        assertThatThrownBy(() -> getPolicyFromQuote(policy, quote))
+                .isInstanceOf(PolicyValidationException.class)
+                .hasMessage(addressWithNoDistrict.getMessage());
+    }
+
+    @Test
+    public void should_return_error_when_create_policy_with_main_insured_with_address_but_no_postcode() throws Exception {
+        final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), insured(35, FALSE));
+        quote.getInsureds().get(0).getPerson().getGeographicalAddress().setPostCode(null);
+        Policy policy = new Policy();
+        assertThatThrownBy(() -> getPolicyFromQuote(policy, quote))
+                .isInstanceOf(PolicyValidationException.class)
+                .hasMessage(addressWithNoPostCode.getMessage());
+    }
+
+    @Test
+    public void should_return_error_when_create_policy_with_main_insured_with_address_but_no_street_address_1() throws Exception {
+        final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), insured(35, FALSE));
+        quote.getInsureds().get(0).getPerson().getGeographicalAddress().setStreetAddress1(null);
+        Policy policy = new Policy();
+        assertThatThrownBy(() -> getPolicyFromQuote(policy, quote))
+                .isInstanceOf(PolicyValidationException.class)
+                .hasMessage(addressWithNoStreetAddress1.getMessage());
+    }
+
+    @Test
+    public void should_return_error_when_create_policy_with_main_insured_with_address_but_no_street_address_2() throws Exception {
+        final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), insured(35, FALSE));
+        quote.getInsureds().get(0).getPerson().getGeographicalAddress().setStreetAddress2(null);
+        Policy policy = new Policy();
+        assertThatThrownBy(() -> getPolicyFromQuote(policy, quote))
+                .isInstanceOf(PolicyValidationException.class)
+                .hasMessage(addressWithNoStreetAddress2.getMessage());
+    }
+
+    @Test
+    public void should_return_error_when_create_policy_with_main_insured_with_address_but_no_sub_country() throws Exception {
+        final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), insured(35, FALSE));
+        quote.getInsureds().get(0).getPerson().getGeographicalAddress().setSubCountry(null);
+        Policy policy = new Policy();
+        assertThatThrownBy(() -> getPolicyFromQuote(policy, quote))
+                .isInstanceOf(PolicyValidationException.class)
+                .hasMessage(addressWithNoSubCountry.getMessage());
+    }
+
+    @Test
+    public void should_return_error_when_create_policy_with_main_insured_with_address_but_no_sub_district() throws Exception {
+        final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), insured(35, FALSE));
+        quote.getInsureds().get(0).getPerson().getGeographicalAddress().setSubdistrict(null);
+        Policy policy = new Policy();
+        assertThatThrownBy(() -> getPolicyFromQuote(policy, quote))
+                .isInstanceOf(PolicyValidationException.class)
+                .hasMessage(addressWithNoSubDistrict.getMessage());
+    }
+
+    @Test
     public void should_return_error_when_create_policy_with_main_insured_with_no_phone() throws Exception {
         final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), insured(35, FALSE));
         quote.getInsureds().get(0).getPerson().setHomePhoneNumber(null);
@@ -991,11 +1061,20 @@ public class Product10ECTest {
         insured.setStartDate(LocalDate.now());
         insured.setType(InsuredType.Insured);
 
+        GeographicalAddress geographicalAddress = new GeographicalAddress();
+        geographicalAddress.setCountry("France");
+        geographicalAddress.setDistrict("Something");
+        geographicalAddress.setPostCode("75015");
+        geographicalAddress.setStreetAddress1("rue du paradis");
+        geographicalAddress.setStreetAddress2("apartement 2");
+        geographicalAddress.setSubCountry("Ile de France");
+        geographicalAddress.setSubdistrict("Paris");
+
         Person person = new Person();
         person.setBirthDate(LocalDate.now().minus(ageAtSubscription, ChronoUnit.YEARS));
         person.setEmail("something@something.com");
         person.setGenderCode(GenderCode.FEMALE);
-        person.setGeographicalAddress(new GeographicalAddress());
+        person.setGeographicalAddress(geographicalAddress);
         person.setGivenName("Someone");
         person.setHeightInCm(100);
         person.setHomePhoneNumber(new PhoneNumber());

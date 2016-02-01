@@ -36,6 +36,14 @@ public class PolicyValidationException extends Exception {
     public static PolicyValidationException beneficiariesNone = new PolicyValidationException("There must be at least one beneficiary.");
     public static PolicyValidationException beneficiariesTooMany = new PolicyValidationException("There are too many beneficiaries.");
 
+    public static PolicyValidationException addressWithNoCountry = new PolicyValidationException("Country of the address cannot be empty.");
+    public static PolicyValidationException addressWithNoDistrict = new PolicyValidationException("District of the address cannot be empty.");
+    public static PolicyValidationException addressWithNoPostCode = new PolicyValidationException("Post code of the address cannot be empty.");
+    public static PolicyValidationException addressWithNoStreetAddress1 = new PolicyValidationException("Street address (part 1) of the address cannot be empty.");
+    public static PolicyValidationException addressWithNoStreetAddress2 = new PolicyValidationException("Street address (part 2) of the address cannot be empty.");
+    public static PolicyValidationException addressWithNoSubCountry = new PolicyValidationException("Sub Country of the address cannot be empty.");
+    public static PolicyValidationException addressWithNoSubDistrict = new PolicyValidationException("Sub District of the address cannot be empty.");
+
     private PolicyValidationException(String message) {
         super(message);
     }

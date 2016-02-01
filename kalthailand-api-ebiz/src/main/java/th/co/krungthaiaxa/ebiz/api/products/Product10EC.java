@@ -213,6 +213,25 @@ public class Product10EC {
         if (!isValidEmailAddress(insured.getPerson().getEmail())) {
             throw PolicyValidationException.mainInsuredWithInvalidEmail;
         }
+        checkGeographicalAddress(insured.getPerson().getGeographicalAddress());
+    }
+
+    private static void checkGeographicalAddress(GeographicalAddress address) throws PolicyValidationException {
+        if (address.getCountry() == null) {
+            throw PolicyValidationException.addressWithNoCountry;
+        } else if (address.getDistrict() == null) {
+            throw PolicyValidationException.addressWithNoDistrict;
+        } else if (address.getPostCode() == null) {
+            throw PolicyValidationException.addressWithNoPostCode;
+        } else if (address.getStreetAddress1() == null) {
+            throw PolicyValidationException.addressWithNoStreetAddress1;
+        } else if (address.getStreetAddress2() == null) {
+            throw PolicyValidationException.addressWithNoStreetAddress2;
+        } else if (address.getSubCountry() == null) {
+            throw PolicyValidationException.addressWithNoSubCountry;
+        } else if (address.getSubdistrict() == null) {
+            throw PolicyValidationException.addressWithNoSubDistrict;
+        }
     }
 
     private static void checkPerson(Quote quote) throws PolicyValidationException {
