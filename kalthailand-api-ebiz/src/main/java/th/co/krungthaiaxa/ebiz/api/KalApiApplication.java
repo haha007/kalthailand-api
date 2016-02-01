@@ -26,7 +26,7 @@ public class KalApiApplication {
                 .paths(paths())
                 .build()
                 .useDefaultResponseMessages(false)
-                .pathMapping("/ebiz")
+                .pathMapping("/")
                 .apiInfo(metadata())
                 .directModelSubstitute(LocalDate.class, Date.class);
     }
@@ -40,7 +40,7 @@ public class KalApiApplication {
         return new ApiInfoBuilder()
                 .title("AXA TH DATA API")
                 .description("This set of API is done by Krungthai Axa Life")
-                .version("1.0")
+                .version("1.0.0")
                 .contact("")
                 .build();
     }

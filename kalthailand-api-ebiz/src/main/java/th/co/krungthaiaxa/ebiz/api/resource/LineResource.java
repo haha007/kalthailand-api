@@ -1,9 +1,6 @@
 package th.co.krungthaiaxa.ebiz.api.resource;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,7 +28,9 @@ public class LineResource {
     })
     @RequestMapping(value = "/decrypt", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity decryptLineId(@RequestParam String value) {
+    public ResponseEntity decryptLineId(
+            @ApiParam(value = "The encrypted line token")
+            @RequestParam String value) {
         logger.info("Value [" + value + "] will be decrypted");
         String decrypted;
         try {

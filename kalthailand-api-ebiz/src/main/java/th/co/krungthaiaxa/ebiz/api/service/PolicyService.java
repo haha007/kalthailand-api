@@ -43,4 +43,7 @@ public class PolicyService {
         return policy;
     }
 
+    public Policy update(Policy policy) {
+        return policyRepository.save(policy);
+    }
 }

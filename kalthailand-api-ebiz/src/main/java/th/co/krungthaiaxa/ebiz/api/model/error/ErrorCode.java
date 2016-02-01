@@ -22,4 +22,7 @@ public class ErrorCode {
     public final static Error INVALID_QUOTE_PROVIDED = new Error("20001", "Unable to update your quote", "The quote provided as JSon is not a valid quote, probably an incompatibility between mobile and server");
     public final static Error NO_QUOTE_IN_SESSION = new Error("20002", "You don't have a saved quote", "There is no quote with the given session id");
 
+    // Quote
+    public final static Error INVALID_POLICY_PROVIDED = new Error("20001", "Unable to update your policy", "The policy provided as JSon is not a valid policy, probably an incompatibility between mobile and server");
+
 }

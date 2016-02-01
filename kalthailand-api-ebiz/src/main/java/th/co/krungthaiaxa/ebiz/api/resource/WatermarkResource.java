@@ -1,9 +1,6 @@
 package th.co.krungthaiaxa.ebiz.api.resource;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,7 +38,11 @@ public class WatermarkResource {
     })
     @RequestMapping(value = "/watermark/upload", produces = APPLICATION_JSON_VALUE, method = POST)
     @ResponseBody
-    public ResponseEntity uploadImageForWatermark(@RequestParam String type, @RequestParam String base64Image) {
+    public ResponseEntity uploadImageForWatermark(
+            @ApiParam(value = "The type of the uploaded image. Should be 'png' or 'jpg'.")
+            @RequestParam String type,
+            @ApiParam(value = "The content of the image to watermark, but base 64 encoded.")
+            @RequestParam String base64Image) {
         byte[] inputImage;
         try {
             inputImage = Base64.getDecoder().decode(base64Image);

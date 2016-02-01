@@ -1,9 +1,6 @@
 package th.co.krungthaiaxa.ebiz.api.resource;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -41,18 +38,28 @@ public class QuoteResource {
     @ApiOperation(value = "Creates an empty quote", notes = "Creates an empty quote, attached to the session ID", response = Quote.class)
     @RequestMapping(value = "/quote", produces = APPLICATION_JSON_VALUE, method = POST)
     @ResponseBody
-    public ResponseEntity createQuote(@RequestParam String sessionId, @RequestParam ChannelType channelType) {
+    public ResponseEntity createQuote(
+            @ApiParam(value = "The session id. Must be unique through the Channel. This is used to recover unfinished quotes throught the channel")
+            @RequestParam String sessionId,
+            @ApiParam(value = "The channel being used to create the quote.")
+            @RequestParam ChannelType channelType) {
         Quote quote = quoteService.createQuote(sessionId, channelType);
         return new ResponseEntity<>(JsonUtil.getJson(quote), OK);
     }
 
-    @ApiOperation(value = "Upadtes a quote", notes = "Updates a quote, attached to the session ID, with provided JSon", response = Quote.class)
+    @ApiOperation(value = "Updates a quote", notes = "Updates a quote, attached to the session ID, with provided JSon", response = Quote.class)
     @ApiResponses({
             @ApiResponse(code = 406, message = "If either JSon is invalid or there is no quote in the given session", response = Error.class)
     })
     @RequestMapping(value = "/quote", produces = APPLICATION_JSON_VALUE, method = PUT)
     @ResponseBody
-    public ResponseEntity updateQuote(@RequestParam String sessionId, @RequestParam ChannelType channelType, @RequestParam String jsonQuote) {
+    public ResponseEntity updateQuote(
+            @ApiParam(value = "The session id. Must be unique through the Channel. This is used to recover unfinished quotes throught the channel")
+            @RequestParam String sessionId,
+            @ApiParam(value = "The channel being used to create the quote.")
+            @RequestParam ChannelType channelType,
+            @ApiParam(value = "The json of the quote. This quote will be updated with given values and will go through minimal validations")
+            @RequestParam String jsonQuote) {
         Quote quote;
         try {
             quote = JsonUtil.mapper.readValue(jsonQuote, Quote.class);
