@@ -107,7 +107,7 @@ public class Product10EC {
         }
 
         // cannot be too young or too old
-        checkMainInsuredAge(quote);
+        checkMainInsuredAge(quote.getInsureds().stream().filter(Insured::getMainInsuredIndicator).findFirst().get());
 
         // calculates premium / sum insured
         PremiumsDataLifeInsurance premiumsData = quote.getPremiumsData();
@@ -151,8 +151,8 @@ public class Product10EC {
     public static void getPolicyFromQuote(Policy policy, Quote quote) throws PolicyValidationException, QuoteCalculationException {
         checkCommonData(quote.getCommonData());
         checkInsured(quote);
-        checkMainInsuredAge(quote);
         checkPerson(quote);
+        checkMainInsuredAge(quote.getInsureds().stream().filter(Insured::getMainInsuredIndicator).findFirst().get());
         checkMainInsured(quote.getInsureds().stream().filter(Insured::getMainInsuredIndicator).findFirst().get());
         checkBeneficiaries(quote.getInsureds().stream().filter(insured -> !insured.getMainInsuredIndicator()).collect(Collectors.toList()));
 
@@ -179,17 +179,13 @@ public class Product10EC {
         }
     }
 
-    private static void checkMainInsuredAge(Quote quote) throws QuoteCalculationException {
-        for (Insured insured : quote.getInsureds()) {
-            if (insured.getMainInsuredIndicator()) {
-                if (insured.getAgeAtSubscription() == null) {
-                    throw ageIsEmptyException;
-                } else if (insured.getAgeAtSubscription() > 70) {
-                    throw ageIsTooHighException;
-                } else if (insured.getAgeAtSubscription() < 20) {
-                    throw ageIsTooLowException;
-                }
-            }
+    private static void checkMainInsuredAge(Insured insured) throws QuoteCalculationException {
+        if (insured.getAgeAtSubscription() == null) {
+            throw ageIsEmptyException;
+        } else if (insured.getAgeAtSubscription() > 70) {
+            throw ageIsTooHighException;
+        } else if (insured.getAgeAtSubscription() < 20) {
+            throw ageIsTooLowException;
         }
     }
 
