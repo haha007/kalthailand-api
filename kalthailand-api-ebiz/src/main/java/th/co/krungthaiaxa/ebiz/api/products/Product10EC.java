@@ -148,7 +148,8 @@ public class Product10EC {
         return quote;
     }
 
-    public static void getPolicyFromQuote(Policy policy, Quote quote) throws PolicyValidationException, QuoteCalculationException {
+    public static void getPolicyFromQuote(Policy policy, Quote quote) throws Exception {
+        // check for mandatory data
         checkCommonData(quote.getCommonData());
         checkInsured(quote);
         checkPerson(quote);
@@ -156,11 +157,15 @@ public class Product10EC {
         checkMainInsured(quote.getInsureds().stream().filter(Insured::getMainInsuredIndicator).findFirst().get());
         checkBeneficiaries(quote.getInsureds().stream().filter(insured -> !insured.getMainInsuredIndicator()).collect(Collectors.toList()));
 
+        // Recalculate the quote
+        quote = calculateQuote(quote);
+
+        // Copy from quote to Policy
         policy.setQuoteFunctionalId(quote.getQuoteId());
         policy.setCommonData(SerializationUtils.clone(quote.getCommonData()));
+        policy.setPremiumsData(SerializationUtils.clone(quote.getPremiumsData()));
         quote.getCoverages().stream().forEach(coverage -> policy.addCoverage(SerializationUtils.clone(coverage)));
         quote.getInsureds().stream().forEach(insured -> policy.addInsured(SerializationUtils.clone(insured)));
-        policy.setPremiumsData(SerializationUtils.clone(quote.getPremiumsData()));
     }
 
     private static void checkCommonData(CommonData commonData) throws PolicyValidationException {

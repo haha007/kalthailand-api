@@ -17,7 +17,7 @@ import java.io.InputStream;
 import java.util.List;
 
 @RestController
-@Api(value = "OCR", description = "Automated recognition of Thai ID card")
+@Api(value = "OCR")
 public class OCRResource {
     @RequestMapping(value = "/ocr/validate/id", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
     @ResponseBody

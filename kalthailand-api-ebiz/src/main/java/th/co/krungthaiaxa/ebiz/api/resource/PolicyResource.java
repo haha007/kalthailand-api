@@ -8,12 +8,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import th.co.krungthaiaxa.ebiz.api.exception.PolicyValidationException;
-import th.co.krungthaiaxa.ebiz.api.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.ebiz.api.model.Policy;
 import th.co.krungthaiaxa.ebiz.api.model.Quote;
 import th.co.krungthaiaxa.ebiz.api.model.error.Error;
-import th.co.krungthaiaxa.ebiz.api.model.error.ErrorCode;
 import th.co.krungthaiaxa.ebiz.api.service.PolicyService;
 import th.co.krungthaiaxa.ebiz.api.utils.JsonUtil;
 
@@ -25,9 +22,10 @@ import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.springframework.web.bind.annotation.RequestMethod.PUT;
+import static th.co.krungthaiaxa.ebiz.api.model.error.ErrorCode.*;
 
 @RestController
-@Api(value = "policies", description = "Everything for policy")
+@Api(value = "Policies")
 public class PolicyResource {
     private final static Logger logger = LoggerFactory.getLogger(PolicyResource.class);
     private final PolicyService policyService;
@@ -43,7 +41,7 @@ public class PolicyResource {
     })
     @RequestMapping(value = "/policies", produces = APPLICATION_JSON_VALUE, method = POST)
     @ResponseBody
-    public ResponseEntity createQuote(
+    public ResponseEntity createPolicy(
             @ApiParam(value = "The json of the quote to create the policy from. This quote will go through maximum validations")
             @RequestParam String jsonQuote) {
         Quote quote;
@@ -51,18 +49,15 @@ public class PolicyResource {
             quote = JsonUtil.mapper.readValue(jsonQuote, Quote.class);
         } catch (IOException e) {
             logger.error("Unable to get a quote out of [" + jsonQuote + "]", e);
-            return new ResponseEntity<>(ErrorCode.INVALID_QUOTE_PROVIDED, NOT_ACCEPTABLE);
+            return new ResponseEntity<>(INVALID_QUOTE_PROVIDED, NOT_ACCEPTABLE);
         }
 
         Policy policy;
         try {
             policy = policyService.createPolicy(quote);
-        } catch (PolicyValidationException e) {
-            logger.error("Unable to get a quote out of [" + jsonQuote + "]", e);
-            return new ResponseEntity<>(ErrorCode.INVALID_QUOTE_PROVIDED, NOT_ACCEPTABLE);
-        } catch (QuoteCalculationException e) {
-            logger.error("Unable to get a quote out of [" + jsonQuote + "]", e);
-            return new ResponseEntity<>(ErrorCode.INVALID_QUOTE_PROVIDED, NOT_ACCEPTABLE);
+        } catch (Exception e) {
+            logger.error("Unable to create a policy from the validated quote [" + jsonQuote + "]", e);
+            return new ResponseEntity<>(POLICY_CANNOT_BE_CREATED.apply(e.getMessage()), NOT_ACCEPTABLE);
         }
         return new ResponseEntity<>(JsonUtil.getJson(policy), OK);
     }
@@ -73,15 +68,15 @@ public class PolicyResource {
     })
     @RequestMapping(value = "/policies", produces = APPLICATION_JSON_VALUE, method = PUT)
     @ResponseBody
-    public ResponseEntity updateQuote(
+    public ResponseEntity updatePolicy(
             @ApiParam(value = "The json of the policy. This policy will be updated with given values")
             @RequestParam String jsonPolicy) {
         Policy policy;
         try {
             policy = JsonUtil.mapper.readValue(jsonPolicy, Policy.class);
         } catch (IOException e) {
-            logger.error("Unable to get a quote out of [" + jsonPolicy + "]", e);
-            return new ResponseEntity<>(ErrorCode.INVALID_POLICY_PROVIDED, NOT_ACCEPTABLE);
+            logger.error("Unable to get a policy out of [" + jsonPolicy + "]", e);
+            return new ResponseEntity<>(INVALID_POLICY_PROVIDED, NOT_ACCEPTABLE);
         }
 
         Policy updatedPolicy = policyService.update(policy);

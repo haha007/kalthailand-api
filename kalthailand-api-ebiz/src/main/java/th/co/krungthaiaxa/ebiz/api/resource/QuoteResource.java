@@ -25,7 +25,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
 @RestController
-@Api(value = "quotes", description = "Everything for quote before getting a policy")
+@Api(value = "Quotes")
 public class QuoteResource {
     private final static Logger logger = LoggerFactory.getLogger(QuoteResource.class);
     private final QuoteService quoteService;

@@ -1046,6 +1046,10 @@ public class Product10ECTest {
     }
 
     private static Quote quote(PeriodicityCode periodicityCode, Insured... insureds) {
+        Amount amount = new Amount();
+        amount.setCurrencyCode("THB");
+        amount.setValue(1000000.0);
+
         Periodicity periodicity = new Periodicity();
         periodicity.setCode(periodicityCode);
 
@@ -1054,6 +1058,7 @@ public class Product10ECTest {
 
         PremiumsDataLifeInsurance premiumsData = new PremiumsDataLifeInsurance();
         premiumsData.setFinancialScheduler(financialScheduler);
+        premiumsData.setLifeInsuranceSumInsured(amount);
 
         CommonData commonData = new CommonData();
         commonData.setProductId(PRODUCT_10_EC_NAME);
@@ -1065,10 +1070,6 @@ public class Product10ECTest {
         for (Insured insured : insureds) {
             quote.addInsured(insured);
         }
-//        Amount amount = new Amount();
-//        amount.setCurrencyCode("THB");
-//        amount.setValue(1000000.0);
-//        quote.getPremiumsData().setLifeInsuranceSumInsured(amount);
         return quote;
     }
 

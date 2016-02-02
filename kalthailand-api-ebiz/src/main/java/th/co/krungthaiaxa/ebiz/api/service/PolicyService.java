@@ -3,7 +3,6 @@ package th.co.krungthaiaxa.ebiz.api.service;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.ebiz.api.exception.PolicyValidationException;
-import th.co.krungthaiaxa.ebiz.api.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.ebiz.api.model.Policy;
 import th.co.krungthaiaxa.ebiz.api.model.Quote;
 import th.co.krungthaiaxa.ebiz.api.products.Product10EC;
@@ -24,7 +23,7 @@ public class PolicyService {
         this.quoteRepository = quoteRepository;
     }
 
-    public Policy createPolicy(Quote quote) throws PolicyValidationException, QuoteCalculationException {
+    public Policy createPolicy(Quote quote) throws Exception {
         if (quote == null) {
             throw PolicyValidationException.emptyQuote;
         } else if (quoteRepository.findOne(quote.getTechnicalId()) == null) {
@@ -37,7 +36,7 @@ public class PolicyService {
             policy.setPolicyId(RandomStringUtils.randomNumeric(20));
             // Only one product so far
             Product10EC.getPolicyFromQuote(policy, quote);
-            policyRepository.save(policy);
+            policy = policyRepository.save(policy);
         }
 
         return policy;

@@ -25,7 +25,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @RestController
-@Api(value = "Watermarking", description = "Watermark an image")
+@Api(value = "Watermarking")
 public class WatermarkResource {
     @Value("${path.store.watermarked.image}")
     private String storePath;
@@ -46,8 +46,7 @@ public class WatermarkResource {
         byte[] inputImage;
         try {
             inputImage = Base64.getDecoder().decode(base64Image);
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(ErrorCode.WATERMARK_IMAGE_INPUT_NOT_READABLE, HttpStatus.BAD_REQUEST);
         }
 

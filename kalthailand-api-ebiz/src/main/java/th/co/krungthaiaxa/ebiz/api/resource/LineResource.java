@@ -15,7 +15,7 @@ import th.co.krungthaiaxa.ebiz.api.utils.Decrypt;
 import th.co.krungthaiaxa.ebiz.api.utils.JsonUtil;
 
 @RestController
-@Api(value = "Line", description = "Everything related to Line")
+@Api(value = "Line")
 public class LineResource {
     private final static Logger logger = LoggerFactory.getLogger(LineResource.class);
 
@@ -42,7 +42,7 @@ public class LineResource {
 
         if (!decrypted.contains(".")) {
             logger.error("Decrypted value doesn't contain a '.'");
-            return new ResponseEntity<>(ErrorCode.INAVLID_LINE_ID, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(ErrorCode.INVALID_LINE_ID, HttpStatus.BAD_REQUEST);
         }
 
         logger.info("Value has been successfuly decrypted");

@@ -9,7 +9,8 @@ public class Error {
     public Error() {
     }
 
-    public Error(String code, String userMessage, String developerMessage) {
+    // Visibility has to be package so only ErrorCode can create Error instances
+    Error(String code, String userMessage, String developerMessage) {
         this.code = code;
         this.userMessage = userMessage;
         this.developerMessage = developerMessage;
