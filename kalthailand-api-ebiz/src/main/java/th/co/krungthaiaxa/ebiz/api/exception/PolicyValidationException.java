@@ -9,9 +9,9 @@ public class PolicyValidationException extends Exception {
 
     public static PolicyValidationException noInsured = new PolicyValidationException("There is no insured for the policy.");
     public static PolicyValidationException noMainInsured = new PolicyValidationException("There is no main insured person for the policy.");
-    public static PolicyValidationException moreThanOneMainInsured = new PolicyValidationException("There is more than one main insured person for the policy.");
     public static PolicyValidationException insuredWithNoMainInsured = new PolicyValidationException("At least one insured has no main insured indicator.");
     public static PolicyValidationException insuredWithNoType = new PolicyValidationException("At least one insured has no insured type.");
+    public static PolicyValidationException insuredMoreThanOne = new PolicyValidationException("Cannot have more than one insured.");
 
     public static PolicyValidationException insuredWithNoPerson = new PolicyValidationException("At least one insured has no person.");
     public static PolicyValidationException personWithNoGivenName = new PolicyValidationException("At least one insured has no given name.");
@@ -37,6 +37,7 @@ public class PolicyValidationException extends Exception {
 
     public static PolicyValidationException beneficiariesNone = new PolicyValidationException("There must be at least one beneficiary.");
     public static PolicyValidationException beneficiariesTooMany = new PolicyValidationException("There are too many beneficiaries.");
+    public static PolicyValidationException beneficiariesPercentSumNot100 = new PolicyValidationException("The sum of percent between beneficiaries is not 100.");
 
     public static PolicyValidationException addressWithNoCountry = new PolicyValidationException("Country of the address cannot be empty.");
     public static PolicyValidationException addressWithNoDistrict = new PolicyValidationException("District of the address cannot be empty.");
@@ -45,6 +46,9 @@ public class PolicyValidationException extends Exception {
     public static PolicyValidationException addressWithNoStreetAddress2 = new PolicyValidationException("Street address (part 2) of the address cannot be empty.");
     public static PolicyValidationException addressWithNoSubCountry = new PolicyValidationException("Sub Country of the address cannot be empty.");
     public static PolicyValidationException addressWithNoSubDistrict = new PolicyValidationException("Sub District of the address cannot be empty.");
+
+    public static PolicyValidationException coverageExpected = new PolicyValidationException("Policy has no coverage.");
+    public static PolicyValidationException coverageMoreThanOne = new PolicyValidationException("Policy has more than one coverage.");
 
     private PolicyValidationException(String message) {
         super(message);

@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import static th.co.krungthaiaxa.ebiz.api.exception.QuoteCalculationException.*;
 
@@ -85,6 +84,7 @@ public class Product10EC {
     public static Quote calculateQuote(Quote quote) throws Exception {
         Optional<Coverage> has10ECCoverage = quote.getCoverages()
                 .stream()
+                .filter(coverage -> coverage.getName() != null)
                 .filter(coverage -> coverage.getName().equalsIgnoreCase(PRODUCT_10_EC_NAME))
                 .findFirst();
 
@@ -155,10 +155,13 @@ public class Product10EC {
         checkPerson(quote);
         checkMainInsuredAge(quote.getInsureds().stream().filter(Insured::getMainInsuredIndicator).findFirst().get());
         checkMainInsured(quote.getInsureds().stream().filter(Insured::getMainInsuredIndicator).findFirst().get());
-        checkBeneficiaries(quote.getInsureds().stream().filter(insured -> !insured.getMainInsuredIndicator()).collect(Collectors.toList()));
 
         // Recalculate the quote
         quote = calculateQuote(quote);
+
+        // check for calculated data
+        checkCoverage(quote.getCoverages());
+        checkBeneficiaries(quote.getCoverages().get(0).getBeneficiaries()); // There is only one coerage at this point
 
         // Copy from quote to Policy
         policy.setQuoteFunctionalId(quote.getQuoteId());
@@ -176,11 +179,21 @@ public class Product10EC {
         }
     }
 
-    private static void checkBeneficiaries(List<Insured> beneficiaries) throws PolicyValidationException {
+    private static void checkCoverage(List<Coverage> coverages) throws PolicyValidationException {
+        if (coverages == null || coverages.size() == 0) {
+            throw PolicyValidationException.coverageExpected;
+        } else if (coverages.size() != 1) {
+            throw PolicyValidationException.coverageMoreThanOne;
+        }
+    }
+
+    private static void checkBeneficiaries(List<CoverageBeneficiary> beneficiaries) throws PolicyValidationException {
         if (beneficiaries == null || beneficiaries.size() == 0) {
             throw PolicyValidationException.beneficiariesNone;
         } else if (beneficiaries.size() > 6) {
             throw PolicyValidationException.beneficiariesTooMany;
+        } else if (beneficiaries.stream().mapToDouble(CoverageBeneficiary::getCoverageBenefitPercentage).sum() != 100.0) {
+            throw PolicyValidationException.beneficiariesPercentSumNot100;
         }
     }
 
@@ -267,14 +280,14 @@ public class Product10EC {
     private static void checkInsured(Quote quote) throws PolicyValidationException {
         if (quote.getInsureds() == null || quote.getInsureds().size() == 0) {
             throw PolicyValidationException.noInsured;
+        } else if (quote.getInsureds().size() != 1) {
+            throw PolicyValidationException.insuredMoreThanOne;
         } else if (quote.getInsureds().stream().anyMatch(insured -> insured.getType() == null)) {
             throw PolicyValidationException.insuredWithNoType;
         } else if (quote.getInsureds().stream().anyMatch(insured -> insured.getMainInsuredIndicator() == null)) {
             throw PolicyValidationException.insuredWithNoMainInsured;
         } else if (!quote.getInsureds().stream().filter(Insured::getMainInsuredIndicator).findFirst().isPresent()) {
             throw PolicyValidationException.noMainInsured;
-        } else if (quote.getInsureds().stream().filter(Insured::getMainInsuredIndicator).count() != 1) {
-            throw PolicyValidationException.moreThanOneMainInsured;
         }
     }
 
