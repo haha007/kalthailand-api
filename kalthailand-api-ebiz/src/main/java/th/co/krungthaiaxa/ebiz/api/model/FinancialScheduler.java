@@ -5,14 +5,13 @@ import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.Objects;
 
 @ApiModel(description = "The definition of how the premiums must be paid")
 public class FinancialScheduler implements Serializable {
     private Periodicity periodicity;
     private Amount modalAmount;
-    private LocalDate endDate = LocalDate.now(ZoneId.of(ZoneId.SHORT_IDS.get("VST")));
+    private LocalDate endDate;
 
     @ApiModelProperty(value = "The periodicity of the scheduled payment")
     public Periodicity getPeriodicity() {
@@ -23,7 +22,7 @@ public class FinancialScheduler implements Serializable {
         this.periodicity = periodicity;
     }
 
-    @ApiModelProperty(value = "A regularly scheduled payment amount contractually obligated by the policy")
+    @ApiModelProperty(value = "A regularly scheduled payment amount contractually obligated by the policy. This is calculated by back end API if a sum insured amount is provided in premiumsDataLifeInsurance. If this value is provided, then it's the premiumsDataLifeInsurance sum insured that is calculated")
     public Amount getModalAmount() {
         return modalAmount;
     }
@@ -32,7 +31,7 @@ public class FinancialScheduler implements Serializable {
         this.modalAmount = modalAmount;
     }
 
-    @ApiModelProperty(value = "End date of the financial scheduler, e.g. date of end premium payment")
+    @ApiModelProperty(value = "End date of the financial scheduler, e.g. date of end premium payment. This is calculated by back end API and cannot be set by client.")
     public LocalDate getEndDate() {
         return endDate;
     }

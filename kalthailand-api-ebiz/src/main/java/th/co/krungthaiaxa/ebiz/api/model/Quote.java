@@ -66,7 +66,7 @@ public class Quote {
         insureds.add(insured);
     }
 
-    @ApiModelProperty(value = "List of all coverages of the quote")
+    @ApiModelProperty(value = "List of all coverages of the quote. This is calculated by back end API and cannot be set by client.")
     public List<Coverage> getCoverages() {
         return coverages;
     }

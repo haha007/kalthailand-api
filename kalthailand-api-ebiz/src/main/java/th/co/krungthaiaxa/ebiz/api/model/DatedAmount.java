@@ -8,7 +8,7 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 @ApiModel(description = "An amount at a specific date with its currency")
-public class DatedAmount implements Serializable {
+public class DatedAmount implements Serializable, Comparable<DatedAmount> {
     private Double value;
     private String currencyCode;
     private LocalDate date;
@@ -38,6 +38,11 @@ public class DatedAmount implements Serializable {
 
     public void setDate(LocalDate date) {
         this.date = date;
+    }
+
+    @Override
+    public int compareTo(DatedAmount compareWith) {
+        return date.compareTo(compareWith.getDate());
     }
 
     @Override

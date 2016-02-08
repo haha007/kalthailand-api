@@ -64,7 +64,7 @@ public class QuoteServiceTest {
         assertThat(quote.getPremiumsData().getLifeInsuranceMinimumYearlyReturns()).hasSize(10);
         assertThat(quote.getPremiumsData().getLifeInsuranceAverageYearlyReturns()).hasSize(10);
         assertThat(quote.getPremiumsData().getLifeInsuranceMaximumYearlyReturns()).hasSize(10);
-        assertThat(quote.getPremiumsData().getLifeInsuranceMinimumExtraDividende()).isEmpty();
+        assertThat(quote.getPremiumsData().getLifeInsuranceMinimumExtraDividende()).hasSize(10);
         assertThat(quote.getPremiumsData().getLifeInsuranceMaximumExtraDividende()).hasSize(10);
         assertThat(quote.getPremiumsData().getLifeInsuranceYearlyCashBacks()).hasSize(10);
         assertThat(quote.getCoverages()).hasSize(1);

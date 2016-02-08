@@ -12,6 +12,10 @@ import java.util.List;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
+import static java.time.LocalDate.now;
+import static java.time.ZoneId.SHORT_IDS;
+import static java.time.ZoneId.of;
+import static java.time.temporal.ChronoUnit.YEARS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static th.co.krungthaiaxa.ebiz.api.exception.PolicyValidationException.*;
@@ -288,9 +292,24 @@ public class Product10ECTest {
     }
 
     @Test
+    public void should_calculate_end_dates_and_start_date() throws Exception {
+        Quote quote = quote(EVERY_YEAR, insured(25, TRUE), beneficiary(100.0));
+        quote.getInsureds().get(0).setStartDate(null);
+        quote.getInsureds().get(0).setEndDate(null);
+        quote.getPremiumsData().getFinancialScheduler().setEndDate(null);
+
+        quote = calculateQuote(quote);
+
+        LocalDate startDate = now(of(SHORT_IDS.get("VST")));
+        LocalDate endDate = startDate.plus(DURATION_IN_YEAR, YEARS);
+        assertThat(quote.getInsureds().get(0).getStartDate()).isEqualTo(startDate);
+        assertThat(quote.getInsureds().get(0).getEndDate()).isEqualTo(endDate);
+        assertThat(quote.getPremiumsData().getFinancialScheduler().getEndDate()).isEqualTo(endDate);
+    }
+
+    @Test
     public void should_calculate_cash_back_returns_from_1_million_sum_insured() throws Exception {
         Quote quote = quote(EVERY_YEAR, insured(25, TRUE), beneficiary(100.0));
-        LocalDate endDate = quote.getPremiumsData().getFinancialScheduler().getEndDate();
 
         Amount amount = new Amount();
         amount.setCurrencyCode("THB");
@@ -298,6 +317,7 @@ public class Product10ECTest {
         quote.getPremiumsData().setLifeInsuranceSumInsured(amount);
 
         quote = calculateQuote(quote);
+        LocalDate endDate = quote.getPremiumsData().getFinancialScheduler().getEndDate();
         List<DatedAmount> result = quote.getPremiumsData().getLifeInsuranceYearlyCashBacks();
         assertThat(result).hasSize(10);
 
@@ -312,15 +332,15 @@ public class Product10ECTest {
         assertThat(result.get(8).getCurrencyCode()).isEqualTo("THB");
         assertThat(result.get(9).getCurrencyCode()).isEqualTo("THB");
 
-        assertThat(result.get(0).getDate()).isEqualTo(endDate.minus(9, ChronoUnit.YEARS));
-        assertThat(result.get(1).getDate()).isEqualTo(endDate.minus(8, ChronoUnit.YEARS));
-        assertThat(result.get(2).getDate()).isEqualTo(endDate.minus(7, ChronoUnit.YEARS));
-        assertThat(result.get(3).getDate()).isEqualTo(endDate.minus(6, ChronoUnit.YEARS));
-        assertThat(result.get(4).getDate()).isEqualTo(endDate.minus(5, ChronoUnit.YEARS));
-        assertThat(result.get(5).getDate()).isEqualTo(endDate.minus(4, ChronoUnit.YEARS));
-        assertThat(result.get(6).getDate()).isEqualTo(endDate.minus(3, ChronoUnit.YEARS));
-        assertThat(result.get(7).getDate()).isEqualTo(endDate.minus(2, ChronoUnit.YEARS));
-        assertThat(result.get(8).getDate()).isEqualTo(endDate.minus(1, ChronoUnit.YEARS));
+        assertThat(result.get(0).getDate()).isEqualTo(endDate.minus(9, YEARS));
+        assertThat(result.get(1).getDate()).isEqualTo(endDate.minus(8, YEARS));
+        assertThat(result.get(2).getDate()).isEqualTo(endDate.minus(7, YEARS));
+        assertThat(result.get(3).getDate()).isEqualTo(endDate.minus(6, YEARS));
+        assertThat(result.get(4).getDate()).isEqualTo(endDate.minus(5, YEARS));
+        assertThat(result.get(5).getDate()).isEqualTo(endDate.minus(4, YEARS));
+        assertThat(result.get(6).getDate()).isEqualTo(endDate.minus(3, YEARS));
+        assertThat(result.get(7).getDate()).isEqualTo(endDate.minus(2, YEARS));
+        assertThat(result.get(8).getDate()).isEqualTo(endDate.minus(1, YEARS));
         assertThat(result.get(9).getDate()).isEqualTo(endDate);
 
         assertThat(result.get(0).getValue()).isEqualTo(20000.0);
@@ -338,7 +358,6 @@ public class Product10ECTest {
     @Test
     public void should_calculate_minimum_yearly_returns_from_1_million_sum_insured() throws Exception {
         Quote quote = quote(EVERY_YEAR, insured(25, TRUE), beneficiary(100.0));
-        LocalDate endDate = quote.getPremiumsData().getFinancialScheduler().getEndDate();
 
         Amount amount = new Amount();
         amount.setCurrencyCode("THB");
@@ -346,6 +365,7 @@ public class Product10ECTest {
         quote.getPremiumsData().setLifeInsuranceSumInsured(amount);
 
         quote = calculateQuote(quote);
+        LocalDate endDate = quote.getPremiumsData().getFinancialScheduler().getEndDate();
         List<DatedAmount> result = quote.getPremiumsData().getLifeInsuranceMinimumYearlyReturns();
         assertThat(result).hasSize(10);
 
@@ -360,15 +380,15 @@ public class Product10ECTest {
         assertThat(result.get(8).getCurrencyCode()).isEqualTo("THB");
         assertThat(result.get(9).getCurrencyCode()).isEqualTo("THB");
 
-        assertThat(result.get(0).getDate()).isEqualTo(endDate.minus(9, ChronoUnit.YEARS));
-        assertThat(result.get(1).getDate()).isEqualTo(endDate.minus(8, ChronoUnit.YEARS));
-        assertThat(result.get(2).getDate()).isEqualTo(endDate.minus(7, ChronoUnit.YEARS));
-        assertThat(result.get(3).getDate()).isEqualTo(endDate.minus(6, ChronoUnit.YEARS));
-        assertThat(result.get(4).getDate()).isEqualTo(endDate.minus(5, ChronoUnit.YEARS));
-        assertThat(result.get(5).getDate()).isEqualTo(endDate.minus(4, ChronoUnit.YEARS));
-        assertThat(result.get(6).getDate()).isEqualTo(endDate.minus(3, ChronoUnit.YEARS));
-        assertThat(result.get(7).getDate()).isEqualTo(endDate.minus(2, ChronoUnit.YEARS));
-        assertThat(result.get(8).getDate()).isEqualTo(endDate.minus(1, ChronoUnit.YEARS));
+        assertThat(result.get(0).getDate()).isEqualTo(endDate.minus(9, YEARS));
+        assertThat(result.get(1).getDate()).isEqualTo(endDate.minus(8, YEARS));
+        assertThat(result.get(2).getDate()).isEqualTo(endDate.minus(7, YEARS));
+        assertThat(result.get(3).getDate()).isEqualTo(endDate.minus(6, YEARS));
+        assertThat(result.get(4).getDate()).isEqualTo(endDate.minus(5, YEARS));
+        assertThat(result.get(5).getDate()).isEqualTo(endDate.minus(4, YEARS));
+        assertThat(result.get(6).getDate()).isEqualTo(endDate.minus(3, YEARS));
+        assertThat(result.get(7).getDate()).isEqualTo(endDate.minus(2, YEARS));
+        assertThat(result.get(8).getDate()).isEqualTo(endDate.minus(1, YEARS));
         assertThat(result.get(9).getDate()).isEqualTo(endDate);
 
         assertThat(result.get(0).getValue()).isEqualTo(20000.0);
@@ -386,7 +406,6 @@ public class Product10ECTest {
     @Test
     public void should_calculate_minimum_yearly_returns_from_510_thousand_sum_insured() throws Exception {
         Quote quote = quote(EVERY_YEAR, insured(35, TRUE), beneficiary(100.0));
-        LocalDate endDate = quote.getPremiumsData().getFinancialScheduler().getEndDate();
 
         Amount amount = new Amount();
         amount.setCurrencyCode("THB");
@@ -394,6 +413,7 @@ public class Product10ECTest {
         quote.getPremiumsData().setLifeInsuranceSumInsured(amount);
 
         quote = calculateQuote(quote);
+        LocalDate endDate = quote.getPremiumsData().getFinancialScheduler().getEndDate();
         List<DatedAmount> result = quote.getPremiumsData().getLifeInsuranceMinimumYearlyReturns();
         assertThat(result).hasSize(10);
 
@@ -408,15 +428,15 @@ public class Product10ECTest {
         assertThat(result.get(8).getCurrencyCode()).isEqualTo("THB");
         assertThat(result.get(9).getCurrencyCode()).isEqualTo("THB");
 
-        assertThat(result.get(0).getDate()).isEqualTo(endDate.minus(9, ChronoUnit.YEARS));
-        assertThat(result.get(1).getDate()).isEqualTo(endDate.minus(8, ChronoUnit.YEARS));
-        assertThat(result.get(2).getDate()).isEqualTo(endDate.minus(7, ChronoUnit.YEARS));
-        assertThat(result.get(3).getDate()).isEqualTo(endDate.minus(6, ChronoUnit.YEARS));
-        assertThat(result.get(4).getDate()).isEqualTo(endDate.minus(5, ChronoUnit.YEARS));
-        assertThat(result.get(5).getDate()).isEqualTo(endDate.minus(4, ChronoUnit.YEARS));
-        assertThat(result.get(6).getDate()).isEqualTo(endDate.minus(3, ChronoUnit.YEARS));
-        assertThat(result.get(7).getDate()).isEqualTo(endDate.minus(2, ChronoUnit.YEARS));
-        assertThat(result.get(8).getDate()).isEqualTo(endDate.minus(1, ChronoUnit.YEARS));
+        assertThat(result.get(0).getDate()).isEqualTo(endDate.minus(9, YEARS));
+        assertThat(result.get(1).getDate()).isEqualTo(endDate.minus(8, YEARS));
+        assertThat(result.get(2).getDate()).isEqualTo(endDate.minus(7, YEARS));
+        assertThat(result.get(3).getDate()).isEqualTo(endDate.minus(6, YEARS));
+        assertThat(result.get(4).getDate()).isEqualTo(endDate.minus(5, YEARS));
+        assertThat(result.get(5).getDate()).isEqualTo(endDate.minus(4, YEARS));
+        assertThat(result.get(6).getDate()).isEqualTo(endDate.minus(3, YEARS));
+        assertThat(result.get(7).getDate()).isEqualTo(endDate.minus(2, YEARS));
+        assertThat(result.get(8).getDate()).isEqualTo(endDate.minus(1, YEARS));
         assertThat(result.get(9).getDate()).isEqualTo(endDate);
 
         assertThat(result.get(0).getValue()).isEqualTo(10200.0);
@@ -434,7 +454,6 @@ public class Product10ECTest {
     @Test
     public void should_calculate_average_yearly_returns_from_1_million_sum_insured() throws Exception {
         Quote quote = quote(EVERY_YEAR, insured(25, TRUE), beneficiary(100.0));
-        LocalDate endDate = quote.getPremiumsData().getFinancialScheduler().getEndDate();
 
         Amount amount = new Amount();
         amount.setCurrencyCode("THB");
@@ -442,6 +461,7 @@ public class Product10ECTest {
         quote.getPremiumsData().setLifeInsuranceSumInsured(amount);
 
         quote = calculateQuote(quote);
+        LocalDate endDate = quote.getPremiumsData().getFinancialScheduler().getEndDate();
         List<DatedAmount> result = quote.getPremiumsData().getLifeInsuranceAverageYearlyReturns();
         assertThat(result).hasSize(10);
 
@@ -456,15 +476,15 @@ public class Product10ECTest {
         assertThat(result.get(8).getCurrencyCode()).isEqualTo("THB");
         assertThat(result.get(9).getCurrencyCode()).isEqualTo("THB");
 
-        assertThat(result.get(0).getDate()).isEqualTo(endDate.minus(9, ChronoUnit.YEARS));
-        assertThat(result.get(1).getDate()).isEqualTo(endDate.minus(8, ChronoUnit.YEARS));
-        assertThat(result.get(2).getDate()).isEqualTo(endDate.minus(7, ChronoUnit.YEARS));
-        assertThat(result.get(3).getDate()).isEqualTo(endDate.minus(6, ChronoUnit.YEARS));
-        assertThat(result.get(4).getDate()).isEqualTo(endDate.minus(5, ChronoUnit.YEARS));
-        assertThat(result.get(5).getDate()).isEqualTo(endDate.minus(4, ChronoUnit.YEARS));
-        assertThat(result.get(6).getDate()).isEqualTo(endDate.minus(3, ChronoUnit.YEARS));
-        assertThat(result.get(7).getDate()).isEqualTo(endDate.minus(2, ChronoUnit.YEARS));
-        assertThat(result.get(8).getDate()).isEqualTo(endDate.minus(1, ChronoUnit.YEARS));
+        assertThat(result.get(0).getDate()).isEqualTo(endDate.minus(9, YEARS));
+        assertThat(result.get(1).getDate()).isEqualTo(endDate.minus(8, YEARS));
+        assertThat(result.get(2).getDate()).isEqualTo(endDate.minus(7, YEARS));
+        assertThat(result.get(3).getDate()).isEqualTo(endDate.minus(6, YEARS));
+        assertThat(result.get(4).getDate()).isEqualTo(endDate.minus(5, YEARS));
+        assertThat(result.get(5).getDate()).isEqualTo(endDate.minus(4, YEARS));
+        assertThat(result.get(6).getDate()).isEqualTo(endDate.minus(3, YEARS));
+        assertThat(result.get(7).getDate()).isEqualTo(endDate.minus(2, YEARS));
+        assertThat(result.get(8).getDate()).isEqualTo(endDate.minus(1, YEARS));
         assertThat(result.get(9).getDate()).isEqualTo(endDate);
 
         assertThat(result.get(0).getValue()).isEqualTo(20000.0);
@@ -482,7 +502,6 @@ public class Product10ECTest {
     @Test
     public void should_calculate_maximum_yearly_returns_from_1_million_sum_insured() throws Exception {
         Quote quote = quote(EVERY_YEAR, insured(25, TRUE), beneficiary(100.0));
-        LocalDate endDate = quote.getPremiumsData().getFinancialScheduler().getEndDate();
 
         Amount amount = new Amount();
         amount.setCurrencyCode("THB");
@@ -490,6 +509,7 @@ public class Product10ECTest {
         quote.getPremiumsData().setLifeInsuranceSumInsured(amount);
 
         quote = calculateQuote(quote);
+        LocalDate endDate = quote.getPremiumsData().getFinancialScheduler().getEndDate();
         List<DatedAmount> result = quote.getPremiumsData().getLifeInsuranceMaximumYearlyReturns();
         assertThat(result).hasSize(10);
 
@@ -504,15 +524,15 @@ public class Product10ECTest {
         assertThat(result.get(8).getCurrencyCode()).isEqualTo("THB");
         assertThat(result.get(9).getCurrencyCode()).isEqualTo("THB");
 
-        assertThat(result.get(0).getDate()).isEqualTo(endDate.minus(9, ChronoUnit.YEARS));
-        assertThat(result.get(1).getDate()).isEqualTo(endDate.minus(8, ChronoUnit.YEARS));
-        assertThat(result.get(2).getDate()).isEqualTo(endDate.minus(7, ChronoUnit.YEARS));
-        assertThat(result.get(3).getDate()).isEqualTo(endDate.minus(6, ChronoUnit.YEARS));
-        assertThat(result.get(4).getDate()).isEqualTo(endDate.minus(5, ChronoUnit.YEARS));
-        assertThat(result.get(5).getDate()).isEqualTo(endDate.minus(4, ChronoUnit.YEARS));
-        assertThat(result.get(6).getDate()).isEqualTo(endDate.minus(3, ChronoUnit.YEARS));
-        assertThat(result.get(7).getDate()).isEqualTo(endDate.minus(2, ChronoUnit.YEARS));
-        assertThat(result.get(8).getDate()).isEqualTo(endDate.minus(1, ChronoUnit.YEARS));
+        assertThat(result.get(0).getDate()).isEqualTo(endDate.minus(9, YEARS));
+        assertThat(result.get(1).getDate()).isEqualTo(endDate.minus(8, YEARS));
+        assertThat(result.get(2).getDate()).isEqualTo(endDate.minus(7, YEARS));
+        assertThat(result.get(3).getDate()).isEqualTo(endDate.minus(6, YEARS));
+        assertThat(result.get(4).getDate()).isEqualTo(endDate.minus(5, YEARS));
+        assertThat(result.get(5).getDate()).isEqualTo(endDate.minus(4, YEARS));
+        assertThat(result.get(6).getDate()).isEqualTo(endDate.minus(3, YEARS));
+        assertThat(result.get(7).getDate()).isEqualTo(endDate.minus(2, YEARS));
+        assertThat(result.get(8).getDate()).isEqualTo(endDate.minus(1, YEARS));
         assertThat(result.get(9).getDate()).isEqualTo(endDate);
 
         assertThat(result.get(0).getValue()).isEqualTo(20000.0);
@@ -537,14 +557,47 @@ public class Product10ECTest {
         quote.getPremiumsData().setLifeInsuranceSumInsured(amount);
 
         quote = calculateQuote(quote);
+        LocalDate endDate = quote.getPremiumsData().getFinancialScheduler().getEndDate();
         List<DatedAmount> result = quote.getPremiumsData().getLifeInsuranceMinimumExtraDividende();
-        assertThat(result).isEmpty();
+        assertThat(result).hasSize(10);
+
+        assertThat(result.get(0).getCurrencyCode()).isEqualTo("THB");
+        assertThat(result.get(1).getCurrencyCode()).isEqualTo("THB");
+        assertThat(result.get(2).getCurrencyCode()).isEqualTo("THB");
+        assertThat(result.get(3).getCurrencyCode()).isEqualTo("THB");
+        assertThat(result.get(4).getCurrencyCode()).isEqualTo("THB");
+        assertThat(result.get(5).getCurrencyCode()).isEqualTo("THB");
+        assertThat(result.get(6).getCurrencyCode()).isEqualTo("THB");
+        assertThat(result.get(7).getCurrencyCode()).isEqualTo("THB");
+        assertThat(result.get(8).getCurrencyCode()).isEqualTo("THB");
+        assertThat(result.get(9).getCurrencyCode()).isEqualTo("THB");
+
+        assertThat(result.get(0).getDate()).isEqualTo(endDate.minus(9, YEARS));
+        assertThat(result.get(1).getDate()).isEqualTo(endDate.minus(8, YEARS));
+        assertThat(result.get(2).getDate()).isEqualTo(endDate.minus(7, YEARS));
+        assertThat(result.get(3).getDate()).isEqualTo(endDate.minus(6, YEARS));
+        assertThat(result.get(4).getDate()).isEqualTo(endDate.minus(5, YEARS));
+        assertThat(result.get(5).getDate()).isEqualTo(endDate.minus(4, YEARS));
+        assertThat(result.get(6).getDate()).isEqualTo(endDate.minus(3, YEARS));
+        assertThat(result.get(7).getDate()).isEqualTo(endDate.minus(2, YEARS));
+        assertThat(result.get(8).getDate()).isEqualTo(endDate.minus(1, YEARS));
+        assertThat(result.get(9).getDate()).isEqualTo(endDate);
+
+        assertThat(result.get(0).getValue()).isEqualTo(0.0);
+        assertThat(result.get(1).getValue()).isEqualTo(0.0);
+        assertThat(result.get(2).getValue()).isEqualTo(0.0);
+        assertThat(result.get(3).getValue()).isEqualTo(0.0);
+        assertThat(result.get(4).getValue()).isEqualTo(0.0);
+        assertThat(result.get(5).getValue()).isEqualTo(0.0);
+        assertThat(result.get(6).getValue()).isEqualTo(0.0);
+        assertThat(result.get(7).getValue()).isEqualTo(0.0);
+        assertThat(result.get(8).getValue()).isEqualTo(0.0);
+        assertThat(result.get(9).getValue()).isEqualTo(0.0);
     }
 
     @Test
     public void should_calculate_average_extra_dividende_returns_from_1_million_sum_insured() throws Exception {
         Quote quote = quote(EVERY_YEAR, insured(25, TRUE), beneficiary(100.0));
-        LocalDate endDate = quote.getPremiumsData().getFinancialScheduler().getEndDate();
 
         Amount amount = new Amount();
         amount.setCurrencyCode("THB");
@@ -552,6 +605,7 @@ public class Product10ECTest {
         quote.getPremiumsData().setLifeInsuranceSumInsured(amount);
 
         quote = calculateQuote(quote);
+        LocalDate endDate = quote.getPremiumsData().getFinancialScheduler().getEndDate();
         List<DatedAmount> result = quote.getPremiumsData().getLifeInsuranceAverageExtraDividende();
         assertThat(result).hasSize(10);
 
@@ -566,15 +620,15 @@ public class Product10ECTest {
         assertThat(result.get(8).getCurrencyCode()).isEqualTo("THB");
         assertThat(result.get(9).getCurrencyCode()).isEqualTo("THB");
 
-        assertThat(result.get(0).getDate()).isEqualTo(endDate.minus(9, ChronoUnit.YEARS));
-        assertThat(result.get(1).getDate()).isEqualTo(endDate.minus(8, ChronoUnit.YEARS));
-        assertThat(result.get(2).getDate()).isEqualTo(endDate.minus(7, ChronoUnit.YEARS));
-        assertThat(result.get(3).getDate()).isEqualTo(endDate.minus(6, ChronoUnit.YEARS));
-        assertThat(result.get(4).getDate()).isEqualTo(endDate.minus(5, ChronoUnit.YEARS));
-        assertThat(result.get(5).getDate()).isEqualTo(endDate.minus(4, ChronoUnit.YEARS));
-        assertThat(result.get(6).getDate()).isEqualTo(endDate.minus(3, ChronoUnit.YEARS));
-        assertThat(result.get(7).getDate()).isEqualTo(endDate.minus(2, ChronoUnit.YEARS));
-        assertThat(result.get(8).getDate()).isEqualTo(endDate.minus(1, ChronoUnit.YEARS));
+        assertThat(result.get(0).getDate()).isEqualTo(endDate.minus(9, YEARS));
+        assertThat(result.get(1).getDate()).isEqualTo(endDate.minus(8, YEARS));
+        assertThat(result.get(2).getDate()).isEqualTo(endDate.minus(7, YEARS));
+        assertThat(result.get(3).getDate()).isEqualTo(endDate.minus(6, YEARS));
+        assertThat(result.get(4).getDate()).isEqualTo(endDate.minus(5, YEARS));
+        assertThat(result.get(5).getDate()).isEqualTo(endDate.minus(4, YEARS));
+        assertThat(result.get(6).getDate()).isEqualTo(endDate.minus(3, YEARS));
+        assertThat(result.get(7).getDate()).isEqualTo(endDate.minus(2, YEARS));
+        assertThat(result.get(8).getDate()).isEqualTo(endDate.minus(1, YEARS));
         assertThat(result.get(9).getDate()).isEqualTo(endDate);
 
         assertThat(result.get(0).getValue()).isEqualTo(0.0);
@@ -592,7 +646,6 @@ public class Product10ECTest {
     @Test
     public void should_calculate_maximum_extra_dividende_returns_from_1_million_sum_insured() throws Exception {
         Quote quote = quote(EVERY_YEAR, insured(25, TRUE), beneficiary(100.0));
-        LocalDate endDate = quote.getPremiumsData().getFinancialScheduler().getEndDate();
 
         Amount amount = new Amount();
         amount.setCurrencyCode("THB");
@@ -600,6 +653,7 @@ public class Product10ECTest {
         quote.getPremiumsData().setLifeInsuranceSumInsured(amount);
 
         quote = calculateQuote(quote);
+        LocalDate endDate = quote.getPremiumsData().getFinancialScheduler().getEndDate();
         List<DatedAmount> result = quote.getPremiumsData().getLifeInsuranceMaximumExtraDividende();
         assertThat(result).hasSize(10);
 
@@ -614,15 +668,15 @@ public class Product10ECTest {
         assertThat(result.get(8).getCurrencyCode()).isEqualTo("THB");
         assertThat(result.get(9).getCurrencyCode()).isEqualTo("THB");
 
-        assertThat(result.get(0).getDate()).isEqualTo(endDate.minus(9, ChronoUnit.YEARS));
-        assertThat(result.get(1).getDate()).isEqualTo(endDate.minus(8, ChronoUnit.YEARS));
-        assertThat(result.get(2).getDate()).isEqualTo(endDate.minus(7, ChronoUnit.YEARS));
-        assertThat(result.get(3).getDate()).isEqualTo(endDate.minus(6, ChronoUnit.YEARS));
-        assertThat(result.get(4).getDate()).isEqualTo(endDate.minus(5, ChronoUnit.YEARS));
-        assertThat(result.get(5).getDate()).isEqualTo(endDate.minus(4, ChronoUnit.YEARS));
-        assertThat(result.get(6).getDate()).isEqualTo(endDate.minus(3, ChronoUnit.YEARS));
-        assertThat(result.get(7).getDate()).isEqualTo(endDate.minus(2, ChronoUnit.YEARS));
-        assertThat(result.get(8).getDate()).isEqualTo(endDate.minus(1, ChronoUnit.YEARS));
+        assertThat(result.get(0).getDate()).isEqualTo(endDate.minus(9, YEARS));
+        assertThat(result.get(1).getDate()).isEqualTo(endDate.minus(8, YEARS));
+        assertThat(result.get(2).getDate()).isEqualTo(endDate.minus(7, YEARS));
+        assertThat(result.get(3).getDate()).isEqualTo(endDate.minus(6, YEARS));
+        assertThat(result.get(4).getDate()).isEqualTo(endDate.minus(5, YEARS));
+        assertThat(result.get(5).getDate()).isEqualTo(endDate.minus(4, YEARS));
+        assertThat(result.get(6).getDate()).isEqualTo(endDate.minus(3, YEARS));
+        assertThat(result.get(7).getDate()).isEqualTo(endDate.minus(2, YEARS));
+        assertThat(result.get(8).getDate()).isEqualTo(endDate.minus(1, YEARS));
         assertThat(result.get(9).getDate()).isEqualTo(endDate);
 
         assertThat(result.get(0).getValue()).isEqualTo(0.0);
@@ -657,7 +711,7 @@ public class Product10ECTest {
     }
 
     @Test
-    public void should_return_error_when_create_policy_with_at_least_one_insured_with_no_insured_type() throws Exception {
+    public void should_return_error_when_create_policy_with_insured_with_no_insured_type() throws Exception {
         final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), beneficiary(100.0));
         quote.getInsureds().get(0).setType(null);
         Policy policy = new Policy();
@@ -676,7 +730,7 @@ public class Product10ECTest {
     }
 
     @Test
-    public void should_return_error_when_create_policy_with_at_least_one_insured_with_no_person() throws Exception {
+    public void should_return_error_when_create_policy_with_insured_with_no_person() throws Exception {
         final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), beneficiary(100.0));
         quote.getInsureds().get(0).setPerson(null);
         Policy policy = new Policy();
@@ -796,13 +850,23 @@ public class Product10ECTest {
     }
 
     @Test
-    public void should_return_error_when_create_policy_with_at_least_one_insured_with_no_start_date() throws Exception {
+    public void should_return_error_when_create_policy_with_insured_with_no_start_date() throws Exception {
         final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), beneficiary(100.0));
         quote.getInsureds().get(0).setStartDate(null);
         Policy policy = new Policy();
         assertThatThrownBy(() -> getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(mainInsuredWithNoStartDate.getMessage());
+    }
+
+    @Test
+    public void should_return_error_when_create_policy_with_insured_with_a_start_date_not_server_date() throws Exception {
+        final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), beneficiary(100.0));
+        quote.getInsureds().get(0).setStartDate(now().minus(1, ChronoUnit.DAYS));
+        Policy policy = new Policy();
+        assertThatThrownBy(() -> getPolicyFromQuote(policy, quote))
+                .isInstanceOf(PolicyValidationException.class)
+                .hasMessage(startDateNotServerDate.getMessage());
     }
 
     @Test
@@ -1114,7 +1178,7 @@ public class Product10ECTest {
         geographicalAddress.setSubdistrict("Paris");
 
         Person person = new Person();
-        person.setBirthDate(LocalDate.now().minus(ageAtSubscription, ChronoUnit.YEARS));
+        person.setBirthDate(now().minus(ageAtSubscription, YEARS));
         person.setEmail("something@something.com");
         person.setGenderCode(GenderCode.FEMALE);
         person.setGeographicalAddress(geographicalAddress);

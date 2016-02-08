@@ -44,7 +44,7 @@ public class Insured implements Serializable {
         this.mainInsuredIndicator = mainInsuredIndicator;
     }
 
-    @ApiModelProperty(value = "Start date of coverage for the insured")
+    @ApiModelProperty(value = "Start date of coverage for the insured. This is calculated by back end API and cannot be set by client.")
     public LocalDate getStartDate() {
         return startDate;
     }
@@ -53,7 +53,7 @@ public class Insured implements Serializable {
         this.startDate = startDate;
     }
 
-    @ApiModelProperty(value = "End date of coverage for the insured")
+    @ApiModelProperty(value = "End date of coverage for the insured. This is calculated by back end API and cannot be set by client.")
     public LocalDate getEndDate() {
         return endDate;
     }

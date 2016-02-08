@@ -7,31 +7,43 @@ import th.co.krungthaiaxa.ebiz.api.model.*;
 import th.co.krungthaiaxa.ebiz.api.model.enums.PeriodicityCode;
 
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.IntStream;
 
+import static java.time.temporal.ChronoUnit.YEARS;
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
 import static th.co.krungthaiaxa.ebiz.api.exception.QuoteCalculationException.*;
 
 public class Product10EC {
+    public final static int DURATION_IN_YEAR = 10;
     public final static String PRODUCT_10_EC_NAME = "10 EC";
+    public final static String PRODUCT_10_EC_CURRENCY = "THB";
+
 
     private static Function<Integer, Integer> dvdRate = numberOfYearsOfContract -> {
         if (numberOfYearsOfContract >= 1 && numberOfYearsOfContract <= 9) {
             return 20;
-        } else if (numberOfYearsOfContract == 10) {
+        } else if (numberOfYearsOfContract == DURATION_IN_YEAR) {
             return 1820;
         } else {
             return 0;
         }
     };
 
+    private static Function<Integer, Integer> minimumExtraDvdRate = numberOfYearsOfContract -> {
+        return 0;
+    };
+
     private static Function<Integer, Integer> averageExtraDvdRate = numberOfYearsOfContract -> {
         if (numberOfYearsOfContract >= 7 && numberOfYearsOfContract <= 9) {
             return 15;
-        } else if (numberOfYearsOfContract == 10) {
+        } else if (numberOfYearsOfContract == DURATION_IN_YEAR) {
             return 165;
         } else {
             return 0;
@@ -41,7 +53,7 @@ public class Product10EC {
     private static Function<Integer, Integer> maximumExtraDvdRate = numberOfYearsOfContract -> {
         if (numberOfYearsOfContract >= 7 && numberOfYearsOfContract <= 9) {
             return 18;
-        } else if (numberOfYearsOfContract == 10) {
+        } else if (numberOfYearsOfContract == DURATION_IN_YEAR) {
             return 198;
         } else {
             return 0;
@@ -109,6 +121,13 @@ public class Product10EC {
         // cannot be too young or too old
         checkMainInsuredAge(quote.getInsureds().stream().filter(Insured::getMainInsuredIndicator).findFirst().get());
 
+        // Set dates based on current date and product duration
+        LocalDate startDate = LocalDate.now(ZoneId.of(ZoneId.SHORT_IDS.get("VST")));
+        LocalDate endDate = startDate.plus(DURATION_IN_YEAR, YEARS);
+        quote.getInsureds().stream().filter(Insured::getMainInsuredIndicator).findFirst().get().setStartDate(startDate);
+        quote.getInsureds().stream().filter(Insured::getMainInsuredIndicator).findFirst().get().setEndDate(endDate);
+        quote.getPremiumsData().getFinancialScheduler().setEndDate(endDate);
+
         // calculates premium / sum insured
         PremiumsDataLifeInsurance premiumsData = quote.getPremiumsData();
         if (premiumsData.getLifeInsuranceSumInsured() != null) {
@@ -117,13 +136,8 @@ public class Product10EC {
             premiumsData.setLifeInsuranceSumInsured(getSumInsuredFromPremium(quote));
         }
 
-        if (premiumsData.getLifeInsuranceSumInsured().getCurrencyCode().equalsIgnoreCase("THB")
-                && premiumsData.getLifeInsuranceSumInsured().getValue() > 1000000.0) {
-            throw sumInsuredTooHighException;
-        } else if (premiumsData.getLifeInsuranceSumInsured().getCurrencyCode().equalsIgnoreCase("THB")
-                && premiumsData.getLifeInsuranceSumInsured().getValue() < 200000.0) {
-            throw sumInsuredTooLowException;
-        }
+        // cannot insure too much or not enough
+        checkSumInsured(premiumsData);
 
         // calculates yearly cash backs
         premiumsData.setLifeInsuranceYearlyCashBacks(calculateDatedAmount(quote, null, dvdRate));
@@ -134,6 +148,7 @@ public class Product10EC {
         premiumsData.setLifeInsuranceMaximumYearlyReturns(calculateDatedAmount(quote, 45, dvdRate));
 
         // calculates yearly returns
+        premiumsData.setLifeInsuranceMinimumExtraDividende(calculateDatedAmount(quote, null, minimumExtraDvdRate));
         premiumsData.setLifeInsuranceAverageExtraDividende(calculateDatedAmount(quote, 40, averageExtraDvdRate));
         premiumsData.setLifeInsuranceMaximumExtraDividende(calculateDatedAmount(quote, 45, maximumExtraDvdRate));
 
@@ -162,6 +177,7 @@ public class Product10EC {
         // check for calculated data
         checkCoverage(quote.getCoverages());
         checkBeneficiaries(quote.getCoverages().get(0).getBeneficiaries()); // There is only one coerage at this point
+        checkPremiumsData(quote.getPremiumsData(), quote.getInsureds().get(0).getStartDate());
 
         // Copy from quote to Policy
         policy.setQuoteFunctionalId(quote.getQuoteId());
@@ -194,6 +210,57 @@ public class Product10EC {
             throw PolicyValidationException.beneficiariesTooMany;
         } else if (beneficiaries.stream().mapToDouble(CoverageBeneficiary::getCoverageBenefitPercentage).sum() != 100.0) {
             throw PolicyValidationException.beneficiariesPercentSumNot100;
+        }
+    }
+
+    private static void checkPremiumsData(PremiumsDataLifeInsurance premiumsData, LocalDate startDate) throws PolicyValidationException, QuoteCalculationException {
+        if (premiumsData == null) {
+            throw PolicyValidationException.premiumnsDataNone;
+        } else if (premiumsData.getLifeInsuranceSumInsured() == null) {
+            throw PolicyValidationException.premiumnsDataNoSumInsured;
+        } else if (premiumsData.getLifeInsuranceSumInsured().getCurrencyCode() == null) {
+            throw PolicyValidationException.premiumnsSumInsuredNoCurrency;
+        } else if (premiumsData.getLifeInsuranceSumInsured().getValue() == null) {
+            throw PolicyValidationException.premiumnsSumInsuredNoAmount;
+        }
+        checkSumInsured(premiumsData);
+        checkDatedAmounts(premiumsData.getLifeInsuranceAverageExtraDividende(), startDate);
+        checkDatedAmounts(premiumsData.getLifeInsuranceAverageYearlyReturns(), startDate);
+        checkDatedAmounts(premiumsData.getLifeInsuranceMaximumExtraDividende(), startDate);
+        checkDatedAmounts(premiumsData.getLifeInsuranceMaximumYearlyReturns(), startDate);
+        checkDatedAmounts(premiumsData.getLifeInsuranceMinimumExtraDividende(), startDate);
+        checkDatedAmounts(premiumsData.getLifeInsuranceMinimumYearlyReturns(), startDate);
+        checkDatedAmounts(premiumsData.getLifeInsuranceYearlyCashBacks(), startDate);
+    }
+
+    private static void checkSumInsured(PremiumsDataLifeInsurance premiumsData) throws QuoteCalculationException {
+        if (premiumsData.getLifeInsuranceSumInsured().getCurrencyCode().equalsIgnoreCase(PRODUCT_10_EC_CURRENCY)
+                && premiumsData.getLifeInsuranceSumInsured().getValue() > 1000000.0) {
+            throw sumInsuredTooHighException;
+        } else if (premiumsData.getLifeInsuranceSumInsured().getCurrencyCode().equalsIgnoreCase(PRODUCT_10_EC_CURRENCY)
+                && premiumsData.getLifeInsuranceSumInsured().getValue() < 200000.0) {
+            throw sumInsuredTooLowException;
+        }
+    }
+
+    private static void checkDatedAmounts(List<DatedAmount> datedAmounts, LocalDate startDate) throws PolicyValidationException {
+        List<LocalDate> allowedDates = new ArrayList<>();
+        IntStream.range(0, 10).forEach(value -> allowedDates.add(startDate.plus(value + 1, YEARS)));
+        List<LocalDate> filteredDates = datedAmounts.stream().map(DatedAmount::getDate).filter(date -> !allowedDates.contains(date)).collect(toList());
+        if (datedAmounts == null) {
+            throw PolicyValidationException.premiumnsCalculatedAmountEmpty;
+        } else if (datedAmounts.size() != DURATION_IN_YEAR) {
+            throw PolicyValidationException.premiumnsCalculatedAmountNotFor10Years;
+        } else if (datedAmounts.stream().anyMatch(datedAmount -> datedAmount.getCurrencyCode() == null)) {
+            throw PolicyValidationException.premiumnsCalculatedAmountNoCurrency;
+        } else if (datedAmounts.stream().anyMatch(datedAmount -> datedAmount.getDate() == null)) {
+            throw PolicyValidationException.premiumnsCalculatedAmountNoDate;
+        } else if (datedAmounts.stream().anyMatch(datedAmount -> datedAmount.getDate().isBefore(LocalDate.now()))) {
+            throw PolicyValidationException.premiumnsCalculatedAmountDateInThePast;
+        } else if (datedAmounts.stream().anyMatch(datedAmount -> datedAmount.getValue() == null)) {
+            throw PolicyValidationException.premiumnsCalculatedAmountNoAmount;
+        } else if (filteredDates.size() != 0) {
+            throw PolicyValidationException.premiumnsCalculatedAmountInvalidDate.apply(filteredDates.stream().map(LocalDate::toString).collect(joining(", ")));
         }
     }
 
@@ -234,6 +301,8 @@ public class Product10EC {
             throw PolicyValidationException.mainInsuredWithNoEmail;
         } else if (insured.getPerson().getGeographicalAddress() == null) {
             throw PolicyValidationException.mainInsuredWithNoGeographicalAddress;
+        } else if (!insured.getStartDate().equals(LocalDate.now())) {
+            throw PolicyValidationException.startDateNotServerDate;
         }
 
         if (insured.getPerson().getHomePhoneNumber() == null && insured.getPerson().getMobilePhoneNumber() == null) {
@@ -296,11 +365,11 @@ public class Product10EC {
         Amount sumInsured = quote.getPremiumsData().getLifeInsuranceSumInsured();
         LocalDate endDate = quote.getPremiumsData().getFinancialScheduler().getEndDate();
         Double latestAmout = 0.0;
-        for (int i = 1; i <= 10; i++) {
+        for (int i = 1; i <= DURATION_IN_YEAR; i++) {
             Double interest = sumInsured.getValue() * dvdFunction.apply(i) / 1000;
             DatedAmount datedAmount = new DatedAmount();
             datedAmount.setCurrencyCode(sumInsured.getCurrencyCode());
-            datedAmount.setDate(endDate.minus(10 - i, ChronoUnit.YEARS));
+            datedAmount.setDate(endDate.minus(DURATION_IN_YEAR - i, YEARS));
             if (percentRate != null) {
                 latestAmout = (double) Math.round(interest + latestAmout + (latestAmout * percentRate) / 1000);
                 datedAmount.setValue(latestAmout);
@@ -309,6 +378,7 @@ public class Product10EC {
             }
             result.add(datedAmount);
         }
+        Collections.sort(result);
         return result;
     }
 

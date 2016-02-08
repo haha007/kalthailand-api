@@ -1,11 +1,15 @@
 package th.co.krungthaiaxa.ebiz.api.exception;
 
+import java.util.function.Function;
+
 public class PolicyValidationException extends Exception {
 
     public static PolicyValidationException product10ECExpected = new PolicyValidationException("Product 10 EC is expected to do validation.");
 
     public static PolicyValidationException emptyQuote = new PolicyValidationException("Policy needs a quote to be created.");
     public static PolicyValidationException noneExistingQuote = new PolicyValidationException("The quote to create the policy from does not exist.");
+
+    public static PolicyValidationException startDateNotServerDate = new PolicyValidationException("The start date of the policy must be day of registration.");
 
     public static PolicyValidationException noInsured = new PolicyValidationException("There is no insured for the policy.");
     public static PolicyValidationException noMainInsured = new PolicyValidationException("There is no main insured person for the policy.");
@@ -49,6 +53,20 @@ public class PolicyValidationException extends Exception {
 
     public static PolicyValidationException coverageExpected = new PolicyValidationException("Policy has no coverage.");
     public static PolicyValidationException coverageMoreThanOne = new PolicyValidationException("Policy has more than one coverage.");
+
+    public static PolicyValidationException premiumnsDataNone = new PolicyValidationException("Policy has no premium data.");
+    public static PolicyValidationException premiumnsDataNoSumInsured = new PolicyValidationException("Policy has no sum insured.");
+    public static PolicyValidationException premiumnsSumInsuredNoCurrency = new PolicyValidationException("Policy has a sum insured without currency.");
+    public static PolicyValidationException premiumnsSumInsuredNoAmount = new PolicyValidationException("Policy has a sum insured without amount.");
+
+    public static PolicyValidationException premiumnsCalculatedAmountEmpty = new PolicyValidationException("Policy is missing premium calculations.");
+    public static PolicyValidationException premiumnsCalculatedAmountNoCurrency = new PolicyValidationException("Policy has a calculated premium with no currency.");
+    public static PolicyValidationException premiumnsCalculatedAmountNoDate = new PolicyValidationException("Policy has a calculated premium with no date.");
+    public static PolicyValidationException premiumnsCalculatedAmountDateInThePast = new PolicyValidationException("Policy has a calculated premium with a date in the past.");
+    public static PolicyValidationException premiumnsCalculatedAmountNoAmount = new PolicyValidationException("Policy has a calculated premium with no amount.");
+    public static Function<String, PolicyValidationException> premiumnsCalculatedAmountInvalidDate = msg -> new PolicyValidationException("Policy has a calculated premium date [" + msg + "] which is invalid date.");
+    public static PolicyValidationException premiumnsCalculatedAmountNotFor10Years = new PolicyValidationException("Policy has calculated premiums for a number of years not compatible with contract duration.");
+
 
     private PolicyValidationException(String message) {
         super(message);
