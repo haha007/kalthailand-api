@@ -15,13 +15,15 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 
+import static java.time.temporal.ChronoUnit.MONTHS;
 import static java.time.temporal.ChronoUnit.YEARS;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static th.co.krungthaiaxa.ebiz.api.exception.QuoteCalculationException.*;
 
 public class Product10EC {
-    public final static int DURATION_IN_YEAR = 10;
+    public final static int DURATION_COVERAGE_IN_YEAR = 10;
+    public final static int DURATION_PAYMENT_IN_YEAR = 6;
     public final static String PRODUCT_10_EC_NAME = "10 EC";
     public final static String PRODUCT_10_EC_CURRENCY = "THB";
 
@@ -29,7 +31,7 @@ public class Product10EC {
     private static Function<Integer, Integer> dvdRate = numberOfYearsOfContract -> {
         if (numberOfYearsOfContract >= 1 && numberOfYearsOfContract <= 9) {
             return 20;
-        } else if (numberOfYearsOfContract == DURATION_IN_YEAR) {
+        } else if (numberOfYearsOfContract == DURATION_COVERAGE_IN_YEAR) {
             return 1820;
         } else {
             return 0;
@@ -43,7 +45,7 @@ public class Product10EC {
     private static Function<Integer, Integer> averageExtraDvdRate = numberOfYearsOfContract -> {
         if (numberOfYearsOfContract >= 7 && numberOfYearsOfContract <= 9) {
             return 15;
-        } else if (numberOfYearsOfContract == DURATION_IN_YEAR) {
+        } else if (numberOfYearsOfContract == DURATION_COVERAGE_IN_YEAR) {
             return 165;
         } else {
             return 0;
@@ -53,7 +55,7 @@ public class Product10EC {
     private static Function<Integer, Integer> maximumExtraDvdRate = numberOfYearsOfContract -> {
         if (numberOfYearsOfContract >= 7 && numberOfYearsOfContract <= 9) {
             return 18;
-        } else if (numberOfYearsOfContract == DURATION_IN_YEAR) {
+        } else if (numberOfYearsOfContract == DURATION_COVERAGE_IN_YEAR) {
             return 198;
         } else {
             return 0;
@@ -123,7 +125,7 @@ public class Product10EC {
 
         // Set dates based on current date and product duration
         LocalDate startDate = LocalDate.now(ZoneId.of(ZoneId.SHORT_IDS.get("VST")));
-        LocalDate endDate = startDate.plus(DURATION_IN_YEAR, YEARS);
+        LocalDate endDate = startDate.plus(DURATION_COVERAGE_IN_YEAR, YEARS);
         quote.getInsureds().stream().filter(Insured::getMainInsuredIndicator).findFirst().get().setStartDate(startDate);
         quote.getInsureds().stream().filter(Insured::getMainInsuredIndicator).findFirst().get().setEndDate(endDate);
         quote.getPremiumsData().getFinancialScheduler().setEndDate(endDate);
@@ -168,23 +170,46 @@ public class Product10EC {
         checkCommonData(quote.getCommonData());
         checkInsured(quote);
         checkPerson(quote);
-        checkMainInsuredAge(quote.getInsureds().stream().filter(Insured::getMainInsuredIndicator).findFirst().get());
-        checkMainInsured(quote.getInsureds().stream().filter(Insured::getMainInsuredIndicator).findFirst().get());
+
+        // There is only one insured at this point
+        Insured insured = quote.getInsureds().get(0);
+
+        // check main insured stuff
+        checkMainInsuredAge(insured);
+        checkMainInsured(insured);
 
         // Recalculate the quote
         quote = calculateQuote(quote);
 
         // check for calculated data
         checkCoverage(quote.getCoverages());
-        checkBeneficiaries(quote.getCoverages().get(0).getBeneficiaries()); // There is only one coerage at this point
-        checkPremiumsData(quote.getPremiumsData(), quote.getInsureds().get(0).getStartDate());
+
+        // There is only one coverage at this point
+        Coverage coverage = quote.getCoverages().get(0);
+
+        checkBeneficiaries(coverage.getBeneficiaries());
+        checkPremiumsData(quote.getPremiumsData(), insured.getStartDate());
 
         // Copy from quote to Policy
         policy.setQuoteFunctionalId(quote.getQuoteId());
         policy.setCommonData(SerializationUtils.clone(quote.getCommonData()));
         policy.setPremiumsData(SerializationUtils.clone(quote.getPremiumsData()));
-        quote.getCoverages().stream().forEach(coverage -> policy.addCoverage(SerializationUtils.clone(coverage)));
-        quote.getInsureds().stream().forEach(insured -> policy.addInsured(SerializationUtils.clone(insured)));
+        policy.addCoverage(SerializationUtils.clone(coverage));
+        policy.addInsured(SerializationUtils.clone(insured));
+
+        // Add future payment schedule
+        addPayments(policy);
+    }
+
+    private static void addPayments(Policy policy) {
+        LocalDate startDate = policy.getInsureds().get(0).getStartDate();
+
+        PeriodicityCode periodicityCode = policy.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode();
+        Double amountValue = policy.getPremiumsData().getFinancialScheduler().getModalAmount().getValue();
+        String amountCurrency = policy.getPremiumsData().getFinancialScheduler().getModalAmount().getCurrencyCode();
+        int nbOfPayments = (12 / periodicityCode.getNbOfMonths()) * DURATION_PAYMENT_IN_YEAR;
+
+        IntStream.range(0, nbOfPayments).forEach(i -> policy.addPayment(new Payment(amountValue, amountCurrency, startDate.plus(i * periodicityCode.getNbOfMonths(), MONTHS))));
     }
 
     private static void checkCommonData(CommonData commonData) throws PolicyValidationException {
@@ -249,7 +274,7 @@ public class Product10EC {
         List<LocalDate> filteredDates = datedAmounts.stream().map(DatedAmount::getDate).filter(date -> !allowedDates.contains(date)).collect(toList());
         if (datedAmounts == null) {
             throw PolicyValidationException.premiumnsCalculatedAmountEmpty;
-        } else if (datedAmounts.size() != DURATION_IN_YEAR) {
+        } else if (datedAmounts.size() != DURATION_COVERAGE_IN_YEAR) {
             throw PolicyValidationException.premiumnsCalculatedAmountNotFor10Years;
         } else if (datedAmounts.stream().anyMatch(datedAmount -> datedAmount.getCurrencyCode() == null)) {
             throw PolicyValidationException.premiumnsCalculatedAmountNoCurrency;
@@ -365,11 +390,11 @@ public class Product10EC {
         Amount sumInsured = quote.getPremiumsData().getLifeInsuranceSumInsured();
         LocalDate endDate = quote.getPremiumsData().getFinancialScheduler().getEndDate();
         Double latestAmout = 0.0;
-        for (int i = 1; i <= DURATION_IN_YEAR; i++) {
+        for (int i = 1; i <= DURATION_COVERAGE_IN_YEAR; i++) {
             Double interest = sumInsured.getValue() * dvdFunction.apply(i) / 1000;
             DatedAmount datedAmount = new DatedAmount();
             datedAmount.setCurrencyCode(sumInsured.getCurrencyCode());
-            datedAmount.setDate(endDate.minus(DURATION_IN_YEAR - i, YEARS));
+            datedAmount.setDate(endDate.minus(DURATION_COVERAGE_IN_YEAR - i, YEARS));
             if (percentRate != null) {
                 latestAmout = (double) Math.round(interest + latestAmout + (latestAmout * percentRate) / 1000);
                 datedAmount.setValue(latestAmout);

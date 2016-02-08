@@ -8,13 +8,16 @@ import th.co.krungthaiaxa.ebiz.api.model.enums.*;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static java.time.LocalDate.now;
 import static java.time.ZoneId.SHORT_IDS;
 import static java.time.ZoneId.of;
+import static java.time.temporal.ChronoUnit.MONTHS;
 import static java.time.temporal.ChronoUnit.YEARS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -301,7 +304,7 @@ public class Product10ECTest {
         quote = calculateQuote(quote);
 
         LocalDate startDate = now(of(SHORT_IDS.get("VST")));
-        LocalDate endDate = startDate.plus(DURATION_IN_YEAR, YEARS);
+        LocalDate endDate = startDate.plus(DURATION_COVERAGE_IN_YEAR, YEARS);
         assertThat(quote.getInsureds().get(0).getStartDate()).isEqualTo(startDate);
         assertThat(quote.getInsureds().get(0).getEndDate()).isEqualTo(endDate);
         assertThat(quote.getPremiumsData().getFinancialScheduler().getEndDate()).isEqualTo(endDate);
@@ -1114,6 +1117,86 @@ public class Product10ECTest {
         assertThat(policy.getInsureds()).isEqualTo(quote.getInsureds());
     }
 
+    @Test
+    public void should_get_6_payments_when_choosing_yearly_schedule() throws Exception {
+        final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), beneficiary(100.0));
+
+        Policy policy = new Policy();
+        getPolicyFromQuote(policy, quote);
+        LocalDate startDate = policy.getInsureds().get(0).getStartDate();
+        List<LocalDate> allowedDates = new ArrayList<>();
+        IntStream.range(0, 6).forEach(value -> allowedDates.add(startDate.plus(value, YEARS)));
+
+        assertThat(policy.getPayments()).hasSize(6);
+        assertThat(policy.getPayments()).extracting("dueDate").containsOnly(allowedDates.toArray());
+        assertThat(policy.getPayments()).extracting("status").containsOnly(PaymentStatus.FUTURE);
+        assertThat(policy.getPayments()).extracting("effectiveDate").containsNull();
+        assertThat(policy.getPayments()).extracting("amount").extracting("currencyCode").containsOnly(policy.getPremiumsData().getFinancialScheduler().getModalAmount().getCurrencyCode());
+        assertThat(policy.getPayments()).extracting("amount").extracting("value").containsOnly(policy.getPremiumsData().getFinancialScheduler().getModalAmount().getValue());
+        assertThat(policy.getPayments()).extracting("registrationKey").containsNull();
+        assertThat(policy.getPayments()).extracting("paymentInformations").containsNull();
+    }
+
+    @Test
+    public void should_get_12_payments_when_choosing_half_year_schedule() throws Exception {
+        final Quote quote = quote(EVERY_HALF_YEAR, insured(25, TRUE), beneficiary(100.0));
+
+        Policy policy = new Policy();
+        getPolicyFromQuote(policy, quote);
+        LocalDate startDate = policy.getInsureds().get(0).getStartDate();
+        List<LocalDate> allowedDates = new ArrayList<>();
+        IntStream.range(0, 12).forEach(value -> allowedDates.add(startDate.plus(value * 6, MONTHS)));
+
+        assertThat(policy.getPayments()).hasSize(12);
+        assertThat(policy.getPayments()).extracting("dueDate").containsOnly(allowedDates.toArray());
+        assertThat(policy.getPayments()).extracting("status").containsOnly(PaymentStatus.FUTURE);
+        assertThat(policy.getPayments()).extracting("effectiveDate").containsNull();
+        assertThat(policy.getPayments()).extracting("amount").extracting("currencyCode").containsOnly(policy.getPremiumsData().getFinancialScheduler().getModalAmount().getCurrencyCode());
+        assertThat(policy.getPayments()).extracting("amount").extracting("value").containsOnly(policy.getPremiumsData().getFinancialScheduler().getModalAmount().getValue());
+        assertThat(policy.getPayments()).extracting("registrationKey").containsNull();
+        assertThat(policy.getPayments()).extracting("paymentInformations").containsNull();
+    }
+
+    @Test
+    public void should_get_24_payments_when_choosing_quarter_schedule() throws Exception {
+        final Quote quote = quote(EVERY_QUARTER, insured(25, TRUE), beneficiary(100.0));
+
+        Policy policy = new Policy();
+        getPolicyFromQuote(policy, quote);
+        LocalDate startDate = policy.getInsureds().get(0).getStartDate();
+        List<LocalDate> allowedDates = new ArrayList<>();
+        IntStream.range(0, 24).forEach(value -> allowedDates.add(startDate.plus(value * 3, MONTHS)));
+
+        assertThat(policy.getPayments()).hasSize(24);
+        assertThat(policy.getPayments()).extracting("dueDate").containsOnly(allowedDates.toArray());
+        assertThat(policy.getPayments()).extracting("status").containsOnly(PaymentStatus.FUTURE);
+        assertThat(policy.getPayments()).extracting("effectiveDate").containsNull();
+        assertThat(policy.getPayments()).extracting("amount").extracting("currencyCode").containsOnly(policy.getPremiumsData().getFinancialScheduler().getModalAmount().getCurrencyCode());
+        assertThat(policy.getPayments()).extracting("amount").extracting("value").containsOnly(policy.getPremiumsData().getFinancialScheduler().getModalAmount().getValue());
+        assertThat(policy.getPayments()).extracting("registrationKey").containsNull();
+        assertThat(policy.getPayments()).extracting("paymentInformations").containsNull();
+    }
+
+    @Test
+    public void should_get_72_payments_when_choosing_monthly_schedule() throws Exception {
+        final Quote quote = quote(EVERY_MONTH, insured(25, TRUE), beneficiary(100.0));
+
+        Policy policy = new Policy();
+        getPolicyFromQuote(policy, quote);
+        LocalDate startDate = policy.getInsureds().get(0).getStartDate();
+        List<LocalDate> allowedDates = new ArrayList<>();
+        IntStream.range(0, 72).forEach(value -> allowedDates.add(startDate.plus(value, MONTHS)));
+
+        assertThat(policy.getPayments()).hasSize(72);
+        assertThat(policy.getPayments()).extracting("dueDate").containsOnly(allowedDates.toArray());
+        assertThat(policy.getPayments()).extracting("status").containsOnly(PaymentStatus.FUTURE);
+        assertThat(policy.getPayments()).extracting("effectiveDate").containsNull();
+        assertThat(policy.getPayments()).extracting("amount").extracting("currencyCode").containsOnly(policy.getPremiumsData().getFinancialScheduler().getModalAmount().getCurrencyCode());
+        assertThat(policy.getPayments()).extracting("amount").extracting("value").containsOnly(policy.getPremiumsData().getFinancialScheduler().getModalAmount().getValue());
+        assertThat(policy.getPayments()).extracting("registrationKey").containsNull();
+        assertThat(policy.getPayments()).extracting("paymentInformations").containsNull();
+    }
+
     private static Quote quote(PeriodicityCode periodicityCode, Insured insured, CoverageBeneficiary... beneficiaries) {
         Amount amount = new Amount();
         amount.setCurrencyCode("THB");
@@ -1161,11 +1244,11 @@ public class Product10ECTest {
         insured.setAgeAtSubscription(ageAtSubscription);
         insured.setDeclaredTaxPercentAtSubscription(5);
         insured.setDisableOrImmunoDeficient(FALSE);
-        insured.setEndDate(LocalDate.now().plus(10, ChronoUnit.YEARS));
+        insured.setEndDate(now().plus(10, ChronoUnit.YEARS));
         insured.setHospitalizedInLast6Months(FALSE);
         insured.setMainInsuredIndicator(mainInsured);
         insured.setProfessionName("Something");
-        insured.setStartDate(LocalDate.now());
+        insured.setStartDate(now());
         insured.setType(InsuredType.Insured);
 
         GeographicalAddress geographicalAddress = new GeographicalAddress();

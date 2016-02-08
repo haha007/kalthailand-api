@@ -16,6 +16,14 @@ public class Payment {
     private String registrationKey;
     private List<PaymentInformation> paymentInformations;
 
+    public Payment(Double value, String currencyCode, LocalDate dueDate) {
+        this.status = PaymentStatus.FUTURE;
+        this.dueDate = dueDate;
+        this.amount = new Amount();
+        amount.setValue(value);
+        amount.setCurrencyCode(currencyCode);
+    }
+
     @ApiModelProperty(required = true, value = "Status of the payment")
     public PaymentStatus getStatus() {
         return status;
