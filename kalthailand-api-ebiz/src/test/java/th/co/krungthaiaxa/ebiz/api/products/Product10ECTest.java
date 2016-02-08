@@ -28,7 +28,7 @@ import static th.co.krungthaiaxa.ebiz.api.exception.QuoteCalculationException.*;
 import static th.co.krungthaiaxa.ebiz.api.model.enums.PaymentStatus.FUTURE;
 import static th.co.krungthaiaxa.ebiz.api.model.enums.PeriodicityCode.*;
 import static th.co.krungthaiaxa.ebiz.api.products.Product10EC.*;
-import static th.co.krungthaiaxa.ebiz.api.resource.ResourceTestUtil.*;
+import static th.co.krungthaiaxa.ebiz.api.resource.TestUtil.*;
 
 public class Product10ECTest {
 

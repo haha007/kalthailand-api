@@ -31,7 +31,7 @@ import static org.springframework.http.HttpStatus.NOT_ACCEPTABLE;
 import static org.springframework.http.HttpStatus.OK;
 import static th.co.krungthaiaxa.ebiz.api.model.enums.PeriodicityCode.EVERY_QUARTER;
 import static th.co.krungthaiaxa.ebiz.api.model.error.ErrorCode.POLICY_CANNOT_BE_CREATED;
-import static th.co.krungthaiaxa.ebiz.api.resource.ResourceTestUtil.*;
+import static th.co.krungthaiaxa.ebiz.api.resource.TestUtil.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiApplication.class)
@@ -62,7 +62,7 @@ public class PolicyResourceTest {
 
         ResponseEntity<String> response = template.postForEntity(base, parameters, String.class);
         assertThat(response.getStatusCode().value()).isEqualTo(NOT_ACCEPTABLE.value());
-        Error error = ResourceTestUtil.getErrorFromJSon(response.getBody());
+        Error error = TestUtil.getErrorFromJSon(response.getBody());
         assertThat(error.getCode()).isEqualTo(POLICY_CANNOT_BE_CREATED.apply("").getCode());
     }
 
@@ -74,7 +74,7 @@ public class PolicyResourceTest {
 
         ResponseEntity<String> response = template.postForEntity(base, parameters, String.class);
         assertThat(response.getStatusCode().value()).isEqualTo(OK.value());
-        Policy policy = ResourceTestUtil.getPolicyFromJSon(response.getBody());
+        Policy policy = TestUtil.getPolicyFromJSon(response.getBody());
 
         // check database values
         Policy savedPolicy = policyRepository.findOne(policy.getTechnicalId());

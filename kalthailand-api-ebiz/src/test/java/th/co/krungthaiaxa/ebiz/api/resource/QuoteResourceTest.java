@@ -40,21 +40,21 @@ import static org.springframework.util.StringUtils.replace;
 @ActiveProfiles("dev")
 @IntegrationTest({"server.port=0"})
 public class QuoteResourceTest {
-	@Value("${local.server.port}")
-	private int port;
-	private URI base;
-	private RestTemplate template;
+    @Value("${local.server.port}")
+    private int port;
+    private URI base;
+    private RestTemplate template;
 
     @Inject
     private SessionQuoteRepository sessionQuoteRepository;
     @Inject
     private QuoteRepository quoteRepository;
 
-	@Before
-	public void setUp() throws Exception {
-		base = new URI("http://localhost:" + port + "/quotes");
-		template = new TestRestTemplate();
-	}
+    @Before
+    public void setUp() throws Exception {
+        base = new URI("http://localhost:" + port + "/quotes");
+        template = new TestRestTemplate();
+    }
 
     @Test
     public void should_return_an_empty_quote_object() throws IOException {
@@ -64,7 +64,7 @@ public class QuoteResourceTest {
 
         ResponseEntity<String> response = template.postForEntity(base, parameters, String.class);
         assertThat(response.getStatusCode().value()).isEqualTo(OK.value());
-        Quote quote = ResourceTestUtil.getQuoteFromJSon(response.getBody());
+        Quote quote = TestUtil.getQuoteFromJSon(response.getBody());
         assertThat(quote).isNotNull();
         assertThat(quote.getPremiumsData()).isNotNull();
         assertThat(quote.getPremiumsData().getFinancialScheduler()).isNotNull();
@@ -84,7 +84,7 @@ public class QuoteResourceTest {
 
         ResponseEntity<String> creationResponse = template.postForEntity(base, creationParameters, String.class);
         assertThat(creationResponse.getStatusCode().value()).isEqualTo(OK.value());
-        Quote quote = ResourceTestUtil.getQuoteFromJSon(creationResponse.getBody());
+        Quote quote = TestUtil.getQuoteFromJSon(creationResponse.getBody());
         assertThat(quote).isNotNull();
 
         String technicalQuoteId = quote.getTechnicalId();
@@ -113,7 +113,7 @@ public class QuoteResourceTest {
         assertThat(savedQuote.getInsureds().get(0).getPerson().getGenderCode()).isEqualTo(GenderCode.MALE);
 
         //check returned JSon
-        quote = ResourceTestUtil.getQuoteFromJSon(updateResponse.getBody());
+        quote = TestUtil.getQuoteFromJSon(updateResponse.getBody());
         assertThat(quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode()).isEqualTo(PeriodicityCode.EVERY_MONTH);
         assertThat(quote.getInsureds().get(0).getPerson().getGenderCode()).isEqualTo(GenderCode.MALE);
     }

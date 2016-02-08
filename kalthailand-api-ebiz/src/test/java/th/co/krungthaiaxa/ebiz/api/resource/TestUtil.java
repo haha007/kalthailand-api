@@ -6,6 +6,8 @@ import th.co.krungthaiaxa.ebiz.api.model.error.Error;
 import th.co.krungthaiaxa.ebiz.api.utils.JsonUtil;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 
 import static java.lang.Boolean.FALSE;
@@ -14,7 +16,7 @@ import static java.time.LocalDate.now;
 import static java.time.temporal.ChronoUnit.YEARS;
 import static th.co.krungthaiaxa.ebiz.api.products.Product10EC.PRODUCT_10_EC_NAME;
 
-public class ResourceTestUtil {
+public class TestUtil {
 
     public static String getJSon(Object object) throws IOException {
         return JsonUtil.mapper.writeValueAsString(object);
@@ -150,4 +152,7 @@ public class ResourceTestUtil {
         return insured;
     }
 
+    public static Payment payment(Double value, String currencyCode) {
+        return new Payment(value, currencyCode, LocalDate.now(ZoneId.of(ZoneId.SHORT_IDS.get("VST"))));
+    }
 }

@@ -61,7 +61,7 @@ public class WatermarkResourceTest {
         ResponseEntity<String> response = template.postForEntity(base, map, String.class);
         assertThat(response.getStatusCode().value()).isEqualTo(BAD_REQUEST.value());
 
-        Error error = ResourceTestUtil.getErrorFromJSon(response.getBody());
+        Error error = TestUtil.getErrorFromJSon(response.getBody());
         assertThat(error.getCode()).isEqualTo(ErrorCode.WATERMARK_IMAGE_INPUT_NOT_READABLE.getCode());
     }
 
