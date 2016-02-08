@@ -4,12 +4,15 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 @ApiModel(description = "Data concerning the policy")
+@Document
 public class Policy {
     @Id
     private String technicalId;
@@ -21,6 +24,7 @@ public class Policy {
     private PremiumsDataLifeInsurance premiumsData;
     private List<Insured> insureds = new ArrayList<>();
     private List<Coverage> coverages = new ArrayList<>();
+    @DBRef
     private List<Payment> payments = new ArrayList<>();
 
     @ApiModelProperty(required = true, value = "Technical ID of the policy. This should not be displayed to user")

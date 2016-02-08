@@ -7,6 +7,7 @@ import th.co.krungthaiaxa.ebiz.api.model.Payment;
 import th.co.krungthaiaxa.ebiz.api.model.Policy;
 import th.co.krungthaiaxa.ebiz.api.model.Quote;
 import th.co.krungthaiaxa.ebiz.api.products.Product10EC;
+import th.co.krungthaiaxa.ebiz.api.repository.PaymentRepository;
 import th.co.krungthaiaxa.ebiz.api.repository.PolicyRepository;
 import th.co.krungthaiaxa.ebiz.api.repository.QuoteRepository;
 
@@ -15,11 +16,13 @@ import javax.inject.Inject;
 @Service
 public class PolicyService {
 
+    private final PaymentRepository paymentRepository;
     private final PolicyRepository policyRepository;
     private final QuoteRepository quoteRepository;
 
     @Inject
-    public PolicyService(PolicyRepository policyRepository, QuoteRepository quoteRepository) {
+    public PolicyService(PaymentRepository paymentRepository, PolicyRepository policyRepository, QuoteRepository quoteRepository) {
+        this.paymentRepository = paymentRepository;
         this.policyRepository = policyRepository;
         this.quoteRepository = quoteRepository;
     }
@@ -41,6 +44,7 @@ public class PolicyService {
             policy.setPolicyId(RandomStringUtils.randomNumeric(20));
             // Only one product so far
             Product10EC.getPolicyFromQuote(policy, quote);
+            policy.getPayments().stream().forEach(paymentRepository::save);
             policy = policyRepository.save(policy);
         }
 

@@ -4,12 +4,14 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @ApiModel(description = "This is the description of a quote and only a quote. It holds all properties gathered from " +
         "user before the quote got transformed into a Policy")
+@Document
 public class Quote {
     @Id
     private String technicalId;

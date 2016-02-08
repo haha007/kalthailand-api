@@ -2,13 +2,18 @@ package th.co.krungthaiaxa.ebiz.api.model;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 import th.co.krungthaiaxa.ebiz.api.model.enums.PaymentStatus;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @ApiModel(description = "Data concerning the payment")
+@Document
 public class Payment {
+    @Id
+    private String paymentId;
     private PaymentStatus status;
     private LocalDate dueDate;
     private LocalDate effectiveDate;
@@ -26,6 +31,15 @@ public class Payment {
         this.amount = new Amount();
         amount.setValue(value);
         amount.setCurrencyCode(currencyCode);
+    }
+
+    @ApiModelProperty(required = true, value = "The payment Id")
+    public String getPaymentId() {
+        return paymentId;
+    }
+
+    public void setPaymentId(String paymentId) {
+        this.paymentId = paymentId;
     }
 
     @ApiModelProperty(required = true, value = "Status of the payment")
