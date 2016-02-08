@@ -20,7 +20,7 @@ public class ErrorCode {
     public static final Error INVALID_QUOTE_PROVIDED = new Error("30001", "Unable to update your quote", "The quote provided as JSon is not a valid quote, probably an incompatibility between mobile and server");
     public static final Error NO_QUOTE_IN_SESSION = new Error("30002", "You don't have a saved quote", "There is no quote with the given session id");
     // Policy
-    public static final Error INVALID_POLICY_PROVIDED = new Error("40001", "Unable to create your policy", "The policy provided as JSon is not a valid policy, probably an incompatibility between mobile and server");
+    public static final Error POLICY_DOES_NOT_EXIST = new Error("40001", "The policy does not exist", "The policy does not exist");
     public static final Function<String, Error> POLICY_CANNOT_BE_CREATED = msg -> new Error("40002", "Unable to create your policy. Error is: " + msg, "The policy could not be created out of the quote for validation reasons");
     // Line token decryption
     public static final Error UNABLE_TO_DECRYPT = new Error("50001", "Unable to get your user ID", "The provided text could not be decrypted");

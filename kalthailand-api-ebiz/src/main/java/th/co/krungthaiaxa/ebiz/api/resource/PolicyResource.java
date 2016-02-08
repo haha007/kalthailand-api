@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import th.co.krungthaiaxa.ebiz.api.model.Payment;
 import th.co.krungthaiaxa.ebiz.api.model.Policy;
 import th.co.krungthaiaxa.ebiz.api.model.Quote;
 import th.co.krungthaiaxa.ebiz.api.model.error.Error;
@@ -20,8 +21,7 @@ import java.io.IOException;
 import static org.springframework.http.HttpStatus.NOT_ACCEPTABLE;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
-import static org.springframework.web.bind.annotation.RequestMethod.PUT;
+import static org.springframework.web.bind.annotation.RequestMethod.*;
 import static th.co.krungthaiaxa.ebiz.api.model.error.ErrorCode.*;
 
 @RestController
@@ -62,25 +62,42 @@ public class PolicyResource {
         return new ResponseEntity<>(JsonUtil.getJson(policy), OK);
     }
 
-    @ApiOperation(value = "Updates a policy", notes = "Updates a policy to save additional information like payment methods", response = Policy.class)
+    @ApiOperation(value = "Policy payments", notes = "Get the payments of a policy", response = Payment.class, responseContainer = "List")
     @ApiResponses({
             @ApiResponse(code = 406, message = "If either JSon is invalid or there is no quote in the given session", response = Error.class)
     })
-    @RequestMapping(value = "/policies", produces = APPLICATION_JSON_VALUE, method = PUT)
+    @RequestMapping(value = "/policies/{policyId}/payments", produces = APPLICATION_JSON_VALUE, method = GET)
     @ResponseBody
-    public ResponseEntity updatePolicy(
-            @ApiParam(value = "The json of the policy. This policy will be updated with given values")
-            @RequestParam String jsonPolicy) {
+    public ResponseEntity getPolicyPayments(
+            @ApiParam(value = "The policy ID")
+            @RequestParam String policyId) {
         Policy policy;
         try {
-            policy = JsonUtil.mapper.readValue(jsonPolicy, Policy.class);
-        } catch (IOException e) {
-            logger.error("Unable to get a policy out of [" + jsonPolicy + "]", e);
-            return new ResponseEntity<>(INVALID_POLICY_PROVIDED, NOT_ACCEPTABLE);
+            policy = policyService.findPolicy(policyId);
+        } catch (Exception e) {
+            logger.error("Unable to find the policy with ID [" + policyId + "]", e);
+            return new ResponseEntity<>(POLICY_DOES_NOT_EXIST, NOT_ACCEPTABLE);
         }
+        return new ResponseEntity<>(JsonUtil.getJson(policy.getPayments()), OK);
+    }
 
-        Policy updatedPolicy = policyService.update(policy);
-        return new ResponseEntity<>(JsonUtil.getJson(updatedPolicy), OK);
+    @ApiOperation(value = "Update Policy payment", notes = "Updates a specific payment of a Policy", response = Payment.class)
+    @ApiResponses({
+            @ApiResponse(code = 406, message = "If either JSon is invalid or there is no quote in the given session", response = Error.class)
+    })
+    @RequestMapping(value = "/policies/{policyId}/payments/{paymentId}", produces = APPLICATION_JSON_VALUE, method = PUT)
+    @ResponseBody
+    public ResponseEntity updatePolicyPayment(
+            @ApiParam(value = "The policy ID")
+            @RequestParam String policyId) {
+        Policy policy;
+        try {
+            policy = policyService.findPolicy(policyId);
+        } catch (Exception e) {
+            logger.error("Unable to find the policy with ID [" + policyId + "]", e);
+            return new ResponseEntity<>(POLICY_DOES_NOT_EXIST, NOT_ACCEPTABLE);
+        }
+        return new ResponseEntity<>(JsonUtil.getJson(policy.getPayments()), OK);
     }
 
 }

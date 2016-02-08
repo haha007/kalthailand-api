@@ -11,11 +11,16 @@ public class PolicyValidationException extends Exception {
 
     public static PolicyValidationException startDateNotServerDate = new PolicyValidationException("The start date of the policy must be day of registration.");
 
-    public static PolicyValidationException noInsured = new PolicyValidationException("There is no insured for the policy.");
-    public static PolicyValidationException noMainInsured = new PolicyValidationException("There is no main insured person for the policy.");
-    public static PolicyValidationException insuredWithNoMainInsured = new PolicyValidationException("At least one insured has no main insured indicator.");
-    public static PolicyValidationException insuredWithNoType = new PolicyValidationException("At least one insured has no insured type.");
+    public static PolicyValidationException noInsured = new PolicyValidationException("There is no insured.");
+    public static PolicyValidationException noMainInsured = new PolicyValidationException("Insured person is not flagged as main insured.");
+    public static PolicyValidationException insuredWithNoMainInsured = new PolicyValidationException("Insured has no main insured indicator.");
+    public static PolicyValidationException insuredWithNoType = new PolicyValidationException("Insured has no insured type.");
     public static PolicyValidationException insuredMoreThanOne = new PolicyValidationException("Cannot have more than one insured.");
+    public static PolicyValidationException insuredNoFatca = new PolicyValidationException("Insured has no fatca status.");
+    public static PolicyValidationException insuredFatcaInvalid1 = new PolicyValidationException("Fatca 'born in USA' is not answered.");
+    public static PolicyValidationException insuredFatcaInvalid2 = new PolicyValidationException("Fatca 'pay tax in USA' is not answered.");
+    public static PolicyValidationException insuredFatcaInvalid3 = new PolicyValidationException("Fatca 'PR for tax of USA' is not answered.");
+    public static PolicyValidationException insuredFatcaInvalid4 = new PolicyValidationException("Fatca 'PR of USA' is not answered.");
 
     public static PolicyValidationException insuredWithNoPerson = new PolicyValidationException("At least one insured has no person.");
     public static PolicyValidationException personWithNoGivenName = new PolicyValidationException("At least one insured has no given name.");

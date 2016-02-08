@@ -6,7 +6,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @ApiModel(description = "This is the description of a quote and only a quote. It holds all properties gathered from " +
@@ -59,7 +58,7 @@ public class Quote {
 
     @ApiModelProperty(value = "List of all insured parties stated on the quote")
     public List<Insured> getInsureds() {
-        return Collections.unmodifiableList(insureds);
+        return insureds;
     }
 
     public void addInsured(Insured insured) {

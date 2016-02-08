@@ -16,6 +16,10 @@ public class Payment {
     private String registrationKey;
     private List<PaymentInformation> paymentInformations;
 
+    // Used by Jackson
+    public Payment() {
+    }
+
     public Payment(Double value, String currencyCode, LocalDate dueDate) {
         this.status = PaymentStatus.FUTURE;
         this.dueDate = dueDate;

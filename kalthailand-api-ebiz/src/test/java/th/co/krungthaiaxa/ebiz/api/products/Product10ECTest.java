@@ -3,8 +3,10 @@ package th.co.krungthaiaxa.ebiz.api.products;
 import org.junit.Test;
 import th.co.krungthaiaxa.ebiz.api.exception.PolicyValidationException;
 import th.co.krungthaiaxa.ebiz.api.exception.QuoteCalculationException;
-import th.co.krungthaiaxa.ebiz.api.model.*;
-import th.co.krungthaiaxa.ebiz.api.model.enums.*;
+import th.co.krungthaiaxa.ebiz.api.model.Amount;
+import th.co.krungthaiaxa.ebiz.api.model.DatedAmount;
+import th.co.krungthaiaxa.ebiz.api.model.Policy;
+import th.co.krungthaiaxa.ebiz.api.model.Quote;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -23,8 +25,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static th.co.krungthaiaxa.ebiz.api.exception.PolicyValidationException.*;
 import static th.co.krungthaiaxa.ebiz.api.exception.QuoteCalculationException.*;
+import static th.co.krungthaiaxa.ebiz.api.model.enums.PaymentStatus.FUTURE;
 import static th.co.krungthaiaxa.ebiz.api.model.enums.PeriodicityCode.*;
 import static th.co.krungthaiaxa.ebiz.api.products.Product10EC.*;
+import static th.co.krungthaiaxa.ebiz.api.resource.ResourceTestUtil.*;
 
 public class Product10ECTest {
 
@@ -1129,7 +1133,7 @@ public class Product10ECTest {
 
         assertThat(policy.getPayments()).hasSize(6);
         assertThat(policy.getPayments()).extracting("dueDate").containsOnly(allowedDates.toArray());
-        assertThat(policy.getPayments()).extracting("status").containsOnly(PaymentStatus.FUTURE);
+        assertThat(policy.getPayments()).extracting("status").containsOnly(FUTURE);
         assertThat(policy.getPayments()).extracting("effectiveDate").containsNull();
         assertThat(policy.getPayments()).extracting("amount").extracting("currencyCode").containsOnly(policy.getPremiumsData().getFinancialScheduler().getModalAmount().getCurrencyCode());
         assertThat(policy.getPayments()).extracting("amount").extracting("value").containsOnly(policy.getPremiumsData().getFinancialScheduler().getModalAmount().getValue());
@@ -1149,7 +1153,7 @@ public class Product10ECTest {
 
         assertThat(policy.getPayments()).hasSize(12);
         assertThat(policy.getPayments()).extracting("dueDate").containsOnly(allowedDates.toArray());
-        assertThat(policy.getPayments()).extracting("status").containsOnly(PaymentStatus.FUTURE);
+        assertThat(policy.getPayments()).extracting("status").containsOnly(FUTURE);
         assertThat(policy.getPayments()).extracting("effectiveDate").containsNull();
         assertThat(policy.getPayments()).extracting("amount").extracting("currencyCode").containsOnly(policy.getPremiumsData().getFinancialScheduler().getModalAmount().getCurrencyCode());
         assertThat(policy.getPayments()).extracting("amount").extracting("value").containsOnly(policy.getPremiumsData().getFinancialScheduler().getModalAmount().getValue());
@@ -1169,7 +1173,7 @@ public class Product10ECTest {
 
         assertThat(policy.getPayments()).hasSize(24);
         assertThat(policy.getPayments()).extracting("dueDate").containsOnly(allowedDates.toArray());
-        assertThat(policy.getPayments()).extracting("status").containsOnly(PaymentStatus.FUTURE);
+        assertThat(policy.getPayments()).extracting("status").containsOnly(FUTURE);
         assertThat(policy.getPayments()).extracting("effectiveDate").containsNull();
         assertThat(policy.getPayments()).extracting("amount").extracting("currencyCode").containsOnly(policy.getPremiumsData().getFinancialScheduler().getModalAmount().getCurrencyCode());
         assertThat(policy.getPayments()).extracting("amount").extracting("value").containsOnly(policy.getPremiumsData().getFinancialScheduler().getModalAmount().getValue());
@@ -1189,92 +1193,11 @@ public class Product10ECTest {
 
         assertThat(policy.getPayments()).hasSize(72);
         assertThat(policy.getPayments()).extracting("dueDate").containsOnly(allowedDates.toArray());
-        assertThat(policy.getPayments()).extracting("status").containsOnly(PaymentStatus.FUTURE);
+        assertThat(policy.getPayments()).extracting("status").containsOnly(FUTURE);
         assertThat(policy.getPayments()).extracting("effectiveDate").containsNull();
         assertThat(policy.getPayments()).extracting("amount").extracting("currencyCode").containsOnly(policy.getPremiumsData().getFinancialScheduler().getModalAmount().getCurrencyCode());
         assertThat(policy.getPayments()).extracting("amount").extracting("value").containsOnly(policy.getPremiumsData().getFinancialScheduler().getModalAmount().getValue());
         assertThat(policy.getPayments()).extracting("registrationKey").containsNull();
         assertThat(policy.getPayments()).extracting("paymentInformations").containsNull();
-    }
-
-    private static Quote quote(PeriodicityCode periodicityCode, Insured insured, CoverageBeneficiary... beneficiaries) {
-        Amount amount = new Amount();
-        amount.setCurrencyCode("THB");
-        amount.setValue(1000000.0);
-
-        Periodicity periodicity = new Periodicity();
-        periodicity.setCode(periodicityCode);
-
-        FinancialScheduler financialScheduler = new FinancialScheduler();
-        financialScheduler.setPeriodicity(periodicity);
-
-        PremiumsDataLifeInsurance premiumsData = new PremiumsDataLifeInsurance();
-        premiumsData.setFinancialScheduler(financialScheduler);
-        premiumsData.setLifeInsuranceSumInsured(amount);
-
-        CommonData commonData = new CommonData();
-        commonData.setProductId(PRODUCT_10_EC_NAME);
-        commonData.setProductName(PRODUCT_10_EC_NAME);
-
-        Coverage coverage = new Coverage();
-        coverage.setName(PRODUCT_10_EC_NAME);
-        for (CoverageBeneficiary beneficiary : beneficiaries) {
-            coverage.addBeneficiary(beneficiary);
-        }
-
-        Quote quote = new Quote();
-        quote.setCommonData(commonData);
-        quote.setPremiumsData(premiumsData);
-        if (insured != null) {
-            quote.addInsured(insured);
-        }
-        quote.addCoverage(coverage);
-        return quote;
-    }
-
-    private static CoverageBeneficiary beneficiary(Double benefitPercent) {
-        CoverageBeneficiary result = new CoverageBeneficiary();
-        result.setCoverageBenefitPercentage(benefitPercent);
-        result.setRelationship(BeneficiaryRelationshipType.CHILD);
-        return result;
-    }
-
-    private static Insured insured(int ageAtSubscription, boolean mainInsured) {
-        Insured insured = new Insured();
-        insured.setAgeAtSubscription(ageAtSubscription);
-        insured.setDeclaredTaxPercentAtSubscription(5);
-        insured.setDisableOrImmunoDeficient(FALSE);
-        insured.setEndDate(now().plus(10, ChronoUnit.YEARS));
-        insured.setHospitalizedInLast6Months(FALSE);
-        insured.setMainInsuredIndicator(mainInsured);
-        insured.setProfessionName("Something");
-        insured.setStartDate(now());
-        insured.setType(InsuredType.Insured);
-
-        GeographicalAddress geographicalAddress = new GeographicalAddress();
-        geographicalAddress.setCountry("France");
-        geographicalAddress.setDistrict("Something");
-        geographicalAddress.setPostCode("75015");
-        geographicalAddress.setStreetAddress1("rue du paradis");
-        geographicalAddress.setStreetAddress2("apartement 2");
-        geographicalAddress.setSubCountry("Ile de France");
-        geographicalAddress.setSubdistrict("Paris");
-
-        Person person = new Person();
-        person.setBirthDate(now().minus(ageAtSubscription, YEARS));
-        person.setEmail("something@something.com");
-        person.setGenderCode(GenderCode.FEMALE);
-        person.setGeographicalAddress(geographicalAddress);
-        person.setGivenName("Someone");
-        person.setHeightInCm(100);
-        person.setHomePhoneNumber(new PhoneNumber());
-        person.setMaritalStatus(MaritalStatus.MARRIED);
-        person.setMiddleName("Else");
-        person.setMobilePhoneNumber(new PhoneNumber());
-        person.setSurName("Surname");
-        person.setTitle("M");
-        person.setWeightInKg(100);
-        insured.setPerson(person);
-        return insured;
     }
 }

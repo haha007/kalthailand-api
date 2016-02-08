@@ -376,12 +376,25 @@ public class Product10EC {
             throw PolicyValidationException.noInsured;
         } else if (quote.getInsureds().size() != 1) {
             throw PolicyValidationException.insuredMoreThanOne;
-        } else if (quote.getInsureds().stream().anyMatch(insured -> insured.getType() == null)) {
+        }
+
+        Insured insured = quote.getInsureds().get(0);
+        if (insured.getType() == null) {
             throw PolicyValidationException.insuredWithNoType;
-        } else if (quote.getInsureds().stream().anyMatch(insured -> insured.getMainInsuredIndicator() == null)) {
+        } else if (insured.getMainInsuredIndicator() == null) {
             throw PolicyValidationException.insuredWithNoMainInsured;
-        } else if (!quote.getInsureds().stream().filter(Insured::getMainInsuredIndicator).findFirst().isPresent()) {
+        } else if (!insured.getMainInsuredIndicator()) {
             throw PolicyValidationException.noMainInsured;
+        } else if (insured.getFatca() == null) {
+            throw PolicyValidationException.insuredNoFatca;
+        } else if (insured.getFatca().isBornInUSA() == null) {
+            throw PolicyValidationException.insuredFatcaInvalid1;
+        } else if (insured.getFatca().isPayTaxInUSA() == null) {
+            throw PolicyValidationException.insuredFatcaInvalid2;
+        } else if (insured.getFatca().isPermanentResidentOfUSAForTax() == null) {
+            throw PolicyValidationException.insuredFatcaInvalid3;
+        } else if (insured.getFatca().getPermanentResidentOfUSA() == null) {
+            throw PolicyValidationException.insuredFatcaInvalid4;
         }
     }
 

@@ -3,6 +3,7 @@ package th.co.krungthaiaxa.ebiz.api.service;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.ebiz.api.model.*;
 import th.co.krungthaiaxa.ebiz.api.model.enums.ChannelType;
+import th.co.krungthaiaxa.ebiz.api.model.enums.InsuredType;
 import th.co.krungthaiaxa.ebiz.api.products.Product10EC;
 import th.co.krungthaiaxa.ebiz.api.repository.QuoteRepository;
 import th.co.krungthaiaxa.ebiz.api.repository.SessionQuoteRepository;
@@ -41,6 +42,7 @@ public class QuoteService {
             insured.setMainInsuredIndicator(true);
             insured.setFatca(new Fatca());
             insured.setPerson(new Person());
+            insured.setType(InsuredType.Insured);
 
             quote = new Quote();
             quote.setCommonData(new CommonData());
