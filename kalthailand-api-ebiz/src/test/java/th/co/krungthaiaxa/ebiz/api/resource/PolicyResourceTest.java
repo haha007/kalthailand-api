@@ -15,15 +15,19 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import th.co.krungthaiaxa.ebiz.api.KalApiApplication;
+import th.co.krungthaiaxa.ebiz.api.model.Payment;
 import th.co.krungthaiaxa.ebiz.api.model.Policy;
 import th.co.krungthaiaxa.ebiz.api.model.Quote;
 import th.co.krungthaiaxa.ebiz.api.model.error.Error;
+import th.co.krungthaiaxa.ebiz.api.repository.PaymentRepository;
 import th.co.krungthaiaxa.ebiz.api.repository.PolicyRepository;
 import th.co.krungthaiaxa.ebiz.api.repository.QuoteRepository;
 
 import javax.inject.Inject;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
 
 import static java.lang.Boolean.TRUE;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -45,9 +49,11 @@ public class PolicyResourceTest {
     private RestTemplate template;
 
     @Inject
-    private QuoteRepository quoteRepository;
+    private PaymentRepository paymentRepository;
     @Inject
     private PolicyRepository policyRepository;
+    @Inject
+    private QuoteRepository quoteRepository;
 
     @Before
     public void setUp() throws Exception {
@@ -67,7 +73,7 @@ public class PolicyResourceTest {
     }
 
     @Test
-    public void should_return_an_empty_quote_object() throws IOException {
+    public void should_return_a_policy_object() throws IOException {
         Quote savedQuote = quoteRepository.save(quote(EVERY_QUARTER, insured(25, TRUE), beneficiary(100.0)));
         MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
         parameters.add("jsonQuote", getJSon(savedQuote));
@@ -80,5 +86,23 @@ public class PolicyResourceTest {
         Policy savedPolicy = policyRepository.findOne(policy.getTechnicalId());
         assertThat(savedPolicy.getPayments()).hasSize(24);
         assertThat(policy.getPayments()).hasSize(24);
+    }
+
+    @Test
+    public void should_return_policy_payment_list() throws IOException, URISyntaxException {
+        Quote savedQuote = quoteRepository.save(quote(EVERY_QUARTER, insured(25, TRUE), beneficiary(100.0)));
+        MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
+        parameters.add("jsonQuote", getJSon(savedQuote));
+
+        ResponseEntity<String> response = template.postForEntity(base, parameters, String.class);
+        assertThat(response.getStatusCode().value()).isEqualTo(OK.value());
+        Policy policy = TestUtil.getPolicyFromJSon(response.getBody());
+
+        URI paymentURI = new URI("http://localhost:" + port + "/policies/" + policy.getTechnicalId() + "/payments");
+        ResponseEntity<String> paymentResponse = template.getForEntity(paymentURI, String.class);
+        List<Payment> payments = TestUtil.getPaymentsFromJSon(paymentResponse.getBody());
+        assertThat(paymentResponse.getStatusCode().value()).isEqualTo(OK.value());
+        assertThat(payments).hasSize(24);
+
     }
 }

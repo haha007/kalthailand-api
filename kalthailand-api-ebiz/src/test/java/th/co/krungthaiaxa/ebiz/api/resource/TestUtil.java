@@ -1,5 +1,6 @@
 package th.co.krungthaiaxa.ebiz.api.resource;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import th.co.krungthaiaxa.ebiz.api.model.*;
 import th.co.krungthaiaxa.ebiz.api.model.enums.*;
 import th.co.krungthaiaxa.ebiz.api.model.error.Error;
@@ -9,6 +10,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
@@ -28,6 +30,11 @@ public class TestUtil {
 
     public static Policy getPolicyFromJSon(String json) throws IOException {
         return JsonUtil.mapper.readValue(json, Policy.class);
+    }
+
+    public static List<Payment> getPaymentsFromJSon(String json) throws IOException {
+        return JsonUtil.mapper.readValue(json, new TypeReference<List<Payment>>() {
+        });
     }
 
     public static Error getErrorFromJSon(String json) throws IOException {
