@@ -1,0 +1,16 @@
+use admin
+db.createUser(
+	{
+		user: "admin",
+		pwd: "password",
+		roles: [ { role: "userAdminAnyDatabase", db: "admin" } ]
+	}
+)
+use ebiz
+db.createUser(
+	{
+		user: "ebizuser",
+		pwd: "password",
+		roles: [ { role: "dbOwner", db: "ebiz" } ]
+	}
+)
