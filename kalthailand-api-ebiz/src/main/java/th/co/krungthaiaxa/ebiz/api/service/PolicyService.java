@@ -37,7 +37,7 @@ public class PolicyService {
         this.quoteRepository = quoteRepository;
     }
 
-    public Policy findPolicy(String policyId) throws Exception {
+    public Policy findPolicy(String policyId) {
         return policyRepository.findOne(policyId);
     }
 

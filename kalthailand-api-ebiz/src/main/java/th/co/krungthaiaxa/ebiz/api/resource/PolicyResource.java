@@ -77,7 +77,7 @@ public class PolicyResource {
         Policy policy;
         try {
             policy = policyService.findPolicy(policyId);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             logger.error("Unable to find the policy with ID [" + policyId + "]", e);
             return new ResponseEntity<>(POLICY_DOES_NOT_EXIST, NOT_FOUND);
         }
@@ -117,7 +117,7 @@ public class PolicyResource {
         Policy policy;
         try {
             policy = policyService.findPolicy(policyId);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             logger.error("Unable to find the policy with ID [" + policyId + "]", e);
             return new ResponseEntity<>(POLICY_DOES_NOT_EXIST, NOT_FOUND);
         }
