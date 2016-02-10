@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import th.co.krungthaiaxa.ebiz.api.model.Quote;
 import th.co.krungthaiaxa.ebiz.api.model.enums.ChannelType;
@@ -35,9 +34,10 @@ public class QuoteResource {
         this.quoteService = quoteService;
     }
 
-    @ApiOperation(value = "Creates an empty quote", notes = "Creates an empty quote, attached to the session ID", response = Quote.class)
+    @ApiOperation(value = "Creates an empty quote", notes = "Creates an empty quote, attached to the session ID. " +
+            "If there is already a quote for the session ID, then the quote returned will be the one saved in the " +
+            "database in its latest state.", response = Quote.class)
     @RequestMapping(value = "/quotes", produces = APPLICATION_JSON_VALUE, method = POST)
-    @ResponseBody
     public ResponseEntity createQuote(
             @ApiParam(value = "The session id. Must be unique through the Channel. This is used to recover unfinished quotes throught the channel")
             @RequestParam String sessionId,
@@ -47,17 +47,14 @@ public class QuoteResource {
         return new ResponseEntity<>(JsonUtil.getJson(quote), OK);
     }
 
-    @ApiOperation(value = "Updates a quote", notes = "Updates a quote, attached to the session ID, with provided JSon", response = Quote.class)
+    @ApiOperation(value = "Updates a quote", notes = "Updates a quote with provided JSon. Calculatiom may occur if " +
+            "enough elements are provided.", response = Quote.class)
     @ApiResponses({
-            @ApiResponse(code = 406, message = "If either JSon is invalid or there is no quote in the given session", response = Error.class)
+            @ApiResponse(code = 406, message = "If either JSon is invalid or there is no quote in the given session",
+                    response = Error.class)
     })
     @RequestMapping(value = "/quotes", produces = APPLICATION_JSON_VALUE, method = PUT)
-    @ResponseBody
     public ResponseEntity updateQuote(
-            @ApiParam(value = "The session id. Must be unique through the Channel. This is used to recover unfinished quotes throught the channel")
-            @RequestParam String sessionId,
-            @ApiParam(value = "The channel being used to create the quote.")
-            @RequestParam ChannelType channelType,
             @ApiParam(value = "The json of the quote. This quote will be updated with given values and will go through minimal validations")
             @RequestParam String jsonQuote) {
         Quote quote;

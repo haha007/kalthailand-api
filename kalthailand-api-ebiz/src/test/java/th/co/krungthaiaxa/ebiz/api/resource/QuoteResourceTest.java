@@ -94,8 +94,6 @@ public class QuoteResourceTest {
         jsonQuote = replace(jsonQuote, "\"periodicity\":{\"code\":null}", "\"periodicity\":{\"code\":\"EVERY_MONTH\"}");
         jsonQuote = replace(jsonQuote, "\"genderCode\":null", "\"genderCode\":\"MALE\"");
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(base.toString())
-                .queryParam("sessionId", sessionId)
-                .queryParam("channelType", ChannelType.LINE.name())
                 .queryParam("jsonQuote", jsonQuote);
 
         HttpHeaders headers = new HttpHeaders();
