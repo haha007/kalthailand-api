@@ -4,6 +4,7 @@ package th.co.krungthaiaxa.ebiz.api.service;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -33,6 +34,8 @@ import static th.co.krungthaiaxa.ebiz.api.resource.TestUtil.payment;
 @WebAppConfiguration
 @ActiveProfiles("dev")
 public class PolicyServiceTest {
+    @Value("policy.number.prefix")
+    private String policyNumberPrefix;
 
     @Inject
     private PolicyService policyService;
@@ -55,6 +58,16 @@ public class PolicyServiceTest {
         assertThatThrownBy(() -> policyService.createPolicy(quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(noneExistingQuote.getMessage());
+    }
+
+    @Test
+    public void should_add_prefix_in_policy_id() throws Exception {
+        Quote quote = quoteService.createQuote(RandomStringUtils.randomNumeric(20), LINE);
+        TestUtil.quote(quote);
+        quote = quoteService.updateQuote(quote);
+
+        Policy policy = policyService.createPolicy(quote);
+        assertThat(policy.getPolicyId()).startsWith(policyNumberPrefix);
     }
 
     @Test
