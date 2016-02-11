@@ -98,7 +98,7 @@ public class PolicyResource {
             @PathVariable String policyId,
             @ApiParam(value = "The payment ID")
             @PathVariable String paymentId,
-            @ApiParam(value = "The amount registered through the channel", required = true)
+            @ApiParam(value = "The amount registered through the channel", required = true, defaultValue = "0.0")
             @RequestParam Double value,
             @ApiParam(value = "The currency registered through the channel", required = true)
             @RequestParam String currencyCode,
