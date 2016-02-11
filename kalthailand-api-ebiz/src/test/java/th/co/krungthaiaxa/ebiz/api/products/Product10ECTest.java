@@ -1138,7 +1138,7 @@ public class Product10ECTest {
         assertThat(policy.getPayments()).extracting("amount").extracting("currencyCode").containsOnly(policy.getPremiumsData().getFinancialScheduler().getModalAmount().getCurrencyCode());
         assertThat(policy.getPayments()).extracting("amount").extracting("value").containsOnly(policy.getPremiumsData().getFinancialScheduler().getModalAmount().getValue());
         assertThat(policy.getPayments()).extracting("registrationKey").containsNull();
-        assertThat(policy.getPayments()).extracting("paymentInformations").containsNull();
+        assertThat(policy.getPayments()).extracting("paymentInformations").hasSize(6);
     }
 
     @Test
@@ -1158,7 +1158,7 @@ public class Product10ECTest {
         assertThat(policy.getPayments()).extracting("amount").extracting("currencyCode").containsOnly(policy.getPremiumsData().getFinancialScheduler().getModalAmount().getCurrencyCode());
         assertThat(policy.getPayments()).extracting("amount").extracting("value").containsOnly(policy.getPremiumsData().getFinancialScheduler().getModalAmount().getValue());
         assertThat(policy.getPayments()).extracting("registrationKey").containsNull();
-        assertThat(policy.getPayments()).extracting("paymentInformations").containsNull();
+        assertThat(policy.getPayments()).extracting("paymentInformations").hasSize(12);
     }
 
     @Test
@@ -1178,7 +1178,7 @@ public class Product10ECTest {
         assertThat(policy.getPayments()).extracting("amount").extracting("currencyCode").containsOnly(policy.getPremiumsData().getFinancialScheduler().getModalAmount().getCurrencyCode());
         assertThat(policy.getPayments()).extracting("amount").extracting("value").containsOnly(policy.getPremiumsData().getFinancialScheduler().getModalAmount().getValue());
         assertThat(policy.getPayments()).extracting("registrationKey").containsNull();
-        assertThat(policy.getPayments()).extracting("paymentInformations").containsNull();
+        assertThat(policy.getPayments()).extracting("paymentInformations").hasSize(24);
     }
 
     @Test
@@ -1198,6 +1198,6 @@ public class Product10ECTest {
         assertThat(policy.getPayments()).extracting("amount").extracting("currencyCode").containsOnly(policy.getPremiumsData().getFinancialScheduler().getModalAmount().getCurrencyCode());
         assertThat(policy.getPayments()).extracting("amount").extracting("value").containsOnly(policy.getPremiumsData().getFinancialScheduler().getModalAmount().getValue());
         assertThat(policy.getPayments()).extracting("registrationKey").containsNull();
-        assertThat(policy.getPayments()).extracting("paymentInformations").containsNull();
+        assertThat(policy.getPayments()).extracting("paymentInformations").hasSize(72);
     }
 }
