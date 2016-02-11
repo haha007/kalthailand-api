@@ -87,8 +87,8 @@ public class QuoteResourceTest {
         Quote quote = TestUtil.getQuoteFromJSon(creationResponse.getBody());
         assertThat(quote).isNotNull();
 
-        String technicalQuoteId = quote.getTechnicalId();
-        assertThat(technicalQuoteId).isNotNull();
+        String id = quote.getId();
+        assertThat(id).isNotNull();
 
         String jsonQuote = new String(JsonUtil.getJson(quote));
         jsonQuote = replace(jsonQuote, "\"periodicity\":{\"code\":null}", "\"periodicity\":{\"code\":\"EVERY_MONTH\"}");
@@ -105,8 +105,8 @@ public class QuoteResourceTest {
 
         // check database values
         SessionQuote sessionQuote = sessionQuoteRepository.findBySessionIdAndChannelType(sessionId, ChannelType.LINE);
-        assertThat(sessionQuote.getQuoteTechId()).isEqualTo(technicalQuoteId);
-        Quote savedQuote = quoteRepository.findOne(technicalQuoteId);
+        assertThat(sessionQuote.getQuoteId()).isEqualTo(id);
+        Quote savedQuote = quoteRepository.findOne(id);
         assertThat(savedQuote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode()).isEqualTo(PeriodicityCode.EVERY_MONTH);
         assertThat(savedQuote.getInsureds().get(0).getPerson().getGenderCode()).isEqualTo(GenderCode.MALE);
 

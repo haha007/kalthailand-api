@@ -83,7 +83,7 @@ public class PolicyResourceTest {
         Policy policy = TestUtil.getPolicyFromJSon(response.getBody());
 
         // check database values
-        Policy savedPolicy = policyRepository.findOne(policy.getTechnicalId());
+        Policy savedPolicy = policyRepository.findOne(policy.getId());
         assertThat(savedPolicy.getPayments()).hasSize(24);
         assertThat(policy.getPayments()).hasSize(24);
     }
@@ -98,7 +98,7 @@ public class PolicyResourceTest {
         assertThat(response.getStatusCode().value()).isEqualTo(OK.value());
         Policy policy = TestUtil.getPolicyFromJSon(response.getBody());
 
-        URI paymentURI = new URI("http://localhost:" + port + "/policies/" + policy.getTechnicalId() + "/payments");
+        URI paymentURI = new URI("http://localhost:" + port + "/policies/" + policy.getId() + "/payments");
         ResponseEntity<String> paymentResponse = template.getForEntity(paymentURI, String.class);
         List<Payment> payments = TestUtil.getPaymentsFromJSon(paymentResponse.getBody());
         assertThat(paymentResponse.getStatusCode().value()).isEqualTo(OK.value());

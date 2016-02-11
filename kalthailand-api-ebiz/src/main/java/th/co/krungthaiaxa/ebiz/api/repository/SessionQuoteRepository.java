@@ -8,4 +8,6 @@ import th.co.krungthaiaxa.ebiz.api.model.enums.ChannelType;
 @Repository
 public interface SessionQuoteRepository extends PagingAndSortingRepository<SessionQuote, String> {
     SessionQuote findBySessionIdAndChannelType(String sessionId, ChannelType channelType);
+
+    SessionQuote findByQuoteId(String quoteId);
 }

@@ -1,5 +1,6 @@
 package th.co.krungthaiaxa.ebiz.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.springframework.data.annotation.Id;
@@ -15,11 +16,11 @@ import java.util.List;
 @Document
 public class Policy {
     @Id
-    private String technicalId;
+    private String id;
     @Indexed
     private String policyId;
     @Indexed
-    private String quoteFunctionalId;
+    private String quoteId;
     private CommonData commonData;
     private PremiumsDataLifeInsurance premiumsData;
     private List<Insured> insureds = new ArrayList<>();
@@ -27,16 +28,15 @@ public class Policy {
     @DBRef
     private List<Payment> payments = new ArrayList<>();
 
-    @ApiModelProperty(required = true, value = "Technical ID of the policy. This should not be displayed to user")
-    public String getTechnicalId() {
-        return technicalId;
+    public String getId() {
+        return id;
     }
 
-    public void setTechnicalId(String technicalId) {
-        this.technicalId = technicalId;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    @ApiModelProperty(required = true, value = "Functional ID of the policy. This may be displayed to user")
+    @ApiModelProperty(required = true, value = "ID of the policy. This may be displayed to user")
     public String getPolicyId() {
         return policyId;
     }
@@ -45,13 +45,13 @@ public class Policy {
         this.policyId = policyId;
     }
 
-    @ApiModelProperty(required = true, value = "Functional ID of the quote the policy is coming from")
-    public String getQuoteFunctionalId() {
-        return quoteFunctionalId;
+    @ApiModelProperty(required = true, value = "ID of the quote the policy is coming from")
+    public String getQuoteId() {
+        return quoteId;
     }
 
-    public void setQuoteFunctionalId(String quoteId) {
-        this.quoteFunctionalId = quoteId;
+    public void setQuoteId(String quoteId) {
+        this.quoteId = quoteId;
     }
 
     @ApiModelProperty(required = true, value = "Data common to all policies commercial types")

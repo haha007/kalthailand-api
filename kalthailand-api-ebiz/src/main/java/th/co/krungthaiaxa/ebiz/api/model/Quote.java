@@ -1,5 +1,6 @@
 package th.co.krungthaiaxa.ebiz.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.springframework.data.annotation.Id;
@@ -14,7 +15,7 @@ import java.util.List;
 @Document
 public class Quote {
     @Id
-    private String technicalId;
+    private String id;
     @Indexed
     private String quoteId;
     private CommonData commonData;
@@ -22,16 +23,15 @@ public class Quote {
     private List<Insured> insureds = new ArrayList<>();
     private List<Coverage> coverages = new ArrayList<>();
 
-    @ApiModelProperty(required = true, value = "Technical ID of the quote. This should not be displayed to user")
-    public String getTechnicalId() {
-        return technicalId;
+    public String getId() {
+        return id;
     }
 
-    public void setTechnicalId(String technicalId) {
-        this.technicalId = technicalId;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    @ApiModelProperty(required = true, value = "Functional ID of the quote. This may be displayed to user")
+    @ApiModelProperty(required = true, value = "ID of the quote. This may be displayed to user")
     public String getQuoteId() {
         return quoteId;
     }

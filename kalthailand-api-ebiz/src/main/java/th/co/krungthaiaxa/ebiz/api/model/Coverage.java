@@ -12,17 +12,17 @@ import java.util.Objects;
 @ApiModel(description = "The coverage of the contract")
 public class Coverage implements Serializable {
     @Id
-    private String coverageId;
+    private String id;
     private String name;
     private List<CoverageBeneficiary> beneficiaries = new ArrayList<>();
 
-    @ApiModelProperty(required = true, value = "The coverage technical Id")
-    public String getCoverageId() {
-        return coverageId;
+    @ApiModelProperty(required = true, value = "The coverage Id")
+    public String getId() {
+        return id;
     }
 
-    public void setCoverageId(String coverageId) {
-        this.coverageId = coverageId;
+    public void setId(String id) {
+        this.id = id;
     }
 
     @ApiModelProperty(required = true, value = "The coverage name")
@@ -48,13 +48,13 @@ public class Coverage implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Coverage coverage = (Coverage) o;
-        return Objects.equals(coverageId, coverage.coverageId) &&
+        return Objects.equals(id, coverage.id) &&
                 Objects.equals(name, coverage.name) &&
                 Objects.equals(beneficiaries, coverage.beneficiaries);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(coverageId, name, beneficiaries);
+        return Objects.hash(id, name, beneficiaries);
     }
 }

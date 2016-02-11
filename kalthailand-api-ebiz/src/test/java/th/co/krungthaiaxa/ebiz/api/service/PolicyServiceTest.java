@@ -56,7 +56,7 @@ public class PolicyServiceTest {
     @Test
     public void should_return_error_when_create_policy_if_quote_does_not_exist() throws Exception {
         Quote quote = new Quote();
-        quote.setTechnicalId("123");
+        quote.setId("123");
         assertThatThrownBy(() -> policyService.createPolicy(quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(noneExistingQuote.getMessage());
@@ -70,7 +70,7 @@ public class PolicyServiceTest {
 
         Policy policy = policyService.createPolicy(quote);
         assertThat(policy.getPolicyId()).isNotNull();
-        assertThat(policy.getTechnicalId()).isNotNull();
+        assertThat(policy.getId()).isNotNull();
     }
 
     @Test

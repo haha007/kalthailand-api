@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.ebiz.api.data.PolicyNumber;
+import th.co.krungthaiaxa.ebiz.api.data.SessionQuote;
 import th.co.krungthaiaxa.ebiz.api.exception.PolicyValidationException;
 import th.co.krungthaiaxa.ebiz.api.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.ebiz.api.model.*;
@@ -12,10 +13,7 @@ import th.co.krungthaiaxa.ebiz.api.model.enums.ChannelType;
 import th.co.krungthaiaxa.ebiz.api.model.enums.PaymentStatus;
 import th.co.krungthaiaxa.ebiz.api.model.enums.SuccessErrorStatus;
 import th.co.krungthaiaxa.ebiz.api.products.Product10EC;
-import th.co.krungthaiaxa.ebiz.api.repository.PaymentRepository;
-import th.co.krungthaiaxa.ebiz.api.repository.PolicyNumberRepository;
-import th.co.krungthaiaxa.ebiz.api.repository.PolicyRepository;
-import th.co.krungthaiaxa.ebiz.api.repository.QuoteRepository;
+import th.co.krungthaiaxa.ebiz.api.repository.*;
 import th.co.krungthaiaxa.ebiz.api.utils.ThaiBahtUtil;
 
 import javax.imageio.ImageIO;
@@ -42,6 +40,7 @@ public class PolicyService {
     private final PolicyRepository policyRepository;
     private final PolicyNumberRepository policyNumberRepository;
     private final QuoteRepository quoteRepository;
+    private final SessionQuoteRepository sessionQuoteRepository;
     @Value("${path.store.elife.ereceipt}")
     private String eReceiptStorePath;
     @Value("${path.store.elife.ereceipt.image}")
@@ -52,11 +51,12 @@ public class PolicyService {
     private String eReceiptMailLogoStorePath;
 
     @Inject
-    public PolicyService(PaymentRepository paymentRepository, PolicyRepository policyRepository, PolicyNumberRepository policyNumberRepository, QuoteRepository quoteRepository) {
+    public PolicyService(PaymentRepository paymentRepository, PolicyRepository policyRepository, PolicyNumberRepository policyNumberRepository, QuoteRepository quoteRepository, SessionQuoteRepository sessionQuoteRepository) {
         this.paymentRepository = paymentRepository;
         this.policyRepository = policyRepository;
         this.policyNumberRepository = policyNumberRepository;
         this.quoteRepository = quoteRepository;
+        this.sessionQuoteRepository = sessionQuoteRepository;
     }
 
     public Policy findPolicy(String policyId) {
@@ -66,7 +66,7 @@ public class PolicyService {
     public Policy createPolicy(Quote quote) throws PolicyValidationException, QuoteCalculationException {
         if (quote == null) {
             throw PolicyValidationException.emptyQuote;
-        } else if (quote.getTechnicalId() == null || quoteRepository.findOne(quote.getTechnicalId()) == null) {
+        } else if (quote.getId() == null || quoteRepository.findOne(quote.getId()) == null) {
             throw PolicyValidationException.noneExistingQuote;
         }
 
@@ -82,7 +82,7 @@ public class PolicyService {
             throw PolicyValidationException.noPolicyNumberAvailable;
         }
 
-        Policy policy = policyRepository.findByQuoteFunctionalId(quote.getTechnicalId());
+        Policy policy = policyRepository.findByQuoteId(quote.getId());
         if (policy == null) {
             policy = new Policy();
             policy.setPolicyId(policyNumber.get().getPolicyId());
@@ -92,6 +92,8 @@ public class PolicyService {
             policy = policyRepository.save(policy);
             policyNumber.get().setPolicy(policy);
             policyNumberRepository.save(policyNumber.get());
+            SessionQuote sessionQuote = sessionQuoteRepository.findByQuoteId(policy.getQuoteId());
+            sessionQuoteRepository.delete(sessionQuote);
         }
 
         return policy;
@@ -145,18 +147,18 @@ public class PolicyService {
     public byte[] createEreceipt(Policy policy) throws Exception {
 
         logger.info("[def] createEReceipt");
-        logger.info("[createEReceipt] quoteId : "+ policy.getQuoteFunctionalId());
-        logger.info("[createEReceipt] policyNumber : "+ policy.getPolicyId());
-        logger.info("[createEReceipt] E-receipt template store name path : "+ eReceiptStorePath);
+        logger.info("[createEReceipt] quoteId : " + policy.getQuoteId());
+        logger.info("[createEReceipt] policyNumber : " + policy.getPolicyId());
+        logger.info("[createEReceipt] E-receipt template store name path : " + eReceiptStorePath);
         logger.info("[createEReceipt] E-receipt image store name path : " + eReceiptImageStorePath);
         try {
 
             DecimalFormat formatter = new DecimalFormat("#,##0.00");
 
             StringBuilder im = new StringBuilder(eReceiptImageStorePath);
-            im.insert(eReceiptImageStorePath.indexOf("."),policy.getPolicyId());
+            im.insert(eReceiptImageStorePath.indexOf("."), policy.getPolicyId());
             eReceiptImageStorePath = im.toString();
-            logger.info("[createEReceipt] Name Image File["+policy.getPolicyId()+"]:" + eReceiptImageStorePath);
+            logger.info("[createEReceipt] Name Image File[" + policy.getPolicyId() + "]:" + eReceiptImageStorePath);
 
             BufferedImage bufferedImage = ImageIO.read(new File(eReceiptStorePath));
             Graphics graphics = bufferedImage.getGraphics();
@@ -251,18 +253,18 @@ public class PolicyService {
             graphics.drawString("ไลน์เพย์ (LINE Pay)", 246, 598);
             logger.info("[createEReceipt] success for drawing graphics on image.");
             ImageIO.write(bufferedImage, "jpg", new File(eReceiptImageStorePath));
-            logger.info("[createEReceipt] write image file success : " + eReceiptImageStorePath );
+            logger.info("[createEReceipt] write image file success : " + eReceiptImageStorePath);
 
-            ByteArrayOutputStream baos  = new ByteArrayOutputStream();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ImageIO.write(bufferedImage, "jpg", baos);
-            byte[] bytes   = baos.toByteArray();
+            byte[] bytes = baos.toByteArray();
 
             logger.info("[createEReceipt] Generating Base64...");
 
             baos.close();
             return bytes;
-        }catch(Exception e){
-            logger.error(null,e);
+        } catch (Exception e) {
+            logger.error(null, e);
             throw e;
         }
     }

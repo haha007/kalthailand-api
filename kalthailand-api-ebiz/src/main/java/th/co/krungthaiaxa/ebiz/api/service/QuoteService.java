@@ -30,8 +30,8 @@ public class QuoteService {
         SessionQuote sessionQuote = sessionQuoteRepository.findBySessionIdAndChannelType(sessionId, channelType);
 
         boolean userHasSavedQuote = sessionQuote != null
-                && sessionQuote.getQuoteTechId() != null
-                && quoteRepository.findOne(sessionQuote.getQuoteTechId()) != null;
+                && sessionQuote.getQuoteId() != null
+                && quoteRepository.findOne(sessionQuote.getQuoteId()) != null;
         Quote quote;
         if (!userHasSavedQuote) {
             FinancialScheduler financialScheduler = new FinancialScheduler();
@@ -56,10 +56,10 @@ public class QuoteService {
             sessionQuote = new SessionQuote();
             sessionQuote.setSessionId(sessionId);
             sessionQuote.setChannelType(channelType);
-            sessionQuote.setQuoteTechId(quote.getTechnicalId());
+            sessionQuote.setQuoteId(quote.getQuoteId());
             sessionQuoteRepository.save(sessionQuote);
         } else {
-            quote = quoteRepository.findOne(sessionQuote.getQuoteTechId());
+            quote = quoteRepository.findOne(sessionQuote.getQuoteId());
         }
 
         return quote;

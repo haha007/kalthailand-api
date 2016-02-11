@@ -191,7 +191,7 @@ public class Product10EC {
         checkPremiumsData(quote.getPremiumsData(), insured.getStartDate());
 
         // Copy from quote to Policy
-        policy.setQuoteFunctionalId(quote.getQuoteId());
+        policy.setQuoteId(quote.getQuoteId());
         policy.setCommonData(SerializationUtils.clone(quote.getCommonData()));
         policy.setPremiumsData(SerializationUtils.clone(quote.getPremiumsData()));
         policy.addCoverage(SerializationUtils.clone(coverage));

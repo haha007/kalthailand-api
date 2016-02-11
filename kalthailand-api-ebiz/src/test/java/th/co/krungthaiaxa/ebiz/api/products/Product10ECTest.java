@@ -1114,7 +1114,7 @@ public class Product10ECTest {
 
         Policy policy = new Policy();
         getPolicyFromQuote(policy, quote);
-        assertThat(policy.getQuoteFunctionalId()).isEqualTo(quote.getQuoteId());
+        assertThat(policy.getQuoteId()).isEqualTo(quote.getQuoteId());
         assertThat(policy.getCommonData()).isEqualToComparingFieldByField(quote.getCommonData());
         assertThat(policy.getPremiumsData()).isEqualTo(quote.getPremiumsData());
         assertThat(policy.getCoverages()).isEqualTo(quote.getCoverages());

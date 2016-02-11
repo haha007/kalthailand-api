@@ -5,17 +5,17 @@ import th.co.krungthaiaxa.ebiz.api.model.enums.ChannelType;
 
 public class SessionQuote {
     @Id
-    private String sessionQuoteId;
+    private String id;
     private String sessionId;
     private ChannelType channelType;
-    private String quoteTechId;
+    private String quoteId;
 
-    public String getSessionQuoteId() {
-        return sessionQuoteId;
+    public String getId() {
+        return id;
     }
 
-    public void setSessionQuoteId(String sessionQuoteId) {
-        this.sessionQuoteId = sessionQuoteId;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getSessionId() {
@@ -34,11 +34,11 @@ public class SessionQuote {
         this.channelType = channelType;
     }
 
-    public String getQuoteTechId() {
-        return quoteTechId;
+    public String getQuoteId() {
+        return quoteId;
     }
 
-    public void setQuoteTechId(String quoteTechId) {
-        this.quoteTechId = quoteTechId;
+    public void setQuoteId(String quoteId) {
+        this.quoteId = quoteId;
     }
 }

@@ -6,5 +6,5 @@ import th.co.krungthaiaxa.ebiz.api.model.Policy;
 
 @Repository
 public interface PolicyRepository extends PagingAndSortingRepository<Policy, String> {
-    Policy findByQuoteFunctionalId(String quoteId);
+    Policy findByQuoteId(String quoteId);
 }
