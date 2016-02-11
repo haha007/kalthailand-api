@@ -1,5 +1,6 @@
 package th.co.krungthaiaxa.ebiz.api.service;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.ebiz.api.data.SessionQuote;
 import th.co.krungthaiaxa.ebiz.api.model.*;
@@ -46,6 +47,7 @@ public class QuoteService {
             insured.setType(InsuredType.Insured);
 
             quote = new Quote();
+            quote.setQuoteId(RandomStringUtils.randomNumeric(20));
             quote.setCommonData(new CommonData());
             quote.setPremiumsData(premiumsData);
             quote.addInsured(insured);
