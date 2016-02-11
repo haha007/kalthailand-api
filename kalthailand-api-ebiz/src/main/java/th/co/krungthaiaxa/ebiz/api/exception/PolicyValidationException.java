@@ -72,6 +72,8 @@ public class PolicyValidationException extends Exception {
     public static Function<String, PolicyValidationException> premiumnsCalculatedAmountInvalidDate = msg -> new PolicyValidationException("Policy has a calculated premium date [" + msg + "] which is invalid date.");
     public static PolicyValidationException premiumnsCalculatedAmountNotFor10Years = new PolicyValidationException("Policy has calculated premiums for a number of years not compatible with contract duration.");
 
+    public static PolicyValidationException noPolicyNumberAccessible = new PolicyValidationException("Policy numbers are not available.");
+    public static PolicyValidationException noPolicyNumberAvailable = new PolicyValidationException("No more Policy numbers are available.");
 
     private PolicyValidationException(String message) {
         super(message);

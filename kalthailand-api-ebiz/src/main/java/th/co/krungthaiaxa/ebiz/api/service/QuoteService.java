@@ -1,6 +1,7 @@
 package th.co.krungthaiaxa.ebiz.api.service;
 
 import org.springframework.stereotype.Service;
+import th.co.krungthaiaxa.ebiz.api.data.SessionQuote;
 import th.co.krungthaiaxa.ebiz.api.model.*;
 import th.co.krungthaiaxa.ebiz.api.model.enums.ChannelType;
 import th.co.krungthaiaxa.ebiz.api.model.enums.InsuredType;

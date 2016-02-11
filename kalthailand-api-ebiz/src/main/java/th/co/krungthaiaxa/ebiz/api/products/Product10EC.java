@@ -95,7 +95,7 @@ public class Product10EC {
         }
     };
 
-    public static Quote calculateQuote(Quote quote) throws Exception {
+    public static Quote calculateQuote(Quote quote) throws QuoteCalculationException {
         Optional<Coverage> has10ECCoverage = quote.getCoverages()
                 .stream()
                 .filter(coverage -> coverage.getName() != null)
@@ -165,7 +165,7 @@ public class Product10EC {
         return quote;
     }
 
-    public static void getPolicyFromQuote(Policy policy, Quote quote) throws Exception {
+    public static void getPolicyFromQuote(Policy policy, Quote quote) throws PolicyValidationException, QuoteCalculationException {
         // check for mandatory data
         checkCommonData(quote.getCommonData());
         checkInsured(quote);

@@ -1,17 +1,19 @@
 package th.co.krungthaiaxa.ebiz.api.service;
 
-import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import th.co.krungthaiaxa.ebiz.api.data.PolicyNumber;
 import th.co.krungthaiaxa.ebiz.api.exception.PolicyValidationException;
+import th.co.krungthaiaxa.ebiz.api.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.ebiz.api.model.*;
 import th.co.krungthaiaxa.ebiz.api.model.enums.ChannelType;
 import th.co.krungthaiaxa.ebiz.api.model.enums.PaymentStatus;
 import th.co.krungthaiaxa.ebiz.api.model.enums.SuccessErrorStatus;
 import th.co.krungthaiaxa.ebiz.api.products.Product10EC;
 import th.co.krungthaiaxa.ebiz.api.repository.PaymentRepository;
+import th.co.krungthaiaxa.ebiz.api.repository.PolicyNumberRepository;
 import th.co.krungthaiaxa.ebiz.api.repository.PolicyRepository;
 import th.co.krungthaiaxa.ebiz.api.repository.QuoteRepository;
 import th.co.krungthaiaxa.ebiz.api.utils.ThaiBahtUtil;
@@ -25,8 +27,9 @@ import java.io.File;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import static th.co.krungthaiaxa.ebiz.api.model.enums.SuccessErrorStatus.ERROR;
 import static th.co.krungthaiaxa.ebiz.api.model.enums.SuccessErrorStatus.SUCCESS;
@@ -35,6 +38,10 @@ import static th.co.krungthaiaxa.ebiz.api.model.enums.SuccessErrorStatus.SUCCESS
 public class PolicyService {
 
     private final static Logger logger = LoggerFactory.getLogger(PolicyService.class);
+    private final PaymentRepository paymentRepository;
+    private final PolicyRepository policyRepository;
+    private final PolicyNumberRepository policyNumberRepository;
+    private final QuoteRepository quoteRepository;
     @Value("${path.store.elife.ereceipt}")
     private String eReceiptStorePath;
     @Value("${path.store.elife.ereceipt.image}")
@@ -44,16 +51,11 @@ public class PolicyService {
     @Value("${path.store.elife.ereceipt.mail.logo}")
     private String eReceiptMailLogoStorePath;
 
-    private final PaymentRepository paymentRepository;
-    private final PolicyRepository policyRepository;
-    private final QuoteRepository quoteRepository;
-    @Value("${policy.number.prefix}")
-    private String policyNumberPrefix;
-
     @Inject
-    public PolicyService(PaymentRepository paymentRepository, PolicyRepository policyRepository, QuoteRepository quoteRepository) {
+    public PolicyService(PaymentRepository paymentRepository, PolicyRepository policyRepository, PolicyNumberRepository policyNumberRepository, QuoteRepository quoteRepository) {
         this.paymentRepository = paymentRepository;
         this.policyRepository = policyRepository;
+        this.policyNumberRepository = policyNumberRepository;
         this.quoteRepository = quoteRepository;
     }
 
@@ -61,21 +63,35 @@ public class PolicyService {
         return policyRepository.findOne(policyId);
     }
 
-    public Policy createPolicy(Quote quote) throws Exception {
+    public Policy createPolicy(Quote quote) throws PolicyValidationException, QuoteCalculationException {
         if (quote == null) {
             throw PolicyValidationException.emptyQuote;
         } else if (quote.getTechnicalId() == null || quoteRepository.findOne(quote.getTechnicalId()) == null) {
             throw PolicyValidationException.noneExistingQuote;
         }
 
+        Stream<PolicyNumber> availablePolicyNumbers;
+        try {
+            availablePolicyNumbers = policyNumberRepository.findByPolicyNull();
+        } catch (RuntimeException e) {
+            throw PolicyValidationException.noPolicyNumberAccessible;
+        }
+
+        Optional<PolicyNumber> policyNumber = availablePolicyNumbers.sorted((p1, p2) -> p1.getPolicyId().compareTo(p2.getPolicyId())).findFirst();
+        if (!policyNumber.isPresent()) {
+            throw PolicyValidationException.noPolicyNumberAvailable;
+        }
+
         Policy policy = policyRepository.findByQuoteFunctionalId(quote.getTechnicalId());
         if (policy == null) {
             policy = new Policy();
-            policy.setPolicyId(policyNumberPrefix + RandomStringUtils.randomNumeric(11));
+            policy.setPolicyId(policyNumber.get().getPolicyId());
             // Only one product so far
             Product10EC.getPolicyFromQuote(policy, quote);
             policy.getPayments().stream().forEach(paymentRepository::save);
             policy = policyRepository.save(policy);
+            policyNumber.get().setPolicy(policy);
+            policyNumberRepository.save(policyNumber.get());
         }
 
         return policy;

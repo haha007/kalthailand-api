@@ -19,7 +19,6 @@ import th.co.krungthaiaxa.ebiz.api.resource.TestUtil;
 import th.co.krungthaiaxa.ebiz.api.utils.ImageUtil;
 
 import javax.inject.Inject;
-
 import java.io.File;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,9 +36,6 @@ import static th.co.krungthaiaxa.ebiz.api.resource.TestUtil.payment;
 @WebAppConfiguration
 @ActiveProfiles("dev")
 public class PolicyServiceTest {
-    @Value("${policy.number.prefix}")
-    private String policyNumberPrefix;
-
     @Value("${path.store.elife.ereceipt.pdf}")
     private String eReceiptPdfStorePath;
 
@@ -64,16 +60,6 @@ public class PolicyServiceTest {
         assertThatThrownBy(() -> policyService.createPolicy(quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(noneExistingQuote.getMessage());
-    }
-
-    @Test
-    public void should_add_prefix_in_policy_id() throws Exception {
-        Quote quote = quoteService.createQuote(RandomStringUtils.randomNumeric(20), LINE);
-        TestUtil.quote(quote);
-        quote = quoteService.updateQuote(quote);
-
-        Policy policy = policyService.createPolicy(quote);
-        assertThat(policy.getPolicyId()).startsWith(policyNumberPrefix);
     }
 
     @Test

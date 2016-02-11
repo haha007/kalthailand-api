@@ -1,4 +1,4 @@
-package th.co.krungthaiaxa.ebiz.api.model;
+package th.co.krungthaiaxa.ebiz.api.data;
 
 import org.springframework.data.annotation.Id;
 import th.co.krungthaiaxa.ebiz.api.model.enums.ChannelType;
