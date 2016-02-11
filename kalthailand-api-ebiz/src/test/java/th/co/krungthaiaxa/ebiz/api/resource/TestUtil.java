@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.Boolean.FALSE;
@@ -19,6 +20,8 @@ import static java.time.temporal.ChronoUnit.YEARS;
 import static th.co.krungthaiaxa.ebiz.api.products.Product10EC.PRODUCT_10_EC_NAME;
 
 public class TestUtil {
+
+
 
     public static String getJSon(Object object) throws IOException {
         return JsonUtil.mapper.writeValueAsString(object);
@@ -141,30 +144,40 @@ public class TestUtil {
         insured.setType(InsuredType.Insured);
         insured.setFatca(fatca);
 
+
         GeographicalAddress geographicalAddress = new GeographicalAddress();
-        geographicalAddress.setCountry("France");
-        geographicalAddress.setDistrict("Something");
-        geographicalAddress.setPostCode("75015");
-        geographicalAddress.setStreetAddress1("rue du paradis");
-        geographicalAddress.setStreetAddress2("apartement 2");
+        geographicalAddress.setCountry("ไทย");
+        geographicalAddress.setDistrict("จตุจักร");
+        geographicalAddress.setPostCode("10900");
+        geographicalAddress.setStreetAddress1("Condo U-delight");
+        geographicalAddress.setStreetAddress2("ประชาชื่น");
         geographicalAddress.setSubCountry("Ile de France");
-        geographicalAddress.setSubdistrict("Paris");
+        geographicalAddress.setSubdistrict("ลาดยาว");
+
+        PhoneNumber phoneNumber = new PhoneNumber();
+        phoneNumber.setType(PhoneNumberType.MOBILE);
+        phoneNumber.setNumber(841139301);
+        phoneNumber.setCountryCode(66);
 
         Person person = new Person();
         person.setBirthDate(now().minus(ageAtSubscription, YEARS));
-        person.setEmail("insured@something.com");
+        person.setEmail("wuttichai.sri@krungthai-axa.co.th");
         person.setGenderCode(GenderCode.FEMALE);
         person.setGeographicalAddress(geographicalAddress);
-        person.setGivenName("Someone");
+        person.setGivenName("วุฒิชัย");
         person.setHeightInCm(100);
         person.setHomePhoneNumber(new PhoneNumber());
         person.setMaritalStatus(MaritalStatus.MARRIED);
         person.setMiddleName("Else");
-        person.setMobilePhoneNumber(new PhoneNumber());
-        person.setSurName("Surname");
+        person.setMobilePhoneNumber(phoneNumber);
+        person.setSurName("ศรีสุข");
         person.setTitle("M");
-        person.setWeightInKg(100);
-        person.addRegistration(registration("3841200364454"));
+        person.setWeightInKg(75);
+
+        Registration registration = new Registration();
+        registration.setId("3841200364454");
+        person.addRegistration(registration);
+
         insured.setPerson(person);
         return insured;
     }
@@ -178,5 +191,11 @@ public class TestUtil {
 
     public static Payment payment(Double value, String currencyCode) {
         return new Payment(value, currencyCode, LocalDate.now(ZoneId.of(ZoneId.SHORT_IDS.get("VST"))));
+    }
+
+    public static void policy(Policy policy) {
+        PaymentInformation paymentInformation = new PaymentInformation();
+        paymentInformation.setMethod("12");
+        policy.getPayments().get(0).addPaymentInformation(paymentInformation);
     }
 }

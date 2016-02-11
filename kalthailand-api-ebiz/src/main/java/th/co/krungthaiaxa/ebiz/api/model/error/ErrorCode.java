@@ -25,5 +25,7 @@ public class ErrorCode {
     public static final Function<String, Error> POLICY_CANNOT_BE_CREATED = msg -> new Error("40003", "Unable to create your policy. Error is: " + msg, "The policy could not be created out of the quote for validation reasons");
     // Line token decryption
     public static final Error UNABLE_TO_DECRYPT = new Error("50001", "Unable to get your user ID", "The provided text could not be decrypted");
+    // E-Receipt
+    public static final Error UNABLE_TO_CREATE_ERECEIPT = new Error("60001", "Unable to create e-receipt", "Processing for create e-receipt fail");
 
 }

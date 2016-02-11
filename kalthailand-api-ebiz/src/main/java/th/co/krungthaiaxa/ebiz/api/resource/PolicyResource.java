@@ -3,6 +3,7 @@ package th.co.krungthaiaxa.ebiz.api.resource;
 import io.swagger.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import th.co.krungthaiaxa.ebiz.api.model.Payment;
@@ -12,10 +13,12 @@ import th.co.krungthaiaxa.ebiz.api.model.enums.ChannelType;
 import th.co.krungthaiaxa.ebiz.api.model.enums.SuccessErrorStatus;
 import th.co.krungthaiaxa.ebiz.api.model.error.Error;
 import th.co.krungthaiaxa.ebiz.api.service.PolicyService;
+import th.co.krungthaiaxa.ebiz.api.utils.ImageUtil;
 import th.co.krungthaiaxa.ebiz.api.utils.JsonUtil;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.util.Base64;
 
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -27,6 +30,9 @@ import static th.co.krungthaiaxa.ebiz.api.model.error.ErrorCode.*;
 public class PolicyResource {
     private final static Logger logger = LoggerFactory.getLogger(PolicyResource.class);
     private final PolicyService policyService;
+    @Value("${path.store.elife.ereceipt.pdf}")
+    private String eReceiptPdfStorePath;
+
 
     @Inject
     public PolicyResource(PolicyService policyService) {
@@ -129,6 +135,43 @@ public class PolicyResource {
 
         Payment payment = policyService.updatePayment(paymentId, value, currencyCode, registrationKey, status, channelType, creditCardName, paymentMethod, errorMessage);
         return new ResponseEntity<>(JsonUtil.getJson(payment), OK);
+    }
+
+    @ApiOperation(value = "Ereceipt", notes = "Get the ereceipt of a policy by return base64 image", response = String.class)
+    @ApiResponses({
+            @ApiResponse(code = 404, message = "If the policy doesn't exist", response = Error.class)
+    })
+    @RequestMapping(value = "/policies/{policyId}/ereceipt", produces = APPLICATION_JSON_VALUE, method = GET)
+    @ResponseBody
+    public ResponseEntity getPolicyEreceipt(
+            @ApiParam(value = "The policy ID")
+            @PathVariable String policyId) {
+        Policy policy;
+        byte[] bytes;
+        StringBuilder im;
+        try {
+            policy = policyService.findPolicy(policyId);
+        } catch (Exception e) {
+            logger.error("Unable to find the policy with ID [" + policyId + "]", e);
+            return new ResponseEntity<>(POLICY_DOES_NOT_EXIST, NOT_FOUND);
+        }
+
+        try{
+            bytes = policyService.createEreceipt(policy);
+            im  = new StringBuilder(eReceiptPdfStorePath);
+            im.insert(eReceiptPdfStorePath.indexOf("."),"_"+policy.getPolicyId());
+            eReceiptPdfStorePath = im.toString();
+            logger.info("Name of PDF path file [" + eReceiptPdfStorePath + "]");
+            ImageUtil.imageToPDF(bytes,eReceiptPdfStorePath);
+        }catch(Exception e){
+            logger.error("Unable to create e-receipt [" + policyId + "]", e);
+            return new ResponseEntity<>(UNABLE_TO_CREATE_ERECEIPT, INTERNAL_SERVER_ERROR);
+        }
+
+        //TODO call MailService for Ereceipt
+
+
+        return new ResponseEntity<>(JsonUtil.getJson(Base64.getEncoder().encodeToString(bytes)), OK);
     }
 
 }

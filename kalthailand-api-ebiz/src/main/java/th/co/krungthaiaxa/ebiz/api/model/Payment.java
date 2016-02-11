@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import th.co.krungthaiaxa.ebiz.api.model.enums.PaymentStatus;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @ApiModel(description = "Data concerning the payment")
@@ -19,7 +20,7 @@ public class Payment {
     private LocalDate effectiveDate;
     private Amount amount;
     private String registrationKey;
-    private List<PaymentInformation> paymentInformations;
+    private List<PaymentInformation> paymentInformations = new ArrayList<>();
 
     // Used by Jackson
     public Payment() {
@@ -95,7 +96,7 @@ public class Payment {
         return paymentInformations;
     }
 
-    public void setPaymentInformations(List<PaymentInformation> paymentInformations) {
-        this.paymentInformations = paymentInformations;
+    public void addPaymentInformation(PaymentInformation paymentInformation) {
+        paymentInformations.add(paymentInformation);
     }
 }

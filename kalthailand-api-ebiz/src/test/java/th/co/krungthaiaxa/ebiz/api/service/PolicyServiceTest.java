@@ -16,8 +16,11 @@ import th.co.krungthaiaxa.ebiz.api.model.Policy;
 import th.co.krungthaiaxa.ebiz.api.model.Quote;
 import th.co.krungthaiaxa.ebiz.api.repository.PaymentRepository;
 import th.co.krungthaiaxa.ebiz.api.resource.TestUtil;
+import th.co.krungthaiaxa.ebiz.api.utils.ImageUtil;
 
 import javax.inject.Inject;
+
+import java.io.File;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -36,6 +39,9 @@ import static th.co.krungthaiaxa.ebiz.api.resource.TestUtil.payment;
 public class PolicyServiceTest {
     @Value("${policy.number.prefix}")
     private String policyNumberPrefix;
+
+    @Value("${path.store.elife.ereceipt.pdf}")
+    private String eReceiptPdfStorePath;
 
     @Inject
     private PolicyService policyService;
@@ -182,5 +188,33 @@ public class PolicyServiceTest {
         assertThat(payment.getPaymentInformations()).extracting("rejectionErrorMessage").containsNull();
         assertThat(payment.getStatus()).isEqualTo(OVERPAID);
     }
+    @Test
+    public void should_create_bytes_for_eReceipt() throws Exception {
+        Quote quote = quoteService.createQuote(RandomStringUtils.randomNumeric(20), LINE);
+        TestUtil.quote(quote);
+        quote = quoteService.updateQuote(quote);
+        Policy policy = policyService.createPolicy(quote);
+        TestUtil.policy(policy);
+
+        byte[] bytes = policyService.createEreceipt(policy);
+        assertThat(bytes).isNotNull();
+    }
+
+    @Test
+    public void should_create_bytes_for_eReceipt_and_can_create_pdf_file_to_file_system() throws Exception {
+        Quote quote = quoteService.createQuote(RandomStringUtils.randomNumeric(20), LINE);
+        TestUtil.quote(quote);
+        quote = quoteService.updateQuote(quote);
+        Policy policy = policyService.createPolicy(quote);
+        TestUtil.policy(policy);
+
+        byte[] bytes = policyService.createEreceipt(policy);
+        assertThat(bytes).isNotNull();
+
+        ImageUtil.imageToPDF(bytes,eReceiptPdfStorePath);
+        File file = new File(eReceiptPdfStorePath);
+        assertThat(file.exists()).isTrue();
+    }
+
 
 }

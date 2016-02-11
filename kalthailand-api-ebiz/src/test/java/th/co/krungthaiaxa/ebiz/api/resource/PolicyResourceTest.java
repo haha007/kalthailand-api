@@ -105,4 +105,9 @@ public class PolicyResourceTest {
         assertThat(payments).hasSize(24);
 
     }
+
+    @Test
+    public void should_return_base64_and_also_save_pdf_format_to_file_system(){
+
+    }
 }

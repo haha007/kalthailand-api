@@ -9,10 +9,10 @@
     </appender>
 
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>/Users/carnoult/tmp/ebiz.log</file>
+        <file>C:/tmp/ebiz.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- daily rollover -->
-            <fileNamePattern>/Users/carnoult/tmp/ebiz%d.log.zip</fileNamePattern>
+            <fileNamePattern>C:/tmp/ebiz%d.log.zip</fileNamePattern>
             <!-- keep 30 days worth of history -->
             <maxHistory>30</maxHistory>
         </rollingPolicy>
