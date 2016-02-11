@@ -215,6 +215,4 @@ public class PolicyServiceTest {
         File file = new File(eReceiptPdfStorePath);
         assertThat(file.exists()).isTrue();
     }
-
-
 }
