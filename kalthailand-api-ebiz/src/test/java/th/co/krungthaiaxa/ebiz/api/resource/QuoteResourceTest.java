@@ -105,8 +105,8 @@ public class QuoteResourceTest {
 
         // check database values
         SessionQuote sessionQuote = sessionQuoteRepository.findBySessionIdAndChannelType(sessionId, ChannelType.LINE);
-        assertThat(sessionQuote.getQuoteId()).isEqualTo(id);
         Quote savedQuote = quoteRepository.findOne(id);
+        assertThat(sessionQuote.getQuoteId()).isEqualTo(savedQuote.getQuoteId());
         assertThat(savedQuote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode()).isEqualTo(PeriodicityCode.EVERY_MONTH);
         assertThat(savedQuote.getInsureds().get(0).getPerson().getGenderCode()).isEqualTo(GenderCode.MALE);
 
