@@ -107,9 +107,18 @@ public class TestUtil {
     }
 
     public static CoverageBeneficiary beneficiary(Double benefitPercent) {
+        Person person = new Person();
+        person.setGenderCode(GenderCode.FEMALE);
+        person.setGivenName("Beneficiary");
+        person.setMiddleName("");
+        person.setSurName("Benf Last name");
+        person.setTitle("M");
+        person.addRegistration(registration("3120300153833"));
+
         CoverageBeneficiary result = new CoverageBeneficiary();
         result.setCoverageBenefitPercentage(benefitPercent);
         result.setRelationship(BeneficiaryRelationshipType.CHILD);
+        result.setPerson(person);
         return result;
     }
 
@@ -143,7 +152,7 @@ public class TestUtil {
 
         Person person = new Person();
         person.setBirthDate(now().minus(ageAtSubscription, YEARS));
-        person.setEmail("something@something.com");
+        person.setEmail("insured@something.com");
         person.setGenderCode(GenderCode.FEMALE);
         person.setGeographicalAddress(geographicalAddress);
         person.setGivenName("Someone");
@@ -155,8 +164,16 @@ public class TestUtil {
         person.setSurName("Surname");
         person.setTitle("M");
         person.setWeightInKg(100);
+        person.addRegistration(registration("3841200364454"));
         insured.setPerson(person);
         return insured;
+    }
+
+    public static Registration registration(String id) {
+        Registration registration = new Registration();
+        registration.setId(id);
+        registration.setTypeName("Thai ID Card number");
+        return registration;
     }
 
     public static Payment payment(Double value, String currencyCode) {

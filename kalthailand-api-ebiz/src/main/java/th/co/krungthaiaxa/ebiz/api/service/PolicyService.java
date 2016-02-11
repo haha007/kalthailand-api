@@ -27,7 +27,7 @@ public class PolicyService {
     private final PaymentRepository paymentRepository;
     private final PolicyRepository policyRepository;
     private final QuoteRepository quoteRepository;
-    @Value("policy.number.prefix")
+    @Value("${policy.number.prefix}")
     private String policyNumberPrefix;
 
     @Inject
@@ -51,7 +51,7 @@ public class PolicyService {
         Policy policy = policyRepository.findByQuoteFunctionalId(quote.getTechnicalId());
         if (policy == null) {
             policy = new Policy();
-            policy.setPolicyId(policyNumberPrefix + RandomStringUtils.randomNumeric(20));
+            policy.setPolicyId(policyNumberPrefix + RandomStringUtils.randomNumeric(11));
             // Only one product so far
             Product10EC.getPolicyFromQuote(policy, quote);
             policy.getPayments().stream().forEach(paymentRepository::save);

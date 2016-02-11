@@ -29,8 +29,8 @@ public class Party implements Serializable {
         return registrations;
     }
 
-    public void setRegistrations(List<Registration> registrations) {
-        this.registrations = registrations;
+    public void addRegistration(Registration registration) {
+        this.registrations.add(registration);
     }
 
     @Override

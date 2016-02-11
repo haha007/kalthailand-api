@@ -34,7 +34,7 @@ import static th.co.krungthaiaxa.ebiz.api.resource.TestUtil.payment;
 @WebAppConfiguration
 @ActiveProfiles("dev")
 public class PolicyServiceTest {
-    @Value("policy.number.prefix")
+    @Value("${policy.number.prefix}")
     private String policyNumberPrefix;
 
     @Inject
