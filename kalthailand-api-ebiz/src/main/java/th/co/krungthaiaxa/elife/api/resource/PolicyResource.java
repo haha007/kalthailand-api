@@ -23,6 +23,7 @@ import java.util.Base64;
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
+import static th.co.krungthaiaxa.elife.api.model.error.ErrorCode.*;
 
 @RestController
 @Api(value = "Policies")

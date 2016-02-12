@@ -24,7 +24,9 @@ import static java.time.temporal.ChronoUnit.MONTHS;
 import static java.time.temporal.ChronoUnit.YEARS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.PaymentStatus.FUTURE;
+import static th.co.krungthaiaxa.elife.api.resource.TestUtil.*;
 
 public class Product10ECTest {
 

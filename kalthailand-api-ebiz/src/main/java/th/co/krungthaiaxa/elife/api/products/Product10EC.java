@@ -19,6 +19,7 @@ import static java.time.temporal.ChronoUnit.MONTHS;
 import static java.time.temporal.ChronoUnit.YEARS;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
+import static th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException.*;
 
 public class Product10EC {
     public final static int DURATION_COVERAGE_IN_YEAR = 10;

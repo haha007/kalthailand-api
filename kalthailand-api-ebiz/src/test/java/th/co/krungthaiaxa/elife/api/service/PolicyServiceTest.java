@@ -26,6 +26,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static th.co.krungthaiaxa.elife.api.exception.PolicyValidationException.emptyQuote;
 import static th.co.krungthaiaxa.elife.api.exception.PolicyValidationException.noneExistingQuote;
 import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
+import static th.co.krungthaiaxa.elife.api.model.enums.PaymentStatus.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.ERROR;
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.SUCCESS;
 import static th.co.krungthaiaxa.elife.api.resource.TestUtil.payment;

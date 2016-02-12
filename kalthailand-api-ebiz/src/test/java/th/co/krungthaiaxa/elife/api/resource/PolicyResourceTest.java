@@ -35,6 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.NOT_ACCEPTABLE;
 import static org.springframework.http.HttpStatus.OK;
 import static th.co.krungthaiaxa.elife.api.model.error.ErrorCode.POLICY_CANNOT_BE_CREATED;
+import static th.co.krungthaiaxa.elife.api.resource.TestUtil.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiApplication.class)
