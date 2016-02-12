@@ -25,6 +25,10 @@ import java.net.URI;
 @ActiveProfiles("dev")
 @IntegrationTest({"server.port=0"})
 public class LineResourceTest {
+    @Value("${api.security.user.name}")
+    private String apiUserName;
+    @Value("${api.security.user.password}")
+    private String apiUserPassword;
     @Value("${local.server.port}")
     private int port;
     private URI base;
@@ -33,7 +37,7 @@ public class LineResourceTest {
     @Before
     public void setUp() throws Exception {
         base = new URI("http://localhost:" + port + "/decrypt");
-        template = new TestRestTemplate();
+        template = new TestRestTemplate(apiUserName, apiUserPassword);
     }
 
     @Test
@@ -45,5 +49,4 @@ public class LineResourceTest {
         Assertions.assertThat(response.getStatusCode().value()).isEqualTo(HttpStatus.OK.value());
         Assertions.assertThat(response.getBody()).isEqualTo("{\"mid\":\"u1478b30e2039b6525218600c91fcf0a1\"}");
     }
-
 }

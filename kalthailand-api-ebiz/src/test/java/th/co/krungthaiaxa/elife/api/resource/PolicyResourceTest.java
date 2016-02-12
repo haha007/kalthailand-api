@@ -43,6 +43,10 @@ import static th.co.krungthaiaxa.elife.api.resource.TestUtil.*;
 @ActiveProfiles("dev")
 @IntegrationTest({"server.port=0"})
 public class PolicyResourceTest {
+    @Value("${api.security.user.name}")
+    private String apiUserName;
+    @Value("${api.security.user.password}")
+    private String apiUserPassword;
     @Value("${local.server.port}")
     private int port;
     private URI base;
@@ -58,7 +62,7 @@ public class PolicyResourceTest {
     @Before
     public void setUp() throws Exception {
         base = new URI("http://localhost:" + port + "/policies");
-        template = new TestRestTemplate();
+        template = new TestRestTemplate(apiUserName, apiUserPassword);
     }
 
     @Test

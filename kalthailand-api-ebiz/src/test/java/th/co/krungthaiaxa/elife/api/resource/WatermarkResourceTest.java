@@ -32,6 +32,10 @@ import static org.springframework.http.HttpStatus.*;
 @ActiveProfiles("dev")
 @IntegrationTest({"server.port=0"})
 public class WatermarkResourceTest {
+    @Value("${api.security.user.name}")
+    private String apiUserName;
+    @Value("${api.security.user.password}")
+    private String apiUserPassword;
     @Value("${local.server.port}")
     private int port;
     private URI base;
@@ -43,7 +47,7 @@ public class WatermarkResourceTest {
     @Before
     public void setUp() throws Exception {
         this.base = new URI("http://localhost:" + port + "/watermark/upload");
-        template = new TestRestTemplate();
+        template = new TestRestTemplate(apiUserName, apiUserPassword);
     }
 
     @Test
