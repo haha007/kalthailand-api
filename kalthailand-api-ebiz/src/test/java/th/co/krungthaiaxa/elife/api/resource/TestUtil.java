@@ -14,7 +14,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import static java.lang.Boolean.FALSE;
-import static java.lang.Boolean.TRUE;
 import static java.time.LocalDate.now;
 import static java.time.temporal.ChronoUnit.YEARS;
 
@@ -42,13 +41,13 @@ public class TestUtil {
         return JsonUtil.mapper.readValue(json, Error.class);
     }
 
-    public static void quote(Quote quote) {
+    public static void quote(Quote quote, PeriodicityCode periodicityCode, Double sumInsuredAmount, Insured insured, CoverageBeneficiary... beneficiaries) {
         Amount amount = new Amount();
         amount.setCurrencyCode("THB");
-        amount.setValue(1000000.0);
+        amount.setValue(sumInsuredAmount);
 
         Periodicity periodicity = new Periodicity();
-        periodicity.setCode(PeriodicityCode.EVERY_MONTH);
+        periodicity.setCode(periodicityCode);
 
         FinancialScheduler financialScheduler = new FinancialScheduler();
         financialScheduler.setPeriodicity(periodicity);
@@ -63,12 +62,14 @@ public class TestUtil {
 
         Coverage coverage = new Coverage();
         coverage.setName(Product10EC.PRODUCT_10_EC_NAME);
-        coverage.addBeneficiary(beneficiary(100.0));
+        for (CoverageBeneficiary beneficiary : beneficiaries) {
+            coverage.addBeneficiary(beneficiary);
+        }
 
         quote.setCommonData(commonData);
         quote.setPremiumsData(premiumsData);
         quote.getInsureds().remove(0);
-        quote.addInsured(insured(35, TRUE));
+        quote.addInsured(insured);
         quote.addCoverage(coverage);
     }
 

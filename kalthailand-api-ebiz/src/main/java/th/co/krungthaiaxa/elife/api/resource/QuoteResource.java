@@ -27,6 +27,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 public class QuoteResource {
     private final static Logger logger = LoggerFactory.getLogger(QuoteResource.class);
     private final QuoteService quoteService;
+    private final EmailService emailService;
     @Value("${email.smtp.server}")
     private String smtp;
     @Value("${email.name}")
@@ -37,8 +38,9 @@ public class QuoteResource {
     private String lineURL;
 
     @Inject
-    public QuoteResource(QuoteService quoteService) {
+    public QuoteResource(QuoteService quoteService, EmailService emailService) {
         this.quoteService = quoteService;
+        this.emailService = emailService;
     }
 
     @ApiOperation(value = "Sending email for quote", notes = "Sending email for quote", response = Quote.class)
@@ -72,7 +74,7 @@ public class QuoteResource {
                 quote.getInsureds().add(insured);
                 */
 
-                (new EmailService()).sendEmail(quote, base64Image, smtp, emailName, subject, lineURL);
+                emailService.sendEmail(quote, base64Image, smtp, emailName, subject, lineURL);
             } catch (Exception e) {
                 logger.error("Unable to send email for [" + quote.getInsureds().get(0).getPerson().getEmail() + "]", e);
                 return new ResponseEntity<>(ErrorCode.UNABLE_TO_SEND_EMAIL, NOT_ACCEPTABLE);
