@@ -27,7 +27,7 @@ import static th.co.krungthaiaxa.elife.api.exception.PolicyValidationException.e
 import static th.co.krungthaiaxa.elife.api.exception.PolicyValidationException.noneExistingQuote;
 import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
 import static th.co.krungthaiaxa.elife.api.model.enums.PaymentStatus.*;
-import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_MONTH;
+import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_YEAR;
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.ERROR;
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.SUCCESS;
 import static th.co.krungthaiaxa.elife.api.resource.TestUtil.*;
@@ -66,7 +66,7 @@ public class PolicyServiceTest {
     @Test
     public void should_add_generated_ids_when_saving_policy_for_first_time() throws Exception {
         Quote quote = quoteService.createQuote(RandomStringUtils.randomNumeric(20), LINE);
-        quote(quote, EVERY_MONTH, 1000000.0, insured(35, Boolean.TRUE), beneficiary(100.0));
+        quote(quote, EVERY_YEAR, 1000000.0, insured(35, Boolean.TRUE), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 
         Policy policy = policyService.createPolicy(quote);
@@ -179,7 +179,7 @@ public class PolicyServiceTest {
     @Test
     public void should_create_bytes_for_eReceipt() throws Exception {
         Quote quote = quoteService.createQuote(RandomStringUtils.randomNumeric(20), LINE);
-        quote(quote, EVERY_MONTH, 1000000.0, insured(35, Boolean.TRUE), beneficiary(100.0));
+        quote(quote, EVERY_YEAR, 1000000.0, insured(35, Boolean.TRUE), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
         Policy policy = policyService.createPolicy(quote);
         TestUtil.policy(policy);
@@ -191,7 +191,7 @@ public class PolicyServiceTest {
     @Test
     public void should_create_bytes_for_eReceipt_and_can_create_pdf_file_to_file_system() throws Exception {
         Quote quote = quoteService.createQuote(RandomStringUtils.randomNumeric(20), LINE);
-        quote(quote, EVERY_MONTH, 1000000.0, insured(35, Boolean.TRUE), beneficiary(100.0));
+        quote(quote, EVERY_YEAR, 1000000.0, insured(35, Boolean.TRUE), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
         Policy policy = policyService.createPolicy(quote);
         TestUtil.policy(policy);
