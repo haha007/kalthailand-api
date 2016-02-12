@@ -263,7 +263,7 @@ public class Product10EC {
                 && premiumsData.getLifeInsuranceSumInsured().getValue() > 1000000.0) {
             throw sumInsuredTooHighException;
         } else if (premiumsData.getLifeInsuranceSumInsured().getCurrencyCode().equalsIgnoreCase(PRODUCT_10_EC_CURRENCY)
-                && premiumsData.getLifeInsuranceSumInsured().getValue() < 200000.0) {
+                && premiumsData.getLifeInsuranceSumInsured().getValue() < 100000.0) {
             throw sumInsuredTooLowException;
         }
     }
