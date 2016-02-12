@@ -76,6 +76,14 @@ public class QuoteService {
         return quoteRepository.save(quote);
     }
 
+    public Quote findByQuoteId(String quoteId) throws Exception {
+        try {
+            return quoteRepository.findByQuoteId(quoteId);
+        }catch (RuntimeException e) {
+            throw new Exception(e);
+        }
+    }
+
     private Quote basicCalculateQuote(Quote quote) {
         // calculate age
         quote.getInsureds().stream()

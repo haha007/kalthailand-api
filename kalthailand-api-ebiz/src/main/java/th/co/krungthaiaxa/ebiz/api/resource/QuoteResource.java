@@ -3,14 +3,19 @@ package th.co.krungthaiaxa.ebiz.api.resource;
 import io.swagger.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import th.co.krungthaiaxa.ebiz.api.model.Insured;
+import th.co.krungthaiaxa.ebiz.api.model.Person;
 import th.co.krungthaiaxa.ebiz.api.model.Quote;
 import th.co.krungthaiaxa.ebiz.api.model.enums.ChannelType;
 import th.co.krungthaiaxa.ebiz.api.model.error.Error;
 import th.co.krungthaiaxa.ebiz.api.model.error.ErrorCode;
+import th.co.krungthaiaxa.ebiz.api.service.EmailService;
 import th.co.krungthaiaxa.ebiz.api.service.QuoteService;
 import th.co.krungthaiaxa.ebiz.api.utils.JsonUtil;
 
@@ -18,6 +23,7 @@ import javax.inject.Inject;
 import java.io.IOException;
 
 import static org.springframework.http.HttpStatus.NOT_ACCEPTABLE;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
@@ -32,6 +38,57 @@ public class QuoteResource {
     @Inject
     public QuoteResource(QuoteService quoteService) {
         this.quoteService = quoteService;
+    }
+    @Value("${email.smtp.server}")
+    private String smtp;
+
+    @Value("${email.name}")
+    private String emailName;
+
+    @Value("${email.subject}")
+    private String subject;
+
+    @Value("${lineid}")
+    private String lineURL;
+
+    @ApiOperation(value = "Sending email for quote", notes = "Sending email for quote", response = Quote.class)
+    @RequestMapping(value = "/quotes/{quoteId}/email", produces = APPLICATION_JSON_VALUE, method = POST)
+    @ResponseBody
+    public ResponseEntity sendEmail(
+            @ApiParam(value = "The quote Id")
+            @PathVariable String quoteId,
+            @ApiParam(value = "The content of the graph image in base 64 encoded.")
+            @RequestParam String base64Image) {
+
+        Quote quote = null;
+        try {
+            quote = quoteService.findByQuoteId(quoteId);
+        } catch (Exception e) {
+            logger.error("Unable to get a quote for quote Id [" + quoteId + "]", e);
+            return new ResponseEntity<>(ErrorCode.ERROR_WHILE_GET_QUOTE_DATA, NOT_FOUND);
+        }
+
+        if(null==quote){
+            return new ResponseEntity<>(ErrorCode.QUOTE_DOSE_NOT_EXIST, NOT_FOUND);
+        }else{
+            try {
+
+                //for test
+                /*
+                Person person = new Person();
+                person.setEmail("santi.lik@krungthai-axa.co.th");
+                Insured insured = new Insured();
+                insured.setPerson(person);
+                quote.getInsureds().add(insured);
+                */
+
+                (new EmailService()).sendEmail(quote, base64Image, smtp, emailName, subject, lineURL);
+            } catch (Exception e) {
+                logger.error("Unable to send email for [" + quote.getInsureds().get(0).getPerson().getEmail() + "]", e);
+                return new ResponseEntity<>(ErrorCode.UNABLE_TO_SEND_EMAIL, NOT_ACCEPTABLE);
+            }
+            return new ResponseEntity<>(JsonUtil.getJson("OK"), OK);
+        }
     }
 
     @ApiOperation(value = "Creates an empty quote", notes = "Creates an empty quote, attached to the session ID. " +

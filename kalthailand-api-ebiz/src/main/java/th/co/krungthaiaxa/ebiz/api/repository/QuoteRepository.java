@@ -6,4 +6,5 @@ import th.co.krungthaiaxa.ebiz.api.model.Quote;
 
 @Repository
 public interface QuoteRepository extends PagingAndSortingRepository<Quote, String> {
+    Quote findByQuoteId(String quoteId);
 }
