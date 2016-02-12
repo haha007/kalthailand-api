@@ -84,7 +84,7 @@ public class PolicyServiceTest {
         assertThat(updatedPayment.getEffectiveDate()).isNull();
         assertThat(updatedPayment.getPaymentInformations()).hasSize(1);
         assertThat(updatedPayment.getPaymentInformations()).extracting("rejectionErrorMessage").containsOnly("Error msg");
-        assertThat(updatedPayment.getStatus()).isEqualTo(INCOMLETE);
+        assertThat(updatedPayment.getStatus()).isEqualTo(INCOMPLETE);
     }
 
     @Test
@@ -159,7 +159,7 @@ public class PolicyServiceTest {
         assertThat(payment.getEffectiveDate()).isNull();
         assertThat(payment.getPaymentInformations()).hasSize(1);
         assertThat(payment.getPaymentInformations()).extracting("rejectionErrorMessage").containsOnly("Currencies are different");
-        assertThat(payment.getStatus()).isEqualTo(INCOMLETE);
+        assertThat(payment.getStatus()).isEqualTo(INCOMPLETE);
     }
 
     @Test

@@ -132,7 +132,7 @@ public class PolicyService {
                 .mapToDouble(tmp -> tmp.getAmount().getValue())
                 .sum();
         if (totalSuccesfulPayments < payment.getAmount().getValue()) {
-            payment.setStatus(PaymentStatus.INCOMLETE);
+            payment.setStatus(PaymentStatus.INCOMPLETE);
         } else if (Objects.equals(totalSuccesfulPayments, payment.getAmount().getValue())) {
             payment.setStatus(PaymentStatus.COMPLETED);
             payment.setEffectiveDate(paymentInformation.getDate());
