@@ -26,6 +26,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.PaymentStatus.FUTURE;
+import static th.co.krungthaiaxa.elife.api.products.Product10EC.SUM_INSURED_MAX;
+import static th.co.krungthaiaxa.elife.api.products.Product10EC.SUM_INSURED_MIN;
 import static th.co.krungthaiaxa.elife.api.resource.TestUtil.*;
 
 public class Product10ECTest {
@@ -59,7 +61,7 @@ public class Product10ECTest {
     }
 
     @Test
-    public void should_return_error_when_sum_insured_is_more_than_1_million_baht() throws Exception {
+    public void should_return_error_when_sum_insured_is_over_the_limit() throws Exception {
         Quote quote = quote(PeriodicityCode.EVERY_YEAR, insured(25, TRUE), beneficiary(100.0));
 
         Amount amount = new Amount();
@@ -69,21 +71,21 @@ public class Product10ECTest {
 
         assertThatThrownBy(() -> Product10EC.calculateQuote(quote))
                 .isInstanceOf(QuoteCalculationException.class)
-                .hasMessage(sumInsuredTooHighException.getMessage());
+                .hasMessage(sumInsuredTooHighException.apply(SUM_INSURED_MAX).getMessage());
     }
 
     @Test
-    public void should_return_error_when_sum_insured_is_less_than_200_thousand_baht() throws Exception {
+    public void should_return_error_when_sum_insured_is_below_the_limit() throws Exception {
         Quote quote = quote(PeriodicityCode.EVERY_YEAR, insured(25, TRUE), beneficiary(100.0));
 
         Amount amount = new Amount();
         amount.setCurrencyCode("THB");
-        amount.setValue(199999.0);
+        amount.setValue(99999.0);
         quote.getPremiumsData().setLifeInsuranceSumInsured(amount);
 
         assertThatThrownBy(() -> Product10EC.calculateQuote(quote))
                 .isInstanceOf(QuoteCalculationException.class)
-                .hasMessage(sumInsuredTooLowException.getMessage());
+                .hasMessage(sumInsuredTooLowException.apply(SUM_INSURED_MIN).getMessage());
     }
 
     @Test

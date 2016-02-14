@@ -83,8 +83,6 @@ public class QuoteServiceTest {
         assertThat(quote.getPremiumsData().getLifeInsuranceMaximumExtraDividende()).isEmpty();
         assertThat(quote.getPremiumsData().getLifeInsuranceYearlyCashBacks()).isEmpty();
         Assertions.assertThat(quote.getCoverages()).isEmpty();
-        assertThat(quote.getCommonData().getProductId()).isNull();
-        assertThat(quote.getCommonData().getProductName()).isNull();
     }
 
     @Test

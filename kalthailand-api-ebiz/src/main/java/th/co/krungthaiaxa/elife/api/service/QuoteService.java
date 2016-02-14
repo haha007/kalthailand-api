@@ -14,6 +14,8 @@ import javax.inject.Inject;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
+import static th.co.krungthaiaxa.elife.api.products.Product10EC.PRODUCT_10_EC_NAME;
+
 @Service
 public class QuoteService {
 
@@ -46,9 +48,11 @@ public class QuoteService {
             insured.setPerson(new Person());
             insured.setType(InsuredType.Insured);
 
+
             quote = new Quote();
             quote.setQuoteId(RandomStringUtils.randomNumeric(20));
-            quote.setCommonData(new CommonData());
+            // There's only one product so far
+            quote.setCommonData(Product10EC.getCommonData());
             quote.setPremiumsData(premiumsData);
             quote.addInsured(insured);
             quote = quoteRepository.save(quote);

@@ -1,5 +1,6 @@
 package th.co.krungthaiaxa.elife.api.resource;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,6 +24,7 @@ import th.co.krungthaiaxa.elife.api.model.error.Error;
 import th.co.krungthaiaxa.elife.api.repository.PaymentRepository;
 import th.co.krungthaiaxa.elife.api.repository.PolicyRepository;
 import th.co.krungthaiaxa.elife.api.repository.QuoteRepository;
+import th.co.krungthaiaxa.elife.api.service.QuoteService;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -34,6 +36,9 @@ import static java.lang.Boolean.TRUE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.NOT_ACCEPTABLE;
 import static org.springframework.http.HttpStatus.OK;
+import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
+import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_QUARTER;
+import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_YEAR;
 import static th.co.krungthaiaxa.elife.api.model.error.ErrorCode.POLICY_CANNOT_BE_CREATED;
 import static th.co.krungthaiaxa.elife.api.resource.TestUtil.*;
 
@@ -53,11 +58,11 @@ public class PolicyResourceTest {
     private RestTemplate template;
 
     @Inject
-    private PaymentRepository paymentRepository;
-    @Inject
     private PolicyRepository policyRepository;
     @Inject
     private QuoteRepository quoteRepository;
+    @Inject
+    private QuoteService quoteService;
 
     @Before
     public void setUp() throws Exception {
@@ -68,7 +73,7 @@ public class PolicyResourceTest {
     @Test
     public void should_return_error_when_creating_policy_from_none_existing_quote() throws IOException {
         MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
-        parameters.add("jsonQuote", getJSon(quote(PeriodicityCode.EVERY_QUARTER, insured(25, TRUE), beneficiary(100.0))));
+        parameters.add("jsonQuote", getJSon(quote(EVERY_QUARTER, insured(25, TRUE), beneficiary(100.0))));
 
         ResponseEntity<String> response = template.postForEntity(base, parameters, String.class);
         assertThat(response.getStatusCode().value()).isEqualTo(NOT_ACCEPTABLE.value());
@@ -77,27 +82,31 @@ public class PolicyResourceTest {
     }
 
     @Test
-    public void should_return_a_policy_object() throws IOException {
-        Quote savedQuote = quoteRepository.save(quote(PeriodicityCode.EVERY_QUARTER, insured(25, TRUE), beneficiary(100.0)));
-        MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
-        parameters.add("jsonQuote", getJSon(savedQuote));
+    public void should_return_a_policy_object() throws Exception {
+        Quote quote = quoteService.createQuote(RandomStringUtils.randomNumeric(20), LINE);
+        quote(quote, EVERY_YEAR, 1000000.0, insured(35, Boolean.TRUE), beneficiary(100.0));
+        quote = quoteService.updateQuote(quote);
 
+        MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
+        parameters.add("jsonQuote", getJSon(quote));
         ResponseEntity<String> response = template.postForEntity(base, parameters, String.class);
         assertThat(response.getStatusCode().value()).isEqualTo(OK.value());
         Policy policy = TestUtil.getPolicyFromJSon(response.getBody());
 
         // check database values
         Policy savedPolicy = policyRepository.findOne(policy.getId());
-        assertThat(savedPolicy.getPayments()).hasSize(24);
-        assertThat(policy.getPayments()).hasSize(24);
+        assertThat(savedPolicy.getId()).isNotNull();
+        assertThat(savedPolicy.getPolicyId()).isNotNull();
     }
 
     @Test
-    public void should_return_policy_payment_list() throws IOException, URISyntaxException {
-        Quote savedQuote = quoteRepository.save(quote(PeriodicityCode.EVERY_QUARTER, insured(25, TRUE), beneficiary(100.0)));
-        MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
-        parameters.add("jsonQuote", getJSon(savedQuote));
+    public void should_return_policy_payment_list() throws Exception {
+        Quote quote = quoteService.createQuote(RandomStringUtils.randomNumeric(20), LINE);
+        quote(quote, EVERY_YEAR, 1000000.0, insured(35, Boolean.TRUE), beneficiary(100.0));
+        quote = quoteService.updateQuote(quote);
 
+        MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
+        parameters.add("jsonQuote", getJSon(quote));
         ResponseEntity<String> response = template.postForEntity(base, parameters, String.class);
         assertThat(response.getStatusCode().value()).isEqualTo(OK.value());
         Policy policy = TestUtil.getPolicyFromJSon(response.getBody());
@@ -106,8 +115,7 @@ public class PolicyResourceTest {
         ResponseEntity<String> paymentResponse = template.getForEntity(paymentURI, String.class);
         List<Payment> payments = TestUtil.getPaymentsFromJSon(paymentResponse.getBody());
         assertThat(paymentResponse.getStatusCode().value()).isEqualTo(OK.value());
-        assertThat(payments).hasSize(24);
-
+        assertThat(payments).hasSize(6);
     }
 
     @Test

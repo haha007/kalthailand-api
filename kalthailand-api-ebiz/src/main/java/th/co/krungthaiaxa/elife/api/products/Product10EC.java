@@ -26,6 +26,10 @@ public class Product10EC {
     public final static int DURATION_PAYMENT_IN_YEAR = 6;
     public final static String PRODUCT_10_EC_NAME = "10 EC";
     public final static String PRODUCT_10_EC_CURRENCY = "THB";
+    public static final Double SUM_INSURED_MIN = 100000.0;
+    public static final Double SUM_INSURED_MAX = 1000000.0;
+    public static final Double PREMIUM_MIN = 2682.0;
+    public static final Double PREMIUM_MAX = 308000.0;
 
 
     private static Function<Integer, Integer> dvdRate = numberOfYearsOfContract -> {
@@ -112,8 +116,6 @@ public class Product10EC {
             quote.getPremiumsData().setLifeInsuranceMinimumExtraDividende(new ArrayList<>());
             quote.getPremiumsData().setLifeInsuranceMinimumYearlyReturns(new ArrayList<>());
             quote.getPremiumsData().setLifeInsuranceYearlyCashBacks(new ArrayList<>());
-            quote.getCommonData().setProductId(null);
-            quote.getCommonData().setProductName(null);
             if (has10ECCoverage.isPresent()) {
                 quote.getCoverages().remove(has10ECCoverage.get());
             }
@@ -130,16 +132,17 @@ public class Product10EC {
         quote.getInsureds().stream().filter(Insured::getMainInsuredIndicator).findFirst().get().setEndDate(endDate);
         quote.getPremiumsData().getFinancialScheduler().setEndDate(endDate);
 
-        // calculates premium / sum insured
         PremiumsDataLifeInsurance premiumsData = quote.getPremiumsData();
+        // cannot insure too much or not enough
+        checkSumInsured(premiumsData);
+        checkPremium(premiumsData);
+
+        // calculates premium / sum insured
         if (premiumsData.getLifeInsuranceSumInsured() != null) {
             premiumsData.getFinancialScheduler().setModalAmount(getPremiumFromSumInsured(quote));
         } else {
             premiumsData.setLifeInsuranceSumInsured(getSumInsuredFromPremium(quote));
         }
-
-        // cannot insure too much or not enough
-        checkSumInsured(premiumsData);
 
         // calculates yearly cash backs
         premiumsData.setLifeInsuranceYearlyCashBacks(calculateDatedAmount(quote, null, dvdRate));
@@ -157,8 +160,6 @@ public class Product10EC {
         if (!has10ECCoverage.isPresent()) {
             Coverage coverage = new Coverage();
             coverage.setName(PRODUCT_10_EC_NAME);
-            quote.getCommonData().setProductId(PRODUCT_10_EC_NAME);
-            quote.getCommonData().setProductName(PRODUCT_10_EC_NAME);
             quote.addCoverage(coverage);
         }
 
@@ -199,6 +200,19 @@ public class Product10EC {
 
         // Add future payment schedule
         addPayments(policy);
+    }
+
+    public static CommonData getCommonData() {
+        CommonData commonData  = new CommonData();
+        commonData.setMaxPremium(amount(PREMIUM_MAX));
+        commonData.setMaxSumInsured(amount(SUM_INSURED_MAX));
+        commonData.setMinPremium(amount(PREMIUM_MIN));
+        commonData.setMinSumInsured(amount(SUM_INSURED_MIN));
+        commonData.setNbOfYearsOfCoverage(DURATION_COVERAGE_IN_YEAR);
+        commonData.setNbOfYearsOfPremium(DURATION_PAYMENT_IN_YEAR);
+        commonData.setProductId(PRODUCT_10_EC_NAME);
+        commonData.setProductName(PRODUCT_10_EC_NAME);
+        return commonData;
     }
 
     private static void addPayments(Policy policy) {
@@ -259,12 +273,32 @@ public class Product10EC {
     }
 
     private static void checkSumInsured(PremiumsDataLifeInsurance premiumsData) throws QuoteCalculationException {
-        if (premiumsData.getLifeInsuranceSumInsured().getCurrencyCode().equalsIgnoreCase(PRODUCT_10_EC_CURRENCY)
-                && premiumsData.getLifeInsuranceSumInsured().getValue() > 1000000.0) {
-            throw sumInsuredTooHighException;
-        } else if (premiumsData.getLifeInsuranceSumInsured().getCurrencyCode().equalsIgnoreCase(PRODUCT_10_EC_CURRENCY)
-                && premiumsData.getLifeInsuranceSumInsured().getValue() < 100000.0) {
-            throw sumInsuredTooLowException;
+        if (premiumsData.getLifeInsuranceSumInsured() == null || premiumsData.getLifeInsuranceSumInsured().getValue() == null) {
+            // no amount to check
+            return;
+        } else if (!PRODUCT_10_EC_CURRENCY.equalsIgnoreCase(premiumsData.getLifeInsuranceSumInsured().getCurrencyCode())) {
+            throw sumInsuredCurrencyException.apply(PRODUCT_10_EC_CURRENCY);
+        }
+
+        if (premiumsData.getLifeInsuranceSumInsured().getValue() > SUM_INSURED_MAX) {
+            throw sumInsuredTooHighException.apply(SUM_INSURED_MAX);
+        } else if (premiumsData.getLifeInsuranceSumInsured().getValue() < SUM_INSURED_MIN) {
+            throw sumInsuredTooLowException.apply(SUM_INSURED_MIN);
+        }
+    }
+
+    private static void checkPremium(PremiumsDataLifeInsurance premiumsData) throws QuoteCalculationException {
+        if (premiumsData.getFinancialScheduler().getModalAmount() == null || premiumsData.getFinancialScheduler().getModalAmount().getValue() == null) {
+            // no amount to check
+            return;
+        } else if (!PRODUCT_10_EC_CURRENCY.equalsIgnoreCase(premiumsData.getFinancialScheduler().getModalAmount().getCurrencyCode())) {
+            throw premiumCurrencyException.apply(PRODUCT_10_EC_CURRENCY);
+        }
+
+        if (premiumsData.getFinancialScheduler().getModalAmount().getValue() > PREMIUM_MAX) {
+            throw premiumTooHighException.apply(PREMIUM_MAX);
+        } else if (premiumsData.getFinancialScheduler().getModalAmount().getValue() < PREMIUM_MIN) {
+            throw premiumTooLowException.apply(PREMIUM_MIN);
         }
     }
 
@@ -470,5 +504,12 @@ public class Product10EC {
         java.util.regex.Pattern p = java.util.regex.Pattern.compile(ePattern);
         java.util.regex.Matcher m = p.matcher(email);
         return m.matches();
+    }
+
+    private static Amount amount(Double value) {
+        Amount amount = new Amount();
+        amount.setCurrencyCode(PRODUCT_10_EC_CURRENCY);
+        amount.setValue(value);
+        return amount;
     }
 }
