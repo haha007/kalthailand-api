@@ -1,4 +1,4 @@
-package th.co.krungthaiaxa.elife.api.service;
+package th.co.krungthaiaxa.elife.api.utils;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
@@ -90,13 +90,13 @@ public class EmailSender {
     }
 
     private Session getSession(String smtpFrom) {
-        Properties smtpProperties = new Properties();
-        smtpProperties.put("mail.smtp.auth", "false");
-        smtpProperties.put("mail.smtp.host", smtpHost);
-        smtpProperties.put("mail.smtp.port", smtpPort);
-        smtpProperties.put("mail.smtp.from", smtpFrom);
+        Properties properties = new Properties();
+        properties.put("mail.smtp.auth", "false");
+        properties.put("mail.smtp.host", smtpHost);
+        properties.put("mail.smtp.port", smtpPort);
+        properties.put("mail.smtp.from", smtpFrom);
 
-        return Session.getInstance(smtpProperties);
+        return Session.getInstance(properties);
     }
 
 }

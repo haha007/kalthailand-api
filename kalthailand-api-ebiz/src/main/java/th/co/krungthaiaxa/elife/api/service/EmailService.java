@@ -4,6 +4,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.elife.api.model.DatedAmount;
 import th.co.krungthaiaxa.elife.api.model.Quote;
+import th.co.krungthaiaxa.elife.api.utils.EmailSender;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -29,10 +30,10 @@ public class EmailService {
 
     public void sendEmail(Quote quote, String base64Image, String smtp, String emailName, String subject, String lineURL) throws Exception {
         List<Pair<byte[], String>> base64ImgFileNames = new ArrayList<>();
-        base64ImgFileNames.add(Pair.of(Base64.getDecoder().decode(base64Image), "imageEbiz2"));
-        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/benefitBlue.jpg")), "benefitRed"));
-        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/benefitGreen.jpg")), "benefitGreen"));
-        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/benefitPoint.jpg")), "benefitPoint"));
+        base64ImgFileNames.add(Pair.of(Base64.getDecoder().decode(base64Image), "<imageEbiz2>"));
+        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/benefitBlue.jpg")), "<benefitRed>"));
+        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/benefitGreen.jpg")), "<benefitGreen>"));
+        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/benefitPoint.jpg")), "<benefitPoint>"));
         emailSender.sendEmail(emailName, quote.getInsureds().get(0).getPerson().getEmail(), subject, getEmailContent(quote, lineURL), base64ImgFileNames);
     }
 
