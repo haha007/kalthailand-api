@@ -28,14 +28,6 @@ public class QuoteResource {
     private final static Logger logger = LoggerFactory.getLogger(QuoteResource.class);
     private final QuoteService quoteService;
     private final EmailService emailService;
-    @Value("${email.smtp.server}")
-    private String smtp;
-    @Value("${email.name}")
-    private String emailName;
-    @Value("${email.subject}")
-    private String subject;
-    @Value("${lineid}")
-    private String lineURL;
 
     @Inject
     public QuoteResource(QuoteService quoteService, EmailService emailService) {
@@ -64,17 +56,7 @@ public class QuoteResource {
             return new ResponseEntity<>(ErrorCode.QUOTE_DOSE_NOT_EXIST, NOT_FOUND);
         } else {
             try {
-
-                //for test
-                /*
-                Person person = new Person();
-                person.setEmail("santi.lik@krungthai-axa.co.th");
-                Insured insured = new Insured();
-                insured.setPerson(person);
-                quote.getInsureds().add(insured);
-                */
-
-                emailService.sendEmail(quote, base64Image, smtp, emailName, subject, lineURL);
+                emailService.sendQuoteEmail(quote, base64Image);
             } catch (Exception e) {
                 logger.error("Unable to send email for [" + quote.getInsureds().get(0).getPerson().getEmail() + "]", e);
                 return new ResponseEntity<>(ErrorCode.UNABLE_TO_SEND_EMAIL, NOT_ACCEPTABLE);

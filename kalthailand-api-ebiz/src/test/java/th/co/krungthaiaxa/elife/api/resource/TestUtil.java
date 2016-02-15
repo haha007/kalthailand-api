@@ -160,7 +160,7 @@ public class TestUtil {
 
         Person person = new Person();
         person.setBirthDate(now().minus(ageAtSubscription, YEARS));
-        person.setEmail("wuttichai.sri@krungthai-axa.co.th");
+        person.setEmail("santi.lik@krungthai-axa.co.th");
         person.setGenderCode(GenderCode.FEMALE);
         person.setGeographicalAddress(geographicalAddress);
         person.setGivenName("วุฒิชัย");

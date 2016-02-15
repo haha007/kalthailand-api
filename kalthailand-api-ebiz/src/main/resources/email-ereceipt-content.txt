@@ -1,0 +1,50 @@
+<html>
+              <head>
+              <meta charset="UTF-8">
+                                       <title></title>
+                                        <style type="text/css">
+                                                        body{
+                                                                        color: #858585;
+                                                        }
+                                                        .header{
+                                                                        color: #0D1366;
+                                                                        font-weight:bold;
+                                                                        font-size:1.5em;
+                                                        }
+                                                        .value{
+                                                                        color: #0081CB;
+                                                        }
+                                                        .btn{
+                                                                        diplay:block;
+                                                                        background-color: #0D1366;
+                                                                        color: white;
+                                                                        padding:15px;
+                                                                        text-decoration:none;
+                                                                        border-radius:5px;
+                                                                        margin:5px;
+                                                        }
+                                        </style>
+                        </head>
+                        <body>
+                                       <table align="center">
+                                            <picture>
+        										            			<div style="margin-top:50px;text-align:center;">
+        																          <img src="cid:imageEbiz">
+        										            			</div>
+                                            </picture>
+                                             <tr><td>เรียนคุณ %1$s </td></tr>
+                                             <tr><td>&nbsp;</td></tr>
+                                             <tr><td>กรุงไทย-แอกซ่า ประกันชีวิต ขอขอบคุณ %2$s<br/>
+        																      ที่วางใจกรุงไทย-แอกซ่า และทำการสั่งซื้อประกัน 10EC อีซี่แคช</td>        																      </tr>
+                                             <tr><td>&nbsp;</td></tr>
+                                             <tr><td>ทางบริษัทฯ ได้ส่งสำเนาใบเสร็จอิเล็กทรอนิกส์ให้คุณในไฟล์แนบ และผู้เชี่ยวชาญของเรา <br/>
+        																      จะติดต่อคุณกลับภายใน 30 นาทีหลังจากคุณส่งเอกสารยืนยันตัวบุคคล <br/>
+        															        หากมีข้อสงสัยใดๆ สามารถติดต่อศูนย์บริการลูกค้าได้ที่ 1159 <br/>
+        																      </td></tr>
+        																      <tr><td>&nbsp;</td></tr>
+																              <tr><td>ขอแสดงความนับถือ</td></tr>
+                                              <tr><td>กรุงไทย-แอกซ่า ประกันชีวิต</td></tr>
+                                      </table>
+                                      <div style="text-align:center;margin-top:80px;"><a class="btn" href=&3$s>UPLOAD YOUR ID NOW</a></div>
+                        </body>
+        </html>

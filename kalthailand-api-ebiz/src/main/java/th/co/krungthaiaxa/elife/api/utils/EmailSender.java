@@ -8,9 +8,11 @@ import org.springframework.stereotype.Component;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
+import javax.activation.FileDataSource;
 import javax.mail.*;
 import javax.mail.internet.*;
 import javax.mail.util.ByteArrayDataSource;
+import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
@@ -28,20 +30,20 @@ public class EmailSender {
     @Value("${email.smtp.port}")
     private String smtpPort;
 
-    public void sendEmail(String fromEmailAddress, String toEmailAddress, String emailSubject, String emailContent, List<Pair<byte[], String>> images)
+    public void sendEmail(String fromEmailAddress, String toEmailAddress, String emailSubject, String emailContent, List<Pair<byte[], String>> images, List<File> attachments)
             throws MessagingException, IOException {
-        sendMessage(fromEmailAddress, toEmailAddress, emailSubject, emailContent, images);
+        sendMessage(fromEmailAddress, toEmailAddress, emailSubject, emailContent, images, attachments);
     }
 
     private void sendMessage(String fromEmailAddress, String toEmailAddress, String emailSubject, String emailContent,
-                             List<Pair<byte[], String>> images) throws MessagingException, IOException {
+                             List<Pair<byte[], String>> images, List<File> attachments) throws MessagingException, IOException {
         hasText(smtpHost, "smtpHost is a mandatory value and cannot be null/blank");
         hasText(smtpPort, "smtpPort is a mandatory value and cannot be null/blank");
 
-        Transport.send(generateMessage(fromEmailAddress, toEmailAddress, emailSubject, emailContent, images));
+        Transport.send(generateMessage(fromEmailAddress, toEmailAddress, emailSubject, emailContent, images, attachments));
     }
 
-    private MimeMessage generateMessage(String fromEmailAddress, String toEmailAddress, String emailSubject, String emailContent, List<Pair<byte[], String>> images)
+    private MimeMessage generateMessage(String fromEmailAddress, String toEmailAddress, String emailSubject, String emailContent, List<Pair<byte[], String>> images, List<File> attachments)
             throws MessagingException, IOException {
 
         notNull(fromEmailAddress, "email from is required");
@@ -52,6 +54,11 @@ public class EmailSender {
         Multipart multipart = new MimeMultipart();
         for (Pair<byte[], String> image : images) {
             multipart.addBodyPart(getImageBodyPart(image));
+        }
+        if(null!=attachments){
+            for (File attachment : attachments) {
+                multipart.addBodyPart(getAttachmentBodyPart(attachment));
+            }
         }
         multipart.addBodyPart(getContentBodyPart(emailContent, "text/html;charset=utf-8"));
 
@@ -86,6 +93,14 @@ public class EmailSender {
         DataSource source = new ByteArrayDataSource(image.getLeft(), "application/octet-stream");
         messageBodyPart.setDataHandler(new DataHandler(source));
         messageBodyPart.addHeader("Content-ID", image.getRight());
+        return messageBodyPart;
+    }
+
+    private BodyPart getAttachmentBodyPart(File attachment) throws MessagingException {
+        BodyPart messageBodyPart = new MimeBodyPart();
+        DataSource source = new FileDataSource(attachment);
+        messageBodyPart.setDataHandler(new DataHandler(source));
+        messageBodyPart.setFileName(attachment.getName());
         return messageBodyPart;
     }
 
