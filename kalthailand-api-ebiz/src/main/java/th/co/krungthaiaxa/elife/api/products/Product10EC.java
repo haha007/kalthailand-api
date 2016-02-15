@@ -24,7 +24,8 @@ import static th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException.*
 public class Product10EC {
     public final static int DURATION_COVERAGE_IN_YEAR = 10;
     public final static int DURATION_PAYMENT_IN_YEAR = 6;
-    public final static String PRODUCT_10_EC_NAME = "10 EC";
+    public final static String PRODUCT_10_EC_ID = "10EC";
+    public final static String PRODUCT_10_EC_NAME = "Product 10 EC";
     public final static String PRODUCT_10_EC_CURRENCY = "THB";
     public static final Double SUM_INSURED_MIN = 100000.0;
     public static final Double SUM_INSURED_MAX = 1000000.0;
@@ -210,7 +211,7 @@ public class Product10EC {
         commonData.setMinSumInsured(amount(SUM_INSURED_MIN));
         commonData.setNbOfYearsOfCoverage(DURATION_COVERAGE_IN_YEAR);
         commonData.setNbOfYearsOfPremium(DURATION_PAYMENT_IN_YEAR);
-        commonData.setProductId(PRODUCT_10_EC_NAME);
+        commonData.setProductId(PRODUCT_10_EC_ID);
         commonData.setProductName(PRODUCT_10_EC_NAME);
         return commonData;
     }
@@ -227,7 +228,7 @@ public class Product10EC {
     }
 
     private static void checkCommonData(CommonData commonData) throws PolicyValidationException {
-        if (!commonData.getProductId().equals(PRODUCT_10_EC_NAME)) {
+        if (!commonData.getProductId().equals(PRODUCT_10_EC_ID)) {
             throw PolicyValidationException.product10ECExpected;
         } else if (!commonData.getProductName().equals(PRODUCT_10_EC_NAME)) {
             throw PolicyValidationException.product10ECExpected;

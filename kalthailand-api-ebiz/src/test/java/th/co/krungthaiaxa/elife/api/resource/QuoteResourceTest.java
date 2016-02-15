@@ -23,6 +23,8 @@ import th.co.krungthaiaxa.elife.api.model.Quote;
 import th.co.krungthaiaxa.elife.api.model.enums.ChannelType;
 import th.co.krungthaiaxa.elife.api.model.enums.GenderCode;
 import th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode;
+import th.co.krungthaiaxa.elife.api.model.error.Error;
+import th.co.krungthaiaxa.elife.api.model.error.ErrorCode;
 import th.co.krungthaiaxa.elife.api.repository.QuoteRepository;
 import th.co.krungthaiaxa.elife.api.repository.SessionQuoteRepository;
 import th.co.krungthaiaxa.elife.api.utils.JsonUtil;
@@ -31,9 +33,12 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.net.URI;
 
+import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.HttpStatus.NOT_ACCEPTABLE;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.util.StringUtils.replace;
+import static th.co.krungthaiaxa.elife.api.products.Product10EC.getCommonData;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiApplication.class)
@@ -62,9 +67,23 @@ public class QuoteResourceTest {
     }
 
     @Test
+    public void should_return_error_when_requesting_on_a_product_that_does_not_exist() throws IOException {
+        MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
+        parameters.add("sessionId", randomNumeric(20));
+        parameters.add("productId", "Something");
+        parameters.add("channelType", ChannelType.LINE.name());
+
+        ResponseEntity<String> response = template.postForEntity(base, parameters, String.class);
+        assertThat(response.getStatusCode().value()).isEqualTo(NOT_ACCEPTABLE.value());
+        Error error = TestUtil.getErrorFromJSon(response.getBody());
+        assertThat(error).isEqualToComparingFieldByField(ErrorCode.INVALID_PRODUCT_ID_PROVIDED);
+    }
+
+    @Test
     public void should_return_an_empty_quote_object() throws IOException {
         MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
-        parameters.add("sessionId", RandomStringUtils.randomNumeric(20));
+        parameters.add("sessionId", randomNumeric(20));
+        parameters.add("productId", "10EC");
         parameters.add("channelType", ChannelType.LINE.name());
 
         ResponseEntity<String> response = template.postForEntity(base, parameters, String.class);
@@ -82,12 +101,13 @@ public class QuoteResourceTest {
 
     @Test
     public void should_return_an_updated_quote() throws IOException {
-        String sessionId = RandomStringUtils.randomNumeric(20);
-        MultiValueMap<String, String> creationParameters = new LinkedMultiValueMap<>();
-        creationParameters.add("sessionId", sessionId);
-        creationParameters.add("channelType", ChannelType.LINE.name());
+        String sessionId = randomNumeric(20);
+        MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
+        parameters.add("sessionId", sessionId);
+        parameters.add("productId", "10EC");
+        parameters.add("channelType", ChannelType.LINE.name());
 
-        ResponseEntity<String> creationResponse = template.postForEntity(base, creationParameters, String.class);
+        ResponseEntity<String> creationResponse = template.postForEntity(base, parameters, String.class);
         assertThat(creationResponse.getStatusCode().value()).isEqualTo(OK.value());
         Quote quote = TestUtil.getQuoteFromJSon(creationResponse.getBody());
         assertThat(quote).isNotNull();

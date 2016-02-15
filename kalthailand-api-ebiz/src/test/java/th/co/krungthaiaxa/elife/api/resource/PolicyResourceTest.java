@@ -33,6 +33,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 
 import static java.lang.Boolean.TRUE;
+import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.NOT_ACCEPTABLE;
 import static org.springframework.http.HttpStatus.OK;
@@ -40,6 +41,7 @@ import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
 import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_QUARTER;
 import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_YEAR;
 import static th.co.krungthaiaxa.elife.api.model.error.ErrorCode.POLICY_CANNOT_BE_CREATED;
+import static th.co.krungthaiaxa.elife.api.products.Product10EC.getCommonData;
 import static th.co.krungthaiaxa.elife.api.resource.TestUtil.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -59,8 +61,6 @@ public class PolicyResourceTest {
 
     @Inject
     private PolicyRepository policyRepository;
-    @Inject
-    private QuoteRepository quoteRepository;
     @Inject
     private QuoteService quoteService;
 
@@ -83,7 +83,7 @@ public class PolicyResourceTest {
 
     @Test
     public void should_return_a_policy_object() throws Exception {
-        Quote quote = quoteService.createQuote(RandomStringUtils.randomNumeric(20), LINE);
+        Quote quote = quoteService.createQuote(randomNumeric(20), getCommonData(), LINE);
         quote(quote, EVERY_YEAR, 1000000.0, insured(35, Boolean.TRUE), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 
@@ -101,7 +101,7 @@ public class PolicyResourceTest {
 
     @Test
     public void should_return_policy_payment_list() throws Exception {
-        Quote quote = quoteService.createQuote(RandomStringUtils.randomNumeric(20), LINE);
+        Quote quote = quoteService.createQuote(randomNumeric(20), getCommonData(), LINE);
         quote(quote, EVERY_YEAR, 1000000.0, insured(35, Boolean.TRUE), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 

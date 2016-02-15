@@ -21,6 +21,7 @@ import th.co.krungthaiaxa.elife.api.utils.ImageUtil;
 import javax.inject.Inject;
 import java.io.File;
 
+import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static th.co.krungthaiaxa.elife.api.exception.PolicyValidationException.emptyQuote;
@@ -30,6 +31,7 @@ import static th.co.krungthaiaxa.elife.api.model.enums.PaymentStatus.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_YEAR;
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.ERROR;
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.SUCCESS;
+import static th.co.krungthaiaxa.elife.api.products.Product10EC.getCommonData;
 import static th.co.krungthaiaxa.elife.api.resource.TestUtil.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -65,7 +67,7 @@ public class PolicyServiceTest {
 
     @Test
     public void should_add_generated_ids_when_saving_policy_for_first_time() throws Exception {
-        Quote quote = quoteService.createQuote(RandomStringUtils.randomNumeric(20), LINE);
+        Quote quote = quoteService.createQuote(randomNumeric(20), getCommonData(), LINE);
         quote(quote, EVERY_YEAR, 1000000.0, insured(35, Boolean.TRUE), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 
@@ -178,7 +180,7 @@ public class PolicyServiceTest {
 
     @Test
     public void should_create_bytes_for_eReceipt() throws Exception {
-        Quote quote = quoteService.createQuote(RandomStringUtils.randomNumeric(20), LINE);
+        Quote quote = quoteService.createQuote(randomNumeric(20), getCommonData(), LINE);
         quote(quote, EVERY_YEAR, 1000000.0, insured(35, Boolean.TRUE), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
         Policy policy = policyService.createPolicy(quote);
@@ -190,7 +192,7 @@ public class PolicyServiceTest {
 
     @Test
     public void should_create_bytes_for_eReceipt_and_can_create_pdf_file_to_file_system() throws Exception {
-        Quote quote = quoteService.createQuote(RandomStringUtils.randomNumeric(20), LINE);
+        Quote quote = quoteService.createQuote(randomNumeric(20), getCommonData(), LINE);
         quote(quote, EVERY_YEAR, 1000000.0, insured(35, Boolean.TRUE), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
         Policy policy = policyService.createPolicy(quote);
