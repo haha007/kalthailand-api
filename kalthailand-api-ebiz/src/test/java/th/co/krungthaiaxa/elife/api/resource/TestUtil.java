@@ -57,7 +57,7 @@ public class TestUtil {
         premiumsData.setLifeInsuranceSumInsured(amount);
 
         CommonData commonData = new CommonData();
-        commonData.setProductId(Product10EC.PRODUCT_10_EC_NAME);
+        commonData.setProductId(Product10EC.PRODUCT_10_EC_ID);
         commonData.setProductName(Product10EC.PRODUCT_10_EC_NAME);
 
         Coverage coverage = new Coverage();
@@ -89,7 +89,7 @@ public class TestUtil {
         premiumsData.setLifeInsuranceSumInsured(amount);
 
         CommonData commonData = new CommonData();
-        commonData.setProductId(Product10EC.PRODUCT_10_EC_NAME);
+        commonData.setProductId(Product10EC.PRODUCT_10_EC_ID);
         commonData.setProductName(Product10EC.PRODUCT_10_EC_NAME);
 
         Coverage coverage = new Coverage();

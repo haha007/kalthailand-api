@@ -18,9 +18,10 @@ public class ErrorCode {
     public static final Error OCR_IMPOSSIBLE = new Error("20004", "Unable to verify your ID", "Extracting text on provided image was impossible");
     // Quote
     public static final Error INVALID_QUOTE_PROVIDED = new Error("30001", "Unable to update your quote", "The quote provided as JSon is not a valid quote, probably an incompatibility between mobile and server");
-    public static final Error NO_QUOTE_IN_SESSION = new Error("30002", "You don't have a saved quote", "There is no quote with the given session id");
-    public static final Error QUOTE_DOSE_NOT_EXIST = new Error("30003", "Quote dose not exists", "There is no quote with the given quote Id");
-    public static final Error ERROR_WHILE_GET_QUOTE_DATA = new Error("30004", "Error while get quote data", "Have some error occur while get quote data");
+    public static final Error INVALID_PRODUCT_ID_PROVIDED = new Error("30002", "The selected product doesn't exist", "The product ID sent does not match known product");
+    public static final Error NO_QUOTE_IN_SESSION = new Error("30003", "You don't have a saved quote", "There is no quote with the given session id");
+    public static final Error QUOTE_DOSE_NOT_EXIST = new Error("30004", "Quote dose not exists", "There is no quote with the given quote Id");
+    public static final Error ERROR_WHILE_GET_QUOTE_DATA = new Error("30005", "Error while get quote data", "Have some error occur while get quote data");
     // Policy
     public static final Error POLICY_DOES_NOT_EXIST = new Error("40001", "The policy does not exist", "The policy does not exist");
     public static final Error POLICY_DOES_NOT_CONTAIN_PAYMENT = new Error("40002", "The policy does not contain the given payment", "The given payment id could not be found in the list of payments within the policy");
