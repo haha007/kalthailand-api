@@ -22,6 +22,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -149,7 +150,8 @@ public class PolicyService {
         logger.info("[def] createEReceipt");
         logger.info("[createEReceipt] quoteId : " + policy.getQuoteId());
         logger.info("[createEReceipt] policyNumber : " + policy.getPolicyId());
-        logger.info("[createEReceipt] E-receipt template store name path : " + eReceiptStorePath);
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("ereceipt/AGENT-WHITE-FINAL.jpg");
+//        logger.info("[createEReceipt] E-receipt template store name path : " + eReceiptStorePath);
         logger.info("[createEReceipt] E-receipt image store name path : " + eReceiptImageStorePath);
         try {
 
@@ -160,7 +162,8 @@ public class PolicyService {
             eReceiptImageStorePath = im.toString();
             logger.info("[createEReceipt] Name Image File[" + policy.getPolicyId() + "]:" + eReceiptImageStorePath);
 
-            BufferedImage bufferedImage = ImageIO.read(new File(eReceiptStorePath));
+            BufferedImage bufferedImage = ImageIO.read(inputStream);
+//            BufferedImage bufferedImage = ImageIO.read(new File(eReceiptStorePath));
             Graphics graphics = bufferedImage.getGraphics();
             graphics.setColor(Color.BLACK);
             graphics.setFont(new Font("Angsana New", Font.BOLD, 30));
