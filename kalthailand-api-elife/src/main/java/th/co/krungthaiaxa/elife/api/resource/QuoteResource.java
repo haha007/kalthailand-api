@@ -77,7 +77,7 @@ public class QuoteResource {
     public ResponseEntity createQuote(
             @ApiParam(value = "The session id. Must be unique through the Channel. This is used to recover unfinished quotes throught the channel")
             @RequestParam String sessionId,
-            @ApiParam(value = "The product id for which to get a quote.")
+            @ApiParam(value = "The product id for which to get a quote.", allowableValues = "10EC")
             @RequestParam String productId,
             @ApiParam(value = "The channel being used to create the quote.")
             @RequestParam ChannelType channelType) {

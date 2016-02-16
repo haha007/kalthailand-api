@@ -31,6 +31,8 @@ public class Product10EC implements Product {
     public static final Double SUM_INSURED_MAX = 1000000.0;
     public static final Double PREMIUM_MIN = 2682.0;
     public static final Double PREMIUM_MAX = 308000.0;
+    public static final int MAX_AGE = 70;
+    public static final int MIN_AGE = 20;
 
 
     private static Function<Integer, Integer> dvdRate = numberOfYearsOfContract -> {
@@ -66,7 +68,7 @@ public class Product10EC implements Product {
     };
 
     private static Function<Integer, Integer> rate = age -> {
-        if (age >= 0 && age <= 45) {
+        if (age >= MIN_AGE && age <= 45) {
             return 308;
         } else if (age >= 46 && age <= 50) {
             return 306;
@@ -76,7 +78,7 @@ public class Product10EC implements Product {
             return 301;
         } else if (age >= 61 && age <= 65) {
             return 300;
-        } else if (age >= 66 && age <= 70) {
+        } else if (age >= 66 && age <= MAX_AGE) {
             return 298;
         } else {
             return 0;
@@ -203,8 +205,10 @@ public class Product10EC implements Product {
 
     public static CommonData getCommonData() {
         CommonData commonData = new CommonData();
+        commonData.setMaxAge(MAX_AGE);
         commonData.setMaxPremium(amount(PREMIUM_MAX));
         commonData.setMaxSumInsured(amount(SUM_INSURED_MAX));
+        commonData.setMinAge(MIN_AGE);
         commonData.setMinPremium(amount(PREMIUM_MIN));
         commonData.setMinSumInsured(amount(SUM_INSURED_MIN));
         commonData.setNbOfYearsOfCoverage(DURATION_COVERAGE_IN_YEAR);
@@ -325,9 +329,9 @@ public class Product10EC implements Product {
     private static void checkMainInsuredAge(Insured insured) throws QuoteCalculationException {
         if (insured.getAgeAtSubscription() == null) {
             throw ageIsEmptyException;
-        } else if (insured.getAgeAtSubscription() > 70) {
+        } else if (insured.getAgeAtSubscription() > MAX_AGE) {
             throw ageIsTooHighException;
-        } else if (insured.getAgeAtSubscription() < 20) {
+        } else if (insured.getAgeAtSubscription() < MIN_AGE) {
             throw ageIsTooLowException;
         }
     }

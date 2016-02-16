@@ -16,6 +16,8 @@ public class CommonData implements Serializable {
     private Amount maxPremium;
     private Amount minSumInsured;
     private Amount maxSumInsured;
+    private Integer minAge;
+    private Integer maxAge;
 
     @ApiModelProperty(required = true, value = "The unique identifier of the product specification the quote is " +
             "based on")
@@ -90,6 +92,24 @@ public class CommonData implements Serializable {
         this.maxSumInsured = maxSumInsured;
     }
 
+    @ApiModelProperty(required = true, value = "The minimum age to get coverage")
+    public Integer getMinAge() {
+        return minAge;
+    }
+
+    public void setMinAge(Integer minAge) {
+        this.minAge = minAge;
+    }
+
+    @ApiModelProperty(required = true, value = "The maximum age to get coverage")
+    public Integer getMaxAge() {
+        return maxAge;
+    }
+
+    public void setMaxAge(Integer maxAge) {
+        this.maxAge = maxAge;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -102,11 +122,13 @@ public class CommonData implements Serializable {
                 Objects.equals(minPremium, that.minPremium) &&
                 Objects.equals(maxPremium, that.maxPremium) &&
                 Objects.equals(minSumInsured, that.minSumInsured) &&
-                Objects.equals(maxSumInsured, that.maxSumInsured);
+                Objects.equals(maxSumInsured, that.maxSumInsured) &&
+                Objects.equals(minAge, that.minAge) &&
+                Objects.equals(maxAge, that.maxAge);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(productId, productName, nbOfYearsOfCoverage, nbOfYearsOfPremium, minPremium, maxPremium, minSumInsured, maxSumInsured);
+        return Objects.hash(productId, productName, nbOfYearsOfCoverage, nbOfYearsOfPremium, minPremium, maxPremium, minSumInsured, maxSumInsured, minAge, maxAge);
     }
 }
