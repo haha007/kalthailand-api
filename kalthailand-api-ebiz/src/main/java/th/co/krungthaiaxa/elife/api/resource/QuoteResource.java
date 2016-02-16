@@ -3,22 +3,18 @@ package th.co.krungthaiaxa.elife.api.resource;
 import io.swagger.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import th.co.krungthaiaxa.elife.api.model.CommonData;
 import th.co.krungthaiaxa.elife.api.model.Quote;
 import th.co.krungthaiaxa.elife.api.model.enums.ChannelType;
 import th.co.krungthaiaxa.elife.api.model.error.Error;
-import th.co.krungthaiaxa.elife.api.model.error.ErrorCode;
-import th.co.krungthaiaxa.elife.api.products.Product10EC;
 import th.co.krungthaiaxa.elife.api.service.EmailService;
 import th.co.krungthaiaxa.elife.api.service.QuoteService;
 import th.co.krungthaiaxa.elife.api.utils.JsonUtil;
 
 import javax.inject.Inject;
 import java.io.IOException;
-import java.util.Optional;
 
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -88,8 +84,7 @@ public class QuoteResource {
         CommonData commonData;
         if (PRODUCT_10_EC_ID.equals(productId)) {
             commonData = getCommonData();
-        }
-        else {
+        } else {
             return new ResponseEntity<>(INVALID_PRODUCT_ID_PROVIDED, NOT_ACCEPTABLE);
         }
 
@@ -106,7 +101,7 @@ public class QuoteResource {
     @RequestMapping(value = "/quotes", produces = APPLICATION_JSON_VALUE, method = PUT)
     public ResponseEntity updateQuote(
             @ApiParam(value = "The json of the quote. This quote will be updated with given values and will go through minimal validations")
-            @RequestParam String jsonQuote) {
+            @RequestBody String jsonQuote) {
         Quote quote;
         try {
             quote = JsonUtil.mapper.readValue(jsonQuote, Quote.class);
