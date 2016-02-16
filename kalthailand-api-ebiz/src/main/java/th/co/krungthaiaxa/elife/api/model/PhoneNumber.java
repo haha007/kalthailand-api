@@ -12,7 +12,7 @@ public class PhoneNumber implements Serializable {
     private PhoneNumberType type;
     private Integer countryCode;
     private Integer areaCode;
-    private Integer number;
+    private String number;
 
     public PhoneNumber() {
     }
@@ -45,11 +45,11 @@ public class PhoneNumber implements Serializable {
     }
 
     @ApiModelProperty(value = "The phone number's remaining numbers")
-    public Integer getNumber() {
+    public String getNumber() {
         return number;
     }
 
-    public void setNumber(Integer number) {
+    public void setNumber(String number) {
         this.number = number;
     }
 

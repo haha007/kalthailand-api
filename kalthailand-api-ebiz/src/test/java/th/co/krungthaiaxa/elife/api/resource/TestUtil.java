@@ -155,7 +155,7 @@ public class TestUtil {
 
         PhoneNumber phoneNumber = new PhoneNumber();
         phoneNumber.setType(PhoneNumberType.MOBILE);
-        phoneNumber.setNumber(841139301);
+        phoneNumber.setNumber("0841139301");
         phoneNumber.setCountryCode(66);
 
         Person person = new Person();
