@@ -61,7 +61,7 @@ public class EmailService {
 
     public void sendQuoteEmail(Quote quote, String base64Image) throws Exception {
         List<Pair<byte[], String>> base64ImgFileNames = new ArrayList<>();
-        base64ImgFileNames.add(Pair.of(Base64.getDecoder().decode(base64Image), "<imageEbiz2>"));
+        base64ImgFileNames.add(Pair.of(Base64.getDecoder().decode(base64Image), "<imageElife2>"));
         base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/benefitBlue.jpg")), "<benefitRed>"));
         base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/benefitGreen.jpg")), "<benefitGreen>"));
         base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/benefitPoint.jpg")), "<benefitPoint>"));
@@ -70,7 +70,7 @@ public class EmailService {
 
     public void sendEreceiptEmail(Policy policy, String attachFile) throws Exception {
         List<Pair<byte[], String>> base64ImgFileNames = new ArrayList<>();
-        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/logo.png")), "<imageEbiz>"));
+        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/logo.png")), "<imageElife>"));
         List<File> fileList = new ArrayList<>();
         fileList.add(new File(attachFile));
         emailSender.sendEmail(emailName, policy.getInsureds().get(0).getPerson().getEmail(), subject, getEreceiptEmailContent(policy), base64ImgFileNames, fileList);

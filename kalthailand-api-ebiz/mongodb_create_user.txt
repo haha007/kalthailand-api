@@ -6,11 +6,11 @@ db.createUser(
 		roles: [ { role: "userAdminAnyDatabase", db: "admin" } ]
 	}
 )
-use ebiz
+use elife
 db.createUser(
 	{
-		user: "ebizuser",
+		user: "elifeuser",
 		pwd: "password",
-		roles: [ { role: "dbOwner", db: "ebiz" } ]
+		roles: [ { role: "dbOwner", db: "elife" } ]
 	}
 )

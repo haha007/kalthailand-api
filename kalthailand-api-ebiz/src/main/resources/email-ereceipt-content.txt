@@ -29,7 +29,7 @@
                                        <table align="center">
                                             <picture>
         										            			<div style="margin-top:50px;text-align:center;">
-        																          <img src="cid:imageEbiz">
+        																          <img src="cid:imageElife">
         										            			</div>
                                             </picture>
                                              <tr><td>เรียนคุณ %1$s </td></tr>
