@@ -8,7 +8,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 public class ProductFactoryTest {
 
     @Test
-    public void should_return_when_product_id_is_unknown() {
+    public void should_return_error_when_product_id_is_unknown() {
         assertThatThrownBy(() -> ProductFactory.getProduct("something"))
                 .isInstanceOf(IllegalArgumentException.class);
     }
