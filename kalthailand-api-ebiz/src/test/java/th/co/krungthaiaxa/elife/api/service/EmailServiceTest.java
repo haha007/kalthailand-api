@@ -55,8 +55,9 @@ public class EmailServiceTest {
     private String subject;
     @Value("${lineid}")
     private String lineURL;
-    @Value("${path.store.elife.ereceipt.pdf}")
+    @Value("${path.store.watermarked.image}")
     private String eReceiptPdfStorePath;
+    private final static String ERECEIPT_MERGED_FILE_NAME= "ereceipts.pdf";
     @Inject
     private EmailService emailService;
     @Inject
@@ -157,6 +158,7 @@ public class EmailServiceTest {
         byte[] bytes = policyService.createEreceipt(policy);
         assertThat(bytes).isNotNull();
 
+        eReceiptPdfStorePath = eReceiptPdfStorePath + System.getProperty("file.separator")+ ERECEIPT_MERGED_FILE_NAME;
         StringBuilder im = new StringBuilder(eReceiptPdfStorePath);
         im.insert(eReceiptPdfStorePath.indexOf("."), "_" + policy.getPolicyId());
         eReceiptPdfStorePath = im.toString();
