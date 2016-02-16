@@ -1,6 +1,5 @@
 package th.co.krungthaiaxa.elife.api.resource;
 
-import org.apache.commons.lang3.RandomStringUtils;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
@@ -9,14 +8,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.TestRestTemplate;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 import th.co.krungthaiaxa.elife.api.KalApiApplication;
 import th.co.krungthaiaxa.elife.api.data.SessionQuote;
 import th.co.krungthaiaxa.elife.api.model.Quote;
@@ -38,7 +38,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.NOT_ACCEPTABLE;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.util.StringUtils.replace;
-import static th.co.krungthaiaxa.elife.api.products.Product10EC.getCommonData;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiApplication.class)
@@ -118,14 +117,8 @@ public class QuoteResourceTest {
         String jsonQuote = new String(JsonUtil.getJson(quote));
         jsonQuote = replace(jsonQuote, "\"periodicity\":{\"code\":null}", "\"periodicity\":{\"code\":\"EVERY_MONTH\"}");
         jsonQuote = replace(jsonQuote, "\"genderCode\":null", "\"genderCode\":\"MALE\"");
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(base.toString())
-                .queryParam("jsonQuote", jsonQuote);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
-        HttpEntity<?> entity = new HttpEntity<>(headers);
-
-        ResponseEntity<String> updateResponse = template.exchange(builder.build().encode().toUri(), HttpMethod.PUT, entity, String.class);
+        ResponseEntity<String> updateResponse = template.exchange(base, HttpMethod.PUT, new HttpEntity<>(jsonQuote), String.class);
         assertThat(updateResponse.getStatusCode().value()).isEqualTo(OK.value());
 
         // check database values
