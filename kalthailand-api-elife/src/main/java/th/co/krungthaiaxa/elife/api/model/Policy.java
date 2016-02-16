@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @ApiModel(description = "Data concerning the policy")
 @Document
@@ -96,5 +97,25 @@ public class Policy {
 
     public void addPayment(Payment payment) {
         payments.add(payment);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Policy policy = (Policy) o;
+        return Objects.equals(id, policy.id) &&
+                Objects.equals(policyId, policy.policyId) &&
+                Objects.equals(quoteId, policy.quoteId) &&
+                Objects.equals(commonData, policy.commonData) &&
+                Objects.equals(premiumsData, policy.premiumsData) &&
+                Objects.equals(insureds, policy.insureds) &&
+                Objects.equals(coverages, policy.coverages) &&
+                Objects.equals(payments, policy.payments);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, policyId, quoteId, commonData, premiumsData, insureds, coverages, payments);
     }
 }

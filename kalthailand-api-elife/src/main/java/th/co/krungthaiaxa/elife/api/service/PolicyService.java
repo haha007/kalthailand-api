@@ -13,7 +13,6 @@ import th.co.krungthaiaxa.elife.api.model.enums.ChannelType;
 import th.co.krungthaiaxa.elife.api.model.enums.PaymentStatus;
 import th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus;
 import th.co.krungthaiaxa.elife.api.products.Product;
-import th.co.krungthaiaxa.elife.api.products.Product10EC;
 import th.co.krungthaiaxa.elife.api.products.ProductFactory;
 import th.co.krungthaiaxa.elife.api.repository.*;
 import th.co.krungthaiaxa.elife.api.utils.ThaiBahtUtil;
@@ -39,7 +38,7 @@ import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.SUCCES
 public class PolicyService {
 
     private final static Logger logger = LoggerFactory.getLogger(PolicyService.class);
-    private final static String ERECEIPT_MERGED_FILE_NAME= "ereceipts_merged.png";
+    private final static String ERECEIPT_MERGED_FILE_NAME = "ereceipts_merged.png";
     private final PaymentRepository paymentRepository;
     private final PolicyRepository policyRepository;
     private final PolicyNumberRepository policyNumberRepository;
@@ -98,7 +97,7 @@ public class PolicyService {
             policy = policyRepository.save(policy);
             policyNumber.get().setPolicy(policy);
             policyNumberRepository.save(policyNumber.get());
-            SessionQuote sessionQuote = sessionQuoteRepository.findByQuoteId(policy.getQuoteId());
+            SessionQuote sessionQuote = sessionQuoteRepository.findByQuotesContaining(quote);
             sessionQuoteRepository.delete(sessionQuote);
         }
 

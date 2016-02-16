@@ -12,7 +12,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -33,10 +32,8 @@ import java.util.Base64;
 import static com.icegreen.greenmail.util.GreenMailUtil.getBody;
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
 import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_YEAR;
-import static th.co.krungthaiaxa.elife.api.model.error.ErrorCode.UNABLE_TO_CREATE_ERECEIPT;
 import static th.co.krungthaiaxa.elife.api.products.Product10EC.getCommonData;
 import static th.co.krungthaiaxa.elife.api.resource.TestUtil.*;
 
@@ -57,7 +54,7 @@ public class EmailServiceTest {
     private String lineURL;
     @Value("${path.store.watermarked.image}")
     private String eReceiptPdfStorePath;
-    private final static String ERECEIPT_MERGED_FILE_NAME= "ereceipts.pdf";
+    private final static String ERECEIPT_MERGED_FILE_NAME = "ereceipts.pdf";
     @Inject
     private EmailService emailService;
     @Inject
@@ -117,9 +114,9 @@ public class EmailServiceTest {
         MimeMessage email = greenMail.getReceivedMessages()[0];
         assertThat(email.getSubject()).isEqualTo(subject);
         String bodyAsString = decodeSimpleBody(getBody(email));
-        assertThat(bodyAsString).contains("<tr><td>รวมรับผลประโยชน์ขั้นต่ำ</td><td class=\"value\" align=\"right\" valign=\"top\" >2,968,718.00 บาท</td></tr>");
-        assertThat(bodyAsString).contains("<tr><td>รวมรับผลประโยชน์ระดับกลาง (รวมเงินปันผล**ระดับกลาง)</td><td class=\"value\" valign=\"top\" align=\"right\" >3,043,171.00 บาท</td></tr>");
-        assertThat(bodyAsString).contains("<tr><td>รวมรับผลประโยชน์ระดับสูง (รวมเงินปันผล**ระดับสูง)</td><td class=\"value\" valign=\"top\" align=\"right\" >3,062,746.00 บาท</td></tr>");
+        assertThat(bodyAsString).contains("รวมรับผลประโยชน์ขั้นต่ำ</td><td class=\"value\" align=\"right\" valign=\"top\" >2,968,718.00 บาท");
+        assertThat(bodyAsString).contains("รวมรับผลประโยชน์ระดับกลาง (รวมเงินปันผล**ระดับกลาง)</td><td class=\"value\" valign=\"top\" align=\"right\" >3,043,171.00 บาท");
+        assertThat(bodyAsString).contains("รวมรับผลประโยชน์ระดับสูง (รวมเงินปันผล**ระดับสูง)</td><td class=\"value\" valign=\"top\" align=\"right\" >3,062,746.00 บาท");
     }
 
     @Test
@@ -134,9 +131,9 @@ public class EmailServiceTest {
         MimeMessage email = greenMail.getReceivedMessages()[0];
         assertThat(email.getSubject()).isEqualTo(subject);
         String bodyAsString = decodeSimpleBody(getBody(email));
-        assertThat(bodyAsString).contains("<tr><td>รวมรับผลประโยชน์ขั้นต่ำ</td><td class=\"value\" align=\"right\" valign=\"top\" >1,484,359.00 บาท</td></tr>");
-        assertThat(bodyAsString).contains("<tr><td>รวมรับผลประโยชน์ระดับกลาง (รวมเงินปันผล**ระดับกลาง)</td><td class=\"value\" valign=\"top\" align=\"right\" >1,521,594.00 บาท</td></tr>");
-        assertThat(bodyAsString).contains("<tr><td>รวมรับผลประโยชน์ระดับสูง (รวมเงินปันผล**ระดับสูง)</td><td class=\"value\" valign=\"top\" align=\"right\" >1,531,376.00 บาท</td></tr>");
+        assertThat(bodyAsString).contains("รวมรับผลประโยชน์ขั้นต่ำ</td><td class=\"value\" align=\"right\" valign=\"top\" >1,484,359.00 บาท");
+        assertThat(bodyAsString).contains("รวมรับผลประโยชน์ระดับกลาง (รวมเงินปันผล**ระดับกลาง)</td><td class=\"value\" valign=\"top\" align=\"right\" >1,521,594.00 บาท");
+        assertThat(bodyAsString).contains("รวมรับผลประโยชน์ระดับสูง (รวมเงินปันผล**ระดับสูง)</td><td class=\"value\" valign=\"top\" align=\"right\" >1,531,376.00 บาท");
     }
 
     public static String decodeSimpleBody(String encodedBody) throws MessagingException, IOException {
@@ -158,7 +155,7 @@ public class EmailServiceTest {
         byte[] bytes = policyService.createEreceipt(policy);
         assertThat(bytes).isNotNull();
 
-        eReceiptPdfStorePath = eReceiptPdfStorePath + System.getProperty("file.separator")+ ERECEIPT_MERGED_FILE_NAME;
+        eReceiptPdfStorePath = eReceiptPdfStorePath + System.getProperty("file.separator") + ERECEIPT_MERGED_FILE_NAME;
         StringBuilder im = new StringBuilder(eReceiptPdfStorePath);
         im.insert(eReceiptPdfStorePath.indexOf("."), "_" + policy.getPolicyId());
         eReceiptPdfStorePath = im.toString();
@@ -167,29 +164,28 @@ public class EmailServiceTest {
         File file = new File(eReceiptPdfStorePath);
         assertThat(file.exists()).isTrue();
 
-        emailService.sendEreceiptEmail(policy,eReceiptPdfStorePath);
+        emailService.sendEreceiptEmail(policy, eReceiptPdfStorePath);
 
         assertThat(greenMail.getReceivedMessages()).hasSize(1);
         MimeMessage email = greenMail.getReceivedMessages()[0];
         assertThat(email.getFrom()).containsOnly(new InternetAddress(emailName));
 
         String bodyAsString = decodeSimpleBody(getBody(email));
-        assertThat(bodyAsString).contains("<tr><td>กรุงไทย-แอกซ่า ประกันชีวิต ขอขอบคุณ "+policy.getInsureds().get(0).getPerson().getGivenName()+" "+policy.getInsureds().get(0).getPerson().getSurName()+"<br/>");
-        assertThat(bodyAsString).contains("<tr><td>กรุงไทย-แอกซ่า ประกันชีวิต</td></tr>");
+        assertThat(bodyAsString).contains("กรุงไทย-แอกซ่า ประกันชีวิต ขอขอบคุณ " + policy.getInsureds().get(0).getPerson().getGivenName() + " " + policy.getInsureds().get(0).getPerson().getSurName() + "<br/>");
+        assertThat(bodyAsString).contains("กรุงไทย-แอกซ่า ประกันชีวิต");
 
         Multipart multipart = (Multipart) email.getContent();
-        for(int i=0; i < multipart.getCount(); i++){
+        for (int i = 0; i < multipart.getCount(); i++) {
             BodyPart bodyPart = multipart.getBodyPart(i);
-            if(!Part.ATTACHMENT.equalsIgnoreCase(bodyPart.getDisposition()) &&
-                !StringUtils.isNotBlank(bodyPart.getFileName())) {
+            if (!Part.ATTACHMENT.equalsIgnoreCase(bodyPart.getDisposition()) &&
+                    !StringUtils.isNotBlank(bodyPart.getFileName())) {
                 //null file value
-            }else{
-                assertThat(null!=bodyPart.getFileName()&&!bodyPart.getFileName().equals(""));
+            } else {
+                assertThat(null != bodyPart.getFileName() && !bodyPart.getFileName().equals(""));
             }
         }
 
     }
-
 
 
 }

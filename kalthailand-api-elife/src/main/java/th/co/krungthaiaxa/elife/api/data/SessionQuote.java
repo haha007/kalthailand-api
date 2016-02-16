@@ -1,14 +1,21 @@
 package th.co.krungthaiaxa.elife.api.data;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import th.co.krungthaiaxa.elife.api.model.Quote;
 import th.co.krungthaiaxa.elife.api.model.enums.ChannelType;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class SessionQuote {
     @Id
     private String id;
     private String sessionId;
     private ChannelType channelType;
-    private String quoteId;
+    @DBRef
+    private List<Quote> quotes = new ArrayList<>();
 
     public String getId() {
         return id;
@@ -34,11 +41,13 @@ public class SessionQuote {
         this.channelType = channelType;
     }
 
-    public String getQuoteId() {
-        return quoteId;
+    public List<Quote> getQuotes() {
+        Collections.reverse(quotes);
+        return quotes;
     }
 
-    public void setQuoteId(String quoteId) {
-        this.quoteId = quoteId;
+    public void addQuote(Quote quote) {
+        this.quotes.add(quote);
     }
+
 }

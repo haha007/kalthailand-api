@@ -15,6 +15,7 @@ import th.co.krungthaiaxa.elife.api.utils.JsonUtil;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.util.Optional;
 
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -23,6 +24,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 import static th.co.krungthaiaxa.elife.api.model.error.ErrorCode.*;
 import static th.co.krungthaiaxa.elife.api.products.Product10EC.PRODUCT_10_EC_ID;
 import static th.co.krungthaiaxa.elife.api.products.Product10EC.getCommonData;
+import static th.co.krungthaiaxa.elife.api.utils.JsonUtil.getJson;
 
 @RestController
 @Api(value = "Quotes")
@@ -39,32 +41,50 @@ public class QuoteResource {
 
     @ApiOperation(value = "Sending email for quote", notes = "Sending email for quote", response = Quote.class)
     @RequestMapping(value = "/quotes/{quoteId}/email", produces = APPLICATION_JSON_VALUE, method = POST)
+    @ApiResponses({
+            @ApiResponse(code = 404, message = "If quote Id is unknown", response = Error.class),
+            @ApiResponse(code = 500, message = "If email could not be sent", response = Error.class)
+    })
     @ResponseBody
     public ResponseEntity sendEmail(
             @ApiParam(value = "The quote Id")
             @PathVariable String quoteId,
             @ApiParam(value = "The content of the graph image in base 64 encoded.")
             @RequestParam String base64Image) {
-
-        Quote quote = null;
-        try {
-            quote = quoteService.findByQuoteId(quoteId);
-        } catch (Exception e) {
-            logger.error("Unable to get a quote for quote Id [" + quoteId + "]", e);
-            return new ResponseEntity<>(ERROR_WHILE_GET_QUOTE_DATA, NOT_FOUND);
-        }
+        Quote quote = quoteService.findByQuoteId(quoteId);
 
         if (null == quote) {
-            return new ResponseEntity<>(QUOTE_DOSE_NOT_EXIST, NOT_FOUND);
-        } else {
-            try {
-                emailService.sendQuoteEmail(quote, base64Image);
-            } catch (Exception e) {
-                logger.error("Unable to send email for [" + quote.getInsureds().get(0).getPerson().getEmail() + "]", e);
-                return new ResponseEntity<>(UNABLE_TO_SEND_EMAIL, NOT_ACCEPTABLE);
-            }
-            return new ResponseEntity<>(JsonUtil.getJson("OK"), OK);
+            return new ResponseEntity<>(QUOTE_DOES_NOT_EXIST, NOT_FOUND);
         }
+
+        try {
+            emailService.sendQuoteEmail(quote, base64Image);
+        } catch (Exception e) {
+            logger.error("Unable to send email for [" + quote.getInsureds().get(0).getPerson().getEmail() + "]", e);
+            return new ResponseEntity<>(UNABLE_TO_SEND_EMAIL, INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(getJson("OK"), OK);
+    }
+
+    @ApiOperation(value = "Detail of a quote", notes = "Gets the details of a quote given its ID", response = Quote.class)
+    @ApiResponses({
+            @ApiResponse(code = 404, message = "If quote Id is unknown or if sessionId user does not have access to the quote", response = Error.class)
+    })
+    @RequestMapping(value = "/quotes/{quoteId}", produces = APPLICATION_JSON_VALUE, method = POST)
+    @ResponseBody
+    public ResponseEntity getQuote(
+            @ApiParam(value = "The quote Id")
+            @PathVariable String quoteId,
+            @ApiParam(value = "The session id. Must be unique through the Channel. This is used to recover unfinished quotes throught the channel")
+            @RequestParam String sessionId,
+            @ApiParam(value = "The channel being used to create the quote.")
+            @RequestParam ChannelType channelType) {
+        Optional<Quote> quote = quoteService.findByQuoteId(quoteId, sessionId, channelType);
+        if (!quote.isPresent()) {
+            return new ResponseEntity<>(QUOTE_DOES_NOT_EXIST_OR_ACCESS_DENIED, NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(getJson(quote), OK);
     }
 
     @ApiOperation(value = "Creates an empty quote", notes = "Creates an empty quote, attached to the session ID. " +
@@ -77,10 +97,10 @@ public class QuoteResource {
     public ResponseEntity createQuote(
             @ApiParam(value = "The session id. Must be unique through the Channel. This is used to recover unfinished quotes throught the channel")
             @RequestParam String sessionId,
-            @ApiParam(value = "The product id for which to get a quote.", allowableValues = "10EC")
-            @RequestParam String productId,
             @ApiParam(value = "The channel being used to create the quote.")
-            @RequestParam ChannelType channelType) {
+            @RequestParam ChannelType channelType,
+            @ApiParam(value = "The product id for which to get a quote.", allowableValues = "10EC")
+            @RequestParam String productId) {
         CommonData commonData;
         if (PRODUCT_10_EC_ID.equals(productId)) {
             commonData = getCommonData();
@@ -88,8 +108,12 @@ public class QuoteResource {
             return new ResponseEntity<>(INVALID_PRODUCT_ID_PROVIDED, NOT_ACCEPTABLE);
         }
 
-        Quote quote = quoteService.createQuote(sessionId, commonData, channelType);
-        return new ResponseEntity<>(JsonUtil.getJson(quote), OK);
+        Optional<Quote> quote = quoteService.getLatestQuote(sessionId, channelType);
+        if (quote.isPresent()) {
+            return new ResponseEntity<>(getJson(quote.get()), OK);
+        } else {
+            return new ResponseEntity<>(getJson(quoteService.createQuote(sessionId, commonData, channelType)), OK);
+        }
     }
 
     @ApiOperation(value = "Updates a quote", notes = "Updates a quote with provided JSon. Calculatiom may occur if " +
@@ -118,7 +142,7 @@ public class QuoteResource {
             return new ResponseEntity<>(NO_QUOTE_IN_SESSION, NOT_ACCEPTABLE);
         }
 
-        return new ResponseEntity<>(JsonUtil.getJson(updatedQuote), OK);
+        return new ResponseEntity<>(getJson(updatedQuote), OK);
     }
 
 }

@@ -9,6 +9,7 @@ import th.co.krungthaiaxa.elife.api.model.enums.PaymentStatus;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @ApiModel(description = "Data concerning the payment")
 @Document
@@ -98,5 +99,24 @@ public class Payment {
 
     public void addPaymentInformation(PaymentInformation paymentInformation) {
         paymentInformations.add(paymentInformation);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Payment payment = (Payment) o;
+        return Objects.equals(paymentId, payment.paymentId) &&
+                status == payment.status &&
+                Objects.equals(dueDate, payment.dueDate) &&
+                Objects.equals(effectiveDate, payment.effectiveDate) &&
+                Objects.equals(amount, payment.amount) &&
+                Objects.equals(registrationKey, payment.registrationKey) &&
+                Objects.equals(paymentInformations, payment.paymentInformations);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(paymentId, status, dueDate, effectiveDate, amount, registrationKey, paymentInformations);
     }
 }
