@@ -90,10 +90,6 @@ public class QuoteService {
         return quoteRepository.save(quote);
     }
 
-    public Quote findByQuoteId(String quoteId) {
-        return quoteRepository.findByQuoteId(quoteId);
-    }
-
     public Optional<Quote> findByQuoteId(String quoteId, String sessionId, ChannelType channelType) {
         SessionQuote sessionQuote = sessionQuoteRepository.findBySessionIdAndChannelType(sessionId, channelType);
         if (sessionQuote == null || sessionQuote.getQuotes() == null) {

@@ -16,7 +16,6 @@ import java.util.List;
 import static java.lang.Boolean.FALSE;
 import static java.time.LocalDate.now;
 import static java.time.temporal.ChronoUnit.YEARS;
-import static th.co.krungthaiaxa.elife.api.products.Product10EC.PRODUCT_10_EC_ID;
 import static th.co.krungthaiaxa.elife.api.products.Product10EC.PRODUCT_10_EC_NAME;
 
 public class TestUtil {
@@ -58,17 +57,13 @@ public class TestUtil {
         premiumsData.setFinancialScheduler(financialScheduler);
         premiumsData.setLifeInsuranceSumInsured(amount);
 
-        CommonData commonData = new CommonData();
-        commonData.setProductId(PRODUCT_10_EC_ID);
-        commonData.setProductName(PRODUCT_10_EC_NAME);
-
         Coverage coverage = new Coverage();
         coverage.setName(PRODUCT_10_EC_NAME);
         for (CoverageBeneficiary beneficiary : beneficiaries) {
             coverage.addBeneficiary(beneficiary);
         }
 
-        quote.setCommonData(commonData);
+        quote.setCommonData(Product10EC.getCommonData());
         quote.setPremiumsData(premiumsData);
         quote.getInsureds().remove(0);
         quote.addInsured(insured);
@@ -90,10 +85,6 @@ public class TestUtil {
         premiumsData.setFinancialScheduler(financialScheduler);
         premiumsData.setLifeInsuranceSumInsured(amount);
 
-        CommonData commonData = new CommonData();
-        commonData.setProductId(PRODUCT_10_EC_ID);
-        commonData.setProductName(PRODUCT_10_EC_NAME);
-
         Coverage coverage = new Coverage();
         coverage.setName(PRODUCT_10_EC_NAME);
         for (CoverageBeneficiary beneficiary : beneficiaries) {
@@ -101,7 +92,7 @@ public class TestUtil {
         }
 
         Quote quote = new Quote();
-        quote.setCommonData(commonData);
+        quote.setCommonData(Product10EC.getCommonData());
         quote.setPremiumsData(premiumsData);
         if (insured != null) {
             quote.addInsured(insured);

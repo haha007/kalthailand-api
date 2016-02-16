@@ -50,17 +50,20 @@ public class QuoteResource {
             @ApiParam(value = "The quote Id")
             @PathVariable String quoteId,
             @ApiParam(value = "The content of the graph image in base 64 encoded.")
-            @RequestParam String base64Image) {
-        Quote quote = quoteService.findByQuoteId(quoteId);
-
-        if (null == quote) {
-            return new ResponseEntity<>(QUOTE_DOES_NOT_EXIST, NOT_FOUND);
+            @RequestParam String base64Image,
+            @ApiParam(value = "The session id the quote is in")
+            @RequestParam String sessionId,
+            @ApiParam(value = "The channel being used to create the quote.")
+            @RequestParam ChannelType channelType) {
+        Optional<Quote> quote = quoteService.findByQuoteId(quoteId, sessionId, channelType);
+        if (!quote.isPresent()) {
+            return new ResponseEntity<>(QUOTE_DOES_NOT_EXIST_OR_ACCESS_DENIED, NOT_FOUND);
         }
 
         try {
-            emailService.sendQuoteEmail(quote, base64Image);
+            emailService.sendQuoteEmail(quote.get(), base64Image);
         } catch (Exception e) {
-            logger.error("Unable to send email for [" + quote.getInsureds().get(0).getPerson().getEmail() + "]", e);
+            logger.error("Unable to send email for [" + quote.get().getInsureds().get(0).getPerson().getEmail() + "]", e);
             return new ResponseEntity<>(UNABLE_TO_SEND_EMAIL, INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity<>(getJson("OK"), OK);
@@ -75,7 +78,7 @@ public class QuoteResource {
     public ResponseEntity getQuote(
             @ApiParam(value = "The quote Id")
             @PathVariable String quoteId,
-            @ApiParam(value = "The session id. Must be unique through the Channel. This is used to recover unfinished quotes throught the channel")
+            @ApiParam(value = "The session id the quote is in")
             @RequestParam String sessionId,
             @ApiParam(value = "The channel being used to create the quote.")
             @RequestParam ChannelType channelType) {
@@ -95,7 +98,7 @@ public class QuoteResource {
     })
     @RequestMapping(value = "/quotes", produces = APPLICATION_JSON_VALUE, method = POST)
     public ResponseEntity createQuote(
-            @ApiParam(value = "The session id. Must be unique through the Channel. This is used to recover unfinished quotes throught the channel")
+            @ApiParam(value = "The session id. Must be unique through the Channel.")
             @RequestParam String sessionId,
             @ApiParam(value = "The channel being used to create the quote.")
             @RequestParam ChannelType channelType,

@@ -40,24 +40,6 @@ public class QuoteServiceTest {
     private SessionQuoteRepository sessionQuoteRepository;
 
     @Test
-    public void should_find_by_quote_id() throws Exception {
-        String sessionId = RandomStringUtils.randomNumeric(20);
-
-        Quote quote = quoteService.createQuote(sessionId, getCommonData(), LINE);
-        quote(quote, EVERY_YEAR, 100000.0, insured(35, TRUE), beneficiary(100.0));
-        quote = quoteService.updateQuote(quote);
-
-        Quote savedQuote = quoteService.findByQuoteId(quote.getQuoteId());
-        assertThat(savedQuote).isNotNull();
-    }
-
-    @Test
-    public void should_not_find_by_quote_id() throws Exception {
-        Quote savedQuote = quoteService.findByQuoteId("Something");
-        assertThat(savedQuote).isNull();
-    }
-
-    @Test
     public void should_find_by_quote_id_and_session_id() throws Exception {
         String sessionId = RandomStringUtils.randomNumeric(20);
 
