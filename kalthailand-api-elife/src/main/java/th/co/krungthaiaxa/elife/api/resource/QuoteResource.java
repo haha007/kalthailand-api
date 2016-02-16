@@ -19,8 +19,7 @@ import java.util.Optional;
 
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
-import static org.springframework.web.bind.annotation.RequestMethod.PUT;
+import static org.springframework.web.bind.annotation.RequestMethod.*;
 import static th.co.krungthaiaxa.elife.api.model.error.ErrorCode.*;
 import static th.co.krungthaiaxa.elife.api.products.Product10EC.PRODUCT_10_EC_ID;
 import static th.co.krungthaiaxa.elife.api.products.Product10EC.getCommonData;
@@ -40,7 +39,7 @@ public class QuoteResource {
     }
 
     @ApiOperation(value = "Sending email for quote", notes = "Sending email for quote", response = Quote.class)
-    @RequestMapping(value = "/quotes/{quoteId}/email", produces = APPLICATION_JSON_VALUE, method = POST)
+    @RequestMapping(value = "/quotes/{quoteId}/email", produces = APPLICATION_JSON_VALUE, method = GET)
     @ApiResponses({
             @ApiResponse(code = 404, message = "If quote Id is unknown", response = Error.class),
             @ApiResponse(code = 500, message = "If email could not be sent", response = Error.class)
