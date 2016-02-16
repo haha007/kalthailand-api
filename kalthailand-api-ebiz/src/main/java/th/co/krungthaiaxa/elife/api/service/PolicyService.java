@@ -37,6 +37,7 @@ import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.SUCCES
 public class PolicyService {
 
     private final static Logger logger = LoggerFactory.getLogger(PolicyService.class);
+    private final static String ERECEIPT_MERGED_FILE_NAME= "ereceipts_merged.png";
     private final PaymentRepository paymentRepository;
     private final PolicyRepository policyRepository;
     private final PolicyNumberRepository policyNumberRepository;
@@ -44,8 +45,8 @@ public class PolicyService {
     private final SessionQuoteRepository sessionQuoteRepository;
     @Value("${path.store.elife.ereceipt}")
     private String eReceiptStorePath;
-    @Value("${path.store.elife.ereceipt.image}")
-    private String eReceiptImageStorePath;
+    @Value("${path.store.watermarked.image}")
+    private String storePath;
     @Value("${path.store.elife.ereceipt.pdf}")
     private String eReceiptPdfStorePath;
     @Value("${path.store.elife.ereceipt.mail.logo}")
@@ -146,21 +147,21 @@ public class PolicyService {
     }
 
     public byte[] createEreceipt(Policy policy) throws Exception {
-
         logger.info("[def] createEReceipt");
         logger.info("[createEReceipt] quoteId : " + policy.getQuoteId());
         logger.info("[createEReceipt] policyNumber : " + policy.getPolicyId());
         InputStream inputStream = getClass().getClassLoader().getResourceAsStream("ereceipt/AGENT-WHITE-FINAL.jpg");
 //        logger.info("[createEReceipt] E-receipt template store name path : " + eReceiptStorePath);
-        logger.info("[createEReceipt] E-receipt image store name path : " + eReceiptImageStorePath);
+        logger.info("[createEReceipt] E-receipt image store name path : " + storePath);
         try {
 
             DecimalFormat formatter = new DecimalFormat("#,##0.00");
 
-            StringBuilder im = new StringBuilder(eReceiptImageStorePath);
-            im.insert(eReceiptImageStorePath.indexOf("."), policy.getPolicyId());
-            eReceiptImageStorePath = im.toString();
-            logger.info("[createEReceipt] Name Image File[" + policy.getPolicyId() + "]:" + eReceiptImageStorePath);
+            StringBuilder im = new StringBuilder(storePath);
+            im.append(File.separator + ERECEIPT_MERGED_FILE_NAME);
+            im.insert(im.toString().indexOf("."), policy.getPolicyId());
+            String resultFileName = im.toString();
+            logger.info("[createEReceipt] Name Image File[" + policy.getPolicyId() + "]:" + resultFileName);
 
             BufferedImage bufferedImage = ImageIO.read(inputStream);
 //            BufferedImage bufferedImage = ImageIO.read(new File(eReceiptStorePath));
@@ -255,8 +256,8 @@ public class PolicyService {
             graphics.drawString("1", 1229, 892);
             graphics.drawString("ไลน์เพย์ (LINE Pay)", 246, 598);
             logger.info("[createEReceipt] success for drawing graphics on image.");
-            ImageIO.write(bufferedImage, "jpg", new File(eReceiptImageStorePath));
-            logger.info("[createEReceipt] write image file success : " + eReceiptImageStorePath);
+            ImageIO.write(bufferedImage, "jpg", new File(resultFileName));
+            logger.info("[createEReceipt] write image file success : " + resultFileName);
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ImageIO.write(bufferedImage, "jpg", baos);
