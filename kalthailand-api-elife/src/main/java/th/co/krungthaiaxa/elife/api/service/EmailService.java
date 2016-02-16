@@ -91,8 +91,8 @@ public class EmailService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return emailContent.replace("%1$s", "test1")
-                .replace("%2$s", "test2")
+        return emailContent.replace("%1$s", quote.getCommonData().getNbOfYearsOfCoverage().toString())
+                .replace("%2$s", quote.getCommonData().getNbOfYearsOfPremium().toString())
                 .replace("%3$s", quote.getInsureds().get(0).getAgeAtSubscription().toString())
                 .replace("%4$s", quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().toString())
                 .replace("%5$s", (new DecimalFormat(decimalFormat)).format(quote.getPremiumsData().getLifeInsuranceSumInsured().getValue()))
