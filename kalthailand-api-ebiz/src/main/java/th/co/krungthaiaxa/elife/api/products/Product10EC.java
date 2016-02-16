@@ -21,7 +21,7 @@ import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException.*;
 
-public class Product10EC {
+public class Product10EC implements Product {
     public final static int DURATION_COVERAGE_IN_YEAR = 10;
     public final static int DURATION_PAYMENT_IN_YEAR = 6;
     public final static String PRODUCT_10_EC_ID = "10EC";
@@ -43,9 +43,7 @@ public class Product10EC {
         }
     };
 
-    private static Function<Integer, Integer> minimumExtraDvdRate = numberOfYearsOfContract -> {
-        return 0;
-    };
+    private static Function<Integer, Integer> minimumExtraDvdRate = numberOfYearsOfContract -> 0;
 
     private static Function<Integer, Integer> averageExtraDvdRate = numberOfYearsOfContract -> {
         if (numberOfYearsOfContract >= 7 && numberOfYearsOfContract <= 9) {
@@ -100,7 +98,7 @@ public class Product10EC {
         }
     };
 
-    public static Quote calculateQuote(Quote quote) throws QuoteCalculationException {
+    public Quote calculateQuote(Quote quote) throws QuoteCalculationException {
         Optional<Coverage> has10ECCoverage = quote.getCoverages()
                 .stream()
                 .filter(coverage -> coverage.getName() != null)
@@ -167,7 +165,7 @@ public class Product10EC {
         return quote;
     }
 
-    public static void getPolicyFromQuote(Policy policy, Quote quote) throws PolicyValidationException, QuoteCalculationException {
+    public void getPolicyFromQuote(Policy policy, Quote quote) throws PolicyValidationException, QuoteCalculationException {
         // check for mandatory data
         checkCommonData(quote.getCommonData());
         checkInsured(quote);
@@ -204,7 +202,7 @@ public class Product10EC {
     }
 
     public static CommonData getCommonData() {
-        CommonData commonData  = new CommonData();
+        CommonData commonData = new CommonData();
         commonData.setMaxPremium(amount(PREMIUM_MAX));
         commonData.setMaxSumInsured(amount(SUM_INSURED_MAX));
         commonData.setMinPremium(amount(PREMIUM_MIN));

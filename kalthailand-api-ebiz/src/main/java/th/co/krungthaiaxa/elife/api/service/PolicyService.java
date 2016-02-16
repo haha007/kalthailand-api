@@ -12,7 +12,9 @@ import th.co.krungthaiaxa.elife.api.model.*;
 import th.co.krungthaiaxa.elife.api.model.enums.ChannelType;
 import th.co.krungthaiaxa.elife.api.model.enums.PaymentStatus;
 import th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus;
+import th.co.krungthaiaxa.elife.api.products.Product;
 import th.co.krungthaiaxa.elife.api.products.Product10EC;
+import th.co.krungthaiaxa.elife.api.products.ProductFactory;
 import th.co.krungthaiaxa.elife.api.repository.*;
 import th.co.krungthaiaxa.elife.api.utils.ThaiBahtUtil;
 
@@ -88,8 +90,10 @@ public class PolicyService {
         if (policy == null) {
             policy = new Policy();
             policy.setPolicyId(policyNumber.get().getPolicyId());
-            // Only one product so far
-            Product10EC.getPolicyFromQuote(policy, quote);
+
+            Product product = ProductFactory.getProduct(quote.getCommonData().getProductId());
+            product.getPolicyFromQuote(policy, quote);
+
             policy.getPayments().stream().forEach(paymentRepository::save);
             policy = policyRepository.save(policy);
             policyNumber.get().setPolicy(policy);

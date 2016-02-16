@@ -6,7 +6,9 @@ import th.co.krungthaiaxa.elife.api.data.SessionQuote;
 import th.co.krungthaiaxa.elife.api.model.*;
 import th.co.krungthaiaxa.elife.api.model.enums.ChannelType;
 import th.co.krungthaiaxa.elife.api.model.enums.InsuredType;
+import th.co.krungthaiaxa.elife.api.products.Product;
 import th.co.krungthaiaxa.elife.api.products.Product10EC;
+import th.co.krungthaiaxa.elife.api.products.ProductFactory;
 import th.co.krungthaiaxa.elife.api.repository.QuoteRepository;
 import th.co.krungthaiaxa.elife.api.repository.SessionQuoteRepository;
 
@@ -70,9 +72,8 @@ public class QuoteService {
         // common calculation
         quote = basicCalculateQuote(quote);
 
-        // product specific calculation
-        // So far there is only one product
-        quote = Product10EC.calculateQuote(quote);
+        Product product = ProductFactory.getProduct(quote.getCommonData().getProductId());
+        quote = product.calculateQuote(quote);
 
         return quoteRepository.save(quote);
     }
