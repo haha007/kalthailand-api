@@ -19,6 +19,7 @@ import th.co.krungthaiaxa.elife.api.utils.ImageUtil;
 import th.co.krungthaiaxa.elife.api.utils.JsonUtil;
 
 import javax.inject.Inject;
+import java.io.File;
 import java.io.IOException;
 import java.time.temporal.ChronoUnit;
 import java.util.Base64;
@@ -37,6 +38,9 @@ import static th.co.krungthaiaxa.elife.api.model.error.ErrorCode.*;
 @Api(value = "Policies")
 public class PolicyResource {
     private final static Logger logger = LoggerFactory.getLogger(PolicyResource.class);
+    private final static String ERECEIPT_PDF_FILE_NAME= "ereceipt.pdf";
+    @Value("${path.store.watermarked.image}")
+    private String storePath;
     private final PolicyService policyService;
     @Value("${path.store.elife.ereceipt.pdf}")
     private String eReceiptPdfStorePath;
@@ -170,10 +174,11 @@ public class PolicyResource {
 
         try {
             bytes = policyService.createEreceipt(policy);
-            im = new StringBuilder(eReceiptPdfStorePath);
-            im.insert(eReceiptPdfStorePath.indexOf("."), "_" + policy.getPolicyId());
-            eReceiptPdfStorePath = im.toString();
-            logger.info("Name of PDF path file [" + eReceiptPdfStorePath + "]");
+            im = new StringBuilder(storePath);
+            im.append(File.separator + ERECEIPT_PDF_FILE_NAME);
+            im.insert(im.toString().indexOf("."), "_" + policy.getPolicyId());
+            String resultFileName = im.toString();
+            logger.info("Name of PDF path file [" + resultFileName + "]");
             ImageUtil.imageToPDF(bytes, eReceiptPdfStorePath);
         } catch (Exception e) {
             logger.error("Unable to create e-receipt [" + policyId + "]", e);

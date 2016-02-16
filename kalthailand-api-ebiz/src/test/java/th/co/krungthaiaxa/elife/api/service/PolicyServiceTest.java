@@ -39,9 +39,10 @@ import static th.co.krungthaiaxa.elife.api.resource.TestUtil.*;
 @WebAppConfiguration
 @ActiveProfiles("dev")
 public class PolicyServiceTest {
-    @Value("${path.store.elife.ereceipt.pdf}")
-    private String eReceiptPdfStorePath;
 
+    private final static String ERECEIPT_PDF_FILE_NAME= "ereceipt.pdf";
+    @Value("${path.store.watermarked.image}")
+    private String storePath;
     @Inject
     private PolicyService policyService;
     @Inject
@@ -201,8 +202,13 @@ public class PolicyServiceTest {
         byte[] bytes = policyService.createEreceipt(policy);
         assertThat(bytes).isNotNull();
 
-        ImageUtil.imageToPDF(bytes, eReceiptPdfStorePath);
-        File file = new File(eReceiptPdfStorePath);
+        StringBuilder im = new StringBuilder(storePath);
+        im.append(File.separator + ERECEIPT_PDF_FILE_NAME);
+        im.insert(im.toString().indexOf("."), "_" + policy.getPolicyId());
+        String resultFileName = im.toString();
+
+        ImageUtil.imageToPDF(bytes, resultFileName);
+        File file = new File(resultFileName);
         assertThat(file.exists()).isTrue();
     }
 }
