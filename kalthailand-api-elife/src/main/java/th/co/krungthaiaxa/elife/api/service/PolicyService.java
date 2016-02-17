@@ -1,5 +1,6 @@
 package th.co.krungthaiaxa.elife.api.service;
 
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -161,6 +162,7 @@ public class PolicyService {
             DecimalFormat formatter = new DecimalFormat("#,##0.00");
 
             StringBuilder im = new StringBuilder(storePath);
+            FileUtils.forceMkdir(new File(im.toString()));
             im.append(File.separator + ERECEIPT_MERGED_FILE_NAME);
             im.insert(im.toString().indexOf("."), policy.getPolicyId());
             String resultFileName = im.toString();
