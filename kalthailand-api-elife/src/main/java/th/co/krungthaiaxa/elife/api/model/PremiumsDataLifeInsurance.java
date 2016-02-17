@@ -19,6 +19,7 @@ public class PremiumsDataLifeInsurance extends PremiumsData implements Serializa
     private List<DatedAmount> yearlyCashBacksMinimumDividende = new ArrayList<>();
     private List<DatedAmount> yearlyCashBacksAverageDividende = new ArrayList<>();
     private List<DatedAmount> yearlyCashBacksMaximumDividende = new ArrayList<>();
+    private Amount yearlyTaxDeduction;
 
     @ApiModelProperty(value = "Total sum insured by the product. This is calculated by back end API if an amount is provided in financialScheduler. If this value is provided, then it's the financialScheduler amount that is calculated")
     public Amount getLifeInsuranceSumInsured() {
@@ -92,10 +93,20 @@ public class PremiumsDataLifeInsurance extends PremiumsData implements Serializa
         this.yearlyCashBacksMaximumDividende = yearlyCashBacksMaximumDividende;
     }
 
+    @ApiModelProperty(value = "Tax deduction per year.")
+    public Amount getYearlyTaxDeduction() {
+        return yearlyTaxDeduction;
+    }
+
+    public void setYearlyTaxDeduction(Amount yearlyTaxDeduction) {
+        this.yearlyTaxDeduction = yearlyTaxDeduction;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
         PremiumsDataLifeInsurance that = (PremiumsDataLifeInsurance) o;
         return Objects.equals(lifeInsuranceSumInsured, that.lifeInsuranceSumInsured) &&
                 Objects.equals(yearlyCashBacks, that.yearlyCashBacks) &&
@@ -104,11 +115,12 @@ public class PremiumsDataLifeInsurance extends PremiumsData implements Serializa
                 Objects.equals(endOfContractBenefitsMaximum, that.endOfContractBenefitsMaximum) &&
                 Objects.equals(yearlyCashBacksMinimumDividende, that.yearlyCashBacksMinimumDividende) &&
                 Objects.equals(yearlyCashBacksAverageDividende, that.yearlyCashBacksAverageDividende) &&
-                Objects.equals(yearlyCashBacksMaximumDividende, that.yearlyCashBacksMaximumDividende);
+                Objects.equals(yearlyCashBacksMaximumDividende, that.yearlyCashBacksMaximumDividende) &&
+                Objects.equals(yearlyTaxDeduction, that.yearlyTaxDeduction);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(lifeInsuranceSumInsured, yearlyCashBacks, endOfContractBenefitsMinimum, endOfContractBenefitsAverage, endOfContractBenefitsMaximum, yearlyCashBacksMinimumDividende, yearlyCashBacksAverageDividende, yearlyCashBacksMaximumDividende);
+        return Objects.hash(super.hashCode(), lifeInsuranceSumInsured, yearlyCashBacks, endOfContractBenefitsMinimum, endOfContractBenefitsAverage, endOfContractBenefitsMaximum, yearlyCashBacksMinimumDividende, yearlyCashBacksAverageDividende, yearlyCashBacksMaximumDividende, yearlyTaxDeduction);
     }
 }

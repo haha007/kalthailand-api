@@ -1,6 +1,5 @@
 package th.co.krungthaiaxa.elife.api.resource;
 
-import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,20 +18,15 @@ import th.co.krungthaiaxa.elife.api.KalApiApplication;
 import th.co.krungthaiaxa.elife.api.model.Payment;
 import th.co.krungthaiaxa.elife.api.model.Policy;
 import th.co.krungthaiaxa.elife.api.model.Quote;
-import th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode;
 import th.co.krungthaiaxa.elife.api.model.error.Error;
-import th.co.krungthaiaxa.elife.api.repository.PaymentRepository;
 import th.co.krungthaiaxa.elife.api.repository.PolicyRepository;
-import th.co.krungthaiaxa.elife.api.repository.QuoteRepository;
 import th.co.krungthaiaxa.elife.api.service.QuoteService;
 
 import javax.inject.Inject;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 
-import static java.lang.Boolean.TRUE;
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.NOT_ACCEPTABLE;
@@ -73,7 +67,7 @@ public class PolicyResourceTest {
     @Test
     public void should_return_error_when_creating_policy_from_none_existing_quote() throws IOException {
         MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
-        parameters.add("jsonQuote", getJSon(quote(EVERY_QUARTER, insured(25, TRUE), beneficiary(100.0))));
+        parameters.add("jsonQuote", getJSon(quote(EVERY_QUARTER, insured(25), beneficiary(100.0))));
 
         ResponseEntity<String> response = template.postForEntity(base, parameters, String.class);
         assertThat(response.getStatusCode().value()).isEqualTo(NOT_ACCEPTABLE.value());
@@ -84,7 +78,7 @@ public class PolicyResourceTest {
     @Test
     public void should_return_a_policy_object() throws Exception {
         Quote quote = quoteService.createQuote(randomNumeric(20), getCommonData(), LINE);
-        quote(quote, EVERY_YEAR, 1000000.0, insured(35, Boolean.TRUE), beneficiary(100.0));
+        quote(quote, EVERY_YEAR, 1000000.0, insured(35), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 
         MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
@@ -102,7 +96,7 @@ public class PolicyResourceTest {
     @Test
     public void should_return_policy_payment_list() throws Exception {
         Quote quote = quoteService.createQuote(randomNumeric(20), getCommonData(), LINE);
-        quote(quote, EVERY_YEAR, 1000000.0, insured(35, Boolean.TRUE), beneficiary(100.0));
+        quote(quote, EVERY_YEAR, 1000000.0, insured(35), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 
         MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();

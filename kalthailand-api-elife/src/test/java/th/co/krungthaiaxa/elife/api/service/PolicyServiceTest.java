@@ -20,7 +20,6 @@ import th.co.krungthaiaxa.elife.api.utils.ImageUtil;
 import javax.inject.Inject;
 import java.io.File;
 
-import static java.lang.Boolean.TRUE;
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -71,11 +70,11 @@ public class PolicyServiceTest {
         String sessionId = randomNumeric(20);
 
         Quote quote1 = quoteService.createQuote(sessionId, getCommonData(), LINE);
-        quote(quote1, EVERY_YEAR, 1000000.0, insured(35, TRUE), beneficiary(100.0));
+        quote(quote1, EVERY_YEAR, 1000000.0, insured(35), beneficiary(100.0));
         quote1 = quoteService.updateQuote(quote1);
 
         Quote quote2 = quoteService.createQuote(sessionId, getCommonData(), LINE);
-        quote(quote2, EVERY_YEAR, 1000000.0, insured(35, TRUE), beneficiary(100.0));
+        quote(quote2, EVERY_YEAR, 1000000.0, insured(35), beneficiary(100.0));
         quote2 = quoteService.updateQuote(quote2);
         policyService.createPolicy(quote2);
 
@@ -86,7 +85,7 @@ public class PolicyServiceTest {
     @Test
     public void should_add_generated_ids_when_saving_policy_for_first_time() throws Exception {
         Quote quote = quoteService.createQuote(randomNumeric(20), getCommonData(), LINE);
-        quote(quote, EVERY_YEAR, 1000000.0, insured(35, TRUE), beneficiary(100.0));
+        quote(quote, EVERY_YEAR, 1000000.0, insured(35), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 
         Policy policy = policyService.createPolicy(quote);
@@ -199,7 +198,7 @@ public class PolicyServiceTest {
     @Test
     public void should_create_bytes_for_eReceipt() throws Exception {
         Quote quote = quoteService.createQuote(randomNumeric(20), getCommonData(), LINE);
-        quote(quote, EVERY_YEAR, 1000000.0, insured(35, TRUE), beneficiary(100.0));
+        quote(quote, EVERY_YEAR, 1000000.0, insured(35), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
         Policy policy = policyService.createPolicy(quote);
         TestUtil.policy(policy);
@@ -211,7 +210,7 @@ public class PolicyServiceTest {
     @Test
     public void should_create_bytes_for_eReceipt_and_can_create_pdf_file_to_file_system() throws Exception {
         Quote quote = quoteService.createQuote(randomNumeric(20), getCommonData(), LINE);
-        quote(quote, EVERY_YEAR, 1000000.0, insured(35, TRUE), beneficiary(100.0));
+        quote(quote, EVERY_YEAR, 1000000.0, insured(35), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
         Policy policy = policyService.createPolicy(quote);
         TestUtil.policy(policy);

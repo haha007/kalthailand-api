@@ -14,6 +14,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
 import static java.time.LocalDate.now;
 import static java.time.temporal.ChronoUnit.YEARS;
 import static th.co.krungthaiaxa.elife.api.products.Product10EC.PRODUCT_10_EC_NAME;
@@ -121,11 +122,23 @@ public class TestUtil {
         return result;
     }
 
-    public static Insured insured(int ageAtSubscription, boolean mainInsured) {
-        return insured(ageAtSubscription, mainInsured, "3841200364454");
+    public static Insured insured(int ageAtSubscription) {
+        return insured(ageAtSubscription, TRUE, "3841200364454", 5);
     }
 
-    public static Insured insured(int ageAtSubscription, boolean mainInsured, String registrationId) {
+    public static Insured insured(int ageAtSubscription, Integer taxRate) {
+        return insured(ageAtSubscription, TRUE, "3841200364454", taxRate);
+    }
+
+    public static Insured insured(int ageAtSubscription, String registrationId) {
+        return insured(ageAtSubscription, TRUE, registrationId, 5);
+    }
+
+    public static Insured insured(int ageAtSubscription, boolean mainInsured) {
+        return insured(ageAtSubscription, mainInsured, "3841200364454", 5);
+    }
+
+    public static Insured insured(int ageAtSubscription, boolean mainInsured, String registrationId, Integer taxRate) {
         Fatca fatca = new Fatca();
         fatca.setBornInUSA(FALSE);
         fatca.setPayTaxInUSA(FALSE);
@@ -140,7 +153,7 @@ public class TestUtil {
 
         Insured insured = new Insured();
         insured.setAgeAtSubscription(ageAtSubscription);
-        insured.setDeclaredTaxPercentAtSubscription(5);
+        insured.setDeclaredTaxPercentAtSubscription(taxRate);
         insured.setEndDate(now().plus(10, ChronoUnit.YEARS));
         insured.setMainInsuredIndicator(mainInsured);
         insured.setProfessionName("Something");

@@ -114,6 +114,7 @@ public class Product10EC implements Product {
             quote.getPremiumsData().setYearlyCashBacksMinimumDividende(new ArrayList<>());
             quote.getPremiumsData().setEndOfContractBenefitsMinimum(new ArrayList<>());
             quote.getPremiumsData().setYearlyCashBacks(new ArrayList<>());
+            quote.getPremiumsData().setYearlyTaxDeduction(null);
             if (has10ECCoverage.isPresent()) {
                 quote.getCoverages().remove(has10ECCoverage.get());
             }
@@ -154,6 +155,9 @@ public class Product10EC implements Product {
         premiumsData.setYearlyCashBacksMinimumDividende(calculateDatedAmount(quote, null, minimumExtraDvdRate));
         premiumsData.setYearlyCashBacksAverageDividende(calculateDatedAmount(quote, 40, averageExtraDvdRate));
         premiumsData.setYearlyCashBacksMaximumDividende(calculateDatedAmount(quote, 45, maximumExtraDvdRate));
+
+        // calculate tax deduction
+        premiumsData.setYearlyTaxDeduction(calculateTaxReturn(quote));
 
         if (!has10ECCoverage.isPresent()) {
             Coverage coverage = new Coverage();
@@ -482,6 +486,18 @@ public class Product10EC implements Product {
         }
         Collections.sort(result);
         return result;
+    }
+
+    private Amount calculateTaxReturn(Quote quote) {
+        // (min(100000, premium) * tax rate / 100) * modalFactor
+        Double premium = quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue();
+        Integer taxRate = quote.getInsureds().get(0).getDeclaredTaxPercentAtSubscription();
+        Double factor = modalFactor.apply(quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode());
+
+        Amount amount = new Amount();
+        amount.setCurrencyCode(PRODUCT_10_EC_CURRENCY);
+        amount.setValue((Math.min(100000.0, premium) * taxRate / 100) * factor);
+        return amount;
     }
 
     private static boolean hasEnoughTocalculate(Quote quote) {
