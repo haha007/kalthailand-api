@@ -17,6 +17,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 import th.co.krungthaiaxa.elife.api.KalApiApplication;
 import th.co.krungthaiaxa.elife.api.data.SessionQuote;
 import th.co.krungthaiaxa.elife.api.model.Quote;
@@ -24,7 +25,6 @@ import th.co.krungthaiaxa.elife.api.model.enums.ChannelType;
 import th.co.krungthaiaxa.elife.api.model.enums.GenderCode;
 import th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode;
 import th.co.krungthaiaxa.elife.api.model.error.Error;
-import th.co.krungthaiaxa.elife.api.model.error.ErrorCode;
 import th.co.krungthaiaxa.elife.api.repository.QuoteRepository;
 import th.co.krungthaiaxa.elife.api.repository.SessionQuoteRepository;
 import th.co.krungthaiaxa.elife.api.utils.JsonUtil;
@@ -32,12 +32,16 @@ import th.co.krungthaiaxa.elife.api.utils.JsonUtil;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.http.HttpStatus.NOT_ACCEPTABLE;
-import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.*;
 import static org.springframework.util.StringUtils.replace;
+import static th.co.krungthaiaxa.elife.api.model.error.ErrorCode.INVALID_PRODUCT_ID_PROVIDED;
+import static th.co.krungthaiaxa.elife.api.model.error.ErrorCode.QUOTE_DOES_NOT_EXIST_OR_ACCESS_DENIED;
+import static th.co.krungthaiaxa.elife.api.resource.TestUtil.getErrorFromJSon;
+import static th.co.krungthaiaxa.elife.api.resource.TestUtil.getQuoteFromJSon;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiApplication.class)
@@ -51,7 +55,6 @@ public class QuoteResourceTest {
     private String apiUserPassword;
     @Value("${local.server.port}")
     private int port;
-    private URI base;
     private RestTemplate template;
 
     @Inject
@@ -61,12 +64,108 @@ public class QuoteResourceTest {
 
     @Before
     public void setUp() throws Exception {
-        base = new URI("http://localhost:" + port + "/quotes");
         template = new TestRestTemplate(apiUserName, apiUserPassword);
     }
 
     @Test
-    public void should_return_error_when_requesting_on_a_product_that_does_not_exist() throws IOException {
+    public void should_return_error_when_get_quote_with_wrong_id() throws IOException, URISyntaxException {
+        URI base = new URI("http://localhost:" + port + "/quotes/123456789");
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUri(base)
+                .queryParam("sessionId", randomNumeric(20))
+                .queryParam("channelType", ChannelType.LINE.name());
+
+        ResponseEntity<String> response = template.getForEntity(builder.toUriString(), String.class);
+        assertThat(response.getStatusCode().value()).isEqualTo(NOT_FOUND.value());
+        Error error = getErrorFromJSon(response.getBody());
+        assertThat(error).isEqualToComparingFieldByField(QUOTE_DOES_NOT_EXIST_OR_ACCESS_DENIED);
+    }
+
+    @Test
+    public void should_return_error_when_get_quote_with_good_id_and_wrong_session_id() throws IOException, URISyntaxException {
+        String sessionId = randomNumeric(20);
+        URI createURI = new URI("http://localhost:" + port + "/quotes");
+        MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
+        parameters.add("sessionId", sessionId);
+        parameters.add("productId", "10EC");
+        parameters.add("channelType", ChannelType.LINE.name());
+
+        ResponseEntity<String> createResponse = template.postForEntity(createURI, parameters, String.class);
+        Quote quote = getQuoteFromJSon(createResponse.getBody());
+
+        URI base = new URI("http://localhost:" + port + "/quotes/" + quote.getQuoteId());
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUri(base)
+                .queryParam("sessionId", randomNumeric(20))
+                .queryParam("channelType", ChannelType.LINE.name());
+
+        ResponseEntity<String> response = template.getForEntity(builder.toUriString(), String.class);
+        assertThat(response.getStatusCode().value()).isEqualTo(NOT_FOUND.value());
+        Error error = getErrorFromJSon(response.getBody());
+        assertThat(error).isEqualToComparingFieldByField(QUOTE_DOES_NOT_EXIST_OR_ACCESS_DENIED);
+    }
+
+    @Test
+    public void should_return_quote_when_get_quote_with_good_id_and_good_session_id() throws IOException, URISyntaxException {
+        String sessionId = randomNumeric(20);
+        URI createURI = new URI("http://localhost:" + port + "/quotes");
+        MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
+        parameters.add("sessionId", sessionId);
+        parameters.add("productId", "10EC");
+        parameters.add("channelType", ChannelType.LINE.name());
+
+        ResponseEntity<String> createResponse = template.postForEntity(createURI, parameters, String.class);
+        Quote quote = getQuoteFromJSon(createResponse.getBody());
+
+        URI base = new URI("http://localhost:" + port + "/quotes/" + quote.getQuoteId());
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUri(base)
+                .queryParam("sessionId", sessionId)
+                .queryParam("channelType", ChannelType.LINE.name());
+
+        ResponseEntity<String> response = template.getForEntity(builder.toUriString(), String.class);
+        assertThat(response.getStatusCode().value()).isEqualTo(OK.value());
+        Quote returnedQuote = getQuoteFromJSon(createResponse.getBody());
+        assertThat(returnedQuote).isEqualTo(quote);
+    }
+
+    @Test
+    public void should_return_empty_last_quote() throws IOException, URISyntaxException {
+        URI base = new URI("http://localhost:" + port + "/quotes/latest");
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUri(base)
+                .queryParam("sessionId", randomNumeric(20))
+                .queryParam("channelType", ChannelType.LINE.name());
+
+        ResponseEntity<String> response = template.getForEntity(builder.toUriString(), String.class);
+        assertThat(response.getStatusCode().value()).isEqualTo(OK.value());
+        assertThat(response.getBody()).isEqualTo("\"\"");
+    }
+
+    @Test
+    public void should_return_last_quote() throws IOException, URISyntaxException {
+        String sessionId = randomNumeric(20);
+        URI createURI = new URI("http://localhost:" + port + "/quotes");
+        MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
+        parameters.add("sessionId", sessionId);
+        parameters.add("productId", "10EC");
+        parameters.add("channelType", ChannelType.LINE.name());
+
+        template.postForEntity(createURI, parameters, String.class);
+        template.postForEntity(createURI, parameters, String.class);
+        ResponseEntity<String> createResponse = template.postForEntity(createURI, parameters, String.class);
+        Quote quote = getQuoteFromJSon(createResponse.getBody());
+
+        URI latestQuoteURI = new URI("http://localhost:" + port + "/quotes/latest");
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUri(latestQuoteURI)
+                .queryParam("sessionId", sessionId)
+                .queryParam("channelType", ChannelType.LINE.name());
+
+        ResponseEntity<String> latestResponse = template.getForEntity(builder.toUriString(), String.class);
+        assertThat(latestResponse.getStatusCode().value()).isEqualTo(OK.value());
+        Quote latestQuote = getQuoteFromJSon(latestResponse.getBody());
+        assertThat(latestQuote).isEqualTo(quote);
+    }
+
+    @Test
+    public void should_return_error_when_requesting_on_a_product_that_does_not_exist() throws IOException, URISyntaxException {
+        URI base = new URI("http://localhost:" + port + "/quotes");
         MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
         parameters.add("sessionId", randomNumeric(20));
         parameters.add("productId", "Something");
@@ -74,12 +173,13 @@ public class QuoteResourceTest {
 
         ResponseEntity<String> response = template.postForEntity(base, parameters, String.class);
         assertThat(response.getStatusCode().value()).isEqualTo(NOT_ACCEPTABLE.value());
-        Error error = TestUtil.getErrorFromJSon(response.getBody());
-        assertThat(error).isEqualToComparingFieldByField(ErrorCode.INVALID_PRODUCT_ID_PROVIDED);
+        Error error = getErrorFromJSon(response.getBody());
+        assertThat(error).isEqualToComparingFieldByField(INVALID_PRODUCT_ID_PROVIDED);
     }
 
     @Test
-    public void should_return_an_empty_quote_object() throws IOException {
+    public void should_return_an_empty_quote_object() throws IOException, URISyntaxException {
+        URI base = new URI("http://localhost:" + port + "/quotes");
         MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
         parameters.add("sessionId", randomNumeric(20));
         parameters.add("productId", "10EC");
@@ -99,7 +199,8 @@ public class QuoteResourceTest {
     }
 
     @Test
-    public void should_return_an_updated_quote() throws IOException {
+    public void should_return_an_updated_quote() throws IOException, URISyntaxException {
+        URI base = new URI("http://localhost:" + port + "/quotes");
         String sessionId = randomNumeric(20);
         MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
         parameters.add("sessionId", sessionId);

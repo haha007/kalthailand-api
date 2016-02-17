@@ -14,6 +14,10 @@ import th.co.krungthaiaxa.elife.api.model.error.ErrorCode;
 import th.co.krungthaiaxa.elife.api.utils.Decrypt;
 import th.co.krungthaiaxa.elife.api.utils.JsonUtil;
 
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static th.co.krungthaiaxa.elife.api.model.error.ErrorCode.INVALID_LINE_ID;
+import static th.co.krungthaiaxa.elife.api.model.error.ErrorCode.UNABLE_TO_DECRYPT;
+
 @RestController
 @Api(value = "Line")
 public class LineResource {
@@ -37,12 +41,12 @@ public class LineResource {
             decrypted = Decrypt.decrypt(value, secretkey);
         } catch (Exception e) {
             logger.error("Unable to decrypt [" + value + "]", e);
-            return new ResponseEntity<>(ErrorCode.UNABLE_TO_DECRYPT, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(UNABLE_TO_DECRYPT, BAD_REQUEST);
         }
 
         if (!decrypted.contains(".")) {
             logger.error("Decrypted value doesn't contain a '.'");
-            return new ResponseEntity<>(ErrorCode.INVALID_LINE_ID, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(INVALID_LINE_ID, BAD_REQUEST);
         }
 
         logger.info("Value has been successfuly decrypted");
