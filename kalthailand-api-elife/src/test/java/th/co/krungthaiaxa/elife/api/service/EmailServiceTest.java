@@ -178,6 +178,22 @@ public class EmailServiceTest {
         }
     }
 
+    @Test
+    public void should_send_quote_email_with_product_information() throws Exception {
+        Quote quote = quoteService.createQuote(randomNumeric(20), getCommonData(), LINE);
+        quote(quote, EVERY_YEAR, 500000.0, insured(55, Boolean.TRUE), beneficiary(100.0));
+        quote = quoteService.updateQuote(quote);
+
+        emailService.sendQuoteEmail(quote, base64Graph);
+
+        assertThat(greenMail.getReceivedMessages()).hasSize(1);
+        MimeMessage email = greenMail.getReceivedMessages()[0];
+        assertThat(email.getSubject()).isEqualTo(subject);
+        String bodyAsString = decodeSimpleBody(getBody(email));
+        assertThat(bodyAsString).contains("<tr><td>ระยะเวลาคุ้มครอง</td><td width=\"120px\" class=\"value\" align=\"right\" >"+quote.getCommonData().getNbOfYearsOfCoverage().toString()+" ปี</td></tr>");
+        assertThat(bodyAsString).contains("<tr><td>ระยะเวลาชำระเบี้ย</td><td class=\"value\" align=\"right\" >"+quote.getCommonData().getNbOfYearsOfPremium().toString()+" ปี</td></tr>");
+    }
+
     private static String decodeSimpleBody(String encodedBody) throws MessagingException, IOException {
         InputStream inputStream = MimeUtility.decode(new ByteArrayInputStream(encodedBody.getBytes("UTF-8")), "quoted-printable");
         BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
