@@ -99,7 +99,8 @@ public class PolicyService {
             policyNumber.get().setPolicy(policy);
             policyNumberRepository.save(policyNumber.get());
             SessionQuote sessionQuote = sessionQuoteRepository.findByQuotesContaining(quote);
-            sessionQuoteRepository.delete(sessionQuote);
+            sessionQuote.getQuotes().remove(quote);
+            sessionQuoteRepository.save(sessionQuote);
         }
 
         return policy;

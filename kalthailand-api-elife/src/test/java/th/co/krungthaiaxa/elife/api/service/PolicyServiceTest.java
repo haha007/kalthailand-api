@@ -1,7 +1,6 @@
 package th.co.krungthaiaxa.elife.api.service;
 
 
-import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,7 +39,7 @@ import static th.co.krungthaiaxa.elife.api.resource.TestUtil.*;
 @ActiveProfiles("test")
 public class PolicyServiceTest {
 
-    private final static String ERECEIPT_PDF_FILE_NAME= "ereceipt.pdf";
+    private final static String ERECEIPT_PDF_FILE_NAME = "ereceipt.pdf";
     @Value("${path.store.watermarked.image}")
     private String storePath;
     @Inject
@@ -64,6 +63,23 @@ public class PolicyServiceTest {
         assertThatThrownBy(() -> policyService.createPolicy(quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(noneExistingQuote.getMessage());
+    }
+
+    @Test
+    public void should_delete_1_quote_when_policy_has_been_created() throws Exception {
+        String sessionId = randomNumeric(20);
+
+        Quote quote1 = quoteService.createQuote(sessionId, getCommonData(), LINE);
+        quote(quote1, EVERY_YEAR, 1000000.0, insured(35, Boolean.TRUE), beneficiary(100.0));
+        quote1 = quoteService.updateQuote(quote1);
+
+        Quote quote2 = quoteService.createQuote(sessionId, getCommonData(), LINE);
+        quote(quote2, EVERY_YEAR, 1000000.0, insured(35, Boolean.TRUE), beneficiary(100.0));
+        quote2 = quoteService.updateQuote(quote2);
+        policyService.createPolicy(quote2);
+
+        assertThat(quoteService.findByQuoteId(quote1.getQuoteId(), sessionId, LINE).isPresent()).isTrue();
+        assertThat(quoteService.findByQuoteId(quote2.getQuoteId(), sessionId, LINE).isPresent()).isFalse();
     }
 
     @Test
