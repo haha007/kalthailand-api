@@ -8,10 +8,7 @@ import th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 
@@ -189,7 +186,7 @@ public class Product10EC implements Product {
         // There is only one coverage at this point
         Coverage coverage = quote.getCoverages().get(0);
 
-        checkBeneficiaries(coverage.getBeneficiaries());
+        checkBeneficiaries(insured, coverage.getBeneficiaries());
         checkPremiumsData(quote.getPremiumsData(), insured.getStartDate());
 
         // Copy from quote to Policy
@@ -245,13 +242,35 @@ public class Product10EC implements Product {
         }
     }
 
-    private static void checkBeneficiaries(List<CoverageBeneficiary> beneficiaries) throws PolicyValidationException {
+    private static void checkBeneficiaries(Insured insured, List<CoverageBeneficiary> beneficiaries) throws PolicyValidationException {
         if (beneficiaries == null || beneficiaries.size() == 0) {
             throw PolicyValidationException.beneficiariesNone;
         } else if (beneficiaries.size() > 6) {
             throw PolicyValidationException.beneficiariesTooMany;
         } else if (beneficiaries.stream().mapToDouble(CoverageBeneficiary::getCoverageBenefitPercentage).sum() != 100.0) {
             throw PolicyValidationException.beneficiariesPercentSumNot100;
+        }
+
+        List<String> insuredRegistrationIds = insured.getPerson().getRegistrations().stream()
+                .map(Registration::getId)
+                .collect(toList());
+        List<String> beneficiaryRegistrationIds = beneficiaries.stream()
+                .map(coverageBeneficiary -> coverageBeneficiary.getPerson().getRegistrations())
+                .flatMap(Collection::stream)
+                .map(Registration::getId)
+                .collect(toList());
+
+        Optional<String> hasABeneficiaryWithSameIdAsInsured = beneficiaryRegistrationIds.stream()
+                .filter(insuredRegistrationIds::contains)
+                .findFirst();
+        if (hasABeneficiaryWithSameIdAsInsured.isPresent()) {
+            throw PolicyValidationException.beneficiariesIdIqualToInsuredId;
+        }
+
+        Boolean hasDifferentBeneficiaries = beneficiaryRegistrationIds.stream()
+                .allMatch(new HashSet<>()::add);
+        if (!hasDifferentBeneficiaries) {
+            throw PolicyValidationException.beneficiariesWithSameId;
         }
     }
 

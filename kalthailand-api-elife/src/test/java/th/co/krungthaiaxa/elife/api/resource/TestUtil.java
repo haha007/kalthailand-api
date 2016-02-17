@@ -102,13 +102,17 @@ public class TestUtil {
     }
 
     public static CoverageBeneficiary beneficiary(Double benefitPercent) {
+        return beneficiary(benefitPercent, "3120300153833");
+    }
+
+    public static CoverageBeneficiary beneficiary(Double benefitPercent, String registrationId) {
         Person person = new Person();
         person.setGenderCode(GenderCode.FEMALE);
         person.setGivenName("Beneficiary");
         person.setMiddleName("");
         person.setSurName("Benf Last name");
         person.setTitle("M");
-        person.addRegistration(registration("3120300153833"));
+        person.addRegistration(registration(registrationId));
 
         CoverageBeneficiary result = new CoverageBeneficiary();
         result.setCoverageBenefitPercentage(benefitPercent);
@@ -118,6 +122,10 @@ public class TestUtil {
     }
 
     public static Insured insured(int ageAtSubscription, boolean mainInsured) {
+        return insured(ageAtSubscription, mainInsured, "3841200364454");
+    }
+
+    public static Insured insured(int ageAtSubscription, boolean mainInsured, String registrationId) {
         Fatca fatca = new Fatca();
         fatca.setBornInUSA(FALSE);
         fatca.setPayTaxInUSA(FALSE);
@@ -135,7 +143,6 @@ public class TestUtil {
         insured.setStartDate(now());
         insured.setType(InsuredType.Insured);
         insured.setFatca(fatca);
-
 
         GeographicalAddress geographicalAddress = new GeographicalAddress();
         geographicalAddress.setCountry("ไทย");
@@ -166,9 +173,7 @@ public class TestUtil {
         person.setTitle("M");
         person.setWeightInKg(75);
 
-        Registration registration = new Registration();
-        registration.setId("3841200364454");
-        person.addRegistration(registration);
+        person.addRegistration(registration(registrationId));
 
         insured.setPerson(person);
         return insured;

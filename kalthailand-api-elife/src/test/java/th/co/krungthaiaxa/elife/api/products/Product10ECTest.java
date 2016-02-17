@@ -26,10 +26,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.PaymentStatus.FUTURE;
+import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_HALF_YEAR;
 import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_YEAR;
-import static th.co.krungthaiaxa.elife.api.products.Product10EC.DURATION_COVERAGE_IN_YEAR;
-import static th.co.krungthaiaxa.elife.api.products.Product10EC.SUM_INSURED_MAX;
-import static th.co.krungthaiaxa.elife.api.products.Product10EC.SUM_INSURED_MIN;
+import static th.co.krungthaiaxa.elife.api.products.Product10EC.*;
 import static th.co.krungthaiaxa.elife.api.resource.TestUtil.*;
 
 public class Product10ECTest {
@@ -219,7 +218,7 @@ public class Product10ECTest {
 
     @Test
     public void should_calculate_premium_from_sum_insured_with_half_year_periodicity_and_age_25() throws Exception {
-        Quote quote = quote(PeriodicityCode.EVERY_HALF_YEAR, insured(25, TRUE), beneficiary(100.0));
+        Quote quote = quote(EVERY_HALF_YEAR, insured(25, TRUE), beneficiary(100.0));
 
         Amount amount = new Amount();
         amount.setCurrencyCode("THB");
@@ -1073,8 +1072,9 @@ public class Product10ECTest {
 
     @Test
     public void should_return_error_when_create_policy_with_too_many_beneficiaries() throws Exception {
-        final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), beneficiary(1.0), beneficiary(1.0),
-                beneficiary(1.0), beneficiary(1.0), beneficiary(1.0), beneficiary(1.0), beneficiary(94.0));
+        final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), beneficiary(1.0, "1"), beneficiary(1.0, "2"),
+                beneficiary(1.0, "3"), beneficiary(1.0, "4"), beneficiary(1.0, "5"), beneficiary(1.0, "6"),
+                beneficiary(94.0, "7"));
         Policy policy = new Policy();
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
@@ -1083,12 +1083,32 @@ public class Product10ECTest {
 
     @Test
     public void should_return_error_when_create_policy_with_beneficiaries_for_percent_sum_different_than_100() throws Exception {
-        final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), beneficiary(1.0), beneficiary(1.0),
-                beneficiary(1.0), beneficiary(1.0), beneficiary(94.0));
+        final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), beneficiary(1.0, "1"), beneficiary(1.0, "2"),
+                beneficiary(1.0, "3"), beneficiary(1.0, "4"), beneficiary(94.0, "5"));
         Policy policy = new Policy();
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(PolicyValidationException.beneficiariesPercentSumNot100.getMessage());
+    }
+
+    @Test
+    public void should_return_error_when_create_policy_with_1_beneficiary_id_equal_to_insured_id() throws Exception {
+        final Quote quote = quote(EVERY_YEAR, insured(25, TRUE, "SAME"), beneficiary(1.0, "SAME"),
+                beneficiary(1.0, "2"), beneficiary(1.0, "3"), beneficiary(1.0, "4"), beneficiary(96.0, "5"));
+        Policy policy = new Policy();
+        assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
+                .isInstanceOf(PolicyValidationException.class)
+                .hasMessage(PolicyValidationException.beneficiariesIdIqualToInsuredId.getMessage());
+    }
+
+    @Test
+    public void should_return_error_when_create_policy_with_2_beneficiaries_with_same_id() throws Exception {
+        final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), beneficiary(1.0, "SAME"), beneficiary(1.0, "SAME"),
+                beneficiary(1.0, "2"), beneficiary(1.0, "3"), beneficiary(96.0, "4"));
+        Policy policy = new Policy();
+        assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
+                .isInstanceOf(PolicyValidationException.class)
+                .hasMessage(PolicyValidationException.beneficiariesWithSameId.getMessage());
     }
 
     @Test
@@ -1146,7 +1166,7 @@ public class Product10ECTest {
 
     @Test
     public void should_get_12_payments_when_choosing_half_year_schedule() throws Exception {
-        final Quote quote = quote(PeriodicityCode.EVERY_HALF_YEAR, insured(25, TRUE), beneficiary(100.0));
+        final Quote quote = quote(EVERY_HALF_YEAR, insured(25, TRUE), beneficiary(100.0));
 
         Policy policy = new Policy();
         product10EC.getPolicyFromQuote(policy, quote);
