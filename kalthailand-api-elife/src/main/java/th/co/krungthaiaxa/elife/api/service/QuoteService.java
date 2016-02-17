@@ -53,6 +53,7 @@ public class QuoteService {
         Insured insured = new Insured();
         insured.setMainInsuredIndicator(true);
         insured.setFatca(new Fatca());
+        insured.setHealthStatus(new HealthStatus());
         insured.setPerson(new Person());
         insured.setType(InsuredType.Insured);
 
