@@ -9,10 +9,10 @@
     </appender>
 
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>/opt/EAP-6.4.0/standalone/log/elife.log</file>
+        <file>/opt/elife/logs/elife.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- daily rollover -->
-            <fileNamePattern>/opt/EAP-6.4.0/standalone/log/elife%d.log.zip</fileNamePattern>
+            <fileNamePattern>/opt/elife/logs/elife%d.log.zip</fileNamePattern>
             <!-- keep 30 days worth of history -->
             <maxHistory>30</maxHistory>
         </rollingPolicy>
