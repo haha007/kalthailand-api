@@ -72,7 +72,7 @@ public class QuoteResource {
     @ApiResponses({
             @ApiResponse(code = 404, message = "If quote Id is unknown or if sessionId user does not have access to the quote", response = Error.class)
     })
-    @RequestMapping(value = "/quotes/{quoteId}", produces = APPLICATION_JSON_VALUE, method = POST)
+    @RequestMapping(value = "/quotes/{quoteId}", produces = APPLICATION_JSON_VALUE, method = GET)
     @ResponseBody
     public ResponseEntity getQuote(
             @ApiParam(value = "The quote Id")
