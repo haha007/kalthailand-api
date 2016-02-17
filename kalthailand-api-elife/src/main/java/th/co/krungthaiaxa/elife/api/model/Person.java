@@ -20,11 +20,11 @@ public class Person extends Party implements Serializable {
     private PhoneNumber workPhoneNumber;
     private String email;
     private MaritalStatus maritalStatus;
-    private Integer heightInCm;
-    private Integer weightInKg;
     private LocalDate birthDate;
     private GenderCode genderCode;
-    private GeographicalAddress geographicalAddress = new GeographicalAddress();
+    private GeographicalAddress currentAddress;
+    private GeographicalAddress deliveryAddress;
+    private GeographicalAddress registrationAddress;
 
     @ApiModelProperty(value = "The person's first name")
     public String getGivenName() {
@@ -107,24 +107,6 @@ public class Person extends Party implements Serializable {
         this.maritalStatus = maritalStatus;
     }
 
-    @ApiModelProperty(value = "The person's height in centimeters")
-    public Integer getHeightInCm() {
-        return heightInCm;
-    }
-
-    public void setHeightInCm(Integer heightInCm) {
-        this.heightInCm = heightInCm;
-    }
-
-    @ApiModelProperty(value = "The person's height in kilograms")
-    public Integer getWeightInKg() {
-        return weightInKg;
-    }
-
-    public void setWeightInKg(Integer weightInKg) {
-        this.weightInKg = weightInKg;
-    }
-
     @ApiModelProperty(value = "The person's birth date")
     public LocalDate getBirthDate() {
         return birthDate;
@@ -143,19 +125,38 @@ public class Person extends Party implements Serializable {
         this.genderCode = genderCode;
     }
 
-    @ApiModelProperty(value = "The person's address")
-    public GeographicalAddress getGeographicalAddress() {
-        return geographicalAddress;
+    @ApiModelProperty(value = "The person's current address")
+    public GeographicalAddress getCurrentAddress() {
+        return currentAddress;
     }
 
-    public void setGeographicalAddress(GeographicalAddress geographicalAddress) {
-        this.geographicalAddress = geographicalAddress;
+    public void setCurrentAddress(GeographicalAddress currentAddress) {
+        this.currentAddress = currentAddress;
+    }
+
+    @ApiModelProperty(value = "The person's address for deliveries")
+    public GeographicalAddress getDeliveryAddress() {
+        return deliveryAddress;
+    }
+
+    public void setDeliveryAddress(GeographicalAddress deliveryAddress) {
+        this.deliveryAddress = deliveryAddress;
+    }
+
+    @ApiModelProperty(value = "The person's address as it is registered")
+    public GeographicalAddress getRegistrationAddress() {
+        return registrationAddress;
+    }
+
+    public void setRegistrationAddress(GeographicalAddress registrationAddress) {
+        this.registrationAddress = registrationAddress;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
         Person person = (Person) o;
         return Objects.equals(givenName, person.givenName) &&
                 Objects.equals(middleName, person.middleName) &&
@@ -166,15 +167,15 @@ public class Person extends Party implements Serializable {
                 Objects.equals(workPhoneNumber, person.workPhoneNumber) &&
                 Objects.equals(email, person.email) &&
                 maritalStatus == person.maritalStatus &&
-                Objects.equals(heightInCm, person.heightInCm) &&
-                Objects.equals(weightInKg, person.weightInKg) &&
                 Objects.equals(birthDate, person.birthDate) &&
                 genderCode == person.genderCode &&
-                Objects.equals(geographicalAddress, person.geographicalAddress);
+                Objects.equals(currentAddress, person.currentAddress) &&
+                Objects.equals(deliveryAddress, person.deliveryAddress) &&
+                Objects.equals(registrationAddress, person.registrationAddress);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(givenName, middleName, surName, title, mobilePhoneNumber, homePhoneNumber, workPhoneNumber, email, maritalStatus, heightInCm, weightInKg, birthDate, genderCode, geographicalAddress);
+        return Objects.hash(super.hashCode(), givenName, middleName, surName, title, mobilePhoneNumber, homePhoneNumber, workPhoneNumber, email, maritalStatus, birthDate, genderCode, currentAddress, deliveryAddress, registrationAddress);
     }
 }

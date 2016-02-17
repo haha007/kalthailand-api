@@ -21,9 +21,8 @@ public class Insured implements Serializable {
     private String annualIncome;
     private Person person;
     private Fatca fatca;
+    private HealthStatus healthStatus;
     private Integer declaredTaxPercentAtSubscription;
-    private Boolean disableOrImmunoDeficient;
-    private Boolean hospitalizedInLast6Months;
     private String additionalInformationFreeText;
 
     @ApiModelProperty(value = "Insured's type")
@@ -134,22 +133,13 @@ public class Insured implements Serializable {
         this.fatca = fatca;
     }
 
-    @ApiModelProperty(value = "Flag for insured disability and HIV status")
-    public Boolean getDisableOrImmunoDeficient() {
-        return disableOrImmunoDeficient;
+    @ApiModelProperty(value = "Health status of the insured")
+    public HealthStatus getHealthStatus() {
+        return healthStatus;
     }
 
-    public void setDisableOrImmunoDeficient(Boolean disableOrImmunoDeficient) {
-        this.disableOrImmunoDeficient = disableOrImmunoDeficient;
-    }
-
-    @ApiModelProperty(value = "Flag for insured being hospitalized in the last 6 months")
-    public Boolean getHospitalizedInLast6Months() {
-        return hospitalizedInLast6Months;
-    }
-
-    public void setHospitalizedInLast6Months(Boolean hospitalizedInLast6Months) {
-        this.hospitalizedInLast6Months = hospitalizedInLast6Months;
+    public void setHealthStatus(HealthStatus healthStatus) {
+        this.healthStatus = healthStatus;
     }
 
     @ApiModelProperty(value = "Free additional text the user may have included")
@@ -177,14 +167,13 @@ public class Insured implements Serializable {
                 Objects.equals(annualIncome, insured.annualIncome) &&
                 Objects.equals(person, insured.person) &&
                 Objects.equals(fatca, insured.fatca) &&
+                Objects.equals(healthStatus, insured.healthStatus) &&
                 Objects.equals(declaredTaxPercentAtSubscription, insured.declaredTaxPercentAtSubscription) &&
-                Objects.equals(disableOrImmunoDeficient, insured.disableOrImmunoDeficient) &&
-                Objects.equals(hospitalizedInLast6Months, insured.hospitalizedInLast6Months) &&
                 Objects.equals(additionalInformationFreeText, insured.additionalInformationFreeText);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(type, mainInsuredIndicator, startDate, endDate, ageAtSubscription, professionName, professionDescription, employerName, annualIncome, person, fatca, declaredTaxPercentAtSubscription, disableOrImmunoDeficient, hospitalizedInLast6Months, additionalInformationFreeText);
+        return Objects.hash(type, mainInsuredIndicator, startDate, endDate, ageAtSubscription, professionName, professionDescription, employerName, annualIncome, person, fatca, healthStatus, declaredTaxPercentAtSubscription, additionalInformationFreeText);
     }
 }

@@ -14,7 +14,7 @@ public class ErrorCode {
     // Quote
     public static final Error INVALID_QUOTE_PROVIDED = new Error("30001", "Unable to update your quote", "The quote provided as JSon is not a valid quote, probably an incompatibility between mobile and server");
     public static final Error INVALID_PRODUCT_ID_PROVIDED = new Error("30002", "The selected product doesn't exist", "The product ID sent does not match known product");
-    public static final Error NO_QUOTE_IN_SESSION = new Error("30003", "You don't have a saved quote", "There is no quote with the given session id");
+    public static final Error QUOTE_NOT_UPDATED = new Error("30003", "The quote has not been updated", "An error occured while trying to update the quote");
     public static final Error QUOTE_DOES_NOT_EXIST = new Error("30004", "Quote dose not exists", "There is no quote with the given quote Id");
     public static final Error QUOTE_DOES_NOT_EXIST_OR_ACCESS_DENIED = new Error("30005", "Unable to access given quotes", "The quote could not be found or given mid does not have access to the quote");
     // Policy

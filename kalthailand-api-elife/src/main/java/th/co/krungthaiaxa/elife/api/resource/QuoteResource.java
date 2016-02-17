@@ -157,7 +157,7 @@ public class QuoteResource {
             updatedQuote = quoteService.updateQuote(quote);
         } catch (Exception e) {
             logger.error("Unable to update quote", e);
-            return new ResponseEntity<>(NO_QUOTE_IN_SESSION, NOT_ACCEPTABLE);
+            return new ResponseEntity<>(QUOTE_NOT_UPDATED, NOT_ACCEPTABLE);
         }
 
         return new ResponseEntity<>(getJson(updatedQuote), OK);

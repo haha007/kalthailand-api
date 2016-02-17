@@ -327,7 +327,7 @@ public class Product10ECTest {
 
         quote = product10EC.calculateQuote(quote);
         LocalDate endDate = quote.getPremiumsData().getFinancialScheduler().getEndDate();
-        List<DatedAmount> result = quote.getPremiumsData().getLifeInsuranceYearlyCashBacks();
+        List<DatedAmount> result = quote.getPremiumsData().getYearlyCashBacks();
         assertThat(result).hasSize(10);
 
         assertThat(result.get(0).getCurrencyCode()).isEqualTo("THB");
@@ -375,7 +375,7 @@ public class Product10ECTest {
 
         quote = product10EC.calculateQuote(quote);
         LocalDate endDate = quote.getPremiumsData().getFinancialScheduler().getEndDate();
-        List<DatedAmount> result = quote.getPremiumsData().getLifeInsuranceMinimumYearlyReturns();
+        List<DatedAmount> result = quote.getPremiumsData().getEndOfContractBenefitsMinimum();
         assertThat(result).hasSize(10);
 
         assertThat(result.get(0).getCurrencyCode()).isEqualTo("THB");
@@ -423,7 +423,7 @@ public class Product10ECTest {
 
         quote = product10EC.calculateQuote(quote);
         LocalDate endDate = quote.getPremiumsData().getFinancialScheduler().getEndDate();
-        List<DatedAmount> result = quote.getPremiumsData().getLifeInsuranceMinimumYearlyReturns();
+        List<DatedAmount> result = quote.getPremiumsData().getEndOfContractBenefitsMinimum();
         assertThat(result).hasSize(10);
 
         assertThat(result.get(0).getCurrencyCode()).isEqualTo("THB");
@@ -471,7 +471,7 @@ public class Product10ECTest {
 
         quote = product10EC.calculateQuote(quote);
         LocalDate endDate = quote.getPremiumsData().getFinancialScheduler().getEndDate();
-        List<DatedAmount> result = quote.getPremiumsData().getLifeInsuranceAverageYearlyReturns();
+        List<DatedAmount> result = quote.getPremiumsData().getEndOfContractBenefitsAverage();
         assertThat(result).hasSize(10);
 
         assertThat(result.get(0).getCurrencyCode()).isEqualTo("THB");
@@ -519,7 +519,7 @@ public class Product10ECTest {
 
         quote = product10EC.calculateQuote(quote);
         LocalDate endDate = quote.getPremiumsData().getFinancialScheduler().getEndDate();
-        List<DatedAmount> result = quote.getPremiumsData().getLifeInsuranceMaximumYearlyReturns();
+        List<DatedAmount> result = quote.getPremiumsData().getEndOfContractBenefitsMaximum();
         assertThat(result).hasSize(10);
 
         assertThat(result.get(0).getCurrencyCode()).isEqualTo("THB");
@@ -567,7 +567,7 @@ public class Product10ECTest {
 
         quote = product10EC.calculateQuote(quote);
         LocalDate endDate = quote.getPremiumsData().getFinancialScheduler().getEndDate();
-        List<DatedAmount> result = quote.getPremiumsData().getLifeInsuranceMinimumExtraDividende();
+        List<DatedAmount> result = quote.getPremiumsData().getYearlyCashBacksMinimumDividende();
         assertThat(result).hasSize(10);
 
         assertThat(result.get(0).getCurrencyCode()).isEqualTo("THB");
@@ -615,7 +615,7 @@ public class Product10ECTest {
 
         quote = product10EC.calculateQuote(quote);
         LocalDate endDate = quote.getPremiumsData().getFinancialScheduler().getEndDate();
-        List<DatedAmount> result = quote.getPremiumsData().getLifeInsuranceAverageExtraDividende();
+        List<DatedAmount> result = quote.getPremiumsData().getYearlyCashBacksAverageDividende();
         assertThat(result).hasSize(10);
 
         assertThat(result.get(0).getCurrencyCode()).isEqualTo("THB");
@@ -663,7 +663,7 @@ public class Product10ECTest {
 
         quote = product10EC.calculateQuote(quote);
         LocalDate endDate = quote.getPremiumsData().getFinancialScheduler().getEndDate();
-        List<DatedAmount> result = quote.getPremiumsData().getLifeInsuranceMaximumExtraDividende();
+        List<DatedAmount> result = quote.getPremiumsData().getYearlyCashBacksMaximumDividende();
         assertThat(result).hasSize(10);
 
         assertThat(result.get(0).getCurrencyCode()).isEqualTo("THB");
@@ -801,7 +801,7 @@ public class Product10ECTest {
     @Test
     public void should_return_error_when_create_policy_with_at_least_one_person_with_no_height() throws Exception {
         final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), beneficiary(100.0));
-        quote.getInsureds().get(0).getPerson().setHeightInCm(null);
+        quote.getInsureds().get(0).getHealthStatus().setHeightInCm(null);
         Policy policy = new Policy();
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
@@ -821,7 +821,7 @@ public class Product10ECTest {
     @Test
     public void should_return_error_when_create_policy_with_main_insured_with_no_weight() throws Exception {
         final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), beneficiary(100.0));
-        quote.getInsureds().get(0).getPerson().setWeightInKg(null);
+        quote.getInsureds().get(0).getHealthStatus().setWeightInKg(null);
         Policy policy = new Policy();
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
@@ -841,7 +841,7 @@ public class Product10ECTest {
     @Test
     public void should_return_error_when_create_policy_with_main_insured_with_no_disable_status() throws Exception {
         final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), beneficiary(100.0));
-        quote.getInsureds().get(0).setDisableOrImmunoDeficient(null);
+        quote.getInsureds().get(0).getHealthStatus().setDisableOrImmunoDeficient(null);
         Policy policy = new Policy();
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
@@ -851,7 +851,7 @@ public class Product10ECTest {
     @Test
     public void should_return_error_when_create_policy_with_main_insured_with_no_hospitalized_status() throws Exception {
         final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), beneficiary(100.0));
-        quote.getInsureds().get(0).setHospitalizedInLast6Months(null);
+        quote.getInsureds().get(0).getHealthStatus().setHospitalizedInLast6Months(null);
         Policy policy = new Policy();
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
@@ -973,7 +973,7 @@ public class Product10ECTest {
     @Test
     public void should_return_error_when_create_policy_with_main_insured_with_no_geo_address() throws Exception {
         final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), beneficiary(100.0));
-        quote.getInsureds().get(0).getPerson().setGeographicalAddress(null);
+        quote.getInsureds().get(0).getPerson().setCurrentAddress(null);
         Policy policy = new Policy();
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
@@ -983,7 +983,7 @@ public class Product10ECTest {
     @Test
     public void should_return_error_when_create_policy_with_main_insured_with_address_but_no_country() throws Exception {
         final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), beneficiary(100.0));
-        quote.getInsureds().get(0).getPerson().getGeographicalAddress().setCountry(null);
+        quote.getInsureds().get(0).getPerson().getCurrentAddress().setCountry(null);
         Policy policy = new Policy();
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
@@ -993,7 +993,7 @@ public class Product10ECTest {
     @Test
     public void should_return_error_when_create_policy_with_main_insured_with_address_but_no_district() throws Exception {
         final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), beneficiary(100.0));
-        quote.getInsureds().get(0).getPerson().getGeographicalAddress().setDistrict(null);
+        quote.getInsureds().get(0).getPerson().getCurrentAddress().setDistrict(null);
         Policy policy = new Policy();
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
@@ -1003,7 +1003,7 @@ public class Product10ECTest {
     @Test
     public void should_return_error_when_create_policy_with_main_insured_with_address_but_no_postcode() throws Exception {
         final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), beneficiary(100.0));
-        quote.getInsureds().get(0).getPerson().getGeographicalAddress().setPostCode(null);
+        quote.getInsureds().get(0).getPerson().getCurrentAddress().setPostCode(null);
         Policy policy = new Policy();
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
@@ -1013,7 +1013,7 @@ public class Product10ECTest {
     @Test
     public void should_return_error_when_create_policy_with_main_insured_with_address_but_no_street_address_1() throws Exception {
         final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), beneficiary(100.0));
-        quote.getInsureds().get(0).getPerson().getGeographicalAddress().setStreetAddress1(null);
+        quote.getInsureds().get(0).getPerson().getCurrentAddress().setStreetAddress1(null);
         Policy policy = new Policy();
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
@@ -1023,7 +1023,7 @@ public class Product10ECTest {
     @Test
     public void should_return_error_when_create_policy_with_main_insured_with_address_but_no_street_address_2() throws Exception {
         final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), beneficiary(100.0));
-        quote.getInsureds().get(0).getPerson().getGeographicalAddress().setStreetAddress2(null);
+        quote.getInsureds().get(0).getPerson().getCurrentAddress().setStreetAddress2(null);
         Policy policy = new Policy();
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
@@ -1033,7 +1033,7 @@ public class Product10ECTest {
     @Test
     public void should_return_error_when_create_policy_with_main_insured_with_address_but_no_sub_country() throws Exception {
         final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), beneficiary(100.0));
-        quote.getInsureds().get(0).getPerson().getGeographicalAddress().setSubCountry(null);
+        quote.getInsureds().get(0).getPerson().getCurrentAddress().setSubCountry(null);
         Policy policy = new Policy();
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
@@ -1043,7 +1043,7 @@ public class Product10ECTest {
     @Test
     public void should_return_error_when_create_policy_with_main_insured_with_address_but_no_sub_district() throws Exception {
         final Quote quote = quote(EVERY_YEAR, insured(25, TRUE), beneficiary(100.0));
-        quote.getInsureds().get(0).getPerson().getGeographicalAddress().setSubdistrict(null);
+        quote.getInsureds().get(0).getPerson().getCurrentAddress().setSubdistrict(null);
         Policy policy = new Policy();
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)

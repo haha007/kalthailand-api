@@ -9,20 +9,9 @@ import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.elife.api.model.Policy;
-import th.co.krungthaiaxa.elife.api.model.Quote;
 import th.co.krungthaiaxa.elife.api.utils.EmailSender;
 
-import javax.activation.DataHandler;
-import javax.activation.DataSource;
-import javax.activation.FileDataSource;
-import javax.mail.*;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
-import javax.mail.util.ByteArrayDataSource;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -32,7 +21,6 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
-import java.util.Properties;
 
 import static org.apache.commons.io.IOUtils.toByteArray;
 
@@ -97,9 +85,9 @@ public class EmailService {
                 .replace("%4$s", quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().toString())
                 .replace("%5$s", (new DecimalFormat(decimalFormat)).format(quote.getPremiumsData().getLifeInsuranceSumInsured().getValue()))
                 .replace("%6$s", (new DecimalFormat(decimalFormat)).format(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()))
-                .replace("%7$s", (new DecimalFormat(decimalFormat)).format(quote.getPremiumsData().getLifeInsuranceMinimumYearlyReturns().stream().mapToDouble(DatedAmount::getValue).sum()))
-                .replace("%8$s", (new DecimalFormat(decimalFormat)).format(quote.getPremiumsData().getLifeInsuranceAverageYearlyReturns().stream().mapToDouble(DatedAmount::getValue).sum()))
-                .replace("%9$s", (new DecimalFormat(decimalFormat)).format(quote.getPremiumsData().getLifeInsuranceMaximumYearlyReturns().stream().mapToDouble(DatedAmount::getValue).sum()))
+                .replace("%7$s", (new DecimalFormat(decimalFormat)).format(quote.getPremiumsData().getEndOfContractBenefitsMinimum().stream().mapToDouble(DatedAmount::getValue).sum()))
+                .replace("%8$s", (new DecimalFormat(decimalFormat)).format(quote.getPremiumsData().getEndOfContractBenefitsAverage().stream().mapToDouble(DatedAmount::getValue).sum()))
+                .replace("%9$s", (new DecimalFormat(decimalFormat)).format(quote.getPremiumsData().getEndOfContractBenefitsMaximum().stream().mapToDouble(DatedAmount::getValue).sum()))
                 .replace("%10$s", "/" + lineURL + "/")
                 .replace("%11$s", "/" + lineURL + "fatca-questions/" + quote.getQuoteId() + "/")
                 .replace("%12$s", "/" + lineURL + "quote-product/line-10-ec" + "/");

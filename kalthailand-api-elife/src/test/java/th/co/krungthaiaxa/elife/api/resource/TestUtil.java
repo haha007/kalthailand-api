@@ -132,17 +132,22 @@ public class TestUtil {
         fatca.setPermanentResidentOfUSA(USPermanentResident.NOT_PR);
         fatca.setPermanentResidentOfUSAForTax(FALSE);
 
+        HealthStatus healthStatus = new HealthStatus();
+        healthStatus.setDisableOrImmunoDeficient(FALSE);
+        healthStatus.setHeightInCm(100);
+        healthStatus.setHospitalizedInLast6Months(FALSE);
+        healthStatus.setWeightInKg(100);
+
         Insured insured = new Insured();
         insured.setAgeAtSubscription(ageAtSubscription);
         insured.setDeclaredTaxPercentAtSubscription(5);
-        insured.setDisableOrImmunoDeficient(FALSE);
         insured.setEndDate(now().plus(10, ChronoUnit.YEARS));
-        insured.setHospitalizedInLast6Months(FALSE);
         insured.setMainInsuredIndicator(mainInsured);
         insured.setProfessionName("Something");
         insured.setStartDate(now());
         insured.setType(InsuredType.Insured);
         insured.setFatca(fatca);
+        insured.setHealthStatus(healthStatus);
 
         GeographicalAddress geographicalAddress = new GeographicalAddress();
         geographicalAddress.setCountry("ไทย");
@@ -162,16 +167,14 @@ public class TestUtil {
         person.setBirthDate(now().minus(ageAtSubscription, YEARS));
         person.setEmail("santi.lik@krungthai-axa.co.th");
         person.setGenderCode(GenderCode.FEMALE);
-        person.setGeographicalAddress(geographicalAddress);
+        person.setCurrentAddress(geographicalAddress);
         person.setGivenName("วุฒิชัย");
-        person.setHeightInCm(100);
         person.setHomePhoneNumber(new PhoneNumber());
         person.setMaritalStatus(MaritalStatus.MARRIED);
         person.setMiddleName("Else");
         person.setMobilePhoneNumber(phoneNumber);
         person.setSurName("ศรีสุข");
         person.setTitle("M");
-        person.setWeightInKg(75);
 
         person.addRegistration(registration(registrationId));
 

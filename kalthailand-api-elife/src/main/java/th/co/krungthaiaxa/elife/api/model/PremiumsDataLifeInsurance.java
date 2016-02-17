@@ -12,13 +12,13 @@ import java.util.Objects;
         "Life Insurance", parent = PremiumsData.class)
 public class PremiumsDataLifeInsurance extends PremiumsData implements Serializable {
     private Amount lifeInsuranceSumInsured;
-    private List<DatedAmount> lifeInsuranceYearlyCashBacks = new ArrayList<>();
-    private List<DatedAmount> lifeInsuranceMinimumYearlyReturns = new ArrayList<>();
-    private List<DatedAmount> lifeInsuranceAverageYearlyReturns = new ArrayList<>();
-    private List<DatedAmount> lifeInsuranceMaximumYearlyReturns = new ArrayList<>();
-    private List<DatedAmount> lifeInsuranceMinimumExtraDividende = new ArrayList<>();
-    private List<DatedAmount> lifeInsuranceAverageExtraDividende = new ArrayList<>();
-    private List<DatedAmount> lifeInsuranceMaximumExtraDividende = new ArrayList<>();
+    private List<DatedAmount> yearlyCashBacks = new ArrayList<>();
+    private List<DatedAmount> endOfContractBenefitsMinimum = new ArrayList<>();
+    private List<DatedAmount> endOfContractBenefitsAverage = new ArrayList<>();
+    private List<DatedAmount> endOfContractBenefitsMaximum = new ArrayList<>();
+    private List<DatedAmount> yearlyCashBacksMinimumDividende = new ArrayList<>();
+    private List<DatedAmount> yearlyCashBacksAverageDividende = new ArrayList<>();
+    private List<DatedAmount> yearlyCashBacksMaximumDividende = new ArrayList<>();
 
     @ApiModelProperty(value = "Total sum insured by the product. This is calculated by back end API if an amount is provided in financialScheduler. If this value is provided, then it's the financialScheduler amount that is calculated")
     public Amount getLifeInsuranceSumInsured() {
@@ -30,66 +30,66 @@ public class PremiumsDataLifeInsurance extends PremiumsData implements Serializa
     }
 
     @ApiModelProperty(value = "Yearly cash backs if cash option is chosen. This is calculated by back end API and cannot be set by client.")
-    public List<DatedAmount> getLifeInsuranceYearlyCashBacks() {
-        return lifeInsuranceYearlyCashBacks;
+    public List<DatedAmount> getYearlyCashBacks() {
+        return yearlyCashBacks;
     }
 
-    public void setLifeInsuranceYearlyCashBacks(List<DatedAmount> lifeInsuranceYearlyCashBacks) {
-        this.lifeInsuranceYearlyCashBacks = lifeInsuranceYearlyCashBacks;
+    public void setYearlyCashBacks(List<DatedAmount> yearlyCashBacks) {
+        this.yearlyCashBacks = yearlyCashBacks;
     }
 
     @ApiModelProperty(value = "Yearly minimum returns. This is calculated by back end API and cannot be set by client.")
-    public List<DatedAmount> getLifeInsuranceMinimumYearlyReturns() {
-        return lifeInsuranceMinimumYearlyReturns;
+    public List<DatedAmount> getEndOfContractBenefitsMinimum() {
+        return endOfContractBenefitsMinimum;
     }
 
-    public void setLifeInsuranceMinimumYearlyReturns(List<DatedAmount> lifeInsuranceMinimumYearlyReturns) {
-        this.lifeInsuranceMinimumYearlyReturns = lifeInsuranceMinimumYearlyReturns;
+    public void setEndOfContractBenefitsMinimum(List<DatedAmount> endOfContractBenefitsMinimum) {
+        this.endOfContractBenefitsMinimum = endOfContractBenefitsMinimum;
     }
 
     @ApiModelProperty(value = "Yearly average returns. This is calculated by back end API and cannot be set by client.")
-    public List<DatedAmount> getLifeInsuranceAverageYearlyReturns() {
-        return lifeInsuranceAverageYearlyReturns;
+    public List<DatedAmount> getEndOfContractBenefitsAverage() {
+        return endOfContractBenefitsAverage;
     }
 
-    public void setLifeInsuranceAverageYearlyReturns(List<DatedAmount> lifeInsuranceAverageYearlyReturns) {
-        this.lifeInsuranceAverageYearlyReturns = lifeInsuranceAverageYearlyReturns;
+    public void setEndOfContractBenefitsAverage(List<DatedAmount> endOfContractBenefitsAverage) {
+        this.endOfContractBenefitsAverage = endOfContractBenefitsAverage;
     }
 
     @ApiModelProperty(value = "Yearly maximum returns. This is calculated by back end API and cannot be set by client.")
-    public List<DatedAmount> getLifeInsuranceMaximumYearlyReturns() {
-        return lifeInsuranceMaximumYearlyReturns;
+    public List<DatedAmount> getEndOfContractBenefitsMaximum() {
+        return endOfContractBenefitsMaximum;
     }
 
-    public void setLifeInsuranceMaximumYearlyReturns(List<DatedAmount> lifeInsuranceMaximumYearlyReturns) {
-        this.lifeInsuranceMaximumYearlyReturns = lifeInsuranceMaximumYearlyReturns;
+    public void setEndOfContractBenefitsMaximum(List<DatedAmount> endOfContractBenefitsMaximum) {
+        this.endOfContractBenefitsMaximum = endOfContractBenefitsMaximum;
     }
 
     @ApiModelProperty(value = "Yearly minimum extra dividend. This is calculated by back end API and cannot be set by client.")
-    public List<DatedAmount> getLifeInsuranceMinimumExtraDividende() {
-        return lifeInsuranceMinimumExtraDividende;
+    public List<DatedAmount> getYearlyCashBacksMinimumDividende() {
+        return yearlyCashBacksMinimumDividende;
     }
 
-    public void setLifeInsuranceMinimumExtraDividende(List<DatedAmount> lifeInsuranceMinimumExtraDividende) {
-        this.lifeInsuranceMinimumExtraDividende = lifeInsuranceMinimumExtraDividende;
+    public void setYearlyCashBacksMinimumDividende(List<DatedAmount> yearlyCashBacksMinimumDividende) {
+        this.yearlyCashBacksMinimumDividende = yearlyCashBacksMinimumDividende;
     }
 
     @ApiModelProperty(value = "Yearly average extra dividend. This is calculated by back end API and cannot be set by client.")
-    public List<DatedAmount> getLifeInsuranceAverageExtraDividende() {
-        return lifeInsuranceAverageExtraDividende;
+    public List<DatedAmount> getYearlyCashBacksAverageDividende() {
+        return yearlyCashBacksAverageDividende;
     }
 
-    public void setLifeInsuranceAverageExtraDividende(List<DatedAmount> lifeInsuranceAverageExtraDividende) {
-        this.lifeInsuranceAverageExtraDividende = lifeInsuranceAverageExtraDividende;
+    public void setYearlyCashBacksAverageDividende(List<DatedAmount> yearlyCashBacksAverageDividende) {
+        this.yearlyCashBacksAverageDividende = yearlyCashBacksAverageDividende;
     }
 
     @ApiModelProperty(value = "Yearly maximum extra dividend. This is calculated by back end API and cannot be set by client.")
-    public List<DatedAmount> getLifeInsuranceMaximumExtraDividende() {
-        return lifeInsuranceMaximumExtraDividende;
+    public List<DatedAmount> getYearlyCashBacksMaximumDividende() {
+        return yearlyCashBacksMaximumDividende;
     }
 
-    public void setLifeInsuranceMaximumExtraDividende(List<DatedAmount> lifeInsuranceMaximumExtraDividende) {
-        this.lifeInsuranceMaximumExtraDividende = lifeInsuranceMaximumExtraDividende;
+    public void setYearlyCashBacksMaximumDividende(List<DatedAmount> yearlyCashBacksMaximumDividende) {
+        this.yearlyCashBacksMaximumDividende = yearlyCashBacksMaximumDividende;
     }
 
     @Override
@@ -98,17 +98,17 @@ public class PremiumsDataLifeInsurance extends PremiumsData implements Serializa
         if (o == null || getClass() != o.getClass()) return false;
         PremiumsDataLifeInsurance that = (PremiumsDataLifeInsurance) o;
         return Objects.equals(lifeInsuranceSumInsured, that.lifeInsuranceSumInsured) &&
-                Objects.equals(lifeInsuranceYearlyCashBacks, that.lifeInsuranceYearlyCashBacks) &&
-                Objects.equals(lifeInsuranceMinimumYearlyReturns, that.lifeInsuranceMinimumYearlyReturns) &&
-                Objects.equals(lifeInsuranceAverageYearlyReturns, that.lifeInsuranceAverageYearlyReturns) &&
-                Objects.equals(lifeInsuranceMaximumYearlyReturns, that.lifeInsuranceMaximumYearlyReturns) &&
-                Objects.equals(lifeInsuranceMinimumExtraDividende, that.lifeInsuranceMinimumExtraDividende) &&
-                Objects.equals(lifeInsuranceAverageExtraDividende, that.lifeInsuranceAverageExtraDividende) &&
-                Objects.equals(lifeInsuranceMaximumExtraDividende, that.lifeInsuranceMaximumExtraDividende);
+                Objects.equals(yearlyCashBacks, that.yearlyCashBacks) &&
+                Objects.equals(endOfContractBenefitsMinimum, that.endOfContractBenefitsMinimum) &&
+                Objects.equals(endOfContractBenefitsAverage, that.endOfContractBenefitsAverage) &&
+                Objects.equals(endOfContractBenefitsMaximum, that.endOfContractBenefitsMaximum) &&
+                Objects.equals(yearlyCashBacksMinimumDividende, that.yearlyCashBacksMinimumDividende) &&
+                Objects.equals(yearlyCashBacksAverageDividende, that.yearlyCashBacksAverageDividende) &&
+                Objects.equals(yearlyCashBacksMaximumDividende, that.yearlyCashBacksMaximumDividende);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(lifeInsuranceSumInsured, lifeInsuranceYearlyCashBacks, lifeInsuranceMinimumYearlyReturns, lifeInsuranceAverageYearlyReturns, lifeInsuranceMaximumYearlyReturns, lifeInsuranceMinimumExtraDividende, lifeInsuranceAverageExtraDividende, lifeInsuranceMaximumExtraDividende);
+        return Objects.hash(lifeInsuranceSumInsured, yearlyCashBacks, endOfContractBenefitsMinimum, endOfContractBenefitsAverage, endOfContractBenefitsMaximum, yearlyCashBacksMinimumDividende, yearlyCashBacksAverageDividende, yearlyCashBacksMaximumDividende);
     }
 }

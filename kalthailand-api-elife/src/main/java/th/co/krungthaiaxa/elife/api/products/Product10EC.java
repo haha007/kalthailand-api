@@ -107,13 +107,13 @@ public class Product10EC implements Product {
         // Do we have enough to calculate anything
         if (!hasEnoughTocalculate(quote)) {
             // we need to delete what might have been calculated before
-            quote.getPremiumsData().setLifeInsuranceAverageExtraDividende(new ArrayList<>());
-            quote.getPremiumsData().setLifeInsuranceAverageYearlyReturns(new ArrayList<>());
-            quote.getPremiumsData().setLifeInsuranceMaximumExtraDividende(new ArrayList<>());
-            quote.getPremiumsData().setLifeInsuranceMaximumYearlyReturns(new ArrayList<>());
-            quote.getPremiumsData().setLifeInsuranceMinimumExtraDividende(new ArrayList<>());
-            quote.getPremiumsData().setLifeInsuranceMinimumYearlyReturns(new ArrayList<>());
-            quote.getPremiumsData().setLifeInsuranceYearlyCashBacks(new ArrayList<>());
+            quote.getPremiumsData().setYearlyCashBacksAverageDividende(new ArrayList<>());
+            quote.getPremiumsData().setEndOfContractBenefitsAverage(new ArrayList<>());
+            quote.getPremiumsData().setYearlyCashBacksMaximumDividende(new ArrayList<>());
+            quote.getPremiumsData().setEndOfContractBenefitsMaximum(new ArrayList<>());
+            quote.getPremiumsData().setYearlyCashBacksMinimumDividende(new ArrayList<>());
+            quote.getPremiumsData().setEndOfContractBenefitsMinimum(new ArrayList<>());
+            quote.getPremiumsData().setYearlyCashBacks(new ArrayList<>());
             if (has10ECCoverage.isPresent()) {
                 quote.getCoverages().remove(has10ECCoverage.get());
             }
@@ -143,17 +143,17 @@ public class Product10EC implements Product {
         }
 
         // calculates yearly cash backs
-        premiumsData.setLifeInsuranceYearlyCashBacks(calculateDatedAmount(quote, null, dvdRate));
+        premiumsData.setYearlyCashBacks(calculateDatedAmount(quote, null, dvdRate));
 
         // calculates yearly returns
-        premiumsData.setLifeInsuranceMinimumYearlyReturns(calculateDatedAmount(quote, 20, dvdRate));
-        premiumsData.setLifeInsuranceAverageYearlyReturns(calculateDatedAmount(quote, 40, dvdRate));
-        premiumsData.setLifeInsuranceMaximumYearlyReturns(calculateDatedAmount(quote, 45, dvdRate));
+        premiumsData.setEndOfContractBenefitsMinimum(calculateDatedAmount(quote, 20, dvdRate));
+        premiumsData.setEndOfContractBenefitsAverage(calculateDatedAmount(quote, 40, dvdRate));
+        premiumsData.setEndOfContractBenefitsMaximum(calculateDatedAmount(quote, 45, dvdRate));
 
         // calculates yearly returns
-        premiumsData.setLifeInsuranceMinimumExtraDividende(calculateDatedAmount(quote, null, minimumExtraDvdRate));
-        premiumsData.setLifeInsuranceAverageExtraDividende(calculateDatedAmount(quote, 40, averageExtraDvdRate));
-        premiumsData.setLifeInsuranceMaximumExtraDividende(calculateDatedAmount(quote, 45, maximumExtraDvdRate));
+        premiumsData.setYearlyCashBacksMinimumDividende(calculateDatedAmount(quote, null, minimumExtraDvdRate));
+        premiumsData.setYearlyCashBacksAverageDividende(calculateDatedAmount(quote, 40, averageExtraDvdRate));
+        premiumsData.setYearlyCashBacksMaximumDividende(calculateDatedAmount(quote, 45, maximumExtraDvdRate));
 
         if (!has10ECCoverage.isPresent()) {
             Coverage coverage = new Coverage();
@@ -285,13 +285,13 @@ public class Product10EC implements Product {
             throw PolicyValidationException.premiumnsSumInsuredNoAmount;
         }
         checkSumInsured(premiumsData);
-        checkDatedAmounts(premiumsData.getLifeInsuranceAverageExtraDividende(), startDate);
-        checkDatedAmounts(premiumsData.getLifeInsuranceAverageYearlyReturns(), startDate);
-        checkDatedAmounts(premiumsData.getLifeInsuranceMaximumExtraDividende(), startDate);
-        checkDatedAmounts(premiumsData.getLifeInsuranceMaximumYearlyReturns(), startDate);
-        checkDatedAmounts(premiumsData.getLifeInsuranceMinimumExtraDividende(), startDate);
-        checkDatedAmounts(premiumsData.getLifeInsuranceMinimumYearlyReturns(), startDate);
-        checkDatedAmounts(premiumsData.getLifeInsuranceYearlyCashBacks(), startDate);
+        checkDatedAmounts(premiumsData.getYearlyCashBacksAverageDividende(), startDate);
+        checkDatedAmounts(premiumsData.getEndOfContractBenefitsAverage(), startDate);
+        checkDatedAmounts(premiumsData.getYearlyCashBacksMaximumDividende(), startDate);
+        checkDatedAmounts(premiumsData.getEndOfContractBenefitsMaximum(), startDate);
+        checkDatedAmounts(premiumsData.getYearlyCashBacksMinimumDividende(), startDate);
+        checkDatedAmounts(premiumsData.getEndOfContractBenefitsMinimum(), startDate);
+        checkDatedAmounts(premiumsData.getYearlyCashBacks(), startDate);
     }
 
     private static void checkSumInsured(PremiumsDataLifeInsurance premiumsData) throws QuoteCalculationException {
@@ -356,11 +356,7 @@ public class Product10EC implements Product {
     }
 
     private static void checkMainInsured(Insured insured) throws PolicyValidationException {
-        if (insured.getDisableOrImmunoDeficient() == null) {
-            throw PolicyValidationException.mainInsuredWithNoDisableStatus;
-        } else if (insured.getHospitalizedInLast6Months() == null) {
-            throw PolicyValidationException.mainInsuredWithNoHospitalizedStatus;
-        } else if (insured.getDeclaredTaxPercentAtSubscription() == null) {
+        if (insured.getDeclaredTaxPercentAtSubscription() == null) {
             throw PolicyValidationException.mainInsuredWithNoDeclaredTax;
         } else if (insured.getStartDate() == null) {
             throw PolicyValidationException.mainInsuredWithNoStartDate;
@@ -370,18 +366,12 @@ public class Product10EC implements Product {
             throw PolicyValidationException.mainInsuredWithNoProfessionName;
         } else if (insured.getPerson().getGenderCode() == null) {
             throw PolicyValidationException.mainInsuredWithNoGenderCode;
-        } else if (insured.getPerson().getHeightInCm() == null) {
-            throw PolicyValidationException.mainInsuredWithNoHeight;
         } else if (insured.getPerson().getMaritalStatus() == null) {
             throw PolicyValidationException.mainInsuredWithNoMaritalStatus;
-        } else if (insured.getPerson().getWeightInKg() == null) {
-            throw PolicyValidationException.mainInsuredWithNoWeight;
         } else if (insured.getPerson().getBirthDate() == null) {
             throw PolicyValidationException.mainInsuredWithNoDOB;
         } else if (insured.getPerson().getEmail() == null) {
             throw PolicyValidationException.mainInsuredWithNoEmail;
-        } else if (insured.getPerson().getGeographicalAddress() == null) {
-            throw PolicyValidationException.mainInsuredWithNoGeographicalAddress;
         } else if (!insured.getStartDate().equals(LocalDate.now())) {
             throw PolicyValidationException.startDateNotServerDate;
         }
@@ -392,11 +382,29 @@ public class Product10EC implements Product {
         if (!isValidEmailAddress(insured.getPerson().getEmail())) {
             throw PolicyValidationException.mainInsuredWithInvalidEmail;
         }
-        checkGeographicalAddress(insured.getPerson().getGeographicalAddress());
+
+        if (insured.getHealthStatus().getDisableOrImmunoDeficient() == null) {
+            throw PolicyValidationException.mainInsuredWithNoDisableStatus;
+        } else if (insured.getHealthStatus().getHospitalizedInLast6Months() == null) {
+            throw PolicyValidationException.mainInsuredWithNoHospitalizedStatus;
+        } else if (insured.getHealthStatus().getHeightInCm() == null) {
+            throw PolicyValidationException.mainInsuredWithNoHeight;
+        } else if (insured.getHealthStatus().getWeightInKg() == null) {
+            throw PolicyValidationException.mainInsuredWithNoWeight;
+        }
+
+        if (insured.getPerson().getCurrentAddress() == null && insured.getPerson().getDeliveryAddress() == null) {
+            throw PolicyValidationException.mainInsuredWithNoGeographicalAddress;
+        }
+        checkGeographicalAddress(insured.getPerson().getCurrentAddress());
+        checkGeographicalAddress(insured.getPerson().getDeliveryAddress());
+        checkGeographicalAddress(insured.getPerson().getRegistrationAddress());
     }
 
     private static void checkGeographicalAddress(GeographicalAddress address) throws PolicyValidationException {
-        if (address.getCountry() == null) {
+        if (address == null) {
+            return;
+        } else if (address.getCountry() == null) {
             throw PolicyValidationException.addressWithNoCountry;
         } else if (address.getDistrict() == null) {
             throw PolicyValidationException.addressWithNoDistrict;
