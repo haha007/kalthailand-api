@@ -103,7 +103,7 @@ public class QuoteResource {
             return new ResponseEntity<>(QUOTE_DOES_NOT_EXIST_OR_ACCESS_DENIED, NOT_FOUND);
         }
 
-        return new ResponseEntity<>(getJson(quote), OK);
+        return new ResponseEntity<>(getJson(quote.get()), OK);
     }
 
     @ApiOperation(value = "Creates an empty quote", notes = "Creates an empty quote, attached to the session ID.",
