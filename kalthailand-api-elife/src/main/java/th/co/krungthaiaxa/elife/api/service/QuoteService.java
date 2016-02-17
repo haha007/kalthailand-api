@@ -40,7 +40,6 @@ public class QuoteService {
         }
         return sessionQuote.getQuotes().stream()
                 .filter(quote1 -> quote1 != null)
-//                .sorted((o1, o2) -> -(o2.getLastUpdateDateTime().compareTo(o1.getLastUpdateDateTime())))
                 .findFirst();
     }
 

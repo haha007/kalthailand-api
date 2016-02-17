@@ -68,6 +68,23 @@ public class QuoteResource {
         return new ResponseEntity<>(getJson("OK"), OK);
     }
 
+    @ApiOperation(value = "Get latest Quote", notes = "Returns the latest quote attached to the given sessionId. " +
+            "Returns empty result if nothing found.", response = Quote.class)
+    @RequestMapping(value = "/quotes/latest", produces = APPLICATION_JSON_VALUE, method = GET)
+    @ResponseBody
+    public ResponseEntity getLatestQuote(
+            @ApiParam(value = "The session id the quote is in")
+            @RequestParam String sessionId,
+            @ApiParam(value = "The channel being used to create the quote.")
+            @RequestParam ChannelType channelType) {
+        Optional<Quote> quote = quoteService.getLatestQuote(sessionId, channelType);
+        if (!quote.isPresent()) {
+            return new ResponseEntity<>(getJson(""), OK);
+        } else {
+            return new ResponseEntity<>(getJson(quote.get()), OK);
+        }
+    }
+
     @ApiOperation(value = "Detail of a quote", notes = "Gets the details of a quote given its ID", response = Quote.class)
     @ApiResponses({
             @ApiResponse(code = 404, message = "If quote Id is unknown or if sessionId user does not have access to the quote", response = Error.class)
@@ -89,9 +106,8 @@ public class QuoteResource {
         return new ResponseEntity<>(getJson(quote), OK);
     }
 
-    @ApiOperation(value = "Creates an empty quote", notes = "Creates an empty quote, attached to the session ID. " +
-            "If there is already a quote for the session ID, then the quote returned will be the one saved in the " +
-            "database in its latest state.", response = Quote.class)
+    @ApiOperation(value = "Creates an empty quote", notes = "Creates an empty quote, attached to the session ID.",
+            response = Quote.class)
     @ApiResponses({
             @ApiResponse(code = 406, message = "If product Id is unknown", response = Error.class)
     })
