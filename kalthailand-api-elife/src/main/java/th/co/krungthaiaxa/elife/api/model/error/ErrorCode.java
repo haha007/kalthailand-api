@@ -11,11 +11,6 @@ public class ErrorCode {
     public static final Error WATERMARK_IMAGE_OUTPUT_NOT_WRITTEN = new Error("10004", "Unable to save your picture", "The output image cannot be saved");
     public static final Error WATERMARK_IMAGE_INPUT_TOO_SMALL = new Error("10005", "Unable to save your picture, it is too small", "The input image is too small to apply the watermark");
     public static final Error WATERMARK_IMAGE_INPUT_NOT_SUPPORTED = new Error("10006", "Unable to save your picture, it is not supported", "The input image is not supported by Java SDK with ImageIO.read ");
-    // OCR
-    public static final Error OCR_INVALID_REQUEST = new Error("20001", "Unable to verify your ID", "The request doesn't contain any uploaded bytes");
-    public static final Error OCR_IMAGE_INPUT_NOT_RECEIVED = new Error("20002", "Unable to verify your ID", "The image is empty");
-    public static final Error OCR_IMAGE_INPUT_NOT_READABLE = new Error("20003", "Unable to verify your ID", "The image cannot be read as stream");
-    public static final Error OCR_IMPOSSIBLE = new Error("20004", "Unable to verify your ID", "Extracting text on provided image was impossible");
     // Quote
     public static final Error INVALID_QUOTE_PROVIDED = new Error("30001", "Unable to update your quote", "The quote provided as JSon is not a valid quote, probably an incompatibility between mobile and server");
     public static final Error INVALID_PRODUCT_ID_PROVIDED = new Error("30002", "The selected product doesn't exist", "The product ID sent does not match known product");

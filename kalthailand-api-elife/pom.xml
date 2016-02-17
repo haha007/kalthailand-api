@@ -47,11 +47,6 @@
             <version>3.4</version>
         </dependency>
         <dependency>
-            <groupId>com.aspose</groupId>
-            <artifactId>aspose-ocr</artifactId>
-            <version>3.0.0</version>
-        </dependency>
-        <dependency>
             <groupId>javax.inject</groupId>
             <artifactId>javax.inject</artifactId>
             <version>1</version>
