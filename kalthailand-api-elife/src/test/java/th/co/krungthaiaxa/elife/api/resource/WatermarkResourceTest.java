@@ -29,7 +29,7 @@ import static org.springframework.http.HttpStatus.*;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiApplication.class)
 @WebAppConfiguration
-@ActiveProfiles("dev")
+@ActiveProfiles("test")
 @IntegrationTest({"server.port=0"})
 public class WatermarkResourceTest {
     @Value("${api.security.user.name}")

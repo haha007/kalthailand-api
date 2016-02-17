@@ -42,7 +42,7 @@ import static org.springframework.util.StringUtils.replace;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiApplication.class)
 @WebAppConfiguration
-@ActiveProfiles("dev")
+@ActiveProfiles("test")
 @IntegrationTest({"server.port=0"})
 public class QuoteResourceTest {
     @Value("${api.security.user.name}")

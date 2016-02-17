@@ -31,7 +31,7 @@ import static th.co.krungthaiaxa.elife.api.resource.TestUtil.*;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiApplication.class)
 @WebAppConfiguration
-@ActiveProfiles("dev")
+@ActiveProfiles("test")
 public class QuoteServiceTest {
 
     @Inject

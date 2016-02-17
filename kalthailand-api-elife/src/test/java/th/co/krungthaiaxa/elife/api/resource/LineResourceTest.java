@@ -22,7 +22,7 @@ import java.net.URI;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiApplication.class)
 @WebAppConfiguration
-@ActiveProfiles("dev")
+@ActiveProfiles("test")
 @IntegrationTest({"server.port=0"})
 public class LineResourceTest {
     @Value("${api.security.user.name}")

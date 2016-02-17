@@ -37,7 +37,7 @@ import static th.co.krungthaiaxa.elife.api.resource.TestUtil.*;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiApplication.class)
 @WebAppConfiguration
-@ActiveProfiles("dev")
+@ActiveProfiles("test")
 public class PolicyServiceTest {
 
     private final static String ERECEIPT_PDF_FILE_NAME= "ereceipt.pdf";

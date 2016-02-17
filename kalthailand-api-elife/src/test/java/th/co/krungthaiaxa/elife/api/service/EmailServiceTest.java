@@ -136,14 +136,6 @@ public class EmailServiceTest {
         assertThat(bodyAsString).contains("รวมรับผลประโยชน์ระดับสูง (รวมเงินปันผล**ระดับสูง)</td><td class=\"value\" valign=\"top\" align=\"right\" >1,531,376.00 บาท");
     }
 
-    public static String decodeSimpleBody(String encodedBody) throws MessagingException, IOException {
-        InputStream inputStream = MimeUtility.decode(new ByteArrayInputStream(encodedBody.getBytes("UTF-8")), "quoted-printable");
-        BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
-        byte[] bytes = new byte[encodedBody.length()];
-        int last = bufferedInputStream.read(bytes);
-        return new String(bytes, 0, last);
-    }
-
     @Test
     public void should_send_pdf_file_attachment_in_email() throws Exception {
         Quote quote = quoteService.createQuote(RandomStringUtils.randomNumeric(20), null, LINE);
@@ -184,7 +176,14 @@ public class EmailServiceTest {
                 assertThat(null != bodyPart.getFileName() && !bodyPart.getFileName().equals(""));
             }
         }
+    }
 
+    private static String decodeSimpleBody(String encodedBody) throws MessagingException, IOException {
+        InputStream inputStream = MimeUtility.decode(new ByteArrayInputStream(encodedBody.getBytes("UTF-8")), "quoted-printable");
+        BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
+        byte[] bytes = new byte[encodedBody.length()];
+        int last = bufferedInputStream.read(bytes);
+        return new String(bytes, 0, last);
     }
 
 
