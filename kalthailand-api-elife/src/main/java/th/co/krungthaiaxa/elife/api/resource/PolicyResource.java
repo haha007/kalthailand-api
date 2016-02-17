@@ -1,5 +1,7 @@
 package th.co.krungthaiaxa.elife.api.resource;
 
+import com.itextpdf.text.BadElementException;
+import com.itextpdf.text.DocumentException;
 import io.swagger.annotations.*;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
@@ -163,8 +165,8 @@ public class PolicyResource {
             @PathVariable String policyId) {
 
         Policy policy;
-        byte[] bytes;
-        StringBuilder im;
+        byte[] bytes = null;
+        StringBuilder im = null;
         try {
             policy = policyService.findPolicy(policyId);
         } catch (Exception e) {
@@ -174,14 +176,23 @@ public class PolicyResource {
 
         try {
             bytes = policyService.createEreceipt(policy);
+        } catch (IOException e) {
+            logger.error("Unable to create byte[] e-receipt [" + policyId + "]", e);
+            return new ResponseEntity<>(UNABLE_TO_CREATE_ERECEIPT, INTERNAL_SERVER_ERROR);
+        }
+
+        try{
             im = new StringBuilder(storePath);
             im.append(File.separator + ERECEIPT_PDF_FILE_NAME);
             im.insert(im.toString().indexOf("."), "_" + policy.getPolicyId());
             String resultFileName = im.toString();
             logger.info("Name of PDF path file [" + resultFileName + "]");
             ImageUtil.imageToPDF(bytes, eReceiptPdfStorePath);
-        } catch (Exception e) {
-            logger.error("Unable to create e-receipt [" + policyId + "]", e);
+        } catch (IOException e) {
+            logger.error("Unable to create e-receipt pdf with output file", e);
+            return new ResponseEntity<>(UNABLE_TO_CREATE_ERECEIPT, INTERNAL_SERVER_ERROR);
+        } catch (DocumentException e) {
+            logger.error("Unable to create e-receipt pdf with itextpdf", e);
             return new ResponseEntity<>(UNABLE_TO_CREATE_ERECEIPT, INTERNAL_SERVER_ERROR);
         }
 
