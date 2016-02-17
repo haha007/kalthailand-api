@@ -18,8 +18,6 @@ import th.co.krungthaiaxa.elife.api.repository.SessionQuoteRepository;
 import javax.inject.Inject;
 import java.util.Optional;
 
-import static java.time.LocalDate.now;
-import static java.time.temporal.ChronoUnit.YEARS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
 import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_MONTH;
@@ -121,8 +119,7 @@ public class QuoteServiceTest {
         String sessionId = RandomStringUtils.randomNumeric(20);
 
         Quote quote = quoteService.createQuote(sessionId, getCommonData(), LINE);
-        quote.getInsureds().get(0).getPerson().setBirthDate(now().minus(35, YEARS));
-        quote.getPremiumsData().getFinancialScheduler().getPeriodicity().setCode(EVERY_YEAR);
+        quote(quote, EVERY_YEAR, 100000.0, insured(35), beneficiary(100.0));
 
         Amount amount = new Amount();
         amount.setCurrencyCode("THB");
@@ -138,8 +135,7 @@ public class QuoteServiceTest {
         String sessionId = RandomStringUtils.randomNumeric(20);
 
         Quote quote = quoteService.createQuote(sessionId, getCommonData(), LINE);
-        quote.getInsureds().get(0).getPerson().setBirthDate(now().minus(35, YEARS));
-        quote.getPremiumsData().getFinancialScheduler().getPeriodicity().setCode(EVERY_YEAR);
+        quote(quote, EVERY_YEAR, 100000.0, insured(35), beneficiary(100.0));
 
         Amount amount = new Amount();
         amount.setCurrencyCode("THB");
