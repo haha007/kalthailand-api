@@ -10,13 +10,13 @@ public class ErrorCode {
     public static final Error WATERMARK_IMAGE_INPUT_NOT_BUFFERABLE = new Error("10003", "Unable to upload your picture", "The image cannot be read as an image");
     public static final Error WATERMARK_IMAGE_OUTPUT_NOT_WRITTEN = new Error("10004", "Unable to save your picture", "The output image cannot be saved");
     public static final Error WATERMARK_IMAGE_INPUT_TOO_SMALL = new Error("10005", "Unable to save your picture, it is too small", "The input image is too small to apply the watermark");
-    public static final Error WATERMARK_IMAGE_INPUT_NOT_SUPPORTED = new Error("10006", "Unable to save your picture, it is not supported", "The input image is not supported by Java SDK with ImageIO.read ");
+    public static final Error WATERMARK_IMAGE_INPUT_NOT_SUPPORTED = new Error("10006", "Unable to save your picture, it is not supported", "The input image is not supported by Java SDK with ImageIO.read");
+    public static final Error WATERMARK_IMAGE_MIME_TYPE_UNKNOWN = new Error("10007", "Unable to get the type of image", "The input image has a mime type unknown from its Input Stream");
     // Quote
     public static final Error INVALID_QUOTE_PROVIDED = new Error("30001", "Unable to update your quote", "The quote provided as JSon is not a valid quote, probably an incompatibility between mobile and server");
     public static final Error INVALID_PRODUCT_ID_PROVIDED = new Error("30002", "The selected product doesn't exist", "The product ID sent does not match known product");
     public static final Error QUOTE_NOT_UPDATED = new Error("30003", "The quote has not been updated", "An error occured while trying to update the quote");
-    public static final Error QUOTE_DOES_NOT_EXIST = new Error("30004", "Quote dose not exists", "There is no quote with the given quote Id");
-    public static final Error QUOTE_DOES_NOT_EXIST_OR_ACCESS_DENIED = new Error("30005", "Unable to access given quotes", "The quote could not be found or given mid does not have access to the quote");
+    public static final Error QUOTE_DOES_NOT_EXIST_OR_ACCESS_DENIED = new Error("30004", "Unable to access given quote", "The quote could not be found or given mid does not have access to the quote");
     // Policy
     public static final Error POLICY_DOES_NOT_EXIST = new Error("40001", "The policy does not exist", "The policy does not exist");
     public static final Error POLICY_DOES_NOT_CONTAIN_PAYMENT = new Error("40002", "The policy does not contain the given payment", "The given payment id could not be found in the list of payments within the policy");

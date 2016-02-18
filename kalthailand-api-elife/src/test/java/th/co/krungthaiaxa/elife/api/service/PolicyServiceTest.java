@@ -1,6 +1,7 @@
 package th.co.krungthaiaxa.elife.api.service;
 
 
+import com.itextpdf.text.DocumentException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,6 +11,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.elife.api.KalApiApplication;
 import th.co.krungthaiaxa.elife.api.exception.PolicyValidationException;
+import th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.elife.api.model.Payment;
 import th.co.krungthaiaxa.elife.api.model.Policy;
 import th.co.krungthaiaxa.elife.api.model.Quote;
@@ -19,6 +21,7 @@ import th.co.krungthaiaxa.elife.api.utils.ImageUtil;
 
 import javax.inject.Inject;
 import java.io.File;
+import java.io.IOException;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -66,7 +69,7 @@ public class PolicyServiceTest {
     }
 
     @Test
-    public void should_delete_1_quote_when_policy_has_been_created() throws Exception {
+    public void should_delete_1_quote_when_policy_has_been_created() throws QuoteCalculationException, PolicyValidationException {
         String sessionId = randomNumeric(20);
 
         Quote quote1 = quoteService.createQuote(sessionId, getCommonData(), LINE);
@@ -83,7 +86,7 @@ public class PolicyServiceTest {
     }
 
     @Test
-    public void should_add_generated_ids_when_saving_policy_for_first_time() throws Exception {
+    public void should_add_generated_ids_when_saving_policy_for_first_time() throws QuoteCalculationException, PolicyValidationException {
         Quote quote = quoteService.createQuote(randomNumeric(20), getCommonData(), LINE);
         quote(quote, EVERY_YEAR, 1000000.0, insured(35), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
@@ -196,7 +199,7 @@ public class PolicyServiceTest {
     }
 
     @Test
-    public void should_create_bytes_for_eReceipt() throws Exception {
+    public void should_create_bytes_for_eReceipt() throws QuoteCalculationException, PolicyValidationException, IOException {
         Quote quote = quoteService.createQuote(randomNumeric(20), getCommonData(), LINE);
         quote(quote, EVERY_YEAR, 1000000.0, insured(35), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
@@ -208,7 +211,8 @@ public class PolicyServiceTest {
     }
 
     @Test
-    public void should_create_bytes_for_eReceipt_and_can_create_pdf_file_to_file_system() throws Exception {
+    public void should_create_bytes_for_eReceipt_and_can_create_pdf_file_to_file_system() throws
+            QuoteCalculationException, PolicyValidationException, IOException, DocumentException {
         Quote quote = quoteService.createQuote(randomNumeric(20), getCommonData(), LINE);
         quote(quote, EVERY_YEAR, 1000000.0, insured(35), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);

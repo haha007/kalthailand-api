@@ -15,6 +15,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import th.co.krungthaiaxa.elife.api.KalApiApplication;
+import th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.elife.api.model.Payment;
 import th.co.krungthaiaxa.elife.api.model.Policy;
 import th.co.krungthaiaxa.elife.api.model.Quote;
@@ -25,6 +26,7 @@ import th.co.krungthaiaxa.elife.api.service.QuoteService;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
@@ -76,7 +78,7 @@ public class PolicyResourceTest {
     }
 
     @Test
-    public void should_return_a_policy_object() throws Exception {
+    public void should_return_a_policy_object() throws QuoteCalculationException, IOException {
         Quote quote = quoteService.createQuote(randomNumeric(20), getCommonData(), LINE);
         quote(quote, EVERY_YEAR, 1000000.0, insured(35), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
@@ -94,7 +96,7 @@ public class PolicyResourceTest {
     }
 
     @Test
-    public void should_return_policy_payment_list() throws Exception {
+    public void should_return_policy_payment_list() throws QuoteCalculationException, IOException, URISyntaxException {
         Quote quote = quoteService.createQuote(randomNumeric(20), getCommonData(), LINE);
         quote(quote, EVERY_YEAR, 1000000.0, insured(35), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
@@ -105,7 +107,7 @@ public class PolicyResourceTest {
         assertThat(response.getStatusCode().value()).isEqualTo(OK.value());
         Policy policy = TestUtil.getPolicyFromJSon(response.getBody());
 
-        URI paymentURI = new URI("http://localhost:" + port + "/policies/" + policy.getId() + "/payments");
+        URI paymentURI = new URI("http://localhost:" + port + "/policies/" + policy.getPolicyId() + "/payments");
         ResponseEntity<String> paymentResponse = template.getForEntity(paymentURI, String.class);
         List<Payment> payments = TestUtil.getPaymentsFromJSon(paymentResponse.getBody());
         assertThat(paymentResponse.getStatusCode().value()).isEqualTo(OK.value());

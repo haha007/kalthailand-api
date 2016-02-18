@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.elife.api.model.CommonData;
 import th.co.krungthaiaxa.elife.api.model.Quote;
 import th.co.krungthaiaxa.elife.api.model.enums.ChannelType;
@@ -150,7 +151,7 @@ public class QuoteResource {
         Quote updatedQuote;
         try {
             updatedQuote = quoteService.updateQuote(quote);
-        } catch (Exception e) {
+        } catch (QuoteCalculationException e) {
             logger.error("Unable to update quote", e);
             return new ResponseEntity<>(QUOTE_NOT_UPDATED, NOT_ACCEPTABLE);
         }

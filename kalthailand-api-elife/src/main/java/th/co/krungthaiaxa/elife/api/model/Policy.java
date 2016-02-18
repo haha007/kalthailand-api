@@ -27,6 +27,8 @@ public class Policy {
     private List<Coverage> coverages = new ArrayList<>();
     @DBRef
     private List<Payment> payments = new ArrayList<>();
+    @DBRef
+    private List<th.co.krungthaiaxa.elife.api.model.Document> documents = new ArrayList<>();
 
     public String getId() {
         return id;
@@ -99,6 +101,15 @@ public class Policy {
         payments.add(payment);
     }
 
+    @ApiModelProperty(value = "List of all policy documents")
+    public List<th.co.krungthaiaxa.elife.api.model.Document> getDocuments() {
+        return Collections.unmodifiableList(documents);
+    }
+
+    public void addDocument(th.co.krungthaiaxa.elife.api.model.Document document) {
+        documents.add(document);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -111,11 +122,12 @@ public class Policy {
                 Objects.equals(premiumsData, policy.premiumsData) &&
                 Objects.equals(insureds, policy.insureds) &&
                 Objects.equals(coverages, policy.coverages) &&
-                Objects.equals(payments, policy.payments);
+                Objects.equals(payments, policy.payments) &&
+                Objects.equals(documents, policy.documents);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, policyId, quoteId, commonData, premiumsData, insureds, coverages, payments);
+        return Objects.hash(id, policyId, quoteId, commonData, premiumsData, insureds, coverages, payments, documents);
     }
 }

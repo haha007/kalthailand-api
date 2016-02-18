@@ -1,59 +1,57 @@
 package th.co.krungthaiaxa.elife.api.resource;
 
-import com.itextpdf.text.BadElementException;
 import com.itextpdf.text.DocumentException;
 import io.swagger.annotations.*;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import th.co.krungthaiaxa.elife.api.exception.PolicyValidationException;
-import th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException;
-import th.co.krungthaiaxa.elife.api.model.*;
-import th.co.krungthaiaxa.elife.api.model.enums.*;
+import th.co.krungthaiaxa.elife.api.exception.ImageTooSmallException;
+import th.co.krungthaiaxa.elife.api.exception.InputImageException;
+import th.co.krungthaiaxa.elife.api.exception.OutputImageException;
+import th.co.krungthaiaxa.elife.api.exception.UnsupportedImageException;
+import th.co.krungthaiaxa.elife.api.model.Payment;
+import th.co.krungthaiaxa.elife.api.model.Policy;
+import th.co.krungthaiaxa.elife.api.model.Quote;
+import th.co.krungthaiaxa.elife.api.model.enums.ChannelType;
+import th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus;
 import th.co.krungthaiaxa.elife.api.model.error.Error;
 import th.co.krungthaiaxa.elife.api.service.EmailService;
 import th.co.krungthaiaxa.elife.api.service.PolicyService;
-import th.co.krungthaiaxa.elife.api.service.QuoteService;
 import th.co.krungthaiaxa.elife.api.utils.ImageUtil;
 import th.co.krungthaiaxa.elife.api.utils.JsonUtil;
+import th.co.krungthaiaxa.elife.api.utils.WatermarkUtil;
 
 import javax.inject.Inject;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.time.temporal.ChronoUnit;
+import java.io.InputStream;
+import java.net.URLConnection;
 import java.util.Base64;
 
-import static java.lang.Boolean.FALSE;
-import static java.time.LocalDate.now;
-import static java.time.temporal.ChronoUnit.YEARS;
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
-import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
-import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_YEAR;
 import static th.co.krungthaiaxa.elife.api.model.error.ErrorCode.*;
 
 @RestController
 @Api(value = "Policies")
 public class PolicyResource {
     private final static Logger logger = LoggerFactory.getLogger(PolicyResource.class);
-    private final static String ERECEIPT_PDF_FILE_NAME= "ereceipt.pdf";
+    private final static String ERECEIPT_PDF_FILE_NAME = "ereceipt.pdf";
     @Value("${path.store.watermarked.image}")
     private String storePath;
     private final PolicyService policyService;
     @Value("${path.store.elife.ereceipt.pdf}")
     private String eReceiptPdfStorePath;
     private final EmailService emailService;
-    private final QuoteService quoteService;
 
     @Inject
-    public PolicyResource(PolicyService policyService, EmailService emailService, QuoteService quoteService) {
+    public PolicyResource(PolicyService policyService, EmailService emailService) {
         this.policyService = policyService;
         this.emailService = emailService;
-        this.quoteService = quoteService;
     }
 
     @ApiOperation(value = "Creates a policy", notes = "Creates a policy out of a quote. Policy will be created only " +
@@ -181,7 +179,7 @@ public class PolicyResource {
             return new ResponseEntity<>(UNABLE_TO_CREATE_ERECEIPT, INTERNAL_SERVER_ERROR);
         }
 
-        try{
+        try {
             im = new StringBuilder(storePath);
             im.append(File.separator + ERECEIPT_PDF_FILE_NAME);
             im.insert(im.toString().indexOf("."), "_" + policy.getPolicyId());
@@ -197,8 +195,8 @@ public class PolicyResource {
         }
 
         try {
-            emailService.sendEreceiptEmail(policy,eReceiptPdfStorePath);
-        }catch (Exception e){
+            emailService.sendEreceiptEmail(policy, eReceiptPdfStorePath);
+        } catch (Exception e) {
             logger.error("Unable to send e-receipt email [" + policyId + "]", e);
             return new ResponseEntity<>(UNABLE_TO_SEND_EMAIL, INTERNAL_SERVER_ERROR);
         }

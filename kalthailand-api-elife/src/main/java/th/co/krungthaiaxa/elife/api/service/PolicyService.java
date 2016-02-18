@@ -1,7 +1,6 @@
 package th.co.krungthaiaxa.elife.api.service;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -59,7 +58,9 @@ public class PolicyService {
     private String eReceiptMailLogoStorePath;
 
     @Inject
-    public PolicyService(PaymentRepository paymentRepository, PolicyRepository policyRepository, PolicyNumberRepository policyNumberRepository, QuoteRepository quoteRepository, SessionQuoteRepository sessionQuoteRepository) {
+    public PolicyService(PaymentRepository paymentRepository, PolicyRepository policyRepository,
+                         PolicyNumberRepository policyNumberRepository, QuoteRepository quoteRepository,
+                         SessionQuoteRepository sessionQuoteRepository) {
         this.paymentRepository = paymentRepository;
         this.policyRepository = policyRepository;
         this.policyNumberRepository = policyNumberRepository;
@@ -68,7 +69,7 @@ public class PolicyService {
     }
 
     public Policy findPolicy(String policyId) {
-        return policyRepository.findOne(policyId);
+        return policyRepository.findByPolicyId(policyId);
     }
 
     public Policy createPolicy(Quote quote) throws PolicyValidationException, QuoteCalculationException {
@@ -156,10 +157,9 @@ public class PolicyService {
     }
 
     public byte[] createEreceipt(Policy policy) throws IOException {
-
         logger.info("[createEReceipt] quoteId : " + policy.getQuoteId());
         logger.info("[createEReceipt] policyNumber : " + policy.getPolicyId());
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("ereceipt/"+ERECEIPT_TEMPLATE_FILE_NAME);
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("ereceipt/" + ERECEIPT_TEMPLATE_FILE_NAME);
         logger.info("[createEReceipt] E-receipt image store name path : " + storePath);
 
         DecimalFormat formatter = new DecimalFormat("#,##0.00");
@@ -173,8 +173,8 @@ public class PolicyService {
 
         BufferedImage bufferedImage = null;
         try {
-             bufferedImage = ImageIO.read(inputStream);
-        }catch (IOException e){
+            bufferedImage = ImageIO.read(inputStream);
+        } catch (IOException e) {
             logger.error("Unable to read the inputStream of template e-receipt", e);
             throw e;
         }
@@ -185,16 +185,16 @@ public class PolicyService {
 
         //Name
         graphics.drawString(policy.getInsureds().get(0).getPerson().getGivenName() + " " + policy.getInsureds().get(0).getPerson().getSurName(), 227, 305);
-        logger.debug("Name Insure : "+ policy.getInsureds().get(0).getPerson().getGivenName() + " " + policy.getInsureds().get(0).getPerson().getSurName());
+        logger.debug("Name Insure : " + policy.getInsureds().get(0).getPerson().getGivenName() + " " + policy.getInsureds().get(0).getPerson().getSurName());
 
         //Mobile Phone
         String mobilePhone = policy.getInsureds().get(0).getPerson().getMobilePhoneNumber().getNumber();
-        logger.debug("MobilePhone : "+ mobilePhone);
+        logger.debug("MobilePhone : " + mobilePhone);
         graphics.drawString(mobilePhone, 633, 305);
 
         //ProductName
         graphics.drawString(policy.getCommonData().getProductName(), 188, 353);
-        logger.debug("ProductName : "+ policy.getCommonData().getProductName());
+        logger.debug("ProductName : " + policy.getCommonData().getProductName());
 
         //SumInsured
         graphics.drawString(formatter.format(policy.getPremiumsData().getLifeInsuranceSumInsured().getValue()), 553, 353);
@@ -285,8 +285,8 @@ public class PolicyService {
         try {
             ImageIO.write(bufferedImage, "jpg", new File(resultFileName));
             logger.info("[createEReceipt] success for drawing graphics on image file.");
-        }catch(IOException e){
-            logger.error("Unable to write image e-receipt : "+ resultFileName, e);
+        } catch (IOException e) {
+            logger.error("Unable to write image e-receipt : " + resultFileName, e);
             throw e;
         }
         logger.info("[createEReceipt] write image file success : " + resultFileName);

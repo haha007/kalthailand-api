@@ -14,7 +14,7 @@ import java.io.InputStream;
 
 
 public class WatermarkUtil {
-    public static byte[] addTextWatermark(InputStream watermarkImageFile, String storePath, String type, InputStream sourceImageFile)
+    public static byte[] addTextWatermark(InputStream watermarkImageFile, String type, InputStream sourceImageFile)
             throws InputImageException, OutputImageException, ImageTooSmallException, UnsupportedImageException {
         BufferedImage sourceImage;
         try {
@@ -47,7 +47,7 @@ public class WatermarkUtil {
 
         byte[] result;
         try (ByteArrayOutputStream destImageFile = new ByteArrayOutputStream()) {
-            ImageIO.write(sourceImage, type.toLowerCase(), destImageFile);
+            ImageIO.write(sourceImage, type.substring(type.indexOf("/") + 1).toLowerCase(), destImageFile);
             result = destImageFile.toByteArray();
         } catch (IOException e) {
             throw new OutputImageException(e);

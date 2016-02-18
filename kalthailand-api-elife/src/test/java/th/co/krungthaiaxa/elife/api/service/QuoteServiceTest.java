@@ -11,6 +11,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.elife.api.KalApiApplication;
 import th.co.krungthaiaxa.elife.api.data.SessionQuote;
+import th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.elife.api.model.Amount;
 import th.co.krungthaiaxa.elife.api.model.Quote;
 import th.co.krungthaiaxa.elife.api.repository.SessionQuoteRepository;
@@ -37,7 +38,7 @@ public class QuoteServiceTest {
     private SessionQuoteRepository sessionQuoteRepository;
 
     @Test
-    public void should_find_by_quote_id_and_session_id() throws Exception {
+    public void should_find_by_quote_id_and_session_id() throws QuoteCalculationException {
         String sessionId = RandomStringUtils.randomNumeric(20);
 
         Quote quote = quoteService.createQuote(sessionId, getCommonData(), LINE);
@@ -51,7 +52,7 @@ public class QuoteServiceTest {
     }
 
     @Test
-    public void should_not_find_by_quote_id_when_session_id_has_no_access_to_quote() throws Exception {
+    public void should_not_find_by_quote_id_when_session_id_has_no_access_to_quote() throws QuoteCalculationException {
         String sessionId = RandomStringUtils.randomNumeric(20);
 
         Quote quote = quoteService.createQuote(sessionId, getCommonData(), LINE);
@@ -64,7 +65,7 @@ public class QuoteServiceTest {
     }
 
     @Test
-    public void should_add_one_quote_in_session() throws Exception {
+    public void should_add_one_quote_in_session() throws QuoteCalculationException {
         String sessionId = RandomStringUtils.randomNumeric(20);
 
         Quote quote = quoteService.createQuote(sessionId, getCommonData(), LINE);
@@ -76,7 +77,7 @@ public class QuoteServiceTest {
     }
 
     @Test
-    public void should_add_two_quotes_in_session_and_ordered_by_update_time() throws Exception {
+    public void should_add_two_quotes_in_session_and_ordered_by_update_time() throws QuoteCalculationException {
         String sessionId = RandomStringUtils.randomNumeric(20);
 
         Quote quote1 = quoteService.createQuote(sessionId, getCommonData(), LINE);
@@ -99,7 +100,7 @@ public class QuoteServiceTest {
     }
 
     @Test
-    public void should_get_latest_quote() throws Exception {
+    public void should_get_latest_quote() throws QuoteCalculationException {
         String sessionId = RandomStringUtils.randomNumeric(20);
 
         Quote quote1 = quoteService.createQuote(sessionId, getCommonData(), LINE);
@@ -115,7 +116,7 @@ public class QuoteServiceTest {
     }
 
     @Test
-    public void should_calculate_age_of_insured() throws Exception {
+    public void should_calculate_age_of_insured() throws QuoteCalculationException {
         String sessionId = RandomStringUtils.randomNumeric(20);
 
         Quote quote = quoteService.createQuote(sessionId, getCommonData(), LINE);
@@ -131,7 +132,7 @@ public class QuoteServiceTest {
     }
 
     @Test
-    public void should_return_empty_calculated_stuff_when_there_is_nothing_to_calculate_anymore() throws Exception {
+    public void should_return_empty_calculated_stuff_when_there_is_nothing_to_calculate_anymore() throws QuoteCalculationException {
         String sessionId = RandomStringUtils.randomNumeric(20);
 
         Quote quote = quoteService.createQuote(sessionId, getCommonData(), LINE);

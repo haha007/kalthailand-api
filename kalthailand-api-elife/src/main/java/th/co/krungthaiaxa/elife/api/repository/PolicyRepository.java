@@ -7,4 +7,5 @@ import th.co.krungthaiaxa.elife.api.model.Policy;
 @Repository
 public interface PolicyRepository extends PagingAndSortingRepository<Policy, String> {
     Policy findByQuoteId(String quoteId);
+    Policy findByPolicyId(String policyId);
 }
