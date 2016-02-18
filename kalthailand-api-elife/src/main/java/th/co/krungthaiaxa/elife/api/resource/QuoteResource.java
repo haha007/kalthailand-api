@@ -126,12 +126,7 @@ public class QuoteResource {
             return new ResponseEntity<>(INVALID_PRODUCT_ID_PROVIDED, NOT_ACCEPTABLE);
         }
 
-        Optional<Quote> quote = quoteService.getLatestQuote(sessionId, channelType);
-        if (quote.isPresent()) {
-            return new ResponseEntity<>(getJson(quote.get()), OK);
-        } else {
-            return new ResponseEntity<>(getJson(quoteService.createQuote(sessionId, commonData, channelType)), OK);
-        }
+        return new ResponseEntity<>(getJson(quoteService.createQuote(sessionId, commonData, channelType)), OK);
     }
 
     @ApiOperation(value = "Updates a quote", notes = "Updates a quote with provided JSon. Calculatiom may occur if " +

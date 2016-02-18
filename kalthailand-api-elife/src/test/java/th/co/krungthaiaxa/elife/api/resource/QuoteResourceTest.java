@@ -178,24 +178,29 @@ public class QuoteResourceTest {
     }
 
     @Test
-    public void should_return_an_empty_quote_object() throws IOException, URISyntaxException {
+    public void should_always_return_a_new_quote_object_for_the_same_sessionId() throws IOException, URISyntaxException {
         URI base = new URI("http://localhost:" + port + "/quotes");
         MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
         parameters.add("sessionId", randomNumeric(20));
         parameters.add("productId", "10EC");
         parameters.add("channelType", ChannelType.LINE.name());
 
-        ResponseEntity<String> response = template.postForEntity(base, parameters, String.class);
-        assertThat(response.getStatusCode().value()).isEqualTo(OK.value());
-        Quote quote = TestUtil.getQuoteFromJSon(response.getBody());
-        assertThat(quote).isNotNull();
-        assertThat(quote.getPremiumsData()).isNotNull();
-        assertThat(quote.getPremiumsData().getFinancialScheduler()).isNotNull();
-        assertThat(quote.getPremiumsData().getFinancialScheduler().getPeriodicity()).isNotNull();
-        assertThat(quote.getInsureds()).hasSize(1);
-        assertThat(quote.getInsureds().get(0)).isNotNull();
-        assertThat(quote.getInsureds().get(0).getFatca()).isNotNull();
-        assertThat(quote.getInsureds().get(0).getPerson()).isNotNull();
+        ResponseEntity<String> response1 = template.postForEntity(base, parameters, String.class);
+        assertThat(response1.getStatusCode().value()).isEqualTo(OK.value());
+        Quote quote1 = TestUtil.getQuoteFromJSon(response1.getBody());
+        assertThat(quote1).isNotNull();
+
+        ResponseEntity<String> response2 = template.postForEntity(base, parameters, String.class);
+        assertThat(response2.getStatusCode().value()).isEqualTo(OK.value());
+        Quote quote2 = TestUtil.getQuoteFromJSon(response2.getBody());
+        assertThat(quote2).isNotNull();
+        assertThat(quote2).isNotEqualTo(quote1);
+
+        ResponseEntity<String> response3 = template.postForEntity(base, parameters, String.class);
+        assertThat(response3.getStatusCode().value()).isEqualTo(OK.value());
+        Quote quote3 = TestUtil.getQuoteFromJSon(response3.getBody());
+        assertThat(quote3).isNotNull();
+        assertThat(quote3).isNotEqualTo(quote2);
     }
 
     @Test
