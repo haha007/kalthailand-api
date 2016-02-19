@@ -50,6 +50,6 @@ public class KalApiApplication {
                 PathSelectors.regex("/quotes.*"),
                 PathSelectors.regex("/policies.*"),
                 PathSelectors.regex("/decrypt.*"),
-                PathSelectors.regex("/watermark.*"));
+                PathSelectors.regex("/documents.*"));
     }
 }

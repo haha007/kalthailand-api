@@ -2,11 +2,11 @@ package th.co.krungthaiaxa.elife.api.model;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import th.co.krungthaiaxa.elife.api.model.enums.DividendOption;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @ApiModel(description = "Data concerning premiums (price for the coverage and benefit agreed) specific to " +
         "Life Insurance", parent = PremiumsData.class)
@@ -20,6 +20,7 @@ public class PremiumsDataLifeInsurance extends PremiumsData implements Serializa
     private List<DatedAmount> yearlyCashBacksAverageDividende = new ArrayList<>();
     private List<DatedAmount> yearlyCashBacksMaximumDividende = new ArrayList<>();
     private Amount yearlyTaxDeduction;
+    private DividendOption dividendOption;
 
     @ApiModelProperty(value = "Total sum insured by the product. This is calculated by back end API if an amount is provided in financialScheduler. If this value is provided, then it's the financialScheduler amount that is calculated")
     public Amount getLifeInsuranceSumInsured() {
@@ -102,25 +103,12 @@ public class PremiumsDataLifeInsurance extends PremiumsData implements Serializa
         this.yearlyTaxDeduction = yearlyTaxDeduction;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        PremiumsDataLifeInsurance that = (PremiumsDataLifeInsurance) o;
-        return Objects.equals(lifeInsuranceSumInsured, that.lifeInsuranceSumInsured) &&
-                Objects.equals(yearlyCashBacks, that.yearlyCashBacks) &&
-                Objects.equals(endOfContractBenefitsMinimum, that.endOfContractBenefitsMinimum) &&
-                Objects.equals(endOfContractBenefitsAverage, that.endOfContractBenefitsAverage) &&
-                Objects.equals(endOfContractBenefitsMaximum, that.endOfContractBenefitsMaximum) &&
-                Objects.equals(yearlyCashBacksMinimumDividende, that.yearlyCashBacksMinimumDividende) &&
-                Objects.equals(yearlyCashBacksAverageDividende, that.yearlyCashBacksAverageDividende) &&
-                Objects.equals(yearlyCashBacksMaximumDividende, that.yearlyCashBacksMaximumDividende) &&
-                Objects.equals(yearlyTaxDeduction, that.yearlyTaxDeduction);
+    @ApiModelProperty(value = "Dividend option. Dividend is either given yearly in cash, or used for next premium or all of it at the end of the product duration.")
+    public DividendOption getDividendOption() {
+        return dividendOption;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), lifeInsuranceSumInsured, yearlyCashBacks, endOfContractBenefitsMinimum, endOfContractBenefitsAverage, endOfContractBenefitsMaximum, yearlyCashBacksMinimumDividende, yearlyCashBacksAverageDividende, yearlyCashBacksMaximumDividende, yearlyTaxDeduction);
+    public void setDividendOption(DividendOption dividendOption) {
+        this.dividendOption = dividendOption;
     }
 }
