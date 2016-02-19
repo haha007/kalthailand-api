@@ -153,8 +153,8 @@ public class Product10EC implements Product {
 
         // calculates yearly returns
         premiumsData.setYearlyCashBacksMinimumDividende(calculateDatedAmount(quote, null, minimumExtraDvdRate));
-        premiumsData.setYearlyCashBacksAverageDividende(calculateDatedAmount(quote, 40, averageExtraDvdRate));
-        premiumsData.setYearlyCashBacksMaximumDividende(calculateDatedAmount(quote, 45, maximumExtraDvdRate));
+        premiumsData.setYearlyCashBacksAverageDividende(calculateDatedAmount(quote, null, averageExtraDvdRate));
+        premiumsData.setYearlyCashBacksMaximumDividende(calculateDatedAmount(quote, null, maximumExtraDvdRate));
 
         // calculate tax deduction
         premiumsData.setYearlyTaxDeduction(calculateTaxReturn(quote));

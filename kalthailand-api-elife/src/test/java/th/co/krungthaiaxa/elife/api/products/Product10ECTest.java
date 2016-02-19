@@ -702,9 +702,9 @@ public class Product10ECTest {
         assertThat(result.get(4).getValue()).isEqualTo(0.0);
         assertThat(result.get(5).getValue()).isEqualTo(0.0);
         assertThat(result.get(6).getValue()).isEqualTo(15000.0);
-        assertThat(result.get(7).getValue()).isEqualTo(30600.0);
-        assertThat(result.get(8).getValue()).isEqualTo(46824.0);
-        assertThat(result.get(9).getValue()).isEqualTo(213697.0);
+        assertThat(result.get(7).getValue()).isEqualTo(15000.0);
+        assertThat(result.get(8).getValue()).isEqualTo(15000.0);
+        assertThat(result.get(9).getValue()).isEqualTo(165000.0);
     }
 
     @Test
@@ -750,9 +750,9 @@ public class Product10ECTest {
         assertThat(result.get(4).getValue()).isEqualTo(0.0);
         assertThat(result.get(5).getValue()).isEqualTo(0.0);
         assertThat(result.get(6).getValue()).isEqualTo(18000.0);
-        assertThat(result.get(7).getValue()).isEqualTo(36810.0);
-        assertThat(result.get(8).getValue()).isEqualTo(56466.0);
-        assertThat(result.get(9).getValue()).isEqualTo(257007.0);
+        assertThat(result.get(7).getValue()).isEqualTo(18000.0);
+        assertThat(result.get(8).getValue()).isEqualTo(18000.0);
+        assertThat(result.get(9).getValue()).isEqualTo(198000.0);
     }
 
     @Test
