@@ -130,16 +130,28 @@ public class QuoteResource {
         return new ResponseEntity<>(getJson(quoteService.createQuote(sessionId, commonData, channelType)), OK);
     }
 
-    @ApiOperation(value = "Updates a quote", notes = "Updates a quote with provided JSon. Calculatiom may occur if " +
-            "enough elements are provided.", response = Quote.class)
+    @ApiOperation(value = "Updates a quote", notes = "Updates a quote with is provided JSon. Calculation may occur " +
+            "if enough elements are provided.", response = Quote.class)
     @ApiResponses({
+            @ApiResponse(code = 404, message = "If quote Id is unknown or if sessionId user does not have access to the quote", response = Error.class),
             @ApiResponse(code = 406, message = "If either JSon is invalid or there is no quote in the given session",
                     response = Error.class)
     })
-    @RequestMapping(value = "/quotes", produces = APPLICATION_JSON_VALUE, method = PUT)
+    @RequestMapping(value = "/quotes/{quoteId}", produces = APPLICATION_JSON_VALUE, method = PUT)
     public ResponseEntity updateQuote(
+            @ApiParam(value = "The quote Id")
+            @PathVariable String quoteId,
+            @ApiParam(value = "The session id the quote is in")
+            @RequestParam String sessionId,
+            @ApiParam(value = "The channel being used to create the quote.")
+            @RequestParam ChannelType channelType,
             @ApiParam(value = "The json of the quote. This quote will be updated with given values and will go through minimal validations")
             @RequestBody String jsonQuote) {
+        Optional<Quote> tmp = quoteService.findByQuoteId(quoteId, sessionId, channelType);
+        if (!tmp.isPresent()) {
+            return new ResponseEntity<>(QUOTE_DOES_NOT_EXIST_OR_ACCESS_DENIED, NOT_FOUND);
+        }
+
         Quote quote;
         try {
             quote = JsonUtil.mapper.readValue(jsonQuote, Quote.class);
@@ -147,6 +159,8 @@ public class QuoteResource {
             logger.error("Unable to get a quote out of [" + jsonQuote + "]", e);
             return new ResponseEntity<>(INVALID_QUOTE_PROVIDED, NOT_ACCEPTABLE);
         }
+        quote.setId(tmp.get().getId());
+        quote.setQuoteId(tmp.get().getQuoteId());
 
         Quote updatedQuote;
         try {

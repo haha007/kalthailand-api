@@ -205,14 +205,14 @@ public class QuoteResourceTest {
 
     @Test
     public void should_return_an_updated_quote() throws IOException, URISyntaxException {
-        URI base = new URI("http://localhost:" + port + "/quotes");
         String sessionId = randomNumeric(20);
         MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
         parameters.add("sessionId", sessionId);
         parameters.add("productId", "10EC");
         parameters.add("channelType", ChannelType.LINE.name());
 
-        ResponseEntity<String> creationResponse = template.postForEntity(base, parameters, String.class);
+        URI creationURI = new URI("http://localhost:" + port + "/quotes");
+        ResponseEntity<String> creationResponse = template.postForEntity(creationURI, parameters, String.class);
         assertThat(creationResponse.getStatusCode().value()).isEqualTo(OK.value());
         Quote quote = TestUtil.getQuoteFromJSon(creationResponse.getBody());
         assertThat(quote).isNotNull();
@@ -224,7 +224,11 @@ public class QuoteResourceTest {
         jsonQuote = replace(jsonQuote, "\"periodicity\":{\"code\":null}", "\"periodicity\":{\"code\":\"EVERY_MONTH\"}");
         jsonQuote = replace(jsonQuote, "\"genderCode\":null", "\"genderCode\":\"MALE\"");
 
-        ResponseEntity<String> updateResponse = template.exchange(base, HttpMethod.PUT, new HttpEntity<>(jsonQuote), String.class);
+        URI updateURI = new URI("http://localhost:" + port + "/quotes/" + quote.getQuoteId());
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUri(updateURI)
+                .queryParam("sessionId", sessionId)
+                .queryParam("channelType", ChannelType.LINE.name());
+        ResponseEntity<String> updateResponse = template.exchange(builder.toUriString(), HttpMethod.PUT, new HttpEntity<>(jsonQuote), String.class);
         assertThat(updateResponse.getStatusCode().value()).isEqualTo(OK.value());
 
         // check database values
