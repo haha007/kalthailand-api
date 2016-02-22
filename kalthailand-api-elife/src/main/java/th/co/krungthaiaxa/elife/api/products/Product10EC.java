@@ -42,8 +42,6 @@ public class Product10EC implements Product {
         }
     };
 
-    private static Function<Integer, Integer> minimumExtraDvdRate = numberOfYearsOfContract -> 0;
-
     private static Function<Integer, Integer> averageExtraDvdRate = numberOfYearsOfContract -> {
         if (numberOfYearsOfContract >= 7 && numberOfYearsOfContract <= 9) {
             return 15;
@@ -107,11 +105,12 @@ public class Product10EC implements Product {
         // Do we have enough to calculate anything
         if (!hasEnoughTocalculate(quote)) {
             // we need to delete what might have been calculated before
+            quote.getPremiumsData().setYearlyCashBacksAverageBenefit(new ArrayList<>());
             quote.getPremiumsData().setYearlyCashBacksAverageDividende(new ArrayList<>());
             quote.getPremiumsData().setEndOfContractBenefitsAverage(new ArrayList<>());
+            quote.getPremiumsData().setYearlyCashBacksMaximumBenefit(new ArrayList<>());
             quote.getPremiumsData().setYearlyCashBacksMaximumDividende(new ArrayList<>());
             quote.getPremiumsData().setEndOfContractBenefitsMaximum(new ArrayList<>());
-            quote.getPremiumsData().setYearlyCashBacksMinimumDividende(new ArrayList<>());
             quote.getPremiumsData().setEndOfContractBenefitsMinimum(new ArrayList<>());
             quote.getPremiumsData().setYearlyCashBacks(new ArrayList<>());
             quote.getPremiumsData().setYearlyTaxDeduction(null);
@@ -152,9 +151,12 @@ public class Product10EC implements Product {
         premiumsData.setEndOfContractBenefitsMaximum(calculateDatedAmount(quote, 45, dvdRate));
 
         // calculates yearly returns
-        premiumsData.setYearlyCashBacksMinimumDividende(calculateDatedAmount(quote, null, minimumExtraDvdRate));
         premiumsData.setYearlyCashBacksAverageDividende(calculateDatedAmount(quote, null, averageExtraDvdRate));
         premiumsData.setYearlyCashBacksMaximumDividende(calculateDatedAmount(quote, null, maximumExtraDvdRate));
+
+        // calculates yearly benefits
+        premiumsData.setYearlyCashBacksAverageBenefit(calculateDatedAmount(quote, 40, averageExtraDvdRate));
+        premiumsData.setYearlyCashBacksMaximumBenefit(calculateDatedAmount(quote, 45, maximumExtraDvdRate));
 
         // calculate tax deduction
         premiumsData.setYearlyTaxDeduction(calculateTaxReturn(quote));
@@ -289,13 +291,14 @@ public class Product10EC implements Product {
             throw PolicyValidationException.premiumnsSumInsuredNoAmount;
         }
         checkSumInsured(premiumsData);
-        checkDatedAmounts(premiumsData.getYearlyCashBacksAverageDividende(), startDate);
         checkDatedAmounts(premiumsData.getEndOfContractBenefitsAverage(), startDate);
-        checkDatedAmounts(premiumsData.getYearlyCashBacksMaximumDividende(), startDate);
         checkDatedAmounts(premiumsData.getEndOfContractBenefitsMaximum(), startDate);
-        checkDatedAmounts(premiumsData.getYearlyCashBacksMinimumDividende(), startDate);
         checkDatedAmounts(premiumsData.getEndOfContractBenefitsMinimum(), startDate);
         checkDatedAmounts(premiumsData.getYearlyCashBacks(), startDate);
+        checkDatedAmounts(premiumsData.getYearlyCashBacksAverageBenefit(), startDate);
+        checkDatedAmounts(premiumsData.getYearlyCashBacksAverageDividende(), startDate);
+        checkDatedAmounts(premiumsData.getYearlyCashBacksMaximumBenefit(), startDate);
+        checkDatedAmounts(premiumsData.getYearlyCashBacksMaximumDividende(), startDate);
     }
 
     private static void checkSumInsured(PremiumsDataLifeInsurance premiumsData) throws QuoteCalculationException {

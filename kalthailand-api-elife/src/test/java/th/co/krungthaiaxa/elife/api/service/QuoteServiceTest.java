@@ -148,9 +148,10 @@ public class QuoteServiceTest {
         assertThat(quote.getPremiumsData().getEndOfContractBenefitsMinimum()).hasSize(10);
         assertThat(quote.getPremiumsData().getEndOfContractBenefitsAverage()).hasSize(10);
         assertThat(quote.getPremiumsData().getEndOfContractBenefitsMaximum()).hasSize(10);
-        assertThat(quote.getPremiumsData().getYearlyCashBacksMinimumDividende()).hasSize(10);
+        assertThat(quote.getPremiumsData().getYearlyCashBacksAverageBenefit()).hasSize(10);
+        assertThat(quote.getPremiumsData().getYearlyCashBacksAverageDividende()).hasSize(10);
+        assertThat(quote.getPremiumsData().getYearlyCashBacksMaximumBenefit()).hasSize(10);
         assertThat(quote.getPremiumsData().getYearlyCashBacksMaximumDividende()).hasSize(10);
-        assertThat(quote.getPremiumsData().getYearlyCashBacks()).hasSize(10);
         Assertions.assertThat(quote.getCoverages()).hasSize(1);
         assertThat(quote.getCommonData().getProductId()).isNotNull();
         assertThat(quote.getCommonData().getProductName()).isNotNull();
@@ -162,7 +163,9 @@ public class QuoteServiceTest {
         assertThat(quote.getPremiumsData().getEndOfContractBenefitsMinimum()).isEmpty();
         assertThat(quote.getPremiumsData().getEndOfContractBenefitsAverage()).isEmpty();
         assertThat(quote.getPremiumsData().getEndOfContractBenefitsMaximum()).isEmpty();
-        assertThat(quote.getPremiumsData().getYearlyCashBacksMinimumDividende()).isEmpty();
+        assertThat(quote.getPremiumsData().getYearlyCashBacksAverageBenefit()).isEmpty();
+        assertThat(quote.getPremiumsData().getYearlyCashBacksAverageDividende()).isEmpty();
+        assertThat(quote.getPremiumsData().getYearlyCashBacksMaximumBenefit()).isEmpty();
         assertThat(quote.getPremiumsData().getYearlyCashBacksMaximumDividende()).isEmpty();
         assertThat(quote.getPremiumsData().getYearlyCashBacks()).isEmpty();
         Assertions.assertThat(quote.getCoverages()).isEmpty();
