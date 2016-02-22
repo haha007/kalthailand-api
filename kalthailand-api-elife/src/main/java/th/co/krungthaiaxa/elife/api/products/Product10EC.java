@@ -103,17 +103,17 @@ public class Product10EC implements Product {
                 .findFirst();
 
         // Do we have enough to calculate anything
-        if (!hasEnoughTocalculate(quote)) {
+        if (!hasEnoughTocalculate(quote) && quote.getPremiumsData().getLifeInsurance() != null) {
             // we need to delete what might have been calculated before
-            quote.getPremiumsData().setYearlyCashBacksAverageBenefit(new ArrayList<>());
-            quote.getPremiumsData().setYearlyCashBacksAverageDividende(new ArrayList<>());
-            quote.getPremiumsData().setEndOfContractBenefitsAverage(new ArrayList<>());
-            quote.getPremiumsData().setYearlyCashBacksMaximumBenefit(new ArrayList<>());
-            quote.getPremiumsData().setYearlyCashBacksMaximumDividende(new ArrayList<>());
-            quote.getPremiumsData().setEndOfContractBenefitsMaximum(new ArrayList<>());
-            quote.getPremiumsData().setEndOfContractBenefitsMinimum(new ArrayList<>());
-            quote.getPremiumsData().setYearlyCashBacks(new ArrayList<>());
-            quote.getPremiumsData().setYearlyTaxDeduction(null);
+            quote.getPremiumsData().getLifeInsurance().setYearlyCashBacksAverageBenefit(new ArrayList<>());
+            quote.getPremiumsData().getLifeInsurance().setYearlyCashBacksAverageDividende(new ArrayList<>());
+            quote.getPremiumsData().getLifeInsurance().setEndOfContractBenefitsAverage(new ArrayList<>());
+            quote.getPremiumsData().getLifeInsurance().setYearlyCashBacksMaximumBenefit(new ArrayList<>());
+            quote.getPremiumsData().getLifeInsurance().setYearlyCashBacksMaximumDividende(new ArrayList<>());
+            quote.getPremiumsData().getLifeInsurance().setEndOfContractBenefitsMaximum(new ArrayList<>());
+            quote.getPremiumsData().getLifeInsurance().setEndOfContractBenefitsMinimum(new ArrayList<>());
+            quote.getPremiumsData().getLifeInsurance().setYearlyCashBacks(new ArrayList<>());
+            quote.getPremiumsData().getLifeInsurance().setYearlyTaxDeduction(null);
             if (has10ECCoverage.isPresent()) {
                 quote.getCoverages().remove(has10ECCoverage.get());
             }
@@ -130,36 +130,36 @@ public class Product10EC implements Product {
         quote.getInsureds().stream().filter(Insured::getMainInsuredIndicator).findFirst().get().setEndDate(endDate);
         quote.getPremiumsData().getFinancialScheduler().setEndDate(endDate);
 
-        PremiumsDataLifeInsurance premiumsData = quote.getPremiumsData();
+        PremiumsData premiumsData = quote.getPremiumsData();
         // cannot insure too much or not enough
         checkSumInsured(premiumsData);
         checkPremium(premiumsData);
 
         // calculates premium / sum insured
-        if (premiumsData.getLifeInsuranceSumInsured() != null) {
+        if (premiumsData.getLifeInsurance().getSumInsured() != null) {
             premiumsData.getFinancialScheduler().setModalAmount(getPremiumFromSumInsured(quote));
         } else {
-            premiumsData.setLifeInsuranceSumInsured(getSumInsuredFromPremium(quote));
+            premiumsData.getLifeInsurance().setSumInsured(getSumInsuredFromPremium(quote));
         }
 
         // calculates yearly cash backs
-        premiumsData.setYearlyCashBacks(calculateDatedAmount(quote, null, dvdRate));
+        premiumsData.getLifeInsurance().setYearlyCashBacks(calculateDatedAmount(quote, null, dvdRate));
 
         // calculates yearly returns
-        premiumsData.setEndOfContractBenefitsMinimum(calculateDatedAmount(quote, 20, dvdRate));
-        premiumsData.setEndOfContractBenefitsAverage(calculateDatedAmount(quote, 40, dvdRate));
-        premiumsData.setEndOfContractBenefitsMaximum(calculateDatedAmount(quote, 45, dvdRate));
+        premiumsData.getLifeInsurance().setEndOfContractBenefitsMinimum(calculateDatedAmount(quote, 20, dvdRate));
+        premiumsData.getLifeInsurance().setEndOfContractBenefitsAverage(calculateDatedAmount(quote, 40, dvdRate));
+        premiumsData.getLifeInsurance().setEndOfContractBenefitsMaximum(calculateDatedAmount(quote, 45, dvdRate));
 
         // calculates yearly returns
-        premiumsData.setYearlyCashBacksAverageDividende(calculateDatedAmount(quote, null, averageExtraDvdRate));
-        premiumsData.setYearlyCashBacksMaximumDividende(calculateDatedAmount(quote, null, maximumExtraDvdRate));
+        premiumsData.getLifeInsurance().setYearlyCashBacksAverageDividende(calculateDatedAmount(quote, null, averageExtraDvdRate));
+        premiumsData.getLifeInsurance().setYearlyCashBacksMaximumDividende(calculateDatedAmount(quote, null, maximumExtraDvdRate));
 
         // calculates yearly benefits
-        premiumsData.setYearlyCashBacksAverageBenefit(calculateDatedAmount(quote, 40, averageExtraDvdRate));
-        premiumsData.setYearlyCashBacksMaximumBenefit(calculateDatedAmount(quote, 45, maximumExtraDvdRate));
+        premiumsData.getLifeInsurance().setYearlyCashBacksAverageBenefit(calculateDatedAmount(quote, 40, averageExtraDvdRate));
+        premiumsData.getLifeInsurance().setYearlyCashBacksMaximumBenefit(calculateDatedAmount(quote, 45, maximumExtraDvdRate));
 
         // calculate tax deduction
-        premiumsData.setYearlyTaxDeduction(calculateTaxReturn(quote));
+        premiumsData.getLifeInsurance().setYearlyTaxDeduction(calculateTaxReturn(quote));
 
         if (!has10ECCoverage.isPresent()) {
             Coverage coverage = new Coverage();
@@ -280,43 +280,43 @@ public class Product10EC implements Product {
         }
     }
 
-    private static void checkPremiumsData(PremiumsDataLifeInsurance premiumsData, LocalDate startDate) throws PolicyValidationException, QuoteCalculationException {
+    private static void checkPremiumsData(PremiumsData premiumsData, LocalDate startDate) throws PolicyValidationException, QuoteCalculationException {
         if (premiumsData == null) {
             throw PolicyValidationException.premiumnsDataNone;
-        } else if (premiumsData.getLifeInsuranceSumInsured() == null) {
+        } else if (premiumsData.getLifeInsurance().getSumInsured() == null) {
             throw PolicyValidationException.premiumnsDataNoSumInsured;
-        } else if (premiumsData.getLifeInsuranceSumInsured().getCurrencyCode() == null) {
+        } else if (premiumsData.getLifeInsurance().getSumInsured().getCurrencyCode() == null) {
             throw PolicyValidationException.premiumnsSumInsuredNoCurrency;
-        } else if (premiumsData.getLifeInsuranceSumInsured().getValue() == null) {
+        } else if (premiumsData.getLifeInsurance().getSumInsured().getValue() == null) {
             throw PolicyValidationException.premiumnsSumInsuredNoAmount;
         }
         checkSumInsured(premiumsData);
-        checkDatedAmounts(premiumsData.getEndOfContractBenefitsAverage(), startDate);
-        checkDatedAmounts(premiumsData.getEndOfContractBenefitsMaximum(), startDate);
-        checkDatedAmounts(premiumsData.getEndOfContractBenefitsMinimum(), startDate);
-        checkDatedAmounts(premiumsData.getYearlyCashBacks(), startDate);
-        checkDatedAmounts(premiumsData.getYearlyCashBacksAverageBenefit(), startDate);
-        checkDatedAmounts(premiumsData.getYearlyCashBacksAverageDividende(), startDate);
-        checkDatedAmounts(premiumsData.getYearlyCashBacksMaximumBenefit(), startDate);
-        checkDatedAmounts(premiumsData.getYearlyCashBacksMaximumDividende(), startDate);
+        checkDatedAmounts(premiumsData.getLifeInsurance().getEndOfContractBenefitsAverage(), startDate);
+        checkDatedAmounts(premiumsData.getLifeInsurance().getEndOfContractBenefitsMaximum(), startDate);
+        checkDatedAmounts(premiumsData.getLifeInsurance().getEndOfContractBenefitsMinimum(), startDate);
+        checkDatedAmounts(premiumsData.getLifeInsurance().getYearlyCashBacks(), startDate);
+        checkDatedAmounts(premiumsData.getLifeInsurance().getYearlyCashBacksAverageBenefit(), startDate);
+        checkDatedAmounts(premiumsData.getLifeInsurance().getYearlyCashBacksAverageDividende(), startDate);
+        checkDatedAmounts(premiumsData.getLifeInsurance().getYearlyCashBacksMaximumBenefit(), startDate);
+        checkDatedAmounts(premiumsData.getLifeInsurance().getYearlyCashBacksMaximumDividende(), startDate);
     }
 
-    private static void checkSumInsured(PremiumsDataLifeInsurance premiumsData) throws QuoteCalculationException {
-        if (premiumsData.getLifeInsuranceSumInsured() == null || premiumsData.getLifeInsuranceSumInsured().getValue() == null) {
+    private static void checkSumInsured(PremiumsData premiumsData) throws QuoteCalculationException {
+        if (premiumsData.getLifeInsurance().getSumInsured() == null || premiumsData.getLifeInsurance().getSumInsured().getValue() == null) {
             // no amount to check
             return;
-        } else if (!PRODUCT_10_EC_CURRENCY.equalsIgnoreCase(premiumsData.getLifeInsuranceSumInsured().getCurrencyCode())) {
+        } else if (!PRODUCT_10_EC_CURRENCY.equalsIgnoreCase(premiumsData.getLifeInsurance().getSumInsured().getCurrencyCode())) {
             throw sumInsuredCurrencyException.apply(PRODUCT_10_EC_CURRENCY);
         }
 
-        if (premiumsData.getLifeInsuranceSumInsured().getValue() > SUM_INSURED_MAX) {
+        if (premiumsData.getLifeInsurance().getSumInsured().getValue() > SUM_INSURED_MAX) {
             throw sumInsuredTooHighException.apply(SUM_INSURED_MAX);
-        } else if (premiumsData.getLifeInsuranceSumInsured().getValue() < SUM_INSURED_MIN) {
+        } else if (premiumsData.getLifeInsurance().getSumInsured().getValue() < SUM_INSURED_MIN) {
             throw sumInsuredTooLowException.apply(SUM_INSURED_MIN);
         }
     }
 
-    private static void checkPremium(PremiumsDataLifeInsurance premiumsData) throws QuoteCalculationException {
+    private static void checkPremium(PremiumsData premiumsData) throws QuoteCalculationException {
         if (premiumsData.getFinancialScheduler().getModalAmount() == null || premiumsData.getFinancialScheduler().getModalAmount().getValue() == null) {
             // no amount to check
             return;
@@ -471,7 +471,7 @@ public class Product10EC implements Product {
 
     private static List<DatedAmount> calculateDatedAmount(Quote quote, Integer percentRate, Function<Integer, Integer> dvdFunction) {
         List<DatedAmount> result = new ArrayList<>();
-        Amount sumInsured = quote.getPremiumsData().getLifeInsuranceSumInsured();
+        Amount sumInsured = quote.getPremiumsData().getLifeInsurance().getSumInsured();
         LocalDate endDate = quote.getPremiumsData().getFinancialScheduler().getEndDate();
         Double latestAmout = 0.0;
         for (int i = 1; i <= DURATION_COVERAGE_IN_YEAR; i++) {
@@ -516,7 +516,7 @@ public class Product10EC implements Product {
         }
 
         // we need an amount
-        boolean hasAmount = quote.getPremiumsData().getLifeInsuranceSumInsured() != null
+        boolean hasAmount = quote.getPremiumsData().getLifeInsurance().getSumInsured() != null
                 || quote.getPremiumsData().getFinancialScheduler().getModalAmount() != null;
         if (!hasAmount) {
             return false;
@@ -528,12 +528,12 @@ public class Product10EC implements Product {
 
     private static Amount getPremiumFromSumInsured(Quote quote) {
         Amount result = new Amount();
-        Double value = quote.getPremiumsData().getLifeInsuranceSumInsured().getValue();
+        Double value = quote.getPremiumsData().getLifeInsurance().getSumInsured().getValue();
         value = value * rate.apply(quote.getInsureds().get(0).getAgeAtSubscription());
         value = value * modalFactor.apply(quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode());
         value = value / 1000;
         result.setValue(value);
-        result.setCurrencyCode(quote.getPremiumsData().getLifeInsuranceSumInsured().getCurrencyCode());
+        result.setCurrencyCode(quote.getPremiumsData().getLifeInsurance().getSumInsured().getCurrencyCode());
         return result;
     }
 

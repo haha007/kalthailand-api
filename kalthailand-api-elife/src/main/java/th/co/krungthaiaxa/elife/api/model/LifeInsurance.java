@@ -9,10 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-@ApiModel(description = "Data concerning premiums (price for the coverage and benefit agreed) specific to " +
-        "Life Insurance", parent = PremiumsData.class)
-public class PremiumsDataLifeInsurance extends PremiumsData implements Serializable {
-    private Amount lifeInsuranceSumInsured;
+@ApiModel(description = "Life Insurance specific Premiums Data")
+public class LifeInsurance implements Serializable {
+    private Amount sumInsured;
     private List<DatedAmount> yearlyCashBacks = new ArrayList<>();
     private List<DatedAmount> endOfContractBenefitsMinimum = new ArrayList<>();
     private List<DatedAmount> endOfContractBenefitsAverage = new ArrayList<>();
@@ -25,12 +24,12 @@ public class PremiumsDataLifeInsurance extends PremiumsData implements Serializa
     private DividendOption dividendOption;
 
     @ApiModelProperty(value = "Total sum insured by the product. This is calculated by back end API if an amount is provided in financialScheduler. If this value is provided, then it's the financialScheduler amount that is calculated")
-    public Amount getLifeInsuranceSumInsured() {
-        return lifeInsuranceSumInsured;
+    public Amount getSumInsured() {
+        return sumInsured;
     }
 
-    public void setLifeInsuranceSumInsured(Amount lifeInsuranceSumInsured) {
-        this.lifeInsuranceSumInsured = lifeInsuranceSumInsured;
+    public void setSumInsured(Amount sumInsured) {
+        this.sumInsured = sumInsured;
     }
 
     @ApiModelProperty(value = "Yearly cash backs if cash option is chosen. This is calculated by back end API and cannot be set by client.")
@@ -127,9 +126,8 @@ public class PremiumsDataLifeInsurance extends PremiumsData implements Serializa
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        PremiumsDataLifeInsurance that = (PremiumsDataLifeInsurance) o;
-        return Objects.equals(lifeInsuranceSumInsured, that.lifeInsuranceSumInsured) &&
+        LifeInsurance that = (LifeInsurance) o;
+        return Objects.equals(sumInsured, that.sumInsured) &&
                 Objects.equals(yearlyCashBacks, that.yearlyCashBacks) &&
                 Objects.equals(endOfContractBenefitsMinimum, that.endOfContractBenefitsMinimum) &&
                 Objects.equals(endOfContractBenefitsAverage, that.endOfContractBenefitsAverage) &&
@@ -144,6 +142,6 @@ public class PremiumsDataLifeInsurance extends PremiumsData implements Serializa
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), lifeInsuranceSumInsured, yearlyCashBacks, endOfContractBenefitsMinimum, endOfContractBenefitsAverage, endOfContractBenefitsMaximum, yearlyCashBacksAverageDividende, yearlyCashBacksMaximumDividende, yearlyCashBacksAverageBenefit, yearlyCashBacksMaximumBenefit, yearlyTaxDeduction, dividendOption);
+        return Objects.hash(sumInsured, yearlyCashBacks, endOfContractBenefitsMinimum, endOfContractBenefitsAverage, endOfContractBenefitsMaximum, yearlyCashBacksAverageDividende, yearlyCashBacksMaximumDividende, yearlyCashBacksAverageBenefit, yearlyCashBacksMaximumBenefit, yearlyTaxDeduction, dividendOption);
     }
 }

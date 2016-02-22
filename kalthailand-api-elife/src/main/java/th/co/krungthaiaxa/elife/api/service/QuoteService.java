@@ -48,7 +48,7 @@ public class QuoteService {
         FinancialScheduler financialScheduler = new FinancialScheduler();
         financialScheduler.setPeriodicity(new Periodicity());
 
-        PremiumsDataLifeInsurance premiumsData = new PremiumsDataLifeInsurance();
+        PremiumsData premiumsData = new PremiumsData();
         premiumsData.setFinancialScheduler(financialScheduler);
 
         Insured insured = new Insured();

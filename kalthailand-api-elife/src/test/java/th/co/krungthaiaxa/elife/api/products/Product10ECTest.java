@@ -40,7 +40,7 @@ public class Product10ECTest {
         Amount amount = new Amount();
         amount.setCurrencyCode("THB");
         amount.setValue(1000000.0);
-        quote.getPremiumsData().setLifeInsuranceSumInsured(amount);
+        quote.getPremiumsData().getLifeInsurance().setSumInsured(amount);
 
         assertThatThrownBy(() -> product10EC.calculateQuote(quote))
                 .isInstanceOf(QuoteCalculationException.class)
@@ -54,7 +54,7 @@ public class Product10ECTest {
         Amount amount = new Amount();
         amount.setCurrencyCode("THB");
         amount.setValue(1000000.0);
-        quote.getPremiumsData().setLifeInsuranceSumInsured(amount);
+        quote.getPremiumsData().getLifeInsurance().setSumInsured(amount);
 
         assertThatThrownBy(() -> product10EC.calculateQuote(quote))
                 .isInstanceOf(QuoteCalculationException.class)
@@ -68,7 +68,7 @@ public class Product10ECTest {
         Amount amount = new Amount();
         amount.setCurrencyCode("THB");
         amount.setValue(1000001.0);
-        quote.getPremiumsData().setLifeInsuranceSumInsured(amount);
+        quote.getPremiumsData().getLifeInsurance().setSumInsured(amount);
 
         assertThatThrownBy(() -> product10EC.calculateQuote(quote))
                 .isInstanceOf(QuoteCalculationException.class)
@@ -82,7 +82,7 @@ public class Product10ECTest {
         Amount amount = new Amount();
         amount.setCurrencyCode("THB");
         amount.setValue(99999.0);
-        quote.getPremiumsData().setLifeInsuranceSumInsured(amount);
+        quote.getPremiumsData().getLifeInsurance().setSumInsured(amount);
 
         assertThatThrownBy(() -> product10EC.calculateQuote(quote))
                 .isInstanceOf(QuoteCalculationException.class)
@@ -98,7 +98,7 @@ public class Product10ECTest {
         amount.setValue(308000.0);
         quote.getPremiumsData().getFinancialScheduler().setModalAmount(amount);
 
-        Amount result = product10EC.calculateQuote(quote).getPremiumsData().getLifeInsuranceSumInsured();
+        Amount result = product10EC.calculateQuote(quote).getPremiumsData().getLifeInsurance().getSumInsured();
         assertThat(result.getCurrencyCode()).isEqualTo("THB");
         assertThat(result.getValue()).isEqualTo(1000000.0);
     }
@@ -112,7 +112,7 @@ public class Product10ECTest {
         amount.setValue(306000.0);
         quote.getPremiumsData().getFinancialScheduler().setModalAmount(amount);
 
-        Amount result = product10EC.calculateQuote(quote).getPremiumsData().getLifeInsuranceSumInsured();
+        Amount result = product10EC.calculateQuote(quote).getPremiumsData().getLifeInsurance().getSumInsured();
         assertThat(result.getCurrencyCode()).isEqualTo("THB");
         assertThat(result.getValue()).isEqualTo(1000000.0);
     }
@@ -126,7 +126,7 @@ public class Product10ECTest {
         amount.setValue(304000.0);
         quote.getPremiumsData().getFinancialScheduler().setModalAmount(amount);
 
-        Amount result = product10EC.calculateQuote(quote).getPremiumsData().getLifeInsuranceSumInsured();
+        Amount result = product10EC.calculateQuote(quote).getPremiumsData().getLifeInsurance().getSumInsured();
         assertThat(result.getCurrencyCode()).isEqualTo("THB");
         assertThat(result.getValue()).isEqualTo(1000000.0);
     }
@@ -140,7 +140,7 @@ public class Product10ECTest {
         amount.setValue(301000.0);
         quote.getPremiumsData().getFinancialScheduler().setModalAmount(amount);
 
-        Amount result = product10EC.calculateQuote(quote).getPremiumsData().getLifeInsuranceSumInsured();
+        Amount result = product10EC.calculateQuote(quote).getPremiumsData().getLifeInsurance().getSumInsured();
         assertThat(result.getCurrencyCode()).isEqualTo("THB");
         assertThat(result.getValue()).isEqualTo(1000000.0);
     }
@@ -154,7 +154,7 @@ public class Product10ECTest {
         amount.setValue(300000.0);
         quote.getPremiumsData().getFinancialScheduler().setModalAmount(amount);
 
-        Amount result = product10EC.calculateQuote(quote).getPremiumsData().getLifeInsuranceSumInsured();
+        Amount result = product10EC.calculateQuote(quote).getPremiumsData().getLifeInsurance().getSumInsured();
         assertThat(result.getCurrencyCode()).isEqualTo("THB");
         assertThat(result.getValue()).isEqualTo(1000000.0);
     }
@@ -168,7 +168,7 @@ public class Product10ECTest {
         amount.setValue(298000.0);
         quote.getPremiumsData().getFinancialScheduler().setModalAmount(amount);
 
-        Amount result = product10EC.calculateQuote(quote).getPremiumsData().getLifeInsuranceSumInsured();
+        Amount result = product10EC.calculateQuote(quote).getPremiumsData().getLifeInsurance().getSumInsured();
         assertThat(result.getCurrencyCode()).isEqualTo("THB");
         assertThat(result.getValue()).isEqualTo(1000000.0);
     }
@@ -180,7 +180,7 @@ public class Product10ECTest {
         Amount amount = new Amount();
         amount.setCurrencyCode("THB");
         amount.setValue(1000000.0);
-        quote.getPremiumsData().setLifeInsuranceSumInsured(amount);
+        quote.getPremiumsData().getLifeInsurance().setSumInsured(amount);
 
         Amount result = product10EC.calculateQuote(quote).getPremiumsData().getFinancialScheduler().getModalAmount();
         assertThat(result.getCurrencyCode()).isEqualTo("THB");
@@ -194,7 +194,7 @@ public class Product10ECTest {
         Amount amount = new Amount();
         amount.setCurrencyCode("THB");
         amount.setValue(1000000.0);
-        quote.getPremiumsData().setLifeInsuranceSumInsured(amount);
+        quote.getPremiumsData().getLifeInsurance().setSumInsured(amount);
 
         Amount result = product10EC.calculateQuote(quote).getPremiumsData().getFinancialScheduler().getModalAmount();
         assertThat(result.getCurrencyCode()).isEqualTo("THB");
@@ -208,7 +208,7 @@ public class Product10ECTest {
         Amount amount = new Amount();
         amount.setCurrencyCode("THB");
         amount.setValue(1000000.0);
-        quote.getPremiumsData().setLifeInsuranceSumInsured(amount);
+        quote.getPremiumsData().getLifeInsurance().setSumInsured(amount);
 
         Amount result = product10EC.calculateQuote(quote).getPremiumsData().getFinancialScheduler().getModalAmount();
         assertThat(result.getCurrencyCode()).isEqualTo("THB");
@@ -222,7 +222,7 @@ public class Product10ECTest {
         Amount amount = new Amount();
         amount.setCurrencyCode("THB");
         amount.setValue(1000000.0);
-        quote.getPremiumsData().setLifeInsuranceSumInsured(amount);
+        quote.getPremiumsData().getLifeInsurance().setSumInsured(amount);
 
         Amount result = product10EC.calculateQuote(quote).getPremiumsData().getFinancialScheduler().getModalAmount();
         assertThat(result.getCurrencyCode()).isEqualTo("THB");
@@ -236,7 +236,7 @@ public class Product10ECTest {
         Amount amount = new Amount();
         amount.setCurrencyCode("THB");
         amount.setValue(1000000.0);
-        quote.getPremiumsData().setLifeInsuranceSumInsured(amount);
+        quote.getPremiumsData().getLifeInsurance().setSumInsured(amount);
 
         Amount result = product10EC.calculateQuote(quote).getPremiumsData().getFinancialScheduler().getModalAmount();
         assertThat(result.getCurrencyCode()).isEqualTo("THB");
@@ -250,7 +250,7 @@ public class Product10ECTest {
         Amount amount = new Amount();
         amount.setCurrencyCode("THB");
         amount.setValue(1000000.0);
-        quote.getPremiumsData().setLifeInsuranceSumInsured(amount);
+        quote.getPremiumsData().getLifeInsurance().setSumInsured(amount);
 
         Amount result = product10EC.calculateQuote(quote).getPremiumsData().getFinancialScheduler().getModalAmount();
         assertThat(result.getCurrencyCode()).isEqualTo("THB");
@@ -264,7 +264,7 @@ public class Product10ECTest {
         Amount amount = new Amount();
         amount.setCurrencyCode("THB");
         amount.setValue(1000000.0);
-        quote.getPremiumsData().setLifeInsuranceSumInsured(amount);
+        quote.getPremiumsData().getLifeInsurance().setSumInsured(amount);
 
         Amount result = product10EC.calculateQuote(quote).getPremiumsData().getFinancialScheduler().getModalAmount();
         assertThat(result.getCurrencyCode()).isEqualTo("THB");
@@ -278,7 +278,7 @@ public class Product10ECTest {
         Amount amount = new Amount();
         amount.setCurrencyCode("THB");
         amount.setValue(1000000.0);
-        quote.getPremiumsData().setLifeInsuranceSumInsured(amount);
+        quote.getPremiumsData().getLifeInsurance().setSumInsured(amount);
 
         Amount result = product10EC.calculateQuote(quote).getPremiumsData().getFinancialScheduler().getModalAmount();
         assertThat(result.getCurrencyCode()).isEqualTo("THB");
@@ -292,7 +292,7 @@ public class Product10ECTest {
         Amount amount = new Amount();
         amount.setCurrencyCode("THB");
         amount.setValue(1000000.0);
-        quote.getPremiumsData().setLifeInsuranceSumInsured(amount);
+        quote.getPremiumsData().getLifeInsurance().setSumInsured(amount);
 
         Amount result = product10EC.calculateQuote(quote).getPremiumsData().getFinancialScheduler().getModalAmount();
         assertThat(result.getCurrencyCode()).isEqualTo("THB");
@@ -322,9 +322,9 @@ public class Product10ECTest {
         Amount amount = new Amount();
         amount.setCurrencyCode("THB");
         amount.setValue(1000000.0);
-        quote.getPremiumsData().setLifeInsuranceSumInsured(amount);
+        quote.getPremiumsData().getLifeInsurance().setSumInsured(amount);
 
-        Amount result = product10EC.calculateQuote(quote).getPremiumsData().getYearlyTaxDeduction();
+        Amount result = product10EC.calculateQuote(quote).getPremiumsData().getLifeInsurance().getYearlyTaxDeduction();
         assertThat(result.getCurrencyCode()).isEqualTo("THB");
         assertThat(result.getValue()).isEqualTo(5000.0);
     }
@@ -336,9 +336,9 @@ public class Product10ECTest {
         Amount amount = new Amount();
         amount.setCurrencyCode("THB");
         amount.setValue(100000.0);
-        quote.getPremiumsData().setLifeInsuranceSumInsured(amount);
+        quote.getPremiumsData().getLifeInsurance().setSumInsured(amount);
 
-        Amount result = product10EC.calculateQuote(quote).getPremiumsData().getYearlyTaxDeduction();
+        Amount result = product10EC.calculateQuote(quote).getPremiumsData().getLifeInsurance().getYearlyTaxDeduction();
         assertThat(result.getCurrencyCode()).isEqualTo("THB");
         assertThat(result.getValue()).isEqualTo(1540.0);
     }
@@ -350,9 +350,9 @@ public class Product10ECTest {
         Amount amount = new Amount();
         amount.setCurrencyCode("THB");
         amount.setValue(1000000.0);
-        quote.getPremiumsData().setLifeInsuranceSumInsured(amount);
+        quote.getPremiumsData().getLifeInsurance().setSumInsured(amount);
 
-        Amount result = product10EC.calculateQuote(quote).getPremiumsData().getYearlyTaxDeduction();
+        Amount result = product10EC.calculateQuote(quote).getPremiumsData().getLifeInsurance().getYearlyTaxDeduction();
         assertThat(result.getCurrencyCode()).isEqualTo("THB");
         assertThat(result.getValue()).isEqualTo(20000.0);
     }
@@ -364,9 +364,9 @@ public class Product10ECTest {
         Amount amount = new Amount();
         amount.setCurrencyCode("THB");
         amount.setValue(100000.0);
-        quote.getPremiumsData().setLifeInsuranceSumInsured(amount);
+        quote.getPremiumsData().getLifeInsurance().setSumInsured(amount);
 
-        Amount result = product10EC.calculateQuote(quote).getPremiumsData().getYearlyTaxDeduction();
+        Amount result = product10EC.calculateQuote(quote).getPremiumsData().getLifeInsurance().getYearlyTaxDeduction();
         assertThat(result.getCurrencyCode()).isEqualTo("THB");
         assertThat(result.getValue()).isEqualTo(6160.0);
     }
@@ -378,11 +378,11 @@ public class Product10ECTest {
         Amount amount = new Amount();
         amount.setCurrencyCode("THB");
         amount.setValue(1000000.0);
-        quote.getPremiumsData().setLifeInsuranceSumInsured(amount);
+        quote.getPremiumsData().getLifeInsurance().setSumInsured(amount);
 
         quote = product10EC.calculateQuote(quote);
         LocalDate endDate = quote.getPremiumsData().getFinancialScheduler().getEndDate();
-        List<DatedAmount> result = quote.getPremiumsData().getYearlyCashBacks();
+        List<DatedAmount> result = quote.getPremiumsData().getLifeInsurance().getYearlyCashBacks();
         assertThat(result).hasSize(10);
 
         assertThat(result.get(0).getCurrencyCode()).isEqualTo("THB");
@@ -426,11 +426,11 @@ public class Product10ECTest {
         Amount amount = new Amount();
         amount.setCurrencyCode("THB");
         amount.setValue(1000000.0);
-        quote.getPremiumsData().setLifeInsuranceSumInsured(amount);
+        quote.getPremiumsData().getLifeInsurance().setSumInsured(amount);
 
         quote = product10EC.calculateQuote(quote);
         LocalDate endDate = quote.getPremiumsData().getFinancialScheduler().getEndDate();
-        List<DatedAmount> result = quote.getPremiumsData().getEndOfContractBenefitsMinimum();
+        List<DatedAmount> result = quote.getPremiumsData().getLifeInsurance().getEndOfContractBenefitsMinimum();
         assertThat(result).hasSize(10);
 
         assertThat(result.get(0).getCurrencyCode()).isEqualTo("THB");
@@ -474,11 +474,11 @@ public class Product10ECTest {
         Amount amount = new Amount();
         amount.setCurrencyCode("THB");
         amount.setValue(510000.0);
-        quote.getPremiumsData().setLifeInsuranceSumInsured(amount);
+        quote.getPremiumsData().getLifeInsurance().setSumInsured(amount);
 
         quote = product10EC.calculateQuote(quote);
         LocalDate endDate = quote.getPremiumsData().getFinancialScheduler().getEndDate();
-        List<DatedAmount> result = quote.getPremiumsData().getEndOfContractBenefitsMinimum();
+        List<DatedAmount> result = quote.getPremiumsData().getLifeInsurance().getEndOfContractBenefitsMinimum();
         assertThat(result).hasSize(10);
 
         assertThat(result.get(0).getCurrencyCode()).isEqualTo("THB");
@@ -522,11 +522,11 @@ public class Product10ECTest {
         Amount amount = new Amount();
         amount.setCurrencyCode("THB");
         amount.setValue(1000000.0);
-        quote.getPremiumsData().setLifeInsuranceSumInsured(amount);
+        quote.getPremiumsData().getLifeInsurance().setSumInsured(amount);
 
         quote = product10EC.calculateQuote(quote);
         LocalDate endDate = quote.getPremiumsData().getFinancialScheduler().getEndDate();
-        List<DatedAmount> result = quote.getPremiumsData().getEndOfContractBenefitsAverage();
+        List<DatedAmount> result = quote.getPremiumsData().getLifeInsurance().getEndOfContractBenefitsAverage();
         assertThat(result).hasSize(10);
 
         assertThat(result.get(0).getCurrencyCode()).isEqualTo("THB");
@@ -570,11 +570,11 @@ public class Product10ECTest {
         Amount amount = new Amount();
         amount.setCurrencyCode("THB");
         amount.setValue(1000000.0);
-        quote.getPremiumsData().setLifeInsuranceSumInsured(amount);
+        quote.getPremiumsData().getLifeInsurance().setSumInsured(amount);
 
         quote = product10EC.calculateQuote(quote);
         LocalDate endDate = quote.getPremiumsData().getFinancialScheduler().getEndDate();
-        List<DatedAmount> result = quote.getPremiumsData().getEndOfContractBenefitsMaximum();
+        List<DatedAmount> result = quote.getPremiumsData().getLifeInsurance().getEndOfContractBenefitsMaximum();
         assertThat(result).hasSize(10);
 
         assertThat(result.get(0).getCurrencyCode()).isEqualTo("THB");
@@ -618,11 +618,11 @@ public class Product10ECTest {
         Amount amount = new Amount();
         amount.setCurrencyCode("THB");
         amount.setValue(1000000.0);
-        quote.getPremiumsData().setLifeInsuranceSumInsured(amount);
+        quote.getPremiumsData().getLifeInsurance().setSumInsured(amount);
 
         quote = product10EC.calculateQuote(quote);
         LocalDate endDate = quote.getPremiumsData().getFinancialScheduler().getEndDate();
-        List<DatedAmount> result = quote.getPremiumsData().getYearlyCashBacksAverageDividende();
+        List<DatedAmount> result = quote.getPremiumsData().getLifeInsurance().getYearlyCashBacksAverageDividende();
         assertThat(result).hasSize(10);
 
         assertThat(result.get(0).getCurrencyCode()).isEqualTo("THB");
@@ -666,11 +666,11 @@ public class Product10ECTest {
         Amount amount = new Amount();
         amount.setCurrencyCode("THB");
         amount.setValue(1000000.0);
-        quote.getPremiumsData().setLifeInsuranceSumInsured(amount);
+        quote.getPremiumsData().getLifeInsurance().setSumInsured(amount);
 
         quote = product10EC.calculateQuote(quote);
         LocalDate endDate = quote.getPremiumsData().getFinancialScheduler().getEndDate();
-        List<DatedAmount> result = quote.getPremiumsData().getYearlyCashBacksMaximumDividende();
+        List<DatedAmount> result = quote.getPremiumsData().getLifeInsurance().getYearlyCashBacksMaximumDividende();
         assertThat(result).hasSize(10);
 
         assertThat(result.get(0).getCurrencyCode()).isEqualTo("THB");
@@ -714,11 +714,11 @@ public class Product10ECTest {
         Amount amount = new Amount();
         amount.setCurrencyCode("THB");
         amount.setValue(1000000.0);
-        quote.getPremiumsData().setLifeInsuranceSumInsured(amount);
+        quote.getPremiumsData().getLifeInsurance().setSumInsured(amount);
 
         quote = product10EC.calculateQuote(quote);
         LocalDate endDate = quote.getPremiumsData().getFinancialScheduler().getEndDate();
-        List<DatedAmount> result = quote.getPremiumsData().getYearlyCashBacksAverageBenefit();
+        List<DatedAmount> result = quote.getPremiumsData().getLifeInsurance().getYearlyCashBacksAverageBenefit();
         assertThat(result).hasSize(10);
 
         assertThat(result.get(0).getCurrencyCode()).isEqualTo("THB");
@@ -762,11 +762,11 @@ public class Product10ECTest {
         Amount amount = new Amount();
         amount.setCurrencyCode("THB");
         amount.setValue(1000000.0);
-        quote.getPremiumsData().setLifeInsuranceSumInsured(amount);
+        quote.getPremiumsData().getLifeInsurance().setSumInsured(amount);
 
         quote = product10EC.calculateQuote(quote);
         LocalDate endDate = quote.getPremiumsData().getFinancialScheduler().getEndDate();
-        List<DatedAmount> result = quote.getPremiumsData().getYearlyCashBacksMaximumBenefit();
+        List<DatedAmount> result = quote.getPremiumsData().getLifeInsurance().getYearlyCashBacksMaximumBenefit();
         assertThat(result).hasSize(10);
 
         assertThat(result.get(0).getCurrencyCode()).isEqualTo("THB");
@@ -1242,7 +1242,8 @@ public class Product10ECTest {
         product10EC.getPolicyFromQuote(policy, quote);
         assertThat(policy.getQuoteId()).isEqualTo(quote.getQuoteId());
         assertThat(policy.getCommonData()).isEqualToComparingFieldByField(quote.getCommonData());
-        assertThat(policy.getPremiumsData()).isEqualTo(quote.getPremiumsData());
+        assertThat(policy.getPremiumsData().getLifeInsurance()).isEqualToComparingFieldByField(quote.getPremiumsData().getLifeInsurance());
+        assertThat(policy.getPremiumsData()).isEqualToComparingFieldByField(quote.getPremiumsData());
         assertThat(policy.getCoverages()).isEqualTo(quote.getCoverages());
         assertThat(policy.getInsureds()).isEqualTo(quote.getInsureds());
     }

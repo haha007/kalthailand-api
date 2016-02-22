@@ -1,17 +1,16 @@
 package th.co.krungthaiaxa.elife.api.service;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.springframework.stereotype.Service;
-import th.co.krungthaiaxa.elife.api.model.DatedAmount;
-import th.co.krungthaiaxa.elife.api.model.Quote;
-
-import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import th.co.krungthaiaxa.elife.api.model.DatedAmount;
 import th.co.krungthaiaxa.elife.api.model.Policy;
+import th.co.krungthaiaxa.elife.api.model.Quote;
 import th.co.krungthaiaxa.elife.api.utils.EmailSender;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -83,17 +82,17 @@ public class EmailService {
                 .replace("%2$s", quote.getCommonData().getNbOfYearsOfPremium().toString())
                 .replace("%3$s", quote.getInsureds().get(0).getAgeAtSubscription().toString())
                 .replace("%4$s", quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().toString())
-                .replace("%5$s", (new DecimalFormat(decimalFormat)).format(quote.getPremiumsData().getLifeInsuranceSumInsured().getValue()))
+                .replace("%5$s", (new DecimalFormat(decimalFormat)).format(quote.getPremiumsData().getLifeInsurance().getSumInsured().getValue()))
                 .replace("%6$s", (new DecimalFormat(decimalFormat)).format(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()))
-                .replace("%7$s", (new DecimalFormat(decimalFormat)).format(quote.getPremiumsData().getEndOfContractBenefitsMinimum().stream().mapToDouble(DatedAmount::getValue).sum()))
-                .replace("%8$s", (new DecimalFormat(decimalFormat)).format(quote.getPremiumsData().getEndOfContractBenefitsAverage().stream().mapToDouble(DatedAmount::getValue).sum()))
-                .replace("%9$s", (new DecimalFormat(decimalFormat)).format(quote.getPremiumsData().getEndOfContractBenefitsMaximum().stream().mapToDouble(DatedAmount::getValue).sum()))
+                .replace("%7$s", (new DecimalFormat(decimalFormat)).format(quote.getPremiumsData().getLifeInsurance().getEndOfContractBenefitsMinimum().stream().mapToDouble(DatedAmount::getValue).sum()))
+                .replace("%8$s", (new DecimalFormat(decimalFormat)).format(quote.getPremiumsData().getLifeInsurance().getEndOfContractBenefitsAverage().stream().mapToDouble(DatedAmount::getValue).sum()))
+                .replace("%9$s", (new DecimalFormat(decimalFormat)).format(quote.getPremiumsData().getLifeInsurance().getEndOfContractBenefitsMaximum().stream().mapToDouble(DatedAmount::getValue).sum()))
                 .replace("%10$s", "/" + lineURL + "/")
                 .replace("%11$s", "/" + lineURL + "fatca-questions/" + quote.getQuoteId() + "/")
                 .replace("%12$s", "/" + lineURL + "quote-product/line-10-ec" + "/");
     }
 
-    private String getEreceiptEmailContent(Policy policy){
+    private String getEreceiptEmailContent(Policy policy) {
         File file = new File((getClass().getClassLoader()).getResource("email-ereceipt-content.txt").getFile());
         String emailContent = "";
         try {
@@ -105,8 +104,8 @@ public class EmailService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return emailContent.replace("%1$s", policy.getInsureds().get(0).getPerson().getGivenName()+" "+policy.getInsureds().get(0).getPerson().getSurName())
-                .replace("%2$s", policy.getInsureds().get(0).getPerson().getGivenName()+" "+policy.getInsureds().get(0).getPerson().getSurName())
+        return emailContent.replace("%1$s", policy.getInsureds().get(0).getPerson().getGivenName() + " " + policy.getInsureds().get(0).getPerson().getSurName())
+                .replace("%2$s", policy.getInsureds().get(0).getPerson().getGivenName() + " " + policy.getInsureds().get(0).getPerson().getSurName())
                 .replace("%3$s", "/" + uploadDocURL + "/");
     }
 

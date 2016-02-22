@@ -54,9 +54,12 @@ public class TestUtil {
         FinancialScheduler financialScheduler = new FinancialScheduler();
         financialScheduler.setPeriodicity(periodicity);
 
-        PremiumsDataLifeInsurance premiumsData = new PremiumsDataLifeInsurance();
+        LifeInsurance lifeInsurance = new LifeInsurance();
+        lifeInsurance.setSumInsured(amount);
+
+        PremiumsData premiumsData = new PremiumsData();
         premiumsData.setFinancialScheduler(financialScheduler);
-        premiumsData.setLifeInsuranceSumInsured(amount);
+        premiumsData.setLifeInsurance(lifeInsurance);
 
         Coverage coverage = new Coverage();
         coverage.setName(PRODUCT_10_EC_NAME);
@@ -82,9 +85,12 @@ public class TestUtil {
         FinancialScheduler financialScheduler = new FinancialScheduler();
         financialScheduler.setPeriodicity(periodicity);
 
-        PremiumsDataLifeInsurance premiumsData = new PremiumsDataLifeInsurance();
+        LifeInsurance lifeInsurance = new LifeInsurance();
+        lifeInsurance.setSumInsured(amount);
+
+        PremiumsData premiumsData = new PremiumsData();
         premiumsData.setFinancialScheduler(financialScheduler);
-        premiumsData.setLifeInsuranceSumInsured(amount);
+        premiumsData.setLifeInsurance(lifeInsurance);
 
         Coverage coverage = new Coverage();
         coverage.setName(PRODUCT_10_EC_NAME);

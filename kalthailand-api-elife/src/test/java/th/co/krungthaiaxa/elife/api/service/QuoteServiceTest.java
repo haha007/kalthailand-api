@@ -125,7 +125,7 @@ public class QuoteServiceTest {
         Amount amount = new Amount();
         amount.setCurrencyCode("THB");
         amount.setValue(1000000.0);
-        quote.getPremiumsData().setLifeInsuranceSumInsured(amount);
+        quote.getPremiumsData().getLifeInsurance().setSumInsured(amount);
 
         quote = quoteService.updateQuote(quote);
         assertThat(quote.getInsureds().get(0).getAgeAtSubscription()).isEqualTo(35);
@@ -141,33 +141,33 @@ public class QuoteServiceTest {
         Amount amount = new Amount();
         amount.setCurrencyCode("THB");
         amount.setValue(1000000.0);
-        quote.getPremiumsData().setLifeInsuranceSumInsured(amount);
+        quote.getPremiumsData().getLifeInsurance().setSumInsured(amount);
 
         quote = quoteService.updateQuote(quote);
-        assertThat(quote.getPremiumsData().getYearlyCashBacks()).hasSize(10);
-        assertThat(quote.getPremiumsData().getEndOfContractBenefitsMinimum()).hasSize(10);
-        assertThat(quote.getPremiumsData().getEndOfContractBenefitsAverage()).hasSize(10);
-        assertThat(quote.getPremiumsData().getEndOfContractBenefitsMaximum()).hasSize(10);
-        assertThat(quote.getPremiumsData().getYearlyCashBacksAverageBenefit()).hasSize(10);
-        assertThat(quote.getPremiumsData().getYearlyCashBacksAverageDividende()).hasSize(10);
-        assertThat(quote.getPremiumsData().getYearlyCashBacksMaximumBenefit()).hasSize(10);
-        assertThat(quote.getPremiumsData().getYearlyCashBacksMaximumDividende()).hasSize(10);
+        assertThat(quote.getPremiumsData().getLifeInsurance().getYearlyCashBacks()).hasSize(10);
+        assertThat(quote.getPremiumsData().getLifeInsurance().getEndOfContractBenefitsMinimum()).hasSize(10);
+        assertThat(quote.getPremiumsData().getLifeInsurance().getEndOfContractBenefitsAverage()).hasSize(10);
+        assertThat(quote.getPremiumsData().getLifeInsurance().getEndOfContractBenefitsMaximum()).hasSize(10);
+        assertThat(quote.getPremiumsData().getLifeInsurance().getYearlyCashBacksAverageBenefit()).hasSize(10);
+        assertThat(quote.getPremiumsData().getLifeInsurance().getYearlyCashBacksAverageDividende()).hasSize(10);
+        assertThat(quote.getPremiumsData().getLifeInsurance().getYearlyCashBacksMaximumBenefit()).hasSize(10);
+        assertThat(quote.getPremiumsData().getLifeInsurance().getYearlyCashBacksMaximumDividende()).hasSize(10);
         Assertions.assertThat(quote.getCoverages()).hasSize(1);
         assertThat(quote.getCommonData().getProductId()).isNotNull();
         assertThat(quote.getCommonData().getProductName()).isNotNull();
 
-        quote.getPremiumsData().setLifeInsuranceSumInsured(null);
+        quote.getPremiumsData().getLifeInsurance().setSumInsured(null);
         quote.getPremiumsData().getFinancialScheduler().setModalAmount(null);
         quote = quoteService.updateQuote(quote);
-        assertThat(quote.getPremiumsData().getYearlyCashBacks()).isEmpty();
-        assertThat(quote.getPremiumsData().getEndOfContractBenefitsMinimum()).isEmpty();
-        assertThat(quote.getPremiumsData().getEndOfContractBenefitsAverage()).isEmpty();
-        assertThat(quote.getPremiumsData().getEndOfContractBenefitsMaximum()).isEmpty();
-        assertThat(quote.getPremiumsData().getYearlyCashBacksAverageBenefit()).isEmpty();
-        assertThat(quote.getPremiumsData().getYearlyCashBacksAverageDividende()).isEmpty();
-        assertThat(quote.getPremiumsData().getYearlyCashBacksMaximumBenefit()).isEmpty();
-        assertThat(quote.getPremiumsData().getYearlyCashBacksMaximumDividende()).isEmpty();
-        assertThat(quote.getPremiumsData().getYearlyCashBacks()).isEmpty();
+        assertThat(quote.getPremiumsData().getLifeInsurance().getYearlyCashBacks()).isEmpty();
+        assertThat(quote.getPremiumsData().getLifeInsurance().getEndOfContractBenefitsMinimum()).isEmpty();
+        assertThat(quote.getPremiumsData().getLifeInsurance().getEndOfContractBenefitsAverage()).isEmpty();
+        assertThat(quote.getPremiumsData().getLifeInsurance().getEndOfContractBenefitsMaximum()).isEmpty();
+        assertThat(quote.getPremiumsData().getLifeInsurance().getYearlyCashBacksAverageBenefit()).isEmpty();
+        assertThat(quote.getPremiumsData().getLifeInsurance().getYearlyCashBacksAverageDividende()).isEmpty();
+        assertThat(quote.getPremiumsData().getLifeInsurance().getYearlyCashBacksMaximumBenefit()).isEmpty();
+        assertThat(quote.getPremiumsData().getLifeInsurance().getYearlyCashBacksMaximumDividende()).isEmpty();
+        assertThat(quote.getPremiumsData().getLifeInsurance().getYearlyCashBacks()).isEmpty();
         Assertions.assertThat(quote.getCoverages()).isEmpty();
     }
 

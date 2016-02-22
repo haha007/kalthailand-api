@@ -6,6 +6,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,13 +15,13 @@ import java.util.Objects;
 @ApiModel(description = "This is the description of a quote and only a quote. It holds all properties gathered from " +
         "user before the quote got transformed into a Policy")
 @Document
-public class Quote {
+public class Quote implements Serializable {
     @Id
     private String id;
     @Indexed
     private String quoteId;
     private CommonData commonData;
-    private PremiumsDataLifeInsurance premiumsData;
+    private PremiumsData premiumsData;
     private List<Insured> insureds = new ArrayList<>();
     private List<Coverage> coverages = new ArrayList<>();
     private LocalDateTime creationDateTime;
@@ -53,11 +54,11 @@ public class Quote {
     }
 
     @ApiModelProperty(value = "Data concerning premiums (price for the coverage and benefit agreed for the quote)")
-    public PremiumsDataLifeInsurance getPremiumsData() {
+    public PremiumsData getPremiumsData() {
         return premiumsData;
     }
 
-    public void setPremiumsData(PremiumsDataLifeInsurance premiumsData) {
+    public void setPremiumsData(PremiumsData premiumsData) {
         this.premiumsData = premiumsData;
     }
 

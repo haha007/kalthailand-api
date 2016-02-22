@@ -1,6 +1,5 @@
 package th.co.krungthaiaxa.elife.api.resource;
 
-import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,7 +8,6 @@ import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -23,7 +21,6 @@ import th.co.krungthaiaxa.elife.api.data.SessionQuote;
 import th.co.krungthaiaxa.elife.api.model.Quote;
 import th.co.krungthaiaxa.elife.api.model.enums.ChannelType;
 import th.co.krungthaiaxa.elife.api.model.enums.GenderCode;
-import th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode;
 import th.co.krungthaiaxa.elife.api.model.error.Error;
 import th.co.krungthaiaxa.elife.api.repository.QuoteRepository;
 import th.co.krungthaiaxa.elife.api.repository.SessionQuoteRepository;
@@ -36,12 +33,14 @@ import java.net.URISyntaxException;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.HttpMethod.PUT;
 import static org.springframework.http.HttpStatus.*;
-import static org.springframework.util.StringUtils.replace;
+import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
+import static th.co.krungthaiaxa.elife.api.model.enums.GenderCode.FEMALE;
+import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_MONTH;
 import static th.co.krungthaiaxa.elife.api.model.error.ErrorCode.INVALID_PRODUCT_ID_PROVIDED;
 import static th.co.krungthaiaxa.elife.api.model.error.ErrorCode.QUOTE_DOES_NOT_EXIST_OR_ACCESS_DENIED;
-import static th.co.krungthaiaxa.elife.api.resource.TestUtil.getErrorFromJSon;
-import static th.co.krungthaiaxa.elife.api.resource.TestUtil.getQuoteFromJSon;
+import static th.co.krungthaiaxa.elife.api.resource.TestUtil.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiApplication.class)
@@ -72,7 +71,7 @@ public class QuoteResourceTest {
         URI base = new URI("http://localhost:" + port + "/quotes/123456789");
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(base)
                 .queryParam("sessionId", randomNumeric(20))
-                .queryParam("channelType", ChannelType.LINE.name());
+                .queryParam("channelType", LINE.name());
 
         ResponseEntity<String> response = template.getForEntity(builder.toUriString(), String.class);
         assertThat(response.getStatusCode().value()).isEqualTo(NOT_FOUND.value());
@@ -87,7 +86,7 @@ public class QuoteResourceTest {
         MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
         parameters.add("sessionId", sessionId);
         parameters.add("productId", "10EC");
-        parameters.add("channelType", ChannelType.LINE.name());
+        parameters.add("channelType", LINE.name());
 
         ResponseEntity<String> createResponse = template.postForEntity(createURI, parameters, String.class);
         Quote quote = getQuoteFromJSon(createResponse.getBody());
@@ -95,7 +94,7 @@ public class QuoteResourceTest {
         URI base = new URI("http://localhost:" + port + "/quotes/" + quote.getQuoteId());
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(base)
                 .queryParam("sessionId", randomNumeric(20))
-                .queryParam("channelType", ChannelType.LINE.name());
+                .queryParam("channelType", LINE.name());
 
         ResponseEntity<String> response = template.getForEntity(builder.toUriString(), String.class);
         assertThat(response.getStatusCode().value()).isEqualTo(NOT_FOUND.value());
@@ -110,7 +109,7 @@ public class QuoteResourceTest {
         MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
         parameters.add("sessionId", sessionId);
         parameters.add("productId", "10EC");
-        parameters.add("channelType", ChannelType.LINE.name());
+        parameters.add("channelType", LINE.name());
 
         ResponseEntity<String> createResponse = template.postForEntity(createURI, parameters, String.class);
         Quote quote = getQuoteFromJSon(createResponse.getBody());
@@ -118,7 +117,7 @@ public class QuoteResourceTest {
         URI base = new URI("http://localhost:" + port + "/quotes/" + quote.getQuoteId());
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(base)
                 .queryParam("sessionId", sessionId)
-                .queryParam("channelType", ChannelType.LINE.name());
+                .queryParam("channelType", LINE.name());
 
         ResponseEntity<String> response = template.getForEntity(builder.toUriString(), String.class);
         assertThat(response.getStatusCode().value()).isEqualTo(OK.value());
@@ -131,7 +130,7 @@ public class QuoteResourceTest {
         URI base = new URI("http://localhost:" + port + "/quotes/latest");
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(base)
                 .queryParam("sessionId", randomNumeric(20))
-                .queryParam("channelType", ChannelType.LINE.name());
+                .queryParam("channelType", LINE.name());
 
         ResponseEntity<String> response = template.getForEntity(builder.toUriString(), String.class);
         assertThat(response.getStatusCode().value()).isEqualTo(OK.value());
@@ -145,7 +144,7 @@ public class QuoteResourceTest {
         MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
         parameters.add("sessionId", sessionId);
         parameters.add("productId", "10EC");
-        parameters.add("channelType", ChannelType.LINE.name());
+        parameters.add("channelType", LINE.name());
 
         template.postForEntity(createURI, parameters, String.class);
         template.postForEntity(createURI, parameters, String.class);
@@ -155,7 +154,7 @@ public class QuoteResourceTest {
         URI latestQuoteURI = new URI("http://localhost:" + port + "/quotes/latest");
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(latestQuoteURI)
                 .queryParam("sessionId", sessionId)
-                .queryParam("channelType", ChannelType.LINE.name());
+                .queryParam("channelType", LINE.name());
 
         ResponseEntity<String> latestResponse = template.getForEntity(builder.toUriString(), String.class);
         assertThat(latestResponse.getStatusCode().value()).isEqualTo(OK.value());
@@ -169,7 +168,7 @@ public class QuoteResourceTest {
         MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
         parameters.add("sessionId", randomNumeric(20));
         parameters.add("productId", "Something");
-        parameters.add("channelType", ChannelType.LINE.name());
+        parameters.add("channelType", LINE.name());
 
         ResponseEntity<String> response = template.postForEntity(base, parameters, String.class);
         assertThat(response.getStatusCode().value()).isEqualTo(NOT_ACCEPTABLE.value());
@@ -183,22 +182,22 @@ public class QuoteResourceTest {
         MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
         parameters.add("sessionId", randomNumeric(20));
         parameters.add("productId", "10EC");
-        parameters.add("channelType", ChannelType.LINE.name());
+        parameters.add("channelType", LINE.name());
 
         ResponseEntity<String> response1 = template.postForEntity(base, parameters, String.class);
         assertThat(response1.getStatusCode().value()).isEqualTo(OK.value());
-        Quote quote1 = TestUtil.getQuoteFromJSon(response1.getBody());
+        Quote quote1 = getQuoteFromJSon(response1.getBody());
         assertThat(quote1).isNotNull();
 
         ResponseEntity<String> response2 = template.postForEntity(base, parameters, String.class);
         assertThat(response2.getStatusCode().value()).isEqualTo(OK.value());
-        Quote quote2 = TestUtil.getQuoteFromJSon(response2.getBody());
+        Quote quote2 = getQuoteFromJSon(response2.getBody());
         assertThat(quote2).isNotNull();
         assertThat(quote2).isNotEqualTo(quote1);
 
         ResponseEntity<String> response3 = template.postForEntity(base, parameters, String.class);
         assertThat(response3.getStatusCode().value()).isEqualTo(OK.value());
-        Quote quote3 = TestUtil.getQuoteFromJSon(response3.getBody());
+        Quote quote3 = getQuoteFromJSon(response3.getBody());
         assertThat(quote3).isNotNull();
         assertThat(quote3).isNotEqualTo(quote2);
     }
@@ -209,38 +208,36 @@ public class QuoteResourceTest {
         MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
         parameters.add("sessionId", sessionId);
         parameters.add("productId", "10EC");
-        parameters.add("channelType", ChannelType.LINE.name());
+        parameters.add("channelType", LINE.name());
 
         URI creationURI = new URI("http://localhost:" + port + "/quotes");
         ResponseEntity<String> creationResponse = template.postForEntity(creationURI, parameters, String.class);
         assertThat(creationResponse.getStatusCode().value()).isEqualTo(OK.value());
-        Quote quote = TestUtil.getQuoteFromJSon(creationResponse.getBody());
+        Quote quote = getQuoteFromJSon(creationResponse.getBody());
+        String quoteId = quote.getId();
         assertThat(quote).isNotNull();
+        assertThat(quoteId).isNotNull();
 
-        String id = quote.getId();
-        assertThat(id).isNotNull();
-
+        quote(quote, EVERY_MONTH, 500000.0, insured(35), beneficiary(100.0));
         String jsonQuote = new String(JsonUtil.getJson(quote));
-        jsonQuote = replace(jsonQuote, "\"periodicity\":{\"code\":null}", "\"periodicity\":{\"code\":\"EVERY_MONTH\"}");
-        jsonQuote = replace(jsonQuote, "\"genderCode\":null", "\"genderCode\":\"MALE\"");
 
         URI updateURI = new URI("http://localhost:" + port + "/quotes/" + quote.getQuoteId());
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(updateURI)
                 .queryParam("sessionId", sessionId)
-                .queryParam("channelType", ChannelType.LINE.name());
-        ResponseEntity<String> updateResponse = template.exchange(builder.toUriString(), HttpMethod.PUT, new HttpEntity<>(jsonQuote), String.class);
+                .queryParam("channelType", LINE.name());
+        ResponseEntity<String> updateResponse = template.exchange(builder.toUriString(), PUT, new HttpEntity<>(jsonQuote), String.class);
         assertThat(updateResponse.getStatusCode().value()).isEqualTo(OK.value());
 
         // check database values
-        SessionQuote sessionQuote = sessionQuoteRepository.findBySessionIdAndChannelType(sessionId, ChannelType.LINE);
-        Quote savedQuote = quoteRepository.findOne(id);
+        SessionQuote sessionQuote = sessionQuoteRepository.findBySessionIdAndChannelType(sessionId, LINE);
+        Quote savedQuote = quoteRepository.findOne(quoteId);
         assertThat(sessionQuote.getQuotes()).containsExactly(savedQuote);
-        Assertions.assertThat(savedQuote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode()).isEqualTo(PeriodicityCode.EVERY_MONTH);
-        Assertions.assertThat(savedQuote.getInsureds().get(0).getPerson().getGenderCode()).isEqualTo(GenderCode.MALE);
+        assertThat(savedQuote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode()).isEqualTo(EVERY_MONTH);
+        assertThat(savedQuote.getInsureds().get(0).getPerson().getGenderCode()).isEqualTo(FEMALE);
 
         //check returned JSon
-        quote = TestUtil.getQuoteFromJSon(updateResponse.getBody());
-        Assertions.assertThat(quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode()).isEqualTo(PeriodicityCode.EVERY_MONTH);
-        Assertions.assertThat(quote.getInsureds().get(0).getPerson().getGenderCode()).isEqualTo(GenderCode.MALE);
+        quote = getQuoteFromJSon(updateResponse.getBody());
+        assertThat(quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode()).isEqualTo(EVERY_MONTH);
+        assertThat(quote.getInsureds().get(0).getPerson().getGenderCode()).isEqualTo(FEMALE);
     }
 }

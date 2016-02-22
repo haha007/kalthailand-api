@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -14,7 +15,7 @@ import java.util.Objects;
 
 @ApiModel(description = "Data concerning the policy")
 @Document
-public class Policy {
+public class Policy implements Serializable {
     @Id
     private String id;
     @Indexed
@@ -22,7 +23,7 @@ public class Policy {
     @Indexed
     private String quoteId;
     private CommonData commonData;
-    private PremiumsDataLifeInsurance premiumsData;
+    private PremiumsData premiumsData;
     private List<Insured> insureds = new ArrayList<>();
     private List<Coverage> coverages = new ArrayList<>();
     @DBRef
@@ -66,11 +67,11 @@ public class Policy {
     }
 
     @ApiModelProperty(value = "Data concerning premiums (price for the coverage and benefit agreed for the policy)")
-    public PremiumsDataLifeInsurance getPremiumsData() {
+    public PremiumsData getPremiumsData() {
         return premiumsData;
     }
 
-    public void setPremiumsData(PremiumsDataLifeInsurance premiumsData) {
+    public void setPremiumsData(PremiumsData premiumsData) {
         this.premiumsData = premiumsData;
     }
 
