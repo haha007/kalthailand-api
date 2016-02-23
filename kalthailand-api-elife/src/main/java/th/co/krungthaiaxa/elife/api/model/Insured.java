@@ -19,6 +19,7 @@ public class Insured implements Serializable {
     private String professionDescription;
     private String employerName;
     private String annualIncome;
+    private String incomeSource;
     private Person person;
     private Fatca fatca;
     private HealthStatus healthStatus;
@@ -106,6 +107,15 @@ public class Insured implements Serializable {
         this.annualIncome = annualIncome;
     }
 
+    @ApiModelProperty(value = "Income Source")
+    public String getIncomeSource() {
+        return incomeSource;
+    }
+
+    public void setIncomeSource(String incomeSource) {
+        this.incomeSource = incomeSource;
+    }
+
     @ApiModelProperty(value = "Declared tax percentage the insured pays at subscription")
     public Integer getDeclaredTaxPercentAtSubscription() {
         return declaredTaxPercentAtSubscription;
@@ -165,6 +175,7 @@ public class Insured implements Serializable {
                 Objects.equals(professionDescription, insured.professionDescription) &&
                 Objects.equals(employerName, insured.employerName) &&
                 Objects.equals(annualIncome, insured.annualIncome) &&
+                Objects.equals(incomeSource, insured.incomeSource) &&
                 Objects.equals(person, insured.person) &&
                 Objects.equals(fatca, insured.fatca) &&
                 Objects.equals(healthStatus, insured.healthStatus) &&
@@ -174,6 +185,6 @@ public class Insured implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(type, mainInsuredIndicator, startDate, endDate, ageAtSubscription, professionName, professionDescription, employerName, annualIncome, person, fatca, healthStatus, declaredTaxPercentAtSubscription, additionalInformationFreeText);
+        return Objects.hash(type, mainInsuredIndicator, startDate, endDate, ageAtSubscription, professionName, professionDescription, employerName, annualIncome, incomeSource, person, fatca, healthStatus, declaredTaxPercentAtSubscription, additionalInformationFreeText);
     }
 }
