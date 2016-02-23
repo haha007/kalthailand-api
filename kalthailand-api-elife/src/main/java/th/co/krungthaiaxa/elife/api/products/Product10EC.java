@@ -255,6 +255,8 @@ public class Product10EC implements Product {
             throw PolicyValidationException.beneficiariesTooMany;
         } else if (beneficiaries.stream().mapToDouble(CoverageBeneficiary::getCoverageBenefitPercentage).sum() != 100.0) {
             throw PolicyValidationException.beneficiariesPercentSumNot100;
+        } else if (beneficiaries.stream().filter(coverageBeneficiary -> coverageBeneficiary.getAgeAtSubscription() == null).findFirst().isPresent()) {
+            throw PolicyValidationException.beneficiariesAgeAtSubscriptionEmpty;
         }
 
         List<String> insuredRegistrationIds = insured.getPerson().getRegistrations().stream()

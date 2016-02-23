@@ -122,6 +122,7 @@ public class TestUtil {
         person.addRegistration(registration(registrationId));
 
         CoverageBeneficiary result = new CoverageBeneficiary();
+        result.setAgeAtSubscription(40);
         result.setCoverageBenefitPercentage(benefitPercent);
         result.setRelationship(BeneficiaryRelationshipType.CHILD);
         result.setPerson(person);

@@ -12,6 +12,7 @@ public class CoverageBeneficiary implements Serializable {
     private Person person;
     private BeneficiaryRelationshipType relationship;
     private Double coverageBenefitPercentage;
+    private Integer ageAtSubscription;
 
     @ApiModelProperty(required = true, value = "The beneficiary details")
     public Person getPerson() {
@@ -40,6 +41,15 @@ public class CoverageBeneficiary implements Serializable {
         this.coverageBenefitPercentage = coverageBenefitPercentage;
     }
 
+    @ApiModelProperty(required = true, value = "Age of the beneficiary at the time of the subscription")
+    public Integer getAgeAtSubscription() {
+        return ageAtSubscription;
+    }
+
+    public void setAgeAtSubscription(Integer ageAtSubscription) {
+        this.ageAtSubscription = ageAtSubscription;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -47,11 +57,12 @@ public class CoverageBeneficiary implements Serializable {
         CoverageBeneficiary that = (CoverageBeneficiary) o;
         return Objects.equals(person, that.person) &&
                 relationship == that.relationship &&
-                Objects.equals(coverageBenefitPercentage, that.coverageBenefitPercentage);
+                Objects.equals(coverageBenefitPercentage, that.coverageBenefitPercentage) &&
+                Objects.equals(ageAtSubscription, that.ageAtSubscription);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(person, relationship, coverageBenefitPercentage);
+        return Objects.hash(person, relationship, coverageBenefitPercentage, ageAtSubscription);
     }
 }

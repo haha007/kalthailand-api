@@ -49,6 +49,7 @@ public class PolicyValidationException extends Exception {
     public static PolicyValidationException beneficiariesPercentSumNot100 = new PolicyValidationException("The sum of percent between beneficiaries is not 100.");
     public static PolicyValidationException beneficiariesIdIqualToInsuredId = new PolicyValidationException("The beneficiary cannot be the insured.");
     public static PolicyValidationException beneficiariesWithSameId = new PolicyValidationException("The beneficiaries must be unique.");
+    public static PolicyValidationException beneficiariesAgeAtSubscriptionEmpty = new PolicyValidationException("The beneficiaries age must be filled in.");
 
     public static PolicyValidationException addressWithNoCountry = new PolicyValidationException("Country of the address cannot be empty.");
     public static PolicyValidationException addressWithNoDistrict = new PolicyValidationException("District of the address cannot be empty.");

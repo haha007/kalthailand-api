@@ -1174,6 +1174,16 @@ public class Product10ECTest {
     }
 
     @Test
+    public void should_return_error_when_create_policy_with_a_beneficiary_with_no_age() throws Exception {
+        final Quote quote = quote(EVERY_YEAR, insured(25), beneficiary(100.0));
+        quote.getCoverages().get(0).getBeneficiaries().get(0).setAgeAtSubscription(null);
+        Policy policy = new Policy();
+        assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
+                .isInstanceOf(PolicyValidationException.class)
+                .hasMessage(PolicyValidationException.beneficiariesAgeAtSubscriptionEmpty.getMessage());
+    }
+
+    @Test
     public void should_return_error_when_create_policy_with_too_many_beneficiaries() throws Exception {
         final Quote quote = quote(EVERY_YEAR, insured(25), beneficiary(1.0, "1"), beneficiary(1.0, "2"),
                 beneficiary(1.0, "3"), beneficiary(1.0, "4"), beneficiary(1.0, "5"), beneficiary(1.0, "6"),
