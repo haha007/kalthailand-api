@@ -25,8 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.PaymentStatus.FUTURE;
-import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_HALF_YEAR;
-import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_YEAR;
+import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.*;
 import static th.co.krungthaiaxa.elife.api.products.Product10EC.*;
 import static th.co.krungthaiaxa.elife.api.resource.TestUtil.*;
 
@@ -317,7 +316,7 @@ public class Product10ECTest {
 
     @Test
     public void should_calculate_tax_return_for_1_million_sum_insured_and_5_percent_tax_rate() throws Exception {
-        Quote quote = quote(EVERY_YEAR, insured(25, 5), beneficiary(100.0));
+        Quote quote = quote(EVERY_HALF_YEAR, insured(25, 5), beneficiary(100.0));
 
         Amount amount = new Amount();
         amount.setCurrencyCode("THB");
@@ -326,12 +325,12 @@ public class Product10ECTest {
 
         Amount result = product10EC.calculateQuote(quote).getPremiumsData().getLifeInsurance().getYearlyTaxDeduction();
         assertThat(result.getCurrencyCode()).isEqualTo("THB");
-        assertThat(result.getValue()).isEqualTo(5000.0);
+        assertThat(result.getValue()).isEqualTo(16016.0);
     }
 
     @Test
     public void should_calculate_tax_return_for_1_thousand_sum_insured_and_5_percent_tax_rate() throws Exception {
-        Quote quote = quote(EVERY_YEAR, insured(25, 5), beneficiary(100.0));
+        Quote quote = quote(EVERY_QUARTER, insured(25, 5), beneficiary(100.0));
 
         Amount amount = new Amount();
         amount.setCurrencyCode("THB");
@@ -340,7 +339,7 @@ public class Product10ECTest {
 
         Amount result = product10EC.calculateQuote(quote).getPremiumsData().getLifeInsurance().getYearlyTaxDeduction();
         assertThat(result.getCurrencyCode()).isEqualTo("THB");
-        assertThat(result.getValue()).isEqualTo(1540.0);
+        assertThat(result.getValue()).isEqualTo(1663.0);
     }
 
     @Test
@@ -354,12 +353,12 @@ public class Product10ECTest {
 
         Amount result = product10EC.calculateQuote(quote).getPremiumsData().getLifeInsurance().getYearlyTaxDeduction();
         assertThat(result.getCurrencyCode()).isEqualTo("THB");
-        assertThat(result.getValue()).isEqualTo(20000.0);
+        assertThat(result.getValue()).isEqualTo(61600.0);
     }
 
     @Test
     public void should_calculate_tax_return_for_1_thousand_sum_insured_and_20_percent_tax_rate() throws Exception {
-        Quote quote = quote(EVERY_YEAR, insured(25, 20), beneficiary(100.0));
+        Quote quote = quote(EVERY_MONTH, insured(25, 20), beneficiary(100.0));
 
         Amount amount = new Amount();
         amount.setCurrencyCode("THB");
@@ -368,7 +367,21 @@ public class Product10ECTest {
 
         Amount result = product10EC.calculateQuote(quote).getPremiumsData().getLifeInsurance().getYearlyTaxDeduction();
         assertThat(result.getCurrencyCode()).isEqualTo("THB");
-        assertThat(result.getValue()).isEqualTo(6160.0);
+        assertThat(result.getValue()).isEqualTo(6653.0);
+    }
+
+    @Test
+    public void should_calculate_tax_return_for_1_million_sum_insured_and_70_percent_tax_rate() throws Exception {
+        Quote quote = quote(EVERY_YEAR, insured(25, 70), beneficiary(100.0));
+
+        Amount amount = new Amount();
+        amount.setCurrencyCode("THB");
+        amount.setValue(1000000.0);
+        quote.getPremiumsData().getLifeInsurance().setSumInsured(amount);
+
+        Amount result = product10EC.calculateQuote(quote).getPremiumsData().getLifeInsurance().getYearlyTaxDeduction();
+        assertThat(result.getCurrencyCode()).isEqualTo("THB");
+        assertThat(result.getValue()).isEqualTo(100000.0);
     }
 
     @Test

@@ -494,14 +494,15 @@ public class Product10EC implements Product {
     }
 
     private Amount calculateTaxReturn(Quote quote) {
-        // (min(100000, premium) * tax rate / 100) * modalFactor
+        // (min(100000, (premium * tax rate / 100 * numberOfPayments)
         Double premium = quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue();
         Integer taxRate = quote.getInsureds().get(0).getDeclaredTaxPercentAtSubscription();
-        Double factor = modalFactor.apply(quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode());
+        PeriodicityCode periodicityCode = quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode();
+        int nbOfPaymentsPerYear = 12 / periodicityCode.getNbOfMonths();
 
         Amount amount = new Amount();
         amount.setCurrencyCode(PRODUCT_10_EC_CURRENCY);
-        amount.setValue((Math.min(100000.0, premium) * taxRate / 100) * factor);
+        amount.setValue(Math.min(100000.0, Math.round(premium * taxRate / 100 * nbOfPaymentsPerYear)));
         return amount;
     }
 
