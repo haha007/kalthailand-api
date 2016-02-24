@@ -8,14 +8,9 @@ import javax.crypto.spec.SecretKeySpec;
 import java.net.URLDecoder;
 
 public class Decrypt {
-    private static final String DEFAULT_KEY = "241b96bcb03d10aeabe86ac66c71103f";
 
     public static String decrypt(String encrypted, String secretkey) throws Exception {
-        try {
-            return doDecrypt(encrypted, secretkey);
-        } catch (Exception e) {
-            return doDecrypt(encrypted, DEFAULT_KEY);
-        }
+        return doDecrypt(encrypted, secretkey);
     }
 
     private static String doDecrypt(String encrypted, String secretkey) throws Exception {
