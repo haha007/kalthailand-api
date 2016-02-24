@@ -86,7 +86,7 @@ public class QuoteService {
         quote = basicCalculateQuote(quote);
 
         Product product = ProductFactory.getProduct(quote.getCommonData().getProductId());
-        quote = product.calculateQuote(quote);
+        product.calculateQuote(quote);
         quote.setLastUpdateDateTime(now(of(SHORT_IDS.get("VST"))));
 
         return quoteRepository.save(quote);

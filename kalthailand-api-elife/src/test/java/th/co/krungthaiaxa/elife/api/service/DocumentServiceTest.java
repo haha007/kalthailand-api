@@ -13,6 +13,7 @@ import th.co.krungthaiaxa.elife.api.model.Document;
 import th.co.krungthaiaxa.elife.api.model.DocumentDownload;
 import th.co.krungthaiaxa.elife.api.model.Policy;
 import th.co.krungthaiaxa.elife.api.model.Quote;
+import th.co.krungthaiaxa.elife.api.products.Product10EC;
 import th.co.krungthaiaxa.elife.api.repository.DocumentDownloadRepository;
 import th.co.krungthaiaxa.elife.api.repository.DocumentRepository;
 
@@ -23,7 +24,6 @@ import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
 import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_YEAR;
-import static th.co.krungthaiaxa.elife.api.products.Product10EC.getCommonData;
 import static th.co.krungthaiaxa.elife.api.resource.TestUtil.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -41,10 +41,11 @@ public class DocumentServiceTest {
     private DocumentRepository documentRepository;
     @Inject
     private DocumentDownloadRepository documentDownloadRepository;
+    private Product10EC product10EC = new Product10EC();
 
     @Test
     public void should_add_2_documents_in_policy() throws QuoteCalculationException, PolicyValidationException {
-        Quote quote1 = quoteService.createQuote(randomNumeric(20), getCommonData(), LINE);
+        Quote quote1 = quoteService.createQuote(randomNumeric(20), product10EC.getCommonData(), LINE);
         quote(quote1, EVERY_YEAR, 1000000.0, insured(35), beneficiary(100.0));
         quote1 = quoteService.updateQuote(quote1);
         Policy policy = policyService.createPolicy(quote1);
@@ -59,7 +60,7 @@ public class DocumentServiceTest {
 
     @Test
     public void should_get_1_document_in_policy() throws QuoteCalculationException, PolicyValidationException {
-        Quote quote1 = quoteService.createQuote(randomNumeric(20), getCommonData(), LINE);
+        Quote quote1 = quoteService.createQuote(randomNumeric(20), product10EC.getCommonData(), LINE);
         quote(quote1, EVERY_YEAR, 1000000.0, insured(35), beneficiary(100.0));
         quote1 = quoteService.updateQuote(quote1);
         Policy policy = policyService.createPolicy(quote1);

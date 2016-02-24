@@ -22,6 +22,8 @@ import th.co.krungthaiaxa.elife.api.model.Policy;
 import th.co.krungthaiaxa.elife.api.model.Quote;
 import th.co.krungthaiaxa.elife.api.model.error.Error;
 import th.co.krungthaiaxa.elife.api.model.error.ErrorCode;
+import th.co.krungthaiaxa.elife.api.products.Product;
+import th.co.krungthaiaxa.elife.api.products.Product10EC;
 import th.co.krungthaiaxa.elife.api.service.QuoteService;
 
 import javax.inject.Inject;
@@ -36,7 +38,6 @@ import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
 import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_YEAR;
-import static th.co.krungthaiaxa.elife.api.products.Product10EC.getCommonData;
 import static th.co.krungthaiaxa.elife.api.resource.TestUtil.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -54,9 +55,9 @@ public class DocumentResourceTest {
     private RestTemplate template;
     @Inject
     private QuoteService quoteService;
-
     @Value("${path.store.watermarked.image}")
     private String storePath;
+    private Product10EC product10EC = new Product10EC();
 
     @Before
     public void setUp() throws Exception {
@@ -72,7 +73,7 @@ public class DocumentResourceTest {
 
     @Test
     public void should_return_error_when_base64image_is_not_base64() throws QuoteCalculationException, IOException, URISyntaxException {
-        Quote quote = quoteService.createQuote(randomNumeric(20), getCommonData(), LINE);
+        Quote quote = quoteService.createQuote(randomNumeric(20), product10EC.getCommonData(), LINE);
         quote(quote, EVERY_YEAR, 1000000.0, insured(35), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
         Policy policy = getPolicy(quote);
@@ -87,7 +88,7 @@ public class DocumentResourceTest {
 
     @Test
     public void should_return_error_when_image_is_too_small() throws IOException, QuoteCalculationException, URISyntaxException {
-        Quote quote = quoteService.createQuote(randomNumeric(20), getCommonData(), LINE);
+        Quote quote = quoteService.createQuote(randomNumeric(20), product10EC.getCommonData(), LINE);
         quote(quote, EVERY_YEAR, 1000000.0, insured(35), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
         Policy policy = getPolicy(quote);
@@ -102,7 +103,7 @@ public class DocumentResourceTest {
 
     @Test
     public void should_return_error_when_sending_a_file_that_is_not_an_image() throws IOException, QuoteCalculationException, URISyntaxException {
-        Quote quote = quoteService.createQuote(randomNumeric(20), getCommonData(), LINE);
+        Quote quote = quoteService.createQuote(randomNumeric(20), product10EC.getCommonData(), LINE);
         quote(quote, EVERY_YEAR, 1000000.0, insured(35), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
         Policy policy = getPolicy(quote);
@@ -117,7 +118,7 @@ public class DocumentResourceTest {
 
     @Test
     public void should_return_ok_with_png() throws IOException, QuoteCalculationException, URISyntaxException {
-        Quote quote = quoteService.createQuote(randomNumeric(20), getCommonData(), LINE);
+        Quote quote = quoteService.createQuote(randomNumeric(20), product10EC.getCommonData(), LINE);
         quote(quote, EVERY_YEAR, 1000000.0, insured(35), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
         Policy policy = getPolicy(quote);
@@ -132,7 +133,7 @@ public class DocumentResourceTest {
 
     @Test
     public void should_return_ok_with_jpg() throws IOException, QuoteCalculationException, URISyntaxException {
-        Quote quote = quoteService.createQuote(randomNumeric(20), getCommonData(), LINE);
+        Quote quote = quoteService.createQuote(randomNumeric(20), product10EC.getCommonData(), LINE);
         quote(quote, EVERY_YEAR, 1000000.0, insured(35), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
         Policy policy = getPolicy(quote);

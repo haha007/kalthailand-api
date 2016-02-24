@@ -67,7 +67,8 @@ public class TestUtil {
             coverage.addBeneficiary(beneficiary);
         }
 
-        quote.setCommonData(Product10EC.getCommonData());
+        Product10EC product10EC = new Product10EC();
+        quote.setCommonData(product10EC.getCommonData());
         quote.setPremiumsData(premiumsData);
         quote.getInsureds().remove(0);
         quote.addInsured(insured);
@@ -98,8 +99,10 @@ public class TestUtil {
             coverage.addBeneficiary(beneficiary);
         }
 
+        Product10EC product10EC = new Product10EC();
+
         Quote quote = new Quote();
-        quote.setCommonData(Product10EC.getCommonData());
+        quote.setCommonData(product10EC.getCommonData());
         quote.setPremiumsData(premiumsData);
         if (insured != null) {
             quote.addInsured(insured);

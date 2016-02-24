@@ -20,6 +20,7 @@ import th.co.krungthaiaxa.elife.api.model.Payment;
 import th.co.krungthaiaxa.elife.api.model.Policy;
 import th.co.krungthaiaxa.elife.api.model.Quote;
 import th.co.krungthaiaxa.elife.api.model.error.Error;
+import th.co.krungthaiaxa.elife.api.products.Product10EC;
 import th.co.krungthaiaxa.elife.api.repository.PolicyRepository;
 import th.co.krungthaiaxa.elife.api.service.QuoteService;
 
@@ -37,7 +38,6 @@ import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
 import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_QUARTER;
 import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_YEAR;
 import static th.co.krungthaiaxa.elife.api.model.error.ErrorCode.POLICY_CANNOT_BE_CREATED;
-import static th.co.krungthaiaxa.elife.api.products.Product10EC.getCommonData;
 import static th.co.krungthaiaxa.elife.api.resource.TestUtil.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -54,6 +54,7 @@ public class PolicyResourceTest {
     private int port;
     private URI base;
     private RestTemplate template;
+    private Product10EC product10EC = new Product10EC();
 
     @Inject
     private PolicyRepository policyRepository;
@@ -79,7 +80,7 @@ public class PolicyResourceTest {
 
     @Test
     public void should_return_a_policy_object() throws QuoteCalculationException, IOException {
-        Quote quote = quoteService.createQuote(randomNumeric(20), getCommonData(), LINE);
+        Quote quote = quoteService.createQuote(randomNumeric(20), product10EC.getCommonData(), LINE);
         quote(quote, EVERY_YEAR, 1000000.0, insured(35), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 
@@ -97,7 +98,7 @@ public class PolicyResourceTest {
 
     @Test
     public void should_return_policy_payment_list() throws QuoteCalculationException, IOException, URISyntaxException {
-        Quote quote = quoteService.createQuote(randomNumeric(20), getCommonData(), LINE);
+        Quote quote = quoteService.createQuote(randomNumeric(20), product10EC.getCommonData(), LINE);
         quote(quote, EVERY_YEAR, 1000000.0, insured(35), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 

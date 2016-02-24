@@ -6,10 +6,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException;
-import th.co.krungthaiaxa.elife.api.model.CommonData;
 import th.co.krungthaiaxa.elife.api.model.Quote;
 import th.co.krungthaiaxa.elife.api.model.enums.ChannelType;
 import th.co.krungthaiaxa.elife.api.model.error.Error;
+import th.co.krungthaiaxa.elife.api.products.Product;
+import th.co.krungthaiaxa.elife.api.products.ProductFactory;
 import th.co.krungthaiaxa.elife.api.service.EmailService;
 import th.co.krungthaiaxa.elife.api.service.QuoteService;
 import th.co.krungthaiaxa.elife.api.utils.JsonUtil;
@@ -22,8 +23,6 @@ import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 import static th.co.krungthaiaxa.elife.api.model.error.ErrorCode.*;
-import static th.co.krungthaiaxa.elife.api.products.Product10EC.PRODUCT_10_EC_ID;
-import static th.co.krungthaiaxa.elife.api.products.Product10EC.getCommonData;
 import static th.co.krungthaiaxa.elife.api.utils.JsonUtil.getJson;
 
 @RestController
@@ -120,14 +119,14 @@ public class QuoteResource {
             @RequestParam ChannelType channelType,
             @ApiParam(value = "The product id for which to get a quote.", allowableValues = "10EC")
             @RequestParam String productId) {
-        CommonData commonData;
-        if (PRODUCT_10_EC_ID.equals(productId)) {
-            commonData = getCommonData();
-        } else {
+        Product product;
+        try {
+            product = ProductFactory.getProduct(productId);
+        } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(INVALID_PRODUCT_ID_PROVIDED, NOT_ACCEPTABLE);
         }
 
-        return new ResponseEntity<>(getJson(quoteService.createQuote(sessionId, commonData, channelType)), OK);
+        return new ResponseEntity<>(getJson(quoteService.createQuote(sessionId, product.getCommonData(), channelType)), OK);
     }
 
     @ApiOperation(value = "Updates a quote", notes = "Updates a quote with is provided JSon. Calculation may occur " +

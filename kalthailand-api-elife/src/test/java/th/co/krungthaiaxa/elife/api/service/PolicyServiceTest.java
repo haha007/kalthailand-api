@@ -15,6 +15,7 @@ import th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.elife.api.model.Payment;
 import th.co.krungthaiaxa.elife.api.model.Policy;
 import th.co.krungthaiaxa.elife.api.model.Quote;
+import th.co.krungthaiaxa.elife.api.products.Product10EC;
 import th.co.krungthaiaxa.elife.api.repository.PaymentRepository;
 import th.co.krungthaiaxa.elife.api.resource.TestUtil;
 import th.co.krungthaiaxa.elife.api.utils.ImageUtil;
@@ -33,7 +34,6 @@ import static th.co.krungthaiaxa.elife.api.model.enums.PaymentStatus.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_YEAR;
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.ERROR;
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.SUCCESS;
-import static th.co.krungthaiaxa.elife.api.products.Product10EC.getCommonData;
 import static th.co.krungthaiaxa.elife.api.resource.TestUtil.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -41,7 +41,6 @@ import static th.co.krungthaiaxa.elife.api.resource.TestUtil.*;
 @WebAppConfiguration
 @ActiveProfiles("test")
 public class PolicyServiceTest {
-
     private final static String ERECEIPT_PDF_FILE_NAME = "ereceipt.pdf";
     @Value("${path.store.watermarked.image}")
     private String storePath;
@@ -51,6 +50,7 @@ public class PolicyServiceTest {
     private QuoteService quoteService;
     @Inject
     private PaymentRepository paymentRepository;
+    private Product10EC product10EC = new Product10EC();
 
     @Test
     public void should_return_error_when_create_policy_if_quote_not_provided() throws Exception {
@@ -72,11 +72,11 @@ public class PolicyServiceTest {
     public void should_delete_1_quote_when_policy_has_been_created() throws QuoteCalculationException, PolicyValidationException {
         String sessionId = randomNumeric(20);
 
-        Quote quote1 = quoteService.createQuote(sessionId, getCommonData(), LINE);
+        Quote quote1 = quoteService.createQuote(sessionId, product10EC.getCommonData(), LINE);
         quote(quote1, EVERY_YEAR, 1000000.0, insured(35), beneficiary(100.0));
         quote1 = quoteService.updateQuote(quote1);
 
-        Quote quote2 = quoteService.createQuote(sessionId, getCommonData(), LINE);
+        Quote quote2 = quoteService.createQuote(sessionId, product10EC.getCommonData(), LINE);
         quote(quote2, EVERY_YEAR, 1000000.0, insured(35), beneficiary(100.0));
         quote2 = quoteService.updateQuote(quote2);
         policyService.createPolicy(quote2);
@@ -87,7 +87,7 @@ public class PolicyServiceTest {
 
     @Test
     public void should_add_generated_ids_when_saving_policy_for_first_time() throws QuoteCalculationException, PolicyValidationException {
-        Quote quote = quoteService.createQuote(randomNumeric(20), getCommonData(), LINE);
+        Quote quote = quoteService.createQuote(randomNumeric(20), product10EC.getCommonData(), LINE);
         quote(quote, EVERY_YEAR, 1000000.0, insured(35), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 
@@ -200,7 +200,7 @@ public class PolicyServiceTest {
 
     @Test
     public void should_create_bytes_for_eReceipt() throws QuoteCalculationException, PolicyValidationException, IOException {
-        Quote quote = quoteService.createQuote(randomNumeric(20), getCommonData(), LINE);
+        Quote quote = quoteService.createQuote(randomNumeric(20), product10EC.getCommonData(), LINE);
         quote(quote, EVERY_YEAR, 1000000.0, insured(35), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
         Policy policy = policyService.createPolicy(quote);
@@ -213,7 +213,7 @@ public class PolicyServiceTest {
     @Test
     public void should_create_bytes_for_eReceipt_and_can_create_pdf_file_to_file_system() throws
             QuoteCalculationException, PolicyValidationException, IOException, DocumentException {
-        Quote quote = quoteService.createQuote(randomNumeric(20), getCommonData(), LINE);
+        Quote quote = quoteService.createQuote(randomNumeric(20), product10EC.getCommonData(), LINE);
         quote(quote, EVERY_YEAR, 1000000.0, insured(35), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
         Policy policy = policyService.createPolicy(quote);
