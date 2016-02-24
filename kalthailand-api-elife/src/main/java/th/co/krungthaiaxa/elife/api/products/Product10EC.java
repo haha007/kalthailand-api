@@ -174,7 +174,6 @@ public class Product10EC implements Product {
         // check for mandatory data
         checkCommonData(quote.getCommonData());
         checkInsured(quote);
-        checkPerson(quote);
 
         // There is only one insured at this point
         Insured insured = quote.getInsureds().get(0);
@@ -257,6 +256,8 @@ public class Product10EC implements Product {
             throw PolicyValidationException.beneficiariesPercentSumNot100;
         } else if (beneficiaries.stream().filter(coverageBeneficiary -> coverageBeneficiary.getAgeAtSubscription() == null).findFirst().isPresent()) {
             throw PolicyValidationException.beneficiariesAgeAtSubscriptionEmpty;
+        } else if (beneficiaries.stream().filter(coverageBeneficiary -> !checkThaiIDNumbers(coverageBeneficiary.getPerson())).findFirst().isPresent()) {
+            throw PolicyValidationException.beneficiariesWithWrongIDNumber;
         }
 
         List<String> insuredRegistrationIds = insured.getPerson().getRegistrations().stream()
@@ -280,6 +281,27 @@ public class Product10EC implements Product {
         if (!hasDifferentBeneficiaries) {
             throw PolicyValidationException.beneficiariesWithSameId;
         }
+    }
+
+    private static boolean checkThaiIDNumbers(Person person) {
+        boolean isValid = true;
+        for (Registration registration : person.getRegistrations()) {
+            isValid = isValid && checkThaiIDNumber(registration.getId());
+        }
+        return isValid;
+    }
+
+    private static boolean checkThaiIDNumber(String id) {
+        if (id.length() != 13) {
+            return false;
+        }
+
+        int sum = 0;
+        for (int i = 0; i < 12; i++) {
+            sum += Integer.parseInt(String.valueOf(id.charAt(i))) * (13 - i);
+        }
+
+        return id.charAt(12) - '0' == ((11 - (sum % 11)) % 10);
     }
 
     private static void checkPremiumsData(PremiumsData premiumsData, LocalDate startDate) throws PolicyValidationException, QuoteCalculationException {
@@ -430,20 +452,6 @@ public class Product10EC implements Product {
         }
     }
 
-    private static void checkPerson(Quote quote) throws PolicyValidationException {
-        if (quote.getInsureds().stream().anyMatch(insured -> insured.getPerson() == null)) {
-            throw PolicyValidationException.insuredWithNoPerson;
-        } else if (quote.getInsureds().stream().anyMatch(insured -> insured.getPerson().getGivenName() == null)) {
-            throw PolicyValidationException.personWithNoGivenName;
-        } else if (quote.getInsureds().stream().anyMatch(insured -> insured.getPerson().getMiddleName() == null)) {
-            throw PolicyValidationException.personWithNoMiddleName;
-        } else if (quote.getInsureds().stream().anyMatch(insured -> insured.getPerson().getSurName() == null)) {
-            throw PolicyValidationException.personWithNoSurname;
-        } else if (quote.getInsureds().stream().anyMatch(insured -> insured.getPerson().getTitle() == null)) {
-            throw PolicyValidationException.personWithNoTitle;
-        }
-    }
-
     private static void checkInsured(Quote quote) throws PolicyValidationException {
         if (quote.getInsureds() == null || quote.getInsureds().size() == 0) {
             throw PolicyValidationException.noInsured;
@@ -468,6 +476,19 @@ public class Product10EC implements Product {
             throw PolicyValidationException.insuredFatcaInvalid3;
         } else if (insured.getFatca().getPermanentResidentOfUSA() == null) {
             throw PolicyValidationException.insuredFatcaInvalid4;
+        }
+        if (insured.getPerson() == null) {
+            throw PolicyValidationException.insuredWithNoPerson;
+        } else if (insured.getPerson().getGivenName() == null) {
+            throw PolicyValidationException.personWithNoGivenName;
+        } else if (insured.getPerson().getMiddleName() == null) {
+            throw PolicyValidationException.personWithNoMiddleName;
+        } else if (insured.getPerson().getSurName() == null) {
+            throw PolicyValidationException.personWithNoSurname;
+        } else if (insured.getPerson().getTitle() == null) {
+            throw PolicyValidationException.personWithNoTitle;
+        } else if (!checkThaiIDNumbers(insured.getPerson())) {
+            throw PolicyValidationException.personWithInvalidThaiIdNumber;
         }
     }
 

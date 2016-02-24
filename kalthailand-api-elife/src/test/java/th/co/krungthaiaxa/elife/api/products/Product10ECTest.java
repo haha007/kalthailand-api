@@ -1178,6 +1178,24 @@ public class Product10ECTest {
     }
 
     @Test
+    public void should_return_error_when_create_policy_with_main_insured_with_invalid_thai_id() throws Exception {
+        final Quote quote = quote(EVERY_YEAR, insured(25, "123456789"), beneficiary(100.0));
+        Policy policy = new Policy();
+        assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
+                .isInstanceOf(PolicyValidationException.class)
+                .hasMessage(PolicyValidationException.personWithInvalidThaiIdNumber.getMessage());
+    }
+
+    @Test
+    public void should_return_error_when_create_policy_with_beneficiary_with_invalid_thai_id() throws Exception {
+        final Quote quote = quote(EVERY_YEAR, insured(25), beneficiary(100.0, "123456789"));
+        Policy policy = new Policy();
+        assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
+                .isInstanceOf(PolicyValidationException.class)
+                .hasMessage(PolicyValidationException.beneficiariesWithWrongIDNumber.getMessage());
+    }
+
+    @Test
     public void should_return_error_when_create_policy_with_no_beneficiary() throws Exception {
         final Quote quote = quote(EVERY_YEAR, insured(25));
         Policy policy = new Policy();
@@ -1219,8 +1237,7 @@ public class Product10ECTest {
 
     @Test
     public void should_return_error_when_create_policy_with_1_beneficiary_id_equal_to_insured_id() throws Exception {
-        final Quote quote = quote(EVERY_YEAR, insured(25, "SAME"), beneficiary(1.0, "SAME"),
-                beneficiary(1.0, "2"), beneficiary(1.0, "3"), beneficiary(1.0, "4"), beneficiary(96.0, "5"));
+        final Quote quote = quote(EVERY_YEAR, insured(25, "3101202780273"), beneficiary(100.0, "3101202780273"));
         Policy policy = new Policy();
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
@@ -1229,8 +1246,8 @@ public class Product10ECTest {
 
     @Test
     public void should_return_error_when_create_policy_with_2_beneficiaries_with_same_id() throws Exception {
-        final Quote quote = quote(EVERY_YEAR, insured(25), beneficiary(1.0, "SAME"), beneficiary(1.0, "SAME"),
-                beneficiary(1.0, "2"), beneficiary(1.0, "3"), beneficiary(96.0, "4"));
+        final Quote quote = quote(EVERY_YEAR, insured(25), beneficiary(1.0, "3101202780273"),
+                beneficiary(99.0, "3101202780273"));
         Policy policy = new Policy();
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)

@@ -22,11 +22,12 @@ public class PolicyValidationException extends Exception {
     public static PolicyValidationException insuredFatcaInvalid3 = new PolicyValidationException("Fatca 'PR for tax of USA' is not answered.");
     public static PolicyValidationException insuredFatcaInvalid4 = new PolicyValidationException("Fatca 'PR of USA' is not answered.");
 
-    public static PolicyValidationException insuredWithNoPerson = new PolicyValidationException("At least one insured has no person.");
-    public static PolicyValidationException personWithNoGivenName = new PolicyValidationException("At least one insured has no given name.");
-    public static PolicyValidationException personWithNoMiddleName = new PolicyValidationException("At least one insured has no middle name.");
-    public static PolicyValidationException personWithNoSurname = new PolicyValidationException("At least one insured has no surname.");
-    public static PolicyValidationException personWithNoTitle = new PolicyValidationException("At least one insured has no title.");
+    public static PolicyValidationException insuredWithNoPerson = new PolicyValidationException("Insured has no person data.");
+    public static PolicyValidationException personWithNoGivenName = new PolicyValidationException("Insured person has no given name.");
+    public static PolicyValidationException personWithNoMiddleName = new PolicyValidationException("Insured person has no middle name.");
+    public static PolicyValidationException personWithNoSurname = new PolicyValidationException("Insured person has no surname.");
+    public static PolicyValidationException personWithNoTitle = new PolicyValidationException("Insured person has no title.");
+    public static PolicyValidationException personWithInvalidThaiIdNumber = new PolicyValidationException("Insured person has an invalid Thai ID number.");
 
     public static PolicyValidationException mainInsuredWithNoGenderCode = new PolicyValidationException("Gender code of main insured is empty.");
     public static PolicyValidationException mainInsuredWithNoMaritalStatus = new PolicyValidationException("Marital status of main insured is empty.");
@@ -50,6 +51,7 @@ public class PolicyValidationException extends Exception {
     public static PolicyValidationException beneficiariesIdIqualToInsuredId = new PolicyValidationException("The beneficiary cannot be the insured.");
     public static PolicyValidationException beneficiariesWithSameId = new PolicyValidationException("The beneficiaries must be unique.");
     public static PolicyValidationException beneficiariesAgeAtSubscriptionEmpty = new PolicyValidationException("The beneficiaries age must be filled in.");
+    public static PolicyValidationException beneficiariesWithWrongIDNumber = new PolicyValidationException("At least one beneficiary has an invalid Thai ID number.");
 
     public static PolicyValidationException addressWithNoCountry = new PolicyValidationException("Country of the address cannot be empty.");
     public static PolicyValidationException addressWithNoDistrict = new PolicyValidationException("District of the address cannot be empty.");
