@@ -17,8 +17,7 @@ import static java.time.temporal.ChronoUnit.YEARS;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException.*;
-import static th.co.krungthaiaxa.elife.api.products.ProductUtils.checkMainInsuredAge;
-import static th.co.krungthaiaxa.elife.api.products.ProductUtils.checkSumInsured;
+import static th.co.krungthaiaxa.elife.api.products.ProductUtils.*;
 
 public class Product10EC implements Product {
     public final static int DURATION_COVERAGE_IN_YEAR = 10;
@@ -63,36 +62,21 @@ public class Product10EC implements Product {
         }
     };
 
-    private static Function<Integer, Integer> rate = age -> {
+    private static Function<Integer, Double> rate = age -> {
         if (age >= MIN_AGE && age <= 45) {
-            return 308;
+            return 308.0;
         } else if (age >= 46 && age <= 50) {
-            return 306;
+            return 306.0;
         } else if (age >= 51 && age <= 55) {
-            return 304;
+            return 304.0;
         } else if (age >= 56 && age <= 60) {
-            return 301;
+            return 301.0;
         } else if (age >= 61 && age <= 65) {
-            return 300;
+            return 300.0;
         } else if (age >= 66 && age <= MAX_AGE) {
-            return 298;
+            return 298.0;
         } else {
-            return 0;
-        }
-    };
-
-    private static Function<PeriodicityCode, Double> modalFactor = periodicityCode -> {
-        switch (periodicityCode) {
-            case EVERY_MONTH:
-                return 0.09;
-            case EVERY_QUARTER:
-                return 0.27;
-            case EVERY_HALF_YEAR:
-                return 0.52;
-            case EVERY_YEAR:
-                return 1.0;
-            default:
-                throw new RuntimeException("The periodicity [" + periodicityCode.name() + "] is invalid to get modal factor");
+            return 0.0;
         }
     };
 
@@ -129,9 +113,9 @@ public class Product10EC implements Product {
 
         // calculates premium / sum insured
         if (premiumsData.getLifeInsurance().getSumInsured() != null) {
-            premiumsData.getFinancialScheduler().setModalAmount(getPremiumFromSumInsured(quote));
+            premiumsData.getFinancialScheduler().setModalAmount(getPremiumFromSumInsured(quote, rate.apply(quote.getInsureds().get(0).getAgeAtSubscription())));
         } else {
-            premiumsData.getLifeInsurance().setSumInsured(getSumInsuredFromPremium(quote));
+            premiumsData.getLifeInsurance().setSumInsured(getSumInsuredFromPremium(quote, rate.apply(quote.getInsureds().get(0).getAgeAtSubscription())));
         }
 
         // calculates yearly cash backs
@@ -515,28 +499,6 @@ public class Product10EC implements Product {
 
         // We need a periodicity
         return quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode() != null;
-    }
-
-    private static Amount getPremiumFromSumInsured(Quote quote) {
-        Amount result = new Amount();
-        Double value = quote.getPremiumsData().getLifeInsurance().getSumInsured().getValue();
-        value = value * rate.apply(quote.getInsureds().get(0).getAgeAtSubscription());
-        value = value * modalFactor.apply(quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode());
-        value = value / 1000;
-        result.setValue(value);
-        result.setCurrencyCode(quote.getPremiumsData().getLifeInsurance().getSumInsured().getCurrencyCode());
-        return result;
-    }
-
-    private static Amount getSumInsuredFromPremium(Quote quote) {
-        Amount result = new Amount();
-        Double value = quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue();
-        value = value * 1000;
-        value = value / modalFactor.apply(quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode());
-        value = value / rate.apply(quote.getInsureds().get(0).getAgeAtSubscription());
-        result.setValue(value);
-        result.setCurrencyCode(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getCurrencyCode());
-        return result;
     }
 
     private static boolean isValidEmailAddress(String email) {

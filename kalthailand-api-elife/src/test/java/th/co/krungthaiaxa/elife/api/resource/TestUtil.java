@@ -17,6 +17,8 @@ import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static java.time.LocalDate.now;
 import static java.time.temporal.ChronoUnit.YEARS;
+import static th.co.krungthaiaxa.elife.api.model.enums.GenderCode.FEMALE;
+import static th.co.krungthaiaxa.elife.api.model.enums.MaritalStatus.MARRIED;
 import static th.co.krungthaiaxa.elife.api.products.Product10EC.PRODUCT_10_EC_NAME;
 
 public class TestUtil {
@@ -118,7 +120,7 @@ public class TestUtil {
 
     public static CoverageBeneficiary beneficiary(Double benefitPercent, String registrationId) {
         Person person = new Person();
-        person.setGenderCode(GenderCode.FEMALE);
+        person.setGenderCode(FEMALE);
         person.setGivenName("Beneficiary");
         person.setMiddleName("");
         person.setSurName("Benf Last name");
@@ -134,22 +136,26 @@ public class TestUtil {
     }
 
     public static Insured insured(int ageAtSubscription) {
-        return insured(ageAtSubscription, TRUE, "3841200364454", 5);
+        return insured(ageAtSubscription, TRUE, "3841200364454", 5, FEMALE);
+    }
+
+    public static Insured insured(int ageAtSubscription, GenderCode genderCode) {
+        return insured(ageAtSubscription, TRUE, "3841200364454", 5, genderCode);
     }
 
     public static Insured insured(int ageAtSubscription, Integer taxRate) {
-        return insured(ageAtSubscription, TRUE, "3841200364454", taxRate);
+        return insured(ageAtSubscription, TRUE, "3841200364454", taxRate, FEMALE);
     }
 
     public static Insured insured(int ageAtSubscription, String registrationId) {
-        return insured(ageAtSubscription, TRUE, registrationId, 5);
+        return insured(ageAtSubscription, TRUE, registrationId, 5, FEMALE);
     }
 
     public static Insured insured(int ageAtSubscription, boolean mainInsured) {
-        return insured(ageAtSubscription, mainInsured, "3841200364454", 5);
+        return insured(ageAtSubscription, mainInsured, "3841200364454", 5, FEMALE);
     }
 
-    public static Insured insured(int ageAtSubscription, boolean mainInsured, String registrationId, Integer taxRate) {
+    public static Insured insured(int ageAtSubscription, boolean mainInsured, String registrationId, Integer taxRate, GenderCode genderCode) {
         Fatca fatca = new Fatca();
         fatca.setBornInUSA(FALSE);
         fatca.setPayTaxInUSA(FALSE);
@@ -190,11 +196,11 @@ public class TestUtil {
         Person person = new Person();
         person.setBirthDate(now().minus(ageAtSubscription, YEARS));
         person.setEmail("santi.lik@krungthai-axa.co.th");
-        person.setGenderCode(GenderCode.FEMALE);
+        person.setGenderCode(genderCode);
         person.setCurrentAddress(geographicalAddress);
         person.setGivenName("วุฒิชัย");
         person.setHomePhoneNumber(new PhoneNumber());
-        person.setMaritalStatus(MaritalStatus.MARRIED);
+        person.setMaritalStatus(MARRIED);
         person.setMiddleName("Else");
         person.setMobilePhoneNumber(phoneNumber);
         person.setSurName("ศรีสุข");

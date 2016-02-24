@@ -1,17 +1,22 @@
 package th.co.krungthaiaxa.elife.api.products;
 
+import org.springframework.stereotype.Component;
 import th.co.krungthaiaxa.elife.api.exception.PolicyValidationException;
 import th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.elife.api.model.*;
+import th.co.krungthaiaxa.elife.api.repository.ProductIBeginRateRepository;
 
+import javax.inject.Inject;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.List;
 import java.util.Optional;
 
 import static java.time.temporal.ChronoUnit.YEARS;
-import static th.co.krungthaiaxa.elife.api.products.ProductUtils.checkMainInsuredAge;
-import static th.co.krungthaiaxa.elife.api.products.ProductUtils.checkSumInsured;
+import static th.co.krungthaiaxa.elife.api.model.enums.GenderCode.MALE;
+import static th.co.krungthaiaxa.elife.api.products.ProductUtils.*;
 
+@Component
 public class ProductIBegin implements Product {
     public final static Integer DURATION_COVERAGE_IN_YEAR = null;
     public final static Integer DURATION_PAYMENT_IN_YEAR = 10;
@@ -24,6 +29,9 @@ public class ProductIBegin implements Product {
     public static final Double PREMIUM_MAX = null;
     public static final int MAX_AGE = 70;
     public static final int MIN_AGE = 50;
+
+    @Inject
+    private ProductIBeginRateRepository productIBeginRateRepository;
 
     @Override
     public void calculateQuote(Quote quote) throws QuoteCalculationException {
@@ -48,12 +56,23 @@ public class ProductIBegin implements Product {
         // Set dates based on current date and product duration
         insured.setStartDate(LocalDate.now(ZoneId.of(ZoneId.SHORT_IDS.get("VST"))));
         insured.setEndDate(insured.getPerson().getBirthDate().plus(90 - insured.getAgeAtSubscription(), YEARS));
-        //TODO this has to change and 5 has to become a parameter
+        //TODO this has to change and 5 has to become a parameter from ProductQuotation
         quote.getPremiumsData().getFinancialScheduler().setEndDate(insured.getStartDate().plus(5, YEARS));
 
         PremiumsData premiumsData = quote.getPremiumsData();
         // cannot insure too much or not enough
         checkSumInsured(premiumsData, PRODUCT_IBEGIN_CURRENCY, SUM_INSURED_MIN, SUM_INSURED_MAX);
+
+        // calculates premium / sum insured
+        //TODO this has to change and iBegin5 has to become a parameter from ProductQuotation
+        ProductIBeginRate productIBeginRate = productIBeginRateRepository.findByPlanAndSumInsured("iBegin5", premiumsData.getLifeInsurance().getSumInsured().getValue());
+        List<Double> rates;
+        if (insured.getPerson().getGenderCode().equals(MALE)) {
+            rates = productIBeginRate.getMaleRate();
+        } else {
+            rates = productIBeginRate.getFemaleRate();
+        }
+        premiumsData.getFinancialScheduler().setModalAmount(getPremiumFromSumInsured(quote, rates.get(quote.getInsureds().get(0).getAgeAtSubscription() - MIN_AGE)));
     }
 
     @Override

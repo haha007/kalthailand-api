@@ -1,17 +1,52 @@
 package th.co.krungthaiaxa.elife.api.products;
 
 import th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException;
-import th.co.krungthaiaxa.elife.api.model.Coverage;
-import th.co.krungthaiaxa.elife.api.model.Insured;
-import th.co.krungthaiaxa.elife.api.model.PremiumsData;
-import th.co.krungthaiaxa.elife.api.model.Quote;
+import th.co.krungthaiaxa.elife.api.model.*;
+import th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode;
 
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.function.Function;
 
 import static th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException.*;
 
 public class ProductUtils {
+    public static Function<PeriodicityCode, Double> modalFactor = periodicityCode -> {
+        switch (periodicityCode) {
+            case EVERY_MONTH:
+                return 0.09;
+            case EVERY_QUARTER:
+                return 0.27;
+            case EVERY_HALF_YEAR:
+                return 0.52;
+            case EVERY_YEAR:
+                return 1.0;
+            default:
+                throw new RuntimeException("The periodicity [" + periodicityCode.name() + "] is invalid to get modal factor");
+        }
+    };
+
+    public static Amount getPremiumFromSumInsured(Quote quote, Double rate) {
+        Amount result = new Amount();
+        Double value = quote.getPremiumsData().getLifeInsurance().getSumInsured().getValue();
+        value = value * rate;
+        value = value * modalFactor.apply(quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode());
+        value = value / 1000;
+        result.setValue((double) (Math.round(value * 100)) / 100);
+        result.setCurrencyCode(quote.getPremiumsData().getLifeInsurance().getSumInsured().getCurrencyCode());
+        return result;
+    }
+
+    public static Amount getSumInsuredFromPremium(Quote quote, Double rate) {
+        Amount result = new Amount();
+        Double value = quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue();
+        value = value * 1000;
+        value = value / modalFactor.apply(quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode());
+        value = value / rate;
+        result.setValue((double) (Math.round(value * 100)) / 100);
+        result.setCurrencyCode(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getCurrencyCode());
+        return result;
+    }
 
     public static void checkMainInsuredAge(Insured insured, int minAge, int maxAge) throws QuoteCalculationException {
         if (insured.getAgeAtSubscription() == null) {
