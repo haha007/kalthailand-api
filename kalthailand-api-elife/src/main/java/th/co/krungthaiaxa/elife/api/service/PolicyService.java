@@ -28,10 +28,12 @@ import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.Base64;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import static th.co.krungthaiaxa.elife.api.model.enums.DocumentType.ERECEIPT;
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.ERROR;
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.SUCCESS;
 
@@ -47,6 +49,7 @@ public class PolicyService {
     private final PolicyNumberRepository policyNumberRepository;
     private final QuoteRepository quoteRepository;
     private final SessionQuoteRepository sessionQuoteRepository;
+    private final DocumentService documentService;
     @Value("${path.store.elife.ereceipt}")
     private String eReceiptStorePath;
     @Value("${path.store.watermarked.image}")
@@ -59,12 +62,13 @@ public class PolicyService {
     @Inject
     public PolicyService(PaymentRepository paymentRepository, PolicyRepository policyRepository,
                          PolicyNumberRepository policyNumberRepository, QuoteRepository quoteRepository,
-                         SessionQuoteRepository sessionQuoteRepository) {
+                         SessionQuoteRepository sessionQuoteRepository, DocumentService documentService) {
         this.paymentRepository = paymentRepository;
         this.policyRepository = policyRepository;
         this.policyNumberRepository = policyNumberRepository;
         this.quoteRepository = quoteRepository;
         this.sessionQuoteRepository = sessionQuoteRepository;
+        this.documentService = documentService;
     }
 
     public Policy findPolicy(String policyId) {
@@ -109,11 +113,9 @@ public class PolicyService {
         return policy;
     }
 
-    public Payment updatePayment(String paymentId, Double value, String currencyCode, String registrationKey,
-                                 SuccessErrorStatus status, ChannelType channelType, String creditCardName,
-                                 String paymentMethod, String errorMessage) {
-        Payment payment = paymentRepository.findOne(paymentId);
-
+    public Policy updatePayment(Policy policy, Payment payment, Double value, String currencyCode, String registrationKey,
+                                SuccessErrorStatus status, ChannelType channelType, String creditCardName,
+                                String paymentMethod, String errorMessage) throws IOException {
         if (!currencyCode.equals(payment.getAmount().getCurrencyCode())) {
             status = ERROR;
             errorMessage = "Currencies are different";
@@ -151,7 +153,16 @@ public class PolicyService {
             payment.setEffectiveDate(paymentInformation.getDate());
         }
 
-        return paymentRepository.save(payment);
+
+        Optional<Document> document = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(ERECEIPT.name())).findFirst();
+        if (!document.isPresent()) {
+            byte[] encodedContent = Base64.getEncoder().encode(createEreceipt(policy));
+            documentService.addDocument(policy, encodedContent, "application/pdf", ERECEIPT);
+        }
+
+        paymentRepository.save(payment);
+
+        return policy;
     }
 
     public byte[] createEreceipt(Policy policy) throws IOException {
@@ -211,17 +222,17 @@ public class PolicyService {
         graphics.drawString(String.valueOf(numberPNO[10]), 1225, 433);
 
         //PaymentMode
-        switch (policy.getPayments().get(0).getPaymentInformations().get(0).getMethod()) {
-            case "12":
+        switch (policy.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode()) {
+            case EVERY_YEAR:
                 graphics.drawString("X", 286, 376);
                 break;
-            case "6":
+            case EVERY_HALF_YEAR:
                 graphics.drawString("X", 390, 376);
                 break;
-            case "3":
+            case EVERY_QUARTER:
                 graphics.drawString("X", 541, 376);
                 break;
-            case "1":
+            case EVERY_MONTH:
                 graphics.drawString("X", 692, 376);
                 break;
             default:

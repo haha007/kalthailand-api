@@ -23,8 +23,10 @@ public class ErrorCode {
     public static final Function<String, Error> POLICY_CANNOT_BE_CREATED = msg -> new Error("40003", "Unable to create your policy. Error is: " + msg, "The policy could not be created out of the quote for validation reasons");
     // Line token decryption
     public static final Error UNABLE_TO_DECRYPT = new Error("50001", "Unable to get your user ID", "The provided text could not be decrypted");
-    // E-Receipt
-    public static final Error UNABLE_TO_CREATE_ERECEIPT = new Error("60001", "Unable to create e-receipt", "Processing for create e-receipt fail");
+    // Document
+    public static final Error POLICY_DOES_NOT_CONTAIN_DOCUMENT = new Error("60001", "Unable to locate the document", "The given document id does not exist for the given policy");
+    public static final Error UNABLE_TO_CREATE_ERECEIPT = new Error("60002", "Unable to create e-receipt", "Processing for create e-receipt fail");
+    public static final Error UNABLE_TO_DOWNLOAD_DOCUMENT = new Error("60003", "Unable to download the document", "Processing for create e-receipt fail");
     // Email
     public static final Error UNABLE_TO_SEND_EMAIL = new Error("70001", "Unable to send email", "The Provided email is not valid");
 

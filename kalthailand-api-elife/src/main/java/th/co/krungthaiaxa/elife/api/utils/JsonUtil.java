@@ -13,8 +13,7 @@ public class JsonUtil {
 
     public static byte[] getJson(Object source) {
         try {
-            String json = mapper.writeValueAsString(source);
-            return json.getBytes(StandardCharsets.UTF_8);
+            return mapper.writeValueAsBytes(source);
         } catch (JsonProcessingException e) {
             return e.getMessage().getBytes(StandardCharsets.UTF_8);
         }

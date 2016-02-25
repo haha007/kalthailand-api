@@ -64,7 +64,7 @@ public class DocumentResourceTest {
 
     @Test
     public void should_return_error_when_policy_unknown() throws IOException, URISyntaxException {
-        URI base = new URI("http://localhost:" + port + "/documents/123456789/thai/id");
+        URI base = new URI("http://localhost:" + port + "/documents/policies/123456789/thai/id");
         ResponseEntity<String> response = template.postForEntity(base, null, String.class);
         assertThat(response.getStatusCode().value()).isEqualTo(BAD_REQUEST.value());
     }
@@ -77,7 +77,7 @@ public class DocumentResourceTest {
         quote = quoteService.updateQuote(quote);
         Policy policy = getPolicy(quote, sessionId);
 
-        URI documentUploadURI = new URI("http://localhost:" + port + "/documents/" + policy.getPolicyId() + "/thai/id");
+        URI documentUploadURI = new URI("http://localhost:" + port + "/documents/policies/" + policy.getPolicyId() + "/thai/id");
         ResponseEntity<String> response = template.exchange(documentUploadURI, POST, new HttpEntity<>("something"), String.class);
 
         Error error = TestUtil.getErrorFromJSon(response.getBody());
@@ -93,7 +93,7 @@ public class DocumentResourceTest {
         quote = quoteService.updateQuote(quote);
         Policy policy = getPolicy(quote, sessionId);
 
-        URI documentUploadURI = new URI("http://localhost:" + port + "/documents/" + policy.getPolicyId() + "/thai/id");
+        URI documentUploadURI = new URI("http://localhost:" + port + "/documents/policies/" + policy.getPolicyId() + "/thai/id");
         ResponseEntity<String> response = template.exchange(documentUploadURI, POST, new HttpEntity<>(getBase64("/images/small.png")), String.class);
 
         Error error = TestUtil.getErrorFromJSon(response.getBody());
@@ -109,7 +109,7 @@ public class DocumentResourceTest {
         quote = quoteService.updateQuote(quote);
         Policy policy = getPolicy(quote, sessionId);
 
-        URI documentUploadURI = new URI("http://localhost:" + port + "/documents/" + policy.getPolicyId() + "/thai/id");
+        URI documentUploadURI = new URI("http://localhost:" + port + "/documents/policies/" + policy.getPolicyId() + "/thai/id");
         ResponseEntity<String> response = template.exchange(documentUploadURI, POST, new HttpEntity<>(getBase64("/texts/sampleTextFile.txt")), String.class);
 
         Error error = TestUtil.getErrorFromJSon(response.getBody());
@@ -125,7 +125,7 @@ public class DocumentResourceTest {
         quote = quoteService.updateQuote(quote);
         Policy policy = getPolicy(quote, sessionId);
 
-        URI documentUploadURI = new URI("http://localhost:" + port + "/documents/" + policy.getPolicyId() + "/thai/id");
+        URI documentUploadURI = new URI("http://localhost:" + port + "/documents/policies/" + policy.getPolicyId() + "/thai/id");
         ResponseEntity<String> response = template.exchange(documentUploadURI, POST, new HttpEntity<>(getBase64("/images/image1.jpg")), String.class);
 
         assertThat(response.getStatusCode().value()).isEqualTo(OK.value());
@@ -141,7 +141,7 @@ public class DocumentResourceTest {
         quote = quoteService.updateQuote(quote);
         Policy policy = getPolicy(quote, sessionId);
 
-        URI documentUploadURI = new URI("http://localhost:" + port + "/documents/" + policy.getPolicyId() + "/thai/id");
+        URI documentUploadURI = new URI("http://localhost:" + port + "/documents/policies/" + policy.getPolicyId() + "/thai/id");
         ResponseEntity<String> response = template.exchange(documentUploadURI, POST, new HttpEntity<>(getBase64("/images/image2.png")), String.class);
 
         assertThat(response.getStatusCode().value()).isEqualTo(OK.value());

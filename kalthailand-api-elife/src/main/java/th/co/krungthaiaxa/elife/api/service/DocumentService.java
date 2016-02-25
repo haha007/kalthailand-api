@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.elife.api.model.Document;
 import th.co.krungthaiaxa.elife.api.model.DocumentDownload;
 import th.co.krungthaiaxa.elife.api.model.Policy;
+import th.co.krungthaiaxa.elife.api.model.enums.DocumentType;
 import th.co.krungthaiaxa.elife.api.repository.DocumentDownloadRepository;
 import th.co.krungthaiaxa.elife.api.repository.DocumentRepository;
 import th.co.krungthaiaxa.elife.api.repository.PolicyRepository;
@@ -29,13 +30,17 @@ public class DocumentService {
         this.policyRepository = policyRepository;
     }
 
-    public Document addDocument(Policy policy, byte[] encodedContent, String mimeType, String documentTypeName) {
+    public DocumentDownload downloadDocument(String documentId) {
+        return documentDownloadRepository.findByDocumentId(documentId);
+    }
+
+    public Document addDocument(Policy policy, byte[] encodedContent, String mimeType, DocumentType documentTypeName) {
         LocalDateTime now = now(of(SHORT_IDS.get("VST")));
 
         Document document = new Document();
         document.setCreationDate(now);
         document.setPolicyId(policy.getPolicyId());
-        document.setTypeName(documentTypeName);
+        document.setTypeName(documentTypeName.name());
         document = documentRepository.save(document);
 
         DocumentDownload documentDownload = new DocumentDownload();

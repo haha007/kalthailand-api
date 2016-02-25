@@ -112,7 +112,7 @@ public class PolicyResource {
 
     @ApiOperation(value = "Update Policy payment", notes = "Updates a specific payment of a Policy. " +
             "Fields 'payment effective date' and 'payment status' will be calculated according to the given status " +
-            "and the amount compare to the amount expected.", response = Payment.class)
+            "and the amount compare to the amount expected.", response = Policy.class)
     @ApiResponses({
             @ApiResponse(code = 404, message = "If the policy doesn't exist", response = Error.class),
             @ApiResponse(code = 406, message = "If the payment id is not found in the policy payment list", response = Error.class)
@@ -148,13 +148,19 @@ public class PolicyResource {
             return new ResponseEntity<>(POLICY_DOES_NOT_EXIST, NOT_FOUND);
         }
 
-        if (!policy.getPayments().stream().map(Payment::getPaymentId).anyMatch(tmp -> tmp.equals(paymentId))) {
+        Optional<Payment> payment = policy.getPayments().stream().filter(tmp -> tmp.getPaymentId().equals(paymentId)).findFirst();
+        if (!payment.isPresent()) {
             logger.error("Unable to find the payment with ID [" + paymentId + "] in the policy with ID [" + policyId + "]");
             return new ResponseEntity<>(POLICY_DOES_NOT_CONTAIN_PAYMENT, NOT_ACCEPTABLE);
         }
 
-        Payment payment = policyService.updatePayment(paymentId, value, currencyCode, registrationKey, status, channelType, creditCardName, paymentMethod, errorMessage);
-        return new ResponseEntity<>(JsonUtil.getJson(payment), OK);
+        try {
+            policy = policyService.updatePayment(policy, payment.get(), value, currencyCode, registrationKey, status,
+                    channelType, creditCardName, paymentMethod, errorMessage);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(JsonUtil.getJson(policy), OK);
     }
 
     @ApiOperation(value = "Ereceipt", notes = "Get the ereceipt of a policy by return base64 image", response = String.class)
@@ -166,10 +172,7 @@ public class PolicyResource {
     public ResponseEntity getPolicyEreceipt(
             @ApiParam(value = "The policy ID")
             @PathVariable String policyId) {
-
         Policy policy;
-        byte[] bytes = null;
-        StringBuilder im = null;
         try {
             policy = policyService.findPolicy(policyId);
         } catch (Exception e) {
@@ -177,6 +180,7 @@ public class PolicyResource {
             return new ResponseEntity<>(POLICY_DOES_NOT_EXIST, NOT_FOUND);
         }
 
+        byte[] bytes;
         try {
             bytes = policyService.createEreceipt(policy);
         } catch (IOException e) {
@@ -184,6 +188,7 @@ public class PolicyResource {
             return new ResponseEntity<>(UNABLE_TO_CREATE_ERECEIPT, INTERNAL_SERVER_ERROR);
         }
 
+        StringBuilder im;
         try {
             im = new StringBuilder(storePath);
             im.append(File.separator + ERECEIPT_PDF_FILE_NAME);
