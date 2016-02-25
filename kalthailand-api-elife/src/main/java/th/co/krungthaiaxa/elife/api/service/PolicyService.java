@@ -116,10 +116,10 @@ public class PolicyService {
 
     public Policy updatePayment(Policy policy, Payment payment, Double value, String currencyCode, String registrationKey,
                                 SuccessErrorStatus status, ChannelType channelType, String creditCardName,
-                                String paymentMethod, String errorMessage) throws IOException {
+                                String paymentMethod, Optional<String> errorMessage) throws IOException {
         if (!currencyCode.equals(payment.getAmount().getCurrencyCode())) {
             status = ERROR;
-            errorMessage = "Currencies are different";
+            errorMessage = Optional.of("Currencies are different");
         }
 
         Amount amount = new Amount();
@@ -132,7 +132,7 @@ public class PolicyService {
         paymentInformation.setCreditCardName(creditCardName);
         paymentInformation.setDate(LocalDate.now(ZoneId.of(ZoneId.SHORT_IDS.get("VST"))));
         paymentInformation.setMethod(paymentMethod);
-        paymentInformation.setRejectionErrorMessage(errorMessage);
+        paymentInformation.setRejectionErrorMessage(errorMessage.isPresent() ? errorMessage.get() : null);
         paymentInformation.setStatus(status);
         payment.getPaymentInformations().add(paymentInformation);
         if (registrationKey != null && !registrationKey.equals(payment.getRegistrationKey())) {

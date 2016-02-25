@@ -23,6 +23,7 @@ import th.co.krungthaiaxa.elife.api.utils.ImageUtil;
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -117,7 +118,7 @@ public class PolicyServiceTest {
         payment.getAmount().setValue(100.0);
         assertThat(payment.getStatus()).isEqualTo(FUTURE);
 
-        policyService.updatePayment(policy, payment, 100.0, "THB", null, ERROR, LINE, null, null, "Error msg");
+        policyService.updatePayment(policy, payment, 100.0, "THB", null, ERROR, LINE, null, null, Optional.of("Error msg"));
         policy.getPayments().get(0);
 
         assertThat(payment.getEffectiveDate()).isNull();

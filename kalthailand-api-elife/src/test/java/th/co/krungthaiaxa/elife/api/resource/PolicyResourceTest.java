@@ -19,6 +19,7 @@ import th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.elife.api.model.Payment;
 import th.co.krungthaiaxa.elife.api.model.Policy;
 import th.co.krungthaiaxa.elife.api.model.Quote;
+import th.co.krungthaiaxa.elife.api.model.enums.ChannelType;
 import th.co.krungthaiaxa.elife.api.model.error.Error;
 import th.co.krungthaiaxa.elife.api.products.Product10EC;
 import th.co.krungthaiaxa.elife.api.repository.PolicyRepository;
@@ -33,11 +34,15 @@ import java.util.List;
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpMethod.PUT;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
+import static th.co.krungthaiaxa.elife.api.model.enums.PaymentStatus.FUTURE;
 import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_QUARTER;
 import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_YEAR;
+import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.ERROR;
+import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.SUCCESS;
 import static th.co.krungthaiaxa.elife.api.model.error.ErrorCode.QUOTE_DOES_NOT_EXIST_OR_ACCESS_DENIED;
 import static th.co.krungthaiaxa.elife.api.resource.TestUtil.*;
 
@@ -125,7 +130,64 @@ public class PolicyResourceTest {
     }
 
     @Test
-    public void should_return_base64_and_also_save_pdf_format_to_file_system() {
+    public void should_be_able_to_update_payment_without_error_message() throws QuoteCalculationException, IOException, URISyntaxException {
+        String sessionId = randomNumeric(20);
 
+        Quote quote = quoteService.createQuote(sessionId, product10EC.getCommonData(), LINE);
+        quote(quote, EVERY_YEAR, 1000000.0, insured(35), beneficiary(100.0));
+        quote = quoteService.updateQuote(quote);
+
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUri(base)
+                .queryParam("sessionId", sessionId)
+                .queryParam("channelType", LINE.name());
+        ResponseEntity<String> response = template.exchange(builder.toUriString(), POST, new HttpEntity<>(getJSon(quote)), String.class);
+        assertThat(response.getStatusCode().value()).isEqualTo(OK.value());
+        Policy policy = TestUtil.getPolicyFromJSon(response.getBody());
+
+        URI paymentURI = new URI("http://localhost:" + port + "/policies/" + policy.getPolicyId() + "/payments/" + policy.getPayments().get(0).getPaymentId());
+        UriComponentsBuilder updatePaymentBuilder = UriComponentsBuilder.fromUri(paymentURI)
+                .queryParam("value", 200.0)
+                .queryParam("currencyCode", "THB")
+                .queryParam("registrationKey", "something")
+                .queryParam("status", SUCCESS)
+                .queryParam("channelType", LINE)
+                .queryParam("creditCardName", "myCreditCardName")
+                .queryParam("paymentMethod", "myPaymentMethod");
+        ResponseEntity<String> updatePaymentResponse = template.exchange(updatePaymentBuilder.toUriString(), PUT, new HttpEntity<>(getJSon(quote)), String.class);
+        Policy updatedPolicy = TestUtil.getPolicyFromJSon(updatePaymentResponse.getBody());
+        assertThat(updatePaymentResponse.getStatusCode().value()).isEqualTo(OK.value());
+        assertThat(updatedPolicy.getPayments().get(0).getStatus()).isNotEqualTo(FUTURE);
     }
+
+    @Test
+    public void should_be_able_to_update_payment_with_error_message() throws QuoteCalculationException, IOException, URISyntaxException {
+        String sessionId = randomNumeric(20);
+
+        Quote quote = quoteService.createQuote(sessionId, product10EC.getCommonData(), LINE);
+        quote(quote, EVERY_YEAR, 1000000.0, insured(35), beneficiary(100.0));
+        quote = quoteService.updateQuote(quote);
+
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUri(base)
+                .queryParam("sessionId", sessionId)
+                .queryParam("channelType", LINE.name());
+        ResponseEntity<String> response = template.exchange(builder.toUriString(), POST, new HttpEntity<>(getJSon(quote)), String.class);
+        assertThat(response.getStatusCode().value()).isEqualTo(OK.value());
+        Policy policy = TestUtil.getPolicyFromJSon(response.getBody());
+
+        URI paymentURI = new URI("http://localhost:" + port + "/policies/" + policy.getPolicyId() + "/payments/" + policy.getPayments().get(0).getPaymentId());
+        UriComponentsBuilder updatePaymentBuilder = UriComponentsBuilder.fromUri(paymentURI)
+                .queryParam("value", 200.0)
+                .queryParam("currencyCode", "THB")
+                .queryParam("registrationKey", "something")
+                .queryParam("status", ERROR)
+                .queryParam("channelType", LINE)
+                .queryParam("creditCardName", "myCreditCardName")
+                .queryParam("paymentMethod", "myPaymentMethod")
+                .queryParam("errorMessage", "myErrorMessage");
+        ResponseEntity<String> updatePaymentResponse = template.exchange(updatePaymentBuilder.toUriString(), PUT, new HttpEntity<>(getJSon(quote)), String.class);
+        Policy updatedPolicy = TestUtil.getPolicyFromJSon(updatePaymentResponse.getBody());
+        assertThat(updatePaymentResponse.getStatusCode().value()).isEqualTo(OK.value());
+        assertThat(updatedPolicy.getPayments().get(0).getStatus()).isNotEqualTo(FUTURE);
+    }
+
 }

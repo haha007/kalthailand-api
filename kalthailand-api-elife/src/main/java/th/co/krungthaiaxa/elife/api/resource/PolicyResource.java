@@ -115,7 +115,8 @@ public class PolicyResource {
             "and the amount compare to the amount expected.", response = Policy.class)
     @ApiResponses({
             @ApiResponse(code = 404, message = "If the policy doesn't exist", response = Error.class),
-            @ApiResponse(code = 406, message = "If the payment id is not found in the policy payment list", response = Error.class)
+            @ApiResponse(code = 406, message = "If the payment id is not found in the policy payment list", response = Error.class),
+            @ApiResponse(code = 500, message = "If the payment has not been updated", response = Error.class)
     })
     @RequestMapping(value = "/policies/{policyId}/payments/{paymentId}", produces = APPLICATION_JSON_VALUE, method = PUT)
     @ResponseBody
@@ -139,7 +140,7 @@ public class PolicyResource {
             @ApiParam(value = "The payment method given by the channel (if any)", required = false)
             @RequestParam String paymentMethod,
             @ApiParam(value = "The error message given by the channel (if any)", required = false)
-            @RequestParam String errorMessage) {
+            @RequestParam Optional<String> errorMessage) {
         Policy policy;
         try {
             policy = policyService.findPolicy(policyId);
@@ -158,7 +159,8 @@ public class PolicyResource {
             policy = policyService.updatePayment(policy, payment.get(), value, currencyCode, registrationKey, status,
                     channelType, creditCardName, paymentMethod, errorMessage);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Unable to update the payment with ID [" + paymentId + "] in the policy with ID [" + policyId + "]");
+            return new ResponseEntity<>(PAYMENT_NOT_UPDATED, INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity<>(JsonUtil.getJson(policy), OK);
     }
