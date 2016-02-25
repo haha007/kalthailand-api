@@ -894,16 +894,6 @@ public class Product10ECTest {
     }
 
     @Test
-    public void should_return_error_when_create_policy_with_at_least_one_person_with_no_middle_name() throws Exception {
-        final Quote quote = quote(EVERY_YEAR, insured(25), beneficiary(100.0));
-        quote.getInsureds().get(0).getPerson().setMiddleName(null);
-        Policy policy = new Policy();
-        assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
-                .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(PolicyValidationException.personWithNoMiddleName.getMessage());
-    }
-
-    @Test
     public void should_return_error_when_create_policy_with_at_least_one_person_with_no_surname() throws Exception {
         final Quote quote = quote(EVERY_YEAR, insured(25), beneficiary(100.0));
         quote.getInsureds().get(0).getPerson().setSurName(null);

@@ -432,8 +432,6 @@ public class Product10EC implements Product {
             throw PolicyValidationException.insuredWithNoPerson;
         } else if (insured.getPerson().getGivenName() == null) {
             throw PolicyValidationException.personWithNoGivenName;
-        } else if (insured.getPerson().getMiddleName() == null) {
-            throw PolicyValidationException.personWithNoMiddleName;
         } else if (insured.getPerson().getSurName() == null) {
             throw PolicyValidationException.personWithNoSurname;
         } else if (insured.getPerson().getTitle() == null) {

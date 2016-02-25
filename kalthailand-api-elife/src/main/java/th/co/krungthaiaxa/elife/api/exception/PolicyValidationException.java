@@ -24,7 +24,6 @@ public class PolicyValidationException extends Exception {
 
     public static PolicyValidationException insuredWithNoPerson = new PolicyValidationException("Insured has no person data.");
     public static PolicyValidationException personWithNoGivenName = new PolicyValidationException("Insured person has no given name.");
-    public static PolicyValidationException personWithNoMiddleName = new PolicyValidationException("Insured person has no middle name.");
     public static PolicyValidationException personWithNoSurname = new PolicyValidationException("Insured person has no surname.");
     public static PolicyValidationException personWithNoTitle = new PolicyValidationException("Insured person has no title.");
     public static PolicyValidationException personWithInvalidThaiIdNumber = new PolicyValidationException("Insured person has an invalid Thai ID number.");
