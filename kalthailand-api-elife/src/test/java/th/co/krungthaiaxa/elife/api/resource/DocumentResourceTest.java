@@ -16,6 +16,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 import th.co.krungthaiaxa.elife.api.KalApiApplication;
 import th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.elife.api.model.Policy;
@@ -148,9 +149,8 @@ public class DocumentResourceTest {
 
     private Policy getPolicy(Quote quote) throws URISyntaxException, IOException {
         URI quoteCreationURI = new URI("http://localhost:" + port + "/policies");
-        MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
-        parameters.add("jsonQuote", getJSon(quote));
-        ResponseEntity<String> response = template.postForEntity(quoteCreationURI, parameters, String.class);
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUri(quoteCreationURI);
+        ResponseEntity<String> response = template.exchange(builder.toUriString(), POST, new HttpEntity<>(getJSon(quote)), String.class);
         return TestUtil.getPolicyFromJSon(response.getBody());
     }
 

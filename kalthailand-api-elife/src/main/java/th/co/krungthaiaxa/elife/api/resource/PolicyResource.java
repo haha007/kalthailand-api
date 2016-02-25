@@ -7,10 +7,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import th.co.krungthaiaxa.elife.api.exception.ImageTooSmallException;
-import th.co.krungthaiaxa.elife.api.exception.InputImageException;
-import th.co.krungthaiaxa.elife.api.exception.OutputImageException;
-import th.co.krungthaiaxa.elife.api.exception.UnsupportedImageException;
 import th.co.krungthaiaxa.elife.api.model.Payment;
 import th.co.krungthaiaxa.elife.api.model.Policy;
 import th.co.krungthaiaxa.elife.api.model.Quote;
@@ -21,14 +17,10 @@ import th.co.krungthaiaxa.elife.api.service.EmailService;
 import th.co.krungthaiaxa.elife.api.service.PolicyService;
 import th.co.krungthaiaxa.elife.api.utils.ImageUtil;
 import th.co.krungthaiaxa.elife.api.utils.JsonUtil;
-import th.co.krungthaiaxa.elife.api.utils.WatermarkUtil;
 
 import javax.inject.Inject;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URLConnection;
 import java.util.Base64;
 
 import static org.springframework.http.HttpStatus.*;
@@ -66,7 +58,7 @@ public class PolicyResource {
     public ResponseEntity createPolicy(
             @ApiParam(value = "The json of the quote to create the policy from. This quote will go through maximum " +
                     "validations")
-            @RequestParam String jsonQuote) {
+            @RequestBody String jsonQuote) {
         Quote quote;
         try {
             quote = JsonUtil.mapper.readValue(jsonQuote, Quote.class);
