@@ -30,6 +30,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static th.co.krungthaiaxa.elife.api.exception.PolicyValidationException.emptyQuote;
 import static th.co.krungthaiaxa.elife.api.exception.PolicyValidationException.noneExistingQuote;
 import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
+import static th.co.krungthaiaxa.elife.api.model.enums.DocumentType.ERECEIPT_IMAGE;
+import static th.co.krungthaiaxa.elife.api.model.enums.DocumentType.ERECEIPT_PDF;
 import static th.co.krungthaiaxa.elife.api.model.enums.PaymentStatus.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_HALF_YEAR;
 import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_YEAR;
@@ -94,7 +96,7 @@ public class PolicyServiceTest {
     }
 
     @Test
-    public void should_add_only_one_document_of_type_ereceipt_when_updating_payment() throws Exception {
+    public void should_add_only_2_documents_of_type_ereceipt_when_updating_payment() throws Exception {
         Policy policy = getPolicy();
 
         Payment payment = policy.getPayments().get(0);
@@ -104,7 +106,7 @@ public class PolicyServiceTest {
         policyService.updatePayment(policy, payment, 50.0, "THB", null, SUCCESS, LINE, null, null, null);
         policyService.updatePayment(policy, payment, 50.0, "THB", null, SUCCESS, LINE, null, null, null);
 
-        assertThat(policy.getDocuments()).extracting("typeName").containsExactly("ERECEIPT");
+        assertThat(policy.getDocuments()).extracting("typeName").containsExactly(ERECEIPT_IMAGE, ERECEIPT_PDF);
     }
 
     @Test

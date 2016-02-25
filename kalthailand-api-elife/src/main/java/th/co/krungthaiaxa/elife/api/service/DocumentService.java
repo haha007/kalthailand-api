@@ -34,13 +34,13 @@ public class DocumentService {
         return documentDownloadRepository.findByDocumentId(documentId);
     }
 
-    public Document addDocument(Policy policy, byte[] encodedContent, String mimeType, DocumentType documentTypeName) {
+    public Document addDocument(Policy policy, byte[] encodedContent, String mimeType, DocumentType documentType) {
         LocalDateTime now = now(of(SHORT_IDS.get("VST")));
 
         Document document = new Document();
         document.setCreationDate(now);
         document.setPolicyId(policy.getPolicyId());
-        document.setTypeName(documentTypeName.name());
+        document.setTypeName(documentType);
         document = documentRepository.save(document);
 
         DocumentDownload documentDownload = new DocumentDownload();

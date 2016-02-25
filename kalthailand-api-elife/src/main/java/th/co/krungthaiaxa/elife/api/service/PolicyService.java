@@ -33,7 +33,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import static th.co.krungthaiaxa.elife.api.model.enums.DocumentType.ERECEIPT;
+import static th.co.krungthaiaxa.elife.api.model.enums.DocumentType.ERECEIPT_IMAGE;
+import static th.co.krungthaiaxa.elife.api.model.enums.DocumentType.ERECEIPT_PDF;
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.ERROR;
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.SUCCESS;
 
@@ -153,11 +154,20 @@ public class PolicyService {
             payment.setEffectiveDate(paymentInformation.getDate());
         }
 
+        byte[] ereceiptImage;
+        Optional<Document> documentImage = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(ERECEIPT_IMAGE)).findFirst();
+        if (!documentImage.isPresent()) {
+            ereceiptImage = createEreceipt(policy);
+            byte[] encodedContent = Base64.getEncoder().encode(ereceiptImage);
+            documentService.addDocument(policy, encodedContent, "image/png", ERECEIPT_IMAGE);
+        } else {
+            ereceiptImage = Base64.getDecoder().decode(documentService.downloadDocument(documentImage.get().getId()).getContent().getBytes());
+        }
 
-        Optional<Document> document = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(ERECEIPT.name())).findFirst();
-        if (!document.isPresent()) {
-            byte[] encodedContent = Base64.getEncoder().encode(createEreceipt(policy));
-            documentService.addDocument(policy, encodedContent, "application/pdf", ERECEIPT);
+        Optional<Document> documentPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(ERECEIPT_PDF)).findFirst();
+        if (!documentPdf.isPresent()) {
+            byte[] encodedContent = Base64.getEncoder().encode(ereceiptImage);
+            documentService.addDocument(policy, encodedContent, "application/pdf", ERECEIPT_PDF);
         }
 
         paymentRepository.save(payment);
@@ -311,6 +321,5 @@ public class PolicyService {
         }
 
         return bytes;
-
     }
 }

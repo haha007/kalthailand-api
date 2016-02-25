@@ -3,6 +3,7 @@ package th.co.krungthaiaxa.elife.api.model;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.springframework.data.annotation.Id;
+import th.co.krungthaiaxa.elife.api.model.enums.DocumentType;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -14,7 +15,7 @@ public class Document implements Serializable {
     @Id
     private String id;
     private String policyId;
-    private String typeName;
+    private DocumentType typeName;
     private LocalDateTime creationDate;
 
     @ApiModelProperty(value = "Identifier of the document")
@@ -36,11 +37,11 @@ public class Document implements Serializable {
     }
 
     @ApiModelProperty(value = "Localized type of the document")
-    public String getTypeName() {
+    public DocumentType getTypeName() {
         return typeName;
     }
 
-    public void setTypeName(String typeName) {
+    public void setTypeName(DocumentType typeName) {
         this.typeName = typeName;
     }
 

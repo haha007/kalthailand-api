@@ -23,7 +23,8 @@ import java.util.Base64;
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
-import static th.co.krungthaiaxa.elife.api.model.enums.DocumentType.ERECEIPT;
+import static th.co.krungthaiaxa.elife.api.model.enums.DocumentType.ERECEIPT_IMAGE;
+import static th.co.krungthaiaxa.elife.api.model.enums.DocumentType.ERECEIPT_PDF;
 import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_YEAR;
 import static th.co.krungthaiaxa.elife.api.resource.TestUtil.*;
 
@@ -52,8 +53,8 @@ public class DocumentServiceTest {
         Policy policy = policyService.createPolicy(quote1);
         assertThat(policy.getDocuments()).hasSize(0);
 
-        Document document1 = documentService.addDocument(policy, Base64.getEncoder().encode("something".getBytes()), "image/jpg", ERECEIPT);
-        Document document2 = documentService.addDocument(policy, Base64.getEncoder().encode("something".getBytes()), "image/jpg", ERECEIPT);
+        Document document1 = documentService.addDocument(policy, Base64.getEncoder().encode("something".getBytes()), "image/jpg", ERECEIPT_IMAGE);
+        Document document2 = documentService.addDocument(policy, Base64.getEncoder().encode("something".getBytes()), "image/jpg", ERECEIPT_PDF);
         Policy savedPolicy = policyService.findPolicy(policy.getPolicyId());
 
         assertThat(savedPolicy.getDocuments()).containsExactly(document1, document2);
@@ -67,16 +68,16 @@ public class DocumentServiceTest {
         Policy policy = policyService.createPolicy(quote1);
         assertThat(policy.getDocuments()).hasSize(0);
 
-        Document document = documentService.addDocument(policy, Base64.getEncoder().encode("something".getBytes()), "image/jpg", ERECEIPT);
+        Document document = documentService.addDocument(policy, Base64.getEncoder().encode("something".getBytes()), "image/png", ERECEIPT_IMAGE);
         DocumentDownload documentDownload = documentDownloadRepository.findByDocumentId(document.getId());
         assertThat(document.getCreationDate()).isNotNull();
         assertThat(document.getId()).isNotNull();
         assertThat(document.getPolicyId()).isEqualTo(policy.getPolicyId());
-        assertThat(document.getTypeName()).isEqualTo("ERECEIPT");
+        assertThat(document.getTypeName()).isEqualTo(ERECEIPT_IMAGE);
         assertThat(documentDownload.getContent()).isNotNull();
         assertThat(documentDownload.getDocumentId()).isEqualTo(document.getId());
         assertThat(documentDownload.getId()).isNotNull();
-        assertThat(documentDownload.getMimeType()).isEqualTo("image/jpg");
+        assertThat(documentDownload.getMimeType()).isEqualTo("image/png");
         assertThat(documentDownload.getName()).isNull();
     }
 }
