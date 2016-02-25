@@ -18,7 +18,7 @@ import java.util.Objects;
 public class Quote implements Serializable {
     @Id
     private String id;
-    @Indexed
+    @Indexed(unique = true)
     private String quoteId;
     private CommonData commonData;
     private PremiumsData premiumsData;
