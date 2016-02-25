@@ -15,6 +15,7 @@ import th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus;
 import th.co.krungthaiaxa.elife.api.model.error.Error;
 import th.co.krungthaiaxa.elife.api.service.EmailService;
 import th.co.krungthaiaxa.elife.api.service.PolicyService;
+import th.co.krungthaiaxa.elife.api.service.QuoteService;
 import th.co.krungthaiaxa.elife.api.utils.ImageUtil;
 import th.co.krungthaiaxa.elife.api.utils.JsonUtil;
 
@@ -22,6 +23,7 @@ import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.util.Base64;
+import java.util.Optional;
 
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -36,13 +38,15 @@ public class PolicyResource {
     @Value("${path.store.watermarked.image}")
     private String storePath;
     private final PolicyService policyService;
+    private final QuoteService quoteService;
     @Value("${path.store.elife.ereceipt.pdf}")
     private String eReceiptPdfStorePath;
     private final EmailService emailService;
 
     @Inject
-    public PolicyResource(PolicyService policyService, EmailService emailService) {
+    public PolicyResource(PolicyService policyService, QuoteService quoteService, EmailService emailService) {
         this.policyService = policyService;
+        this.quoteService = quoteService;
         this.emailService = emailService;
     }
 
@@ -56,6 +60,10 @@ public class PolicyResource {
     @RequestMapping(value = "/policies", produces = APPLICATION_JSON_VALUE, method = POST)
     @ResponseBody
     public ResponseEntity createPolicy(
+            @ApiParam(value = "The session id the quote is in")
+            @RequestParam String sessionId,
+            @ApiParam(value = "The channel being used to create the quote.")
+            @RequestParam ChannelType channelType,
             @ApiParam(value = "The json of the quote to create the policy from. This quote will go through maximum " +
                     "validations")
             @RequestBody String jsonQuote) {
@@ -65,6 +73,11 @@ public class PolicyResource {
         } catch (IOException e) {
             logger.error("Unable to get a quote out of [" + jsonQuote + "]", e);
             return new ResponseEntity<>(INVALID_QUOTE_PROVIDED, NOT_ACCEPTABLE);
+        }
+
+        Optional<Quote> tmp = quoteService.findByQuoteId(quote.getQuoteId(), sessionId, channelType);
+        if (!tmp.isPresent()) {
+            return new ResponseEntity<>(QUOTE_DOES_NOT_EXIST_OR_ACCESS_DENIED, NOT_FOUND);
         }
 
         Policy policy;
