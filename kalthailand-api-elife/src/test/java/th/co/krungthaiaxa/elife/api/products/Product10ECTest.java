@@ -1106,13 +1106,11 @@ public class Product10ECTest {
     }
 
     @Test
-    public void should_return_error_when_create_policy_with_main_insured_with_address_but_no_country() throws Exception {
+    public void should_return_thailand_as_countruy_when_create_policy_with_main_insured_with_address_but_no_country() throws Exception {
         final Quote quote = quote(EVERY_YEAR, insured(25), beneficiary(100.0));
-        quote.getInsureds().get(0).getPerson().getCurrentAddress().setCountry(null);
         Policy policy = new Policy();
-        assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
-                .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(PolicyValidationException.addressWithNoCountry.getMessage());
+        product10EC.getPolicyFromQuote(policy, quote);
+        assertThat(policy.getInsureds().get(0).getPerson().getCurrentAddress().getCountry()).isEqualTo("Thailand");
     }
 
     @Test

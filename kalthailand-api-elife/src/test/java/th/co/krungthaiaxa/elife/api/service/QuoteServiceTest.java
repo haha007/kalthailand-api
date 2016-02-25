@@ -11,6 +11,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.elife.api.KalApiApplication;
 import th.co.krungthaiaxa.elife.api.data.SessionQuote;
+import th.co.krungthaiaxa.elife.api.exception.PolicyValidationException;
 import th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.elife.api.model.Amount;
 import th.co.krungthaiaxa.elife.api.model.Quote;
@@ -32,6 +33,8 @@ import static th.co.krungthaiaxa.elife.api.resource.TestUtil.*;
 @ActiveProfiles("test")
 public class QuoteServiceTest {
 
+    @Inject
+    private PolicyService policyService;
     @Inject
     private QuoteService quoteService;
     @Inject
@@ -112,8 +115,23 @@ public class QuoteServiceTest {
         quote2 = quoteService.updateQuote(quote2);
 
         Optional<Quote> quote = quoteService.getLatestQuote(sessionId, LINE);
-        assertThat(quote.isPresent()).isTrue();
         assertThat(quote.get()).isEqualTo(quote2);
+    }
+
+    @Test
+    public void should_get_latest_quote_that_has_not_been_transformed_into_policy() throws QuoteCalculationException, PolicyValidationException {
+        String sessionId = RandomStringUtils.randomNumeric(20);
+
+        Quote quote1 = quoteService.createQuote(sessionId, product10EC.getCommonData(), LINE);
+        quote(quote1, EVERY_YEAR, 100000.0, insured(35), beneficiary(100.0));
+        quoteService.updateQuote(quote1);
+        Quote quote2 = quoteService.createQuote(sessionId, product10EC.getCommonData(), LINE);
+        quote(quote2, EVERY_MONTH, 200000.0, insured(35), beneficiary(100.0));
+        quote2 = quoteService.updateQuote(quote2);
+        policyService.createPolicy(quote2);
+
+        Optional<Quote> quote = quoteService.getLatestQuote(sessionId, LINE);
+        assertThat(quote.get()).isEqualTo(quote1);
     }
 
     @Test

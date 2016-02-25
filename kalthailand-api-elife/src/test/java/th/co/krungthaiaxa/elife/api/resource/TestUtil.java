@@ -180,7 +180,6 @@ public class TestUtil {
         insured.setHealthStatus(healthStatus);
 
         GeographicalAddress geographicalAddress = new GeographicalAddress();
-        geographicalAddress.setCountry("ไทย");
         geographicalAddress.setDistrict("จตุจักร");
         geographicalAddress.setPostCode("10900");
         geographicalAddress.setStreetAddress1("Condo U-delight");

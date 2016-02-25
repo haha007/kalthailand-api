@@ -69,7 +69,7 @@ public class PolicyServiceTest {
     }
 
     @Test
-    public void should_delete_1_quote_when_policy_has_been_created() throws QuoteCalculationException, PolicyValidationException {
+    public void should_update_quote_with_policy_id_when_policy_has_been_created() throws QuoteCalculationException, PolicyValidationException {
         String sessionId = randomNumeric(20);
 
         Quote quote1 = quoteService.createQuote(sessionId, product10EC.getCommonData(), LINE);
@@ -79,10 +79,10 @@ public class PolicyServiceTest {
         Quote quote2 = quoteService.createQuote(sessionId, product10EC.getCommonData(), LINE);
         quote(quote2, EVERY_YEAR, 1000000.0, insured(35), beneficiary(100.0));
         quote2 = quoteService.updateQuote(quote2);
-        policyService.createPolicy(quote2);
+        Policy policy = policyService.createPolicy(quote2);
 
-        assertThat(quoteService.findByQuoteId(quote1.getQuoteId(), sessionId, LINE).isPresent()).isTrue();
-        assertThat(quoteService.findByQuoteId(quote2.getQuoteId(), sessionId, LINE).isPresent()).isFalse();
+        assertThat(quoteService.findByQuoteId(quote1.getQuoteId(), sessionId, LINE).get().getPolicyId()).isNull();
+        assertThat(quoteService.findByQuoteId(quote2.getQuoteId(), sessionId, LINE).get().getPolicyId()).isEqualTo(policy.getPolicyId());
     }
 
     @Test

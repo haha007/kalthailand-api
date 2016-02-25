@@ -39,8 +39,11 @@ public class QuoteService {
         if (sessionQuote == null) {
             return Optional.empty();
         }
+
+        // should return latest quote that is not finished, meaning that hasn't been transformed into a Policy
         return sessionQuote.getQuotes().stream()
                 .filter(quote1 -> quote1 != null)
+                .filter(quote1 -> quote1.getPolicyId() == null)
                 .findFirst();
     }
 

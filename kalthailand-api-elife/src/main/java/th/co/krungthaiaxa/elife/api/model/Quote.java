@@ -20,6 +20,7 @@ public class Quote implements Serializable {
     private String id;
     @Indexed(unique = true)
     private String quoteId;
+    private String policyId;
     private CommonData commonData;
     private PremiumsData premiumsData;
     private List<Insured> insureds = new ArrayList<>();
@@ -27,6 +28,7 @@ public class Quote implements Serializable {
     private LocalDateTime creationDateTime;
     private LocalDateTime lastUpdateDateTime;
 
+    @ApiModelProperty(required = true, value = "Quote ID")
     public String getId() {
         return id;
     }
@@ -42,6 +44,15 @@ public class Quote implements Serializable {
 
     public void setQuoteId(String quoteId) {
         this.quoteId = quoteId;
+    }
+
+    @ApiModelProperty(required = true, value = "ID of the Policy if the quote has been transformed to a Policy")
+    public String getPolicyId() {
+        return policyId;
+    }
+
+    public void setPolicyId(String policyId) {
+        this.policyId = policyId;
     }
 
     @ApiModelProperty(required = true, value = "Data common to all quotes commercial types")

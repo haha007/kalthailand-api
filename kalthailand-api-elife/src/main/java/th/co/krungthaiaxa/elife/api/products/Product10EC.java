@@ -386,8 +386,6 @@ public class Product10EC implements Product {
     private static void checkGeographicalAddress(GeographicalAddress address) throws PolicyValidationException {
         if (address == null) {
             return;
-        } else if (address.getCountry() == null) {
-            throw PolicyValidationException.addressWithNoCountry;
         } else if (address.getDistrict() == null) {
             throw PolicyValidationException.addressWithNoDistrict;
         } else if (address.getPostCode() == null) {

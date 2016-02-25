@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.elife.api.data.PolicyNumber;
-import th.co.krungthaiaxa.elife.api.data.SessionQuote;
 import th.co.krungthaiaxa.elife.api.exception.PolicyValidationException;
 import th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.elife.api.model.*;
@@ -103,9 +102,8 @@ public class PolicyService {
             policy = policyRepository.save(policy);
             policyNumber.get().setPolicy(policy);
             policyNumberRepository.save(policyNumber.get());
-            SessionQuote sessionQuote = sessionQuoteRepository.findByQuotesContaining(quote);
-            sessionQuote.getQuotes().remove(quote);
-            sessionQuoteRepository.save(sessionQuote);
+            quote.setPolicyId(policy.getPolicyId());
+            quoteRepository.save(quote);
         }
 
         return policy;

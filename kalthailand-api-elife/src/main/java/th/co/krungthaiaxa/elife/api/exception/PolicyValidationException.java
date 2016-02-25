@@ -52,7 +52,6 @@ public class PolicyValidationException extends Exception {
     public static PolicyValidationException beneficiariesAgeAtSubscriptionEmpty = new PolicyValidationException("The beneficiaries age must be filled in.");
     public static PolicyValidationException beneficiariesWithWrongIDNumber = new PolicyValidationException("At least one beneficiary has an invalid Thai ID number.");
 
-    public static PolicyValidationException addressWithNoCountry = new PolicyValidationException("Country of the address cannot be empty.");
     public static PolicyValidationException addressWithNoDistrict = new PolicyValidationException("District of the address cannot be empty.");
     public static PolicyValidationException addressWithNoPostCode = new PolicyValidationException("Post code of the address cannot be empty.");
     public static PolicyValidationException addressWithNoStreetAddress1 = new PolicyValidationException("Street address (part 1) of the address cannot be empty.");
