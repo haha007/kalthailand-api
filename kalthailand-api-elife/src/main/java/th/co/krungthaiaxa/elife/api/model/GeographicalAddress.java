@@ -2,6 +2,7 @@ package th.co.krungthaiaxa.elife.api.model;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -14,7 +15,7 @@ public class GeographicalAddress implements Serializable {
     private String district;
     private String subdistrict;
     private String subCountry;
-    private String country;
+    private String country = "Thailand";
 
     @ApiModelProperty(value = "Street number")
     public String getStreetAddress1() {
@@ -76,7 +77,9 @@ public class GeographicalAddress implements Serializable {
     }
 
     public void setCountry(String country) {
-        this.country = country;
+        if (StringUtils.isNotEmpty(country)) {
+            this.country = country;
+        }
     }
 
     @Override
