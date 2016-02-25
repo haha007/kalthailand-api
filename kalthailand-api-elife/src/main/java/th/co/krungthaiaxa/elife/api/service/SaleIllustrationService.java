@@ -98,7 +98,7 @@ public class SaleIllustrationService {
 
         table.addCell(addData("เบี้ยประกัน", getFontHeaderStyle(),tbCols,TB_HORIZONTAL_ALIGN_LEFT,null));
 
-        table.addCell(addData("งวดชำระ"+quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().toString(), getFontNormalStyle(),null,TB_HORIZONTAL_ALIGN_LEFT,null));
+        table.addCell(addData("งวดชำระ"+getPeriodicityThai(quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().toString()), getFontNormalStyle(),null,TB_HORIZONTAL_ALIGN_LEFT,null));
 
         table.addCell(addData((new DecimalFormat(MONEY_DECIMAL_FORMAT)).format(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue())+" บาท", getFontNormalBlueStyle(),null,TB_HORIZONTAL_ALIGN_RIGHT,null));
 
@@ -279,6 +279,20 @@ public class SaleIllustrationService {
 
         return new File(PDF_OUT_PUT);
 
+    }
+
+    private String getPeriodicityThai(String periodicityEng){
+        String val = "";
+        if(periodicityEng.equals("EVERY_YEAR")){
+            val = "รายปี";
+        }else if(periodicityEng.equals("EVERY_HALF_YEAR")){
+            val = "ราย 6 เดือน";
+        }else if(periodicityEng.equals("EVERY_QUARTER")){
+            val = "ราย 3 เดือน";
+        }else if(periodicityEng.equals("EVERY_MONTH")){
+            val = "รายเดือน";
+        }
+        return val;
     }
 
     private Double getMinimumRefundEveryYear(Quote q){
