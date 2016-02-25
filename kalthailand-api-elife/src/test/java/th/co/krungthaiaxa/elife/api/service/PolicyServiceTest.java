@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
 
+import static java.util.Optional.empty;
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -104,8 +105,8 @@ public class PolicyServiceTest {
         payment.getAmount().setValue(100.0);
         assertThat(payment.getStatus()).isEqualTo(FUTURE);
 
-        policyService.updatePayment(policy, payment, 50.0, "THB", null, SUCCESS, LINE, null, null, null);
-        policyService.updatePayment(policy, payment, 50.0, "THB", null, SUCCESS, LINE, null, null, null);
+        policyService.updatePayment(policy, payment, 50.0, "THB", null, SUCCESS, LINE, null, null, empty());
+        policyService.updatePayment(policy, payment, 50.0, "THB", null, SUCCESS, LINE, null, null, empty());
 
         assertThat(policy.getDocuments()).extracting("typeName").containsExactly(ERECEIPT_IMAGE, ERECEIPT_PDF);
     }
@@ -135,7 +136,7 @@ public class PolicyServiceTest {
         payment.getAmount().setValue(100.0);
         assertThat(payment.getStatus()).isEqualTo(FUTURE);
 
-        policyService.updatePayment(policy, payment, 100.0, "THB", null, SUCCESS, LINE, null, null, null);
+        policyService.updatePayment(policy, payment, 100.0, "THB", null, SUCCESS, LINE, null, null, empty());
 
         assertThat(payment.getEffectiveDate()).isEqualTo(payment.getDueDate());
         assertThat(payment.getPaymentInformations()).hasSize(1);
@@ -151,8 +152,8 @@ public class PolicyServiceTest {
         payment.getAmount().setValue(100.0);
         assertThat(payment.getStatus()).isEqualTo(FUTURE);
 
-        policyService.updatePayment(policy, payment, 50.0, "THB", null, SUCCESS, LINE, null, null, null);
-        policyService.updatePayment(policy, payment, 50.0, "THB", null, SUCCESS, LINE, null, null, null);
+        policyService.updatePayment(policy, payment, 50.0, "THB", null, SUCCESS, LINE, null, null, empty());
+        policyService.updatePayment(policy, payment, 50.0, "THB", null, SUCCESS, LINE, null, null, empty());
 
         assertThat(payment.getEffectiveDate()).isEqualTo(payment.getDueDate());
         assertThat(payment.getPaymentInformations()).hasSize(2);
@@ -168,9 +169,9 @@ public class PolicyServiceTest {
         payment.getAmount().setValue(100.0);
         assertThat(payment.getStatus()).isEqualTo(FUTURE);
 
-        policyService.updatePayment(policy, payment, 50.0, "THB", null, SUCCESS, LINE, null, null, null);
-        policyService.updatePayment(policy, payment, 75.0, "THB", null, SUCCESS, LINE, null, null, null);
-        policyService.updatePayment(policy, payment, -25.0, "THB", null, SUCCESS, LINE, null, null, null);
+        policyService.updatePayment(policy, payment, 50.0, "THB", null, SUCCESS, LINE, null, null, empty());
+        policyService.updatePayment(policy, payment, 75.0, "THB", null, SUCCESS, LINE, null, null, empty());
+        policyService.updatePayment(policy, payment, -25.0, "THB", null, SUCCESS, LINE, null, null, empty());
 
         assertThat(payment.getEffectiveDate()).isEqualTo(payment.getDueDate());
         assertThat(payment.getPaymentInformations()).hasSize(3);
@@ -186,9 +187,9 @@ public class PolicyServiceTest {
         payment.getAmount().setValue(100.0);
         assertThat(payment.getStatus()).isEqualTo(FUTURE);
 
-        policyService.updatePayment(policy, payment, 50.0, "THB", null, SUCCESS, LINE, null, null, null);
-        policyService.updatePayment(policy, payment, 50.0, "THB", null, ERROR, LINE, null, null, null);
-        policyService.updatePayment(policy, payment, 50.0, "THB", null, SUCCESS, LINE, null, null, null);
+        policyService.updatePayment(policy, payment, 50.0, "THB", null, SUCCESS, LINE, null, null, empty());
+        policyService.updatePayment(policy, payment, 50.0, "THB", null, ERROR, LINE, null, null, empty());
+        policyService.updatePayment(policy, payment, 50.0, "THB", null, SUCCESS, LINE, null, null, empty());
 
         assertThat(payment.getEffectiveDate()).isEqualTo(payment.getDueDate());
         assertThat(payment.getPaymentInformations()).hasSize(3);
@@ -204,7 +205,7 @@ public class PolicyServiceTest {
         payment.getAmount().setValue(100.0);
         assertThat(payment.getStatus()).isEqualTo(FUTURE);
 
-        policyService.updatePayment(policy, payment, 100.0, "EUR", null, SUCCESS, LINE, null, null, null);
+        policyService.updatePayment(policy, payment, 100.0, "EUR", null, SUCCESS, LINE, null, null, empty());
 
         assertThat(payment.getEffectiveDate()).isNull();
         assertThat(payment.getPaymentInformations()).hasSize(1);
@@ -220,7 +221,7 @@ public class PolicyServiceTest {
         payment.getAmount().setValue(100.0);
         assertThat(payment.getStatus()).isEqualTo(FUTURE);
 
-        policyService.updatePayment(policy, payment, 150.0, "THB", null, SUCCESS, LINE, null, null, null);
+        policyService.updatePayment(policy, payment, 150.0, "THB", null, SUCCESS, LINE, null, null, empty());
 
         assertThat(payment.getEffectiveDate()).isEqualTo(payment.getDueDate());
         assertThat(payment.getPaymentInformations()).hasSize(1);

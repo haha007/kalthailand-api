@@ -1,10 +1,8 @@
 package th.co.krungthaiaxa.elife.api.resource;
 
-import com.itextpdf.text.DocumentException;
 import io.swagger.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import th.co.krungthaiaxa.elife.api.model.Payment;
@@ -13,16 +11,12 @@ import th.co.krungthaiaxa.elife.api.model.Quote;
 import th.co.krungthaiaxa.elife.api.model.enums.ChannelType;
 import th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus;
 import th.co.krungthaiaxa.elife.api.model.error.Error;
-import th.co.krungthaiaxa.elife.api.service.EmailService;
 import th.co.krungthaiaxa.elife.api.service.PolicyService;
 import th.co.krungthaiaxa.elife.api.service.QuoteService;
-import th.co.krungthaiaxa.elife.api.utils.ImageUtil;
 import th.co.krungthaiaxa.elife.api.utils.JsonUtil;
 
 import javax.inject.Inject;
-import java.io.File;
 import java.io.IOException;
-import java.util.Base64;
 import java.util.Optional;
 
 import static org.springframework.http.HttpStatus.*;
@@ -34,20 +28,13 @@ import static th.co.krungthaiaxa.elife.api.model.error.ErrorCode.*;
 @Api(value = "Policies")
 public class PolicyResource {
     private final static Logger logger = LoggerFactory.getLogger(PolicyResource.class);
-    private final static String ERECEIPT_PDF_FILE_NAME = "ereceipt.pdf";
-    @Value("${path.store.watermarked.image}")
-    private String storePath;
     private final PolicyService policyService;
     private final QuoteService quoteService;
-    @Value("${path.store.elife.ereceipt.pdf}")
-    private String eReceiptPdfStorePath;
-    private final EmailService emailService;
 
     @Inject
-    public PolicyResource(PolicyService policyService, QuoteService quoteService, EmailService emailService) {
+    public PolicyResource(PolicyService policyService, QuoteService quoteService) {
         this.policyService = policyService;
         this.quoteService = quoteService;
-        this.emailService = emailService;
     }
 
     @ApiOperation(value = "Creates a policy", notes = "Creates a policy out of a quote. Policy will be created only " +
@@ -163,57 +150,6 @@ public class PolicyResource {
             return new ResponseEntity<>(PAYMENT_NOT_UPDATED, INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity<>(JsonUtil.getJson(policy), OK);
-    }
-
-    @ApiOperation(value = "Ereceipt", notes = "Get the ereceipt of a policy by return base64 image", response = String.class)
-    @ApiResponses({
-            @ApiResponse(code = 404, message = "If the policy doesn't exist", response = Error.class)
-    })
-    @RequestMapping(value = "/policies/{policyId}/ereceipt", produces = APPLICATION_JSON_VALUE, method = GET)
-    @ResponseBody
-    public ResponseEntity getPolicyEreceipt(
-            @ApiParam(value = "The policy ID")
-            @PathVariable String policyId) {
-        Policy policy;
-        try {
-            policy = policyService.findPolicy(policyId);
-        } catch (Exception e) {
-            logger.error("Unable to find the policy with ID [" + policyId + "]", e);
-            return new ResponseEntity<>(POLICY_DOES_NOT_EXIST, NOT_FOUND);
-        }
-
-        byte[] bytes;
-        try {
-            bytes = policyService.createEreceipt(policy);
-        } catch (IOException e) {
-            logger.error("Unable to create byte[] e-receipt [" + policyId + "]", e);
-            return new ResponseEntity<>(UNABLE_TO_CREATE_ERECEIPT, INTERNAL_SERVER_ERROR);
-        }
-
-        StringBuilder im;
-        try {
-            im = new StringBuilder(storePath);
-            im.append(File.separator + ERECEIPT_PDF_FILE_NAME);
-            im.insert(im.toString().indexOf("."), "_" + policy.getPolicyId());
-            String resultFileName = im.toString();
-            logger.info("Name of PDF path file [" + resultFileName + "]");
-            ImageUtil.imageToPDF(bytes, eReceiptPdfStorePath);
-        } catch (IOException e) {
-            logger.error("Unable to create e-receipt pdf with output file", e);
-            return new ResponseEntity<>(UNABLE_TO_CREATE_ERECEIPT, INTERNAL_SERVER_ERROR);
-        } catch (DocumentException e) {
-            logger.error("Unable to create e-receipt pdf with itextpdf", e);
-            return new ResponseEntity<>(UNABLE_TO_CREATE_ERECEIPT, INTERNAL_SERVER_ERROR);
-        }
-
-        try {
-            emailService.sendEreceiptEmail(policy, eReceiptPdfStorePath);
-        } catch (Exception e) {
-            logger.error("Unable to send e-receipt email [" + policyId + "]", e);
-            return new ResponseEntity<>(UNABLE_TO_SEND_EMAIL, INTERNAL_SERVER_ERROR);
-        }
-
-        return new ResponseEntity<>(JsonUtil.getJson(Base64.getEncoder().encodeToString(bytes)), OK);
     }
 
 }
