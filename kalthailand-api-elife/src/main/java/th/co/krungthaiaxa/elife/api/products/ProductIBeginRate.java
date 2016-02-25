@@ -11,18 +11,18 @@ public class ProductIBeginRate {
     @Id
     private String id;
     @Indexed
-    private String plan;
+    private Integer nbOfYearsOfPayment;
     @Indexed
     private Double sumInsured;
     private List<Double> maleRate;
     private List<Double> femaleRate;
 
-    public String getPlan() {
-        return plan;
+    public Integer getNbOfYearsOfPayment() {
+        return nbOfYearsOfPayment;
     }
 
-    public void setPlan(String plan) {
-        this.plan = plan;
+    public void setNbOfYearsOfPayment(Integer nbOfYearsOfPayment) {
+        this.nbOfYearsOfPayment = nbOfYearsOfPayment;
     }
 
     public Double getSumInsured() {

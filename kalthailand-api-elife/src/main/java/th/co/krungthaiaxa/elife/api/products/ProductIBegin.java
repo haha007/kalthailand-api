@@ -65,7 +65,7 @@ public class ProductIBegin implements Product {
 
         // calculates premium / sum insured
         //TODO this has to change and iBegin5 has to become a parameter from ProductQuotation
-        ProductIBeginRate productIBeginRate = productIBeginRateRepository.findByPlanAndSumInsured("iBegin5", premiumsData.getLifeInsurance().getSumInsured().getValue());
+        ProductIBeginRate productIBeginRate = productIBeginRateRepository.findByNbOfYearsOfPaymentAndSumInsured(5, premiumsData.getLifeInsurance().getSumInsured().getValue());
         List<Double> rates;
         if (insured.getPerson().getGenderCode().equals(MALE)) {
             rates = productIBeginRate.getMaleRate();
