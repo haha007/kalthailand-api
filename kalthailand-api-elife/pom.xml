@@ -21,6 +21,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
+        <local.repo.path>${project.basedir}</local.repo.path>
     </properties>
 
     <dependencies>
@@ -122,6 +123,11 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.microsoft.sqlserver</groupId>
+            <artifactId>sqljdbc</artifactId>
+            <version>4.2</version>
+        </dependency>
         <!--<dependency>-->
         <!--<groupId>de.flapdoodle.embed</groupId>-->
         <!--<artifactId>de.flapdoodle.embed.mongo</artifactId>-->
@@ -140,6 +146,11 @@
     </build>
 
     <repositories>
+        <repository>
+            <id>elife</id>
+            <name>elife libraries</name>
+            <url>file://${local.repo.path}/../libraries</url>
+        </repository>
         <repository>
             <id>aspose-maven-repository</id>
             <url>http://maven.aspose.com/repository/repo/</url>
