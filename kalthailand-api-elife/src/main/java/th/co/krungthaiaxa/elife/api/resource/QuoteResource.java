@@ -13,7 +13,6 @@ import th.co.krungthaiaxa.elife.api.products.Product;
 import th.co.krungthaiaxa.elife.api.products.ProductFactory;
 import th.co.krungthaiaxa.elife.api.service.EmailService;
 import th.co.krungthaiaxa.elife.api.service.QuoteService;
-import th.co.krungthaiaxa.elife.api.service.SaleIllustrationService;
 import th.co.krungthaiaxa.elife.api.utils.JsonUtil;
 
 import javax.inject.Inject;
@@ -50,7 +49,7 @@ public class QuoteResource {
             @ApiParam(value = "The quote Id")
             @PathVariable String quoteId,
             @ApiParam(value = "The content of the graph image in base 64 encoded.")
-            @RequestParam String base64Image,
+            @RequestBody String base64Image,
             @ApiParam(value = "The session id the quote is in")
             @RequestParam String sessionId,
             @ApiParam(value = "The channel being used to create the quote.")
