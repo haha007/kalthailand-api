@@ -255,7 +255,7 @@ public class QuoteResourceTest {
     }
 
     @Test
-    public void should_be_able_to_call_send_email_api_with_image_as_request_body() throws IOException, URISyntaxException {
+    public void should_send_email_api_with_image_as_request_body() throws IOException, URISyntaxException {
         String sessionId = randomNumeric(20);
         MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
         parameters.add("sessionId", sessionId);
