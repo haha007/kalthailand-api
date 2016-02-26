@@ -1,5 +1,6 @@
 package th.co.krungthaiaxa.elife.api.service;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,9 +14,6 @@ import th.co.krungthaiaxa.elife.api.utils.EmailSender;
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -63,21 +61,9 @@ public class EmailService {
         emailSender.sendEmail(emailName, policy.getInsureds().get(0).getPerson().getEmail(), subject, getEreceiptEmailContent(policy), base64ImgFileNames, fileList);
     }
 
-    private String getQuoteEmailContent(Quote quote) {
+    private String getQuoteEmailContent(Quote quote) throws IOException {
         String decimalFormat = "#,##0.00";
-
-        File file = new File((getClass().getClassLoader()).getResource("email-quote-content.txt").getFile());
-
-        String emailContent = "";
-        try {
-            List lines = Files.readAllLines(Paths.get(file.getAbsolutePath()),
-                    Charset.defaultCharset());
-            for (Object line : lines) {
-                emailContent += (String) line + "\n";
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        String emailContent = IOUtils.toString(this.getClass().getResourceAsStream("/email-quote-content.txt"));
         return emailContent.replace("%1$s", quote.getCommonData().getNbOfYearsOfCoverage().toString())
                 .replace("%2$s", quote.getCommonData().getNbOfYearsOfPremium().toString())
                 .replace("%3$s", quote.getInsureds().get(0).getAgeAtSubscription().toString())
@@ -92,18 +78,8 @@ public class EmailService {
                 .replace("%12$s", "/" + lineURL + "quote-product/line-10-ec" + "/");
     }
 
-    private String getEreceiptEmailContent(Policy policy) {
-        File file = new File((getClass().getClassLoader()).getResource("email-ereceipt-content.txt").getFile());
-        String emailContent = "";
-        try {
-            List lines = Files.readAllLines(Paths.get(file.getAbsolutePath()),
-                    Charset.defaultCharset());
-            for (Object line : lines) {
-                emailContent += (String) line + "\n";
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    private String getEreceiptEmailContent(Policy policy) throws IOException {
+        String emailContent = IOUtils.toString(this.getClass().getResourceAsStream("/email-ereceipt-content.txt"));
         return emailContent.replace("%1$s", policy.getInsureds().get(0).getPerson().getGivenName() + " " + policy.getInsureds().get(0).getPerson().getSurName())
                 .replace("%2$s", policy.getInsureds().get(0).getPerson().getGivenName() + " " + policy.getInsureds().get(0).getPerson().getSurName())
                 .replace("%3$s", "/" + uploadDocURL + "/");

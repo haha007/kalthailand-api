@@ -30,12 +30,17 @@ import th.co.krungthaiaxa.elife.api.repository.SessionQuoteRepository;
 import th.co.krungthaiaxa.elife.api.utils.JsonUtil;
 
 import javax.inject.Inject;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeUtility;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Base64;
 
+import static com.icegreen.greenmail.util.GreenMailUtil.getBody;
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpMethod.POST;
@@ -255,7 +260,7 @@ public class QuoteResourceTest {
     }
 
     @Test
-    public void should_be_able_to_call_send_email_api_with_image_as_request_body() throws IOException, URISyntaxException {
+    public void should_be_able_to_call_send_email_api_with_image_as_request_body() throws IOException, URISyntaxException, MessagingException {
         String sessionId = randomNumeric(20);
         MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
         parameters.add("sessionId", sessionId);
@@ -287,5 +292,15 @@ public class QuoteResourceTest {
         ResponseEntity<String> emailResponse = template.exchange(emailBuilder.toUriString(), POST, new HttpEntity<>(base64Graph), String.class);
         assertThat(emailResponse.getStatusCode().value()).isEqualTo(OK.value());
         assertThat(greenMail.getReceivedMessages()).hasSize(1);
+        String bodyAsString = decodeSimpleBody(getBody(greenMail.getReceivedMessages()[0]));
+        assertThat(bodyAsString).contains("<div>เงินจ่ายคืนตามกรมธรรม์ประกันภัยและเงินครบกำหนดสัญญา (ณ สิ้นปี)</div>");
+    }
+
+    private static String decodeSimpleBody(String encodedBody) throws MessagingException, IOException {
+        InputStream inputStream = MimeUtility.decode(new ByteArrayInputStream(encodedBody.getBytes("UTF-8")), "quoted-printable");
+        BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
+        byte[] bytes = new byte[encodedBody.length()];
+        int last = bufferedInputStream.read(bytes);
+        return new String(bytes, 0, last);
     }
 }
