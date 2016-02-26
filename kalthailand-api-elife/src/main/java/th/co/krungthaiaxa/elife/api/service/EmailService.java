@@ -12,6 +12,7 @@ import th.co.krungthaiaxa.elife.api.model.Quote;
 import th.co.krungthaiaxa.elife.api.utils.EmailSender;
 
 import javax.inject.Inject;
+import javax.mail.util.ByteArrayDataSource;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
