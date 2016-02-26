@@ -29,6 +29,6 @@ public class ErrorCode {
     public static final Error UNABLE_TO_CREATE_ERECEIPT = new Error("60002", "Unable to create e-receipt", "Processing for create e-receipt fail");
     public static final Error UNABLE_TO_DOWNLOAD_DOCUMENT = new Error("60003", "Unable to download the document", "Processing for create e-receipt fail");
     // Email
-    public static final Error UNABLE_TO_SEND_EMAIL = new Error("70001", "Unable to send email", "The Provided email is not valid");
+    public static final Function<String, Error> UNABLE_TO_SEND_EMAIL = msg -> new Error("70001", "Unable to send email", "Error message is:" + msg);
 
 }
