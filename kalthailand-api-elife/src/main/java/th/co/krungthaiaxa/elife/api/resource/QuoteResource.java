@@ -39,7 +39,7 @@ public class QuoteResource {
     }
 
     @ApiOperation(value = "Sending email for quote", notes = "Sending email for quote", response = Quote.class)
-    @RequestMapping(value = "/quotes/{quoteId}/email", produces = APPLICATION_JSON_VALUE, method = GET)
+    @RequestMapping(value = "/quotes/{quoteId}/email", produces = APPLICATION_JSON_VALUE, method = POST)
     @ApiResponses({
             @ApiResponse(code = 404, message = "If quote Id is unknown", response = Error.class),
             @ApiResponse(code = 500, message = "If email could not be sent", response = Error.class)
@@ -65,7 +65,7 @@ public class QuoteResource {
             logger.error("Unable to send email for [" + quote.get().getInsureds().get(0).getPerson().getEmail() + "]", e);
             return new ResponseEntity<>(UNABLE_TO_SEND_EMAIL, INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(getJson("OK"), OK);
+        return new ResponseEntity<>(getJson(""), OK);
     }
 
     @ApiOperation(value = "Get latest Quote", notes = "Returns the latest quote attached to the given sessionId. " +
