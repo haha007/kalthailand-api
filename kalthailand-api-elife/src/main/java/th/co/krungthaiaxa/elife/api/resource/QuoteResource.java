@@ -13,7 +13,6 @@ import th.co.krungthaiaxa.elife.api.products.Product;
 import th.co.krungthaiaxa.elife.api.products.ProductFactory;
 import th.co.krungthaiaxa.elife.api.service.EmailService;
 import th.co.krungthaiaxa.elife.api.service.QuoteService;
-import th.co.krungthaiaxa.elife.api.service.SaleIllustrationService;
 import th.co.krungthaiaxa.elife.api.utils.JsonUtil;
 
 import javax.inject.Inject;
@@ -40,7 +39,7 @@ public class QuoteResource {
     }
 
     @ApiOperation(value = "Sending email for quote", notes = "Sending email for quote", response = Quote.class)
-    @RequestMapping(value = "/quotes/{quoteId}/email", produces = APPLICATION_JSON_VALUE, method = GET)
+    @RequestMapping(value = "/quotes/{quoteId}/email", produces = APPLICATION_JSON_VALUE, method = POST)
     @ApiResponses({
             @ApiResponse(code = 404, message = "If quote Id is unknown", response = Error.class),
             @ApiResponse(code = 500, message = "If email could not be sent", response = Error.class)
@@ -50,7 +49,7 @@ public class QuoteResource {
             @ApiParam(value = "The quote Id")
             @PathVariable String quoteId,
             @ApiParam(value = "The content of the graph image in base 64 encoded.")
-            @RequestParam String base64Image,
+            @RequestBody String base64Image,
             @ApiParam(value = "The session id the quote is in")
             @RequestParam String sessionId,
             @ApiParam(value = "The channel being used to create the quote.")
@@ -66,7 +65,7 @@ public class QuoteResource {
             logger.error("Unable to send email for [" + quote.get().getInsureds().get(0).getPerson().getEmail() + "]", e);
             return new ResponseEntity<>(UNABLE_TO_SEND_EMAIL, INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(getJson("OK"), OK);
+        return new ResponseEntity<>(getJson(""), OK);
     }
 
     @ApiOperation(value = "Get latest Quote", notes = "Returns the latest quote attached to the given sessionId. " +

@@ -1,8 +1,5 @@
 package th.co.krungthaiaxa.elife.api.service;
 
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.elife.api.data.SessionQuote;
 import th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException;
@@ -24,14 +21,10 @@ import static java.time.LocalDateTime.now;
 import static java.time.ZoneId.SHORT_IDS;
 import static java.time.ZoneId.of;
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
-import java.io.FileOutputStream;
-import java.io.IOException;
-
 
 @Service
 public class QuoteService {
 
-    private final static Logger logger = LoggerFactory.getLogger(PolicyService.class);
     private final SessionQuoteRepository sessionQuoteRepository;
     private final QuoteRepository quoteRepository;
 

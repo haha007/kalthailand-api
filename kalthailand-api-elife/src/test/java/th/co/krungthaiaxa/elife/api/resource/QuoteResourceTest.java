@@ -1,6 +1,11 @@
 package th.co.krungthaiaxa.elife.api.resource;
 
+import com.icegreen.greenmail.junit.GreenMailRule;
+import com.icegreen.greenmail.util.ServerSetupTest;
+import org.apache.commons.io.IOUtils;
+import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,8 +24,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import th.co.krungthaiaxa.elife.api.KalApiApplication;
 import th.co.krungthaiaxa.elife.api.data.SessionQuote;
 import th.co.krungthaiaxa.elife.api.model.Quote;
-import th.co.krungthaiaxa.elife.api.model.enums.ChannelType;
-import th.co.krungthaiaxa.elife.api.model.enums.GenderCode;
 import th.co.krungthaiaxa.elife.api.model.error.Error;
 import th.co.krungthaiaxa.elife.api.repository.QuoteRepository;
 import th.co.krungthaiaxa.elife.api.repository.SessionQuoteRepository;
@@ -28,11 +31,14 @@ import th.co.krungthaiaxa.elife.api.utils.JsonUtil;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Base64;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpMethod.PUT;
 import static org.springframework.http.HttpStatus.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
@@ -48,6 +54,8 @@ import static th.co.krungthaiaxa.elife.api.resource.TestUtil.*;
 @ActiveProfiles("test")
 @IntegrationTest({"server.port=0"})
 public class QuoteResourceTest {
+    @Rule
+    public final GreenMailRule greenMail = new GreenMailRule(ServerSetupTest.SMTP_IMAP);
     @Value("${api.security.user.name}")
     private String apiUserName;
     @Value("${api.security.user.password}")
@@ -64,6 +72,12 @@ public class QuoteResourceTest {
     @Before
     public void setUp() throws Exception {
         template = new TestRestTemplate(apiUserName, apiUserPassword);
+        greenMail.start();
+    }
+
+    @After
+    public void tearDown() {
+        greenMail.stop();
     }
 
     @Test
@@ -214,9 +228,8 @@ public class QuoteResourceTest {
         ResponseEntity<String> creationResponse = template.postForEntity(creationURI, parameters, String.class);
         assertThat(creationResponse.getStatusCode().value()).isEqualTo(OK.value());
         Quote quote = getQuoteFromJSon(creationResponse.getBody());
-        String quoteId = quote.getId();
         assertThat(quote).isNotNull();
-        assertThat(quoteId).isNotNull();
+        assertThat(quote.getId()).isNotNull();
 
         quote(quote, EVERY_MONTH, 500000.0, insured(35), beneficiary(100.0));
         String jsonQuote = new String(JsonUtil.getJson(quote));
@@ -230,7 +243,7 @@ public class QuoteResourceTest {
 
         // check database values
         SessionQuote sessionQuote = sessionQuoteRepository.findBySessionIdAndChannelType(sessionId, LINE);
-        Quote savedQuote = quoteRepository.findOne(quoteId);
+        Quote savedQuote = quoteRepository.findOne(quote.getId());
         assertThat(sessionQuote.getQuotes()).containsExactly(savedQuote);
         assertThat(savedQuote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode()).isEqualTo(EVERY_MONTH);
         assertThat(savedQuote.getInsureds().get(0).getPerson().getGenderCode()).isEqualTo(FEMALE);
@@ -239,5 +252,40 @@ public class QuoteResourceTest {
         quote = getQuoteFromJSon(updateResponse.getBody());
         assertThat(quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode()).isEqualTo(EVERY_MONTH);
         assertThat(quote.getInsureds().get(0).getPerson().getGenderCode()).isEqualTo(FEMALE);
+    }
+
+    @Test
+    public void should_be_able_to_call_send_email_api_with_image_as_request_body() throws IOException, URISyntaxException {
+        String sessionId = randomNumeric(20);
+        MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
+        parameters.add("sessionId", sessionId);
+        parameters.add("productId", "10EC");
+        parameters.add("channelType", LINE.name());
+
+        URI creationURI = new URI("http://localhost:" + port + "/quotes");
+        ResponseEntity<String> creationResponse = template.postForEntity(creationURI, parameters, String.class);
+        assertThat(creationResponse.getStatusCode().value()).isEqualTo(OK.value());
+        Quote quote = getQuoteFromJSon(creationResponse.getBody());
+
+        quote(quote, EVERY_MONTH, 500000.0, insured(35), beneficiary(100.0));
+        String jsonQuote = new String(JsonUtil.getJson(quote));
+
+        URI updateURI = new URI("http://localhost:" + port + "/quotes/" + quote.getQuoteId());
+        UriComponentsBuilder updateBuilder = UriComponentsBuilder.fromUri(updateURI)
+                .queryParam("sessionId", sessionId)
+                .queryParam("channelType", LINE.name());
+        ResponseEntity<String> updateResponse = template.exchange(updateBuilder.toUriString(), PUT, new HttpEntity<>(jsonQuote), String.class);
+        assertThat(updateResponse.getStatusCode().value()).isEqualTo(OK.value());
+
+        InputStream inputStream = this.getClass().getResourceAsStream("/graph.jpg");
+        String base64Graph = Base64.getEncoder().encodeToString(IOUtils.toByteArray(inputStream));
+
+        URI emailURI = new URI("http://localhost:" + port + "/quotes/" + quote.getQuoteId() + "/email");
+        UriComponentsBuilder emailBuilder = UriComponentsBuilder.fromUri(emailURI)
+                .queryParam("sessionId", sessionId)
+                .queryParam("channelType", LINE.name());
+        ResponseEntity<String> emailResponse = template.exchange(emailBuilder.toUriString(), POST, new HttpEntity<>(base64Graph), String.class);
+        assertThat(emailResponse.getStatusCode().value()).isEqualTo(OK.value());
+        assertThat(greenMail.getReceivedMessages()).hasSize(1);
     }
 }
