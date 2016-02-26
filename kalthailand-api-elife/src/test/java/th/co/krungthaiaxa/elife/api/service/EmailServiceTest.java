@@ -193,18 +193,6 @@ public class EmailServiceTest {
         String bodyAsString = decodeSimpleBody(getBody(email));
         assertThat(bodyAsString).contains("<tr><td>ระยะเวลาคุ้มครอง</td><td width=\"120px\" class=\"value\" align=\"right\" >" + quote.getCommonData().getNbOfYearsOfCoverage().toString() + " ปี</td></tr>");
         assertThat(bodyAsString).contains("<tr><td>ระยะเวลาชำระเบี้ย</td><td class=\"value\" align=\"right\" >" + quote.getCommonData().getNbOfYearsOfPremium().toString() + " ปี</td></tr>");
-
-        Multipart multipart = (Multipart) email.getContent();
-        for (int i = 0; i < multipart.getCount(); i++) {
-            BodyPart bodyPart = multipart.getBodyPart(i);
-            if (!Part.ATTACHMENT.equalsIgnoreCase(bodyPart.getDisposition()) &&
-                    !StringUtils.isNotBlank(bodyPart.getFileName())) {
-                //null file value
-            } else {
-                assertThat(null != bodyPart.getFileName() && !bodyPart.getFileName().equals(""));
-            }
-        }
-
     }
 
     private static String decodeSimpleBody(String encodedBody) throws MessagingException, IOException {
@@ -214,8 +202,6 @@ public class EmailServiceTest {
         int last = bufferedInputStream.read(bytes);
         return new String(bytes, 0, last);
     }
-
-
 
 
 }
