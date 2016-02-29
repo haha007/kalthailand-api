@@ -51,14 +51,8 @@ public class PolicyService {
     private final QuoteRepository quoteRepository;
     private final SessionQuoteRepository sessionQuoteRepository;
     private final DocumentService documentService;
-    @Value("${path.store.elife.ereceipt}")
-    private String eReceiptStorePath;
     @Value("${path.store.watermarked.image}")
     private String storePath;
-    @Value("${path.store.elife.ereceipt.pdf}")
-    private String eReceiptPdfStorePath;
-    @Value("${path.store.elife.ereceipt.mail.logo}")
-    private String eReceiptMailLogoStorePath;
 
     @Inject
     public PolicyService(PaymentRepository paymentRepository, PolicyRepository policyRepository,
