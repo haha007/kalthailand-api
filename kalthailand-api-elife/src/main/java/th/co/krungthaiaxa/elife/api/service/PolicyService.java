@@ -1,9 +1,7 @@
 package th.co.krungthaiaxa.elife.api.service;
 
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.elife.api.data.PolicyNumber;
 import th.co.krungthaiaxa.elife.api.exception.PolicyValidationException;
@@ -22,7 +20,6 @@ import javax.inject.Inject;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DecimalFormat;
@@ -51,8 +48,6 @@ public class PolicyService {
     private final QuoteRepository quoteRepository;
     private final SessionQuoteRepository sessionQuoteRepository;
     private final DocumentService documentService;
-    @Value("${path.store.watermarked.image}")
-    private String storePath;
 
     @Inject
     public PolicyService(PaymentRepository paymentRepository, PolicyRepository policyRepository,
@@ -173,16 +168,14 @@ public class PolicyService {
         logger.info("[createEReceipt] quoteId : " + policy.getQuoteId());
         logger.info("[createEReceipt] policyNumber : " + policy.getPolicyId());
         InputStream inputStream = getClass().getClassLoader().getResourceAsStream("ereceipt/" + ERECEIPT_TEMPLATE_FILE_NAME);
-        logger.info("[createEReceipt] E-receipt image store name path : " + storePath);
 
         DecimalFormat formatter = new DecimalFormat("#,##0.00");
 
-        StringBuilder im = new StringBuilder(storePath);
-        FileUtils.forceMkdir(new File(im.toString()));
-        im.append(File.separator + ERECEIPT_MERGED_FILE_NAME);
-        im.insert(im.toString().indexOf("."), policy.getPolicyId());
+        StringBuilder im = new StringBuilder();
+        im.append(ERECEIPT_MERGED_FILE_NAME);
+        im.insert(im.toString().indexOf("."), "_" + policy.getPolicyId());
         String resultFileName = im.toString();
-        logger.info("[createEReceipt] Name Image File[" + policy.getPolicyId() + "]:" + resultFileName);
+        logger.info("[createEReceipt] eReceipt file name:" + resultFileName);
 
         BufferedImage bufferedImage = null;
         try {
@@ -293,16 +286,6 @@ public class PolicyService {
         graphics.drawString("0", 1200, 892);
         graphics.drawString("1", 1229, 892);
         graphics.drawString("ไลน์เพย์ (LINE Pay)", 246, 598);
-
-        //For keep image files to disk.
-        try {
-            ImageIO.write(bufferedImage, "jpg", new File(resultFileName));
-            logger.info("[createEReceipt] success for drawing graphics on image file.");
-        } catch (IOException e) {
-            logger.error("Unable to write image e-receipt : " + resultFileName, e);
-            throw e;
-        }
-        logger.info("[createEReceipt] write image file success : " + resultFileName);
 
         byte[] bytes;
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {

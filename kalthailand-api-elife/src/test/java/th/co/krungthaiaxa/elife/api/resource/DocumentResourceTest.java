@@ -53,8 +53,6 @@ public class DocumentResourceTest {
     private RestTemplate template;
     @Inject
     private QuoteService quoteService;
-    @Value("${path.store.watermarked.image}")
-    private String storePath;
     private Product10EC product10EC = new Product10EC();
 
     @Before

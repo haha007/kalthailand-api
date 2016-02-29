@@ -2,6 +2,7 @@ package th.co.krungthaiaxa.elife.api.service;
 
 import com.icegreen.greenmail.junit.GreenMailRule;
 import com.icegreen.greenmail.util.ServerSetupTest;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -32,6 +33,7 @@ import java.io.*;
 import java.util.Base64;
 
 import static com.icegreen.greenmail.util.GreenMailUtil.getBody;
+import static java.lang.System.getProperty;
 import static org.apache.commons.io.FileUtils.readFileToByteArray;
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -55,8 +57,8 @@ public class EmailServiceTest {
     private String subject;
     @Value("${lineid}")
     private String lineURL;
-    @Value("${path.store.watermarked.image}")
-    private String eReceiptPdfStorePath;
+    @Value("${tmp.path.deleted.after.tests}")
+    private String tmpPathDeletedAfterTests;
     @Value("${button.url.ereceipt.mail}")
     private String buttonUrlEreceiptMail;
     @Inject
@@ -179,13 +181,14 @@ public class EmailServiceTest {
         byte[] bytes = policyService.createEreceipt(policy);
         assertThat(bytes).isNotNull();
 
-        eReceiptPdfStorePath = eReceiptPdfStorePath + System.getProperty("file.separator") + ERECEIPT_MERGED_FILE_NAME;
-        StringBuilder im = new StringBuilder(eReceiptPdfStorePath);
-        im.insert(eReceiptPdfStorePath.indexOf("."), "_" + policy.getPolicyId());
-        eReceiptPdfStorePath = im.toString();
+        FileUtils.forceMkdir(new File(tmpPathDeletedAfterTests));
+        tmpPathDeletedAfterTests = tmpPathDeletedAfterTests + getProperty("file.separator") + ERECEIPT_MERGED_FILE_NAME;
+        StringBuilder im = new StringBuilder(tmpPathDeletedAfterTests);
+        im.insert(tmpPathDeletedAfterTests.indexOf("."), "_" + policy.getPolicyId());
+        tmpPathDeletedAfterTests = im.toString();
 
-        ImageUtil.imageToPDF(bytes, eReceiptPdfStorePath);
-        File file = new File(eReceiptPdfStorePath);
+        ImageUtil.imageToPDF(bytes, tmpPathDeletedAfterTests);
+        File file = new File(tmpPathDeletedAfterTests);
         assertThat(file.exists()).isTrue();
 
         emailService.sendEreceiptEmail(policy, Pair.of(readFileToByteArray(file), file.getName()));
