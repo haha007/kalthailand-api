@@ -12,7 +12,6 @@ import th.co.krungthaiaxa.elife.api.model.Quote;
 import th.co.krungthaiaxa.elife.api.utils.EmailSender;
 
 import javax.inject.Inject;
-import javax.mail.util.ByteArrayDataSource;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -51,7 +50,7 @@ public class EmailService {
         base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/benefitGreen.jpg")), "<benefitGreen>"));
         base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/benefitPoint.jpg")), "<benefitPoint>"));
         //generate sale illustration pdf file
-        List<File> Attachlist = (new ArrayList<File>());
+        List<File> Attachlist = (new ArrayList<>());
         Attachlist.add(saleIllustrationService.generatePDF(quote, base64Image));
         emailSender.sendEmail(emailName, quote.getInsureds().get(0).getPerson().getEmail(), subject, getQuoteEmailContent(quote), base64ImgFileNames, Attachlist);
     }
