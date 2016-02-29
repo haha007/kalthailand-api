@@ -442,13 +442,13 @@ public class Product10EC implements Product {
     private static List<DatedAmount> calculateDatedAmount(Quote quote, Integer percentRate, Function<Integer, Integer> dvdFunction) {
         List<DatedAmount> result = new ArrayList<>();
         Amount sumInsured = quote.getPremiumsData().getLifeInsurance().getSumInsured();
-        LocalDate endDate = quote.getInsureds().get(0).getEndDate();
+        LocalDate startDate = quote.getInsureds().get(0).getStartDate();
         Double latestAmout = 0.0;
         for (int i = 1; i <= DURATION_COVERAGE_IN_YEAR; i++) {
             Double interest = sumInsured.getValue() * dvdFunction.apply(i) / 1000;
             DatedAmount datedAmount = new DatedAmount();
             datedAmount.setCurrencyCode(sumInsured.getCurrencyCode());
-            datedAmount.setDate(endDate.minus(DURATION_COVERAGE_IN_YEAR - i, YEARS));
+            datedAmount.setDate(startDate.plus(i, YEARS));
             if (percentRate != null) {
                 latestAmout = (double) Math.round(interest + latestAmout + (latestAmout * percentRate) / 1000);
                 datedAmount.setValue(latestAmout);

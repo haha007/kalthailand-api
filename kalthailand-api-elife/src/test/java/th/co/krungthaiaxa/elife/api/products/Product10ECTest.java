@@ -413,7 +413,7 @@ public class Product10ECTest {
         quote.getPremiumsData().getLifeInsurance().setSumInsured(amount);
 
         product10EC.calculateQuote(quote);
-        LocalDate endDate = quote.getInsureds().get(0).getEndDate();
+        LocalDate startDate = quote.getInsureds().get(0).getStartDate();
         List<DatedAmount> result = quote.getPremiumsData().getLifeInsurance().getYearlyCashBacks();
         assertThat(result).hasSize(10);
 
@@ -428,16 +428,16 @@ public class Product10ECTest {
         assertThat(result.get(8).getCurrencyCode()).isEqualTo("THB");
         assertThat(result.get(9).getCurrencyCode()).isEqualTo("THB");
 
-        assertThat(result.get(0).getDate()).isEqualTo(endDate.minus(9, YEARS));
-        assertThat(result.get(1).getDate()).isEqualTo(endDate.minus(8, YEARS));
-        assertThat(result.get(2).getDate()).isEqualTo(endDate.minus(7, YEARS));
-        assertThat(result.get(3).getDate()).isEqualTo(endDate.minus(6, YEARS));
-        assertThat(result.get(4).getDate()).isEqualTo(endDate.minus(5, YEARS));
-        assertThat(result.get(5).getDate()).isEqualTo(endDate.minus(4, YEARS));
-        assertThat(result.get(6).getDate()).isEqualTo(endDate.minus(3, YEARS));
-        assertThat(result.get(7).getDate()).isEqualTo(endDate.minus(2, YEARS));
-        assertThat(result.get(8).getDate()).isEqualTo(endDate.minus(1, YEARS));
-        assertThat(result.get(9).getDate()).isEqualTo(endDate);
+        assertThat(result.get(0).getDate()).isEqualTo(startDate.plus(1, YEARS));
+        assertThat(result.get(1).getDate()).isEqualTo(startDate.plus(2, YEARS));
+        assertThat(result.get(2).getDate()).isEqualTo(startDate.plus(3, YEARS));
+        assertThat(result.get(3).getDate()).isEqualTo(startDate.plus(4, YEARS));
+        assertThat(result.get(4).getDate()).isEqualTo(startDate.plus(5, YEARS));
+        assertThat(result.get(5).getDate()).isEqualTo(startDate.plus(6, YEARS));
+        assertThat(result.get(6).getDate()).isEqualTo(startDate.plus(7, YEARS));
+        assertThat(result.get(7).getDate()).isEqualTo(startDate.plus(8, YEARS));
+        assertThat(result.get(8).getDate()).isEqualTo(startDate.plus(9, YEARS));
+        assertThat(result.get(9).getDate()).isEqualTo(startDate.plus(10, YEARS));
 
         assertThat(result.get(0).getValue()).isEqualTo(20000.0);
         assertThat(result.get(1).getValue()).isEqualTo(20000.0);
@@ -461,7 +461,7 @@ public class Product10ECTest {
         quote.getPremiumsData().getLifeInsurance().setSumInsured(amount);
 
         product10EC.calculateQuote(quote);
-        LocalDate endDate = quote.getInsureds().get(0).getEndDate();
+        LocalDate startDate = quote.getInsureds().get(0).getStartDate();
         List<DatedAmount> result = quote.getPremiumsData().getLifeInsurance().getEndOfContractBenefitsMinimum();
         assertThat(result).hasSize(10);
 
@@ -476,16 +476,17 @@ public class Product10ECTest {
         assertThat(result.get(8).getCurrencyCode()).isEqualTo("THB");
         assertThat(result.get(9).getCurrencyCode()).isEqualTo("THB");
 
-        assertThat(result.get(0).getDate()).isEqualTo(endDate.minus(9, YEARS));
-        assertThat(result.get(1).getDate()).isEqualTo(endDate.minus(8, YEARS));
-        assertThat(result.get(2).getDate()).isEqualTo(endDate.minus(7, YEARS));
-        assertThat(result.get(3).getDate()).isEqualTo(endDate.minus(6, YEARS));
-        assertThat(result.get(4).getDate()).isEqualTo(endDate.minus(5, YEARS));
-        assertThat(result.get(5).getDate()).isEqualTo(endDate.minus(4, YEARS));
-        assertThat(result.get(6).getDate()).isEqualTo(endDate.minus(3, YEARS));
-        assertThat(result.get(7).getDate()).isEqualTo(endDate.minus(2, YEARS));
-        assertThat(result.get(8).getDate()).isEqualTo(endDate.minus(1, YEARS));
-        assertThat(result.get(9).getDate()).isEqualTo(endDate);
+        assertThat(result.get(0).getDate()).isEqualTo(startDate.plus(1, YEARS));
+        assertThat(result.get(1).getDate()).isEqualTo(startDate.plus(2, YEARS));
+        assertThat(result.get(2).getDate()).isEqualTo(startDate.plus(3, YEARS));
+        assertThat(result.get(3).getDate()).isEqualTo(startDate.plus(4, YEARS));
+        assertThat(result.get(4).getDate()).isEqualTo(startDate.plus(5, YEARS));
+        assertThat(result.get(5).getDate()).isEqualTo(startDate.plus(6, YEARS));
+        assertThat(result.get(6).getDate()).isEqualTo(startDate.plus(7, YEARS));
+        assertThat(result.get(7).getDate()).isEqualTo(startDate.plus(8, YEARS));
+        assertThat(result.get(8).getDate()).isEqualTo(startDate.plus(9, YEARS));
+        assertThat(result.get(9).getDate()).isEqualTo(startDate.plus(10, YEARS));
+
 
         assertThat(result.get(0).getValue()).isEqualTo(20000.0);
         assertThat(result.get(1).getValue()).isEqualTo(40400.0);
@@ -509,7 +510,7 @@ public class Product10ECTest {
         quote.getPremiumsData().getLifeInsurance().setSumInsured(amount);
 
         product10EC.calculateQuote(quote);
-        LocalDate endDate = quote.getInsureds().get(0).getEndDate();
+        LocalDate startDate = quote.getInsureds().get(0).getStartDate();
         List<DatedAmount> result = quote.getPremiumsData().getLifeInsurance().getEndOfContractBenefitsMinimum();
         assertThat(result).hasSize(10);
 
@@ -524,16 +525,16 @@ public class Product10ECTest {
         assertThat(result.get(8).getCurrencyCode()).isEqualTo("THB");
         assertThat(result.get(9).getCurrencyCode()).isEqualTo("THB");
 
-        assertThat(result.get(0).getDate()).isEqualTo(endDate.minus(9, YEARS));
-        assertThat(result.get(1).getDate()).isEqualTo(endDate.minus(8, YEARS));
-        assertThat(result.get(2).getDate()).isEqualTo(endDate.minus(7, YEARS));
-        assertThat(result.get(3).getDate()).isEqualTo(endDate.minus(6, YEARS));
-        assertThat(result.get(4).getDate()).isEqualTo(endDate.minus(5, YEARS));
-        assertThat(result.get(5).getDate()).isEqualTo(endDate.minus(4, YEARS));
-        assertThat(result.get(6).getDate()).isEqualTo(endDate.minus(3, YEARS));
-        assertThat(result.get(7).getDate()).isEqualTo(endDate.minus(2, YEARS));
-        assertThat(result.get(8).getDate()).isEqualTo(endDate.minus(1, YEARS));
-        assertThat(result.get(9).getDate()).isEqualTo(endDate);
+        assertThat(result.get(0).getDate()).isEqualTo(startDate.plus(1, YEARS));
+        assertThat(result.get(1).getDate()).isEqualTo(startDate.plus(2, YEARS));
+        assertThat(result.get(2).getDate()).isEqualTo(startDate.plus(3, YEARS));
+        assertThat(result.get(3).getDate()).isEqualTo(startDate.plus(4, YEARS));
+        assertThat(result.get(4).getDate()).isEqualTo(startDate.plus(5, YEARS));
+        assertThat(result.get(5).getDate()).isEqualTo(startDate.plus(6, YEARS));
+        assertThat(result.get(6).getDate()).isEqualTo(startDate.plus(7, YEARS));
+        assertThat(result.get(7).getDate()).isEqualTo(startDate.plus(8, YEARS));
+        assertThat(result.get(8).getDate()).isEqualTo(startDate.plus(9, YEARS));
+        assertThat(result.get(9).getDate()).isEqualTo(startDate.plus(10, YEARS));
 
         assertThat(result.get(0).getValue()).isEqualTo(10200.0);
         assertThat(result.get(1).getValue()).isEqualTo(20604.0);
@@ -557,7 +558,7 @@ public class Product10ECTest {
         quote.getPremiumsData().getLifeInsurance().setSumInsured(amount);
 
         product10EC.calculateQuote(quote);
-        LocalDate endDate = quote.getInsureds().get(0).getEndDate();
+        LocalDate startDate = quote.getInsureds().get(0).getStartDate();
         List<DatedAmount> result = quote.getPremiumsData().getLifeInsurance().getEndOfContractBenefitsAverage();
         assertThat(result).hasSize(10);
 
@@ -572,16 +573,16 @@ public class Product10ECTest {
         assertThat(result.get(8).getCurrencyCode()).isEqualTo("THB");
         assertThat(result.get(9).getCurrencyCode()).isEqualTo("THB");
 
-        assertThat(result.get(0).getDate()).isEqualTo(endDate.minus(9, YEARS));
-        assertThat(result.get(1).getDate()).isEqualTo(endDate.minus(8, YEARS));
-        assertThat(result.get(2).getDate()).isEqualTo(endDate.minus(7, YEARS));
-        assertThat(result.get(3).getDate()).isEqualTo(endDate.minus(6, YEARS));
-        assertThat(result.get(4).getDate()).isEqualTo(endDate.minus(5, YEARS));
-        assertThat(result.get(5).getDate()).isEqualTo(endDate.minus(4, YEARS));
-        assertThat(result.get(6).getDate()).isEqualTo(endDate.minus(3, YEARS));
-        assertThat(result.get(7).getDate()).isEqualTo(endDate.minus(2, YEARS));
-        assertThat(result.get(8).getDate()).isEqualTo(endDate.minus(1, YEARS));
-        assertThat(result.get(9).getDate()).isEqualTo(endDate);
+        assertThat(result.get(0).getDate()).isEqualTo(startDate.plus(1, YEARS));
+        assertThat(result.get(1).getDate()).isEqualTo(startDate.plus(2, YEARS));
+        assertThat(result.get(2).getDate()).isEqualTo(startDate.plus(3, YEARS));
+        assertThat(result.get(3).getDate()).isEqualTo(startDate.plus(4, YEARS));
+        assertThat(result.get(4).getDate()).isEqualTo(startDate.plus(5, YEARS));
+        assertThat(result.get(5).getDate()).isEqualTo(startDate.plus(6, YEARS));
+        assertThat(result.get(6).getDate()).isEqualTo(startDate.plus(7, YEARS));
+        assertThat(result.get(7).getDate()).isEqualTo(startDate.plus(8, YEARS));
+        assertThat(result.get(8).getDate()).isEqualTo(startDate.plus(9, YEARS));
+        assertThat(result.get(9).getDate()).isEqualTo(startDate.plus(10, YEARS));
 
         assertThat(result.get(0).getValue()).isEqualTo(20000.0);
         assertThat(result.get(1).getValue()).isEqualTo(40800.0);
@@ -605,7 +606,7 @@ public class Product10ECTest {
         quote.getPremiumsData().getLifeInsurance().setSumInsured(amount);
 
         product10EC.calculateQuote(quote);
-        LocalDate endDate = quote.getInsureds().get(0).getEndDate();
+        LocalDate startDate = quote.getInsureds().get(0).getStartDate();
         List<DatedAmount> result = quote.getPremiumsData().getLifeInsurance().getEndOfContractBenefitsMaximum();
         assertThat(result).hasSize(10);
 
@@ -620,16 +621,16 @@ public class Product10ECTest {
         assertThat(result.get(8).getCurrencyCode()).isEqualTo("THB");
         assertThat(result.get(9).getCurrencyCode()).isEqualTo("THB");
 
-        assertThat(result.get(0).getDate()).isEqualTo(endDate.minus(9, YEARS));
-        assertThat(result.get(1).getDate()).isEqualTo(endDate.minus(8, YEARS));
-        assertThat(result.get(2).getDate()).isEqualTo(endDate.minus(7, YEARS));
-        assertThat(result.get(3).getDate()).isEqualTo(endDate.minus(6, YEARS));
-        assertThat(result.get(4).getDate()).isEqualTo(endDate.minus(5, YEARS));
-        assertThat(result.get(5).getDate()).isEqualTo(endDate.minus(4, YEARS));
-        assertThat(result.get(6).getDate()).isEqualTo(endDate.minus(3, YEARS));
-        assertThat(result.get(7).getDate()).isEqualTo(endDate.minus(2, YEARS));
-        assertThat(result.get(8).getDate()).isEqualTo(endDate.minus(1, YEARS));
-        assertThat(result.get(9).getDate()).isEqualTo(endDate);
+        assertThat(result.get(0).getDate()).isEqualTo(startDate.plus(1, YEARS));
+        assertThat(result.get(1).getDate()).isEqualTo(startDate.plus(2, YEARS));
+        assertThat(result.get(2).getDate()).isEqualTo(startDate.plus(3, YEARS));
+        assertThat(result.get(3).getDate()).isEqualTo(startDate.plus(4, YEARS));
+        assertThat(result.get(4).getDate()).isEqualTo(startDate.plus(5, YEARS));
+        assertThat(result.get(5).getDate()).isEqualTo(startDate.plus(6, YEARS));
+        assertThat(result.get(6).getDate()).isEqualTo(startDate.plus(7, YEARS));
+        assertThat(result.get(7).getDate()).isEqualTo(startDate.plus(8, YEARS));
+        assertThat(result.get(8).getDate()).isEqualTo(startDate.plus(9, YEARS));
+        assertThat(result.get(9).getDate()).isEqualTo(startDate.plus(10, YEARS));
 
         assertThat(result.get(0).getValue()).isEqualTo(20000.0);
         assertThat(result.get(1).getValue()).isEqualTo(40900.0);
@@ -653,7 +654,7 @@ public class Product10ECTest {
         quote.getPremiumsData().getLifeInsurance().setSumInsured(amount);
 
         product10EC.calculateQuote(quote);
-        LocalDate endDate = quote.getInsureds().get(0).getEndDate();
+        LocalDate startDate = quote.getInsureds().get(0).getStartDate();
         List<DatedAmount> result = quote.getPremiumsData().getLifeInsurance().getYearlyCashBacksAverageDividende();
         assertThat(result).hasSize(10);
 
@@ -668,16 +669,16 @@ public class Product10ECTest {
         assertThat(result.get(8).getCurrencyCode()).isEqualTo("THB");
         assertThat(result.get(9).getCurrencyCode()).isEqualTo("THB");
 
-        assertThat(result.get(0).getDate()).isEqualTo(endDate.minus(9, YEARS));
-        assertThat(result.get(1).getDate()).isEqualTo(endDate.minus(8, YEARS));
-        assertThat(result.get(2).getDate()).isEqualTo(endDate.minus(7, YEARS));
-        assertThat(result.get(3).getDate()).isEqualTo(endDate.minus(6, YEARS));
-        assertThat(result.get(4).getDate()).isEqualTo(endDate.minus(5, YEARS));
-        assertThat(result.get(5).getDate()).isEqualTo(endDate.minus(4, YEARS));
-        assertThat(result.get(6).getDate()).isEqualTo(endDate.minus(3, YEARS));
-        assertThat(result.get(7).getDate()).isEqualTo(endDate.minus(2, YEARS));
-        assertThat(result.get(8).getDate()).isEqualTo(endDate.minus(1, YEARS));
-        assertThat(result.get(9).getDate()).isEqualTo(endDate);
+        assertThat(result.get(0).getDate()).isEqualTo(startDate.plus(1, YEARS));
+        assertThat(result.get(1).getDate()).isEqualTo(startDate.plus(2, YEARS));
+        assertThat(result.get(2).getDate()).isEqualTo(startDate.plus(3, YEARS));
+        assertThat(result.get(3).getDate()).isEqualTo(startDate.plus(4, YEARS));
+        assertThat(result.get(4).getDate()).isEqualTo(startDate.plus(5, YEARS));
+        assertThat(result.get(5).getDate()).isEqualTo(startDate.plus(6, YEARS));
+        assertThat(result.get(6).getDate()).isEqualTo(startDate.plus(7, YEARS));
+        assertThat(result.get(7).getDate()).isEqualTo(startDate.plus(8, YEARS));
+        assertThat(result.get(8).getDate()).isEqualTo(startDate.plus(9, YEARS));
+        assertThat(result.get(9).getDate()).isEqualTo(startDate.plus(10, YEARS));
 
         assertThat(result.get(0).getValue()).isEqualTo(0.0);
         assertThat(result.get(1).getValue()).isEqualTo(0.0);
@@ -701,7 +702,7 @@ public class Product10ECTest {
         quote.getPremiumsData().getLifeInsurance().setSumInsured(amount);
 
         product10EC.calculateQuote(quote);
-        LocalDate endDate = quote.getInsureds().get(0).getEndDate();
+        LocalDate startDate = quote.getInsureds().get(0).getStartDate();
         List<DatedAmount> result = quote.getPremiumsData().getLifeInsurance().getYearlyCashBacksMaximumDividende();
         assertThat(result).hasSize(10);
 
@@ -716,16 +717,16 @@ public class Product10ECTest {
         assertThat(result.get(8).getCurrencyCode()).isEqualTo("THB");
         assertThat(result.get(9).getCurrencyCode()).isEqualTo("THB");
 
-        assertThat(result.get(0).getDate()).isEqualTo(endDate.minus(9, YEARS));
-        assertThat(result.get(1).getDate()).isEqualTo(endDate.minus(8, YEARS));
-        assertThat(result.get(2).getDate()).isEqualTo(endDate.minus(7, YEARS));
-        assertThat(result.get(3).getDate()).isEqualTo(endDate.minus(6, YEARS));
-        assertThat(result.get(4).getDate()).isEqualTo(endDate.minus(5, YEARS));
-        assertThat(result.get(5).getDate()).isEqualTo(endDate.minus(4, YEARS));
-        assertThat(result.get(6).getDate()).isEqualTo(endDate.minus(3, YEARS));
-        assertThat(result.get(7).getDate()).isEqualTo(endDate.minus(2, YEARS));
-        assertThat(result.get(8).getDate()).isEqualTo(endDate.minus(1, YEARS));
-        assertThat(result.get(9).getDate()).isEqualTo(endDate);
+        assertThat(result.get(0).getDate()).isEqualTo(startDate.plus(1, YEARS));
+        assertThat(result.get(1).getDate()).isEqualTo(startDate.plus(2, YEARS));
+        assertThat(result.get(2).getDate()).isEqualTo(startDate.plus(3, YEARS));
+        assertThat(result.get(3).getDate()).isEqualTo(startDate.plus(4, YEARS));
+        assertThat(result.get(4).getDate()).isEqualTo(startDate.plus(5, YEARS));
+        assertThat(result.get(5).getDate()).isEqualTo(startDate.plus(6, YEARS));
+        assertThat(result.get(6).getDate()).isEqualTo(startDate.plus(7, YEARS));
+        assertThat(result.get(7).getDate()).isEqualTo(startDate.plus(8, YEARS));
+        assertThat(result.get(8).getDate()).isEqualTo(startDate.plus(9, YEARS));
+        assertThat(result.get(9).getDate()).isEqualTo(startDate.plus(10, YEARS));
 
         assertThat(result.get(0).getValue()).isEqualTo(0.0);
         assertThat(result.get(1).getValue()).isEqualTo(0.0);
@@ -749,7 +750,7 @@ public class Product10ECTest {
         quote.getPremiumsData().getLifeInsurance().setSumInsured(amount);
 
         product10EC.calculateQuote(quote);
-        LocalDate endDate = quote.getInsureds().get(0).getEndDate();
+        LocalDate startDate = quote.getInsureds().get(0).getStartDate();
         List<DatedAmount> result = quote.getPremiumsData().getLifeInsurance().getYearlyCashBacksAverageBenefit();
         assertThat(result).hasSize(10);
 
@@ -764,16 +765,16 @@ public class Product10ECTest {
         assertThat(result.get(8).getCurrencyCode()).isEqualTo("THB");
         assertThat(result.get(9).getCurrencyCode()).isEqualTo("THB");
 
-        assertThat(result.get(0).getDate()).isEqualTo(endDate.minus(9, YEARS));
-        assertThat(result.get(1).getDate()).isEqualTo(endDate.minus(8, YEARS));
-        assertThat(result.get(2).getDate()).isEqualTo(endDate.minus(7, YEARS));
-        assertThat(result.get(3).getDate()).isEqualTo(endDate.minus(6, YEARS));
-        assertThat(result.get(4).getDate()).isEqualTo(endDate.minus(5, YEARS));
-        assertThat(result.get(5).getDate()).isEqualTo(endDate.minus(4, YEARS));
-        assertThat(result.get(6).getDate()).isEqualTo(endDate.minus(3, YEARS));
-        assertThat(result.get(7).getDate()).isEqualTo(endDate.minus(2, YEARS));
-        assertThat(result.get(8).getDate()).isEqualTo(endDate.minus(1, YEARS));
-        assertThat(result.get(9).getDate()).isEqualTo(endDate);
+        assertThat(result.get(0).getDate()).isEqualTo(startDate.plus(1, YEARS));
+        assertThat(result.get(1).getDate()).isEqualTo(startDate.plus(2, YEARS));
+        assertThat(result.get(2).getDate()).isEqualTo(startDate.plus(3, YEARS));
+        assertThat(result.get(3).getDate()).isEqualTo(startDate.plus(4, YEARS));
+        assertThat(result.get(4).getDate()).isEqualTo(startDate.plus(5, YEARS));
+        assertThat(result.get(5).getDate()).isEqualTo(startDate.plus(6, YEARS));
+        assertThat(result.get(6).getDate()).isEqualTo(startDate.plus(7, YEARS));
+        assertThat(result.get(7).getDate()).isEqualTo(startDate.plus(8, YEARS));
+        assertThat(result.get(8).getDate()).isEqualTo(startDate.plus(9, YEARS));
+        assertThat(result.get(9).getDate()).isEqualTo(startDate.plus(10, YEARS));
 
         assertThat(result.get(0).getValue()).isEqualTo(0.0);
         assertThat(result.get(1).getValue()).isEqualTo(0.0);
@@ -797,7 +798,7 @@ public class Product10ECTest {
         quote.getPremiumsData().getLifeInsurance().setSumInsured(amount);
 
         product10EC.calculateQuote(quote);
-        LocalDate endDate = quote.getInsureds().get(0).getEndDate();
+        LocalDate startDate = quote.getInsureds().get(0).getStartDate();
         List<DatedAmount> result = quote.getPremiumsData().getLifeInsurance().getYearlyCashBacksMaximumBenefit();
         assertThat(result).hasSize(10);
 
@@ -812,16 +813,16 @@ public class Product10ECTest {
         assertThat(result.get(8).getCurrencyCode()).isEqualTo("THB");
         assertThat(result.get(9).getCurrencyCode()).isEqualTo("THB");
 
-        assertThat(result.get(0).getDate()).isEqualTo(endDate.minus(9, YEARS));
-        assertThat(result.get(1).getDate()).isEqualTo(endDate.minus(8, YEARS));
-        assertThat(result.get(2).getDate()).isEqualTo(endDate.minus(7, YEARS));
-        assertThat(result.get(3).getDate()).isEqualTo(endDate.minus(6, YEARS));
-        assertThat(result.get(4).getDate()).isEqualTo(endDate.minus(5, YEARS));
-        assertThat(result.get(5).getDate()).isEqualTo(endDate.minus(4, YEARS));
-        assertThat(result.get(6).getDate()).isEqualTo(endDate.minus(3, YEARS));
-        assertThat(result.get(7).getDate()).isEqualTo(endDate.minus(2, YEARS));
-        assertThat(result.get(8).getDate()).isEqualTo(endDate.minus(1, YEARS));
-        assertThat(result.get(9).getDate()).isEqualTo(endDate);
+        assertThat(result.get(0).getDate()).isEqualTo(startDate.plus(1, YEARS));
+        assertThat(result.get(1).getDate()).isEqualTo(startDate.plus(2, YEARS));
+        assertThat(result.get(2).getDate()).isEqualTo(startDate.plus(3, YEARS));
+        assertThat(result.get(3).getDate()).isEqualTo(startDate.plus(4, YEARS));
+        assertThat(result.get(4).getDate()).isEqualTo(startDate.plus(5, YEARS));
+        assertThat(result.get(5).getDate()).isEqualTo(startDate.plus(6, YEARS));
+        assertThat(result.get(6).getDate()).isEqualTo(startDate.plus(7, YEARS));
+        assertThat(result.get(7).getDate()).isEqualTo(startDate.plus(8, YEARS));
+        assertThat(result.get(8).getDate()).isEqualTo(startDate.plus(9, YEARS));
+        assertThat(result.get(9).getDate()).isEqualTo(startDate.plus(10, YEARS));
 
         assertThat(result.get(0).getValue()).isEqualTo(0.0);
         assertThat(result.get(1).getValue()).isEqualTo(0.0);
@@ -1106,7 +1107,7 @@ public class Product10ECTest {
     }
 
     @Test
-    public void should_return_thailand_as_countruy_when_create_policy_with_main_insured_with_address_but_no_country() throws Exception {
+    public void should_return_thailand_as_country_when_create_policy_with_main_insured_with_address_but_no_country() throws Exception {
         final Quote quote = quote(EVERY_YEAR, insured(25), beneficiary(100.0));
         Policy policy = new Policy();
         product10EC.getPolicyFromQuote(policy, quote);
