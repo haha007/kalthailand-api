@@ -80,7 +80,7 @@ public class EmailServiceTest {
     }
 
     @Test
-    public void should_send_email_with_proper_from_address() throws Exception {
+    public void should_send_quote_email_with_proper_from_address() throws Exception {
         Quote quote = quoteService.createQuote(randomNumeric(20), product10EC.getCommonData(), LINE);
         quote(quote, EVERY_YEAR, 1000000.0, insured(35), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
@@ -93,7 +93,7 @@ public class EmailServiceTest {
     }
 
     @Test
-    public void should_send_email_to_insured_email_address() throws Exception {
+    public void should_send_quote_email_to_insured_email_address() throws Exception {
         Quote quote = quoteService.createQuote(randomNumeric(20), product10EC.getCommonData(), LINE);
         quote(quote, EVERY_YEAR, 1000000.0, insured(35), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
@@ -106,7 +106,7 @@ public class EmailServiceTest {
     }
 
     @Test
-    public void should_send_email_containing_amounts_for_1_million_baht_with_insured_of_35_years_old() throws Exception {
+    public void should_send_quote_email_containing_amounts_for_1_million_baht_with_insured_of_35_years_old() throws Exception {
         Quote quote = quoteService.createQuote(randomNumeric(20), product10EC.getCommonData(), LINE);
         quote(quote, EVERY_YEAR, 1000000.0, insured(35), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
@@ -123,7 +123,7 @@ public class EmailServiceTest {
     }
 
     @Test
-    public void should_send_email_containing_amounts_for_500_thousand_baht_with_insured_of_55_years_old() throws Exception {
+    public void should_send_quote_email_containing_amounts_for_500_thousand_baht_with_insured_of_55_years_old() throws Exception {
         Quote quote = quoteService.createQuote(randomNumeric(20), product10EC.getCommonData(), LINE);
         quote(quote, EVERY_YEAR, 500000.0, insured(55), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
@@ -140,7 +140,34 @@ public class EmailServiceTest {
     }
 
     @Test
-    public void should_send_pdf_file_attachment_in_email() throws Exception {
+    public void should_send_quote_email_with_product_information() throws Exception {
+        Quote quote = quoteService.createQuote(randomNumeric(20), product10EC.getCommonData(), LINE);
+        quote(quote, EVERY_YEAR, 500000.0, insured(55), beneficiary(100.0));
+        quote = quoteService.updateQuote(quote);
+
+        emailService.sendQuoteEmail(quote, base64Graph);
+
+        assertThat(greenMail.getReceivedMessages()).hasSize(1);
+        MimeMessage email = greenMail.getReceivedMessages()[0];
+        assertThat(email.getSubject()).isEqualTo(subject);
+        String bodyAsString = decodeSimpleBody(getBody(email));
+        assertThat(bodyAsString).contains("<tr><td>ระยะเวลาคุ้มครอง</td><td width=\"120px\" class=\"value\" align=\"right\" >" + quote.getCommonData().getNbOfYearsOfCoverage().toString() + " ปี</td></tr>");
+        assertThat(bodyAsString).contains("<tr><td>ระยะเวลาชำระเบี้ย</td><td class=\"value\" align=\"right\" >" + quote.getCommonData().getNbOfYearsOfPremium().toString() + " ปี</td></tr>");
+
+        Multipart multipart = (Multipart) email.getContent();
+        for (int i = 0; i < multipart.getCount(); i++) {
+            BodyPart bodyPart = multipart.getBodyPart(i);
+            if (!Part.ATTACHMENT.equalsIgnoreCase(bodyPart.getDisposition()) &&
+                    !StringUtils.isNotBlank(bodyPart.getFileName())) {
+                //null file value
+            } else {
+                assertThat(null != bodyPart.getFileName() && !bodyPart.getFileName().equals(""));
+            }
+        }
+    }
+
+    @Test
+    public void should_send_ereceipt_pdf_file_attachment_in_email() throws Exception {
         Quote quote = quoteService.createQuote(RandomStringUtils.randomNumeric(20), null, LINE);
         quote(quote, EVERY_YEAR, 1000000.0, insured(35), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
@@ -180,34 +207,6 @@ public class EmailServiceTest {
                 assertThat(null != bodyPart.getFileName() && !bodyPart.getFileName().equals(""));
             }
         }
-    }
-
-    @Test
-    public void should_send_quote_email_with_product_information() throws Exception {
-        Quote quote = quoteService.createQuote(randomNumeric(20), product10EC.getCommonData(), LINE);
-        quote(quote, EVERY_YEAR, 500000.0, insured(55), beneficiary(100.0));
-        quote = quoteService.updateQuote(quote);
-
-        emailService.sendQuoteEmail(quote, base64Graph);
-
-        assertThat(greenMail.getReceivedMessages()).hasSize(1);
-        MimeMessage email = greenMail.getReceivedMessages()[0];
-        assertThat(email.getSubject()).isEqualTo(subject);
-        String bodyAsString = decodeSimpleBody(getBody(email));
-        assertThat(bodyAsString).contains("<tr><td>ระยะเวลาคุ้มครอง</td><td width=\"120px\" class=\"value\" align=\"right\" >" + quote.getCommonData().getNbOfYearsOfCoverage().toString() + " ปี</td></tr>");
-        assertThat(bodyAsString).contains("<tr><td>ระยะเวลาชำระเบี้ย</td><td class=\"value\" align=\"right\" >" + quote.getCommonData().getNbOfYearsOfPremium().toString() + " ปี</td></tr>");
-
-        Multipart multipart = (Multipart) email.getContent();
-        for (int i = 0; i < multipart.getCount(); i++) {
-            BodyPart bodyPart = multipart.getBodyPart(i);
-            if (!Part.ATTACHMENT.equalsIgnoreCase(bodyPart.getDisposition()) &&
-                    !StringUtils.isNotBlank(bodyPart.getFileName())) {
-                //null file value
-            } else {
-                assertThat(null != bodyPart.getFileName() && !bodyPart.getFileName().equals(""));
-            }
-        }
-
     }
 
     private static String decodeSimpleBody(String encodedBody) throws MessagingException, IOException {
