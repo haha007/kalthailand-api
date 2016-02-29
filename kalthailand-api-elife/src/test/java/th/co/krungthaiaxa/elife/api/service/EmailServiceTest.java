@@ -42,6 +42,7 @@ import static th.co.krungthaiaxa.elife.api.resource.TestUtil.*;
 @WebAppConfiguration
 @ActiveProfiles("test")
 public class EmailServiceTest {
+    private final static String ERECEIPT_MERGED_FILE_NAME = "ereceipts.pdf";
     @Rule
     public final GreenMailRule greenMail = new GreenMailRule(ServerSetupTest.SMTP_IMAP);
     @Value("${email.smtp.server}")
@@ -54,7 +55,8 @@ public class EmailServiceTest {
     private String lineURL;
     @Value("${path.store.watermarked.image}")
     private String eReceiptPdfStorePath;
-    private final static String ERECEIPT_MERGED_FILE_NAME = "ereceipts.pdf";
+    @Value("${button.url.ereceipt.mail}")
+    private String buttonUrlEreceiptMail;
     @Inject
     private EmailService emailService;
     @Inject
@@ -166,6 +168,7 @@ public class EmailServiceTest {
         String bodyAsString = decodeSimpleBody(getBody(email));
         assertThat(bodyAsString).contains("กรุงไทย-แอกซ่า ประกันชีวิต ขอขอบคุณ " + policy.getInsureds().get(0).getPerson().getGivenName() + " " + policy.getInsureds().get(0).getPerson().getSurName() + "<br/>");
         assertThat(bodyAsString).contains("กรุงไทย-แอกซ่า ประกันชีวิต");
+        assertThat(bodyAsString).contains("<a class=\"btn\" href=\"" + buttonUrlEreceiptMail + "\">UPLOAD YOUR ID NOW</a>");
 
         Multipart multipart = (Multipart) email.getContent();
         for (int i = 0; i < multipart.getCount(); i++) {
@@ -214,8 +217,6 @@ public class EmailServiceTest {
         int last = bufferedInputStream.read(bytes);
         return new String(bytes, 0, last);
     }
-
-
 
 
 }

@@ -40,7 +40,7 @@ public class EmailService {
     private String subject;
     @Value("${lineid}")
     private String lineURL;
-    @Value("${receipt.button.url}")
+    @Value("${button.url.ereceipt.mail}")
     private String uploadDocURL;
 
     public void sendQuoteEmail(Quote quote, String base64Image) throws Exception {
@@ -84,7 +84,7 @@ public class EmailService {
         String emailContent = IOUtils.toString(this.getClass().getResourceAsStream("/email-ereceipt-content.txt"));
         return emailContent.replace("%1$s", policy.getInsureds().get(0).getPerson().getGivenName() + " " + policy.getInsureds().get(0).getPerson().getSurName())
                 .replace("%2$s", policy.getInsureds().get(0).getPerson().getGivenName() + " " + policy.getInsureds().get(0).getPerson().getSurName())
-                .replace("%3$s", "/" + uploadDocURL + "/");
+                .replace("%3$s", uploadDocURL);
     }
 
 }
