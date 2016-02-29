@@ -31,7 +31,7 @@ public class CDBUtilTest {
     @Test
     public void should_not_get_previous_pno_and_agent_code() throws Exception {
         Map<String, String> m = cdbUtil.getExistingAgentCode("", "");
-        assertThat(m == null);
+        assertThat(m).isNull();
     }
 
 }
