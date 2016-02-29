@@ -5,6 +5,7 @@ import com.icegreen.greenmail.util.ServerSetupTest;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -31,6 +32,7 @@ import java.io.*;
 import java.util.Base64;
 
 import static com.icegreen.greenmail.util.GreenMailUtil.getBody;
+import static org.apache.commons.io.FileUtils.readFileToByteArray;
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
@@ -186,7 +188,7 @@ public class EmailServiceTest {
         File file = new File(eReceiptPdfStorePath);
         assertThat(file.exists()).isTrue();
 
-        emailService.sendEreceiptEmail(policy, eReceiptPdfStorePath);
+        emailService.sendEreceiptEmail(policy, Pair.of(readFileToByteArray(file), file.getName()));
 
         assertThat(greenMail.getReceivedMessages()).hasSize(1);
         MimeMessage email = greenMail.getReceivedMessages()[0];

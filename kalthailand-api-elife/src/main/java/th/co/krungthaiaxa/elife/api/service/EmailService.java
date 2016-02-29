@@ -12,7 +12,6 @@ import th.co.krungthaiaxa.elife.api.model.Quote;
 import th.co.krungthaiaxa.elife.api.utils.EmailSender;
 
 import javax.inject.Inject;
-import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -33,7 +32,7 @@ public class EmailService {
         this.saleIllustrationService = saleIllustrationService;
     }
 
-    private final static Logger logger = LoggerFactory.getLogger(PolicyService.class);
+    private final static Logger logger = LoggerFactory.getLogger(EmailService.class);
     @Value("${email.name}")
     private String emailName;
     @Value("${email.subject}")
@@ -50,16 +49,16 @@ public class EmailService {
         base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/benefitGreen.jpg")), "<benefitGreen>"));
         base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/benefitPoint.jpg")), "<benefitPoint>"));
         //generate sale illustration pdf file
-        List<File> Attachlist = (new ArrayList<>());
-        Attachlist.add(saleIllustrationService.generatePDF(quote, base64Image));
-        emailSender.sendEmail(emailName, quote.getInsureds().get(0).getPerson().getEmail(), subject, getQuoteEmailContent(quote), base64ImgFileNames, Attachlist);
+        List<Pair<byte[], String>> attachments = new ArrayList<>();
+        attachments.add(saleIllustrationService.generatePDF(quote, base64Image));
+        emailSender.sendEmail(emailName, quote.getInsureds().get(0).getPerson().getEmail(), subject, getQuoteEmailContent(quote), base64ImgFileNames, attachments);
     }
 
-    public void sendEreceiptEmail(Policy policy, String attachFile) throws Exception {
+    public void sendEreceiptEmail(Policy policy, Pair<byte[], String> attachFile) throws Exception {
         List<Pair<byte[], String>> base64ImgFileNames = new ArrayList<>();
         base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/logo.png")), "<imageElife>"));
-        List<File> fileList = new ArrayList<>();
-        fileList.add(new File(attachFile));
+        List<Pair<byte[], String>> fileList = new ArrayList<>();
+        fileList.add(attachFile);
         emailSender.sendEmail(emailName, policy.getInsureds().get(0).getPerson().getEmail(), subject, getEreceiptEmailContent(policy), base64ImgFileNames, fileList);
     }
 
