@@ -10,7 +10,7 @@ import th.co.krungthaiaxa.elife.api.model.Quote;
 import th.co.krungthaiaxa.elife.api.model.enums.ChannelType;
 import th.co.krungthaiaxa.elife.api.model.error.Error;
 import th.co.krungthaiaxa.elife.api.products.Product;
-import th.co.krungthaiaxa.elife.api.products.ProductFactory;
+import th.co.krungthaiaxa.elife.api.products.ProductQuotation;
 import th.co.krungthaiaxa.elife.api.service.EmailService;
 import th.co.krungthaiaxa.elife.api.service.QuoteService;
 import th.co.krungthaiaxa.elife.api.utils.JsonUtil;
@@ -23,6 +23,7 @@ import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 import static th.co.krungthaiaxa.elife.api.model.error.ErrorCode.*;
+import static th.co.krungthaiaxa.elife.api.products.ProductFactory.getProduct;
 import static th.co.krungthaiaxa.elife.api.utils.JsonUtil.getJson;
 
 @RestController
@@ -117,15 +118,9 @@ public class QuoteResource {
             @RequestParam String sessionId,
             @ApiParam(value = "The channel being used to create the quote.")
             @RequestParam ChannelType channelType,
-            @ApiParam(value = "The product id for which to get a quote.", allowableValues = "10EC")
-            @RequestParam String productId) {
-        Product product;
-        try {
-            product = ProductFactory.getProduct(productId);
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(INVALID_PRODUCT_ID_PROVIDED, NOT_ACCEPTABLE);
-        }
-
+            @ApiParam(value = "The product details for which to create a quote on")
+            @RequestBody ProductQuotation productQuotation) {
+        Product product = getProduct(productQuotation.getProductType().getName());
         return new ResponseEntity<>(getJson(quoteService.createQuote(sessionId, product.getCommonData(), channelType)), OK);
     }
 

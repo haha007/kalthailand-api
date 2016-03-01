@@ -17,12 +17,12 @@ import static java.time.temporal.ChronoUnit.YEARS;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException.*;
+import static th.co.krungthaiaxa.elife.api.products.ProductType.PRODUCT_10_EC;
 import static th.co.krungthaiaxa.elife.api.products.ProductUtils.*;
 
 public class Product10EC implements Product {
     public final static int DURATION_COVERAGE_IN_YEAR = 10;
     public final static int DURATION_PAYMENT_IN_YEAR = 6;
-    public final static String PRODUCT_10_EC_ID = "10EC";
     public final static String PRODUCT_10_EC_NAME = "Product 10 EC";
     public final static String PRODUCT_10_EC_CURRENCY = "THB";
     public static final Double SUM_INSURED_MIN = 100000.0;
@@ -191,7 +191,7 @@ public class Product10EC implements Product {
         commonData.setMinSumInsured(amount(SUM_INSURED_MIN));
         commonData.setNbOfYearsOfCoverage(DURATION_COVERAGE_IN_YEAR);
         commonData.setNbOfYearsOfPremium(DURATION_PAYMENT_IN_YEAR);
-        commonData.setProductId(PRODUCT_10_EC_ID);
+        commonData.setProductId(PRODUCT_10_EC.getName());
         commonData.setProductName(PRODUCT_10_EC_NAME);
         return commonData;
     }
@@ -208,7 +208,7 @@ public class Product10EC implements Product {
     }
 
     private static void checkCommonData(CommonData commonData) throws PolicyValidationException {
-        if (!commonData.getProductId().equals(PRODUCT_10_EC_ID)) {
+        if (!commonData.getProductId().equals(PRODUCT_10_EC.getName())) {
             throw PolicyValidationException.product10ECExpected;
         } else if (!commonData.getProductName().equals(PRODUCT_10_EC_NAME)) {
             throw PolicyValidationException.product10ECExpected;

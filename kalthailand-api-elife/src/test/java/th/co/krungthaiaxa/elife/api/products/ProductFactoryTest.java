@@ -15,7 +15,7 @@ public class ProductFactoryTest {
 
     @Test
     public void should_return_10EC_product() {
-        Product product = ProductFactory.getProduct(Product10EC.PRODUCT_10_EC_ID);
+        Product product = ProductFactory.getProduct(ProductType.PRODUCT_10_EC.getName());
         assertThat(product).isInstanceOf(Product10EC.class);
     }
 }
