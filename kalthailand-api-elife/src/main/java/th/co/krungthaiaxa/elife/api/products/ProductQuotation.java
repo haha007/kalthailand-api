@@ -1,28 +1,34 @@
 package th.co.krungthaiaxa.elife.api.products;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import th.co.krungthaiaxa.elife.api.model.Amount;
 import th.co.krungthaiaxa.elife.api.model.enums.GenderCode;
 import th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode;
 
 import java.time.LocalDate;
 
+@ApiModel(description = "Data concerning quote for a product")
 public class ProductQuotation {
-    private String productId;
+    private ProductType productType;
     private LocalDate dateOfBirth;
     private GenderCode genderCode;
     private Amount premiumAmount;
     private Amount sumInsuredAmount;
     private PeriodicityCode periodicityCode;
     private Integer nbOfYearsOfPayment;
+    private String occupation;
 
-    public String getProductId() {
-        return productId;
+    @ApiModelProperty(value = "The product type")
+    public ProductType getProductType() {
+        return productType;
     }
 
-    public void setProductId(String productId) {
-        this.productId = productId;
+    public void setProductType(ProductType productType) {
+        this.productType = productType;
     }
 
+    @ApiModelProperty(value = "The date of birth of insured")
     public LocalDate getDateOfBirth() {
         return dateOfBirth;
     }
@@ -31,6 +37,7 @@ public class ProductQuotation {
         this.dateOfBirth = dateOfBirth;
     }
 
+    @ApiModelProperty(value = "The gender of insured")
     public GenderCode getGenderCode() {
         return genderCode;
     }
@@ -39,6 +46,7 @@ public class ProductQuotation {
         this.genderCode = genderCode;
     }
 
+    @ApiModelProperty(value = "The premium amount")
     public Amount getPremiumAmount() {
         return premiumAmount;
     }
@@ -47,6 +55,7 @@ public class ProductQuotation {
         this.premiumAmount = premiumAmount;
     }
 
+    @ApiModelProperty(value = "The sum insured amount")
     public Amount getSumInsuredAmount() {
         return sumInsuredAmount;
     }
@@ -55,6 +64,7 @@ public class ProductQuotation {
         this.sumInsuredAmount = sumInsuredAmount;
     }
 
+    @ApiModelProperty(value = "The payment periodicity")
     public PeriodicityCode getPeriodicityCode() {
         return periodicityCode;
     }
@@ -63,11 +73,21 @@ public class ProductQuotation {
         this.periodicityCode = periodicityCode;
     }
 
+    @ApiModelProperty(value = "The plan duration (in years)")
     public Integer getNbOfYearsOfPayment() {
         return nbOfYearsOfPayment;
     }
 
     public void setNbOfYearsOfPayment(Integer nbOfYearsOfPayment) {
         this.nbOfYearsOfPayment = nbOfYearsOfPayment;
+    }
+
+    @ApiModelProperty(value = "The insured occupation")
+    public String getOccupation() {
+        return occupation;
+    }
+
+    public void setOccupation(String occupation) {
+        this.occupation = occupation;
     }
 }
