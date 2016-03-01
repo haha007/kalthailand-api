@@ -33,15 +33,15 @@ public class CDBUtil {
             conn = DriverManager.getConnection("jdbc:sqlserver://" + ip + ":1433;databaseName=" + dbName + ";user=" + user + ";password=" + pass);
             System.out.println("Connection successfully.");
         } catch (Exception e) {
-            System.out.println("Failed connection.");
+            logger.error("Failed connection.");
         }
     }
 
     private void close() {
         try {
             conn.close();
-        } catch (Exception e) {
-            System.out.println("Failed to close connection.");
+        }catch(Exception e){
+            logger.error("Failed to close connection.");
         }
     }
 
@@ -65,8 +65,8 @@ public class CDBUtil {
                 outMap.put("pagt2", rs.getString("pagt2"));
                 rs.close();
             }
-        } catch (Exception e) {
-            System.out.println("error:" + e.getMessage());
+        }catch(Exception e){
+            logger.error("error:"+e.getMessage());
         }
         rs = null;
         ps = null;
