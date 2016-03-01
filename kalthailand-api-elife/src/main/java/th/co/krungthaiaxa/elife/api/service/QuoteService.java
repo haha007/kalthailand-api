@@ -71,6 +71,25 @@ public class QuoteService {
         quote.setCommonData(commonData);
         quote.setPremiumsData(premiumsData);
         quote.addInsured(insured);
+
+        // copy data already gathered in ProductQuotation
+        quote.getPremiumsData().getFinancialScheduler().getPeriodicity().setCode(productQuotation.getPeriodicityCode());
+        quote.getInsureds().get(0).getPerson().setBirthDate(productQuotation.getDateOfBirth());
+        quote.getInsureds().get(0).getPerson().setGenderCode(productQuotation.getGenderCode());
+        if (productQuotation.getSumInsuredAmount().getValue() != null) {
+            Amount amount = new Amount();
+            amount.setCurrencyCode(productQuotation.getSumInsuredAmount().getCurrencyCode());
+            amount.setValue(productQuotation.getSumInsuredAmount().getValue());
+            quote.getPremiumsData().getLifeInsurance().setSumInsured(amount);
+        } else {
+            Amount amount = new Amount();
+            amount.setCurrencyCode(productQuotation.getPremiumAmount().getCurrencyCode());
+            amount.setValue(productQuotation.getPremiumAmount().getValue());
+            quote.getPremiumsData().getFinancialScheduler().setModalAmount(amount);
+        }
+
+        //calculate
+
         quote = quoteRepository.save(quote);
 
         SessionQuote sessionQuote = sessionQuoteRepository.findBySessionIdAndChannelType(sessionId, channelType);
