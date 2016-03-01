@@ -47,7 +47,7 @@ public class DocumentServiceTest {
 
     @Test
     public void should_add_2_documents_in_policy() throws QuoteCalculationException, PolicyValidationException {
-        Quote quote1 = quoteService.createQuote(randomNumeric(20), product10EC.getCommonData(), LINE);
+        Quote quote1 = quoteService.createQuote(randomNumeric(20), product10EC.getCommonData(), LINE, productQuotation());
         quote(quote1, EVERY_YEAR, 1000000.0, insured(35), beneficiary(100.0));
         quote1 = quoteService.updateQuote(quote1);
         Policy policy = policyService.createPolicy(quote1);
@@ -62,7 +62,7 @@ public class DocumentServiceTest {
 
     @Test
     public void should_get_1_document_in_policy() throws QuoteCalculationException, PolicyValidationException {
-        Quote quote1 = quoteService.createQuote(randomNumeric(20), product10EC.getCommonData(), LINE);
+        Quote quote1 = quoteService.createQuote(randomNumeric(20), product10EC.getCommonData(), LINE, productQuotation());
         quote(quote1, EVERY_YEAR, 1000000.0, insured(35), beneficiary(100.0));
         quote1 = quoteService.updateQuote(quote1);
         Policy policy = policyService.createPolicy(quote1);

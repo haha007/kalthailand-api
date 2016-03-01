@@ -8,6 +8,7 @@ import th.co.krungthaiaxa.elife.api.model.enums.ChannelType;
 import th.co.krungthaiaxa.elife.api.model.enums.InsuredType;
 import th.co.krungthaiaxa.elife.api.products.Product;
 import th.co.krungthaiaxa.elife.api.products.ProductFactory;
+import th.co.krungthaiaxa.elife.api.products.ProductQuotation;
 import th.co.krungthaiaxa.elife.api.repository.QuoteRepository;
 import th.co.krungthaiaxa.elife.api.repository.SessionQuoteRepository;
 
@@ -47,7 +48,7 @@ public class QuoteService {
                 .findFirst();
     }
 
-    public Quote createQuote(String sessionId, CommonData commonData, ChannelType channelType) {
+    public Quote createQuote(String sessionId, CommonData commonData, ChannelType channelType, ProductQuotation productQuotation) {
         FinancialScheduler financialScheduler = new FinancialScheduler();
         financialScheduler.setPeriodicity(new Periodicity());
 

@@ -89,7 +89,7 @@ public class PolicyResourceTest {
     public void should_return_a_policy_object() throws QuoteCalculationException, IOException {
         String sessionId = randomNumeric(20);
 
-        Quote quote = quoteService.createQuote(sessionId, product10EC.getCommonData(), LINE);
+        Quote quote = quoteService.createQuote(sessionId, product10EC.getCommonData(), LINE, productQuotation());
         quote(quote, EVERY_YEAR, 1000000.0, insured(35), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 
@@ -110,7 +110,7 @@ public class PolicyResourceTest {
     public void should_return_policy_payment_list() throws QuoteCalculationException, IOException, URISyntaxException {
         String sessionId = randomNumeric(20);
 
-        Quote quote = quoteService.createQuote(sessionId, product10EC.getCommonData(), LINE);
+        Quote quote = quoteService.createQuote(sessionId, product10EC.getCommonData(), LINE, productQuotation());
         quote(quote, EVERY_YEAR, 1000000.0, insured(35), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 
@@ -132,7 +132,7 @@ public class PolicyResourceTest {
     public void should_be_able_to_update_payment_without_error_message() throws QuoteCalculationException, IOException, URISyntaxException {
         String sessionId = randomNumeric(20);
 
-        Quote quote = quoteService.createQuote(sessionId, product10EC.getCommonData(), LINE);
+        Quote quote = quoteService.createQuote(sessionId, product10EC.getCommonData(), LINE, productQuotation());
         quote(quote, EVERY_YEAR, 1000000.0, insured(35), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 
@@ -162,7 +162,7 @@ public class PolicyResourceTest {
     public void should_be_able_to_update_payment_with_error_message() throws QuoteCalculationException, IOException, URISyntaxException {
         String sessionId = randomNumeric(20);
 
-        Quote quote = quoteService.createQuote(sessionId, product10EC.getCommonData(), LINE);
+        Quote quote = quoteService.createQuote(sessionId, product10EC.getCommonData(), LINE, productQuotation());
         quote(quote, EVERY_YEAR, 1000000.0, insured(35), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 

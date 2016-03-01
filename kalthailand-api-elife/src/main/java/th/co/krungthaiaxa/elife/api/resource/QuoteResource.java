@@ -121,7 +121,7 @@ public class QuoteResource {
             @ApiParam(value = "The product details for which to create a quote on")
             @RequestBody ProductQuotation productQuotation) {
         Product product = getProduct(productQuotation.getProductType().getName());
-        return new ResponseEntity<>(getJson(quoteService.createQuote(sessionId, product.getCommonData(), channelType)), OK);
+        return new ResponseEntity<>(getJson(quoteService.createQuote(sessionId, product.getCommonData(), channelType, productQuotation)), OK);
     }
 
     @ApiOperation(value = "Updates a quote", notes = "Updates a quote with is provided JSon. Calculation may occur " +
