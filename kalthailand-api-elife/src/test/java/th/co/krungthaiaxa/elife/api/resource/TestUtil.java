@@ -21,6 +21,7 @@ import static java.time.LocalDate.now;
 import static java.time.temporal.ChronoUnit.YEARS;
 import static th.co.krungthaiaxa.elife.api.model.enums.GenderCode.FEMALE;
 import static th.co.krungthaiaxa.elife.api.model.enums.MaritalStatus.MARRIED;
+import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_HALF_YEAR;
 import static th.co.krungthaiaxa.elife.api.products.Product10EC.PRODUCT_10_EC_NAME;
 import static th.co.krungthaiaxa.elife.api.products.ProductType.PRODUCT_10_EC;
 
@@ -31,8 +32,16 @@ public class TestUtil {
     }
 
     public static ProductQuotation productQuotation(ProductType productType) {
+        Amount amount = new Amount();
+        amount.setCurrencyCode("THB");
+        amount.setValue(350000.0);
+
         ProductQuotation productQuotation = new ProductQuotation();
         productQuotation.setProductType(productType);
+        productQuotation.setDateOfBirth(now().minus(43, YEARS));
+        productQuotation.setGenderCode(FEMALE);
+        productQuotation.setPeriodicityCode(EVERY_HALF_YEAR);
+        productQuotation.setSumInsuredAmount(amount);
         return productQuotation;
     }
 
