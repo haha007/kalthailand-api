@@ -282,14 +282,4 @@ public class QuoteResourceTest {
         int last = bufferedInputStream.read(bytes);
         return new String(bytes, 0, last);
     }
-
-    private static ProductQuotation productQuotation() {
-        return productQuotation(PRODUCT_10_EC);
-    }
-
-    private static ProductQuotation productQuotation(ProductType productType) {
-        ProductQuotation productQuotation = new ProductQuotation();
-        productQuotation.setProductType(productType);
-        return productQuotation;
-    }
 }

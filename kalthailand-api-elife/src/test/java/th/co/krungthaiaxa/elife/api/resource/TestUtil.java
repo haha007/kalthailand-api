@@ -5,6 +5,8 @@ import th.co.krungthaiaxa.elife.api.model.*;
 import th.co.krungthaiaxa.elife.api.model.enums.*;
 import th.co.krungthaiaxa.elife.api.model.error.Error;
 import th.co.krungthaiaxa.elife.api.products.Product10EC;
+import th.co.krungthaiaxa.elife.api.products.ProductQuotation;
+import th.co.krungthaiaxa.elife.api.products.ProductType;
 import th.co.krungthaiaxa.elife.api.utils.JsonUtil;
 
 import java.io.IOException;
@@ -20,9 +22,19 @@ import static java.time.temporal.ChronoUnit.YEARS;
 import static th.co.krungthaiaxa.elife.api.model.enums.GenderCode.FEMALE;
 import static th.co.krungthaiaxa.elife.api.model.enums.MaritalStatus.MARRIED;
 import static th.co.krungthaiaxa.elife.api.products.Product10EC.PRODUCT_10_EC_NAME;
+import static th.co.krungthaiaxa.elife.api.products.ProductType.PRODUCT_10_EC;
 
 public class TestUtil {
 
+    public static ProductQuotation productQuotation() {
+        return productQuotation(PRODUCT_10_EC);
+    }
+
+    public static ProductQuotation productQuotation(ProductType productType) {
+        ProductQuotation productQuotation = new ProductQuotation();
+        productQuotation.setProductType(productType);
+        return productQuotation;
+    }
 
     public static String getJSon(Object object) throws IOException {
         return JsonUtil.mapper.writeValueAsString(object);
