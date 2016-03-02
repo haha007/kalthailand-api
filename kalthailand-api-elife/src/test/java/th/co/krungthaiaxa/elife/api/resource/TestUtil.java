@@ -5,6 +5,7 @@ import th.co.krungthaiaxa.elife.api.model.*;
 import th.co.krungthaiaxa.elife.api.model.enums.*;
 import th.co.krungthaiaxa.elife.api.model.error.Error;
 import th.co.krungthaiaxa.elife.api.products.Product10EC;
+import th.co.krungthaiaxa.elife.api.products.ProductAmounts;
 import th.co.krungthaiaxa.elife.api.products.ProductQuotation;
 import th.co.krungthaiaxa.elife.api.products.ProductType;
 import th.co.krungthaiaxa.elife.api.utils.JsonUtil;
@@ -27,21 +28,29 @@ import static th.co.krungthaiaxa.elife.api.products.ProductType.PRODUCT_10_EC;
 
 public class TestUtil {
 
-    public static ProductQuotation productQuotation() {
-        return productQuotation(PRODUCT_10_EC);
+    public static ProductQuotation productQuotation(Integer age, PeriodicityCode periodicityCode) {
+        return productQuotation(PRODUCT_10_EC, age, periodicityCode);
     }
 
     public static ProductQuotation productQuotation(ProductType productType) {
+        return productQuotation(productType, 43, EVERY_HALF_YEAR);
+    }
+
+    public static ProductQuotation productQuotation() {
+        return productQuotation(PRODUCT_10_EC, 43, EVERY_HALF_YEAR);
+    }
+
+    public static ProductQuotation productQuotation(ProductType productType, Integer age, PeriodicityCode periodicityCode) {
         Amount amount = new Amount();
         amount.setCurrencyCode("THB");
         amount.setValue(350000.0);
 
         ProductQuotation productQuotation = new ProductQuotation();
         productQuotation.setProductType(productType);
-        productQuotation.setDateOfBirth(now().minus(43, YEARS));
+        productQuotation.setDateOfBirth(now().minus(age, YEARS));
         productQuotation.setDeclaredTaxPercentAtSubscription(23);
         productQuotation.setGenderCode(FEMALE);
-        productQuotation.setPeriodicityCode(EVERY_HALF_YEAR);
+        productQuotation.setPeriodicityCode(periodicityCode);
         productQuotation.setSumInsuredAmount(amount);
         return productQuotation;
     }
@@ -65,6 +74,10 @@ public class TestUtil {
 
     public static Error getErrorFromJSon(String json) throws IOException {
         return JsonUtil.mapper.readValue(json, Error.class);
+    }
+
+    public static ProductAmounts getProductAmountsFromJSon(String json) throws IOException {
+        return JsonUtil.mapper.readValue(json, ProductAmounts.class);
     }
 
     public static void quote(Quote quote, PeriodicityCode periodicityCode, Double sumInsuredAmount, Insured insured, CoverageBeneficiary... beneficiaries) {

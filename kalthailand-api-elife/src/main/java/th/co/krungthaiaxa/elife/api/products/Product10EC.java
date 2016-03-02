@@ -8,6 +8,7 @@ import th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.IntStream;
@@ -194,6 +195,23 @@ public class Product10EC implements Product {
         commonData.setProductId(PRODUCT_10_EC.getName());
         commonData.setProductName(PRODUCT_10_EC_NAME);
         return commonData;
+    }
+
+    @Override
+    public ProductAmounts getProductAmounts(ProductQuotation productQuotation) {
+        ProductAmounts productAmounts = new ProductAmounts();
+        productAmounts.setCommonData(getCommonData());
+        if (productQuotation.getDateOfBirth() == null || productQuotation.getPeriodicityCode() == null) {
+            return productAmounts;
+        }
+
+        Double interestRate = rate.apply(getAge(productQuotation.getDateOfBirth()));
+        Double factor = modalFactor.apply(productQuotation.getPeriodicityCode());
+        productAmounts.setMaxPremium(amount(SUM_INSURED_MAX * factor * interestRate / 1000));
+        productAmounts.setMaxSumInsured(amount(SUM_INSURED_MAX));
+        productAmounts.setMinPremium(amount(SUM_INSURED_MIN * factor * interestRate / 1000));
+        productAmounts.setMinSumInsured(amount(SUM_INSURED_MIN));
+        return productAmounts;
     }
 
     private static void addPayments(Policy policy) {
@@ -509,5 +527,9 @@ public class Product10EC implements Product {
         amount.setCurrencyCode(PRODUCT_10_EC_CURRENCY);
         amount.setValue(value);
         return amount;
+    }
+
+    private Integer getAge(LocalDate birthDate) {
+        return ((Long) ChronoUnit.YEARS.between(birthDate, LocalDate.now())).intValue();
     }
 }
