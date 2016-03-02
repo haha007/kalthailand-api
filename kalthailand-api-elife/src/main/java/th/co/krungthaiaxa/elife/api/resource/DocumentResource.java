@@ -68,7 +68,7 @@ public class DocumentResource {
         return new ResponseEntity<>(getJson(policy.getDocuments()), OK);
     }
 
-    @ApiOperation(value = "Documents of a policy", notes = "Downloads a document of a policy", response = DocumentDownload.class)
+    @ApiOperation(value = "Download a document", notes = "Downloads a document of a policy", response = DocumentDownload.class)
     @ApiResponses({
             @ApiResponse(code = 404, message = "If policy is not found", response = Error.class),
             @ApiResponse(code = 406, message = "If document is not in policy", response = Error.class),
