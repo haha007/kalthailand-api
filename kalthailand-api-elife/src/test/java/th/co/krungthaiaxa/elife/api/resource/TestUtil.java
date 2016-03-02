@@ -41,6 +41,11 @@ public class TestUtil {
         });
     }
 
+    public static List<Document> getDocumentsFromJSon(String json) throws IOException {
+        return JsonUtil.mapper.readValue(json, new TypeReference<List<Document>>() {
+        });
+    }
+
     public static Error getErrorFromJSon(String json) throws IOException {
         return JsonUtil.mapper.readValue(json, Error.class);
     }

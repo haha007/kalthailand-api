@@ -17,6 +17,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import th.co.krungthaiaxa.elife.api.KalApiApplication;
 import th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException;
+import th.co.krungthaiaxa.elife.api.model.Document;
 import th.co.krungthaiaxa.elife.api.model.Policy;
 import th.co.krungthaiaxa.elife.api.model.Quote;
 import th.co.krungthaiaxa.elife.api.model.error.Error;
@@ -29,13 +30,16 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Base64;
+import java.util.List;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpMethod.PUT;
 import static org.springframework.http.HttpStatus.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
 import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_YEAR;
+import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.ERROR;
 import static th.co.krungthaiaxa.elife.api.resource.TestUtil.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -147,13 +151,42 @@ public class DocumentResourceTest {
         assertThat(Base64.getDecoder().decode(response.getBody())).isNotNull();
     }
 
+    @Test
+    public void should_return_2_documents_after_a_policy_has_been_created_and_payment_updated() throws QuoteCalculationException, IOException, URISyntaxException {
+        String sessionId = randomNumeric(20);
+        Quote quote = quoteService.createQuote(sessionId, product10EC.getCommonData(), LINE);
+        quote(quote, EVERY_YEAR, 1000000.0, insured(35), beneficiary(100.0));
+        quote = quoteService.updateQuote(quote);
+
+        Policy policy = getPolicy(quote, sessionId);
+
+        URI paymentURI = new URI("http://localhost:" + port + "/policies/" + policy.getPolicyId() + "/payments/" + policy.getPayments().get(0).getPaymentId());
+        UriComponentsBuilder updatePaymentBuilder = UriComponentsBuilder.fromUri(paymentURI)
+                .queryParam("value", 200.0)
+                .queryParam("currencyCode", "THB")
+                .queryParam("registrationKey", "something")
+                .queryParam("status", ERROR)
+                .queryParam("channelType", LINE)
+                .queryParam("creditCardName", "myCreditCardName")
+                .queryParam("paymentMethod", "myPaymentMethod")
+                .queryParam("errorMessage", "myErrorMessage");
+        template.exchange(updatePaymentBuilder.toUriString(), PUT, new HttpEntity<>(getJSon(quote)), String.class);
+
+        URI documentUploadURI = new URI("http://localhost:" + port + "/documents/policies/" + policy.getPolicyId());
+        ResponseEntity<String> response = template.getForEntity(documentUploadURI, String.class);
+        assertThat(response.getStatusCode().value()).isEqualTo(OK.value());
+
+        List<Document> documents = getDocumentsFromJSon(response.getBody());
+        assertThat(documents).hasSize(2);
+    }
+
     private Policy getPolicy(Quote quote, String sessionId) throws URISyntaxException, IOException {
         URI quoteCreationURI = new URI("http://localhost:" + port + "/policies");
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(quoteCreationURI)
                 .queryParam("sessionId", sessionId)
                 .queryParam("channelType", LINE.name());
         ResponseEntity<String> response = template.exchange(builder.toUriString(), POST, new HttpEntity<>(getJSon(quote)), String.class);
-        return TestUtil.getPolicyFromJSon(response.getBody());
+        return getPolicyFromJSon(response.getBody());
     }
 
     private String getBase64(String file) {

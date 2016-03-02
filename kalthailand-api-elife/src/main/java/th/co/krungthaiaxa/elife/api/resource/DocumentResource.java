@@ -46,6 +46,28 @@ public class DocumentResource {
         this.policyService = policyService;
     }
 
+    @ApiOperation(value = "Documents of a policy", notes = "Document collection for a policy", response = Document.class, responseContainer = "List")
+    @ApiResponses({
+            @ApiResponse(code = 404, message = "If policy is not found", response = Error.class),
+            @ApiResponse(code = 406, message = "If document is not in policy", response = Error.class),
+            @ApiResponse(code = 500, message = "If document could not be downloaded", response = Error.class)
+    })
+    @RequestMapping(value = "/documents/policies/{policyId}", produces = APPLICATION_JSON_VALUE, method = GET)
+    @ResponseBody
+    public ResponseEntity documentsOfPolicy(
+            @ApiParam(value = "The policy ID")
+            @PathVariable String policyId) {
+        Policy policy;
+        try {
+            policy = policyService.findPolicy(policyId);
+        } catch (RuntimeException e) {
+            logger.error("Unable to find the policy with ID [" + policyId + "]", e);
+            return new ResponseEntity<>(POLICY_DOES_NOT_EXIST, NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(getJson(policy.getDocuments()), OK);
+    }
+
     @ApiOperation(value = "Documents of a policy", notes = "Downloads a document of a policy", response = DocumentDownload.class)
     @ApiResponses({
             @ApiResponse(code = 404, message = "If policy is not found", response = Error.class),
@@ -54,7 +76,7 @@ public class DocumentResource {
     })
     @RequestMapping(value = "/documents/policies/{policyId}/{documentId}", produces = APPLICATION_JSON_VALUE, method = GET)
     @ResponseBody
-    public ResponseEntity documentsOfPolicy(
+    public ResponseEntity documentDownloadOfPolicy(
             @ApiParam(value = "The policy ID")
             @PathVariable String policyId,
             @ApiParam(value = "The document ID")
