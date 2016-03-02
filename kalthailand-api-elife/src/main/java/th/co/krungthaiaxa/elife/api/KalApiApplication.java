@@ -49,6 +49,7 @@ public class KalApiApplication {
         return Predicates.or(
                 PathSelectors.regex("/quotes.*"),
                 PathSelectors.regex("/policies.*"),
+                PathSelectors.regex("/products.*"),
                 PathSelectors.regex("/decrypt.*"),
                 PathSelectors.regex("/documents.*"));
     }

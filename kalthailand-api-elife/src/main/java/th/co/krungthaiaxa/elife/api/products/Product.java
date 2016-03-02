@@ -12,4 +12,6 @@ public interface Product {
     void getPolicyFromQuote(Policy policy, Quote quote) throws PolicyValidationException, QuoteCalculationException;
 
     CommonData getCommonData();
+
+    ProductAmounts getProductAmounts(ProductQuotation productQuotation);
 }

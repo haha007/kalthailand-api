@@ -33,6 +33,87 @@ public class Product10ECTest {
     private Product10EC product10EC = new Product10EC();
 
     @Test
+    public void should_return_amount_for_30_yo_monthly() throws Exception {
+        ProductAmounts productAmounts = product10EC.getProductAmounts(productQuotation(30, EVERY_MONTH));
+        assertThat(productAmounts.getMinPremium().getValue()).isEqualTo(2772.0);
+        assertThat(productAmounts.getMaxPremium().getValue()).isEqualTo(27720.0);
+        assertThat(productAmounts.getMinSumInsured().getValue()).isEqualTo(100000.0);
+        assertThat(productAmounts.getMaxSumInsured().getValue()).isEqualTo(1000000.0);
+    }
+
+    @Test
+    public void should_return_amount_for_30_yo_quarterly() throws Exception {
+        ProductAmounts productAmounts = product10EC.getProductAmounts(productQuotation(30, EVERY_QUARTER));
+        assertThat(productAmounts.getMinPremium().getValue()).isEqualTo(8316.0);
+        assertThat(productAmounts.getMaxPremium().getValue()).isEqualTo(83160.0);
+        assertThat(productAmounts.getMinSumInsured().getValue()).isEqualTo(100000.0);
+        assertThat(productAmounts.getMaxSumInsured().getValue()).isEqualTo(1000000.0);
+    }
+
+    @Test
+    public void should_return_amount_for_30_yo_half_yearly() throws Exception {
+        ProductAmounts productAmounts = product10EC.getProductAmounts(productQuotation(30, EVERY_HALF_YEAR));
+        assertThat(productAmounts.getMinPremium().getValue()).isEqualTo(16016.0);
+        assertThat(productAmounts.getMaxPremium().getValue()).isEqualTo(160160.0);
+        assertThat(productAmounts.getMinSumInsured().getValue()).isEqualTo(100000.0);
+        assertThat(productAmounts.getMaxSumInsured().getValue()).isEqualTo(1000000.0);
+    }
+
+    @Test
+    public void should_return_amount_for_30_yo_yearly() throws Exception {
+        ProductAmounts productAmounts = product10EC.getProductAmounts(productQuotation(30, EVERY_YEAR));
+        assertThat(productAmounts.getMinPremium().getValue()).isEqualTo(30800.0);
+        assertThat(productAmounts.getMaxPremium().getValue()).isEqualTo(308000.0);
+        assertThat(productAmounts.getMinSumInsured().getValue()).isEqualTo(100000.0);
+        assertThat(productAmounts.getMaxSumInsured().getValue()).isEqualTo(1000000.0);
+    }
+
+    @Test
+    public void should_return_amount_for_48_yo_yearly() throws Exception {
+        ProductAmounts productAmounts = product10EC.getProductAmounts(productQuotation(48, EVERY_YEAR));
+        assertThat(productAmounts.getMinPremium().getValue()).isEqualTo(30600.0);
+        assertThat(productAmounts.getMaxPremium().getValue()).isEqualTo(306000.0);
+        assertThat(productAmounts.getMinSumInsured().getValue()).isEqualTo(100000.0);
+        assertThat(productAmounts.getMaxSumInsured().getValue()).isEqualTo(1000000.0);
+    }
+
+    @Test
+    public void should_return_amount_for_53_yo_yearly() throws Exception {
+        ProductAmounts productAmounts = product10EC.getProductAmounts(productQuotation(53, EVERY_YEAR));
+        assertThat(productAmounts.getMinPremium().getValue()).isEqualTo(30400.0);
+        assertThat(productAmounts.getMaxPremium().getValue()).isEqualTo(304000.0);
+        assertThat(productAmounts.getMinSumInsured().getValue()).isEqualTo(100000.0);
+        assertThat(productAmounts.getMaxSumInsured().getValue()).isEqualTo(1000000.0);
+    }
+
+    @Test
+    public void should_return_amount_for_58_yo_yearly() throws Exception {
+        ProductAmounts productAmounts = product10EC.getProductAmounts(productQuotation(58, EVERY_YEAR));
+        assertThat(productAmounts.getMinPremium().getValue()).isEqualTo(30100.0);
+        assertThat(productAmounts.getMaxPremium().getValue()).isEqualTo(301000.0);
+        assertThat(productAmounts.getMinSumInsured().getValue()).isEqualTo(100000.0);
+        assertThat(productAmounts.getMaxSumInsured().getValue()).isEqualTo(1000000.0);
+    }
+
+    @Test
+    public void should_return_amount_for_63_yo_yearly() throws Exception {
+        ProductAmounts productAmounts = product10EC.getProductAmounts(productQuotation(63, EVERY_YEAR));
+        assertThat(productAmounts.getMinPremium().getValue()).isEqualTo(30000.0);
+        assertThat(productAmounts.getMaxPremium().getValue()).isEqualTo(300000.0);
+        assertThat(productAmounts.getMinSumInsured().getValue()).isEqualTo(100000.0);
+        assertThat(productAmounts.getMaxSumInsured().getValue()).isEqualTo(1000000.0);
+    }
+
+    @Test
+    public void should_return_amount_for_68_yo_yearly() throws Exception {
+        ProductAmounts productAmounts = product10EC.getProductAmounts(productQuotation(68, EVERY_YEAR));
+        assertThat(productAmounts.getMinPremium().getValue()).isEqualTo(29800.0);
+        assertThat(productAmounts.getMaxPremium().getValue()).isEqualTo(298000.0);
+        assertThat(productAmounts.getMinSumInsured().getValue()).isEqualTo(100000.0);
+        assertThat(productAmounts.getMaxSumInsured().getValue()).isEqualTo(1000000.0);
+    }
+
+    @Test
     public void should_throw_error_if_age_at_subscription_is_less_than_20() throws Exception {
         Quote quote = quote(EVERY_YEAR, insured(19), beneficiary(100.0));
 

@@ -96,6 +96,11 @@ public class ProductIBegin implements Product {
         return commonData;
     }
 
+    @Override
+    public ProductAmounts getProductAmounts(ProductQuotation productQuotation) {
+        return null;
+    }
+
     private static boolean hasEnoughTocalculate(Quote quote) {
         // Do we have a birth date to calculate the age of insured
         boolean hasAnyDateOfBirth = quote.getInsureds().stream()

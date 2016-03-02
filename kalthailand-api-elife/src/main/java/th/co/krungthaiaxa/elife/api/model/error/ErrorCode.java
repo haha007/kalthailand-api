@@ -30,5 +30,8 @@ public class ErrorCode {
     public static final Error UNABLE_TO_DOWNLOAD_DOCUMENT = new Error("60003", "Unable to download the document", "Processing for create e-receipt fail");
     // Email
     public static final Function<String, Error> UNABLE_TO_SEND_EMAIL = msg -> new Error("70001", "Unable to send email", "Error message is:" + msg);
+    // Product
+    public static final Function<String, Error> INVALID_PRODUCT_QUOTATION_PROVIDED = msg -> new Error("70001", "Unable to get the product details", "The given product cannot be transformed. Error message is:" + msg);
+
 
 }
