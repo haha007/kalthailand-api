@@ -39,6 +39,7 @@ public class TestUtil {
         ProductQuotation productQuotation = new ProductQuotation();
         productQuotation.setProductType(productType);
         productQuotation.setDateOfBirth(now().minus(43, YEARS));
+        productQuotation.setDeclaredTaxPercentAtSubscription(23);
         productQuotation.setGenderCode(FEMALE);
         productQuotation.setPeriodicityCode(EVERY_HALF_YEAR);
         productQuotation.setSumInsuredAmount(amount);
@@ -89,18 +90,20 @@ public class TestUtil {
         premiumsData.setFinancialScheduler(financialScheduler);
         premiumsData.setLifeInsurance(lifeInsurance);
 
-        Coverage coverage = new Coverage();
-        coverage.setName(PRODUCT_10_EC_NAME);
-        for (CoverageBeneficiary beneficiary : beneficiaries) {
-            coverage.addBeneficiary(beneficiary);
-        }
-
         Product10EC product10EC = new Product10EC();
         quote.setCommonData(product10EC.getCommonData());
         quote.setPremiumsData(premiumsData);
         quote.getInsureds().remove(0);
         quote.addInsured(insured);
-        quote.addCoverage(coverage);
+        if (quote.getCoverages().size() == 0) {
+            Coverage coverage = new Coverage();
+            coverage.setName(PRODUCT_10_EC_NAME);
+            quote.addCoverage(coverage);
+        }
+
+        for (CoverageBeneficiary beneficiary : beneficiaries) {
+            quote.getCoverages().get(0).addBeneficiary(beneficiary);
+        }
     }
 
     public static Quote quote(PeriodicityCode periodicityCode, Insured insured, CoverageBeneficiary... beneficiaries) {
@@ -121,12 +124,6 @@ public class TestUtil {
         premiumsData.setFinancialScheduler(financialScheduler);
         premiumsData.setLifeInsurance(lifeInsurance);
 
-        Coverage coverage = new Coverage();
-        coverage.setName(PRODUCT_10_EC_NAME);
-        for (CoverageBeneficiary beneficiary : beneficiaries) {
-            coverage.addBeneficiary(beneficiary);
-        }
-
         Product10EC product10EC = new Product10EC();
 
         Quote quote = new Quote();
@@ -135,7 +132,16 @@ public class TestUtil {
         if (insured != null) {
             quote.addInsured(insured);
         }
-        quote.addCoverage(coverage);
+        if (quote.getCoverages().size() == 0) {
+            Coverage coverage = new Coverage();
+            coverage.setName(PRODUCT_10_EC_NAME);
+            quote.addCoverage(coverage);
+        }
+
+        for (CoverageBeneficiary beneficiary : beneficiaries) {
+            quote.getCoverages().get(0).addBeneficiary(beneficiary);
+        }
+
         return quote;
     }
 

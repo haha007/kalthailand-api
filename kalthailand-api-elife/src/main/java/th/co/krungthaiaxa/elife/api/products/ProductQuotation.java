@@ -18,6 +18,7 @@ public class ProductQuotation {
     private PeriodicityCode periodicityCode;
     private Integer nbOfYearsOfPayment;
     private String occupation;
+    private Integer declaredTaxPercentAtSubscription;
 
     @ApiModelProperty(value = "The product type")
     public ProductType getProductType() {
@@ -89,5 +90,14 @@ public class ProductQuotation {
 
     public void setOccupation(String occupation) {
         this.occupation = occupation;
+    }
+
+    @ApiModelProperty(value = "The tax percent paid at subscruption")
+    public Integer getDeclaredTaxPercentAtSubscription() {
+        return declaredTaxPercentAtSubscription;
+    }
+
+    public void setDeclaredTaxPercentAtSubscription(Integer declaredTaxPercentAtSubscription) {
+        this.declaredTaxPercentAtSubscription = declaredTaxPercentAtSubscription;
     }
 }

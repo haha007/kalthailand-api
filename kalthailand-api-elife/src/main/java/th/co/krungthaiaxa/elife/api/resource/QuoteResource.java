@@ -120,8 +120,12 @@ public class QuoteResource {
             @RequestParam ChannelType channelType,
             @ApiParam(value = "The product details for which to create a quote on")
             @RequestBody ProductQuotation productQuotation) {
-        Product product = getProduct(productQuotation.getProductType().getName());
-        return new ResponseEntity<>(getJson(quoteService.createQuote(sessionId, product.getCommonData(), channelType, productQuotation)), OK);
+        try {
+            return new ResponseEntity<>(getJson(quoteService.createQuote(sessionId, channelType, productQuotation)), OK);
+        } catch (QuoteCalculationException e) {
+            logger.error("Unable to update quote", e);
+            return new ResponseEntity<>(QUOTE_NOT_CREATED, NOT_ACCEPTABLE);
+        }
     }
 
     @ApiOperation(value = "Updates a quote", notes = "Updates a quote with is provided JSon. Calculation may occur " +

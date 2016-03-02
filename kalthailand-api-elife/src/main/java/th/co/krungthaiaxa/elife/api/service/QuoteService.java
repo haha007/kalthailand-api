@@ -22,6 +22,7 @@ import static java.time.LocalDateTime.now;
 import static java.time.ZoneId.SHORT_IDS;
 import static java.time.ZoneId.of;
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
+import static th.co.krungthaiaxa.elife.api.products.ProductFactory.getProduct;
 
 
 @Service
@@ -48,7 +49,9 @@ public class QuoteService {
                 .findFirst();
     }
 
-    public Quote createQuote(String sessionId, CommonData commonData, ChannelType channelType, ProductQuotation productQuotation) {
+    public Quote createQuote(String sessionId, ChannelType channelType, ProductQuotation productQuotation) throws QuoteCalculationException {
+        Product product = getProduct(productQuotation.getProductType().getName());
+
         FinancialScheduler financialScheduler = new FinancialScheduler();
         financialScheduler.setPeriodicity(new Periodicity());
 
@@ -68,14 +71,16 @@ public class QuoteService {
         quote.setCreationDateTime(now);
         quote.setLastUpdateDateTime(now);
         quote.setQuoteId(randomNumeric(20));
-        quote.setCommonData(commonData);
+        quote.setCommonData(product.getCommonData());
         quote.setPremiumsData(premiumsData);
         quote.addInsured(insured);
 
         // copy data already gathered in ProductQuotation
         quote.getPremiumsData().getFinancialScheduler().getPeriodicity().setCode(productQuotation.getPeriodicityCode());
         quote.getInsureds().get(0).getPerson().setBirthDate(productQuotation.getDateOfBirth());
+        quote.getInsureds().get(0).setAgeAtSubscription(getAge(productQuotation.getDateOfBirth()));
         quote.getInsureds().get(0).getPerson().setGenderCode(productQuotation.getGenderCode());
+        quote.getInsureds().get(0).setDeclaredTaxPercentAtSubscription(productQuotation.getDeclaredTaxPercentAtSubscription());
         if (productQuotation.getSumInsuredAmount().getValue() != null) {
             Amount amount = new Amount();
             amount.setCurrencyCode(productQuotation.getSumInsuredAmount().getCurrencyCode());
@@ -89,6 +94,7 @@ public class QuoteService {
         }
 
         //calculate
+        product.calculateQuote(quote);
 
         quote = quoteRepository.save(quote);
 
