@@ -9,7 +9,6 @@ import th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.elife.api.model.Quote;
 import th.co.krungthaiaxa.elife.api.model.enums.ChannelType;
 import th.co.krungthaiaxa.elife.api.model.error.Error;
-import th.co.krungthaiaxa.elife.api.products.Product;
 import th.co.krungthaiaxa.elife.api.products.ProductQuotation;
 import th.co.krungthaiaxa.elife.api.service.EmailService;
 import th.co.krungthaiaxa.elife.api.service.QuoteService;
@@ -23,7 +22,6 @@ import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 import static th.co.krungthaiaxa.elife.api.model.error.ErrorCode.*;
-import static th.co.krungthaiaxa.elife.api.products.ProductFactory.getProduct;
 import static th.co.krungthaiaxa.elife.api.utils.JsonUtil.getJson;
 
 @RestController
@@ -107,7 +105,8 @@ public class QuoteResource {
         return new ResponseEntity<>(getJson(quote.get()), OK);
     }
 
-    @ApiOperation(value = "Creates an empty quote", notes = "Creates an empty quote, attached to the session ID.",
+    @ApiOperation(value = "Create a quote", notes = "Creates a quote, attached to the session ID, with product " +
+            "details and calculated fields. Possible values for productType are [10EC, iFine]",
             response = Quote.class)
     @ApiResponses({
             @ApiResponse(code = 406, message = "If product Id is unknown", response = Error.class)
