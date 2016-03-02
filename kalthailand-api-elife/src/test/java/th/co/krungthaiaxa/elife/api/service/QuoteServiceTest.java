@@ -1,7 +1,6 @@
 package th.co.krungthaiaxa.elife.api.service;
 
 
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.SpringApplicationConfiguration;
@@ -46,7 +45,7 @@ public class QuoteServiceTest {
     public void should_find_by_quote_id_and_session_id() throws QuoteCalculationException {
         String sessionId = randomNumeric(20);
 
-        Quote quote = quoteService.createQuote(sessionId, product10EC.getCommonData(), LINE, productQuotation());
+        Quote quote = quoteService.createQuote(sessionId, LINE, productQuotation());
         quote(quote, EVERY_YEAR, 100000.0, insured(35), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 
@@ -60,7 +59,7 @@ public class QuoteServiceTest {
     public void should_not_find_by_quote_id_when_session_id_has_no_access_to_quote() throws QuoteCalculationException {
         String sessionId = randomNumeric(20);
 
-        Quote quote = quoteService.createQuote(sessionId, product10EC.getCommonData(), LINE, productQuotation());
+        Quote quote = quoteService.createQuote(sessionId, LINE, productQuotation());
         quote(quote, EVERY_YEAR, 100000.0, insured(35), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 
@@ -73,7 +72,7 @@ public class QuoteServiceTest {
     public void should_add_one_quote_in_session() throws QuoteCalculationException {
         String sessionId = randomNumeric(20);
 
-        Quote quote = quoteService.createQuote(sessionId, product10EC.getCommonData(), LINE, productQuotation());
+        Quote quote = quoteService.createQuote(sessionId, LINE, productQuotation());
         quote(quote, EVERY_YEAR, 100000.0, insured(35), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 
@@ -85,10 +84,10 @@ public class QuoteServiceTest {
     public void should_add_two_quotes_in_session_and_ordered_by_update_time() throws QuoteCalculationException {
         String sessionId = randomNumeric(20);
 
-        Quote quote1 = quoteService.createQuote(sessionId, product10EC.getCommonData(), LINE, productQuotation());
+        Quote quote1 = quoteService.createQuote(sessionId, LINE, productQuotation());
         quote(quote1, EVERY_YEAR, 100000.0, insured(35), beneficiary(100.0));
         quote1 = quoteService.updateQuote(quote1);
-        Quote quote2 = quoteService.createQuote(sessionId, product10EC.getCommonData(), LINE, productQuotation());
+        Quote quote2 = quoteService.createQuote(sessionId, LINE, productQuotation());
         quote(quote2, EVERY_MONTH, 200000.0, insured(35), beneficiary(100.0));
         quote2 = quoteService.updateQuote(quote2);
 
@@ -108,10 +107,10 @@ public class QuoteServiceTest {
     public void should_get_latest_quote() throws QuoteCalculationException {
         String sessionId = randomNumeric(20);
 
-        Quote quote1 = quoteService.createQuote(sessionId, product10EC.getCommonData(), LINE, productQuotation());
+        Quote quote1 = quoteService.createQuote(sessionId, LINE, productQuotation());
         quote(quote1, EVERY_YEAR, 100000.0, insured(35), beneficiary(100.0));
         quoteService.updateQuote(quote1);
-        Quote quote2 = quoteService.createQuote(sessionId, product10EC.getCommonData(), LINE, productQuotation());
+        Quote quote2 = quoteService.createQuote(sessionId, LINE, productQuotation());
         quote(quote2, EVERY_MONTH, 200000.0, insured(35), beneficiary(100.0));
         quote2 = quoteService.updateQuote(quote2);
 
@@ -123,10 +122,10 @@ public class QuoteServiceTest {
     public void should_get_latest_quote_that_has_not_been_transformed_into_policy() throws QuoteCalculationException, PolicyValidationException {
         String sessionId = randomNumeric(20);
 
-        Quote quote1 = quoteService.createQuote(sessionId, product10EC.getCommonData(), LINE, productQuotation());
+        Quote quote1 = quoteService.createQuote(sessionId, LINE, productQuotation());
         quote(quote1, EVERY_YEAR, 100000.0, insured(35), beneficiary(100.0));
         quoteService.updateQuote(quote1);
-        Quote quote2 = quoteService.createQuote(sessionId, product10EC.getCommonData(), LINE, productQuotation());
+        Quote quote2 = quoteService.createQuote(sessionId, LINE, productQuotation());
         quote(quote2, EVERY_MONTH, 200000.0, insured(35), beneficiary(100.0));
         quote2 = quoteService.updateQuote(quote2);
         policyService.createPolicy(quote2);
@@ -139,7 +138,7 @@ public class QuoteServiceTest {
     public void should_calculate_age_of_insured() throws QuoteCalculationException {
         String sessionId = randomNumeric(20);
 
-        Quote quote = quoteService.createQuote(sessionId, product10EC.getCommonData(), LINE, productQuotation());
+        Quote quote = quoteService.createQuote(sessionId, LINE, productQuotation());
         quote(quote, EVERY_YEAR, 100000.0, insured(35), beneficiary(100.0));
 
         Amount amount = new Amount();
@@ -155,7 +154,7 @@ public class QuoteServiceTest {
     public void should_return_empty_calculated_stuff_when_there_is_nothing_to_calculate_anymore() throws QuoteCalculationException {
         String sessionId = randomNumeric(20);
 
-        Quote quote = quoteService.createQuote(sessionId, product10EC.getCommonData(), LINE, productQuotation());
+        Quote quote = quoteService.createQuote(sessionId, LINE, productQuotation());
         quote(quote, EVERY_YEAR, 100000.0, insured(35), beneficiary(100.0));
 
         Amount amount = new Amount();
@@ -172,7 +171,7 @@ public class QuoteServiceTest {
         assertThat(quote.getPremiumsData().getLifeInsurance().getYearlyCashBacksAverageDividende()).hasSize(10);
         assertThat(quote.getPremiumsData().getLifeInsurance().getYearlyCashBacksMaximumBenefit()).hasSize(10);
         assertThat(quote.getPremiumsData().getLifeInsurance().getYearlyCashBacksMaximumDividende()).hasSize(10);
-        Assertions.assertThat(quote.getCoverages()).hasSize(1);
+        assertThat(quote.getCoverages()).hasSize(1);
         assertThat(quote.getCommonData().getProductId()).isNotNull();
         assertThat(quote.getCommonData().getProductName()).isNotNull();
 
@@ -188,15 +187,15 @@ public class QuoteServiceTest {
         assertThat(quote.getPremiumsData().getLifeInsurance().getYearlyCashBacksMaximumBenefit()).isEmpty();
         assertThat(quote.getPremiumsData().getLifeInsurance().getYearlyCashBacksMaximumDividende()).isEmpty();
         assertThat(quote.getPremiumsData().getLifeInsurance().getYearlyCashBacks()).isEmpty();
-        Assertions.assertThat(quote.getCoverages()).isEmpty();
+        assertThat(quote.getCoverages()).isEmpty();
     }
 
     @Test
-    public void should_return_quote_object_with_object_not_in_product_quotation_set_to_null() {
-        Quote quote = quoteService.createQuote(randomNumeric(20), product10EC.getCommonData(), LINE, productQuotation());
+    public void should_return_quote_object_with_object_not_in_product_quotation_set_to_null() throws QuoteCalculationException {
+        Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation());
         assertThat(quote).isNotNull();
         assertThat(quote.getCommonData()).isNotNull();
-        Assertions.assertThat(quote.getInsureds()).hasSize(1);
+        assertThat(quote.getInsureds()).hasSize(1);
         assertThat(quote.getInsureds().get(0)).isNotNull();
         assertThat(quote.getInsureds().get(0).getFatca()).isNotNull();
         assertThat(quote.getInsureds().get(0).getPerson()).isNotNull();
@@ -206,10 +205,10 @@ public class QuoteServiceTest {
     }
 
     @Test
-    public void should_return_quote_object_with_object_in_product_quotation_with_default_values() {
+    public void should_return_quote_object_with_object_in_product_quotation_with_default_values() throws QuoteCalculationException {
         ProductQuotation productQuotation = productQuotation();
 
-        Quote quote = quoteService.createQuote(randomNumeric(20), product10EC.getCommonData(), LINE, productQuotation);
+        Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation);
         assertThat(quote.getInsureds().get(0).getPerson().getBirthDate()).isEqualTo(productQuotation.getDateOfBirth());
         assertThat(quote.getInsureds().get(0).getPerson().getGenderCode()).isEqualTo(productQuotation.getGenderCode());
         assertThat(quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode()).isEqualTo(productQuotation.getPeriodicityCode());

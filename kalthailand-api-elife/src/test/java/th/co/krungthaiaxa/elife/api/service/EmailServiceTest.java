@@ -85,7 +85,7 @@ public class EmailServiceTest {
 
     @Test
     public void should_send_quote_email_with_proper_from_address() throws Exception {
-        Quote quote = quoteService.createQuote(randomNumeric(20), product10EC.getCommonData(), LINE, productQuotation());
+        Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation());
         quote(quote, EVERY_YEAR, 1000000.0, insured(35), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 
@@ -98,7 +98,7 @@ public class EmailServiceTest {
 
     @Test
     public void should_send_quote_email_to_insured_email_address() throws Exception {
-        Quote quote = quoteService.createQuote(randomNumeric(20), product10EC.getCommonData(), LINE, productQuotation());
+        Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation());
         quote(quote, EVERY_YEAR, 1000000.0, insured(35), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 
@@ -111,7 +111,7 @@ public class EmailServiceTest {
 
     @Test
     public void should_send_quote_email_containing_amounts_for_1_million_baht_with_insured_of_35_years_old() throws Exception {
-        Quote quote = quoteService.createQuote(randomNumeric(20), product10EC.getCommonData(), LINE, productQuotation());
+        Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation());
         quote(quote, EVERY_YEAR, 1000000.0, insured(35), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 
@@ -128,7 +128,7 @@ public class EmailServiceTest {
 
     @Test
     public void should_send_quote_email_containing_amounts_for_500_thousand_baht_with_insured_of_55_years_old() throws Exception {
-        Quote quote = quoteService.createQuote(randomNumeric(20), product10EC.getCommonData(), LINE, productQuotation());
+        Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation());
         quote(quote, EVERY_YEAR, 500000.0, insured(55), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 
@@ -145,7 +145,7 @@ public class EmailServiceTest {
 
     @Test
     public void should_send_quote_email_with_product_information() throws Exception {
-        Quote quote = quoteService.createQuote(randomNumeric(20), product10EC.getCommonData(), LINE, productQuotation());
+        Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation());
         quote(quote, EVERY_YEAR, 500000.0, insured(55), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 
@@ -172,7 +172,7 @@ public class EmailServiceTest {
 
     @Test
     public void should_send_ereceipt_pdf_file_attachment_in_email() throws Exception {
-        Quote quote = quoteService.createQuote(RandomStringUtils.randomNumeric(20), null, LINE, productQuotation());
+        Quote quote = quoteService.createQuote(RandomStringUtils.randomNumeric(20), LINE, productQuotation());
         quote(quote, EVERY_YEAR, 1000000.0, insured(35), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
         Policy policy = policyService.createPolicy(quote);

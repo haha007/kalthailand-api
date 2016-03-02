@@ -70,7 +70,7 @@ public class DocumentResourceTest {
     @Test
     public void should_return_error_when_base64image_is_not_base64() throws QuoteCalculationException, IOException, URISyntaxException {
         String sessionId = randomNumeric(20);
-        Quote quote = quoteService.createQuote(sessionId, product10EC.getCommonData(), LINE, productQuotation());
+        Quote quote = quoteService.createQuote(sessionId, LINE, productQuotation());
         quote(quote, EVERY_YEAR, 1000000.0, insured(35), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
         Policy policy = getPolicy(quote, sessionId);
@@ -86,7 +86,7 @@ public class DocumentResourceTest {
     @Test
     public void should_return_error_when_image_is_too_small() throws IOException, QuoteCalculationException, URISyntaxException {
         String sessionId = randomNumeric(20);
-        Quote quote = quoteService.createQuote(sessionId, product10EC.getCommonData(), LINE, productQuotation());
+        Quote quote = quoteService.createQuote(sessionId, LINE, productQuotation());
         quote(quote, EVERY_YEAR, 1000000.0, insured(35), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
         Policy policy = getPolicy(quote, sessionId);
@@ -102,7 +102,7 @@ public class DocumentResourceTest {
     @Test
     public void should_return_error_when_sending_a_file_that_is_not_an_image() throws IOException, QuoteCalculationException, URISyntaxException {
         String sessionId = randomNumeric(20);
-        Quote quote = quoteService.createQuote(sessionId, product10EC.getCommonData(), LINE, productQuotation());
+        Quote quote = quoteService.createQuote(sessionId, LINE, productQuotation());
         quote(quote, EVERY_YEAR, 1000000.0, insured(35), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
         Policy policy = getPolicy(quote, sessionId);
@@ -118,7 +118,7 @@ public class DocumentResourceTest {
     @Test
     public void should_return_ok_with_png() throws IOException, QuoteCalculationException, URISyntaxException {
         String sessionId = randomNumeric(20);
-        Quote quote = quoteService.createQuote(sessionId, product10EC.getCommonData(), LINE, productQuotation());
+        Quote quote = quoteService.createQuote(sessionId, LINE, productQuotation());
         quote(quote, EVERY_YEAR, 1000000.0, insured(35), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
         Policy policy = getPolicy(quote, sessionId);
@@ -134,7 +134,7 @@ public class DocumentResourceTest {
     @Test
     public void should_return_ok_with_jpg() throws IOException, QuoteCalculationException, URISyntaxException {
         String sessionId = randomNumeric(20);
-        Quote quote = quoteService.createQuote(sessionId, product10EC.getCommonData(), LINE, productQuotation());
+        Quote quote = quoteService.createQuote(sessionId, LINE, productQuotation());
         quote(quote, EVERY_YEAR, 1000000.0, insured(35), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
         Policy policy = getPolicy(quote, sessionId);
