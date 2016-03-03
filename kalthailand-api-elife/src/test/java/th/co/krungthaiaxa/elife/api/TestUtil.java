@@ -1,4 +1,4 @@
-package th.co.krungthaiaxa.elife.api.resource;
+package th.co.krungthaiaxa.elife.api;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import th.co.krungthaiaxa.elife.api.model.*;
@@ -11,8 +11,6 @@ import th.co.krungthaiaxa.elife.api.products.ProductType;
 import th.co.krungthaiaxa.elife.api.utils.JsonUtil;
 
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
@@ -261,10 +259,6 @@ public class TestUtil {
         registration.setId(id);
         registration.setTypeName("Thai ID Card number");
         return registration;
-    }
-
-    public static Payment payment(Double value, String currencyCode) {
-        return new Payment(value, currencyCode, LocalDate.now(ZoneId.of(ZoneId.SHORT_IDS.get("VST"))));
     }
 
     public static void policy(Policy policy) {

@@ -24,8 +24,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpMethod.PUT;
 import static org.springframework.http.HttpStatus.OK;
 import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_MONTH;
-import static th.co.krungthaiaxa.elife.api.resource.TestUtil.getProductAmountsFromJSon;
-import static th.co.krungthaiaxa.elife.api.resource.TestUtil.productQuotation;
+import static th.co.krungthaiaxa.elife.api.TestUtil.getProductAmountsFromJSon;
+import static th.co.krungthaiaxa.elife.api.TestUtil.productQuotation;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiApplication.class)

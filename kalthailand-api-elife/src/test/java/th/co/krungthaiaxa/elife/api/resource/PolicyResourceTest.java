@@ -15,12 +15,12 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import th.co.krungthaiaxa.elife.api.KalApiApplication;
+import th.co.krungthaiaxa.elife.api.TestUtil;
 import th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.elife.api.model.Payment;
 import th.co.krungthaiaxa.elife.api.model.Policy;
 import th.co.krungthaiaxa.elife.api.model.Quote;
 import th.co.krungthaiaxa.elife.api.model.error.Error;
-import th.co.krungthaiaxa.elife.api.products.Product10EC;
 import th.co.krungthaiaxa.elife.api.repository.PolicyRepository;
 import th.co.krungthaiaxa.elife.api.service.QuoteService;
 
@@ -43,7 +43,7 @@ import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_YEA
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.ERROR;
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.SUCCESS;
 import static th.co.krungthaiaxa.elife.api.model.error.ErrorCode.QUOTE_DOES_NOT_EXIST_OR_ACCESS_DENIED;
-import static th.co.krungthaiaxa.elife.api.resource.TestUtil.*;
+import static th.co.krungthaiaxa.elife.api.TestUtil.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiApplication.class)
@@ -59,7 +59,6 @@ public class PolicyResourceTest {
     private int port;
     private URI base;
     private RestTemplate template;
-    private Product10EC product10EC = new Product10EC();
 
     @Inject
     private PolicyRepository policyRepository;

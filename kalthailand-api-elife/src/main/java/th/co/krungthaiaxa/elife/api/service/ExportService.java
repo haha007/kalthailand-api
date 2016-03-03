@@ -7,6 +7,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.elife.api.model.PaymentInformation;
 import th.co.krungthaiaxa.elife.api.model.Policy;
 import th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode;
@@ -17,6 +18,7 @@ import java.util.function.Function;
 
 import static th.co.krungthaiaxa.elife.api.utils.ExcelUtils.*;
 
+@Service
 public class ExportService {
     private final static Logger logger = LoggerFactory.getLogger(ExportService.class);
 

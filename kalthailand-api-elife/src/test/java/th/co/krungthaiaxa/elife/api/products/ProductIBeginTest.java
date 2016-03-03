@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static th.co.krungthaiaxa.elife.api.model.enums.GenderCode.FEMALE;
 import static th.co.krungthaiaxa.elife.api.model.enums.GenderCode.MALE;
 import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.*;
-import static th.co.krungthaiaxa.elife.api.resource.TestUtil.*;
+import static th.co.krungthaiaxa.elife.api.TestUtil.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiApplication.class)

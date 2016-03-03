@@ -23,8 +23,6 @@ import th.co.krungthaiaxa.elife.api.KalApiApplication;
 import th.co.krungthaiaxa.elife.api.data.SessionQuote;
 import th.co.krungthaiaxa.elife.api.model.Quote;
 import th.co.krungthaiaxa.elife.api.model.error.Error;
-import th.co.krungthaiaxa.elife.api.products.ProductQuotation;
-import th.co.krungthaiaxa.elife.api.products.ProductType;
 import th.co.krungthaiaxa.elife.api.repository.QuoteRepository;
 import th.co.krungthaiaxa.elife.api.repository.SessionQuoteRepository;
 import th.co.krungthaiaxa.elife.api.utils.JsonUtil;
@@ -51,8 +49,7 @@ import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
 import static th.co.krungthaiaxa.elife.api.model.enums.GenderCode.FEMALE;
 import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_MONTH;
 import static th.co.krungthaiaxa.elife.api.model.error.ErrorCode.QUOTE_DOES_NOT_EXIST_OR_ACCESS_DENIED;
-import static th.co.krungthaiaxa.elife.api.products.ProductType.PRODUCT_10_EC;
-import static th.co.krungthaiaxa.elife.api.resource.TestUtil.*;
+import static th.co.krungthaiaxa.elife.api.TestUtil.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiApplication.class)

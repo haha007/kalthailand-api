@@ -15,9 +15,7 @@ import th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.elife.api.model.Payment;
 import th.co.krungthaiaxa.elife.api.model.Policy;
 import th.co.krungthaiaxa.elife.api.model.Quote;
-import th.co.krungthaiaxa.elife.api.products.Product10EC;
-import th.co.krungthaiaxa.elife.api.repository.PaymentRepository;
-import th.co.krungthaiaxa.elife.api.resource.TestUtil;
+import th.co.krungthaiaxa.elife.api.TestUtil;
 import th.co.krungthaiaxa.elife.api.utils.ImageUtil;
 
 import javax.inject.Inject;
@@ -39,7 +37,7 @@ import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_HAL
 import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_YEAR;
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.ERROR;
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.SUCCESS;
-import static th.co.krungthaiaxa.elife.api.resource.TestUtil.*;
+import static th.co.krungthaiaxa.elife.api.TestUtil.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiApplication.class)
@@ -53,9 +51,6 @@ public class PolicyServiceTest {
     private PolicyService policyService;
     @Inject
     private QuoteService quoteService;
-    @Inject
-    private PaymentRepository paymentRepository;
-    private Product10EC product10EC = new Product10EC();
 
     @Test
     public void should_return_error_when_create_policy_if_quote_not_provided() throws Exception {

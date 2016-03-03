@@ -1,6 +1,5 @@
 package th.co.krungthaiaxa.elife.api.service;
 
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.SpringApplicationConfiguration;
@@ -13,7 +12,6 @@ import th.co.krungthaiaxa.elife.api.exception.PolicyValidationException;
 import th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.elife.api.model.Amount;
 import th.co.krungthaiaxa.elife.api.model.Quote;
-import th.co.krungthaiaxa.elife.api.products.Product10EC;
 import th.co.krungthaiaxa.elife.api.products.ProductQuotation;
 import th.co.krungthaiaxa.elife.api.repository.SessionQuoteRepository;
 
@@ -25,21 +23,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
 import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_MONTH;
 import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_YEAR;
-import static th.co.krungthaiaxa.elife.api.resource.TestUtil.*;
+import static th.co.krungthaiaxa.elife.api.TestUtil.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiApplication.class)
 @WebAppConfiguration
 @ActiveProfiles("test")
 public class QuoteServiceTest {
-
     @Inject
     private PolicyService policyService;
     @Inject
     private QuoteService quoteService;
     @Inject
     private SessionQuoteRepository sessionQuoteRepository;
-    private Product10EC product10EC = new Product10EC();
 
     @Test
     public void should_find_by_quote_id_and_session_id() throws QuoteCalculationException {

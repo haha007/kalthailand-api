@@ -20,9 +20,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.elife.api.KalApiApplication;
 import th.co.krungthaiaxa.elife.api.model.Policy;
 import th.co.krungthaiaxa.elife.api.model.Quote;
-import th.co.krungthaiaxa.elife.api.model.enums.ChannelType;
-import th.co.krungthaiaxa.elife.api.products.Product10EC;
-import th.co.krungthaiaxa.elife.api.resource.TestUtil;
+import th.co.krungthaiaxa.elife.api.TestUtil;
 import th.co.krungthaiaxa.elife.api.utils.ImageUtil;
 
 import javax.inject.Inject;
@@ -32,7 +30,6 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeUtility;
 import java.io.*;
 import java.util.Base64;
-import java.util.Optional;
 
 import static com.icegreen.greenmail.util.GreenMailUtil.getBody;
 import static java.lang.System.getProperty;
@@ -41,7 +38,7 @@ import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
 import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_YEAR;
-import static th.co.krungthaiaxa.elife.api.resource.TestUtil.*;
+import static th.co.krungthaiaxa.elife.api.TestUtil.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiApplication.class)
@@ -71,7 +68,6 @@ public class EmailServiceTest {
     private PolicyService policyService;
 
     private String base64Graph;
-    private Product10EC product10EC = new Product10EC();
 
     @Before
     public void setup() throws IOException {

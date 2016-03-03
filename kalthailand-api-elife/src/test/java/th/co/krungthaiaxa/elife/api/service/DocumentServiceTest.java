@@ -13,9 +13,7 @@ import th.co.krungthaiaxa.elife.api.model.Document;
 import th.co.krungthaiaxa.elife.api.model.DocumentDownload;
 import th.co.krungthaiaxa.elife.api.model.Policy;
 import th.co.krungthaiaxa.elife.api.model.Quote;
-import th.co.krungthaiaxa.elife.api.products.Product10EC;
 import th.co.krungthaiaxa.elife.api.repository.DocumentDownloadRepository;
-import th.co.krungthaiaxa.elife.api.repository.DocumentRepository;
 
 import javax.inject.Inject;
 import java.util.Base64;
@@ -26,7 +24,7 @@ import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
 import static th.co.krungthaiaxa.elife.api.model.enums.DocumentType.ERECEIPT_IMAGE;
 import static th.co.krungthaiaxa.elife.api.model.enums.DocumentType.ERECEIPT_PDF;
 import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_YEAR;
-import static th.co.krungthaiaxa.elife.api.resource.TestUtil.*;
+import static th.co.krungthaiaxa.elife.api.TestUtil.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiApplication.class)
@@ -40,10 +38,7 @@ public class DocumentServiceTest {
     @Inject
     private QuoteService quoteService;
     @Inject
-    private DocumentRepository documentRepository;
-    @Inject
     private DocumentDownloadRepository documentDownloadRepository;
-    private Product10EC product10EC = new Product10EC();
 
     @Test
     public void should_add_2_documents_in_policy() throws QuoteCalculationException, PolicyValidationException {

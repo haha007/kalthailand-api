@@ -17,9 +17,8 @@ public class ImageUtil {
     public static void imageToPDF(byte[] bytesImage, String outputPDFFile) throws IOException,DocumentException {
         logger.info("[imageToPDF] begin");
         Document document = new Document();
-        String output = outputPDFFile;
         Integer indentation = 0;
-        try (FileOutputStream fos = new FileOutputStream(output)){
+        try (FileOutputStream fos = new FileOutputStream(outputPDFFile)){
             PdfWriter writer = PdfWriter.getInstance(document, fos);
             writer.open();
             document.open();

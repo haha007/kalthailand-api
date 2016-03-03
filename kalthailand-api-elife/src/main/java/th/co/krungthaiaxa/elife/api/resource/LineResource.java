@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import th.co.krungthaiaxa.elife.api.model.Mid;
 import th.co.krungthaiaxa.elife.api.model.error.Error;
-import th.co.krungthaiaxa.elife.api.model.error.ErrorCode;
 import th.co.krungthaiaxa.elife.api.utils.Decrypt;
 import th.co.krungthaiaxa.elife.api.utils.JsonUtil;
 
