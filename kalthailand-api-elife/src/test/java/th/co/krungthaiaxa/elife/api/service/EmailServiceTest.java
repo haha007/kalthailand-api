@@ -20,6 +20,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.elife.api.KalApiApplication;
 import th.co.krungthaiaxa.elife.api.model.Policy;
 import th.co.krungthaiaxa.elife.api.model.Quote;
+import th.co.krungthaiaxa.elife.api.model.enums.ChannelType;
 import th.co.krungthaiaxa.elife.api.products.Product10EC;
 import th.co.krungthaiaxa.elife.api.resource.TestUtil;
 import th.co.krungthaiaxa.elife.api.utils.ImageUtil;
@@ -31,6 +32,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeUtility;
 import java.io.*;
 import java.util.Base64;
+import java.util.Optional;
 
 import static com.icegreen.greenmail.util.GreenMailUtil.getBody;
 import static java.lang.System.getProperty;
@@ -155,6 +157,36 @@ public class EmailServiceTest {
         MimeMessage email = greenMail.getReceivedMessages()[0];
         assertThat(email.getSubject()).isEqualTo(subject);
         String bodyAsString = decodeSimpleBody(getBody(email));
+        assertThat(bodyAsString).contains("<tr><td>ระยะเวลาคุ้มครอง</td><td width=\"120px\" class=\"value\" align=\"right\" >" + quote.getCommonData().getNbOfYearsOfCoverage().toString() + " ปี</td></tr>");
+        assertThat(bodyAsString).contains("<tr><td>ระยะเวลาชำระเบี้ย</td><td class=\"value\" align=\"right\" >" + quote.getCommonData().getNbOfYearsOfPremium().toString() + " ปี</td></tr>");
+
+        Multipart multipart = (Multipart) email.getContent();
+        for (int i = 0; i < multipart.getCount(); i++) {
+            BodyPart bodyPart = multipart.getBodyPart(i);
+            if (!Part.ATTACHMENT.equalsIgnoreCase(bodyPart.getDisposition()) &&
+                    !StringUtils.isNotBlank(bodyPart.getFileName())) {
+                //null file value
+            } else {
+                assertThat(null != bodyPart.getFileName() && !bodyPart.getFileName().equals(""));
+            }
+        }
+    }
+
+    @Test
+    public void generate_sale_illustration_pdf_file() throws Exception {
+
+        Quote quote = quoteService.createQuote(randomNumeric(20), product10EC.getCommonData(), LINE);
+        quote(quote, EVERY_YEAR, 1000000.0, insured(30), beneficiary(100.0));
+        quote = quoteService.updateQuote(quote);
+
+        emailService.sendQuoteEmail(quote, base64Graph);
+
+        assertThat(greenMail.getReceivedMessages()).hasSize(1);
+        MimeMessage email = greenMail.getReceivedMessages()[0];
+        assertThat(email.getSubject()).isEqualTo(subject);
+        String bodyAsString = decodeSimpleBody(getBody(email));
+        //System.out.println(quote.getQuoteId());
+        //System.out.println(bodyAsString);
         assertThat(bodyAsString).contains("<tr><td>ระยะเวลาคุ้มครอง</td><td width=\"120px\" class=\"value\" align=\"right\" >" + quote.getCommonData().getNbOfYearsOfCoverage().toString() + " ปี</td></tr>");
         assertThat(bodyAsString).contains("<tr><td>ระยะเวลาชำระเบี้ย</td><td class=\"value\" align=\"right\" >" + quote.getCommonData().getNbOfYearsOfPremium().toString() + " ปี</td></tr>");
 

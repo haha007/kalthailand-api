@@ -71,9 +71,9 @@ public class EmailService {
                 .replace("%4$s", quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().toString())
                 .replace("%5$s", (new DecimalFormat(decimalFormat)).format(quote.getPremiumsData().getLifeInsurance().getSumInsured().getValue()))
                 .replace("%6$s", (new DecimalFormat(decimalFormat)).format(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()))
-                .replace("%7$s", (new DecimalFormat(decimalFormat)).format(quote.getPremiumsData().getLifeInsurance().getEndOfContractBenefitsMinimum().stream().mapToDouble(DatedAmount::getValue).sum()))
-                .replace("%8$s", (new DecimalFormat(decimalFormat)).format(quote.getPremiumsData().getLifeInsurance().getEndOfContractBenefitsAverage().stream().mapToDouble(DatedAmount::getValue).sum()))
-                .replace("%9$s", (new DecimalFormat(decimalFormat)).format(quote.getPremiumsData().getLifeInsurance().getEndOfContractBenefitsMaximum().stream().mapToDouble(DatedAmount::getValue).sum()))
+                .replace("%7$s", (new DecimalFormat(decimalFormat)).format(quote.getPremiumsData().getLifeInsurance().getEndOfContractBenefitsMinimum().get(9).getValue()))
+                .replace("%8$s", (new DecimalFormat(decimalFormat)).format(quote.getPremiumsData().getLifeInsurance().getEndOfContractBenefitsAverage().get(9).getValue()+quote.getPremiumsData().getLifeInsurance().getYearlyCashBacksAverageBenefit().get(9).getValue()))
+                .replace("%9$s", (new DecimalFormat(decimalFormat)).format(quote.getPremiumsData().getLifeInsurance().getEndOfContractBenefitsMaximum().get(9).getValue()+quote.getPremiumsData().getLifeInsurance().getYearlyCashBacksMaximumBenefit().get(9).getValue()))
                 .replace("%10$s", "/" + lineURL + "/")
                 .replace("%11$s", "/" + lineURL + "fatca-questions/" + quote.getQuoteId() + "/")
                 .replace("%12$s", "/" + lineURL + "quote-product/line-10-ec" + "/");
