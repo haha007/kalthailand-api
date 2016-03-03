@@ -87,21 +87,14 @@
             <version>1.4.7</version>
         </dependency>
         <dependency>
-            <groupId>com.icegreen</groupId>
-            <artifactId>greenmail</artifactId>
-            <version>1.4.1</version>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <artifactId>javax.mail</artifactId>
-                    <groupId>com.sun.mail</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
             <groupId>com.itextpdf</groupId>
             <artifactId>itextpdf</artifactId>
             <version>5.5.8</version>
+        </dependency>
+        <dependency>
+            <groupId>com.microsoft.sqlserver</groupId>
+            <artifactId>sqljdbc</artifactId>
+            <version>4.2</version>
         </dependency>
 
         <!-- provided stuff -->
@@ -124,9 +117,16 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.microsoft.sqlserver</groupId>
-            <artifactId>sqljdbc</artifactId>
-            <version>4.2</version>
+            <groupId>com.icegreen</groupId>
+            <artifactId>greenmail</artifactId>
+            <version>1.4.1</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>javax.mail</artifactId>
+                    <groupId>com.sun.mail</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!--<dependency>-->
         <!--<groupId>de.flapdoodle.embed</groupId>-->
@@ -150,10 +150,6 @@
             <id>elife</id>
             <name>elife libraries</name>
             <url>file://${local.repo.path}/../libraries</url>
-        </repository>
-        <repository>
-            <id>aspose-maven-repository</id>
-            <url>http://maven.aspose.com/repository/repo/</url>
         </repository>
     </repositories>
 
