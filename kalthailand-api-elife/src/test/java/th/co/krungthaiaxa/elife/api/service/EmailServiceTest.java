@@ -175,7 +175,7 @@ public class EmailServiceTest {
     @Test
     public void generate_sale_illustration_pdf_file() throws Exception {
 
-        Quote quote = quoteService.createQuote(randomNumeric(20), product10EC.getCommonData(), LINE);
+        Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation());
         quote(quote, EVERY_YEAR, 1000000.0, insured(30), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 

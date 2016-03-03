@@ -50,10 +50,10 @@ public class ExportServiceTest {
     public void should_create_excel_file_with_one_sheet_only_with_2_lines() throws Exception {
         Policy policy = getPolicy();
         PaymentInformation paymentInformation = new PaymentInformation();
-        paymentInformation.setAmount();
-        paymentInformation.setDate();
-        paymentInformation.setRejectionErrorMessage();
-        paymentInformation.setStatus();
+//        paymentInformation.setAmount();
+//        paymentInformation.setDate();
+//        paymentInformation.setRejectionErrorMessage();
+//        paymentInformation.setStatus();
 
         List<Pair<Policy, PaymentInformation>> payments = new ArrayList<>();
         payments.add(Pair.of(policy, paymentInformation));
@@ -63,7 +63,7 @@ public class ExportServiceTest {
     }
 
     private Policy getPolicy() throws QuoteCalculationException, PolicyValidationException {
-        Quote quote = quoteService.createQuote(randomNumeric(20), product10EC.getCommonData(), LINE);
+        Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation());
         quote(quote, EVERY_HALF_YEAR, 1000000.0, insured(35), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 
