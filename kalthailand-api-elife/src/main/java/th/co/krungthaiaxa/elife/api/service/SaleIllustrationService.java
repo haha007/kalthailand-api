@@ -157,7 +157,6 @@ public class SaleIllustrationService {
         document.add(table2);
         document.close();
         content.close();
-        FileUtils.writeByteArrayToFile(new File("D:\\quote.pdf"),content.toByteArray());
         return Pair.of(content.toByteArray(), "proposal_" + quote.getQuoteId() + "_" + getDate() + ".pdf");
     }
 
