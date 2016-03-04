@@ -81,7 +81,7 @@ public class QuoteService {
         quote.getInsureds().get(0).setAgeAtSubscription(getAge(productQuotation.getDateOfBirth()));
         quote.getInsureds().get(0).getPerson().setGenderCode(productQuotation.getGenderCode());
         quote.getInsureds().get(0).setDeclaredTaxPercentAtSubscription(productQuotation.getDeclaredTaxPercentAtSubscription());
-        if (productQuotation.getSumInsuredAmount().getValue() != null) {
+        if (productQuotation.getSumInsuredAmount() != null && productQuotation.getSumInsuredAmount().getValue() != null) {
             Amount amount = new Amount();
             amount.setCurrencyCode(productQuotation.getSumInsuredAmount().getCurrencyCode());
             amount.setValue(productQuotation.getSumInsuredAmount().getValue());
