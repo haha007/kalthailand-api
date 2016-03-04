@@ -46,18 +46,16 @@ public class PolicyService {
     private final PolicyRepository policyRepository;
     private final PolicyNumberRepository policyNumberRepository;
     private final QuoteRepository quoteRepository;
-    private final SessionQuoteRepository sessionQuoteRepository;
     private final DocumentService documentService;
 
     @Inject
     public PolicyService(PaymentRepository paymentRepository, PolicyRepository policyRepository,
                          PolicyNumberRepository policyNumberRepository, QuoteRepository quoteRepository,
-                         SessionQuoteRepository sessionQuoteRepository, DocumentService documentService) {
+                         DocumentService documentService) {
         this.paymentRepository = paymentRepository;
         this.policyRepository = policyRepository;
         this.policyNumberRepository = policyNumberRepository;
         this.quoteRepository = quoteRepository;
-        this.sessionQuoteRepository = sessionQuoteRepository;
         this.documentService = documentService;
     }
 
@@ -177,7 +175,7 @@ public class PolicyService {
         String resultFileName = im.toString();
         logger.info("[createEReceipt] eReceipt file name:" + resultFileName);
 
-        BufferedImage bufferedImage = null;
+        BufferedImage bufferedImage;
         try {
             bufferedImage = ImageIO.read(inputStream);
         } catch (IOException e) {
