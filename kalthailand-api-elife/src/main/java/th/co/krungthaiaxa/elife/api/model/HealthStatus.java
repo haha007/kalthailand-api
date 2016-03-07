@@ -10,6 +10,7 @@ public class HealthStatus implements Serializable {
     private Integer weightInKg;
     private Boolean disableOrImmunoDeficient;
     private Boolean hospitalizedInLast6Months;
+    private Boolean deniedOrCounterOffer;
 
     @ApiModelProperty(value = "The person's height in centimeters")
     public Integer getHeightInCm() {
@@ -47,6 +48,15 @@ public class HealthStatus implements Serializable {
         this.hospitalizedInLast6Months = hospitalizedInLast6Months;
     }
 
+    @ApiModelProperty(value = "Has been denied a policy before or had counter offer with higher premium")
+    public Boolean getDeniedOrCounterOffer() {
+        return deniedOrCounterOffer;
+    }
+
+    public void setDeniedOrCounterOffer(Boolean deniedOrCounterOffer) {
+        this.deniedOrCounterOffer = deniedOrCounterOffer;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -55,11 +65,12 @@ public class HealthStatus implements Serializable {
         return Objects.equals(heightInCm, that.heightInCm) &&
                 Objects.equals(weightInKg, that.weightInKg) &&
                 Objects.equals(disableOrImmunoDeficient, that.disableOrImmunoDeficient) &&
-                Objects.equals(hospitalizedInLast6Months, that.hospitalizedInLast6Months);
+                Objects.equals(hospitalizedInLast6Months, that.hospitalizedInLast6Months) &&
+                Objects.equals(deniedOrCounterOffer, that.deniedOrCounterOffer);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(heightInCm, weightInKg, disableOrImmunoDeficient, hospitalizedInLast6Months);
+        return Objects.hash(heightInCm, weightInKg, disableOrImmunoDeficient, hospitalizedInLast6Months, deniedOrCounterOffer);
     }
 }
