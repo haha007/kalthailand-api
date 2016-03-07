@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.elife.api.model.Quote;
 
+import java.io.File;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Base64;
@@ -319,7 +320,12 @@ public class SaleIllustrationService {
     }
 
     private String getAbsoluteFilePath(String fileName) {
-        return this.getClass().getResource(fileName).getFile();
+        String path = this.getClass().getResource(fileName).getFile();
+        File f = new File(path);
+        logger.info(path);
+        logger.info(f.getAbsolutePath());
+        logger.info(String.valueOf(f.exists()));
+        return path;
     }
 
 }
