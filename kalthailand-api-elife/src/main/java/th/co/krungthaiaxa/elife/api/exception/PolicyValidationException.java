@@ -35,6 +35,7 @@ public class PolicyValidationException extends Exception {
     public static PolicyValidationException mainInsuredWithNoDeclaredTax = new PolicyValidationException("Declared tax of main insured is empty.");
     public static PolicyValidationException mainInsuredWithNoDisableStatus = new PolicyValidationException("Disability or HIV status of main insured is empty.");
     public static PolicyValidationException mainInsuredWithNoHospitalizedStatus = new PolicyValidationException("Hospitalized status of main insured is empty.");
+    public static PolicyValidationException mainInsuredWithNoDeniedOrCounterOfferStatus = new PolicyValidationException("Denied policy status of main insured is empty.");
     public static PolicyValidationException mainInsuredWithNoStartDate = new PolicyValidationException("Start date of main insured is empty.");
     public static PolicyValidationException mainInsuredWithNoEndDate = new PolicyValidationException("End date of main insured is empty.");
     public static PolicyValidationException mainInsuredWithNoProfessionName = new PolicyValidationException("Profession name of main insured is empty.");

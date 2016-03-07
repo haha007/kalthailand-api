@@ -1066,6 +1066,16 @@ public class Product10ECTest {
     }
 
     @Test
+    public void should_return_error_when_create_policy_with_main_insured_with_no_denied_policy_status() throws Exception {
+        final Quote quote = quote(EVERY_YEAR, insured(25), beneficiary(100.0));
+        quote.getInsureds().get(0).getHealthStatus().setDeniedOrCounterOffer(null);
+        Policy policy = new Policy();
+        assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
+                .isInstanceOf(PolicyValidationException.class)
+                .hasMessage(PolicyValidationException.mainInsuredWithNoDeniedOrCounterOfferStatus.getMessage());
+    }
+
+    @Test
     public void should_return_error_when_create_policy_with_insured_with_no_start_date() throws Exception {
         final Quote quote = quote(EVERY_YEAR, insured(25), beneficiary(100.0));
         quote.getInsureds().get(0).setStartDate(null);

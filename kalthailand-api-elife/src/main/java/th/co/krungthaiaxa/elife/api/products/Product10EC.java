@@ -387,6 +387,8 @@ public class Product10EC implements Product {
             throw PolicyValidationException.mainInsuredWithNoDisableStatus;
         } else if (insured.getHealthStatus().getHospitalizedInLast6Months() == null) {
             throw PolicyValidationException.mainInsuredWithNoHospitalizedStatus;
+        } else if (insured.getHealthStatus().getDeniedOrCounterOffer() == null) {
+            throw PolicyValidationException.mainInsuredWithNoDeniedOrCounterOfferStatus;
         } else if (insured.getHealthStatus().getHeightInCm() == null) {
             throw PolicyValidationException.mainInsuredWithNoHeight;
         } else if (insured.getHealthStatus().getWeightInKg() == null) {

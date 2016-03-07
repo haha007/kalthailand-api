@@ -207,6 +207,7 @@ public class TestUtil {
 
         HealthStatus healthStatus = new HealthStatus();
         healthStatus.setDisableOrImmunoDeficient(FALSE);
+        healthStatus.setDeniedOrCounterOffer(FALSE);
         healthStatus.setHeightInCm(100);
         healthStatus.setHospitalizedInLast6Months(FALSE);
         healthStatus.setWeightInKg(100);
