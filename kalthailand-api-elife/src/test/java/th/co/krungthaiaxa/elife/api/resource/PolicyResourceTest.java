@@ -39,7 +39,6 @@ import static org.springframework.http.HttpStatus.OK;
 import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
 import static th.co.krungthaiaxa.elife.api.model.enums.PaymentStatus.FUTURE;
 import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_QUARTER;
-import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_YEAR;
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.ERROR;
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.SUCCESS;
 import static th.co.krungthaiaxa.elife.api.model.error.ErrorCode.QUOTE_DOES_NOT_EXIST_OR_ACCESS_DENIED;
@@ -89,7 +88,7 @@ public class PolicyResourceTest {
         String sessionId = randomNumeric(20);
 
         Quote quote = quoteService.createQuote(sessionId, LINE, productQuotation());
-        quote(quote, EVERY_YEAR, 1000000.0, insured(35), beneficiary(100.0));
+        quote(quote, insured(35), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(base)
@@ -110,7 +109,7 @@ public class PolicyResourceTest {
         String sessionId = randomNumeric(20);
 
         Quote quote = quoteService.createQuote(sessionId, LINE, productQuotation());
-        quote(quote, EVERY_YEAR, 1000000.0, insured(35), beneficiary(100.0));
+        quote(quote, insured(35), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(base)
@@ -132,7 +131,7 @@ public class PolicyResourceTest {
         String sessionId = randomNumeric(20);
 
         Quote quote = quoteService.createQuote(sessionId, LINE, productQuotation());
-        quote(quote, EVERY_YEAR, 1000000.0, insured(35), beneficiary(100.0));
+        quote(quote, insured(35), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(base)
@@ -162,7 +161,7 @@ public class PolicyResourceTest {
         String sessionId = randomNumeric(20);
 
         Quote quote = quoteService.createQuote(sessionId, LINE, productQuotation());
-        quote(quote, EVERY_YEAR, 1000000.0, insured(35), beneficiary(100.0));
+        quote(quote, insured(35), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(base)

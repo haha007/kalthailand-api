@@ -55,9 +55,9 @@ public class ProductIBegin implements Product {
 
         // Set dates based on current date and product duration
         insured.setStartDate(LocalDate.now(ZoneId.of(ZoneId.SHORT_IDS.get("VST"))));
-        insured.setEndDate(insured.getPerson().getBirthDate().plus(90 - insured.getAgeAtSubscription(), YEARS));
+        insured.setEndDate(insured.getPerson().getBirthDate().plusYears(90 - insured.getAgeAtSubscription()));
         //TODO this has to change and 5 has to become a parameter from ProductQuotation
-        quote.getPremiumsData().getFinancialScheduler().setEndDate(insured.getStartDate().plus(5, YEARS));
+        quote.getPremiumsData().getFinancialScheduler().setEndDate(insured.getStartDate().plusYears(5));
 
         PremiumsData premiumsData = quote.getPremiumsData();
         // cannot insure too much or not enough

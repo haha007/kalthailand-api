@@ -20,10 +20,8 @@ import java.util.Optional;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
-import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
-import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_MONTH;
-import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_YEAR;
 import static th.co.krungthaiaxa.elife.api.TestUtil.*;
+import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiApplication.class)
@@ -42,7 +40,7 @@ public class QuoteServiceTest {
         String sessionId = randomNumeric(20);
 
         Quote quote = quoteService.createQuote(sessionId, LINE, productQuotation());
-        quote(quote, EVERY_YEAR, 100000.0, insured(35), beneficiary(100.0));
+        quote(quote, insured(35), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 
         Optional<Quote> savedQuote = quoteService.findByQuoteId(quote.getQuoteId(), sessionId, LINE);
@@ -56,7 +54,7 @@ public class QuoteServiceTest {
         String sessionId = randomNumeric(20);
 
         Quote quote = quoteService.createQuote(sessionId, LINE, productQuotation());
-        quote(quote, EVERY_YEAR, 100000.0, insured(35), beneficiary(100.0));
+        quote(quote, insured(35), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 
         Optional<Quote> savedQuote = quoteService.findByQuoteId(quote.getQuoteId(), "something", LINE);
@@ -69,7 +67,7 @@ public class QuoteServiceTest {
         String sessionId = randomNumeric(20);
 
         Quote quote = quoteService.createQuote(sessionId, LINE, productQuotation());
-        quote(quote, EVERY_YEAR, 100000.0, insured(35), beneficiary(100.0));
+        quote(quote, insured(35), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 
         SessionQuote sessionQuote = sessionQuoteRepository.findBySessionIdAndChannelType(sessionId, LINE);
@@ -81,10 +79,10 @@ public class QuoteServiceTest {
         String sessionId = randomNumeric(20);
 
         Quote quote1 = quoteService.createQuote(sessionId, LINE, productQuotation());
-        quote(quote1, EVERY_YEAR, 100000.0, insured(35), beneficiary(100.0));
+        quote(quote1, insured(35), beneficiary(100.0));
         quote1 = quoteService.updateQuote(quote1);
         Quote quote2 = quoteService.createQuote(sessionId, LINE, productQuotation());
-        quote(quote2, EVERY_MONTH, 200000.0, insured(35), beneficiary(100.0));
+        quote(quote2, insured(35), beneficiary(100.0));
         quote2 = quoteService.updateQuote(quote2);
 
         SessionQuote sessionQuote = sessionQuoteRepository.findBySessionIdAndChannelType(sessionId, LINE);
@@ -104,10 +102,10 @@ public class QuoteServiceTest {
         String sessionId = randomNumeric(20);
 
         Quote quote1 = quoteService.createQuote(sessionId, LINE, productQuotation());
-        quote(quote1, EVERY_YEAR, 100000.0, insured(35), beneficiary(100.0));
+        quote(quote1, insured(35), beneficiary(100.0));
         quoteService.updateQuote(quote1);
         Quote quote2 = quoteService.createQuote(sessionId, LINE, productQuotation());
-        quote(quote2, EVERY_MONTH, 200000.0, insured(35), beneficiary(100.0));
+        quote(quote2, insured(35), beneficiary(100.0));
         quote2 = quoteService.updateQuote(quote2);
 
         Optional<Quote> quote = quoteService.getLatestQuote(sessionId, LINE);
@@ -119,10 +117,10 @@ public class QuoteServiceTest {
         String sessionId = randomNumeric(20);
 
         Quote quote1 = quoteService.createQuote(sessionId, LINE, productQuotation());
-        quote(quote1, EVERY_YEAR, 100000.0, insured(35), beneficiary(100.0));
+        quote(quote1, insured(35), beneficiary(100.0));
         quoteService.updateQuote(quote1);
         Quote quote2 = quoteService.createQuote(sessionId, LINE, productQuotation());
-        quote(quote2, EVERY_MONTH, 200000.0, insured(35), beneficiary(100.0));
+        quote(quote2, insured(35), beneficiary(100.0));
         quote2 = quoteService.updateQuote(quote2);
         policyService.createPolicy(quote2);
 
@@ -135,7 +133,7 @@ public class QuoteServiceTest {
         String sessionId = randomNumeric(20);
 
         Quote quote = quoteService.createQuote(sessionId, LINE, productQuotation());
-        quote(quote, EVERY_YEAR, 100000.0, insured(35), beneficiary(100.0));
+        quote(quote, insured(35), beneficiary(100.0));
 
         Amount amount = new Amount();
         amount.setCurrencyCode("THB");
@@ -151,7 +149,7 @@ public class QuoteServiceTest {
         String sessionId = randomNumeric(20);
 
         Quote quote = quoteService.createQuote(sessionId, LINE, productQuotation());
-        quote(quote, EVERY_YEAR, 100000.0, insured(35), beneficiary(100.0));
+        quote(quote, insured(35), beneficiary(100.0));
 
         Amount amount = new Amount();
         amount.setCurrencyCode("THB");

@@ -6,15 +6,14 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class CollectionFile {
     @Id
     private String id;
     @Indexed(unique = true)
-    private Integer fileHashCode;
+    private String fileHashCode;
     private LocalDate sendDate;
-    private List<List<String>> lines = new ArrayList<>();
+    private List<CollectionFileLine> lines = new ArrayList<>();
 
     public String getId() {
         return id;
@@ -32,23 +31,19 @@ public class CollectionFile {
         this.sendDate = sendDate;
     }
 
-    public List<List<String>> getLines() {
+    public List<CollectionFileLine> getLines() {
         return lines;
     }
 
-    public void addLine(List<String> line) {
+    public void addLine(CollectionFileLine line) {
         this.lines.add(line);
     }
 
-    public void setFileHashCode(Integer fileHashCode) {
+    public void setFileHashCode(String fileHashCode) {
         this.fileHashCode = fileHashCode;
     }
 
-    public Integer getFileHashCode() {
+    public String getFileHashCode() {
         return fileHashCode;
-    }
-
-    public int calculateFileHashCode() {
-        return Objects.hash(id, sendDate, lines);
     }
 }

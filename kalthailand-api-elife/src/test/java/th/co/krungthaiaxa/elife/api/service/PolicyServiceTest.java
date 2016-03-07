@@ -10,12 +10,12 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.elife.api.KalApiApplication;
+import th.co.krungthaiaxa.elife.api.TestUtil;
 import th.co.krungthaiaxa.elife.api.exception.PolicyValidationException;
 import th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.elife.api.model.Payment;
 import th.co.krungthaiaxa.elife.api.model.Policy;
 import th.co.krungthaiaxa.elife.api.model.Quote;
-import th.co.krungthaiaxa.elife.api.TestUtil;
 import th.co.krungthaiaxa.elife.api.utils.ImageUtil;
 
 import javax.inject.Inject;
@@ -27,17 +27,15 @@ import static java.util.Optional.empty;
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static th.co.krungthaiaxa.elife.api.TestUtil.*;
 import static th.co.krungthaiaxa.elife.api.exception.PolicyValidationException.emptyQuote;
 import static th.co.krungthaiaxa.elife.api.exception.PolicyValidationException.noneExistingQuote;
 import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
 import static th.co.krungthaiaxa.elife.api.model.enums.DocumentType.ERECEIPT_IMAGE;
 import static th.co.krungthaiaxa.elife.api.model.enums.DocumentType.ERECEIPT_PDF;
 import static th.co.krungthaiaxa.elife.api.model.enums.PaymentStatus.*;
-import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_HALF_YEAR;
-import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_YEAR;
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.ERROR;
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.SUCCESS;
-import static th.co.krungthaiaxa.elife.api.TestUtil.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiApplication.class)
@@ -73,11 +71,11 @@ public class PolicyServiceTest {
         String sessionId = randomNumeric(20);
 
         Quote quote1 = quoteService.createQuote(sessionId, LINE, productQuotation());
-        quote(quote1, EVERY_YEAR, 1000000.0, insured(35), beneficiary(100.0));
+        quote(quote1, insured(35), beneficiary(100.0));
         quote1 = quoteService.updateQuote(quote1);
 
         Quote quote2 = quoteService.createQuote(sessionId, LINE, productQuotation());
-        quote(quote2, EVERY_YEAR, 1000000.0, insured(35), beneficiary(100.0));
+        quote(quote2, insured(35), beneficiary(100.0));
         quote2 = quoteService.updateQuote(quote2);
         Policy policy = policyService.createPolicy(quote2);
 
@@ -254,7 +252,7 @@ public class PolicyServiceTest {
 
     private Policy getPolicy() throws QuoteCalculationException, PolicyValidationException {
         Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation());
-        quote(quote, EVERY_HALF_YEAR, 1000000.0, insured(35), beneficiary(100.0));
+        quote(quote, insured(35), beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 
         return policyService.createPolicy(quote);

@@ -10,7 +10,6 @@ import th.co.krungthaiaxa.elife.api.model.Quote;
 import th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode;
 
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -19,15 +18,13 @@ import static java.lang.Boolean.FALSE;
 import static java.time.LocalDate.now;
 import static java.time.ZoneId.SHORT_IDS;
 import static java.time.ZoneId.of;
-import static java.time.temporal.ChronoUnit.MONTHS;
-import static java.time.temporal.ChronoUnit.YEARS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static th.co.krungthaiaxa.elife.api.TestUtil.*;
 import static th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.PaymentStatus.FUTURE;
 import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.*;
 import static th.co.krungthaiaxa.elife.api.products.Product10EC.*;
-import static th.co.krungthaiaxa.elife.api.TestUtil.*;
 
 public class Product10ECTest {
     private Product10EC product10EC = new Product10EC();
@@ -405,8 +402,8 @@ public class Product10ECTest {
 
         LocalDate startDate = now(of(SHORT_IDS.get("VST")));
         assertThat(quote.getInsureds().get(0).getStartDate()).isEqualTo(startDate);
-        assertThat(quote.getInsureds().get(0).getEndDate()).isEqualTo(startDate.plus(DURATION_COVERAGE_IN_YEAR, YEARS));
-        assertThat(quote.getPremiumsData().getFinancialScheduler().getEndDate()).isEqualTo(startDate.plus(DURATION_PAYMENT_IN_YEAR, YEARS));
+        assertThat(quote.getInsureds().get(0).getEndDate()).isEqualTo(startDate.plusYears(DURATION_COVERAGE_IN_YEAR));
+        assertThat(quote.getPremiumsData().getFinancialScheduler().getEndDate()).isEqualTo(startDate.plusYears(DURATION_PAYMENT_IN_YEAR));
     }
 
     @Test
@@ -509,16 +506,16 @@ public class Product10ECTest {
         assertThat(result.get(8).getCurrencyCode()).isEqualTo("THB");
         assertThat(result.get(9).getCurrencyCode()).isEqualTo("THB");
 
-        assertThat(result.get(0).getDate()).isEqualTo(startDate.plus(1, YEARS));
-        assertThat(result.get(1).getDate()).isEqualTo(startDate.plus(2, YEARS));
-        assertThat(result.get(2).getDate()).isEqualTo(startDate.plus(3, YEARS));
-        assertThat(result.get(3).getDate()).isEqualTo(startDate.plus(4, YEARS));
-        assertThat(result.get(4).getDate()).isEqualTo(startDate.plus(5, YEARS));
-        assertThat(result.get(5).getDate()).isEqualTo(startDate.plus(6, YEARS));
-        assertThat(result.get(6).getDate()).isEqualTo(startDate.plus(7, YEARS));
-        assertThat(result.get(7).getDate()).isEqualTo(startDate.plus(8, YEARS));
-        assertThat(result.get(8).getDate()).isEqualTo(startDate.plus(9, YEARS));
-        assertThat(result.get(9).getDate()).isEqualTo(startDate.plus(10, YEARS));
+        assertThat(result.get(0).getDate()).isEqualTo(startDate.plusYears(1));
+        assertThat(result.get(1).getDate()).isEqualTo(startDate.plusYears(2));
+        assertThat(result.get(2).getDate()).isEqualTo(startDate.plusYears(3));
+        assertThat(result.get(3).getDate()).isEqualTo(startDate.plusYears(4));
+        assertThat(result.get(4).getDate()).isEqualTo(startDate.plusYears(5));
+        assertThat(result.get(5).getDate()).isEqualTo(startDate.plusYears(6));
+        assertThat(result.get(6).getDate()).isEqualTo(startDate.plusYears(7));
+        assertThat(result.get(7).getDate()).isEqualTo(startDate.plusYears(8));
+        assertThat(result.get(8).getDate()).isEqualTo(startDate.plusYears(9));
+        assertThat(result.get(9).getDate()).isEqualTo(startDate.plusYears(10));
 
         assertThat(result.get(0).getValue()).isEqualTo(20000.0);
         assertThat(result.get(1).getValue()).isEqualTo(20000.0);
@@ -557,16 +554,16 @@ public class Product10ECTest {
         assertThat(result.get(8).getCurrencyCode()).isEqualTo("THB");
         assertThat(result.get(9).getCurrencyCode()).isEqualTo("THB");
 
-        assertThat(result.get(0).getDate()).isEqualTo(startDate.plus(1, YEARS));
-        assertThat(result.get(1).getDate()).isEqualTo(startDate.plus(2, YEARS));
-        assertThat(result.get(2).getDate()).isEqualTo(startDate.plus(3, YEARS));
-        assertThat(result.get(3).getDate()).isEqualTo(startDate.plus(4, YEARS));
-        assertThat(result.get(4).getDate()).isEqualTo(startDate.plus(5, YEARS));
-        assertThat(result.get(5).getDate()).isEqualTo(startDate.plus(6, YEARS));
-        assertThat(result.get(6).getDate()).isEqualTo(startDate.plus(7, YEARS));
-        assertThat(result.get(7).getDate()).isEqualTo(startDate.plus(8, YEARS));
-        assertThat(result.get(8).getDate()).isEqualTo(startDate.plus(9, YEARS));
-        assertThat(result.get(9).getDate()).isEqualTo(startDate.plus(10, YEARS));
+        assertThat(result.get(0).getDate()).isEqualTo(startDate.plusYears(1));
+        assertThat(result.get(1).getDate()).isEqualTo(startDate.plusYears(2));
+        assertThat(result.get(2).getDate()).isEqualTo(startDate.plusYears(3));
+        assertThat(result.get(3).getDate()).isEqualTo(startDate.plusYears(4));
+        assertThat(result.get(4).getDate()).isEqualTo(startDate.plusYears(5));
+        assertThat(result.get(5).getDate()).isEqualTo(startDate.plusYears(6));
+        assertThat(result.get(6).getDate()).isEqualTo(startDate.plusYears(7));
+        assertThat(result.get(7).getDate()).isEqualTo(startDate.plusYears(8));
+        assertThat(result.get(8).getDate()).isEqualTo(startDate.plusYears(9));
+        assertThat(result.get(9).getDate()).isEqualTo(startDate.plusYears(10));
 
 
         assertThat(result.get(0).getValue()).isEqualTo(20000.0);
@@ -606,16 +603,16 @@ public class Product10ECTest {
         assertThat(result.get(8).getCurrencyCode()).isEqualTo("THB");
         assertThat(result.get(9).getCurrencyCode()).isEqualTo("THB");
 
-        assertThat(result.get(0).getDate()).isEqualTo(startDate.plus(1, YEARS));
-        assertThat(result.get(1).getDate()).isEqualTo(startDate.plus(2, YEARS));
-        assertThat(result.get(2).getDate()).isEqualTo(startDate.plus(3, YEARS));
-        assertThat(result.get(3).getDate()).isEqualTo(startDate.plus(4, YEARS));
-        assertThat(result.get(4).getDate()).isEqualTo(startDate.plus(5, YEARS));
-        assertThat(result.get(5).getDate()).isEqualTo(startDate.plus(6, YEARS));
-        assertThat(result.get(6).getDate()).isEqualTo(startDate.plus(7, YEARS));
-        assertThat(result.get(7).getDate()).isEqualTo(startDate.plus(8, YEARS));
-        assertThat(result.get(8).getDate()).isEqualTo(startDate.plus(9, YEARS));
-        assertThat(result.get(9).getDate()).isEqualTo(startDate.plus(10, YEARS));
+        assertThat(result.get(0).getDate()).isEqualTo(startDate.plusYears(1));
+        assertThat(result.get(1).getDate()).isEqualTo(startDate.plusYears(2));
+        assertThat(result.get(2).getDate()).isEqualTo(startDate.plusYears(3));
+        assertThat(result.get(3).getDate()).isEqualTo(startDate.plusYears(4));
+        assertThat(result.get(4).getDate()).isEqualTo(startDate.plusYears(5));
+        assertThat(result.get(5).getDate()).isEqualTo(startDate.plusYears(6));
+        assertThat(result.get(6).getDate()).isEqualTo(startDate.plusYears(7));
+        assertThat(result.get(7).getDate()).isEqualTo(startDate.plusYears(8));
+        assertThat(result.get(8).getDate()).isEqualTo(startDate.plusYears(9));
+        assertThat(result.get(9).getDate()).isEqualTo(startDate.plusYears(10));
 
         assertThat(result.get(0).getValue()).isEqualTo(10200.0);
         assertThat(result.get(1).getValue()).isEqualTo(20604.0);
@@ -654,16 +651,16 @@ public class Product10ECTest {
         assertThat(result.get(8).getCurrencyCode()).isEqualTo("THB");
         assertThat(result.get(9).getCurrencyCode()).isEqualTo("THB");
 
-        assertThat(result.get(0).getDate()).isEqualTo(startDate.plus(1, YEARS));
-        assertThat(result.get(1).getDate()).isEqualTo(startDate.plus(2, YEARS));
-        assertThat(result.get(2).getDate()).isEqualTo(startDate.plus(3, YEARS));
-        assertThat(result.get(3).getDate()).isEqualTo(startDate.plus(4, YEARS));
-        assertThat(result.get(4).getDate()).isEqualTo(startDate.plus(5, YEARS));
-        assertThat(result.get(5).getDate()).isEqualTo(startDate.plus(6, YEARS));
-        assertThat(result.get(6).getDate()).isEqualTo(startDate.plus(7, YEARS));
-        assertThat(result.get(7).getDate()).isEqualTo(startDate.plus(8, YEARS));
-        assertThat(result.get(8).getDate()).isEqualTo(startDate.plus(9, YEARS));
-        assertThat(result.get(9).getDate()).isEqualTo(startDate.plus(10, YEARS));
+        assertThat(result.get(0).getDate()).isEqualTo(startDate.plusYears(1));
+        assertThat(result.get(1).getDate()).isEqualTo(startDate.plusYears(2));
+        assertThat(result.get(2).getDate()).isEqualTo(startDate.plusYears(3));
+        assertThat(result.get(3).getDate()).isEqualTo(startDate.plusYears(4));
+        assertThat(result.get(4).getDate()).isEqualTo(startDate.plusYears(5));
+        assertThat(result.get(5).getDate()).isEqualTo(startDate.plusYears(6));
+        assertThat(result.get(6).getDate()).isEqualTo(startDate.plusYears(7));
+        assertThat(result.get(7).getDate()).isEqualTo(startDate.plusYears(8));
+        assertThat(result.get(8).getDate()).isEqualTo(startDate.plusYears(9));
+        assertThat(result.get(9).getDate()).isEqualTo(startDate.plusYears(10));
 
         assertThat(result.get(0).getValue()).isEqualTo(20000.0);
         assertThat(result.get(1).getValue()).isEqualTo(40800.0);
@@ -702,16 +699,16 @@ public class Product10ECTest {
         assertThat(result.get(8).getCurrencyCode()).isEqualTo("THB");
         assertThat(result.get(9).getCurrencyCode()).isEqualTo("THB");
 
-        assertThat(result.get(0).getDate()).isEqualTo(startDate.plus(1, YEARS));
-        assertThat(result.get(1).getDate()).isEqualTo(startDate.plus(2, YEARS));
-        assertThat(result.get(2).getDate()).isEqualTo(startDate.plus(3, YEARS));
-        assertThat(result.get(3).getDate()).isEqualTo(startDate.plus(4, YEARS));
-        assertThat(result.get(4).getDate()).isEqualTo(startDate.plus(5, YEARS));
-        assertThat(result.get(5).getDate()).isEqualTo(startDate.plus(6, YEARS));
-        assertThat(result.get(6).getDate()).isEqualTo(startDate.plus(7, YEARS));
-        assertThat(result.get(7).getDate()).isEqualTo(startDate.plus(8, YEARS));
-        assertThat(result.get(8).getDate()).isEqualTo(startDate.plus(9, YEARS));
-        assertThat(result.get(9).getDate()).isEqualTo(startDate.plus(10, YEARS));
+        assertThat(result.get(0).getDate()).isEqualTo(startDate.plusYears(1));
+        assertThat(result.get(1).getDate()).isEqualTo(startDate.plusYears(2));
+        assertThat(result.get(2).getDate()).isEqualTo(startDate.plusYears(3));
+        assertThat(result.get(3).getDate()).isEqualTo(startDate.plusYears(4));
+        assertThat(result.get(4).getDate()).isEqualTo(startDate.plusYears(5));
+        assertThat(result.get(5).getDate()).isEqualTo(startDate.plusYears(6));
+        assertThat(result.get(6).getDate()).isEqualTo(startDate.plusYears(7));
+        assertThat(result.get(7).getDate()).isEqualTo(startDate.plusYears(8));
+        assertThat(result.get(8).getDate()).isEqualTo(startDate.plusYears(9));
+        assertThat(result.get(9).getDate()).isEqualTo(startDate.plusYears(10));
 
         assertThat(result.get(0).getValue()).isEqualTo(20000.0);
         assertThat(result.get(1).getValue()).isEqualTo(40900.0);
@@ -750,16 +747,16 @@ public class Product10ECTest {
         assertThat(result.get(8).getCurrencyCode()).isEqualTo("THB");
         assertThat(result.get(9).getCurrencyCode()).isEqualTo("THB");
 
-        assertThat(result.get(0).getDate()).isEqualTo(startDate.plus(1, YEARS));
-        assertThat(result.get(1).getDate()).isEqualTo(startDate.plus(2, YEARS));
-        assertThat(result.get(2).getDate()).isEqualTo(startDate.plus(3, YEARS));
-        assertThat(result.get(3).getDate()).isEqualTo(startDate.plus(4, YEARS));
-        assertThat(result.get(4).getDate()).isEqualTo(startDate.plus(5, YEARS));
-        assertThat(result.get(5).getDate()).isEqualTo(startDate.plus(6, YEARS));
-        assertThat(result.get(6).getDate()).isEqualTo(startDate.plus(7, YEARS));
-        assertThat(result.get(7).getDate()).isEqualTo(startDate.plus(8, YEARS));
-        assertThat(result.get(8).getDate()).isEqualTo(startDate.plus(9, YEARS));
-        assertThat(result.get(9).getDate()).isEqualTo(startDate.plus(10, YEARS));
+        assertThat(result.get(0).getDate()).isEqualTo(startDate.plusYears(1));
+        assertThat(result.get(1).getDate()).isEqualTo(startDate.plusYears(2));
+        assertThat(result.get(2).getDate()).isEqualTo(startDate.plusYears(3));
+        assertThat(result.get(3).getDate()).isEqualTo(startDate.plusYears(4));
+        assertThat(result.get(4).getDate()).isEqualTo(startDate.plusYears(5));
+        assertThat(result.get(5).getDate()).isEqualTo(startDate.plusYears(6));
+        assertThat(result.get(6).getDate()).isEqualTo(startDate.plusYears(7));
+        assertThat(result.get(7).getDate()).isEqualTo(startDate.plusYears(8));
+        assertThat(result.get(8).getDate()).isEqualTo(startDate.plusYears(9));
+        assertThat(result.get(9).getDate()).isEqualTo(startDate.plusYears(10));
 
         assertThat(result.get(0).getValue()).isEqualTo(0.0);
         assertThat(result.get(1).getValue()).isEqualTo(0.0);
@@ -798,16 +795,16 @@ public class Product10ECTest {
         assertThat(result.get(8).getCurrencyCode()).isEqualTo("THB");
         assertThat(result.get(9).getCurrencyCode()).isEqualTo("THB");
 
-        assertThat(result.get(0).getDate()).isEqualTo(startDate.plus(1, YEARS));
-        assertThat(result.get(1).getDate()).isEqualTo(startDate.plus(2, YEARS));
-        assertThat(result.get(2).getDate()).isEqualTo(startDate.plus(3, YEARS));
-        assertThat(result.get(3).getDate()).isEqualTo(startDate.plus(4, YEARS));
-        assertThat(result.get(4).getDate()).isEqualTo(startDate.plus(5, YEARS));
-        assertThat(result.get(5).getDate()).isEqualTo(startDate.plus(6, YEARS));
-        assertThat(result.get(6).getDate()).isEqualTo(startDate.plus(7, YEARS));
-        assertThat(result.get(7).getDate()).isEqualTo(startDate.plus(8, YEARS));
-        assertThat(result.get(8).getDate()).isEqualTo(startDate.plus(9, YEARS));
-        assertThat(result.get(9).getDate()).isEqualTo(startDate.plus(10, YEARS));
+        assertThat(result.get(0).getDate()).isEqualTo(startDate.plusYears(1));
+        assertThat(result.get(1).getDate()).isEqualTo(startDate.plusYears(2));
+        assertThat(result.get(2).getDate()).isEqualTo(startDate.plusYears(3));
+        assertThat(result.get(3).getDate()).isEqualTo(startDate.plusYears(4));
+        assertThat(result.get(4).getDate()).isEqualTo(startDate.plusYears(5));
+        assertThat(result.get(5).getDate()).isEqualTo(startDate.plusYears(6));
+        assertThat(result.get(6).getDate()).isEqualTo(startDate.plusYears(7));
+        assertThat(result.get(7).getDate()).isEqualTo(startDate.plusYears(8));
+        assertThat(result.get(8).getDate()).isEqualTo(startDate.plusYears(9));
+        assertThat(result.get(9).getDate()).isEqualTo(startDate.plusYears(10));
 
         assertThat(result.get(0).getValue()).isEqualTo(0.0);
         assertThat(result.get(1).getValue()).isEqualTo(0.0);
@@ -846,16 +843,16 @@ public class Product10ECTest {
         assertThat(result.get(8).getCurrencyCode()).isEqualTo("THB");
         assertThat(result.get(9).getCurrencyCode()).isEqualTo("THB");
 
-        assertThat(result.get(0).getDate()).isEqualTo(startDate.plus(1, YEARS));
-        assertThat(result.get(1).getDate()).isEqualTo(startDate.plus(2, YEARS));
-        assertThat(result.get(2).getDate()).isEqualTo(startDate.plus(3, YEARS));
-        assertThat(result.get(3).getDate()).isEqualTo(startDate.plus(4, YEARS));
-        assertThat(result.get(4).getDate()).isEqualTo(startDate.plus(5, YEARS));
-        assertThat(result.get(5).getDate()).isEqualTo(startDate.plus(6, YEARS));
-        assertThat(result.get(6).getDate()).isEqualTo(startDate.plus(7, YEARS));
-        assertThat(result.get(7).getDate()).isEqualTo(startDate.plus(8, YEARS));
-        assertThat(result.get(8).getDate()).isEqualTo(startDate.plus(9, YEARS));
-        assertThat(result.get(9).getDate()).isEqualTo(startDate.plus(10, YEARS));
+        assertThat(result.get(0).getDate()).isEqualTo(startDate.plusYears(1));
+        assertThat(result.get(1).getDate()).isEqualTo(startDate.plusYears(2));
+        assertThat(result.get(2).getDate()).isEqualTo(startDate.plusYears(3));
+        assertThat(result.get(3).getDate()).isEqualTo(startDate.plusYears(4));
+        assertThat(result.get(4).getDate()).isEqualTo(startDate.plusYears(5));
+        assertThat(result.get(5).getDate()).isEqualTo(startDate.plusYears(6));
+        assertThat(result.get(6).getDate()).isEqualTo(startDate.plusYears(7));
+        assertThat(result.get(7).getDate()).isEqualTo(startDate.plusYears(8));
+        assertThat(result.get(8).getDate()).isEqualTo(startDate.plusYears(9));
+        assertThat(result.get(9).getDate()).isEqualTo(startDate.plusYears(10));
 
         assertThat(result.get(0).getValue()).isEqualTo(0.0);
         assertThat(result.get(1).getValue()).isEqualTo(0.0);
@@ -894,16 +891,16 @@ public class Product10ECTest {
         assertThat(result.get(8).getCurrencyCode()).isEqualTo("THB");
         assertThat(result.get(9).getCurrencyCode()).isEqualTo("THB");
 
-        assertThat(result.get(0).getDate()).isEqualTo(startDate.plus(1, YEARS));
-        assertThat(result.get(1).getDate()).isEqualTo(startDate.plus(2, YEARS));
-        assertThat(result.get(2).getDate()).isEqualTo(startDate.plus(3, YEARS));
-        assertThat(result.get(3).getDate()).isEqualTo(startDate.plus(4, YEARS));
-        assertThat(result.get(4).getDate()).isEqualTo(startDate.plus(5, YEARS));
-        assertThat(result.get(5).getDate()).isEqualTo(startDate.plus(6, YEARS));
-        assertThat(result.get(6).getDate()).isEqualTo(startDate.plus(7, YEARS));
-        assertThat(result.get(7).getDate()).isEqualTo(startDate.plus(8, YEARS));
-        assertThat(result.get(8).getDate()).isEqualTo(startDate.plus(9, YEARS));
-        assertThat(result.get(9).getDate()).isEqualTo(startDate.plus(10, YEARS));
+        assertThat(result.get(0).getDate()).isEqualTo(startDate.plusYears(1));
+        assertThat(result.get(1).getDate()).isEqualTo(startDate.plusYears(2));
+        assertThat(result.get(2).getDate()).isEqualTo(startDate.plusYears(3));
+        assertThat(result.get(3).getDate()).isEqualTo(startDate.plusYears(4));
+        assertThat(result.get(4).getDate()).isEqualTo(startDate.plusYears(5));
+        assertThat(result.get(5).getDate()).isEqualTo(startDate.plusYears(6));
+        assertThat(result.get(6).getDate()).isEqualTo(startDate.plusYears(7));
+        assertThat(result.get(7).getDate()).isEqualTo(startDate.plusYears(8));
+        assertThat(result.get(8).getDate()).isEqualTo(startDate.plusYears(9));
+        assertThat(result.get(9).getDate()).isEqualTo(startDate.plusYears(10));
 
         assertThat(result.get(0).getValue()).isEqualTo(0.0);
         assertThat(result.get(1).getValue()).isEqualTo(0.0);
@@ -1088,7 +1085,7 @@ public class Product10ECTest {
     @Test
     public void should_return_error_when_create_policy_with_insured_with_a_start_date_not_server_date() throws Exception {
         final Quote quote = quote(EVERY_YEAR, insured(25), beneficiary(100.0));
-        quote.getInsureds().get(0).setStartDate(now().minus(1, ChronoUnit.DAYS));
+        quote.getInsureds().get(0).setStartDate(now().minusDays(1));
         Policy policy = new Policy();
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
@@ -1395,7 +1392,7 @@ public class Product10ECTest {
         product10EC.getPolicyFromQuote(policy, quote);
         LocalDate startDate = policy.getInsureds().get(0).getStartDate();
         List<LocalDate> allowedDates = new ArrayList<>();
-        IntStream.range(0, 6).forEach(value -> allowedDates.add(startDate.plus(value, YEARS)));
+        IntStream.range(0, 6).forEach(value -> allowedDates.add(startDate.plusMonths(value)));
 
         assertThat(policy.getPayments()).hasSize(6);
         assertThat(policy.getPayments()).extracting("dueDate").containsOnly(allowedDates.toArray());
@@ -1415,7 +1412,7 @@ public class Product10ECTest {
         product10EC.getPolicyFromQuote(policy, quote);
         LocalDate startDate = policy.getInsureds().get(0).getStartDate();
         List<LocalDate> allowedDates = new ArrayList<>();
-        IntStream.range(0, 12).forEach(value -> allowedDates.add(startDate.plus(value * 6, MONTHS)));
+        IntStream.range(0, 12).forEach(value -> allowedDates.add(startDate.plusMonths(value * 6)));
 
         assertThat(policy.getPayments()).hasSize(12);
         assertThat(policy.getPayments()).extracting("dueDate").containsOnly(allowedDates.toArray());
@@ -1435,7 +1432,7 @@ public class Product10ECTest {
         product10EC.getPolicyFromQuote(policy, quote);
         LocalDate startDate = policy.getInsureds().get(0).getStartDate();
         List<LocalDate> allowedDates = new ArrayList<>();
-        IntStream.range(0, 24).forEach(value -> allowedDates.add(startDate.plus(value * 3, MONTHS)));
+        IntStream.range(0, 24).forEach(value -> allowedDates.add(startDate.plusMonths(value * 3)));
 
         assertThat(policy.getPayments()).hasSize(24);
         assertThat(policy.getPayments()).extracting("dueDate").containsOnly(allowedDates.toArray());
@@ -1455,7 +1452,7 @@ public class Product10ECTest {
         product10EC.getPolicyFromQuote(policy, quote);
         LocalDate startDate = policy.getInsureds().get(0).getStartDate();
         List<LocalDate> allowedDates = new ArrayList<>();
-        IntStream.range(0, 72).forEach(value -> allowedDates.add(startDate.plus(value, MONTHS)));
+        IntStream.range(0, 72).forEach(value -> allowedDates.add(startDate.plusMonths(value)));
 
         assertThat(policy.getPayments()).hasSize(72);
         assertThat(policy.getPayments()).extracting("dueDate").containsOnly(allowedDates.toArray());

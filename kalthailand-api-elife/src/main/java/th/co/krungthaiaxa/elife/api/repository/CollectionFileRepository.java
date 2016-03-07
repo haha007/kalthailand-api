@@ -6,5 +6,5 @@ import th.co.krungthaiaxa.elife.api.data.CollectionFile;
 
 @Repository
 public interface CollectionFileRepository extends MongoRepository<CollectionFile, String> {
-    CollectionFile findByFileHashCode(Integer fileHashCode);
+    CollectionFile findByFileHashCode(String fileHashCode);
 }

@@ -11,16 +11,15 @@ import th.co.krungthaiaxa.elife.api.products.ProductType;
 import th.co.krungthaiaxa.elife.api.utils.JsonUtil;
 
 import java.io.IOException;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static java.time.LocalDate.now;
-import static java.time.temporal.ChronoUnit.YEARS;
 import static th.co.krungthaiaxa.elife.api.model.enums.GenderCode.FEMALE;
 import static th.co.krungthaiaxa.elife.api.model.enums.MaritalStatus.MARRIED;
 import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_HALF_YEAR;
+import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_YEAR;
 import static th.co.krungthaiaxa.elife.api.products.Product10EC.PRODUCT_10_EC_NAME;
 import static th.co.krungthaiaxa.elife.api.products.ProductType.PRODUCT_10_EC;
 
@@ -45,7 +44,7 @@ public class TestUtil {
 
         ProductQuotation productQuotation = new ProductQuotation();
         productQuotation.setProductType(productType);
-        productQuotation.setDateOfBirth(now().minus(age, YEARS));
+        productQuotation.setDateOfBirth(now().minusYears(age));
         productQuotation.setDeclaredTaxPercentAtSubscription(23);
         productQuotation.setGenderCode(FEMALE);
         productQuotation.setPeriodicityCode(periodicityCode);
@@ -83,10 +82,14 @@ public class TestUtil {
         return JsonUtil.mapper.readValue(json, ProductAmounts.class);
     }
 
-    public static void quote(Quote quote, PeriodicityCode periodicityCode, Double sumInsuredAmount, Insured insured, CoverageBeneficiary... beneficiaries) {
+    public static void quote(Quote quote, Insured insured, CoverageBeneficiary... beneficiaries) {
+        quote(quote, EVERY_YEAR, insured, beneficiaries);
+    }
+
+    public static void quote(Quote quote, PeriodicityCode periodicityCode, Insured insured, CoverageBeneficiary... beneficiaries) {
         Amount amount = new Amount();
         amount.setCurrencyCode("THB");
-        amount.setValue(sumInsuredAmount);
+        amount.setValue(100000.0);
 
         Periodicity periodicity = new Periodicity();
         periodicity.setCode(periodicityCode);
@@ -215,7 +218,7 @@ public class TestUtil {
         Insured insured = new Insured();
         insured.setAgeAtSubscription(ageAtSubscription);
         insured.setDeclaredTaxPercentAtSubscription(taxRate);
-        insured.setEndDate(now().plus(10, ChronoUnit.YEARS));
+        insured.setEndDate(now().plusYears(10));
         insured.setMainInsuredIndicator(mainInsured);
         insured.setProfessionName("Something");
         insured.setStartDate(now());
@@ -237,7 +240,7 @@ public class TestUtil {
         phoneNumber.setCountryCode(66);
 
         Person person = new Person();
-        person.setBirthDate(now().minus(ageAtSubscription, YEARS));
+        person.setBirthDate(now().minusYears(ageAtSubscription));
         person.setEmail("santi.lik@krungthai-axa.co.th");
         person.setGenderCode(genderCode);
         person.setCurrentAddress(geographicalAddress);

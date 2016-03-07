@@ -13,8 +13,6 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 
-import static java.time.temporal.ChronoUnit.MONTHS;
-import static java.time.temporal.ChronoUnit.YEARS;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException.*;
@@ -104,8 +102,8 @@ public class Product10EC implements Product {
         // Set dates based on current date and product duration
         LocalDate startDate = LocalDate.now(ZoneId.of(ZoneId.SHORT_IDS.get("VST")));
         insured.setStartDate(startDate);
-        insured.setEndDate(startDate.plus(DURATION_COVERAGE_IN_YEAR, YEARS));
-        quote.getPremiumsData().getFinancialScheduler().setEndDate(startDate.plus(DURATION_PAYMENT_IN_YEAR, YEARS));
+        insured.setEndDate(startDate.plusYears(DURATION_COVERAGE_IN_YEAR));
+        quote.getPremiumsData().getFinancialScheduler().setEndDate(startDate.plusYears(DURATION_PAYMENT_IN_YEAR));
 
         PremiumsData premiumsData = quote.getPremiumsData();
         // cannot insure too much or not enough
@@ -222,7 +220,7 @@ public class Product10EC implements Product {
         String amountCurrency = policy.getPremiumsData().getFinancialScheduler().getModalAmount().getCurrencyCode();
         int nbOfPayments = (12 / periodicityCode.getNbOfMonths()) * DURATION_PAYMENT_IN_YEAR;
 
-        IntStream.range(0, nbOfPayments).forEach(i -> policy.addPayment(new Payment(amountValue, amountCurrency, startDate.plus(i * periodicityCode.getNbOfMonths(), MONTHS))));
+        IntStream.range(0, nbOfPayments).forEach(i -> policy.addPayment(new Payment(amountValue, amountCurrency, startDate.plusMonths(i * periodicityCode.getNbOfMonths()))));
     }
 
     private static void checkCommonData(CommonData commonData) throws PolicyValidationException {
@@ -336,7 +334,7 @@ public class Product10EC implements Product {
 
     private static void checkDatedAmounts(List<DatedAmount> datedAmounts, LocalDate startDate) throws PolicyValidationException {
         List<LocalDate> allowedDates = new ArrayList<>();
-        IntStream.range(0, 10).forEach(value -> allowedDates.add(startDate.plus(value + 1, YEARS)));
+        IntStream.range(0, 10).forEach(value -> allowedDates.add(startDate.plusYears(value + 1)));
         List<LocalDate> filteredDates = datedAmounts.stream().map(DatedAmount::getDate).filter(date -> !allowedDates.contains(date)).collect(toList());
         if (datedAmounts == null) {
             throw PolicyValidationException.premiumnsCalculatedAmountEmpty;
@@ -468,7 +466,7 @@ public class Product10EC implements Product {
             Double interest = sumInsured.getValue() * dvdFunction.apply(i) / 1000;
             DatedAmount datedAmount = new DatedAmount();
             datedAmount.setCurrencyCode(sumInsured.getCurrencyCode());
-            datedAmount.setDate(startDate.plus(i, YEARS));
+            datedAmount.setDate(startDate.plusYears(i));
             if (percentRate != null) {
                 latestAmout = (double) Math.round(interest + latestAmout + (latestAmout * percentRate) / 1000);
                 datedAmount.setValue(latestAmout);

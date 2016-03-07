@@ -45,11 +45,11 @@ import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpMethod.PUT;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
+import static th.co.krungthaiaxa.elife.api.TestUtil.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
 import static th.co.krungthaiaxa.elife.api.model.enums.GenderCode.FEMALE;
-import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_MONTH;
+import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_YEAR;
 import static th.co.krungthaiaxa.elife.api.model.error.ErrorCode.QUOTE_DOES_NOT_EXIST_OR_ACCESS_DENIED;
-import static th.co.krungthaiaxa.elife.api.TestUtil.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiApplication.class)
@@ -213,7 +213,7 @@ public class QuoteResourceTest {
         assertThat(quote).isNotNull();
         assertThat(quote.getId()).isNotNull();
 
-        quote(quote, EVERY_MONTH, 500000.0, insured(35), beneficiary(100.0));
+        quote(quote, insured(35), beneficiary(100.0));
         String jsonQuote = new String(JsonUtil.getJson(quote));
 
         URI updateURI = new URI("http://localhost:" + port + "/quotes/" + quote.getQuoteId());
@@ -227,12 +227,12 @@ public class QuoteResourceTest {
         SessionQuote sessionQuote = sessionQuoteRepository.findBySessionIdAndChannelType(sessionId, LINE);
         Quote savedQuote = quoteRepository.findOne(quote.getId());
         assertThat(sessionQuote.getQuotes()).containsExactly(savedQuote);
-        assertThat(savedQuote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode()).isEqualTo(EVERY_MONTH);
+        assertThat(savedQuote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode()).isEqualTo(EVERY_YEAR);
         assertThat(savedQuote.getInsureds().get(0).getPerson().getGenderCode()).isEqualTo(FEMALE);
 
         //check returned JSon
         quote = getQuoteFromJSon(updateResponse.getBody());
-        assertThat(quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode()).isEqualTo(EVERY_MONTH);
+        assertThat(quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode()).isEqualTo(EVERY_YEAR);
         assertThat(quote.getInsureds().get(0).getPerson().getGenderCode()).isEqualTo(FEMALE);
     }
 
@@ -248,7 +248,7 @@ public class QuoteResourceTest {
         assertThat(creationResponse.getStatusCode().value()).isEqualTo(OK.value());
         Quote quote = getQuoteFromJSon(creationResponse.getBody());
 
-        quote(quote, EVERY_MONTH, 500000.0, insured(35), beneficiary(100.0));
+        quote(quote, insured(35), beneficiary(100.0));
         String jsonQuote = new String(JsonUtil.getJson(quote));
 
         URI updateURI = new URI("http://localhost:" + port + "/quotes/" + quote.getQuoteId());
