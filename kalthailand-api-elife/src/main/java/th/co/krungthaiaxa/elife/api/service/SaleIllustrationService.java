@@ -320,7 +320,7 @@ public class SaleIllustrationService {
     }
 
     private String getAbsoluteFilePath(String fileName) {
-        String path = this.getClass().getResource(fileName).getFile();
+        String path = this.getClass().getClassLoader().getResource(fileName).getFile();
         File f = new File(path);
         logger.info(path);
         logger.info(f.getAbsolutePath());
