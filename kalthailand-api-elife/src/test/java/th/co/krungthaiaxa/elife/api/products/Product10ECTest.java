@@ -1392,7 +1392,7 @@ public class Product10ECTest {
         product10EC.getPolicyFromQuote(policy, quote);
         LocalDate startDate = policy.getInsureds().get(0).getStartDate();
         List<LocalDate> allowedDates = new ArrayList<>();
-        IntStream.range(0, 6).forEach(value -> allowedDates.add(startDate.plusMonths(value)));
+        IntStream.range(0, 6).forEach(value -> allowedDates.add(startDate.plusMonths(value * 12)));
 
         assertThat(policy.getPayments()).hasSize(6);
         assertThat(policy.getPayments()).extracting("dueDate").containsOnly(allowedDates.toArray());
