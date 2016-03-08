@@ -76,6 +76,10 @@ public class RLSService {
         collectionFile.getLines().forEach(this::addPaymentId);
     }
 
+    public List<CollectionFile> getCollectionFiles() {
+        return collectionFileRepository.findAll();
+    }
+
     CollectionFile readExcelFile(InputStream is) {
         notNull(is, "The file excel file is not available");
         HSSFWorkbook workbook;
@@ -92,7 +96,7 @@ public class RLSService {
         int noOfColumns = sheet.getRow(0).getLastCellNum();
         isTrue(noOfColumns == COLLECTION_FILE_NUMBER_OF_COLUMNS, "The file does not contain [" + COLLECTION_FILE_NUMBER_OF_COLUMNS + "] columns with data");
 
-        // first line is does not contain data, but need to check for column header
+        // first line does not contain data, but need to check for column header
         Iterator<Row> rowIterator = sheet.rowIterator();
         Row firstRow = rowIterator.next();
         List<String> firstLine = new ArrayList<>();
