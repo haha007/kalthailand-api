@@ -118,9 +118,9 @@ public class EmailServiceTest {
         MimeMessage email = greenMail.getReceivedMessages()[0];
         assertThat(email.getSubject()).isEqualTo(subject);
         String bodyAsString = decodeSimpleBody(getBody(email));
-        assertThat(bodyAsString).contains("รวมรับผลประโยชน์ขั้นต่ำ</td><td class=\"value\" align=\"right\" valign=\"top\" >2,018,995.00 บาท");
-        assertThat(bodyAsString).contains("รวมรับผลประโยชน์ระดับกลาง (รวมเงินปันผล**ระดับกลาง)</td><td class=\"value\" valign=\"top\" align=\"right\" >2,253,818.00 บาท");
-        assertThat(bodyAsString).contains("รวมรับผลประโยชน์ระดับสูง (รวมเงินปันผล**ระดับสูง)</td><td class=\"value\" valign=\"top\" align=\"right\" >2,302,771.00 บาท");
+        assertThat(bodyAsString).contains("<tr><td>รวมรับผลประโยชน์ขั้นต่ำ</td><td class=\"value\" align=\"right\" valign=\"top\" >201,898.00 บาท</td></tr>");
+        assertThat(bodyAsString).contains("<tr><td>รวมรับผลประโยชน์ระดับกลาง (รวมเงินปันผล**ระดับกลาง)</td><td class=\"value\" valign=\"top\" align=\"right\" >225,382.00 บาท</td></tr>");
+        assertThat(bodyAsString).contains("<tr><td>รวมรับผลประโยชน์ระดับสูง (รวมเงินปันผล**ระดับสูง)</td><td class=\"value\" valign=\"top\" align=\"right\" >230,276.00 บาท</td></tr>");
     }
 
     @Test
@@ -135,9 +135,9 @@ public class EmailServiceTest {
         MimeMessage email = greenMail.getReceivedMessages()[0];
         assertThat(email.getSubject()).isEqualTo(subject);
         String bodyAsString = decodeSimpleBody(getBody(email));
-        assertThat(bodyAsString).contains("รวมรับผลประโยชน์ขั้นต่ำ</td><td class=\"value\" align=\"right\" valign=\"top\" >1,009,498.00 บาท");
-        assertThat(bodyAsString).contains("รวมรับผลประโยชน์ระดับกลาง (รวมเงินปันผล**ระดับกลาง)</td><td class=\"value\" valign=\"top\" align=\"right\" >1,126,910.00 บาท");
-        assertThat(bodyAsString).contains("รวมรับผลประโยชน์ระดับสูง (รวมเงินปันผล**ระดับสูง)</td><td class=\"value\" valign=\"top\" align=\"right\" >1,151,386.00 บาท");
+        assertThat(bodyAsString).contains("<tr><td>รวมรับผลประโยชน์ขั้นต่ำ</td><td class=\"value\" align=\"right\" valign=\"top\" >201,898.00 บาท</td></tr>");
+        assertThat(bodyAsString).contains("<tr><td>รวมรับผลประโยชน์ระดับกลาง (รวมเงินปันผล**ระดับกลาง)</td><td class=\"value\" valign=\"top\" align=\"right\" >225,382.00 บาท</td></tr>");
+        assertThat(bodyAsString).contains("<tr><td>รวมรับผลประโยชน์ระดับสูง (รวมเงินปันผล**ระดับสูง)</td><td class=\"value\" valign=\"top\" align=\"right\" >230,276.00 บาท</td></tr>");
     }
 
     @Test
