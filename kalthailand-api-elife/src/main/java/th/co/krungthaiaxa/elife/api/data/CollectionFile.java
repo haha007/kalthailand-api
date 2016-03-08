@@ -12,8 +12,11 @@ public class CollectionFile {
     private String id;
     @Indexed(unique = true)
     private String fileHashCode;
-    private LocalDate sendDate;
+    private LocalDate receivedDate;
+    private LocalDate jobStartedDate;
+    private LocalDate jobEndedDate;
     private List<CollectionFileLine> lines = new ArrayList<>();
+    private DeductionFile deductionFile;
 
     public String getId() {
         return id;
@@ -23,12 +26,36 @@ public class CollectionFile {
         this.id = id;
     }
 
-    public LocalDate getSendDate() {
-        return sendDate;
+    public String getFileHashCode() {
+        return fileHashCode;
     }
 
-    public void setSendDate(LocalDate sendDate) {
-        this.sendDate = sendDate;
+    public void setFileHashCode(String fileHashCode) {
+        this.fileHashCode = fileHashCode;
+    }
+
+    public LocalDate getReceivedDate() {
+        return receivedDate;
+    }
+
+    public void setReceivedDate(LocalDate receivedDate) {
+        this.receivedDate = receivedDate;
+    }
+
+    public LocalDate getJobStartedDate() {
+        return jobStartedDate;
+    }
+
+    public void setJobStartedDate(LocalDate jobStartedDate) {
+        this.jobStartedDate = jobStartedDate;
+    }
+
+    public LocalDate getJobEndedDate() {
+        return jobEndedDate;
+    }
+
+    public void setJobEndedDate(LocalDate jobEndedDate) {
+        this.jobEndedDate = jobEndedDate;
     }
 
     public List<CollectionFileLine> getLines() {
@@ -39,11 +66,11 @@ public class CollectionFile {
         this.lines.add(line);
     }
 
-    public void setFileHashCode(String fileHashCode) {
-        this.fileHashCode = fileHashCode;
+    public DeductionFile getDeductionFile() {
+        return deductionFile;
     }
 
-    public String getFileHashCode() {
-        return fileHashCode;
+    public void setDeductionFile(DeductionFile deductionFile) {
+        this.deductionFile = deductionFile;
     }
 }

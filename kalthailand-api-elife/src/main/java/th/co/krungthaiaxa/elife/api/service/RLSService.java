@@ -112,7 +112,7 @@ public class RLSService {
 
         // copy all the lines
         CollectionFile collectionFile = new CollectionFile();
-        collectionFile.setSendDate(now());
+        collectionFile.setReceivedDate(now());
         StringBuilder stringBuilder = new StringBuilder();
         while (rowIterator.hasNext()) {
             Row currentRow = rowIterator.next();
