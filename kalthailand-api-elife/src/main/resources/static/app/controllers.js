@@ -7,5 +7,13 @@
                 console.log(response);
                 $scope.collectionFiles = response;
             });
+
+            $scope.file = null;
+            $scope.upload = function(event) {
+                event.preventDefault();
+                var newItem = new Item;
+                newItem.file = $scope.file;
+                newItem.$save();
+            }
         });
 })();

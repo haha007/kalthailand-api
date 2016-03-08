@@ -32,6 +32,8 @@ public class ErrorCode {
     public static final Function<String, Error> UNABLE_TO_SEND_EMAIL = msg -> new Error("70001", "Unable to send email", "Error message is:" + msg);
     // Product
     public static final Function<String, Error> INVALID_PRODUCT_QUOTATION_PROVIDED = msg -> new Error("70001", "Unable to get the product details", "The given product cannot be transformed. Error message is:" + msg);
+    // Watermarking
+    public static final Function<String, Error> INVALID_COLLECTION_FILE = msg -> new Error("80001", "Unable to upload the collection file. Error is: [" + msg + "]", "Unable to upload the collection file. Error is: ["+msg+"]");
 
 
 }

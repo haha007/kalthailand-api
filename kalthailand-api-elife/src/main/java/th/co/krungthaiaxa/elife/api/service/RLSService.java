@@ -75,6 +75,7 @@ public class RLSService {
     public void importCollectionFile(InputStream is) {
         CollectionFile collectionFile = readExcelFile(is);
         collectionFile.getLines().forEach(this::addPaymentId);
+        collectionFileRepository.save(collectionFile);
     }
 
     public List<CollectionFile> getCollectionFiles() {
@@ -147,7 +148,6 @@ public class RLSService {
             throw new IllegalArgumentException("The file has already been uploaded");
         }
 
-        collectionFileRepository.save(collectionFile);
         return collectionFile;
     }
 

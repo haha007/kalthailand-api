@@ -10,6 +10,10 @@
             <div class="page-header">
                 <h1>List of all Collection file</h1>
             </div>
+            <form name="formUpload" ng-submit="upload($event)">
+                <input type="file" file-model="file">
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
             <div class="alert alert-info" role="alert" ng-hide="collectionFiles && collectionFiles.length > 0">
                 There are no collection file yet.
             </div>
@@ -38,9 +42,9 @@
 </div>
 <script type="text/javascript" src="./bower_components/angular/angular.min.js"></script>
 <script type="text/javascript" src="./bower_components/angular-resource/angular-resource.min.js"></script>
+<script src="./bower_components/angular-file-model/angular-file-model.js"></script>
 <script type="text/javascript" src="./app/app.js"></script>
 <script type="text/javascript" src="./app/controllers.js"></script>
 <script type="text/javascript" src="./app/services.js"></script>
-<script type="text/javascript" src="./app/tools.js"></script>
 </body>
 </html>

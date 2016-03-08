@@ -21,7 +21,6 @@ import th.co.krungthaiaxa.elife.api.repository.CollectionFileRepository;
 import th.co.krungthaiaxa.elife.api.repository.PaymentRepository;
 
 import javax.inject.Inject;
-import java.util.List;
 
 import static java.time.LocalDate.now;
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
@@ -57,62 +56,66 @@ public class RLSServiceTest {
     }
 
     @Test
-    public void should_not_save_collection_file_when_file_not_valid_excel_file() throws Exception {
+    public void should_not_save_collection_file_when_there_is_an_error() throws Exception {
+        assertThatThrownBy(() -> rlsService.readExcelFile(this.getClass().getResourceAsStream("/graph.jpg")))
+                .isInstanceOf(IllegalArgumentException.class);
+        assertThat(collectionFileRepository.findAll()).hasSize(0);
+    }
+
+    @Test
+    public void should_throw_exception_when_file_not_valid_excel_file() throws Exception {
         assertThatThrownBy(() -> rlsService.readExcelFile(this.getClass().getResourceAsStream("/graph.jpg")))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
-    public void should_not_save_collection_file_when_file_not_found() throws Exception {
+    public void should_throw_exception_when_file_not_found() throws Exception {
         assertThatThrownBy(() -> rlsService.readExcelFile(this.getClass().getResourceAsStream("/something.xls")))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
-    public void should_not_save_collection_file_with_extra_column() throws Exception {
+    public void should_throw_exception_when_file_with_extra_column() throws Exception {
         assertThatThrownBy(() -> rlsService.readExcelFile(this.getClass().getResourceAsStream("/collectionFile_extraColumn.xls")))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
-    public void should_not_save_collection_file_with_missing_sheet() throws Exception {
+    public void should_throw_exception_when_file_with_missing_sheet() throws Exception {
         assertThatThrownBy(() -> rlsService.readExcelFile(this.getClass().getResourceAsStream("/collectionFile_missingSheet.xls")))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
-    public void should_not_save_collection_file_with_missing_column() throws Exception {
+    public void should_throw_exception_when_file_with_missing_column() throws Exception {
         assertThatThrownBy(() -> rlsService.readExcelFile(this.getClass().getResourceAsStream("/collectionFile_missingColumn.xls")))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
-    public void should_not_save_collection_file_with_wrong_column_name() throws Exception {
+    public void should_throw_exception_when_file_with_wrong_column_name() throws Exception {
         assertThatThrownBy(() -> rlsService.readExcelFile(this.getClass().getResourceAsStream("/collectionFile_wrongColumnName.xls")))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
-    public void should_not_save_collection_file_twice() throws Exception {
-        rlsService.readExcelFile(this.getClass().getResourceAsStream("/collectionFile_full.xls"));
+    public void should_throw_exception_when_saving_same_file_twice() throws Exception {
+        CollectionFile collectionFile = rlsService.readExcelFile(this.getClass().getResourceAsStream("/collectionFile_full.xls"));
+        collectionFileRepository.save(collectionFile);
         assertThatThrownBy(() -> rlsService.readExcelFile(this.getClass().getResourceAsStream("/collectionFile_full.xls")))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     public void should_save_empty_collection() throws Exception {
-        rlsService.readExcelFile(this.getClass().getResourceAsStream("/collectionFile_empty.xls"));
-        List<CollectionFile> collectionFiles = collectionFileRepository.findAll();
-        assertThat(collectionFiles).hasSize(1);
-        assertThat(collectionFiles.get(0).getLines()).hasSize(0);
+        CollectionFile collectionFile = rlsService.readExcelFile(this.getClass().getResourceAsStream("/collectionFile_empty.xls"));
+        assertThat(collectionFile.getLines()).hasSize(0);
     }
 
     @Test
     public void should_save_collection_file_with_lines() throws Exception {
-        rlsService.readExcelFile(this.getClass().getResourceAsStream("/collectionFile_full.xls"));
-        List<CollectionFile> collectionFiles = collectionFileRepository.findAll();
-        assertThat(collectionFiles).hasSize(1);
-        assertThat(collectionFiles.get(0).getLines()).hasSize(50);
+        CollectionFile collectionFile = rlsService.readExcelFile(this.getClass().getResourceAsStream("/collectionFile_full.xls"));
+        assertThat(collectionFile.getLines()).hasSize(50);
     }
 
     @Test

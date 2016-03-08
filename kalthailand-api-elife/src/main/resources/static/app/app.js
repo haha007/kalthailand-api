@@ -2,6 +2,7 @@
     'use strict';
 
     angular.module('myApp', [
-        'ngResource'
+        'ngResource',
+        'file-model'
     ]);
 }());
