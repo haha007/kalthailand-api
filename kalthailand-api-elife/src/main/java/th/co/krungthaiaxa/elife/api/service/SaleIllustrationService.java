@@ -13,10 +13,13 @@ import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.elife.api.model.Quote;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Base64;
 import java.util.Date;
+
+import static org.apache.commons.io.IOUtils.toByteArray;
 
 @Service
 public class SaleIllustrationService {
@@ -95,38 +98,38 @@ public class SaleIllustrationService {
         PdfPTable table2 = new PdfPTable(tbCols);
         table2.addCell(addLine(false, tbCols));
         table2.addCell(addLine(false, tbCols));
-        table2.addCell(addImage(getAbsoluteFilePath(IMG_SYMBOL_1), 50, null, TB_HORIZONTAL_ALIGN_CENTER));
+        table2.addCell(addImage(getResourceAsByteArray(IMG_SYMBOL_1), 50, null, TB_HORIZONTAL_ALIGN_CENTER));
         table2.addCell(addData("เงินจ่ายคืนตามกรมธรรม์ประกันภัยและเงินครบกำหนดสัญญา (ณ สิ้นปี)", getFontExtraSmallGrayStyle(), tbCols - 1, TB_HORIZONTAL_ALIGN_LEFT, null));
         table2.addCell(addLine(false, null));
         table2.addCell(addData("กรณีสะสมกับบริษัทด้วยอัตราดอกเบี้ยขั้นต่ำ 2% ต่อปี", getFontExtraSmallStyle(), tbCols - 1, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table2.addCell(addImage(getAbsoluteFilePath(IMG_SYMBOL_2), 50, null, TB_HORIZONTAL_ALIGN_CENTER));
+        table2.addCell(addImage(getResourceAsByteArray(IMG_SYMBOL_2), 50, null, TB_HORIZONTAL_ALIGN_CENTER));
         table2.addCell(addData("เงินจ่ายคืนตามกรมธรรม์ประกันภัยและเงินครบกำหนดสัญญา (ณ สิ้นปี)", getFontExtraSmallGrayStyle(), tbCols - 1, TB_HORIZONTAL_ALIGN_LEFT, null));
         table2.addCell(addLine(false, null));
         table2.addCell(addData("กรณีรับเงินสด", getFontExtraSmallStyle(), tbCols - 1, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table2.addCell(addImage(getAbsoluteFilePath(IMG_SYMBOL_3), 50, null, TB_HORIZONTAL_ALIGN_CENTER));
+        table2.addCell(addImage(getResourceAsByteArray(IMG_SYMBOL_3), 50, null, TB_HORIZONTAL_ALIGN_CENTER));
         table2.addCell(addData("เงินปันผลสูงสุด", getFontExtraSmallGrayStyle(), tbCols - 1, TB_HORIZONTAL_ALIGN_LEFT, null));
         table2.addCell(addLine(false, null));
         table2.addCell(addData("กรณีรับเงินสด", getFontExtraSmallStyle(), tbCols - 1, TB_HORIZONTAL_ALIGN_LEFT, null));
         table2.addCell(addLine(true, tbCols));
         table2.addCell(addLine(false, tbCols));
         table2.addCell(addLine(false, tbCols));
-        table2.addCell(addImage(getAbsoluteFilePath(IMG_BENEFIT_1), SYMBOL_IMG_SIZE, tbCols, TB_HORIZONTAL_ALIGN_CENTER));
+        table2.addCell(addImage(getResourceAsByteArray(IMG_BENEFIT_1), SYMBOL_IMG_SIZE, tbCols, TB_HORIZONTAL_ALIGN_CENTER));
         table2.addCell(addData("ออมระยะสั้น", getFontHeaderStyle(), tbCols, TB_HORIZONTAL_ALIGN_CENTER, null));
         table2.addCell(addData("ระยะเวลาในการชำระเบี้ยประกันภัยหลักเพียง 6 ปี" + NEW_LINE + "คุ้มครองชีวิต 10 ปี ทำให้คุณสามารถวางแผน" + NEW_LINE + "ทางการเงินได้อย่างคล่องตัว", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_CENTER, null));
         table2.addCell(addLine(false, tbCols));
-        table2.addCell(addImage(getAbsoluteFilePath(IMG_BENEFIT_2), SYMBOL_IMG_SIZE, tbCols, TB_HORIZONTAL_ALIGN_CENTER));
+        table2.addCell(addImage(getResourceAsByteArray(IMG_BENEFIT_2), SYMBOL_IMG_SIZE, tbCols, TB_HORIZONTAL_ALIGN_CENTER));
         table2.addCell(addData("รับผลประโยชน์เพิ่มจากเงินปันผล", getFontHeaderStyle(), tbCols, TB_HORIZONTAL_ALIGN_CENTER, null));
         table2.addCell(addData("ตั้งแต่ปีที่ 7 จนถึงปีที่ 10 รวมสูงสุด 25.2% *", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_CENTER, null));
         table2.addCell(addLine(false, tbCols));
-        table2.addCell(addImage(getAbsoluteFilePath(IMG_BENEFIT_3), SYMBOL_IMG_SIZE, tbCols, TB_HORIZONTAL_ALIGN_CENTER));
+        table2.addCell(addImage(getResourceAsByteArray(IMG_BENEFIT_3), SYMBOL_IMG_SIZE, tbCols, TB_HORIZONTAL_ALIGN_CENTER));
         table2.addCell(addData("รับเงินจ่ายคืนประจำปีในอัตรา 2%", getFontHeaderStyle(), tbCols, TB_HORIZONTAL_ALIGN_CENTER, null));
         table2.addCell(addData("ของจำนวนเงินเอาประกันภัย นับตั้งแต่สิ้นปีที่ 1 จนถึง" + NEW_LINE + "ปีที่ 9 ครบสัญญารับเพิ่มอีก 182% รวมรับ" + NEW_LINE + "ผลประโยชน์เงินจ่ายคืนตามกรมธรรม์ขั้นต่ำ 200%", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_CENTER, null));
         table2.addCell(addLine(false, tbCols));
-        table2.addCell(addImage(getAbsoluteFilePath(IMG_BENEFIT_4), SYMBOL_IMG_SIZE, tbCols, TB_HORIZONTAL_ALIGN_CENTER));
+        table2.addCell(addImage(getResourceAsByteArray(IMG_BENEFIT_4), SYMBOL_IMG_SIZE, tbCols, TB_HORIZONTAL_ALIGN_CENTER));
         table2.addCell(addData("รับผลประโยชน์ตลอดอายุสัญญา", getFontHeaderStyle(), tbCols, TB_HORIZONTAL_ALIGN_CENTER, null));
         table2.addCell(addData("ขั้นต่ำ 200% สูงสุดถึง 225.2% *", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_CENTER, null));
         table2.addCell(addLine(false, tbCols));
-        table2.addCell(addImage(getAbsoluteFilePath(IMG_BENEFIT_5), SYMBOL_IMG_SIZE, tbCols, TB_HORIZONTAL_ALIGN_CENTER));
+        table2.addCell(addImage(getResourceAsByteArray(IMG_BENEFIT_5), SYMBOL_IMG_SIZE, tbCols, TB_HORIZONTAL_ALIGN_CENTER));
         table2.addCell(addData("รับสิทธิลดหย่อนภาษี", getFontHeaderStyle(), tbCols, TB_HORIZONTAL_ALIGN_CENTER, null));
         table2.addCell(addData("ผลประโยชน์เพิ่มเติมจากการลดหย่อนภาษี" + NEW_LINE + "สูงสุดที่ชำระ 35% ต่อปี", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_CENTER, null));
         table2.addCell(addLine(false, tbCols));
@@ -254,7 +257,7 @@ public class SaleIllustrationService {
     private Font getFontHeaderStyle() {
         BaseFont bfBold = null;
         try {
-            bfBold = BaseFont.createFont(getAbsoluteFilePath(_fontBold), BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+            bfBold = BaseFont.createFont(_fontBold, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
         } catch (Exception e) {
             logger.error("Unable to add image", e);
         }
@@ -266,7 +269,7 @@ public class SaleIllustrationService {
     private Font getFontNormalStyle() {
         BaseFont bfNormal = null;
         try {
-            bfNormal = BaseFont.createFont(getAbsoluteFilePath(_fontBold), BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+            bfNormal = BaseFont.createFont(_fontBold, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
         } catch (Exception e) {
             logger.error("Unable to add image", e);
         }
@@ -276,7 +279,7 @@ public class SaleIllustrationService {
     private Font getFontNormalGrayStyle() {
         BaseFont bfNormal = null;
         try {
-            bfNormal = BaseFont.createFont(getAbsoluteFilePath(_fontBold), BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+            bfNormal = BaseFont.createFont(_fontBold, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
         } catch (Exception e) {
             logger.error("Unable to add image", e);
         }
@@ -288,7 +291,7 @@ public class SaleIllustrationService {
     private Font getFontNormalBlueStyle() {
         BaseFont bfNormalBlue = null;
         try {
-            bfNormalBlue = BaseFont.createFont(getAbsoluteFilePath(_fontBold), BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+            bfNormalBlue = BaseFont.createFont(_fontBold, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
         } catch (Exception e) {
             logger.error("Unable to add image", e);
         }
@@ -300,7 +303,7 @@ public class SaleIllustrationService {
     private Font getFontExtraSmallStyle() {
         BaseFont bfExtraSmall = null;
         try {
-            bfExtraSmall = BaseFont.createFont(getAbsoluteFilePath(_fontNormal), BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+            bfExtraSmall = BaseFont.createFont(_fontNormal, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
         } catch (Exception e) {
             logger.error("Unable to add image", e);
         }
@@ -310,7 +313,7 @@ public class SaleIllustrationService {
     private Font getFontExtraSmallGrayStyle() {
         BaseFont bfExtraSmall = null;
         try {
-            bfExtraSmall = BaseFont.createFont(getAbsoluteFilePath(_fontNormal), BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+            bfExtraSmall = BaseFont.createFont(_fontNormal, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
         } catch (Exception e) {
             logger.error("Unable to add image", e);
         }
@@ -319,13 +322,15 @@ public class SaleIllustrationService {
         return fontExtraSmallGray;
     }
 
-    private String getAbsoluteFilePath(String fileName) {
-        String path = this.getClass().getClassLoader().getResource(fileName).getFile();
-        File f = new File(path);
-        logger.info(path);
-        logger.info(f.getAbsolutePath());
-        logger.info(String.valueOf(f.exists()));
-        return path;
+    private byte[] getResourceAsByteArray(String imgPath){
+        byte[] outPut = new byte[0];
+        try {
+            outPut = toByteArray(this.getClass().getResourceAsStream(imgPath));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return outPut;
     }
+
 
 }
