@@ -35,6 +35,22 @@ public class RLSResource {
     @ResponseBody
     public ResponseEntity getCollectionFiles() {
         logger.info("Getting all collection File");
+//        List<CollectionFile> result = new ArrayList<>();
+//
+//        CollectionFileLine collectionFileLine = new CollectionFileLine();
+//
+//        DeductionFile deductionFile = new DeductionFile();
+//        deductionFile.addLine(new DeductionFileLine());
+//
+//        CollectionFile collectionFile = new CollectionFile();
+//        collectionFile.setReceivedDate(LocalDateTime.now());
+//        collectionFile.setJobEndedDate(LocalDateTime.now());
+//        collectionFile.setJobStartedDate(LocalDateTime.now());
+//        collectionFile.setDeductionFile(deductionFile);
+//        collectionFile.addLine(collectionFileLine);
+//
+//        result.add(collectionFile);
+//        return new ResponseEntity<>(getJson(result), OK);
         return new ResponseEntity<>(getJson(rlsService.getCollectionFiles()), OK);
     }
 

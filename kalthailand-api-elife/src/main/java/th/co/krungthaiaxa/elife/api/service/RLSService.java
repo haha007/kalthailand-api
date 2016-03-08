@@ -24,6 +24,7 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -112,7 +113,7 @@ public class RLSService {
 
         // copy all the lines
         CollectionFile collectionFile = new CollectionFile();
-        collectionFile.setReceivedDate(now());
+        collectionFile.setReceivedDate(LocalDateTime.now());
         StringBuilder stringBuilder = new StringBuilder();
         while (rowIterator.hasNext()) {
             Row currentRow = rowIterator.next();

@@ -3,7 +3,7 @@ package th.co.krungthaiaxa.elife.api.data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,9 +12,9 @@ public class CollectionFile {
     private String id;
     @Indexed(unique = true)
     private String fileHashCode;
-    private LocalDate receivedDate;
-    private LocalDate jobStartedDate;
-    private LocalDate jobEndedDate;
+    private LocalDateTime receivedDate;
+    private LocalDateTime jobStartedDate;
+    private LocalDateTime jobEndedDate;
     private List<CollectionFileLine> lines = new ArrayList<>();
     private DeductionFile deductionFile;
 
@@ -34,27 +34,27 @@ public class CollectionFile {
         this.fileHashCode = fileHashCode;
     }
 
-    public LocalDate getReceivedDate() {
+    public LocalDateTime getReceivedDate() {
         return receivedDate;
     }
 
-    public void setReceivedDate(LocalDate receivedDate) {
+    public void setReceivedDate(LocalDateTime receivedDate) {
         this.receivedDate = receivedDate;
     }
 
-    public LocalDate getJobStartedDate() {
+    public LocalDateTime getJobStartedDate() {
         return jobStartedDate;
     }
 
-    public void setJobStartedDate(LocalDate jobStartedDate) {
+    public void setJobStartedDate(LocalDateTime jobStartedDate) {
         this.jobStartedDate = jobStartedDate;
     }
 
-    public LocalDate getJobEndedDate() {
+    public LocalDateTime getJobEndedDate() {
         return jobEndedDate;
     }
 
-    public void setJobEndedDate(LocalDate jobEndedDate) {
+    public void setJobEndedDate(LocalDateTime jobEndedDate) {
         this.jobEndedDate = jobEndedDate;
     }
 
