@@ -2,6 +2,13 @@
 <html lang="en">
 <head>
     <link rel="stylesheet" href="./bower_components/bootstrap-css-only/css/bootstrap.min.css" />
+    <style>
+        .form-upload {
+            border: 1px solid #eee;
+            margin-bottom: 20px;
+            padding: 5px;
+        }
+    </style>
 </head>
 <body ng-app="myApp">
 <div class="container" ng-controller="AppController">
@@ -10,12 +17,18 @@
             <div class="page-header">
                 <h1>List of all Collection file</h1>
             </div>
-            <form name="formUpload" ng-submit="upload($event)">
-                <input type="file" file-model="file">
-                <button type="submit" class="btn btn-primary">Submit</button>
+            <form name="formUpload" ng-submit="upload($event)" class="form-inline form-upload">
+                <div class="form-group">
+                    <label for="fileToUpload">Choose a collection file to upload</label>
+                    <input type="file" file-model="file" id="fileToUpload">
+                </div>
+                <button type="submit" class="btn btn-primary btn-danger">Submit</button>
             </form>
             <div class="alert alert-info" role="alert" ng-hide="collectionFiles && collectionFiles.length > 0">
                 There are no collection file yet.
+            </div>
+            <div class="alert alert-danger" role="alert" ng-show="errorMessage">
+                {{ errorMessage }}
             </div>
             <table class="table table-bordered table-striped table-hover table-condensed">
                 <tr>

@@ -4,7 +4,6 @@
     angular.module('myApp')
         .controller('AppController', function($scope, Item) {
             Item.query(function(response) {
-                console.log(response);
                 $scope.collectionFiles = response;
             });
 
@@ -13,7 +12,20 @@
                 event.preventDefault();
                 var newItem = new Item;
                 newItem.file = $scope.file;
-                newItem.$save();
+
+                newItem.$save()
+                    .then(function(resp) {
+                        // For successfully state
+                        console.log(resp);
+                        $scope.errorMessage = null;
+                    })
+                    .catch(function(resp) {
+                        // For error state
+                        console.log(resp);
+                        console.log(resp.data);
+                        console.log(resp.data.userMessage);
+                        $scope.errorMessage = resp.data.userMessage;
+                    });
             }
         });
 })();
