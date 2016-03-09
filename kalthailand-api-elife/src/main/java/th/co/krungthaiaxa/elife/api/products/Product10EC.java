@@ -93,7 +93,7 @@ public class Product10EC implements Product {
         // Do we have enough to calculate anything
         if (!hasEnoughTocalculate(productQuotation)) {
             // we need to delete what might have been calculated before
-            ProductUtils.resetCalculatedStuff(quote, has10ECCoverage);
+            resetCalculatedStuff(quote, has10ECCoverage);
             return;
         }
 
@@ -242,6 +242,23 @@ public class Product10EC implements Product {
         int nbOfPayments = (12 / periodicityCode.getNbOfMonths()) * DURATION_PAYMENT_IN_YEAR;
 
         IntStream.range(0, nbOfPayments).forEach(i -> policy.addPayment(new Payment(amountValue, amountCurrency, startDate.plusMonths(i * periodicityCode.getNbOfMonths()))));
+    }
+
+    public static void resetCalculatedStuff(Quote quote, Optional<Coverage> coverage) {
+        if (quote.getPremiumsData().getLifeInsurance() != null) {
+            quote.getPremiumsData().getLifeInsurance().setYearlyCashBacksAverageBenefit(new ArrayList<>());
+            quote.getPremiumsData().getLifeInsurance().setYearlyCashBacksAverageDividende(new ArrayList<>());
+            quote.getPremiumsData().getLifeInsurance().setEndOfContractBenefitsAverage(new ArrayList<>());
+            quote.getPremiumsData().getLifeInsurance().setYearlyCashBacksMaximumBenefit(new ArrayList<>());
+            quote.getPremiumsData().getLifeInsurance().setYearlyCashBacksMaximumDividende(new ArrayList<>());
+            quote.getPremiumsData().getLifeInsurance().setEndOfContractBenefitsMaximum(new ArrayList<>());
+            quote.getPremiumsData().getLifeInsurance().setEndOfContractBenefitsMinimum(new ArrayList<>());
+            quote.getPremiumsData().getLifeInsurance().setYearlyCashBacks(new ArrayList<>());
+            quote.getPremiumsData().getLifeInsurance().setYearlyTaxDeduction(null);
+        }
+        if (coverage.isPresent()) {
+            quote.getCoverages().remove(coverage.get());
+        }
     }
 
     private static void checkCommonData(CommonData commonData) throws PolicyValidationException {

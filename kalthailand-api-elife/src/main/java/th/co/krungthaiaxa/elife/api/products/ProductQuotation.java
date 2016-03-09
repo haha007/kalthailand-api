@@ -18,6 +18,7 @@ public class ProductQuotation {
     private PeriodicityCode periodicityCode;
     private Integer nbOfYearsOfPayment;
     private String occupation;
+    private String packageName;
     private Integer declaredTaxPercentAtSubscription;
 
     @ApiModelProperty(value = "The product type")
@@ -90,6 +91,15 @@ public class ProductQuotation {
 
     public void setOccupation(String occupation) {
         this.occupation = occupation;
+    }
+
+    @ApiModelProperty(value = "The product name (such as IFINE1, IFINE2, ...")
+    public String getPackageName() {
+        return packageName;
+    }
+
+    public void setPackageName(String packageName) {
+        this.packageName = packageName;
     }
 
     @ApiModelProperty(value = "The tax percent paid at subscruption")

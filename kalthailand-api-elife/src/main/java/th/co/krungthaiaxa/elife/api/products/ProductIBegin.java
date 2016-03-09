@@ -43,7 +43,6 @@ public class ProductIBegin implements Product {
         // Do we have enough to calculate anything
         if (!hasEnoughTocalculate(productQuotation)) {
             // we need to delete what might have been calculated before
-            ProductUtils.resetCalculatedStuff(quote, hasIBeginCoverage);
             return;
         }
 

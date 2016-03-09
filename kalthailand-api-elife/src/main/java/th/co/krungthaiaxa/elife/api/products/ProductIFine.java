@@ -40,9 +40,9 @@ public class ProductIFine implements Product {
                 .findFirst();
 
         // Do we have enough to calculate anything
-        if (!hasEnoughTocalculate(quote)) {
+        if (!hasEnoughTocalculate(productQuotation)) {
             // we need to delete what might have been calculated before
-            ProductUtils.resetCalculatedStuff(quote, hasIBeginCoverage);
+//            resetCalculatedStuff(quote, hasIBeginCoverage);
             return;
         }
 
@@ -62,31 +62,33 @@ public class ProductIFine implements Product {
         checkSumInsured(premiumsData, PRODUCT_IFINE_CURRENCY, SUM_INSURED_MIN, SUM_INSURED_MAX);
     }
 
-    private static boolean hasEnoughTocalculate(Quote quote) {
+    private static boolean hasEnoughTocalculate(ProductQuotation productQuotation) {
         // Do we have a birth date to calculate the age of insured
-        boolean hasAnyDateOfBirth = quote.getInsureds().stream()
-                .filter(insured -> insured != null)
-                .filter(insured -> insured.getPerson() != null)
-                .filter(insured -> insured.getPerson().getBirthDate() != null)
-                .findFirst()
-                .isPresent();
+        boolean hasAnyDateOfBirth = productQuotation.getDateOfBirth() != null;
         if (!hasAnyDateOfBirth) {
             return false;
         }
 
         // we need a gender
-        boolean hasGender = quote.getInsureds().stream()
-                .filter(insured -> insured != null)
-                .filter(insured -> insured.getPerson() != null)
-                .filter(insured -> insured.getPerson().getGenderCode() != null)
-                .findFirst()
-                .isPresent();
+        boolean hasGender = productQuotation.getGenderCode() != null;
         if (!hasGender) {
             return false;
         }
 
+        // we need an occupation
+        boolean hasOccupation = productQuotation.getOccupation() != null;
+        if (!hasOccupation) {
+            return false;
+        }
+
+        // we need the product name
+        boolean hasPackageName = productQuotation.getPackageName() != null;
+        if (!hasPackageName) {
+            return false;
+        }
+
         // We need a periodicity
-        return quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode() != null;
+        return productQuotation.getPeriodicityCode() != null;
     }
 
     @Override

@@ -60,23 +60,6 @@ public class ProductUtils {
         }
     }
 
-    public static void resetCalculatedStuff(Quote quote, Optional<Coverage> coverage) {
-        if (quote.getPremiumsData().getLifeInsurance() != null) {
-            quote.getPremiumsData().getLifeInsurance().setYearlyCashBacksAverageBenefit(new ArrayList<>());
-            quote.getPremiumsData().getLifeInsurance().setYearlyCashBacksAverageDividende(new ArrayList<>());
-            quote.getPremiumsData().getLifeInsurance().setEndOfContractBenefitsAverage(new ArrayList<>());
-            quote.getPremiumsData().getLifeInsurance().setYearlyCashBacksMaximumBenefit(new ArrayList<>());
-            quote.getPremiumsData().getLifeInsurance().setYearlyCashBacksMaximumDividende(new ArrayList<>());
-            quote.getPremiumsData().getLifeInsurance().setEndOfContractBenefitsMaximum(new ArrayList<>());
-            quote.getPremiumsData().getLifeInsurance().setEndOfContractBenefitsMinimum(new ArrayList<>());
-            quote.getPremiumsData().getLifeInsurance().setYearlyCashBacks(new ArrayList<>());
-            quote.getPremiumsData().getLifeInsurance().setYearlyTaxDeduction(null);
-        }
-        if (coverage.isPresent()) {
-            quote.getCoverages().remove(coverage.get());
-        }
-    }
-
     public static void checkSumInsured(PremiumsData premiumsData, String currency, Double sumInsuredMin, Double sumInsuredMax) throws QuoteCalculationException {
         if (premiumsData.getLifeInsurance().getSumInsured() == null || premiumsData.getLifeInsurance().getSumInsured().getValue() == null) {
             // no amount to check
