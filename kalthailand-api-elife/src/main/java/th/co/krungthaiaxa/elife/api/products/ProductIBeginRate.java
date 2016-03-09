@@ -21,16 +21,8 @@ public class ProductIBeginRate {
         return nbOfYearsOfPayment;
     }
 
-    public void setNbOfYearsOfPayment(Integer nbOfYearsOfPayment) {
-        this.nbOfYearsOfPayment = nbOfYearsOfPayment;
-    }
-
     public Double getSumInsured() {
         return sumInsured;
-    }
-
-    public void setSumInsured(Double sumInsured) {
-        this.sumInsured = sumInsured;
     }
 
     public List<Double> getMaleRate() {
