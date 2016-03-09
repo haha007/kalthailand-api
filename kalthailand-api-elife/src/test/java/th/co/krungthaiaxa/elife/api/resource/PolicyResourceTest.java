@@ -36,13 +36,13 @@ import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpMethod.PUT;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
+import static th.co.krungthaiaxa.elife.api.TestUtil.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
 import static th.co.krungthaiaxa.elife.api.model.enums.PaymentStatus.FUTURE;
-import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_QUARTER;
+import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_YEAR;
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.ERROR;
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.SUCCESS;
 import static th.co.krungthaiaxa.elife.api.model.error.ErrorCode.QUOTE_DOES_NOT_EXIST_OR_ACCESS_DENIED;
-import static th.co.krungthaiaxa.elife.api.TestUtil.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiApplication.class)
@@ -73,7 +73,7 @@ public class PolicyResourceTest {
     @Test
     public void should_return_error_when_creating_policy_from_none_existing_quote() throws IOException {
         String sessionId = randomNumeric(20);
-        String jsonQuote = getJSon(quote(EVERY_QUARTER, insured(25), beneficiary(100.0)));
+        String jsonQuote = getJSon(quote());
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(base)
                 .queryParam("sessionId", sessionId)
                 .queryParam("channelType", LINE.name());
@@ -88,7 +88,7 @@ public class PolicyResourceTest {
         String sessionId = randomNumeric(20);
 
         Quote quote = quoteService.createQuote(sessionId, LINE, productQuotation());
-        quote(quote, insured(35), beneficiary(100.0));
+        quote(quote, beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(base)
@@ -108,8 +108,8 @@ public class PolicyResourceTest {
     public void should_return_policy_payment_list() throws QuoteCalculationException, IOException, URISyntaxException {
         String sessionId = randomNumeric(20);
 
-        Quote quote = quoteService.createQuote(sessionId, LINE, productQuotation());
-        quote(quote, insured(35), beneficiary(100.0));
+        Quote quote = quoteService.createQuote(sessionId, LINE, productQuotation(25, EVERY_YEAR));
+        quote(quote, beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(base)
@@ -131,7 +131,7 @@ public class PolicyResourceTest {
         String sessionId = randomNumeric(20);
 
         Quote quote = quoteService.createQuote(sessionId, LINE, productQuotation());
-        quote(quote, insured(35), beneficiary(100.0));
+        quote(quote, beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(base)
@@ -161,7 +161,7 @@ public class PolicyResourceTest {
         String sessionId = randomNumeric(20);
 
         Quote quote = quoteService.createQuote(sessionId, LINE, productQuotation());
-        quote(quote, insured(35), beneficiary(100.0));
+        quote(quote, beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(base)

@@ -7,7 +7,7 @@ import th.co.krungthaiaxa.elife.api.model.Policy;
 import th.co.krungthaiaxa.elife.api.model.Quote;
 
 public interface Product {
-    void calculateQuote(Quote quote) throws QuoteCalculationException;
+    void calculateQuote(Quote quote, ProductQuotation productQuotation) throws QuoteCalculationException;
 
     void getPolicyFromQuote(Policy policy, Quote quote) throws PolicyValidationException, QuoteCalculationException;
 

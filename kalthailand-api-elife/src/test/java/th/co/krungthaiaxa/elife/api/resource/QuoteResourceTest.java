@@ -207,13 +207,13 @@ public class QuoteResourceTest {
         UriComponentsBuilder createBuilder = UriComponentsBuilder.fromUri(createURI)
                 .queryParam("sessionId", sessionId)
                 .queryParam("channelType", LINE.name());
-        ResponseEntity<String> creationResponse = template.exchange(createBuilder.toUriString(), POST, new HttpEntity<>(productQuotation()), String.class);
+        ResponseEntity<String> creationResponse = template.exchange(createBuilder.toUriString(), POST, new HttpEntity<>(productQuotation(35, EVERY_YEAR)), String.class);
         assertThat(creationResponse.getStatusCode().value()).isEqualTo(OK.value());
         Quote quote = getQuoteFromJSon(creationResponse.getBody());
         assertThat(quote).isNotNull();
         assertThat(quote.getId()).isNotNull();
 
-        quote(quote, insured(35), beneficiary(100.0));
+        quote(quote, beneficiary(100.0));
         String jsonQuote = new String(JsonUtil.getJson(quote));
 
         URI updateURI = new URI("http://localhost:" + port + "/quotes/" + quote.getQuoteId());
@@ -248,7 +248,7 @@ public class QuoteResourceTest {
         assertThat(creationResponse.getStatusCode().value()).isEqualTo(OK.value());
         Quote quote = getQuoteFromJSon(creationResponse.getBody());
 
-        quote(quote, insured(35), beneficiary(100.0));
+        quote(quote, beneficiary(100.0));
         String jsonQuote = new String(JsonUtil.getJson(quote));
 
         URI updateURI = new URI("http://localhost:" + port + "/quotes/" + quote.getQuoteId());

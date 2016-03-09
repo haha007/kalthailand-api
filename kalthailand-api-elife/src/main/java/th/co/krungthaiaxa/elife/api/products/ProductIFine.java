@@ -3,20 +3,24 @@ package th.co.krungthaiaxa.elife.api.products;
 import org.springframework.stereotype.Component;
 import th.co.krungthaiaxa.elife.api.exception.PolicyValidationException;
 import th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException;
-import th.co.krungthaiaxa.elife.api.model.CommonData;
-import th.co.krungthaiaxa.elife.api.model.Policy;
-import th.co.krungthaiaxa.elife.api.model.Quote;
+import th.co.krungthaiaxa.elife.api.model.*;
 import th.co.krungthaiaxa.elife.api.repository.ProductIFineRateRepository;
 
 import javax.inject.Inject;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Optional;
+
+import static th.co.krungthaiaxa.elife.api.products.ProductUtils.checkMainInsuredAge;
+import static th.co.krungthaiaxa.elife.api.products.ProductUtils.checkSumInsured;
 
 @Component
 public class ProductIFine implements Product {
     public final static Integer DURATION_COVERAGE_IN_YEAR = 10;
     public final static Integer DURATION_PAYMENT_IN_YEAR = 10;
-    public final static String PRODUCT_IBEGIN_ID = "iFine";
-    public final static String PRODUCT_IBEGIN_NAME = "Product iFine";
-    public final static String PRODUCT_IBEGIN_CURRENCY = "THB";
+    public final static String PRODUCT_IFINE_ID = "iFine";
+    public final static String PRODUCT_IFINE_NAME = "Product iFine";
+    public final static String PRODUCT_IFINE_CURRENCY = "THB";
     public static final Double SUM_INSURED_MIN = 100000.0;
     public static final Double SUM_INSURED_MAX = 300000.0;
     public static final Double PREMIUM_MIN = null;
@@ -28,8 +32,61 @@ public class ProductIFine implements Product {
     private ProductIFineRateRepository productIFineRateRepository;
 
     @Override
-    public void calculateQuote(Quote quote) throws QuoteCalculationException {
+    public void calculateQuote(Quote quote, ProductQuotation productQuotation) throws QuoteCalculationException {
+        Optional<Coverage> hasIBeginCoverage = quote.getCoverages()
+                .stream()
+                .filter(coverage -> coverage.getName() != null)
+                .filter(coverage -> coverage.getName().equalsIgnoreCase(PRODUCT_IFINE_ID))
+                .findFirst();
 
+        // Do we have enough to calculate anything
+        if (!hasEnoughTocalculate(quote)) {
+            // we need to delete what might have been calculated before
+            ProductUtils.resetCalculatedStuff(quote, hasIBeginCoverage);
+            return;
+        }
+
+        Insured insured = quote.getInsureds().stream().filter(Insured::getMainInsuredIndicator).findFirst().get();
+
+        // cannot be too young or too old
+        checkMainInsuredAge(insured, MIN_AGE, MAX_AGE);
+
+        // Set dates based on current date and product duration
+        insured.setStartDate(LocalDate.now(ZoneId.of(ZoneId.SHORT_IDS.get("VST"))));
+        insured.setEndDate(insured.getPerson().getBirthDate().plusYears(90 - insured.getAgeAtSubscription()));
+        //TODO this has to change and 5 has to become a parameter from ProductQuotation
+        quote.getPremiumsData().getFinancialScheduler().setEndDate(insured.getStartDate().plusYears(5));
+
+        PremiumsData premiumsData = quote.getPremiumsData();
+        // cannot insure too much or not enough
+        checkSumInsured(premiumsData, PRODUCT_IFINE_CURRENCY, SUM_INSURED_MIN, SUM_INSURED_MAX);
+    }
+
+    private static boolean hasEnoughTocalculate(Quote quote) {
+        // Do we have a birth date to calculate the age of insured
+        boolean hasAnyDateOfBirth = quote.getInsureds().stream()
+                .filter(insured -> insured != null)
+                .filter(insured -> insured.getPerson() != null)
+                .filter(insured -> insured.getPerson().getBirthDate() != null)
+                .findFirst()
+                .isPresent();
+        if (!hasAnyDateOfBirth) {
+            return false;
+        }
+
+        // we need a gender
+        boolean hasGender = quote.getInsureds().stream()
+                .filter(insured -> insured != null)
+                .filter(insured -> insured.getPerson() != null)
+                .filter(insured -> insured.getPerson().getGenderCode() != null)
+                .findFirst()
+                .isPresent();
+        if (!hasGender) {
+            return false;
+        }
+
+        // We need a periodicity
+        return quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode() != null;
     }
 
     @Override

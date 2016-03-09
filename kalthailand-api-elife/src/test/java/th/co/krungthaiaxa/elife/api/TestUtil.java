@@ -19,36 +19,64 @@ import static java.time.LocalDate.now;
 import static th.co.krungthaiaxa.elife.api.model.enums.GenderCode.FEMALE;
 import static th.co.krungthaiaxa.elife.api.model.enums.MaritalStatus.MARRIED;
 import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_HALF_YEAR;
-import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_YEAR;
-import static th.co.krungthaiaxa.elife.api.products.Product10EC.PRODUCT_10_EC_NAME;
+import static th.co.krungthaiaxa.elife.api.model.enums.USPermanentResident.NOT_PR;
 import static th.co.krungthaiaxa.elife.api.products.ProductType.PRODUCT_10_EC;
 
 public class TestUtil {
 
     public static ProductQuotation productQuotation(Integer age, PeriodicityCode periodicityCode) {
-        return productQuotation(PRODUCT_10_EC, age, periodicityCode);
+        return productQuotation(PRODUCT_10_EC, age, periodicityCode, 350000.0, true, 23, FEMALE);
     }
 
     public static ProductQuotation productQuotation(ProductType productType) {
-        return productQuotation(productType, 43, EVERY_HALF_YEAR);
+        return productQuotation(productType, 43, EVERY_HALF_YEAR, 350000.0, true, 23, FEMALE);
     }
 
     public static ProductQuotation productQuotation() {
-        return productQuotation(PRODUCT_10_EC, 43, EVERY_HALF_YEAR);
+        return productQuotation(PRODUCT_10_EC, 43, EVERY_HALF_YEAR, 350000.0, true, 23, FEMALE);
     }
 
-    public static ProductQuotation productQuotation(ProductType productType, Integer age, PeriodicityCode periodicityCode) {
+    public static ProductQuotation productQuotation(Double sumInsured) {
+        return productQuotation(PRODUCT_10_EC, 43, EVERY_HALF_YEAR, sumInsured, true, 23, FEMALE);
+    }
+
+    public static ProductQuotation productQuotation(PeriodicityCode periodicityCode, Double amount, Integer taxRate) {
+        return productQuotation(PRODUCT_10_EC, 25, periodicityCode, amount, true, taxRate, FEMALE);
+    }
+
+    public static ProductQuotation productQuotation(Integer age, PeriodicityCode periodicityCode, Double amount) {
+        return productQuotation(PRODUCT_10_EC, age, periodicityCode, amount, true, 23, FEMALE);
+    }
+
+    public static ProductQuotation productQuotation(Integer age, PeriodicityCode periodicityCode, Double amount, GenderCode genderCode) {
+        return productQuotation(PRODUCT_10_EC, age, periodicityCode, amount, true, 23, genderCode);
+    }
+
+    public static ProductQuotation productQuotation(Integer age, PeriodicityCode periodicityCode, Double amount, Boolean isSumInsured) {
+        return productQuotation(PRODUCT_10_EC, age, periodicityCode, amount, isSumInsured, 23, FEMALE);
+    }
+
+    public static ProductQuotation productQuotation(ProductType productType, Integer age, PeriodicityCode periodicityCode, Double amount, GenderCode genderCode) {
+        return productQuotation(productType, age, periodicityCode, amount, true, 23, genderCode);
+    }
+
+    public static ProductQuotation productQuotation(ProductType productType, Integer age, PeriodicityCode periodicityCode, Double amountValue, Boolean isSumInsured, Integer taxRate, GenderCode genderCode) {
         Amount amount = new Amount();
         amount.setCurrencyCode("THB");
-        amount.setValue(350000.0);
+        amount.setValue(amountValue);
 
         ProductQuotation productQuotation = new ProductQuotation();
         productQuotation.setProductType(productType);
         productQuotation.setDateOfBirth(now().minusYears(age));
-        productQuotation.setDeclaredTaxPercentAtSubscription(23);
-        productQuotation.setGenderCode(FEMALE);
+        productQuotation.setDeclaredTaxPercentAtSubscription(taxRate);
+        productQuotation.setGenderCode(genderCode);
         productQuotation.setPeriodicityCode(periodicityCode);
-        productQuotation.setSumInsuredAmount(amount);
+        if (isSumInsured) {
+            productQuotation.setSumInsuredAmount(amount);
+        }
+        else {
+            productQuotation.setPremiumAmount(amount);
+        }
         return productQuotation;
     }
 
@@ -82,51 +110,62 @@ public class TestUtil {
         return JsonUtil.mapper.readValue(json, ProductAmounts.class);
     }
 
-    public static void quote(Quote quote, Insured insured, CoverageBeneficiary... beneficiaries) {
-        quote(quote, EVERY_YEAR, insured, beneficiaries);
-    }
+    public static void quote(Quote quote, CoverageBeneficiary... beneficiaries) {
+        GeographicalAddress geographicalAddress = new GeographicalAddress();
+        geographicalAddress.setDistrict("จตุจักร");
+        geographicalAddress.setPostCode("10900");
+        geographicalAddress.setStreetAddress1("Condo U-delight");
+        geographicalAddress.setStreetAddress2("ประชาชื่น");
+        geographicalAddress.setSubCountry("Ile de France");
+        geographicalAddress.setSubdistrict("ลาดยาว");
 
-    public static void quote(Quote quote, PeriodicityCode periodicityCode, Insured insured, CoverageBeneficiary... beneficiaries) {
-        Amount amount = new Amount();
-        amount.setCurrencyCode("THB");
-        amount.setValue(100000.0);
+        PhoneNumber phoneNumber = new PhoneNumber();
+        phoneNumber.setType(PhoneNumberType.MOBILE);
+        phoneNumber.setNumber("0841139301");
+        phoneNumber.setCountryCode(66);
 
-        Periodicity periodicity = new Periodicity();
-        periodicity.setCode(periodicityCode);
+        quote.getInsureds().get(0).getFatca().setBornInUSA(FALSE);
+        quote.getInsureds().get(0).getFatca().setPayTaxInUSA(FALSE);
+        quote.getInsureds().get(0).getFatca().setPermanentResidentOfUSA(NOT_PR);
+        quote.getInsureds().get(0).getFatca().setPermanentResidentOfUSAForTax(FALSE);
+        quote.getInsureds().get(0).getHealthStatus().setDisableOrImmunoDeficient(FALSE);
+        quote.getInsureds().get(0).getHealthStatus().setDeniedOrCounterOffer(FALSE);
+        quote.getInsureds().get(0).getHealthStatus().setHeightInCm(100);
+        quote.getInsureds().get(0).getHealthStatus().setHospitalizedInLast6Months(FALSE);
+        quote.getInsureds().get(0).getHealthStatus().setWeightInKg(100);
+        quote.getInsureds().get(0).setEndDate(now().plusYears(10));
+        quote.getInsureds().get(0).setMainInsuredIndicator(TRUE);
+        quote.getInsureds().get(0).setProfessionName("Something");
+        quote.getInsureds().get(0).setStartDate(now());
+        quote.getInsureds().get(0).setType(InsuredType.Insured);
+        quote.getInsureds().get(0).getPerson().setEmail("santi.lik@krungthai-axa.co.th");
+        quote.getInsureds().get(0).getPerson().setCurrentAddress(geographicalAddress);
+        quote.getInsureds().get(0).getPerson().setGivenName("วุฒิชัย");
+        quote.getInsureds().get(0).getPerson().setHomePhoneNumber(new PhoneNumber());
+        quote.getInsureds().get(0).getPerson().setMaritalStatus(MARRIED);
+        quote.getInsureds().get(0).getPerson().setMiddleName("Else");
+        quote.getInsureds().get(0).getPerson().setMobilePhoneNumber(phoneNumber);
+        quote.getInsureds().get(0).getPerson().setSurName("ศรีสุข");
+        quote.getInsureds().get(0).getPerson().setTitle("M");
+        quote.getInsureds().get(0).getPerson().addRegistration(registration("3841200364454"));
 
-        FinancialScheduler financialScheduler = new FinancialScheduler();
-        financialScheduler.setPeriodicity(periodicity);
-
-        LifeInsurance lifeInsurance = new LifeInsurance();
-        lifeInsurance.setSumInsured(amount);
-
-        PremiumsData premiumsData = new PremiumsData();
-        premiumsData.setFinancialScheduler(financialScheduler);
-        premiumsData.setLifeInsurance(lifeInsurance);
-
-        Product10EC product10EC = new Product10EC();
-        quote.setCommonData(product10EC.getCommonData());
-        quote.setPremiumsData(premiumsData);
-        quote.getInsureds().remove(0);
-        quote.addInsured(insured);
         if (quote.getCoverages().size() == 0) {
-            Coverage coverage = new Coverage();
-            coverage.setName(PRODUCT_10_EC_NAME);
-            quote.addCoverage(coverage);
+            quote.getCoverages().add(new Coverage());
         }
 
-        for (CoverageBeneficiary beneficiary : beneficiaries) {
-            quote.getCoverages().get(0).addBeneficiary(beneficiary);
+        if (beneficiaries != null) {
+            for (CoverageBeneficiary beneficiary : beneficiaries) {
+                quote.getCoverages().get(0).addBeneficiary(beneficiary);
+            }
         }
     }
-
-    public static Quote quote(PeriodicityCode periodicityCode, Insured insured, CoverageBeneficiary... beneficiaries) {
+    public static Quote quote() {
         Amount amount = new Amount();
         amount.setCurrencyCode("THB");
         amount.setValue(1000000.0);
 
         Periodicity periodicity = new Periodicity();
-        periodicity.setCode(periodicityCode);
+        periodicity.setCode(null);
 
         FinancialScheduler financialScheduler = new FinancialScheduler();
         financialScheduler.setPeriodicity(periodicity);
@@ -140,21 +179,17 @@ public class TestUtil {
 
         Product10EC product10EC = new Product10EC();
 
+        Insured emptyInsured = new Insured();
+        emptyInsured.setMainInsuredIndicator(true);
+        emptyInsured.setFatca(new Fatca());
+        emptyInsured.setHealthStatus(new HealthStatus());
+        emptyInsured.setPerson(new Person());
+        emptyInsured.setType(InsuredType.Insured);
+
         Quote quote = new Quote();
         quote.setCommonData(product10EC.getCommonData());
         quote.setPremiumsData(premiumsData);
-        if (insured != null) {
-            quote.addInsured(insured);
-        }
-        if (quote.getCoverages().size() == 0) {
-            Coverage coverage = new Coverage();
-            coverage.setName(PRODUCT_10_EC_NAME);
-            quote.addCoverage(coverage);
-        }
-
-        for (CoverageBeneficiary beneficiary : beneficiaries) {
-            quote.getCoverages().get(0).addBeneficiary(beneficiary);
-        }
+        quote.addInsured(emptyInsured);
 
         return quote;
     }
@@ -205,7 +240,7 @@ public class TestUtil {
         Fatca fatca = new Fatca();
         fatca.setBornInUSA(FALSE);
         fatca.setPayTaxInUSA(FALSE);
-        fatca.setPermanentResidentOfUSA(USPermanentResident.NOT_PR);
+        fatca.setPermanentResidentOfUSA(NOT_PR);
         fatca.setPermanentResidentOfUSAForTax(FALSE);
 
         HealthStatus healthStatus = new HealthStatus();

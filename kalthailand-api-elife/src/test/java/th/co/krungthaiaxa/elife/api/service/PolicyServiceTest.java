@@ -71,11 +71,11 @@ public class PolicyServiceTest {
         String sessionId = randomNumeric(20);
 
         Quote quote1 = quoteService.createQuote(sessionId, LINE, productQuotation());
-        quote(quote1, insured(35), beneficiary(100.0));
+        quote(quote1, beneficiary(100.0));
         quote1 = quoteService.updateQuote(quote1);
 
         Quote quote2 = quoteService.createQuote(sessionId, LINE, productQuotation());
-        quote(quote2, insured(35), beneficiary(100.0));
+        quote(quote2, beneficiary(100.0));
         quote2 = quoteService.updateQuote(quote2);
         Policy policy = policyService.createPolicy(quote2);
 
@@ -252,7 +252,7 @@ public class PolicyServiceTest {
 
     private Policy getPolicy() throws QuoteCalculationException, PolicyValidationException {
         Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation());
-        quote(quote, insured(35), beneficiary(100.0));
+        quote(quote, beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 
         return policyService.createPolicy(quote);

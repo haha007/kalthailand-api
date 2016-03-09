@@ -22,6 +22,7 @@ import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static th.co.krungthaiaxa.elife.api.TestUtil.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
+import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_MONTH;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiApplication.class)
@@ -36,12 +37,9 @@ public class QuoteServiceTest {
     private SessionQuoteRepository sessionQuoteRepository;
 
     @Test
-    public void should_find_by_quote_id_and_session_id() throws QuoteCalculationException {
+    public void should_find_by_quote_id_and_session_id() throws QuoteCalculationException, PolicyValidationException {
         String sessionId = randomNumeric(20);
-
-        Quote quote = quoteService.createQuote(sessionId, LINE, productQuotation());
-        quote(quote, insured(35), beneficiary(100.0));
-        quote = quoteService.updateQuote(quote);
+        Quote quote = getQuote(sessionId);
 
         Optional<Quote> savedQuote = quoteService.findByQuoteId(quote.getQuoteId(), sessionId, LINE);
         assertThat(savedQuote).isNotNull();
@@ -50,12 +48,9 @@ public class QuoteServiceTest {
     }
 
     @Test
-    public void should_not_find_by_quote_id_when_session_id_has_no_access_to_quote() throws QuoteCalculationException {
+    public void should_not_find_by_quote_id_when_session_id_has_no_access_to_quote() throws QuoteCalculationException, PolicyValidationException {
         String sessionId = randomNumeric(20);
-
-        Quote quote = quoteService.createQuote(sessionId, LINE, productQuotation());
-        quote(quote, insured(35), beneficiary(100.0));
-        quote = quoteService.updateQuote(quote);
+        Quote quote = getQuote(sessionId);
 
         Optional<Quote> savedQuote = quoteService.findByQuoteId(quote.getQuoteId(), "something", LINE);
         assertThat(savedQuote).isNotNull();
@@ -63,27 +58,19 @@ public class QuoteServiceTest {
     }
 
     @Test
-    public void should_add_one_quote_in_session() throws QuoteCalculationException {
+    public void should_add_one_quote_in_session() throws QuoteCalculationException, PolicyValidationException {
         String sessionId = randomNumeric(20);
-
-        Quote quote = quoteService.createQuote(sessionId, LINE, productQuotation());
-        quote(quote, insured(35), beneficiary(100.0));
-        quote = quoteService.updateQuote(quote);
+        Quote quote = getQuote(sessionId);
 
         SessionQuote sessionQuote = sessionQuoteRepository.findBySessionIdAndChannelType(sessionId, LINE);
         assertThat(sessionQuote.getQuotes()).containsExactly(quote);
     }
 
     @Test
-    public void should_add_two_quotes_in_session_and_ordered_by_update_time() throws QuoteCalculationException {
+    public void should_add_two_quotes_in_session_and_ordered_by_update_time() throws QuoteCalculationException, PolicyValidationException {
         String sessionId = randomNumeric(20);
-
-        Quote quote1 = quoteService.createQuote(sessionId, LINE, productQuotation());
-        quote(quote1, insured(35), beneficiary(100.0));
-        quote1 = quoteService.updateQuote(quote1);
-        Quote quote2 = quoteService.createQuote(sessionId, LINE, productQuotation());
-        quote(quote2, insured(35), beneficiary(100.0));
-        quote2 = quoteService.updateQuote(quote2);
+        Quote quote1 = getQuote(sessionId);
+        Quote quote2 = getQuote(sessionId);
 
         SessionQuote sessionQuote = sessionQuoteRepository.findBySessionIdAndChannelType(sessionId, LINE);
         assertThat(sessionQuote.getQuotes()).containsExactly(quote2, quote1);
@@ -98,15 +85,10 @@ public class QuoteServiceTest {
     }
 
     @Test
-    public void should_get_latest_quote() throws QuoteCalculationException {
+    public void should_get_latest_quote() throws QuoteCalculationException, PolicyValidationException {
         String sessionId = randomNumeric(20);
-
-        Quote quote1 = quoteService.createQuote(sessionId, LINE, productQuotation());
-        quote(quote1, insured(35), beneficiary(100.0));
-        quoteService.updateQuote(quote1);
-        Quote quote2 = quoteService.createQuote(sessionId, LINE, productQuotation());
-        quote(quote2, insured(35), beneficiary(100.0));
-        quote2 = quoteService.updateQuote(quote2);
+        getQuote(sessionId);
+        Quote quote2 = getQuote(sessionId);
 
         Optional<Quote> quote = quoteService.getLatestQuote(sessionId, LINE);
         assertThat(quote.get()).isEqualTo(quote2);
@@ -115,13 +97,8 @@ public class QuoteServiceTest {
     @Test
     public void should_get_latest_quote_that_has_not_been_transformed_into_policy() throws QuoteCalculationException, PolicyValidationException {
         String sessionId = randomNumeric(20);
-
-        Quote quote1 = quoteService.createQuote(sessionId, LINE, productQuotation());
-        quote(quote1, insured(35), beneficiary(100.0));
-        quoteService.updateQuote(quote1);
-        Quote quote2 = quoteService.createQuote(sessionId, LINE, productQuotation());
-        quote(quote2, insured(35), beneficiary(100.0));
-        quote2 = quoteService.updateQuote(quote2);
+        Quote quote1 = getQuote(sessionId);
+        Quote quote2 = getQuote(sessionId);
         policyService.createPolicy(quote2);
 
         Optional<Quote> quote = quoteService.getLatestQuote(sessionId, LINE);
@@ -129,11 +106,9 @@ public class QuoteServiceTest {
     }
 
     @Test
-    public void should_calculate_age_of_insured() throws QuoteCalculationException {
+    public void should_calculate_age_of_insured() throws QuoteCalculationException, PolicyValidationException {
         String sessionId = randomNumeric(20);
-
-        Quote quote = quoteService.createQuote(sessionId, LINE, productQuotation());
-        quote(quote, insured(35), beneficiary(100.0));
+        Quote quote = getQuote(sessionId);
 
         Amount amount = new Amount();
         amount.setCurrencyCode("THB");
@@ -145,11 +120,9 @@ public class QuoteServiceTest {
     }
 
     @Test
-    public void should_return_empty_calculated_stuff_when_there_is_nothing_to_calculate_anymore() throws QuoteCalculationException {
+    public void should_return_empty_calculated_stuff_when_there_is_nothing_to_calculate_anymore() throws QuoteCalculationException, PolicyValidationException {
         String sessionId = randomNumeric(20);
-
-        Quote quote = quoteService.createQuote(sessionId, LINE, productQuotation());
-        quote(quote, insured(35), beneficiary(100.0));
+        Quote quote = getQuote(sessionId);
 
         Amount amount = new Amount();
         amount.setCurrencyCode("THB");
@@ -207,5 +180,11 @@ public class QuoteServiceTest {
         assertThat(quote.getInsureds().get(0).getPerson().getGenderCode()).isEqualTo(productQuotation.getGenderCode());
         assertThat(quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode()).isEqualTo(productQuotation.getPeriodicityCode());
         assertThat(quote.getPremiumsData().getLifeInsurance().getSumInsured()).isEqualTo(productQuotation.getSumInsuredAmount());
+    }
+
+    private Quote getQuote(String sessionId) throws QuoteCalculationException, PolicyValidationException {
+        Quote quote = quoteService.createQuote(sessionId, LINE, productQuotation(35, EVERY_MONTH, 1000000.0));
+        quote(quote, beneficiary(100.0));
+        return quoteService.updateQuote(quote);
     }
 }

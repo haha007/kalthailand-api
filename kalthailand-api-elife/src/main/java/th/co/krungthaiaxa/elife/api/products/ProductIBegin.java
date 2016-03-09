@@ -12,7 +12,6 @@ import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 
-import static java.time.temporal.ChronoUnit.YEARS;
 import static th.co.krungthaiaxa.elife.api.model.enums.GenderCode.MALE;
 import static th.co.krungthaiaxa.elife.api.products.ProductUtils.*;
 
@@ -34,7 +33,7 @@ public class ProductIBegin implements Product {
     private ProductIBeginRateRepository productIBeginRateRepository;
 
     @Override
-    public void calculateQuote(Quote quote) throws QuoteCalculationException {
+    public void calculateQuote(Quote quote, ProductQuotation productQuotation) throws QuoteCalculationException {
         Optional<Coverage> hasIBeginCoverage = quote.getCoverages()
                 .stream()
                 .filter(coverage -> coverage.getName() != null)
@@ -42,13 +41,26 @@ public class ProductIBegin implements Product {
                 .findFirst();
 
         // Do we have enough to calculate anything
-        if (!hasEnoughTocalculate(quote)) {
+        if (!hasEnoughTocalculate(productQuotation)) {
             // we need to delete what might have been calculated before
             ProductUtils.resetCalculatedStuff(quote, hasIBeginCoverage);
             return;
         }
 
         Insured insured = quote.getInsureds().stream().filter(Insured::getMainInsuredIndicator).findFirst().get();
+
+        // copy data already gathered in ProductQuotation
+        quote.getPremiumsData().getFinancialScheduler().getPeriodicity().setCode(productQuotation.getPeriodicityCode());
+        insured.getPerson().setBirthDate(productQuotation.getDateOfBirth());
+        insured.setAgeAtSubscription(getAge(productQuotation.getDateOfBirth()));
+        insured.getPerson().setGenderCode(productQuotation.getGenderCode());
+        insured.setDeclaredTaxPercentAtSubscription(productQuotation.getDeclaredTaxPercentAtSubscription());
+        if (productQuotation.getSumInsuredAmount() != null && productQuotation.getSumInsuredAmount().getValue() != null) {
+            Amount amount = new Amount();
+            amount.setCurrencyCode(productQuotation.getSumInsuredAmount().getCurrencyCode());
+            amount.setValue(productQuotation.getSumInsuredAmount().getValue());
+            quote.getPremiumsData().getLifeInsurance().setSumInsured(amount);
+        }
 
         // cannot be too young or too old
         checkMainInsuredAge(insured, MIN_AGE, MAX_AGE);
@@ -101,37 +113,27 @@ public class ProductIBegin implements Product {
         return null;
     }
 
-    private static boolean hasEnoughTocalculate(Quote quote) {
+    private static boolean hasEnoughTocalculate(ProductQuotation productQuotation) {
         // Do we have a birth date to calculate the age of insured
-        boolean hasAnyDateOfBirth = quote.getInsureds().stream()
-                .filter(insured -> insured != null)
-                .filter(insured -> insured.getPerson() != null)
-                .filter(insured -> insured.getPerson().getBirthDate() != null)
-                .findFirst()
-                .isPresent();
+        boolean hasAnyDateOfBirth = productQuotation.getDateOfBirth() != null;
         if (!hasAnyDateOfBirth) {
             return false;
         }
 
         // we need a gender
-        boolean hasGender = quote.getInsureds().stream()
-                .filter(insured -> insured != null)
-                .filter(insured -> insured.getPerson() != null)
-                .filter(insured -> insured.getPerson().getGenderCode() != null)
-                .findFirst()
-                .isPresent();
+        boolean hasGender = productQuotation.getGenderCode() != null;
         if (!hasGender) {
             return false;
         }
 
         // we need an amount
-        boolean hasAmount = quote.getPremiumsData().getLifeInsurance().getSumInsured() != null;
+        boolean hasAmount = productQuotation.getSumInsuredAmount() != null;
         if (!hasAmount) {
             return false;
         }
 
         // We need a periodicity
-        return quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode() != null;
+        return productQuotation.getPeriodicityCode() != null;
     }
 
     private static Amount amount(Double value) {

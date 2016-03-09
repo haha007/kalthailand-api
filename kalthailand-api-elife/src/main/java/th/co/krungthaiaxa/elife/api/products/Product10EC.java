@@ -8,7 +8,6 @@ import th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.IntStream;
@@ -80,7 +79,11 @@ public class Product10EC implements Product {
     };
 
     @Override
-    public void calculateQuote(Quote quote) throws QuoteCalculationException {
+    public void calculateQuote(Quote quote, ProductQuotation productQuotation) throws QuoteCalculationException {
+        if (productQuotation == null) {
+            return;
+        }
+
         Optional<Coverage> has10ECCoverage = quote.getCoverages()
                 .stream()
                 .filter(coverage -> coverage.getName() != null)
@@ -88,13 +91,31 @@ public class Product10EC implements Product {
                 .findFirst();
 
         // Do we have enough to calculate anything
-        if (!hasEnoughTocalculate(quote)) {
+        if (!hasEnoughTocalculate(productQuotation)) {
             // we need to delete what might have been calculated before
             ProductUtils.resetCalculatedStuff(quote, has10ECCoverage);
             return;
         }
 
         Insured insured = quote.getInsureds().stream().filter(Insured::getMainInsuredIndicator).findFirst().get();
+
+        // copy data already gathered in ProductQuotation
+        quote.getPremiumsData().getFinancialScheduler().getPeriodicity().setCode(productQuotation.getPeriodicityCode());
+        insured.getPerson().setBirthDate(productQuotation.getDateOfBirth());
+        insured.setAgeAtSubscription(getAge(productQuotation.getDateOfBirth()));
+        insured.getPerson().setGenderCode(productQuotation.getGenderCode());
+        insured.setDeclaredTaxPercentAtSubscription(productQuotation.getDeclaredTaxPercentAtSubscription());
+        if (productQuotation.getSumInsuredAmount() != null && productQuotation.getSumInsuredAmount().getValue() != null) {
+            Amount amount = new Amount();
+            amount.setCurrencyCode(productQuotation.getSumInsuredAmount().getCurrencyCode());
+            amount.setValue(productQuotation.getSumInsuredAmount().getValue());
+            quote.getPremiumsData().getLifeInsurance().setSumInsured(amount);
+        } else {
+            Amount amount = new Amount();
+            amount.setCurrencyCode(productQuotation.getPremiumAmount().getCurrencyCode());
+            amount.setValue(productQuotation.getPremiumAmount().getValue());
+            quote.getPremiumsData().getFinancialScheduler().setModalAmount(amount);
+        }
 
         // cannot be too young or too old
         checkMainInsuredAge(insured, MIN_AGE, MAX_AGE);
@@ -106,16 +127,16 @@ public class Product10EC implements Product {
         quote.getPremiumsData().getFinancialScheduler().setEndDate(startDate.plusYears(DURATION_PAYMENT_IN_YEAR));
 
         PremiumsData premiumsData = quote.getPremiumsData();
+        // calculates premium / sum insured
+        if (premiumsData.getLifeInsurance().getSumInsured() != null) {
+            premiumsData.getFinancialScheduler().setModalAmount(getPremiumFromSumInsured(quote, rate.apply(insured.getAgeAtSubscription())));
+        } else {
+            premiumsData.getLifeInsurance().setSumInsured(getSumInsuredFromPremium(quote, rate.apply(insured.getAgeAtSubscription())));
+        }
+
         // cannot insure too much or not enough
         checkSumInsured(premiumsData, PRODUCT_10_EC_CURRENCY, SUM_INSURED_MIN, SUM_INSURED_MAX);
         checkPremium(premiumsData);
-
-        // calculates premium / sum insured
-        if (premiumsData.getLifeInsurance().getSumInsured() != null) {
-            premiumsData.getFinancialScheduler().setModalAmount(getPremiumFromSumInsured(quote, rate.apply(quote.getInsureds().get(0).getAgeAtSubscription())));
-        } else {
-            premiumsData.getLifeInsurance().setSumInsured(getSumInsuredFromPremium(quote, rate.apply(quote.getInsureds().get(0).getAgeAtSubscription())));
-        }
 
         // calculates yearly cash backs
         premiumsData.getLifeInsurance().setYearlyCashBacks(calculateDatedAmount(quote, null, dvdRate));
@@ -157,7 +178,7 @@ public class Product10EC implements Product {
         checkMainInsured(insured);
 
         // Recalculate the quote
-        calculateQuote(quote);
+        calculateQuote(quote, null);
 
         // check for calculated data
         checkCoverage(quote.getCoverages());
@@ -419,7 +440,7 @@ public class Product10EC implements Product {
         }
     }
 
-    private static void checkInsured(Quote quote) throws PolicyValidationException {
+    static void checkInsured(Quote quote) throws PolicyValidationException {
         if (quote.getInsureds() == null || quote.getInsureds().size() == 0) {
             throw PolicyValidationException.noInsured;
         } else if (quote.getInsureds().size() != 1) {
@@ -492,27 +513,22 @@ public class Product10EC implements Product {
         return amount;
     }
 
-    private static boolean hasEnoughTocalculate(Quote quote) {
+    private static boolean hasEnoughTocalculate(ProductQuotation productQuotation) {
         // Do we have a birth date to calculate the age of insured
-        boolean hasAnyDateOfBirth = quote.getInsureds().stream()
-                .filter(insured -> insured != null)
-                .filter(insured -> insured.getPerson() != null)
-                .filter(insured -> insured.getPerson().getBirthDate() != null)
-                .findFirst()
-                .isPresent();
+        boolean hasAnyDateOfBirth = productQuotation.getDateOfBirth() != null;
         if (!hasAnyDateOfBirth) {
             return false;
         }
 
         // we need an amount
-        boolean hasAmount = quote.getPremiumsData().getLifeInsurance().getSumInsured() != null
-                || quote.getPremiumsData().getFinancialScheduler().getModalAmount() != null;
+        boolean hasAmount = productQuotation.getSumInsuredAmount() != null
+                || productQuotation.getPremiumAmount() != null;
         if (!hasAmount) {
             return false;
         }
 
         // We need a periodicity
-        return quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode() != null;
+        return productQuotation.getPeriodicityCode() != null;
     }
 
     private static boolean isValidEmailAddress(String email) {
@@ -527,9 +543,5 @@ public class Product10EC implements Product {
         amount.setCurrencyCode(PRODUCT_10_EC_CURRENCY);
         amount.setValue(value);
         return amount;
-    }
-
-    private Integer getAge(LocalDate birthDate) {
-        return ((Long) ChronoUnit.YEARS.between(birthDate, LocalDate.now())).intValue();
     }
 }

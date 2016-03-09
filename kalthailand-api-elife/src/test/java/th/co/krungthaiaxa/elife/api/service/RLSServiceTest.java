@@ -171,8 +171,8 @@ public class RLSServiceTest {
     }
 
     private Policy getPolicy(PeriodicityCode periodicityCode) throws QuoteCalculationException, PolicyValidationException {
-        Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation());
-        quote(quote, periodicityCode, insured(35), beneficiary(100.0));
+        Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation(periodicityCode, 1000000.0, 5));
+        quote(quote, beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 
         return policyService.createPolicy(quote);

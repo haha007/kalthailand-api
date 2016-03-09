@@ -75,26 +75,8 @@ public class QuoteService {
         quote.setPremiumsData(premiumsData);
         quote.addInsured(insured);
 
-        // copy data already gathered in ProductQuotation
-        quote.getPremiumsData().getFinancialScheduler().getPeriodicity().setCode(productQuotation.getPeriodicityCode());
-        quote.getInsureds().get(0).getPerson().setBirthDate(productQuotation.getDateOfBirth());
-        quote.getInsureds().get(0).setAgeAtSubscription(getAge(productQuotation.getDateOfBirth()));
-        quote.getInsureds().get(0).getPerson().setGenderCode(productQuotation.getGenderCode());
-        quote.getInsureds().get(0).setDeclaredTaxPercentAtSubscription(productQuotation.getDeclaredTaxPercentAtSubscription());
-        if (productQuotation.getSumInsuredAmount() != null && productQuotation.getSumInsuredAmount().getValue() != null) {
-            Amount amount = new Amount();
-            amount.setCurrencyCode(productQuotation.getSumInsuredAmount().getCurrencyCode());
-            amount.setValue(productQuotation.getSumInsuredAmount().getValue());
-            quote.getPremiumsData().getLifeInsurance().setSumInsured(amount);
-        } else {
-            Amount amount = new Amount();
-            amount.setCurrencyCode(productQuotation.getPremiumAmount().getCurrencyCode());
-            amount.setValue(productQuotation.getPremiumAmount().getValue());
-            quote.getPremiumsData().getFinancialScheduler().setModalAmount(amount);
-        }
-
         //calculate
-        product.calculateQuote(quote);
+        product.calculateQuote(quote, productQuotation);
 
         quote = quoteRepository.save(quote);
 
@@ -115,7 +97,7 @@ public class QuoteService {
         quote = basicCalculateQuote(quote);
 
         Product product = ProductFactory.getProduct(quote.getCommonData().getProductId());
-        product.calculateQuote(quote);
+        product.calculateQuote(quote, null);
         quote.setLastUpdateDateTime(now(of(SHORT_IDS.get("VST"))));
 
         return quoteRepository.save(quote);

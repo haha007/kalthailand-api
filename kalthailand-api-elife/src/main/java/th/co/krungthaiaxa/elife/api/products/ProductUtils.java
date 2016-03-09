@@ -4,6 +4,8 @@ import th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.elife.api.model.*;
 import th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.function.Function;
@@ -88,5 +90,9 @@ public class ProductUtils {
         } else if (premiumsData.getLifeInsurance().getSumInsured().getValue() < sumInsuredMin) {
             throw sumInsuredTooLowException.apply(sumInsuredMin);
         }
+    }
+
+    public static Integer getAge(LocalDate birthDate) {
+        return ((Long) ChronoUnit.YEARS.between(birthDate, LocalDate.now())).intValue();
     }
 }
