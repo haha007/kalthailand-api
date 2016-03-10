@@ -150,7 +150,7 @@ public class Product10ECTest {
         Quote quote = quote();
 
         product10EC.calculateQuote(quote, productQuotation(25, EVERY_YEAR, 308000.0, false));
-        Amount result = quote.getPremiumsData().getLifeInsurance().getSumInsured();
+        Amount result = quote.getPremiumsData().getProduct10ECPremium().getSumInsured();
         assertThat(result.getCurrencyCode()).isEqualTo("THB");
         assertThat(result.getValue()).isEqualTo(1000000.0);
     }
@@ -160,7 +160,7 @@ public class Product10ECTest {
         Quote quote = quote();
 
         product10EC.calculateQuote(quote, productQuotation(46, EVERY_YEAR, 306000.0, false));
-        Amount result = quote.getPremiumsData().getLifeInsurance().getSumInsured();
+        Amount result = quote.getPremiumsData().getProduct10ECPremium().getSumInsured();
         assertThat(result.getCurrencyCode()).isEqualTo("THB");
         assertThat(result.getValue()).isEqualTo(1000000.0);
     }
@@ -170,7 +170,7 @@ public class Product10ECTest {
         Quote quote = quote();
 
         product10EC.calculateQuote(quote, productQuotation(51, EVERY_YEAR, 304000.0, false));
-        Amount result = quote.getPremiumsData().getLifeInsurance().getSumInsured();
+        Amount result = quote.getPremiumsData().getProduct10ECPremium().getSumInsured();
         assertThat(result.getCurrencyCode()).isEqualTo("THB");
         assertThat(result.getValue()).isEqualTo(1000000.0);
     }
@@ -180,7 +180,7 @@ public class Product10ECTest {
         Quote quote = quote();
 
         product10EC.calculateQuote(quote, productQuotation(56, EVERY_YEAR, 301000.0, false));
-        Amount result = quote.getPremiumsData().getLifeInsurance().getSumInsured();
+        Amount result = quote.getPremiumsData().getProduct10ECPremium().getSumInsured();
         assertThat(result.getCurrencyCode()).isEqualTo("THB");
         assertThat(result.getValue()).isEqualTo(1000000.0);
     }
@@ -190,7 +190,7 @@ public class Product10ECTest {
         Quote quote = quote();
 
         product10EC.calculateQuote(quote, productQuotation(61, EVERY_YEAR, 300000.0, false));
-        Amount result = quote.getPremiumsData().getLifeInsurance().getSumInsured();
+        Amount result = quote.getPremiumsData().getProduct10ECPremium().getSumInsured();
         assertThat(result.getCurrencyCode()).isEqualTo("THB");
         assertThat(result.getValue()).isEqualTo(1000000.0);
     }
@@ -200,7 +200,7 @@ public class Product10ECTest {
         Quote quote = quote();
 
         product10EC.calculateQuote(quote, productQuotation(66, EVERY_YEAR, 298000.0, false));
-        Amount result = quote.getPremiumsData().getLifeInsurance().getSumInsured();
+        Amount result = quote.getPremiumsData().getProduct10ECPremium().getSumInsured();
         assertThat(result.getCurrencyCode()).isEqualTo("THB");
         assertThat(result.getValue()).isEqualTo(1000000.0);
     }
@@ -317,7 +317,7 @@ public class Product10ECTest {
         Quote quote = quote();
 
         product10EC.calculateQuote(quote, productQuotation(EVERY_HALF_YEAR, 1000000.0, 5));
-        Amount result = quote.getPremiumsData().getLifeInsurance().getYearlyTaxDeduction();
+        Amount result = quote.getPremiumsData().getProduct10ECPremium().getYearlyTaxDeduction();
         assertThat(result.getCurrencyCode()).isEqualTo("THB");
         assertThat(result.getValue()).isEqualTo(16016.0);
     }
@@ -327,7 +327,7 @@ public class Product10ECTest {
         Quote quote = quote();
 
         product10EC.calculateQuote(quote, productQuotation(EVERY_QUARTER, 100000.0, 5));
-        Amount result = quote.getPremiumsData().getLifeInsurance().getYearlyTaxDeduction();
+        Amount result = quote.getPremiumsData().getProduct10ECPremium().getYearlyTaxDeduction();
         assertThat(result.getCurrencyCode()).isEqualTo("THB");
         assertThat(result.getValue()).isEqualTo(1663.0);
     }
@@ -337,7 +337,7 @@ public class Product10ECTest {
         Quote quote = quote();
 
         product10EC.calculateQuote(quote, productQuotation(EVERY_YEAR, 1000000.0, 20));
-        Amount result = quote.getPremiumsData().getLifeInsurance().getYearlyTaxDeduction();
+        Amount result = quote.getPremiumsData().getProduct10ECPremium().getYearlyTaxDeduction();
         assertThat(result.getCurrencyCode()).isEqualTo("THB");
         assertThat(result.getValue()).isEqualTo(61600.0);
     }
@@ -347,7 +347,7 @@ public class Product10ECTest {
         Quote quote = quote();
 
         product10EC.calculateQuote(quote, productQuotation(EVERY_MONTH, 100000.0, 20));
-        Amount result = quote.getPremiumsData().getLifeInsurance().getYearlyTaxDeduction();
+        Amount result = quote.getPremiumsData().getProduct10ECPremium().getYearlyTaxDeduction();
         assertThat(result.getCurrencyCode()).isEqualTo("THB");
         assertThat(result.getValue()).isEqualTo(6653.0);
     }
@@ -357,7 +357,7 @@ public class Product10ECTest {
         Quote quote = quote();
 
         product10EC.calculateQuote(quote, productQuotation(EVERY_YEAR, 1000000.0, 70));
-        Amount result = quote.getPremiumsData().getLifeInsurance().getYearlyTaxDeduction();
+        Amount result = quote.getPremiumsData().getProduct10ECPremium().getYearlyTaxDeduction();
         assertThat(result.getCurrencyCode()).isEqualTo("THB");
         assertThat(result.getValue()).isEqualTo(100000.0);
     }
@@ -368,7 +368,7 @@ public class Product10ECTest {
 
         product10EC.calculateQuote(quote, productQuotation(25, EVERY_YEAR, 1000000.0));
         LocalDate startDate = quote.getInsureds().get(0).getStartDate();
-        List<DatedAmount> result = quote.getPremiumsData().getLifeInsurance().getYearlyCashBacks();
+        List<DatedAmount> result = quote.getPremiumsData().getProduct10ECPremium().getYearlyCashBacks();
         assertThat(result).hasSize(10);
 
         assertThat(result.get(0).getCurrencyCode()).isEqualTo("THB");
@@ -411,7 +411,7 @@ public class Product10ECTest {
 
         product10EC.calculateQuote(quote, productQuotation(25, EVERY_YEAR, 1000000.0));
         LocalDate startDate = quote.getInsureds().get(0).getStartDate();
-        List<DatedAmount> result = quote.getPremiumsData().getLifeInsurance().getEndOfContractBenefitsMinimum();
+        List<DatedAmount> result = quote.getPremiumsData().getProduct10ECPremium().getEndOfContractBenefitsMinimum();
         assertThat(result).hasSize(10);
 
         assertThat(result.get(0).getCurrencyCode()).isEqualTo("THB");
@@ -455,7 +455,7 @@ public class Product10ECTest {
 
         product10EC.calculateQuote(quote, productQuotation(35, EVERY_YEAR, 510000.0));
         LocalDate startDate = quote.getInsureds().get(0).getStartDate();
-        List<DatedAmount> result = quote.getPremiumsData().getLifeInsurance().getEndOfContractBenefitsMinimum();
+        List<DatedAmount> result = quote.getPremiumsData().getProduct10ECPremium().getEndOfContractBenefitsMinimum();
         assertThat(result).hasSize(10);
 
         assertThat(result.get(0).getCurrencyCode()).isEqualTo("THB");
@@ -498,7 +498,7 @@ public class Product10ECTest {
 
         product10EC.calculateQuote(quote, productQuotation(25, EVERY_YEAR, 1000000.0));
         LocalDate startDate = quote.getInsureds().get(0).getStartDate();
-        List<DatedAmount> result = quote.getPremiumsData().getLifeInsurance().getEndOfContractBenefitsAverage();
+        List<DatedAmount> result = quote.getPremiumsData().getProduct10ECPremium().getEndOfContractBenefitsAverage();
         assertThat(result).hasSize(10);
 
         assertThat(result.get(0).getCurrencyCode()).isEqualTo("THB");
@@ -541,7 +541,7 @@ public class Product10ECTest {
 
         product10EC.calculateQuote(quote, productQuotation(25, EVERY_YEAR, 1000000.0));
         LocalDate startDate = quote.getInsureds().get(0).getStartDate();
-        List<DatedAmount> result = quote.getPremiumsData().getLifeInsurance().getEndOfContractBenefitsMaximum();
+        List<DatedAmount> result = quote.getPremiumsData().getProduct10ECPremium().getEndOfContractBenefitsMaximum();
         assertThat(result).hasSize(10);
 
         assertThat(result.get(0).getCurrencyCode()).isEqualTo("THB");
@@ -584,7 +584,7 @@ public class Product10ECTest {
 
         product10EC.calculateQuote(quote, productQuotation(25, EVERY_YEAR, 1000000.0));
         LocalDate startDate = quote.getInsureds().get(0).getStartDate();
-        List<DatedAmount> result = quote.getPremiumsData().getLifeInsurance().getYearlyCashBacksAverageDividende();
+        List<DatedAmount> result = quote.getPremiumsData().getProduct10ECPremium().getYearlyCashBacksAverageDividende();
         assertThat(result).hasSize(10);
 
         assertThat(result.get(0).getCurrencyCode()).isEqualTo("THB");
@@ -627,7 +627,7 @@ public class Product10ECTest {
 
         product10EC.calculateQuote(quote, productQuotation(25, EVERY_YEAR, 1000000.0));
         LocalDate startDate = quote.getInsureds().get(0).getStartDate();
-        List<DatedAmount> result = quote.getPremiumsData().getLifeInsurance().getYearlyCashBacksMaximumDividende();
+        List<DatedAmount> result = quote.getPremiumsData().getProduct10ECPremium().getYearlyCashBacksMaximumDividende();
         assertThat(result).hasSize(10);
 
         assertThat(result.get(0).getCurrencyCode()).isEqualTo("THB");
@@ -670,7 +670,7 @@ public class Product10ECTest {
 
         product10EC.calculateQuote(quote, productQuotation(25, EVERY_YEAR, 1000000.0));
         LocalDate startDate = quote.getInsureds().get(0).getStartDate();
-        List<DatedAmount> result = quote.getPremiumsData().getLifeInsurance().getYearlyCashBacksAverageBenefit();
+        List<DatedAmount> result = quote.getPremiumsData().getProduct10ECPremium().getYearlyCashBacksAverageBenefit();
         assertThat(result).hasSize(10);
 
         assertThat(result.get(0).getCurrencyCode()).isEqualTo("THB");
@@ -713,7 +713,7 @@ public class Product10ECTest {
 
         product10EC.calculateQuote(quote, productQuotation(25, EVERY_YEAR, 1000000.0));
         LocalDate startDate = quote.getInsureds().get(0).getStartDate();
-        List<DatedAmount> result = quote.getPremiumsData().getLifeInsurance().getYearlyCashBacksMaximumBenefit();
+        List<DatedAmount> result = quote.getPremiumsData().getProduct10ECPremium().getYearlyCashBacksMaximumBenefit();
         assertThat(result).hasSize(10);
 
         assertThat(result.get(0).getCurrencyCode()).isEqualTo("THB");
@@ -1306,7 +1306,7 @@ public class Product10ECTest {
         product10EC.getPolicyFromQuote(policy, quote);
         assertThat(policy.getQuoteId()).isEqualTo(quote.getQuoteId());
         assertThat(policy.getCommonData()).isEqualToComparingFieldByField(quote.getCommonData());
-        assertThat(policy.getPremiumsData().getLifeInsurance()).isEqualToComparingFieldByField(quote.getPremiumsData().getLifeInsurance());
+        assertThat(policy.getPremiumsData().getProduct10ECPremium()).isEqualToComparingFieldByField(quote.getPremiumsData().getProduct10ECPremium());
         assertThat(policy.getPremiumsData()).isEqualToComparingFieldByField(quote.getPremiumsData());
         assertThat(policy.getCoverages()).isEqualTo(quote.getCoverages());
         assertThat(policy.getInsureds()).isEqualTo(quote.getInsureds());

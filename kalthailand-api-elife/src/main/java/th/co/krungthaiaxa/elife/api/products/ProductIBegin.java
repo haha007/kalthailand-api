@@ -58,7 +58,7 @@ public class ProductIBegin implements Product {
             Amount amount = new Amount();
             amount.setCurrencyCode(productQuotation.getSumInsuredAmount().getCurrencyCode());
             amount.setValue(productQuotation.getSumInsuredAmount().getValue());
-            quote.getPremiumsData().getLifeInsurance().setSumInsured(amount);
+            quote.getPremiumsData().getProduct10ECPremium().setSumInsured(amount);
         }
 
         // cannot be too young or too old
@@ -76,7 +76,7 @@ public class ProductIBegin implements Product {
 
         // calculates premium / sum insured
         //TODO this has to change and iBegin5 has to become a parameter from ProductQuotation
-        ProductIBeginRate productIBeginRate = productIBeginRateRepository.findByNbOfYearsOfPaymentAndSumInsured(5, premiumsData.getLifeInsurance().getSumInsured().getValue());
+        ProductIBeginRate productIBeginRate = productIBeginRateRepository.findByNbOfYearsOfPaymentAndSumInsured(5, premiumsData.getProduct10ECPremium().getSumInsured().getValue());
         List<Double> rates;
         if (insured.getPerson().getGenderCode().equals(MALE)) {
             rates = productIBeginRate.getMaleRate();

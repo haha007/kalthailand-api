@@ -170,12 +170,12 @@ public class TestUtil {
         FinancialScheduler financialScheduler = new FinancialScheduler();
         financialScheduler.setPeriodicity(periodicity);
 
-        LifeInsurance lifeInsurance = new LifeInsurance();
-        lifeInsurance.setSumInsured(amount);
+        Product10ECPremium product10ECPremium = new Product10ECPremium();
+        product10ECPremium.setSumInsured(amount);
 
         PremiumsData premiumsData = new PremiumsData();
         premiumsData.setFinancialScheduler(financialScheduler);
-        premiumsData.setLifeInsurance(lifeInsurance);
+        premiumsData.setProduct10ECPremium(product10ECPremium);
 
         Product10EC product10EC = new Product10EC();
 

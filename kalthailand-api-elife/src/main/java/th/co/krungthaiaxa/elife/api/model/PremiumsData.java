@@ -7,10 +7,10 @@ import java.io.Serializable;
 import java.util.Objects;
 
 @ApiModel(description = "Data concerning premiums (price for the coverage and benefit agreed) to all commercial types",
-        subTypes = {LifeInsurance.class})
+        subTypes = {Product10ECPremium.class})
 public class PremiumsData implements Serializable {
     private FinancialScheduler financialScheduler;
-    private LifeInsurance lifeInsurance;
+    private Product10ECPremium product10ECPremium;
 
     @ApiModelProperty(value = "The definition of how the premiums must be paid")
     public FinancialScheduler getFinancialScheduler() {
@@ -21,13 +21,13 @@ public class PremiumsData implements Serializable {
         this.financialScheduler = financialScheduler;
     }
 
-    @ApiModelProperty(value = "Life Insurance specific Premiums Data")
-    public LifeInsurance getLifeInsurance() {
-        return lifeInsurance;
+    @ApiModelProperty(value = "10 EC specific Premiums Data")
+    public Product10ECPremium getProduct10ECPremium() {
+        return product10ECPremium;
     }
 
-    public void setLifeInsurance(LifeInsurance lifeInsurance) {
-        this.lifeInsurance = lifeInsurance;
+    public void setProduct10ECPremium(Product10ECPremium product10ECPremium) {
+        this.product10ECPremium = product10ECPremium;
     }
 
     @Override
@@ -36,11 +36,11 @@ public class PremiumsData implements Serializable {
         if (o == null || getClass() != o.getClass()) return false;
         PremiumsData that = (PremiumsData) o;
         return Objects.equals(financialScheduler, that.financialScheduler) &&
-                Objects.equals(lifeInsurance, that.lifeInsurance);
+                Objects.equals(product10ECPremium, that.product10ECPremium);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(financialScheduler, lifeInsurance);
+        return Objects.hash(financialScheduler, product10ECPremium);
     }
 }

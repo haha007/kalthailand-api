@@ -6,8 +6,6 @@ import th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Optional;
 import java.util.function.Function;
 
 import static th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException.*;
@@ -30,12 +28,12 @@ public class ProductUtils {
 
     public static Amount getPremiumFromSumInsured(Quote quote, Double rate) {
         Amount result = new Amount();
-        Double value = quote.getPremiumsData().getLifeInsurance().getSumInsured().getValue();
+        Double value = quote.getPremiumsData().getProduct10ECPremium().getSumInsured().getValue();
         value = value * rate;
         value = value * modalFactor.apply(quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode());
         value = value / 1000;
         result.setValue((double) (Math.round(value * 100)) / 100);
-        result.setCurrencyCode(quote.getPremiumsData().getLifeInsurance().getSumInsured().getCurrencyCode());
+        result.setCurrencyCode(quote.getPremiumsData().getProduct10ECPremium().getSumInsured().getCurrencyCode());
         return result;
     }
 
@@ -61,16 +59,16 @@ public class ProductUtils {
     }
 
     public static void checkSumInsured(PremiumsData premiumsData, String currency, Double sumInsuredMin, Double sumInsuredMax) throws QuoteCalculationException {
-        if (premiumsData.getLifeInsurance().getSumInsured() == null || premiumsData.getLifeInsurance().getSumInsured().getValue() == null) {
+        if (premiumsData.getProduct10ECPremium().getSumInsured() == null || premiumsData.getProduct10ECPremium().getSumInsured().getValue() == null) {
             // no amount to check
             return;
-        } else if (!currency.equalsIgnoreCase(premiumsData.getLifeInsurance().getSumInsured().getCurrencyCode())) {
+        } else if (!currency.equalsIgnoreCase(premiumsData.getProduct10ECPremium().getSumInsured().getCurrencyCode())) {
             throw sumInsuredCurrencyException.apply(currency);
         }
 
-        if (premiumsData.getLifeInsurance().getSumInsured().getValue() > sumInsuredMax) {
+        if (premiumsData.getProduct10ECPremium().getSumInsured().getValue() > sumInsuredMax) {
             throw sumInsuredTooHighException.apply(sumInsuredMax);
-        } else if (premiumsData.getLifeInsurance().getSumInsured().getValue() < sumInsuredMin) {
+        } else if (premiumsData.getProduct10ECPremium().getSumInsured().getValue() < sumInsuredMin) {
             throw sumInsuredTooLowException.apply(sumInsuredMin);
         }
     }

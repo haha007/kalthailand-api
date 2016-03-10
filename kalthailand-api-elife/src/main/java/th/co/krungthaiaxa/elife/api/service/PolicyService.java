@@ -201,7 +201,7 @@ public class PolicyService {
         logger.debug("ProductName : " + policy.getCommonData().getProductName());
 
         //SumInsured
-        graphics.drawString(formatter.format(policy.getPremiumsData().getLifeInsurance().getSumInsured().getValue()), 553, 353);
+        graphics.drawString(formatter.format(policy.getPremiumsData().getProduct10ECPremium().getSumInsured().getValue()), 553, 353);
 
         //PolicyNo
         char[] numberPNO = policy.getPolicyId().toCharArray();

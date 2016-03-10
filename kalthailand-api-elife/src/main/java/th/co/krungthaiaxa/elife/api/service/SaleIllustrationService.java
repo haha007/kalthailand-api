@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.elife.api.model.Quote;
 
-import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -69,13 +68,13 @@ public class SaleIllustrationService {
         table1.addCell(addData("กรณีเลือกรับครั้งเดียว ณ ครบกำหนดสัญญา", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
         table1.addCell(addLine(false, tbCols));
         table1.addCell(addData("รวมรับผลประโยชน์ขั้นต่ำ", getFontNormalStyle(), null, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table1.addCell(addData((new DecimalFormat(MONEY_DECIMAL_FORMAT)).format(quote.getPremiumsData().getLifeInsurance().getEndOfContractBenefitsMinimum().get(9).getValue()) + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT, null));
+        table1.addCell(addData((new DecimalFormat(MONEY_DECIMAL_FORMAT)).format(quote.getPremiumsData().getProduct10ECPremium().getEndOfContractBenefitsMinimum().get(9).getValue()) + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT, null));
         table1.addCell(addLine(false, tbCols));
         table1.addCell(addData("รวมรับผลประโยชน์ระดับกลาง" + NEW_LINE + "(รวมเงินปันผล*ระดับกลาง)", getFontNormalStyle(), null, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table1.addCell(addData((new DecimalFormat(MONEY_DECIMAL_FORMAT)).format(quote.getPremiumsData().getLifeInsurance().getEndOfContractBenefitsAverage().get(9).getValue()+quote.getPremiumsData().getLifeInsurance().getYearlyCashBacksAverageBenefit().get(9).getValue()) + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT, null));
+        table1.addCell(addData((new DecimalFormat(MONEY_DECIMAL_FORMAT)).format(quote.getPremiumsData().getProduct10ECPremium().getEndOfContractBenefitsAverage().get(9).getValue()+quote.getPremiumsData().getProduct10ECPremium().getYearlyCashBacksAverageBenefit().get(9).getValue()) + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT, null));
         table1.addCell(addLine(false, tbCols));
         table1.addCell(addData("รวมรับผลประโยชน์ระดับสูง" + NEW_LINE + "(รวมเงินปันผล*ระดับสูง)", getFontNormalStyle(), null, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table1.addCell(addData((new DecimalFormat(MONEY_DECIMAL_FORMAT)).format(quote.getPremiumsData().getLifeInsurance().getEndOfContractBenefitsMaximum().get(9).getValue()+quote.getPremiumsData().getLifeInsurance().getYearlyCashBacksMaximumBenefit().get(9).getValue()) + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT, null));
+        table1.addCell(addData((new DecimalFormat(MONEY_DECIMAL_FORMAT)).format(quote.getPremiumsData().getProduct10ECPremium().getEndOfContractBenefitsMaximum().get(9).getValue()+quote.getPremiumsData().getProduct10ECPremium().getYearlyCashBacksMaximumBenefit().get(9).getValue()) + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT, null));
         table1.addCell(addLine(false, tbCols));
         table1.addCell(addData("กรณีเลือกขอรับคืนทุกปี รวมตลอดสัญญา", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
         table1.addCell(addLine(false, tbCols));
@@ -137,14 +136,14 @@ public class SaleIllustrationService {
         table2.addCell(addData("สรุปผลประโยชน์สำหรับแบบประกัน", getFontHeaderStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
         table2.addCell(addData("ผลประโยชน์กรณีเสียชีวิต", getFontHeaderStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
         table2.addCell(addData("ขั้นต่ำกรณีเสียชีวิตภายใน 3 ปีแรก", getFontNormalStyle(), tbCols - 1, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table2.addCell(addData((new DecimalFormat(MONEY_DECIMAL_FORMAT)).format(quote.getPremiumsData().getLifeInsurance().getSumInsured().getValue()) + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT, null));
+        table2.addCell(addData((new DecimalFormat(MONEY_DECIMAL_FORMAT)).format(quote.getPremiumsData().getProduct10ECPremium().getSumInsured().getValue()) + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT, null));
         table2.addCell(addData("ผลประโยชน์เพิ่มเติม", getFontHeaderStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
         table2.addCell(addData("ลดหย่อนภาษีที่อัตราสูงสุด", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
         table2.addCell(addData("ที่ชำระ " + quote.getInsureds().get(0).getDeclaredTaxPercentAtSubscription() + "% ต่อปี", getFontExtraSmallGrayStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
         table2.addCell(addData(TAB + "ท่านจะได้รับผลประโยชน์จาก" + NEW_LINE + TAB + "การลดหย่อนภาษี ปีละ", getFontNormalStyle(), tbCols - 1, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table2.addCell(addData((new DecimalFormat(MONEY_DECIMAL_FORMAT)).format(quote.getPremiumsData().getLifeInsurance().getYearlyTaxDeduction().getValue()) + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT, TB_VERTICAL_ALIGN_TOP));
+        table2.addCell(addData((new DecimalFormat(MONEY_DECIMAL_FORMAT)).format(quote.getPremiumsData().getProduct10ECPremium().getYearlyTaxDeduction().getValue()) + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT, TB_VERTICAL_ALIGN_TOP));
         table2.addCell(addData(TAB + "รวมผลประโยชน์ทางภาษีจาก" + NEW_LINE + TAB + "การชำระเบี้ยประกันภัย" + NEW_LINE + TAB + "ตลอดสัญญา เป็นเงิน", getFontNormalStyle(), tbCols - 1, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table2.addCell(addData((new DecimalFormat(MONEY_DECIMAL_FORMAT)).format(quote.getPremiumsData().getLifeInsurance().getYearlyTaxDeduction().getValue() * quote.getCommonData().getNbOfYearsOfPremium()) + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT, TB_VERTICAL_ALIGN_TOP));
+        table2.addCell(addData((new DecimalFormat(MONEY_DECIMAL_FORMAT)).format(quote.getPremiumsData().getProduct10ECPremium().getYearlyTaxDeduction().getValue() * quote.getCommonData().getNbOfYearsOfPremium()) + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT, TB_VERTICAL_ALIGN_TOP));
         table2.addCell(addLine(true, tbCols));
         table2.addCell(addData("* หมายเหตุ", getFontNormalGrayStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
         table2.addCell(addData("จำนวนเงินปันผลที่แสดงเป็นเพียงตัวเลขประมาณการเงินปันผลในอนาคตเท่านั้น บริษัทฯ ไม่สามารถรับประกันว่าท่านจะได้รับเงินปันผลตามประมาณการนี้ในอนาคต ท่านควรพิจารณาตัวเลขประมาณการเงินปันผลและสมมุติฐานโดยละเอียดโดยวิเคราะห์ถึงผลประกอบการในอนาคตและความคาดหวังในผลิตภัณฑ์นี้ด้วยตัวท่านเอง", getFontNormalGrayStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
@@ -162,16 +161,16 @@ public class SaleIllustrationService {
 
     private Double getMinimumRefundEveryYear(Quote q) {
         Double sum = 0.0;
-        for (Integer a = 0; a < q.getPremiumsData().getLifeInsurance().getYearlyCashBacks().size(); a++) {
-            sum += q.getPremiumsData().getLifeInsurance().getYearlyCashBacks().get(a).getValue();
+        for (Integer a = 0; a < q.getPremiumsData().getProduct10ECPremium().getYearlyCashBacks().size(); a++) {
+            sum += q.getPremiumsData().getProduct10ECPremium().getYearlyCashBacks().get(a).getValue();
         }
         return sum;
     }
 
     private Double getMediumRefundEveryYear(Quote q) {
         Double sum = 0.0;
-        for (Integer a = 0; a < q.getPremiumsData().getLifeInsurance().getYearlyCashBacksAverageDividende().size(); a++) {
-            sum += q.getPremiumsData().getLifeInsurance().getYearlyCashBacksAverageDividende().get(a).getValue();
+        for (Integer a = 0; a < q.getPremiumsData().getProduct10ECPremium().getYearlyCashBacksAverageDividende().size(); a++) {
+            sum += q.getPremiumsData().getProduct10ECPremium().getYearlyCashBacksAverageDividende().get(a).getValue();
         }
         sum += getMinimumRefundEveryYear(q);
         return sum;
@@ -179,8 +178,8 @@ public class SaleIllustrationService {
 
     private Double getMaximumRefundEveryYear(Quote q) {
         Double sum = 0.0;
-        for (Integer a = 0; a < q.getPremiumsData().getLifeInsurance().getYearlyCashBacksMaximumDividende().size(); a++) {
-            sum += q.getPremiumsData().getLifeInsurance().getYearlyCashBacksMaximumDividende().get(a).getValue();
+        for (Integer a = 0; a < q.getPremiumsData().getProduct10ECPremium().getYearlyCashBacksMaximumDividende().size(); a++) {
+            sum += q.getPremiumsData().getProduct10ECPremium().getYearlyCashBacksMaximumDividende().get(a).getValue();
         }
         sum += getMinimumRefundEveryYear(q);
         return sum;

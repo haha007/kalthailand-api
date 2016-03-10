@@ -57,7 +57,7 @@ public class QuoteService {
 
         PremiumsData premiumsData = new PremiumsData();
         premiumsData.setFinancialScheduler(financialScheduler);
-        premiumsData.setLifeInsurance(new LifeInsurance());
+        premiumsData.setProduct10ECPremium(new Product10ECPremium());
 
         Insured insured = new Insured();
         insured.setMainInsuredIndicator(true);
