@@ -18,9 +18,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.elife.api.KalApiApplication;
+import th.co.krungthaiaxa.elife.api.TestUtil;
 import th.co.krungthaiaxa.elife.api.model.Policy;
 import th.co.krungthaiaxa.elife.api.model.Quote;
-import th.co.krungthaiaxa.elife.api.TestUtil;
 import th.co.krungthaiaxa.elife.api.utils.ImageUtil;
 
 import javax.inject.Inject;
@@ -36,8 +36,9 @@ import static java.lang.System.getProperty;
 import static org.apache.commons.io.FileUtils.readFileToByteArray;
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
-import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
 import static th.co.krungthaiaxa.elife.api.TestUtil.*;
+import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
+import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_YEAR;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiApplication.class)
@@ -118,14 +119,14 @@ public class EmailServiceTest {
         MimeMessage email = greenMail.getReceivedMessages()[0];
         assertThat(email.getSubject()).isEqualTo(subject);
         String bodyAsString = decodeSimpleBody(getBody(email));
-        assertThat(bodyAsString).contains("<tr><td>รวมรับผลประโยชน์ขั้นต่ำ</td><td class=\"value\" align=\"right\" valign=\"top\" >201,898.00 บาท</td></tr>");
-        assertThat(bodyAsString).contains("<tr><td>รวมรับผลประโยชน์ระดับกลาง (รวมเงินปันผล**ระดับกลาง)</td><td class=\"value\" valign=\"top\" align=\"right\" >225,382.00 บาท</td></tr>");
-        assertThat(bodyAsString).contains("<tr><td>รวมรับผลประโยชน์ระดับสูง (รวมเงินปันผล**ระดับสูง)</td><td class=\"value\" valign=\"top\" align=\"right\" >230,276.00 บาท</td></tr>");
+        assertThat(bodyAsString).contains("<tr><td>รวมรับผลประโยชน์ขั้นต่ำ</td><td class=\"value\" align=\"right\" valign=\"top\" >706,649.00 บาท</td></tr>");
+        assertThat(bodyAsString).contains("<tr><td>รวมรับผลประโยชน์ระดับกลาง (รวมเงินปันผล**ระดับกลาง)</td><td class=\"value\" valign=\"top\" align=\"right\" >788,837.00 บาท</td></tr>");
+        assertThat(bodyAsString).contains("<tr><td>รวมรับผลประโยชน์ระดับสูง (รวมเงินปันผล**ระดับสูง)</td><td class=\"value\" valign=\"top\" align=\"right\" >805,971.00 บาท</td></tr>");
     }
 
     @Test
     public void should_send_quote_email_containing_amounts_for_500_thousand_baht_with_insured_of_55_years_old() throws Exception {
-        Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation());
+        Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation(55, EVERY_YEAR, 500000.0));
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 
@@ -135,14 +136,14 @@ public class EmailServiceTest {
         MimeMessage email = greenMail.getReceivedMessages()[0];
         assertThat(email.getSubject()).isEqualTo(subject);
         String bodyAsString = decodeSimpleBody(getBody(email));
-        assertThat(bodyAsString).contains("<tr><td>รวมรับผลประโยชน์ขั้นต่ำ</td><td class=\"value\" align=\"right\" valign=\"top\" >201,898.00 บาท</td></tr>");
-        assertThat(bodyAsString).contains("<tr><td>รวมรับผลประโยชน์ระดับกลาง (รวมเงินปันผล**ระดับกลาง)</td><td class=\"value\" valign=\"top\" align=\"right\" >225,382.00 บาท</td></tr>");
-        assertThat(bodyAsString).contains("<tr><td>รวมรับผลประโยชน์ระดับสูง (รวมเงินปันผล**ระดับสูง)</td><td class=\"value\" valign=\"top\" align=\"right\" >230,276.00 บาท</td></tr>");
+        assertThat(bodyAsString).contains("<tr><td>รวมรับผลประโยชน์ขั้นต่ำ</td><td class=\"value\" align=\"right\" valign=\"top\" >1,009,498.00 บาท</td></tr>");
+        assertThat(bodyAsString).contains("<tr><td>รวมรับผลประโยชน์ระดับกลาง (รวมเงินปันผล**ระดับกลาง)</td><td class=\"value\" valign=\"top\" align=\"right\" >1,126,910.00 บาท</td></tr>");
+        assertThat(bodyAsString).contains("<tr><td>รวมรับผลประโยชน์ระดับสูง (รวมเงินปันผล**ระดับสูง)</td><td class=\"value\" valign=\"top\" align=\"right\" >1,151,386.00 บาท</td></tr>");
     }
 
     @Test
     public void should_send_quote_email_with_product_information() throws Exception {
-        Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation());
+        Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation(55, EVERY_YEAR, 500000.0));
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 
@@ -152,8 +153,8 @@ public class EmailServiceTest {
         MimeMessage email = greenMail.getReceivedMessages()[0];
         assertThat(email.getSubject()).isEqualTo(subject);
         String bodyAsString = decodeSimpleBody(getBody(email));
-        assertThat(bodyAsString).contains("<tr><td>ระยะเวลาคุ้มครอง</td><td width=\"120px\" class=\"value\" align=\"right\" >" + quote.getCommonData().getNbOfYearsOfCoverage().toString() + " ปี</td></tr>");
-        assertThat(bodyAsString).contains("<tr><td>ระยะเวลาชำระเบี้ย</td><td class=\"value\" align=\"right\" >" + quote.getCommonData().getNbOfYearsOfPremium().toString() + " ปี</td></tr>");
+        assertThat(bodyAsString).contains("<tr><td>ระยะเวลาคุ้มครอง</td><td width=\"120px\" class=\"value\" align=\"right\" >10 ปี</td></tr>");
+        assertThat(bodyAsString).contains("<tr><td>ระยะเวลาชำระเบี้ย</td><td class=\"value\" align=\"right\" >6 ปี</td></tr>");
 
         Multipart multipart = (Multipart) email.getContent();
         for (int i = 0; i < multipart.getCount(); i++) {
