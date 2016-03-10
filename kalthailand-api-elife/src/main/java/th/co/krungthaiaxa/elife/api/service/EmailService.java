@@ -5,6 +5,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.elife.api.model.Policy;
 import th.co.krungthaiaxa.elife.api.model.Quote;
@@ -16,6 +17,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.Locale;
 
 import static org.apache.commons.io.IOUtils.toByteArray;
 
@@ -24,6 +26,10 @@ public class EmailService {
 
     private final EmailSender emailSender;
     private final SaleIllustrationService saleIllustrationService;
+
+    @Inject
+    private MessageSource messageSource;
+    private Locale thLocale = new Locale("th","");
 
     @Inject
     public EmailService(EmailSender emailSender, SaleIllustrationService saleIllustrationService) {
@@ -67,7 +73,7 @@ public class EmailService {
         return emailContent.replace("%1$s", quote.getCommonData().getNbOfYearsOfCoverage().toString())
                 .replace("%2$s", quote.getCommonData().getNbOfYearsOfPremium().toString())
                 .replace("%3$s", quote.getInsureds().get(0).getAgeAtSubscription().toString())
-                .replace("%4$s", quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().toString())
+                .replace("%4$s", messageSource.getMessage("payment.mode."+quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().toString(), null, thLocale))
                 .replace("%5$s", (new DecimalFormat(decimalFormat)).format(quote.getPremiumsData().getProduct10ECPremium().getSumInsured().getValue()))
                 .replace("%6$s", (new DecimalFormat(decimalFormat)).format(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()))
                 .replace("%7$s", (new DecimalFormat(decimalFormat)).format(quote.getPremiumsData().getProduct10ECPremium().getEndOfContractBenefitsMinimum().get(9).getValue()))
