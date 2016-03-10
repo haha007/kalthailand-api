@@ -121,15 +121,8 @@ public class QuoteServiceTest {
 
     @Test
     public void should_return_empty_calculated_stuff_when_there_is_nothing_to_calculate_anymore() throws QuoteCalculationException, PolicyValidationException {
-        String sessionId = randomNumeric(20);
-        Quote quote = getQuote(sessionId);
+        Quote quote = getQuote(randomNumeric(20));
 
-        Amount amount = new Amount();
-        amount.setCurrencyCode("THB");
-        amount.setValue(1000000.0);
-        quote.getPremiumsData().getLifeInsurance().setSumInsured(amount);
-
-        quote = quoteService.updateQuote(quote);
         assertThat(quote.getPremiumsData().getLifeInsurance().getYearlyCashBacks()).hasSize(10);
         assertThat(quote.getPremiumsData().getLifeInsurance().getEndOfContractBenefitsMinimum()).hasSize(10);
         assertThat(quote.getPremiumsData().getLifeInsurance().getEndOfContractBenefitsAverage()).hasSize(10);
