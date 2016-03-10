@@ -12,33 +12,28 @@ public class ProductIFineRate {
     private String id;
     @Indexed
     private String planName;
-    private Boolean riskOccupation;
-    private List<Double> taxDeductibleMaleRate;
-    private List<Double> nonTaxDeductibleMaleRate;
-    private List<Double> taxDeductibleFemaleRate;
-    private List<Double> nonTaxDeductibleFemaleRate;
+    private String gender;
+    private List<Double> taxDeductibleRate;
+    private List<Double> nonTaxDeductibleRate;
+    private List<Double> nonTaxDeductibleRiskRate;
 
     public String getPlanName() {
         return planName;
     }
 
-    public Boolean getRiskOccupation() {
-        return riskOccupation;
+    public String getGender() {
+        return gender;
     }
 
-    public List<Double> getTaxDeductibleMaleRate() {
-        return taxDeductibleMaleRate;
+    public List<Double> getTaxDeductibleRate() {
+        return taxDeductibleRate;
     }
 
-    public List<Double> getNonTaxDeductibleMaleRate() {
-        return nonTaxDeductibleMaleRate;
+    public List<Double> getNonTaxDeductibleRate() {
+        return nonTaxDeductibleRate;
     }
 
-    public List<Double> getTaxDeductibleFemaleRate() {
-        return taxDeductibleFemaleRate;
-    }
-
-    public List<Double> getNonTaxDeductibleFemaleRate() {
-        return nonTaxDeductibleFemaleRate;
+    public List<Double> getNonTaxDeductibleRiskRate() {
+        return nonTaxDeductibleRiskRate;
     }
 }

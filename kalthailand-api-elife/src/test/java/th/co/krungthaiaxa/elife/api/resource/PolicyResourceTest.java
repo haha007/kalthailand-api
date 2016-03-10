@@ -72,10 +72,9 @@ public class PolicyResourceTest {
 
     @Test
     public void should_return_error_when_creating_policy_from_none_existing_quote() throws IOException {
-        String sessionId = randomNumeric(20);
-        String jsonQuote = getJSon(quote());
+        String jsonQuote = getJSon(quote(product10EC()));
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(base)
-                .queryParam("sessionId", sessionId)
+                .queryParam("sessionId", randomNumeric(20))
                 .queryParam("channelType", LINE.name());
         ResponseEntity<String> response = template.exchange(builder.toUriString(), POST, new HttpEntity<>(jsonQuote), String.class);
         assertThat(response.getStatusCode().value()).isEqualTo(NOT_FOUND.value());

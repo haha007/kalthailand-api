@@ -13,6 +13,8 @@ public class QuoteCalculationException extends Exception {
     public static QuoteCalculationException ageIsTooHighException = new QuoteCalculationException("Cannot insured when older than 70 years old.");
     public static QuoteCalculationException ageIsEmptyException = new QuoteCalculationException("Age of main insured is empty.");
 
+    public static QuoteCalculationException iFinePackageNameUnknown = new QuoteCalculationException("The iFine package name is unknown.");
+
     private QuoteCalculationException(String message) {
         super(message);
     }

@@ -129,9 +129,15 @@ public class Product10EC implements Product {
         PremiumsData premiumsData = quote.getPremiumsData();
         // calculates premium / sum insured
         if (premiumsData.getProduct10ECPremium().getSumInsured() != null) {
-            premiumsData.getFinancialScheduler().setModalAmount(getPremiumFromSumInsured(quote, rate.apply(insured.getAgeAtSubscription())));
+            premiumsData.getFinancialScheduler().setModalAmount(getPremiumFromSumInsured(
+                    quote.getPremiumsData().getProduct10ECPremium().getSumInsured(),
+                    rate.apply(insured.getAgeAtSubscription()),
+                    quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode()));
         } else {
-            premiumsData.getProduct10ECPremium().setSumInsured(getSumInsuredFromPremium(quote, rate.apply(insured.getAgeAtSubscription())));
+            premiumsData.getProduct10ECPremium().setSumInsured(getSumInsuredFromPremium(
+                    quote.getPremiumsData().getFinancialScheduler().getModalAmount(),
+                    rate.apply(insured.getAgeAtSubscription()),
+                    quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode()));
         }
 
         // cannot insure too much or not enough
@@ -233,6 +239,20 @@ public class Product10EC implements Product {
         return productAmounts;
     }
 
+    @Override
+    public PremiumsData getPremiumData() {
+        FinancialScheduler financialScheduler = new FinancialScheduler();
+        financialScheduler.setPeriodicity(new Periodicity());
+
+        Product10ECPremium product10ECPremium = new Product10ECPremium();
+
+        PremiumsData premiumsData = new PremiumsData();
+        premiumsData.setFinancialScheduler(financialScheduler);
+        premiumsData.setProduct10ECPremium(product10ECPremium);
+
+        return premiumsData;
+    }
+
     private static void addPayments(Policy policy) {
         LocalDate startDate = policy.getInsureds().get(0).getStartDate();
 
@@ -258,6 +278,21 @@ public class Product10EC implements Product {
         }
         if (coverage.isPresent()) {
             quote.getCoverages().remove(coverage.get());
+        }
+    }
+
+    private static void checkSumInsured(PremiumsData premiumsData, String currency, Double sumInsuredMin, Double sumInsuredMax) throws QuoteCalculationException {
+        if (premiumsData.getProduct10ECPremium().getSumInsured() == null || premiumsData.getProduct10ECPremium().getSumInsured().getValue() == null) {
+            // no amount to check
+            return;
+        } else if (!currency.equalsIgnoreCase(premiumsData.getProduct10ECPremium().getSumInsured().getCurrencyCode())) {
+            throw sumInsuredCurrencyException.apply(currency);
+        }
+
+        if (premiumsData.getProduct10ECPremium().getSumInsured().getValue() > sumInsuredMax) {
+            throw sumInsuredTooHighException.apply(sumInsuredMax);
+        } else if (premiumsData.getProduct10ECPremium().getSumInsured().getValue() < sumInsuredMin) {
+            throw sumInsuredTooLowException.apply(sumInsuredMin);
         }
     }
 

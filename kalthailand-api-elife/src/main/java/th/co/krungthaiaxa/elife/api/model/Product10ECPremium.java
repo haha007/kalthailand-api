@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-@ApiModel(description = "Life Insurance specific Premiums Data")
+@ApiModel(description = "10 EC Life Insurance specific Premiums Data")
 public class Product10ECPremium implements Serializable {
     private Amount sumInsured;
     private List<DatedAmount> yearlyCashBacks = new ArrayList<>();

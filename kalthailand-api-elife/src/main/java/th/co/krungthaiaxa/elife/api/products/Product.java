@@ -4,6 +4,7 @@ import th.co.krungthaiaxa.elife.api.exception.PolicyValidationException;
 import th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.elife.api.model.CommonData;
 import th.co.krungthaiaxa.elife.api.model.Policy;
+import th.co.krungthaiaxa.elife.api.model.PremiumsData;
 import th.co.krungthaiaxa.elife.api.model.Quote;
 
 public interface Product {
@@ -14,4 +15,6 @@ public interface Product {
     CommonData getCommonData();
 
     ProductAmounts getProductAmounts(ProductQuotation productQuotation);
+
+    PremiumsData getPremiumData();
 }

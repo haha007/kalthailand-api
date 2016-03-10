@@ -4,10 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import th.co.krungthaiaxa.elife.api.model.*;
 import th.co.krungthaiaxa.elife.api.model.enums.*;
 import th.co.krungthaiaxa.elife.api.model.error.Error;
-import th.co.krungthaiaxa.elife.api.products.Product10EC;
-import th.co.krungthaiaxa.elife.api.products.ProductAmounts;
-import th.co.krungthaiaxa.elife.api.products.ProductQuotation;
-import th.co.krungthaiaxa.elife.api.products.ProductType;
+import th.co.krungthaiaxa.elife.api.products.*;
 import th.co.krungthaiaxa.elife.api.utils.JsonUtil;
 
 import java.io.IOException;
@@ -21,6 +18,7 @@ import static th.co.krungthaiaxa.elife.api.model.enums.MaritalStatus.MARRIED;
 import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_HALF_YEAR;
 import static th.co.krungthaiaxa.elife.api.model.enums.USPermanentResident.NOT_PR;
 import static th.co.krungthaiaxa.elife.api.products.ProductType.PRODUCT_10_EC;
+import static th.co.krungthaiaxa.elife.api.products.ProductType.PRODUCT_IFINE;
 
 public class TestUtil {
 
@@ -58,6 +56,14 @@ public class TestUtil {
 
     public static ProductQuotation productQuotation(ProductType productType, Integer age, PeriodicityCode periodicityCode, Double amount, GenderCode genderCode) {
         return productQuotation(productType, age, periodicityCode, amount, true, 23, genderCode);
+    }
+
+    public static ProductQuotation productQuotation(ProductIFinePackage productIFinePackage, Integer age, PeriodicityCode periodicityCode, GenderCode genderCode, Boolean riskOccupation) {
+        ProductQuotation productQuotation = productQuotation(PRODUCT_IFINE, age, periodicityCode, productIFinePackage.getSumInsured(), true, 23, genderCode);
+        productQuotation.setOccupation("something");
+        productQuotation.setRiskOccupation(riskOccupation);
+        productQuotation.setPackageName(productIFinePackage.name());
+        return productQuotation;
     }
 
     public static ProductQuotation productQuotation(ProductType productType, Integer age, PeriodicityCode periodicityCode, Double amountValue, Boolean isSumInsured, Integer taxRate, GenderCode genderCode) {
@@ -159,7 +165,8 @@ public class TestUtil {
             }
         }
     }
-    public static Quote quote() {
+
+    public static Quote quote(Product product) {
         Amount amount = new Amount();
         amount.setCurrencyCode("THB");
         amount.setValue(1000000.0);
@@ -170,15 +177,6 @@ public class TestUtil {
         FinancialScheduler financialScheduler = new FinancialScheduler();
         financialScheduler.setPeriodicity(periodicity);
 
-        Product10ECPremium product10ECPremium = new Product10ECPremium();
-        product10ECPremium.setSumInsured(amount);
-
-        PremiumsData premiumsData = new PremiumsData();
-        premiumsData.setFinancialScheduler(financialScheduler);
-        premiumsData.setProduct10ECPremium(product10ECPremium);
-
-        Product10EC product10EC = new Product10EC();
-
         Insured emptyInsured = new Insured();
         emptyInsured.setMainInsuredIndicator(true);
         emptyInsured.setFatca(new Fatca());
@@ -187,11 +185,23 @@ public class TestUtil {
         emptyInsured.setType(InsuredType.Insured);
 
         Quote quote = new Quote();
-        quote.setCommonData(product10EC.getCommonData());
-        quote.setPremiumsData(premiumsData);
+        quote.setCommonData(product.getCommonData());
+        quote.setPremiumsData(product.getPremiumData());
         quote.addInsured(emptyInsured);
 
         return quote;
+    }
+
+    public static Product10EC product10EC() {
+        return new Product10EC();
+    }
+
+    public static ProductIBegin productIBegin() {
+        return new ProductIBegin();
+    }
+
+    public static ProductIFine productIFine() {
+        return new ProductIFine();
     }
 
     public static CoverageBeneficiary beneficiary(Double benefitPercent) {

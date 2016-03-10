@@ -11,6 +11,7 @@ import java.util.Objects;
 public class PremiumsData implements Serializable {
     private FinancialScheduler financialScheduler;
     private Product10ECPremium product10ECPremium;
+    private ProductIFinePremium productIFinePremium;
 
     @ApiModelProperty(value = "The definition of how the premiums must be paid")
     public FinancialScheduler getFinancialScheduler() {
@@ -30,17 +31,27 @@ public class PremiumsData implements Serializable {
         this.product10ECPremium = product10ECPremium;
     }
 
+    @ApiModelProperty(value = "iFine specific Premiums Data")
+    public ProductIFinePremium getProductIFinePremium() {
+        return productIFinePremium;
+    }
+
+    public void setProductIFinePremium(ProductIFinePremium productIFinePremium) {
+        this.productIFinePremium = productIFinePremium;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PremiumsData that = (PremiumsData) o;
         return Objects.equals(financialScheduler, that.financialScheduler) &&
-                Objects.equals(product10ECPremium, that.product10ECPremium);
+                Objects.equals(product10ECPremium, that.product10ECPremium) &&
+                Objects.equals(productIFinePremium, that.productIFinePremium);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(financialScheduler, product10ECPremium);
+        return Objects.hash(financialScheduler, product10ECPremium, productIFinePremium);
     }
 }
