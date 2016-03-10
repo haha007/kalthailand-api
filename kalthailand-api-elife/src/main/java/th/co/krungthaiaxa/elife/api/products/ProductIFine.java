@@ -55,6 +55,7 @@ public class ProductIFine implements Product {
         insured.getPerson().setBirthDate(productQuotation.getDateOfBirth());
         insured.setAgeAtSubscription(age);
         insured.getPerson().setGenderCode(productQuotation.getGenderCode());
+        insured.setProfessionName(productQuotation.getOccupation());
 
         // cannot be too young or too old
         checkMainInsuredAge(insured, MIN_AGE, MAX_AGE);
