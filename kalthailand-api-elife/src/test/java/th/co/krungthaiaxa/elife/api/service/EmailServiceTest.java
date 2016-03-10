@@ -181,8 +181,6 @@ public class EmailServiceTest {
         MimeMessage email = greenMail.getReceivedMessages()[0];
         assertThat(email.getSubject()).isEqualTo(subject);
         String bodyAsString = decodeSimpleBody(getBody(email));
-        //System.out.println(quote.getQuoteId());
-        //System.out.println(bodyAsString);
         assertThat(bodyAsString).contains("<tr><td>ระยะเวลาคุ้มครอง</td><td width=\"120px\" class=\"value\" align=\"right\" >" + quote.getCommonData().getNbOfYearsOfCoverage().toString() + " ปี</td></tr>");
         assertThat(bodyAsString).contains("<tr><td>ระยะเวลาชำระเบี้ย</td><td class=\"value\" align=\"right\" >" + quote.getCommonData().getNbOfYearsOfPremium().toString() + " ปี</td></tr>");
 
