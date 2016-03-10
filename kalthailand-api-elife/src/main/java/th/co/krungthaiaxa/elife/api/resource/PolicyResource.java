@@ -1,27 +1,31 @@
 package th.co.krungthaiaxa.elife.api.resource;
 
 import io.swagger.annotations.*;
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import th.co.krungthaiaxa.elife.api.model.Document;
 import th.co.krungthaiaxa.elife.api.model.Payment;
 import th.co.krungthaiaxa.elife.api.model.Policy;
 import th.co.krungthaiaxa.elife.api.model.Quote;
 import th.co.krungthaiaxa.elife.api.model.enums.ChannelType;
 import th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus;
 import th.co.krungthaiaxa.elife.api.model.error.Error;
+import th.co.krungthaiaxa.elife.api.service.DocumentService;
+import th.co.krungthaiaxa.elife.api.service.EmailService;
 import th.co.krungthaiaxa.elife.api.service.PolicyService;
 import th.co.krungthaiaxa.elife.api.service.QuoteService;
 import th.co.krungthaiaxa.elife.api.utils.JsonUtil;
-
 import javax.inject.Inject;
 import java.io.IOException;
+import java.util.Base64;
 import java.util.Optional;
-
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
+import static th.co.krungthaiaxa.elife.api.model.enums.DocumentType.ERECEIPT_PDF;
 import static th.co.krungthaiaxa.elife.api.model.error.ErrorCode.*;
 
 @RestController
@@ -30,11 +34,15 @@ public class PolicyResource {
     private final static Logger logger = LoggerFactory.getLogger(PolicyResource.class);
     private final PolicyService policyService;
     private final QuoteService quoteService;
+    private final EmailService emailService;
+    private final DocumentService documentService;
 
     @Inject
-    public PolicyResource(PolicyService policyService, QuoteService quoteService) {
+    public PolicyResource(PolicyService policyService, QuoteService quoteService, EmailService emailService, DocumentService documentService) {
         this.policyService = policyService;
         this.quoteService = quoteService;
+        this.emailService = emailService;
+        this.documentService = documentService;
     }
 
     @ApiOperation(value = "Creates a policy", notes = "Creates a policy out of a quote. Policy will be created only " +
@@ -149,6 +157,20 @@ public class PolicyResource {
             logger.error("Unable to update the payment with ID [" + paymentId + "] in the policy with ID [" + policyId + "]");
             return new ResponseEntity<>(PAYMENT_NOT_UPDATED, INTERNAL_SERVER_ERROR);
         }
+
+        Optional<Document> documentPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(ERECEIPT_PDF)).findFirst();
+        if (documentPdf.isPresent()) {
+            try {
+                emailService.sendEreceiptEmail(policy,Pair.of(Base64.getDecoder().decode((documentService.downloadDocument(documentPdf.get().getId())).getContent()), "e-receipt_"+policy.getPolicyId()+".pdf"));
+            } catch (Exception e) {
+                logger.error(String.format("Unable to send e-receipt document while sending email with policy id is [%1$s]...",policy.getPolicyId()));
+                return new ResponseEntity<>(UNABLE_TO_SEND_EMAIL, INTERNAL_SERVER_ERROR);
+            }
+        }else{
+            logger.error(String.format("E-receipt of policy [%1$s] is not available...",policy.getPolicyId()));
+            return new ResponseEntity<>(UNABLE_TO_CREATE_ERECEIPT, INTERNAL_SERVER_ERROR);
+        }
+
         return new ResponseEntity<>(JsonUtil.getJson(policy), OK);
     }
 

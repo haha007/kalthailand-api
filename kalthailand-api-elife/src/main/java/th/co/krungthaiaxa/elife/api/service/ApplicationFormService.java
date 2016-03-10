@@ -299,13 +299,7 @@ public class ApplicationFormService {
         //insure professional
         g2.drawString(pol.getInsureds().get(0).getProfessionName(), 1110, 1000);
 
-        List<Integer> listY = new ArrayList<>();
-        listY.add(1385);
-        listY.add(1465);
-        listY.add(1540);
-        listY.add(1620);
-        listY.add(1695);
-        listY.add(1775);
+        List<Integer> listY = getBenefitPositionY();
         List<CoverageBeneficiary> allBenefit = pol.getCoverages().get(0).getBeneficiaries();
         for(Integer a=0;a<allBenefit.size();a++){
             CoverageBeneficiary benefit = pol.getCoverages().get(0).getBeneficiaries().get(a);
@@ -425,6 +419,17 @@ public class ApplicationFormService {
 
         document.close();
 
+    }
+
+    private List<Integer> getBenefitPositionY(){
+        List<Integer> listY = new ArrayList<>();
+        listY.add(1385);
+        listY.add(1465);
+        listY.add(1540);
+        listY.add(1620);
+        listY.add(1695);
+        listY.add(1775);
+        return listY;
     }
 
     private String generateAddress(GeographicalAddress g){

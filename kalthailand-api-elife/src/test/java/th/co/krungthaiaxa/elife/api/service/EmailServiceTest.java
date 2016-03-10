@@ -45,7 +45,7 @@ import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_YEA
 @WebAppConfiguration
 @ActiveProfiles("test")
 public class EmailServiceTest {
-    private final static String ERECEIPT_MERGED_FILE_NAME = "ereceipts.pdf";
+    private final static String ERECEIPT_MERGED_FILE_NAME = "e-receipts.pdf";
     @Rule
     public final GreenMailRule greenMail = new GreenMailRule(ServerSetupTest.SMTP_IMAP);
     @Value("${email.smtp.server}")

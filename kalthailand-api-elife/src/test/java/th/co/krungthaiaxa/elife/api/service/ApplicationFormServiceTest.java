@@ -153,7 +153,7 @@ public class ApplicationFormServiceTest {
 
     private Coverage getCoverageBenefit(){
         Coverage coverage = new Coverage();
-        for(Integer a = 0;a<6;a++){
+        for(Integer a = 0;a<3;a++){
             CoverageBeneficiary benefit = new CoverageBeneficiary();
             Person ps = new Person();
             ps.setGivenName("name_"+a);
