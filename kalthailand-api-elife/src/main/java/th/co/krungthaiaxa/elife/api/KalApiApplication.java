@@ -41,7 +41,6 @@ public class KalApiApplication {
                 .title("AXA TH DATA API")
                 .description("This set of API is done by Krungthai Axa Life")
                 .version("1.0.0")
-                .contact("")
                 .build();
     }
 
