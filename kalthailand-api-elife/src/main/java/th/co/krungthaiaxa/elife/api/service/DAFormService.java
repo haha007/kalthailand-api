@@ -5,11 +5,11 @@ import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.Font;
-import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -19,6 +19,7 @@ import java.text.DecimalFormat;
 /**
  * Created by santilik on 3/10/2016.
  */
+@Service
 public class DAFormService {
 
     private final static Logger logger = LoggerFactory.getLogger(DAFormService.class);
@@ -38,7 +39,7 @@ public class DAFormService {
         InputStream is1 = getClass().getClassLoader().getResourceAsStream("da-form/" + DA_IMAGE);
         BufferedImage bf1 = ImageIO.read(is1);
         Graphics g1 = bf1.getGraphics();
-        g1 = setGraphicColorAndFontBigText(g1);
+        g1 = setGraphicColorAndFont(g1);
 
         //Policy number
         g1.drawString("12", 1615, 535);
@@ -61,6 +62,12 @@ public class DAFormService {
 
         document.close();
 
+    }
+
+    private Graphics setGraphicColorAndFont(Graphics g){
+        g.setColor(FONT_COLOR);
+        g.setFont(new Font(FONT_NAME, Font.BOLD, FONT_SIZE));
+        return g;
     }
 
     private Graphics setGraphicColorAndFontBigText(Graphics g){

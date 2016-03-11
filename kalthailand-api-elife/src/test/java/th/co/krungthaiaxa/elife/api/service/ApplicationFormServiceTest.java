@@ -161,7 +161,7 @@ public class ApplicationFormServiceTest {
     }
 
     @Test
-    public void generate_application_pdf_file() throws Exception {
+    public void should_generate_application_pdf_file() throws Exception {
 
         Integer age = 35;
         String email = "santi.lik@krungthai-axa.co.th";
