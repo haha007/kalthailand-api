@@ -13,6 +13,7 @@ import java.util.List;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static java.time.LocalDate.now;
+import static th.co.krungthaiaxa.elife.api.model.enums.DividendOption.YEARLY_FOR_NEXT_PREMIUM;
 import static th.co.krungthaiaxa.elife.api.model.enums.GenderCode.FEMALE;
 import static th.co.krungthaiaxa.elife.api.model.enums.MaritalStatus.MARRIED;
 import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_HALF_YEAR;
@@ -154,6 +155,10 @@ public class TestUtil {
         quote.getInsureds().get(0).getPerson().setSurName("ศรีสุข");
         quote.getInsureds().get(0).getPerson().setTitle("M");
         quote.getInsureds().get(0).getPerson().addRegistration(registration("3841200364454"));
+
+        if (quote.getPremiumsData().getProduct10ECPremium() != null) {
+            quote.getPremiumsData().getProduct10ECPremium().setDividendOption(YEARLY_FOR_NEXT_PREMIUM);
+        }
 
         if (quote.getCoverages().size() == 0) {
             quote.getCoverages().add(new Coverage());

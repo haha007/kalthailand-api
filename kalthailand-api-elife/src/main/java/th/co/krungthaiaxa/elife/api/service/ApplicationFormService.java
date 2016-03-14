@@ -1,19 +1,17 @@
 package th.co.krungthaiaxa.elife.api.service;
 
+import com.itextpdf.text.BadElementException;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfWriter;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import th.co.krungthaiaxa.elife.api.model.CoverageBeneficiary;
-import th.co.krungthaiaxa.elife.api.model.GeographicalAddress;
-import th.co.krungthaiaxa.elife.api.model.Insured;
-import th.co.krungthaiaxa.elife.api.model.Policy;
-import th.co.krungthaiaxa.elife.api.model.enums.DividendOption;
+import th.co.krungthaiaxa.elife.api.model.*;
 import th.co.krungthaiaxa.elife.api.model.enums.GenderCode;
 import th.co.krungthaiaxa.elife.api.model.enums.MaritalStatus;
 import th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode;
@@ -22,8 +20,7 @@ import th.co.krungthaiaxa.elife.api.products.ProductType;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.text.DateFormatSymbols;
 import java.text.DecimalFormat;
@@ -31,28 +28,59 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.List;
 
+import static th.co.krungthaiaxa.elife.api.model.enums.DividendOption.*;
+import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.*;
+
 @Service
 public class ApplicationFormService {
-
     private final static Logger logger = LoggerFactory.getLogger(ApplicationFormService.class);
 
     private final String FONT_NAME = "Angsana New";
     private final Color FONT_COLOR = Color.BLACK;
     private final String ID_CARD_DOC = "Thai ID Card number";
+    private final String MARK = "X";
     private final DecimalFormat MONEY_FORMAT = new DecimalFormat("#,##0.00");
 
-    public void generatePdfForm(Policy pol) throws Exception {
+    public byte[] generatePdfForm(Policy pol) throws Exception {
+        ByteArrayOutputStream content = new ByteArrayOutputStream();
+        Document document = new Document(PageSize.A4);
+        PdfWriter writer = PdfWriter.getInstance(document, content);
+        document.open();
+
+        // page1
+        PdfContentByte canvas1 = writer.getDirectContentUnder();
+        canvas1.addImage(getPdfImage(getPage1(pol)));
+
+        // page2
+        document.newPage();
+        PdfContentByte canvas2 = writer.getDirectContentUnder();
+        canvas2.addImage(getPdfImage(getPage2(pol)));
+
+        // page3
+        document.newPage();
+        PdfContentByte canvas3 = writer.getDirectContentUnder();
+        canvas3.addImage(getPdfImage(getPage3()));
+
+        document.close();
+        content.close();
+        return content.toByteArray();
+    }
+
+    private Image getPdfImage(byte[] imageConent) throws IOException, BadElementException {
+        Image image = Image.getInstance(imageConent);
+        image.scaleAbsolute(PageSize.A4);
+        image.setAbsolutePosition(0, 0);
+        return image;
+    }
+
+    public byte[] getPage1(Policy pol) throws Exception {
         InputStream is1 = getClass().getClassLoader().getResourceAsStream("application-form/application-form-1.png");
-        InputStream is2 = getClass().getClassLoader().getResourceAsStream("application-form/application-form-2.png");
-        InputStream is3 = getClass().getClassLoader().getResourceAsStream("application-form/application-form-3.png");
-
         BufferedImage bf1 = ImageIO.read(is1);
-        BufferedImage bf2 = ImageIO.read(is2);
-        BufferedImage bf3 = ImageIO.read(is3);
-
-        //page1
         Graphics g1 = bf1.getGraphics();
         g1 = setGraphicColorAndFontBigText(g1);
+
+        Insured insured = pol.getInsureds().get(0);
+        Person person = insured.getPerson();
 
         //Policy number
         g1.drawString(pol.getPolicyId(), 1930, 460);
@@ -60,12 +88,10 @@ public class ApplicationFormService {
         g1 = setGraphicColorAndFont(g1);
 
         //Name
-        Insured insured = pol.getInsureds().get(0);
-        g1.drawString(insured.getPerson().getGivenName() + " " + insured.getPerson().getSurName(), 630, 775);
+        g1.drawString(person.getGivenName() + " " + person.getSurName(), 630, 775);
 
         //gender
-        String MARK = "X";
-        if (insured.getPerson().getGenderCode().equals(GenderCode.MALE)) {
+        if (person.getGenderCode().equals(GenderCode.MALE)) {
             //Gender mail
             g1.drawString(MARK, 1580, 780);
         } else {
@@ -77,13 +103,13 @@ public class ApplicationFormService {
         g1.drawString("ไทย", 2070, 775);
 
         //marital status
-        if (insured.getPerson().getMaritalStatus().equals(MaritalStatus.SINGLE)) {
+        if (person.getMaritalStatus().equals(MaritalStatus.SINGLE)) {
             //Marital status 1
             g1.drawString(MARK, 290, 850);
-        } else if (insured.getPerson().getMaritalStatus().equals(MaritalStatus.MARRIED)) {
+        } else if (person.getMaritalStatus().equals(MaritalStatus.MARRIED)) {
             //Marital status 2
             g1.drawString(MARK, 435, 850);
-        } else if (insured.getPerson().getMaritalStatus().equals(MaritalStatus.DIVORCED)) {
+        } else if (person.getMaritalStatus().equals(MaritalStatus.DIVORCED)) {
             //Marital status 3
             g1.drawString(MARK, 603, 850);
         } else {
@@ -95,7 +121,7 @@ public class ApplicationFormService {
         g1.drawString(String.valueOf(insured.getAgeAtSubscription()), 1063, 845);
 
         //birthdate
-        Map<String, String> birthDate = doSplitDateOfBirth(insured.getPerson().getBirthDate());
+        Map<String, String> birthDate = doSplitDateOfBirth(person.getBirthDate());
         //date of birthday
         g1.drawString(birthDate.get("date"), 1430, 845);
         //month of birthday
@@ -104,7 +130,7 @@ public class ApplicationFormService {
         g1.drawString(birthDate.get("year"), 2100, 845);
 
         //document display
-        if (insured.getPerson().getRegistrations().get(0).getTypeName().equals(ID_CARD_DOC)) {
+        if (person.getRegistrations().get(0).getTypeName().equals(ID_CARD_DOC)) {
             //document display id card
             g1.drawString(MARK, 395, 915);
         }
@@ -116,46 +142,51 @@ public class ApplicationFormService {
         */
 
         //id card number or passport number
-        g1.drawString(insured.getPerson().getRegistrations().get(0).getId(), 750, 995);
+        g1.drawString(person.getRegistrations().get(0).getId(), 750, 995);
 
         //present address number
-        g1.drawString(insured.getPerson().getCurrentAddress().getStreetAddress1(), 485, 1160);
+        g1.drawString(person.getCurrentAddress().getStreetAddress1(), 485, 1160);
         //present address road
-        g1.drawString(solveNullValue(insured.getPerson().getCurrentAddress().getStreetAddress2()), 330, 1235);
+        g1.drawString(solveNullValue(person.getCurrentAddress().getStreetAddress2()), 330, 1235);
         //present address sub district
-        g1.drawString(insured.getPerson().getCurrentAddress().getSubdistrict(), 1485, 1235);
+        g1.drawString(person.getCurrentAddress().getSubdistrict(), 1485, 1235);
         //present address district
-        g1.drawString(insured.getPerson().getCurrentAddress().getDistrict(), 340, 1310);
+        g1.drawString(person.getCurrentAddress().getDistrict(), 340, 1310);
         //present address province
-        g1.drawString(insured.getPerson().getCurrentAddress().getSubCountry(), 1170, 1310);
+        g1.drawString(person.getCurrentAddress().getSubCountry(), 1170, 1310);
         //present address zipcode
-        g1.drawString(insured.getPerson().getCurrentAddress().getPostCode(), 2075, 1310);
+        g1.drawString(person.getCurrentAddress().getPostCode(), 2075, 1310);
 
         //register address same present address check
-        if (insured.getPerson().getRegistrationAddress() == null) {
+        if (person.getRegistrationAddress() == null) {
             //register address same present address mark
             g1.drawString(MARK, 480, 1365);
         } else {
             //register address number
-            g1.drawString(insured.getPerson().getRegistrationAddress().getStreetAddress1(), 485, 1440);
+            g1.drawString(person.getRegistrationAddress().getStreetAddress1(), 485, 1440);
             //register address road
-            g1.drawString(solveNullValue(insured.getPerson().getRegistrationAddress().getStreetAddress2()), 320, 1515);
+            g1.drawString(solveNullValue(person.getRegistrationAddress().getStreetAddress2()), 320, 1515);
             //register address sub district
-            g1.drawString(insured.getPerson().getRegistrationAddress().getSubdistrict(), 1480, 1515);
+            g1.drawString(person.getRegistrationAddress().getSubdistrict(), 1480, 1515);
             //register address district
-            g1.drawString(insured.getPerson().getRegistrationAddress().getDistrict(), 340, 1590);
+            g1.drawString(person.getRegistrationAddress().getDistrict(), 340, 1590);
             //register address province
-            g1.drawString(insured.getPerson().getRegistrationAddress().getSubCountry(), 1165, 1590);
+            g1.drawString(person.getRegistrationAddress().getSubCountry(), 1165, 1590);
             //register address zipcode
-            g1.drawString(insured.getPerson().getRegistrationAddress().getPostCode(), 2070, 1590);
+            g1.drawString(person.getRegistrationAddress().getPostCode(), 2070, 1590);
         }
 
         //contact telephone
-        g1.drawString(insured.getPerson().getHomePhoneNumber().getNumber(), 315, 1720);
+        if (person.getHomePhoneNumber() != null && person.getHomePhoneNumber().getNumber() != null) {
+            g1.drawString(person.getHomePhoneNumber().getNumber(), 315, 1720);
+        }
         //contact mobile
-        g1.drawString(insured.getPerson().getMobilePhoneNumber().getNumber(), 1490, 1720);
+        if (person.getMobilePhoneNumber() != null && person.getMobilePhoneNumber().getNumber() != null) {
+            g1.drawString(person.getMobilePhoneNumber().getNumber(), 1490, 1720);
+        }
+
         //contact email
-        g1.drawString(insured.getPerson().getEmail(), 270, 1795);
+        g1.drawString(person.getEmail(), 270, 1795);
 
         /*
         //occupation constructor
@@ -171,15 +202,25 @@ public class ApplicationFormService {
         */
 
         //occupation position
-        g1.drawString(insured.getProfessionName(), 285, 2230);
+        if (insured.getProfessionName() != null) {
+            g1.drawString(insured.getProfessionName(), 285, 2230);
+        }
         //occupation job description
-        g1.drawString(insured.getProfessionDescription(), 375, 2305);
+        if (insured.getProfessionDescription() != null) {
+            g1.drawString(insured.getProfessionDescription(), 375, 2305);
+        }
         //annual income
-        g1.drawString(MONEY_FORMAT.format(Integer.parseInt(insured.getAnnualIncome(), 10)), 310, 2375);
+        if (insured.getAnnualIncome() != null) {
+            g1.drawString(MONEY_FORMAT.format(Integer.parseInt(insured.getAnnualIncome(), 10)), 310, 2375);
+        }
         //source income
-        g1.drawString(pol.getInsureds().get(0).getIncomeSource(), 1230, 2375);
+        if (insured.getIncomeSource() != null) {
+            g1.drawString(insured.getIncomeSource(), 1230, 2375);
+        }
         //working location
-        g1.drawString(pol.getInsureds().get(0).getEmployerName(), 345, 2455);
+        if (insured.getEmployerName() != null) {
+            g1.drawString(insured.getEmployerName(), 345, 2455);
+        }
 
         if (pol.getCommonData().getProductId().equals(ProductType.PRODUCT_IFINE.name())) {
             //product ifine select mark
@@ -203,9 +244,16 @@ public class ApplicationFormService {
             g1.drawString(MONEY_FORMAT.format(pol.getPremiumsData().getProduct10ECPremium().getSumInsured().getValue()), 1790, 2705);
         }
 
-        //page2
+        return getImageBytes(bf1);
+    }
+
+    public byte[] getPage2(Policy pol) throws Exception {
+        InputStream is2 = getClass().getClassLoader().getResourceAsStream("application-form/application-form-2.png");
+        BufferedImage bf2 = ImageIO.read(is2);
         Graphics g2 = bf2.getGraphics();
         g2 = setGraphicColorAndFont(g2);
+        Insured insured = pol.getInsureds().get(0);
+        Person person = insured.getPerson();
 
         //coverage period
         g2.drawString(String.valueOf(pol.getCommonData().getNbOfYearsOfCoverage()), 435, 130);
@@ -213,32 +261,32 @@ public class ApplicationFormService {
         g2.drawString(String.valueOf(pol.getCommonData().getNbOfYearsOfPremium()), 1025, 130);
 
         //dividend option
-        if (pol.getPremiumsData().getProduct10ECPremium().getDividendOption().equals(DividendOption.YEARLY_CASH)) {
+        if (pol.getPremiumsData().getProduct10ECPremium().getDividendOption().equals(YEARLY_CASH)) {
             //divident option 1
             g2.drawString(MARK, 105, 275);
             //divident option 1.1
             g2.drawString(MARK, 165, 345);
-        } else if (pol.getPremiumsData().getProduct10ECPremium().getDividendOption().equals(DividendOption.YEARLY_FOR_NEXT_PREMIUM)) {
+        } else if (pol.getPremiumsData().getProduct10ECPremium().getDividendOption().equals(YEARLY_FOR_NEXT_PREMIUM)) {
             //divident option 1
             g2.drawString(MARK, 105, 275);
             //divident option 1.2
             g2.drawString(MARK, 165, 415);
-        } else if (pol.getPremiumsData().getProduct10ECPremium().getDividendOption().equals(DividendOption.IN_FINE)) {
+        } else if (pol.getPremiumsData().getProduct10ECPremium().getDividendOption().equals(IN_FINE)) {
             //divident option 2
             g2.drawString(MARK, 105, 555);
         }
 
         //payment mode
-        if (pol.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().equals(PeriodicityCode.EVERY_MONTH)) {
+        if (pol.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().equals(EVERY_MONTH)) {
             //payment mode 1 m
             g2.drawString(MARK, 1440, 195);
-        } else if (pol.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().equals(PeriodicityCode.EVERY_HALF_YEAR)) {
+        } else if (pol.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().equals(EVERY_HALF_YEAR)) {
             //payment mode 6 m
             g2.drawString(MARK, 1650, 195);
-        } else if (pol.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().equals(PeriodicityCode.EVERY_QUARTER)) {
+        } else if (pol.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().equals(EVERY_QUARTER)) {
             //payment mode 3 m
             g2.drawString(MARK, 1900, 195);
-        } else if (pol.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().equals(PeriodicityCode.EVERY_YEAR)) {
+        } else if (pol.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().equals(EVERY_YEAR)) {
             //payment mode 12 m
             g2.drawString(MARK, 2160, 195);
         }
@@ -267,7 +315,7 @@ public class ApplicationFormService {
         //weight
         g2.drawString(String.valueOf(pol.getInsureds().get(0).getHealthStatus().getWeightInKg()), 740, 730);
         //insure name
-        g2.drawString(insured.getPerson().getGivenName() + " " + insured.getPerson().getSurName(), 705, 920);
+        g2.drawString(person.getGivenName() + " " + person.getSurName(), 705, 920);
 
         //gender
         if (pol.getInsureds().get(0).getPerson().getGenderCode().equals(GenderCode.MALE)) {
@@ -314,7 +362,12 @@ public class ApplicationFormService {
         //fatca 2
         g2.drawString(MARK, 170, 3360);
 
-        //page3
+        return getImageBytes(bf2);
+    }
+
+    public byte[] getPage3() throws Exception {
+        InputStream is3 = getClass().getClassLoader().getResourceAsStream("application-form/application-form-3.png");
+        BufferedImage bf3 = ImageIO.read(is3);
         Graphics g3 = bf3.getGraphics();
         g3 = setGraphicColorAndFont(g3);
 
@@ -363,48 +416,7 @@ public class ApplicationFormService {
         //agent code 13
         g3.drawString("4", 925, 2870);
 
-        //generate page1
-        File outputfile1 = new File("D:\\test\\application-form-1-merged.png");
-        ImageIO.write(bf1, "png", outputfile1);
-
-        //generate page2
-        File outputfile2 = new File("D:\\test\\application-form-2-merged.png");
-        ImageIO.write(bf2, "png", outputfile2);
-
-        //generate page3
-        File outputfile3 = new File("D:\\test\\application-form-3-merged.png");
-        ImageIO.write(bf3, "png", outputfile3);
-
-        //create pdf file
-        Document document = new Document(PageSize.A4);
-        PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream("D:\\test\\application-form-1-merged.pdf"));
-        document.open();
-
-        //merge page1
-        PdfContentByte canvas1 = writer.getDirectContentUnder();
-        Image image1 = Image.getInstance("D:\\test\\application-form-1-merged.png");
-        image1.scaleAbsolute(PageSize.A4);
-        image1.setAbsolutePosition(0, 0);
-        canvas1.addImage(image1);
-
-        //merge page2
-        document.newPage();
-        PdfContentByte canvas2 = writer.getDirectContentUnder();
-        Image image2 = Image.getInstance("D:\\test\\application-form-2-merged.png");
-        image2.scaleAbsolute(PageSize.A4);
-        image2.setAbsolutePosition(0, 0);
-        canvas2.addImage(image2);
-
-        //merge page3
-        document.newPage();
-        PdfContentByte canvas3 = writer.getDirectContentUnder();
-        Image image3 = Image.getInstance("D:\\test\\application-form-3-merged.png");
-        image3.scaleAbsolute(PageSize.A4);
-        image3.setAbsolutePosition(0, 0);
-        canvas3.addImage(image3);
-
-        document.close();
-
+        return getImageBytes(bf3);
     }
 
     private List<Integer> getBenefitPositionY() {
@@ -419,6 +431,10 @@ public class ApplicationFormService {
     }
 
     private String generateAddress(GeographicalAddress g) {
+        if (g == null) {
+            return "";
+        }
+
         String out = "";
         out += g.getStreetAddress1();
         out += " " + g.getStreetAddress2();
@@ -432,13 +448,13 @@ public class ApplicationFormService {
 
     private Double getYearlyPremium(Double premium, PeriodicityCode mode) {
         Double premiumPerYear = 0.0;
-        if (mode.equals(PeriodicityCode.EVERY_YEAR)) {
+        if (mode.equals(EVERY_YEAR)) {
             premiumPerYear = premium;
-        } else if (mode.equals(PeriodicityCode.EVERY_HALF_YEAR)) {
+        } else if (mode.equals(EVERY_HALF_YEAR)) {
             premiumPerYear = premium * 2;
-        } else if (mode.equals(PeriodicityCode.EVERY_QUARTER)) {
+        } else if (mode.equals(EVERY_QUARTER)) {
             premiumPerYear = premium * 4;
-        } else if (mode.equals(PeriodicityCode.EVERY_MONTH)) {
+        } else if (mode.equals(EVERY_MONTH)) {
             premiumPerYear = premium * 12;
         }
         return premiumPerYear;
@@ -467,6 +483,15 @@ public class ApplicationFormService {
         g.setColor(FONT_COLOR);
         g.setFont(new Font(FONT_NAME, Font.BOLD, 100));
         return g;
+    }
+
+    private byte[] getImageBytes(BufferedImage bf1) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write(bf1, "png", baos);
+        baos.flush();
+        byte[] content = baos.toByteArray();
+        baos.close();
+        return content;
     }
 
 }
