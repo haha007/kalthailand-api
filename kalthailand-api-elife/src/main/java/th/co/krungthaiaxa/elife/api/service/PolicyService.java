@@ -1,5 +1,8 @@
 package th.co.krungthaiaxa.elife.api.service;
 
+import com.itextpdf.text.*;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.pdf.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -7,6 +10,7 @@ import th.co.krungthaiaxa.elife.api.data.PolicyNumber;
 import th.co.krungthaiaxa.elife.api.exception.PolicyValidationException;
 import th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.elife.api.model.*;
+import th.co.krungthaiaxa.elife.api.model.Document;
 import th.co.krungthaiaxa.elife.api.model.enums.ChannelType;
 import th.co.krungthaiaxa.elife.api.model.enums.PaymentStatus;
 import th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus;
@@ -18,10 +22,9 @@ import th.co.krungthaiaxa.elife.api.utils.ThaiBahtUtil;
 import javax.imageio.ImageIO;
 import javax.inject.Inject;
 import java.awt.*;
+import java.awt.Font;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -42,6 +45,7 @@ public class PolicyService {
 
     private final static String ERECEIPT_MERGED_FILE_NAME = "ereceipts_merged.png";
     private final static String ERECEIPT_TEMPLATE_FILE_NAME = "AGENT-WHITE-FINAL.jpg";
+    private final static String ERECEIPT_PDF_BLANK_FILE_NAME = "blank.pdf";
     private final PaymentRepository paymentRepository;
     private final PolicyRepository policyRepository;
     private final PolicyNumberRepository policyNumberRepository;
@@ -162,6 +166,42 @@ public class PolicyService {
         paymentRepository.save(payment);
 
         return policy;
+    }
+
+    public byte[] createEreceiptPDF(byte[] eReceiptImage)throws Exception{
+
+
+
+
+
+
+
+
+
+
+
+        com.itextpdf.text.Document document
+                = new com.itextpdf.text.Document(PageSize.A4.rotate());
+        // step 2
+        PdfWriter writer
+                = PdfWriter.getInstance(document, new FileOutputStream("C:\\Users\\santilik\\Desktop\\temp\\merge.pdf"));
+        writer.setCompressionLevel(0);
+        // step 3
+        document.open();
+        // step 4
+        Image img = Image.getInstance("C:\\Users\\santilik\\Desktop\\temp\\AGENT-WHITE-FINAL.jpg");
+        img.scalePercent(50);
+        img.setAbsolutePosition(100,30);
+        writer.getDirectContent().addImage(img);
+        //Paragraph p = new Paragraph("Foobar Film Festival", n Font(FontFamily.HELVETICA, 22));
+        //p.setAlignment(Element.ALIGN_CENTER);
+        //document.add(p);
+        // step 5
+        document.close();
+
+        return null;
+
+
     }
 
     public byte[] createEreceipt(Policy policy) throws IOException {
