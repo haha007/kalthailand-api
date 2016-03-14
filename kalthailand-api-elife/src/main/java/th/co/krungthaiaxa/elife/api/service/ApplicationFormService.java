@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.elife.api.model.CoverageBeneficiary;
 import th.co.krungthaiaxa.elife.api.model.GeographicalAddress;
+import th.co.krungthaiaxa.elife.api.model.Insured;
 import th.co.krungthaiaxa.elife.api.model.Policy;
 import th.co.krungthaiaxa.elife.api.model.enums.DividendOption;
 import th.co.krungthaiaxa.elife.api.model.enums.GenderCode;
@@ -30,37 +31,24 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.List;
 
-/**
- * Created by santilik on 3/4/2016.
- */
-
 @Service
 public class ApplicationFormService {
 
     private final static Logger logger = LoggerFactory.getLogger(ApplicationFormService.class);
 
-    private final String APPLICATION_FROM_1 = "application-form-1.png";
-    private final String APPLICATION_FROM_2 = "application-form-2.png";
-    private final String APPLICATION_FROM_3 = "application-form-3.png";
     private final String FONT_NAME = "Angsana New";
-    private final Integer FONT_SIZE = 50;
-    private final Integer FONT_SIZE_BIG = 100;
     private final Color FONT_COLOR = Color.BLACK;
-    private final String MARK = "X";
     private final String ID_CARD_DOC = "Thai ID Card number";
-    private final Integer INDX = 0;
     private final DecimalFormat MONEY_FORMAT = new DecimalFormat("#,##0.00");
 
-    public void generatePdfForm(Policy pol)throws Exception{
-
-        InputStream is1 = getClass().getClassLoader().getResourceAsStream("application-form/" + APPLICATION_FROM_1);
-        InputStream is2 = getClass().getClassLoader().getResourceAsStream("application-form/" + APPLICATION_FROM_2);
-        InputStream is3 = getClass().getClassLoader().getResourceAsStream("application-form/" + APPLICATION_FROM_3);
-
+    public void generatePdfForm(Policy pol) throws Exception {
+        InputStream is1 = getClass().getClassLoader().getResourceAsStream("application-form/application-form-1.png");
+        InputStream is2 = getClass().getClassLoader().getResourceAsStream("application-form/application-form-2.png");
+        InputStream is3 = getClass().getClassLoader().getResourceAsStream("application-form/application-form-3.png");
 
         BufferedImage bf1 = ImageIO.read(is1);
         BufferedImage bf2 = ImageIO.read(is2);
-        BufferedImage bf3= ImageIO.read(is3);
+        BufferedImage bf3 = ImageIO.read(is3);
 
         //page1
         Graphics g1 = bf1.getGraphics();
@@ -72,13 +60,15 @@ public class ApplicationFormService {
         g1 = setGraphicColorAndFont(g1);
 
         //Name
-        g1.drawString(pol.getInsureds().get(INDX).getPerson().getGivenName()+" "+pol.getInsureds().get(INDX).getPerson().getSurName(), 630, 775);
+        Insured insured = pol.getInsureds().get(0);
+        g1.drawString(insured.getPerson().getGivenName() + " " + insured.getPerson().getSurName(), 630, 775);
 
         //gender
-        if(pol.getInsureds().get(INDX).getPerson().getGenderCode().equals(GenderCode.MALE)){
+        String MARK = "X";
+        if (insured.getPerson().getGenderCode().equals(GenderCode.MALE)) {
             //Gender mail
             g1.drawString(MARK, 1580, 780);
-        }else{
+        } else {
             //Gender femail
             g1.drawString(MARK, 1730, 780);
         }
@@ -87,25 +77,25 @@ public class ApplicationFormService {
         g1.drawString("ไทย", 2070, 775);
 
         //marital status
-        if(pol.getInsureds().get(INDX).getPerson().getMaritalStatus().equals(MaritalStatus.SINGLE)){
+        if (insured.getPerson().getMaritalStatus().equals(MaritalStatus.SINGLE)) {
             //Marital status 1
             g1.drawString(MARK, 290, 850);
-        }else if(pol.getInsureds().get(INDX).getPerson().getMaritalStatus().equals(MaritalStatus.MARRIED)){
+        } else if (insured.getPerson().getMaritalStatus().equals(MaritalStatus.MARRIED)) {
             //Marital status 2
             g1.drawString(MARK, 435, 850);
-        }else if(pol.getInsureds().get(INDX).getPerson().getMaritalStatus().equals(MaritalStatus.DIVORCED)){
+        } else if (insured.getPerson().getMaritalStatus().equals(MaritalStatus.DIVORCED)) {
             //Marital status 3
             g1.drawString(MARK, 603, 850);
-        }else{
+        } else {
             //Marital status 4
             g1.drawString(MARK, 773, 850);
         }
 
         //Age
-        g1.drawString(String.valueOf(pol.getInsureds().get(INDX).getAgeAtSubscription()), 1063, 845);
+        g1.drawString(String.valueOf(insured.getAgeAtSubscription()), 1063, 845);
 
         //birthdate
-        Map<String,String> birthDate = doSplitDateOfBirth(pol.getInsureds().get(INDX).getPerson().getBirthDate());
+        Map<String, String> birthDate = doSplitDateOfBirth(insured.getPerson().getBirthDate());
         //date of birthday
         g1.drawString(birthDate.get("date"), 1430, 845);
         //month of birthday
@@ -114,7 +104,7 @@ public class ApplicationFormService {
         g1.drawString(birthDate.get("year"), 2100, 845);
 
         //document display
-        if(pol.getInsureds().get(INDX).getPerson().getRegistrations().get(0).getTypeName().equals(ID_CARD_DOC)){
+        if (insured.getPerson().getRegistrations().get(0).getTypeName().equals(ID_CARD_DOC)) {
             //document display id card
             g1.drawString(MARK, 395, 915);
         }
@@ -126,46 +116,46 @@ public class ApplicationFormService {
         */
 
         //id card number or passport number
-        g1.drawString(pol.getInsureds().get(INDX).getPerson().getRegistrations().get(0).getId(), 750, 995);
+        g1.drawString(insured.getPerson().getRegistrations().get(0).getId(), 750, 995);
 
         //present address number
-        g1.drawString(pol.getInsureds().get(INDX).getPerson().getCurrentAddress().getStreetAddress1(), 485, 1160);
+        g1.drawString(insured.getPerson().getCurrentAddress().getStreetAddress1(), 485, 1160);
         //present address road
-        g1.drawString(solveNullValue(pol.getInsureds().get(INDX).getPerson().getCurrentAddress().getStreetAddress2()), 330, 1235);
+        g1.drawString(solveNullValue(insured.getPerson().getCurrentAddress().getStreetAddress2()), 330, 1235);
         //present address sub district
-        g1.drawString(pol.getInsureds().get(INDX).getPerson().getCurrentAddress().getSubdistrict(), 1485, 1235);
+        g1.drawString(insured.getPerson().getCurrentAddress().getSubdistrict(), 1485, 1235);
         //present address district
-        g1.drawString(pol.getInsureds().get(INDX).getPerson().getCurrentAddress().getDistrict(), 340, 1310);
+        g1.drawString(insured.getPerson().getCurrentAddress().getDistrict(), 340, 1310);
         //present address province
-        g1.drawString(pol.getInsureds().get(INDX).getPerson().getCurrentAddress().getSubCountry(), 1170, 1310);
+        g1.drawString(insured.getPerson().getCurrentAddress().getSubCountry(), 1170, 1310);
         //present address zipcode
-        g1.drawString(pol.getInsureds().get(INDX).getPerson().getCurrentAddress().getPostCode(), 2075, 1310);
+        g1.drawString(insured.getPerson().getCurrentAddress().getPostCode(), 2075, 1310);
 
         //register address same present address check
-        if(pol.getInsureds().get(INDX).getPerson().getRegistrationAddress()==null){
+        if (insured.getPerson().getRegistrationAddress() == null) {
             //register address same present address mark
             g1.drawString(MARK, 480, 1365);
-        }else{
+        } else {
             //register address number
-            g1.drawString(pol.getInsureds().get(INDX).getPerson().getRegistrationAddress().getStreetAddress1(), 485, 1440);
+            g1.drawString(insured.getPerson().getRegistrationAddress().getStreetAddress1(), 485, 1440);
             //register address road
-            g1.drawString(solveNullValue(pol.getInsureds().get(INDX).getPerson().getRegistrationAddress().getStreetAddress2()), 320, 1515);
+            g1.drawString(solveNullValue(insured.getPerson().getRegistrationAddress().getStreetAddress2()), 320, 1515);
             //register address sub district
-            g1.drawString(pol.getInsureds().get(INDX).getPerson().getRegistrationAddress().getSubdistrict(), 1480, 1515);
+            g1.drawString(insured.getPerson().getRegistrationAddress().getSubdistrict(), 1480, 1515);
             //register address district
-            g1.drawString(pol.getInsureds().get(INDX).getPerson().getRegistrationAddress().getDistrict(), 340, 1590);
+            g1.drawString(insured.getPerson().getRegistrationAddress().getDistrict(), 340, 1590);
             //register address province
-            g1.drawString(pol.getInsureds().get(INDX).getPerson().getRegistrationAddress().getSubCountry(), 1165, 1590);
+            g1.drawString(insured.getPerson().getRegistrationAddress().getSubCountry(), 1165, 1590);
             //register address zipcode
-            g1.drawString(pol.getInsureds().get(INDX).getPerson().getRegistrationAddress().getPostCode(), 2070, 1590);
+            g1.drawString(insured.getPerson().getRegistrationAddress().getPostCode(), 2070, 1590);
         }
 
         //contact telephone
-        g1.drawString(pol.getInsureds().get(INDX).getPerson().getHomePhoneNumber().getNumber(), 315, 1720);
+        g1.drawString(insured.getPerson().getHomePhoneNumber().getNumber(), 315, 1720);
         //contact mobile
-        g1.drawString(pol.getInsureds().get(INDX).getPerson().getMobilePhoneNumber().getNumber(), 1490, 1720);
+        g1.drawString(insured.getPerson().getMobilePhoneNumber().getNumber(), 1490, 1720);
         //contact email
-        g1.drawString(pol.getInsureds().get(INDX).getPerson().getEmail(), 270, 1795);
+        g1.drawString(insured.getPerson().getEmail(), 270, 1795);
 
         /*
         //occupation constructor
@@ -181,17 +171,17 @@ public class ApplicationFormService {
         */
 
         //occupation position
-        g1.drawString(pol.getInsureds().get(INDX).getProfessionName(), 285, 2230);
+        g1.drawString(insured.getProfessionName(), 285, 2230);
         //occupation job description
-        g1.drawString(pol.getInsureds().get(INDX).getProfessionDescription(), 375, 2305);
+        g1.drawString(insured.getProfessionDescription(), 375, 2305);
         //annual income
-        g1.drawString(MONEY_FORMAT.format(Integer.parseInt(pol.getInsureds().get(INDX).getAnnualIncome(),10)), 310, 2375);
+        g1.drawString(MONEY_FORMAT.format(Integer.parseInt(insured.getAnnualIncome(), 10)), 310, 2375);
         //source income
         g1.drawString(pol.getInsureds().get(0).getIncomeSource(), 1230, 2375);
         //working location
         g1.drawString(pol.getInsureds().get(0).getEmployerName(), 345, 2455);
 
-        if(pol.getCommonData().getProductId().equals(ProductType.PRODUCT_IFINE.name())){
+        if (pol.getCommonData().getProductId().equals(ProductType.PRODUCT_IFINE.name())) {
             //product ifine select mark
             g1.drawString(MARK, 155, 2620);
             //ifine plan 1
@@ -204,7 +194,7 @@ public class ApplicationFormService {
             g1.drawString(MARK, 1005, 2765);
             //ifine plan 5
             g1.drawString(MARK, 1210, 2765);
-        }else if(pol.getCommonData().getProductId().equals(ProductType.PRODUCT_10_EC.name())){
+        } else if (pol.getCommonData().getProductId().equals(ProductType.PRODUCT_10_EC.name())) {
             //other product mark
             g1.drawString(MARK, 1445, 2565);
             //product 10ec
@@ -223,38 +213,38 @@ public class ApplicationFormService {
         g2.drawString(String.valueOf(pol.getCommonData().getNbOfYearsOfPremium()), 1025, 130);
 
         //dividend option
-        if(pol.getPremiumsData().getProduct10ECPremium().getDividendOption().equals(DividendOption.YEARLY_CASH)){
+        if (pol.getPremiumsData().getProduct10ECPremium().getDividendOption().equals(DividendOption.YEARLY_CASH)) {
             //divident option 1
             g2.drawString(MARK, 105, 275);
             //divident option 1.1
             g2.drawString(MARK, 165, 345);
-        }else if(pol.getPremiumsData().getProduct10ECPremium().getDividendOption().equals(DividendOption.YEARLY_FOR_NEXT_PREMIUM)){
+        } else if (pol.getPremiumsData().getProduct10ECPremium().getDividendOption().equals(DividendOption.YEARLY_FOR_NEXT_PREMIUM)) {
             //divident option 1
             g2.drawString(MARK, 105, 275);
             //divident option 1.2
             g2.drawString(MARK, 165, 415);
-        }else if(pol.getPremiumsData().getProduct10ECPremium().getDividendOption().equals(DividendOption.IN_FINE)){
+        } else if (pol.getPremiumsData().getProduct10ECPremium().getDividendOption().equals(DividendOption.IN_FINE)) {
             //divident option 2
             g2.drawString(MARK, 105, 555);
         }
 
         //payment mode
-        if(pol.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().equals(PeriodicityCode.EVERY_MONTH)){
+        if (pol.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().equals(PeriodicityCode.EVERY_MONTH)) {
             //payment mode 1 m
             g2.drawString(MARK, 1440, 195);
-        }else if(pol.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().equals(PeriodicityCode.EVERY_HALF_YEAR)){
+        } else if (pol.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().equals(PeriodicityCode.EVERY_HALF_YEAR)) {
             //payment mode 6 m
             g2.drawString(MARK, 1650, 195);
-        }else if(pol.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().equals(PeriodicityCode.EVERY_QUARTER)){
+        } else if (pol.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().equals(PeriodicityCode.EVERY_QUARTER)) {
             //payment mode 3 m
             g2.drawString(MARK, 1900, 195);
-        }else if(pol.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().equals(PeriodicityCode.EVERY_YEAR)){
+        } else if (pol.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().equals(PeriodicityCode.EVERY_YEAR)) {
             //payment mode 12 m
             g2.drawString(MARK, 2160, 195);
         }
 
         //premium
-        g2.drawString(MONEY_FORMAT.format(getYearlyPremium(pol.getPremiumsData().getFinancialScheduler().getModalAmount().getValue(),pol.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode())), 1705, 260);
+        g2.drawString(MONEY_FORMAT.format(getYearlyPremium(pol.getPremiumsData().getFinancialScheduler().getModalAmount().getValue(), pol.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode())), 1705, 260);
         //nb premium
         g2.drawString(MONEY_FORMAT.format(pol.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()), 1930, 330);
 
@@ -277,13 +267,13 @@ public class ApplicationFormService {
         //weight
         g2.drawString(String.valueOf(pol.getInsureds().get(0).getHealthStatus().getWeightInKg()), 740, 730);
         //insure name
-        g2.drawString(pol.getInsureds().get(INDX).getPerson().getGivenName()+" "+pol.getInsureds().get(INDX).getPerson().getSurName(), 705, 920);
+        g2.drawString(insured.getPerson().getGivenName() + " " + insured.getPerson().getSurName(), 705, 920);
 
         //gender
-        if(pol.getInsureds().get(0).getPerson().getGenderCode().equals(GenderCode.MALE)){
+        if (pol.getInsureds().get(0).getPerson().getGenderCode().equals(GenderCode.MALE)) {
             //insure gender mail
             g2.drawString(MARK, 1785, 925);
-        }else if(pol.getInsureds().get(0).getPerson().getGenderCode().equals(GenderCode.FEMALE)) {
+        } else if (pol.getInsureds().get(0).getPerson().getGenderCode().equals(GenderCode.FEMALE)) {
             //insure gender femail
             g2.drawString(MARK, 1930, 925);
         }
@@ -297,10 +287,10 @@ public class ApplicationFormService {
 
         List<Integer> listY = getBenefitPositionY();
         List<CoverageBeneficiary> allBenefit = pol.getCoverages().get(0).getBeneficiaries();
-        for(Integer a=0;a<allBenefit.size();a++){
+        for (Integer a = 0; a < allBenefit.size(); a++) {
             CoverageBeneficiary benefit = pol.getCoverages().get(0).getBeneficiaries().get(a);
             //benefit name
-            g2.drawString(benefit.getPerson().getGivenName()+" "+benefit.getPerson().getSurName(), 170, listY.get(a));
+            g2.drawString(benefit.getPerson().getGivenName() + " " + benefit.getPerson().getSurName(), 170, listY.get(a));
             //benefit age
             g2.drawString(String.valueOf(benefit.getAgeAtSubscription()), 740, listY.get(a));
             //benefit relation
@@ -417,7 +407,7 @@ public class ApplicationFormService {
 
     }
 
-    private List<Integer> getBenefitPositionY(){
+    private List<Integer> getBenefitPositionY() {
         List<Integer> listY = new ArrayList<>();
         listY.add(1385);
         listY.add(1465);
@@ -428,7 +418,7 @@ public class ApplicationFormService {
         return listY;
     }
 
-    private String generateAddress(GeographicalAddress g){
+    private String generateAddress(GeographicalAddress g) {
         String out = "";
         out += g.getStreetAddress1();
         out += " " + g.getStreetAddress2();
@@ -440,42 +430,42 @@ public class ApplicationFormService {
         return out;
     }
 
-    private Double getYearlyPremium(Double premium, PeriodicityCode mode){
+    private Double getYearlyPremium(Double premium, PeriodicityCode mode) {
         Double premiumPerYear = 0.0;
-        if(mode.equals(PeriodicityCode.EVERY_YEAR)){
+        if (mode.equals(PeriodicityCode.EVERY_YEAR)) {
             premiumPerYear = premium;
-        }else if(mode.equals(PeriodicityCode.EVERY_HALF_YEAR)){
+        } else if (mode.equals(PeriodicityCode.EVERY_HALF_YEAR)) {
             premiumPerYear = premium * 2;
-        }else if(mode.equals(PeriodicityCode.EVERY_QUARTER)){
-            premiumPerYear = premium *4;
-        }else if(mode.equals(PeriodicityCode.EVERY_MONTH)){
+        } else if (mode.equals(PeriodicityCode.EVERY_QUARTER)) {
+            premiumPerYear = premium * 4;
+        } else if (mode.equals(PeriodicityCode.EVERY_MONTH)) {
             premiumPerYear = premium * 12;
         }
         return premiumPerYear;
     }
 
-    private String solveNullValue(String s){
-        return (StringUtils.isBlank(s)?"":s);
+    private String solveNullValue(String s) {
+        return (StringUtils.isBlank(s) ? "" : s);
     }
 
-    private Map<String,String> doSplitDateOfBirth(LocalDate birthDate){
-        Map<String,String> m = new HashMap<>();
-        m.put("date",(new DecimalFormat("00")).format(birthDate.getDayOfMonth()));
-        DateFormatSymbols dfs = new DateFormatSymbols(new Locale("th","TH"));
-        m.put("month",dfs.getMonths()[(birthDate.getMonthValue()-1)]);
-        m.put("year",String.valueOf(birthDate.getYear()+543));
+    private Map<String, String> doSplitDateOfBirth(LocalDate birthDate) {
+        Map<String, String> m = new HashMap<>();
+        m.put("date", (new DecimalFormat("00")).format(birthDate.getDayOfMonth()));
+        DateFormatSymbols dfs = new DateFormatSymbols(new Locale("th", "TH"));
+        m.put("month", dfs.getMonths()[(birthDate.getMonthValue() - 1)]);
+        m.put("year", String.valueOf(birthDate.getYear() + 543));
         return m;
     }
 
-    private Graphics setGraphicColorAndFont(Graphics g){
+    private Graphics setGraphicColorAndFont(Graphics g) {
         g.setColor(FONT_COLOR);
-        g.setFont(new Font(FONT_NAME, Font.BOLD, FONT_SIZE));
+        g.setFont(new Font(FONT_NAME, Font.BOLD, 50));
         return g;
     }
 
-    private Graphics setGraphicColorAndFontBigText(Graphics g){
+    private Graphics setGraphicColorAndFontBigText(Graphics g) {
         g.setColor(FONT_COLOR);
-        g.setFont(new Font(FONT_NAME, Font.BOLD, FONT_SIZE_BIG));
+        g.setFont(new Font(FONT_NAME, Font.BOLD, 100));
         return g;
     }
 
