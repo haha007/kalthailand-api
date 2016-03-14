@@ -61,7 +61,7 @@ public class ApplicationFormServiceTest {
         return financialScheduler;
     }
 
-    private Product10ECPremium getLifeInsurance(Integer indx, Double sumInsured, Double datedAmountValue, DividendOption dividendOption){
+    private Product10ECPremium getProduct10ECPremium(Integer indx, Double sumInsured, Double datedAmountValue, DividendOption dividendOption){
         Product10ECPremium product10ECPremium = new Product10ECPremium();
         product10ECPremium.setSumInsured(getAmount(sumInsured,CURRENCY_CODE));
         List<DatedAmount> listyearlyCashBacks = new ArrayList<>();
@@ -185,7 +185,7 @@ public class ApplicationFormServiceTest {
 
         PremiumsData premiumData = new PremiumsData();
         premiumData.setFinancialScheduler(getFinancialScheduler(PeriodicityCode.EVERY_HALF_YEAR,30800.0));
-        premiumData.setProduct10ECPremium(getLifeInsurance(10, 100000.0, 2000.0, DividendOption.YEARLY_CASH));
+        premiumData.setProduct10ECPremium(getProduct10ECPremium(10, 100000.0, 2000.0, DividendOption.YEARLY_CASH));
 
         pol.setPremiumsData(premiumData);
 
