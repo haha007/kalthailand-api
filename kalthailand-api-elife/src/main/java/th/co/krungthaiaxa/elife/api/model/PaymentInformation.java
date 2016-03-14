@@ -16,6 +16,7 @@ public class PaymentInformation {
     private String method;
     private SuccessErrorStatus status;
     private String creditCardName;
+    private String rejectionErrorCode;
     private String rejectionErrorMessage;
 
     @ApiModelProperty(required = true, value = "Date of the payment")
@@ -72,6 +73,15 @@ public class PaymentInformation {
         this.creditCardName = creditCardName;
     }
 
+    @ApiModelProperty(required = true, value = "Rejection error code if the payment was rejected")
+    public String getRejectionErrorCode() {
+        return rejectionErrorCode;
+    }
+
+    public void setRejectionErrorCode(String rejectionErrorCode) {
+        this.rejectionErrorCode = rejectionErrorCode;
+    }
+
     @ApiModelProperty(required = true, value = "Rejection error message if the payment was rejected")
     public String getRejectionErrorMessage() {
         return rejectionErrorMessage;
@@ -92,11 +102,12 @@ public class PaymentInformation {
                 Objects.equals(method, that.method) &&
                 status == that.status &&
                 Objects.equals(creditCardName, that.creditCardName) &&
+                Objects.equals(rejectionErrorCode, that.rejectionErrorCode) &&
                 Objects.equals(rejectionErrorMessage, that.rejectionErrorMessage);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(date, amount, channel, method, status, creditCardName, rejectionErrorMessage);
+        return Objects.hash(date, amount, channel, method, status, creditCardName, rejectionErrorCode, rejectionErrorMessage);
     }
 }

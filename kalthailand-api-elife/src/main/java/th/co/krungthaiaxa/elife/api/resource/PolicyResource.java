@@ -18,10 +18,12 @@ import th.co.krungthaiaxa.elife.api.service.EmailService;
 import th.co.krungthaiaxa.elife.api.service.PolicyService;
 import th.co.krungthaiaxa.elife.api.service.QuoteService;
 import th.co.krungthaiaxa.elife.api.utils.JsonUtil;
+
 import javax.inject.Inject;
 import java.io.IOException;
 import java.util.Base64;
 import java.util.Optional;
+
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
@@ -125,15 +127,17 @@ public class PolicyResource {
             @ApiParam(value = "The currency registered through the channel", required = true)
             @RequestParam String currencyCode,
             @ApiParam(value = "The registration key given by the channel (if any)", required = false)
-            @RequestParam String registrationKey,
+            @RequestParam Optional<String> registrationKey,
             @ApiParam(value = "The status of the transaction through the channel", required = true)
             @RequestParam SuccessErrorStatus status,
             @ApiParam(value = "The Channel", required = true)
             @RequestParam ChannelType channelType,
             @ApiParam(value = "The credit card name given by the channel (if any)", required = false)
-            @RequestParam String creditCardName,
+            @RequestParam Optional<String> creditCardName,
             @ApiParam(value = "The payment method given by the channel (if any)", required = false)
-            @RequestParam String paymentMethod,
+            @RequestParam Optional<String> paymentMethod,
+            @ApiParam(value = "The error message given by the channel (if any)", required = false)
+            @RequestParam Optional<String> errorCode,
             @ApiParam(value = "The error message given by the channel (if any)", required = false)
             @RequestParam Optional<String> errorMessage) {
         Policy policy;
@@ -152,7 +156,7 @@ public class PolicyResource {
 
         try {
             policy = policyService.updatePayment(policy, payment.get(), value, currencyCode, registrationKey, status,
-                    channelType, creditCardName, paymentMethod, errorMessage);
+                    channelType, creditCardName, paymentMethod, errorCode, errorMessage);
         } catch (IOException e) {
             logger.error("Unable to update the payment with ID [" + paymentId + "] in the policy with ID [" + policyId + "]");
             return new ResponseEntity<>(PAYMENT_NOT_UPDATED, INTERNAL_SERVER_ERROR);
@@ -161,13 +165,13 @@ public class PolicyResource {
         Optional<Document> documentPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(ERECEIPT_PDF)).findFirst();
         if (documentPdf.isPresent()) {
             try {
-                emailService.sendEreceiptEmail(policy,Pair.of(Base64.getDecoder().decode((documentService.downloadDocument(documentPdf.get().getId())).getContent()), "e-receipt_"+policy.getPolicyId()+".pdf"));
+                emailService.sendEreceiptEmail(policy, Pair.of(Base64.getDecoder().decode((documentService.downloadDocument(documentPdf.get().getId())).getContent()), "e-receipt_" + policy.getPolicyId() + ".pdf"));
             } catch (Exception e) {
-                logger.error(String.format("Unable to send e-receipt document while sending email with policy id is [%1$s]...",policy.getPolicyId()));
+                logger.error(String.format("Unable to send e-receipt document while sending email with policy id is [%1$s].", policy.getPolicyId()), e);
                 return new ResponseEntity<>(UNABLE_TO_SEND_EMAIL, INTERNAL_SERVER_ERROR);
             }
-        }else{
-            logger.error(String.format("E-receipt of policy [%1$s] is not available...",policy.getPolicyId()));
+        } else {
+            logger.error(String.format("E-receipt of policy [%1$s] is not available.", policy.getPolicyId()));
             return new ResponseEntity<>(UNABLE_TO_CREATE_ERECEIPT, INTERNAL_SERVER_ERROR);
         }
 

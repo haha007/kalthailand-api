@@ -101,9 +101,10 @@ public class PolicyService {
         return policy;
     }
 
-    public Policy updatePayment(Policy policy, Payment payment, Double value, String currencyCode, String registrationKey,
-                                SuccessErrorStatus status, ChannelType channelType, String creditCardName,
-                                String paymentMethod, Optional<String> errorMessage) throws IOException {
+    public Policy updatePayment(Policy policy, Payment payment, Double value, String currencyCode,
+                                Optional<String> registrationKey, SuccessErrorStatus status, ChannelType channelType,
+                                Optional<String> creditCardName, Optional<String> paymentMethod,
+                                Optional<String> errorCode, Optional<String> errorMessage) throws IOException {
         if (!currencyCode.equals(payment.getAmount().getCurrencyCode())) {
             status = ERROR;
             errorMessage = Optional.of("Currencies are different");
@@ -116,14 +117,15 @@ public class PolicyService {
         PaymentInformation paymentInformation = new PaymentInformation();
         paymentInformation.setAmount(amount);
         paymentInformation.setChannel(channelType);
-        paymentInformation.setCreditCardName(creditCardName);
+        paymentInformation.setCreditCardName(creditCardName.isPresent() ? creditCardName.get() : null);
         paymentInformation.setDate(LocalDate.now(ZoneId.of(ZoneId.SHORT_IDS.get("VST"))));
-        paymentInformation.setMethod(paymentMethod);
+        paymentInformation.setMethod(paymentMethod.isPresent() ? paymentMethod.get() : null);
+        paymentInformation.setRejectionErrorCode(errorCode.isPresent() ? errorCode.get() : null);
         paymentInformation.setRejectionErrorMessage(errorMessage.isPresent() ? errorMessage.get() : null);
         paymentInformation.setStatus(status);
         payment.getPaymentInformations().add(paymentInformation);
-        if (registrationKey != null && !registrationKey.equals(payment.getRegistrationKey())) {
-            payment.setRegistrationKey(registrationKey);
+        if (registrationKey.isPresent() && !registrationKey.get().equals(payment.getRegistrationKey())) {
+            payment.setRegistrationKey(registrationKey.get());
         }
 
         Double totalSuccesfulPayments = payment.getPaymentInformations()

@@ -1,6 +1,9 @@
 package th.co.krungthaiaxa.elife.api.resource;
 
+import com.icegreen.greenmail.junit.GreenMailRule;
+import com.icegreen.greenmail.util.ServerSetupTest;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
@@ -50,6 +53,8 @@ import static th.co.krungthaiaxa.elife.api.model.error.ErrorCode.QUOTE_DOES_NOT_
 @ActiveProfiles("test")
 @IntegrationTest({"server.port=0"})
 public class PolicyResourceTest {
+    @Rule
+    public final GreenMailRule greenMail = new GreenMailRule(ServerSetupTest.SMTP_IMAP);
     @Value("${api.security.user.name}")
     private String apiUserName;
     @Value("${api.security.user.password}")
