@@ -215,7 +215,7 @@ public class ApplicationFormService {
             g1.drawString(insured.getEmployerName(), 345, 2455);
         }
 
-        if (pol.getCommonData().getProductId().equals(ProductType.PRODUCT_IFINE.name())) {
+        if (pol.getCommonData().getProductId().equals(ProductType.PRODUCT_IFINE.getName())) {
             //product ifine select mark
             g1.drawString(MARK, 155, 2620);
             //ifine plan 1
@@ -228,7 +228,7 @@ public class ApplicationFormService {
             g1.drawString(MARK, 1005, 2765);
             //ifine plan 5
             g1.drawString(MARK, 1210, 2765);
-        } else if (pol.getCommonData().getProductId().equals(ProductType.PRODUCT_10_EC.name())) {
+        } else if (pol.getCommonData().getProductId().equals(ProductType.PRODUCT_10_EC.getName())) {
             //other product mark
             g1.drawString(MARK, 1445, 2565);
             //product 10ec

@@ -13,6 +13,7 @@ import th.co.krungthaiaxa.elife.api.KalApiApplication;
 import th.co.krungthaiaxa.elife.api.TestUtil;
 import th.co.krungthaiaxa.elife.api.exception.PolicyValidationException;
 import th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException;
+import th.co.krungthaiaxa.elife.api.model.Document;
 import th.co.krungthaiaxa.elife.api.model.Payment;
 import th.co.krungthaiaxa.elife.api.model.Policy;
 import th.co.krungthaiaxa.elife.api.model.Quote;
@@ -20,7 +21,10 @@ import th.co.krungthaiaxa.elife.api.utils.ImageUtil;
 
 import javax.inject.Inject;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Base64;
 import java.util.Optional;
 
 import static java.util.Optional.empty;
@@ -48,6 +52,9 @@ public class PolicyServiceTest {
     private PolicyService policyService;
     @Inject
     private QuoteService quoteService;
+    @Inject
+    private DocumentService documentService;
+
 
     @Test
     public void should_return_error_when_create_policy_if_quote_not_provided() throws Exception {

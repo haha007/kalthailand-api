@@ -173,7 +173,8 @@ public class PolicyResource {
         Optional<Document> documentPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(ERECEIPT_PDF)).findFirst();
         if (documentPdf.isPresent()) {
             try {
-                emailService.sendEreceiptEmail(policy, Pair.of(Base64.getDecoder().decode((documentService.downloadDocument(documentPdf.get().getId())).getContent()), "e-receipt_" + policy.getPolicyId() + ".pdf"));
+                byte[] eReceiptArray = policyService.createEreceiptPDF(Base64.getDecoder().decode((documentService.downloadDocument(documentPdf.get().getId())).getContent()));
+                emailService.sendEreceiptEmail(policy, Pair.of(Base64.getDecoder().decode(eReceiptArray), "e-receipt_" + policy.getPolicyId() + ".pdf"));
             } catch (Exception e) {
                 logger.error(String.format("Unable to send e-receipt document while sending email with policy id is [%1$s].", policy.getPolicyId()), e);
                 return new ResponseEntity<>(UNABLE_TO_SEND_EMAIL, INTERNAL_SERVER_ERROR);

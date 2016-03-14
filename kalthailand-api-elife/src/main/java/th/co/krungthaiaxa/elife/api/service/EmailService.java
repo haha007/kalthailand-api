@@ -9,6 +9,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.elife.api.model.Policy;
 import th.co.krungthaiaxa.elife.api.model.Quote;
+import th.co.krungthaiaxa.elife.api.products.ProductType;
 import th.co.krungthaiaxa.elife.api.utils.EmailSender;
 
 import javax.inject.Inject;
@@ -40,12 +41,16 @@ public class EmailService {
     private final static Logger logger = LoggerFactory.getLogger(EmailService.class);
     @Value("${email.name}")
     private String emailName;
-    @Value("${email.subject}")
+    @Value("${email.subject.quote}")
     private String subject;
     @Value("${lineid}")
     private String lineURL;
     @Value("${button.url.ereceipt.mail}")
     private String uploadDocURL;
+    @Value("${email.subject.ereceipt.10ec}")
+    private String emailSubjectFor10EC;
+    @Value("${email.subject.ereceipt.ifine}")
+    private String emailSubjectForIFine;
 
     public void sendQuoteEmail(Quote quote, String base64Image) throws Exception {
         List<Pair<byte[], String>> base64ImgFileNames = new ArrayList<>();
@@ -64,7 +69,13 @@ public class EmailService {
         base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/logo.png")), "<imageElife>"));
         List<Pair<byte[], String>> fileList = new ArrayList<>();
         fileList.add(attachFile);
-        emailSender.sendEmail(emailName, policy.getInsureds().get(0).getPerson().getEmail(), subject, getEreceiptEmailContent(policy), base64ImgFileNames, fileList);
+        String sbj = "";
+        if (policy.getCommonData().getProductId().equals(ProductType.PRODUCT_IFINE.getName())) {
+            sbj = emailSubjectForIFine;
+        } else if (policy.getCommonData().getProductId().equals(ProductType.PRODUCT_10_EC.getName())) {
+            sbj = emailSubjectFor10EC;
+        }
+        emailSender.sendEmail(emailName, policy.getInsureds().get(0).getPerson().getEmail(), sbj, getEreceiptEmailContent(policy), base64ImgFileNames, fileList);
     }
 
     private String getQuoteEmailContent(Quote quote) throws IOException {
@@ -87,8 +98,7 @@ public class EmailService {
     private String getEreceiptEmailContent(Policy policy) throws IOException {
         String emailContent = IOUtils.toString(this.getClass().getResourceAsStream("/email-ereceipt-content.txt"));
         return emailContent.replace("%1$s", policy.getInsureds().get(0).getPerson().getGivenName() + " " + policy.getInsureds().get(0).getPerson().getSurName())
-                .replace("%2$s", policy.getInsureds().get(0).getPerson().getGivenName() + " " + policy.getInsureds().get(0).getPerson().getSurName())
-                .replace("%3$s", uploadDocURL);
+                .replace("%2$s", policy.getInsureds().get(0).getPerson().getGivenName() + " " + policy.getInsureds().get(0).getPerson().getSurName());
     }
 
 }

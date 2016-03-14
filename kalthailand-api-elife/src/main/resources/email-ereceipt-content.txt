@@ -32,6 +32,7 @@
                     <img src="cid:imageElife">
                 </div>
             </picture>
+            <br/><br/>
             <tr><td>เรียนคุณ %1$s </td></tr>
             <tr><td>&nbsp;</td></tr>
             <tr>
@@ -52,6 +53,5 @@
             <tr><td>ขอแสดงความนับถือ</td></tr>
             <tr><td>กรุงไทย-แอกซ่า ประกันชีวิต</td></tr>
         </table>
-        <div style="text-align:center;margin-top:80px;"><a class="btn" href="%3$s">UPLOAD YOUR ID NOW</a></div>
     </body>
 </html>

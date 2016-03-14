@@ -226,7 +226,6 @@ public class EmailServiceTest {
         String bodyAsString = decodeSimpleBody(getBody(email));
         assertThat(bodyAsString).contains("กรุงไทย-แอกซ่า ประกันชีวิต ขอขอบคุณ " + policy.getInsureds().get(0).getPerson().getGivenName() + " " + policy.getInsureds().get(0).getPerson().getSurName() + "<br/>");
         assertThat(bodyAsString).contains("กรุงไทย-แอกซ่า ประกันชีวิต");
-        assertThat(bodyAsString).contains("<a class=\"btn\" href=\"" + buttonUrlEreceiptMail + "\">UPLOAD YOUR ID NOW</a>");
 
         Multipart multipart = (Multipart) email.getContent();
         for (int i = 0; i < multipart.getCount(); i++) {

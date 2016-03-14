@@ -3,6 +3,7 @@ package th.co.krungthaiaxa.elife.api.service;
 import com.itextpdf.text.*;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.pdf.*;
+import org.apache.commons.io.output.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,7 @@ import java.awt.*;
 import java.awt.Font;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.io.ByteArrayOutputStream;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -183,37 +185,21 @@ public class PolicyService {
 
     public byte[] createEreceiptPDF(byte[] eReceiptImage)throws Exception{
 
-
-
-
-
-
-
-
-
-
-
-        com.itextpdf.text.Document document
-                = new com.itextpdf.text.Document(PageSize.A4.rotate());
-        // step 2
-        PdfWriter writer
-                = PdfWriter.getInstance(document, new FileOutputStream("C:\\Users\\santilik\\Desktop\\temp\\merge.pdf"));
-        writer.setCompressionLevel(0);
-        // step 3
+        org.apache.commons.io.output.ByteArrayOutputStream content = new org.apache.commons.io.output.ByteArrayOutputStream();
+        com.itextpdf.text.Document document = new com.itextpdf.text.Document(PageSize.A4.rotate());
+        PdfWriter writer = PdfWriter.getInstance(document, content);
         document.open();
-        // step 4
-        Image img = Image.getInstance("C:\\Users\\santilik\\Desktop\\temp\\AGENT-WHITE-FINAL.jpg");
-        img.scalePercent(50);
-        img.setAbsolutePosition(100,30);
-        writer.getDirectContent().addImage(img);
-        //Paragraph p = new Paragraph("Foobar Film Festival", n Font(FontFamily.HELVETICA, 22));
-        //p.setAlignment(Element.ALIGN_CENTER);
-        //document.add(p);
-        // step 5
+
+        PdfContentByte canvas1 = writer.getDirectContentUnder();
+        Image image = Image.getInstance(eReceiptImage);
+        image.scaleAbsolute(PageSize.A4);
+        image.scalePercent(50);
+        image.setAbsolutePosition(120, 80);
+        canvas1.addImage(image);
+
         document.close();
-
-        return null;
-
+        content.close();
+        return content.toByteArray();
 
     }
 
