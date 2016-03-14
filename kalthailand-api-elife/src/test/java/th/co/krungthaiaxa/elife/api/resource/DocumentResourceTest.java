@@ -150,7 +150,7 @@ public class DocumentResourceTest {
     }
 
     @Test
-    public void should_return_2_documents_after_a_policy_has_been_created_and_payment_updated() throws QuoteCalculationException, IOException, URISyntaxException {
+    public void should_return_3_documents_after_a_policy_has_been_created_and_payment_updated() throws QuoteCalculationException, IOException, URISyntaxException {
         String sessionId = randomNumeric(20);
         Quote quote = quoteService.createQuote(sessionId, LINE, productQuotation());
         quote(quote, beneficiary(100.0));
@@ -175,7 +175,7 @@ public class DocumentResourceTest {
         assertThat(response.getStatusCode().value()).isEqualTo(OK.value());
 
         List<Document> documents = getDocumentsFromJSon(response.getBody());
-        assertThat(documents).hasSize(2);
+        assertThat(documents).hasSize(3);
     }
 
     private Policy getPolicy(Quote quote, String sessionId) throws URISyntaxException, IOException {

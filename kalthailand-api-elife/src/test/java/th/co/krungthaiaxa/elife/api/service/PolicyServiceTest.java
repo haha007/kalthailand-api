@@ -31,8 +31,7 @@ import static th.co.krungthaiaxa.elife.api.TestUtil.*;
 import static th.co.krungthaiaxa.elife.api.exception.PolicyValidationException.emptyQuote;
 import static th.co.krungthaiaxa.elife.api.exception.PolicyValidationException.noneExistingQuote;
 import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
-import static th.co.krungthaiaxa.elife.api.model.enums.DocumentType.ERECEIPT_IMAGE;
-import static th.co.krungthaiaxa.elife.api.model.enums.DocumentType.ERECEIPT_PDF;
+import static th.co.krungthaiaxa.elife.api.model.enums.DocumentType.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.PaymentStatus.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.ERROR;
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.SUCCESS;
@@ -91,20 +90,30 @@ public class PolicyServiceTest {
     }
 
     @Test
-    public void should_add_only_2_documents_of_type_ereceipt_when_updating_payment() throws Exception {
-        /*
+    public void should_add_have_3_documents_after_updating_first_payment() throws Exception {
         Policy policy = getPolicy();
 
         Payment payment = policy.getPayments().get(0);
-        payment.getAmount().setValue(100.0);
-        assertThat(payment.getStatus()).isEqualTo(FUTURE);
 
         policyService.updatePayment(policy, payment, 50.0, "THB", empty(), SUCCESS, LINE, empty(), empty(), empty(), empty());
-        policyService.updatePayment(policy, payment, 50.0, "THB", empty(), SUCCESS, LINE, empty(), empty(), empty(), empty());
 
-        assertThat(policy.getDocuments()).extracting("typeName").containsExactly(ERECEIPT_IMAGE, ERECEIPT_PDF);
-        */
-        policyService.createEreceiptPDF(null);
+        assertThat(policy.getDocuments()).extracting("typeName").containsExactly(ERECEIPT_IMAGE, ERECEIPT_PDF, APPLICATION_FORM);
+    }
+
+    @Test
+    public void should_still_have_only_3_documents_even_after_updating_multiple_payments() throws Exception {
+        Policy policy = getPolicy();
+
+        Payment payment1 = policy.getPayments().get(0);
+        Payment payment2 = policy.getPayments().get(1);
+        Payment payment3 = policy.getPayments().get(2);
+
+        policyService.updatePayment(policy, payment1, 50.0, "THB", empty(), SUCCESS, LINE, empty(), empty(), empty(), empty());
+        policyService.updatePayment(policy, payment1, 50.0, "THB", empty(), SUCCESS, LINE, empty(), empty(), empty(), empty());
+        policyService.updatePayment(policy, payment2, 50.0, "THB", empty(), SUCCESS, LINE, empty(), empty(), empty(), empty());
+        policyService.updatePayment(policy, payment3, 50.0, "THB", empty(), SUCCESS, LINE, empty(), empty(), empty(), empty());
+
+        assertThat(policy.getDocuments()).extracting("typeName").containsExactly(ERECEIPT_IMAGE, ERECEIPT_PDF, APPLICATION_FORM);
     }
 
     @Test

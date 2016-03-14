@@ -33,6 +33,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import static th.co.krungthaiaxa.elife.api.model.enums.DocumentType.APPLICATION_FORM;
 import static th.co.krungthaiaxa.elife.api.model.enums.DocumentType.ERECEIPT_IMAGE;
 import static th.co.krungthaiaxa.elife.api.model.enums.DocumentType.ERECEIPT_PDF;
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.ERROR;
@@ -50,16 +51,18 @@ public class PolicyService {
     private final PolicyRepository policyRepository;
     private final PolicyNumberRepository policyNumberRepository;
     private final QuoteRepository quoteRepository;
+    private final ApplicationFormService applicationFormService;
     private final DocumentService documentService;
 
     @Inject
     public PolicyService(PaymentRepository paymentRepository, PolicyRepository policyRepository,
                          PolicyNumberRepository policyNumberRepository, QuoteRepository quoteRepository,
-                         DocumentService documentService) {
+                         ApplicationFormService applicationFormService, DocumentService documentService) {
         this.paymentRepository = paymentRepository;
         this.policyRepository = policyRepository;
         this.policyNumberRepository = policyNumberRepository;
         this.quoteRepository = quoteRepository;
+        this.applicationFormService = applicationFormService;
         this.documentService = documentService;
     }
 
@@ -161,6 +164,16 @@ public class PolicyService {
         if (!documentPdf.isPresent()) {
             byte[] encodedContent = Base64.getEncoder().encode(ereceiptImage);
             documentService.addDocument(policy, encodedContent, "application/pdf", ERECEIPT_PDF);
+        }
+
+        Optional<Document> applicationForm = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(APPLICATION_FORM)).findFirst();
+        if (!applicationForm.isPresent()) {
+            try {
+                byte[] content = applicationFormService.generatePdfForm(policy);
+                documentService.addDocument(policy, content, "application/pdf", APPLICATION_FORM);
+            } catch (Exception e) {
+                logger.error("Application form for Policy [" + policy.getPolicyId()+ "] has not been generated.", e);
+            }
         }
 
         paymentRepository.save(payment);

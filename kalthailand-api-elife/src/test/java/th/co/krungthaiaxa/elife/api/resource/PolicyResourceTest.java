@@ -184,6 +184,7 @@ public class PolicyResourceTest {
                 .queryParam("channelType", LINE)
                 .queryParam("creditCardName", "myCreditCardName")
                 .queryParam("paymentMethod", "myPaymentMethod")
+                .queryParam("errorCode", "myErrorCode")
                 .queryParam("errorMessage", "myErrorMessage");
         ResponseEntity<String> updatePaymentResponse = template.exchange(updatePaymentBuilder.toUriString(), PUT, new HttpEntity<>(getJSon(quote)), String.class);
         Policy updatedPolicy = TestUtil.getPolicyFromJSon(updatePaymentResponse.getBody());

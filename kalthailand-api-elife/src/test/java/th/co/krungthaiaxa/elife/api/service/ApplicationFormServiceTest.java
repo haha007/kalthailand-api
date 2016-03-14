@@ -1,7 +1,6 @@
 package th.co.krungthaiaxa.elife.api.service;
 
-import org.apache.commons.io.FileUtils;
-import org.assertj.core.api.Assertions;
+import com.itextpdf.text.pdf.PdfReader;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,7 +17,9 @@ import th.co.krungthaiaxa.elife.api.model.Quote;
 import javax.inject.Inject;
 import java.io.File;
 
+import static org.apache.commons.io.FileUtils.writeByteArrayToFile;
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
+import static org.assertj.core.api.Assertions.assertThat;
 import static th.co.krungthaiaxa.elife.api.TestUtil.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
 
@@ -43,8 +44,11 @@ public class ApplicationFormServiceTest {
 
         byte[] pdfContent = appService.generatePdfForm(policy);
         File pdfFile = new File(tmpPathDeletedAfterTests + File.separator + "ApplicationFormServiceTest.pdf");
-        FileUtils.writeByteArrayToFile(pdfFile, pdfContent);
-        Assertions.assertThat(pdfFile.exists()).isTrue();
+        writeByteArrayToFile(pdfFile, pdfContent);
+
+        // check if file exist and can read as PDF
+        assertThat(pdfFile.exists()).isTrue();
+        assertThat(new PdfReader(pdfContent)).isNotNull();
     }
 
     private Policy getPolicy() throws QuoteCalculationException, PolicyValidationException {
