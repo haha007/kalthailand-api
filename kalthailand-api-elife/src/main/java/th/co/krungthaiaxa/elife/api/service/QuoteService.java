@@ -52,13 +52,6 @@ public class QuoteService {
     public Quote createQuote(String sessionId, ChannelType channelType, ProductQuotation productQuotation) throws QuoteCalculationException {
         Product product = getProduct(productQuotation.getProductType().getName());
 
-        FinancialScheduler financialScheduler = new FinancialScheduler();
-        financialScheduler.setPeriodicity(new Periodicity());
-
-        PremiumsData premiumsData = new PremiumsData();
-        premiumsData.setFinancialScheduler(financialScheduler);
-        premiumsData.setLifeInsurance(new LifeInsurance());
-
         Insured insured = new Insured();
         insured.setMainInsuredIndicator(true);
         insured.setFatca(new Fatca());
@@ -72,7 +65,7 @@ public class QuoteService {
         quote.setLastUpdateDateTime(now);
         quote.setQuoteId(randomNumeric(20));
         quote.setCommonData(product.getCommonData());
-        quote.setPremiumsData(premiumsData);
+        quote.setPremiumsData(product.getPremiumData());
         quote.addInsured(insured);
 
         //calculate

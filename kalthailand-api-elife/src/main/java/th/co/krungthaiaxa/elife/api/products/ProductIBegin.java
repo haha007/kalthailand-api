@@ -58,7 +58,7 @@ public class ProductIBegin implements Product {
             Amount amount = new Amount();
             amount.setCurrencyCode(productQuotation.getSumInsuredAmount().getCurrencyCode());
             amount.setValue(productQuotation.getSumInsuredAmount().getValue());
-            quote.getPremiumsData().getLifeInsurance().setSumInsured(amount);
+            quote.getPremiumsData().getProduct10ECPremium().setSumInsured(amount);
         }
 
         // cannot be too young or too old
@@ -72,18 +72,21 @@ public class ProductIBegin implements Product {
 
         PremiumsData premiumsData = quote.getPremiumsData();
         // cannot insure too much or not enough
-        checkSumInsured(premiumsData, PRODUCT_IBEGIN_CURRENCY, SUM_INSURED_MIN, SUM_INSURED_MAX);
+//        checkSumInsured(premiumsData, PRODUCT_IBEGIN_CURRENCY, SUM_INSURED_MIN, SUM_INSURED_MAX);
 
         // calculates premium / sum insured
         //TODO this has to change and iBegin5 has to become a parameter from ProductQuotation
-        ProductIBeginRate productIBeginRate = productIBeginRateRepository.findByNbOfYearsOfPaymentAndSumInsured(5, premiumsData.getLifeInsurance().getSumInsured().getValue());
+        ProductIBeginRate productIBeginRate = productIBeginRateRepository.findByNbOfYearsOfPaymentAndSumInsured(5, premiumsData.getProduct10ECPremium().getSumInsured().getValue());
         List<Double> rates;
         if (insured.getPerson().getGenderCode().equals(MALE)) {
             rates = productIBeginRate.getMaleRate();
         } else {
             rates = productIBeginRate.getFemaleRate();
         }
-        premiumsData.getFinancialScheduler().setModalAmount(getPremiumFromSumInsured(quote, rates.get(quote.getInsureds().get(0).getAgeAtSubscription() - MIN_AGE)));
+        premiumsData.getFinancialScheduler().setModalAmount(getPremiumFromSumInsured(
+                quote.getPremiumsData().getProduct10ECPremium().getSumInsured(),
+                rates.get(quote.getInsureds().get(0).getAgeAtSubscription() - MIN_AGE),
+                quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode()));
     }
 
     @Override
@@ -105,6 +108,20 @@ public class ProductIBegin implements Product {
         commonData.setProductId(PRODUCT_IBEGIN_ID);
         commonData.setProductName(PRODUCT_IBEGIN_NAME);
         return commonData;
+    }
+
+    @Override
+    public PremiumsData getPremiumData() {
+        FinancialScheduler financialScheduler = new FinancialScheduler();
+        financialScheduler.setPeriodicity(new Periodicity());
+
+        Product10ECPremium product10ECPremium = new Product10ECPremium();
+
+        PremiumsData premiumsData = new PremiumsData();
+        premiumsData.setFinancialScheduler(financialScheduler);
+        premiumsData.setProduct10ECPremium(product10ECPremium);
+
+        return premiumsData;
     }
 
     @Override

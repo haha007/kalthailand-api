@@ -6,4 +6,6 @@ import th.co.krungthaiaxa.elife.api.products.ProductIFineRate;
 
 @Repository
 public interface ProductIFineRateRepository extends PagingAndSortingRepository<ProductIFineRate, String> {
+
+    ProductIFineRate findByPlanNameAndGender(String packageName, String gender);
 }

@@ -113,7 +113,7 @@ public class QuoteServiceTest {
         Amount amount = new Amount();
         amount.setCurrencyCode("THB");
         amount.setValue(1000000.0);
-        quote.getPremiumsData().getLifeInsurance().setSumInsured(amount);
+        quote.getPremiumsData().getProduct10ECPremium().setSumInsured(amount);
 
         quote = quoteService.updateQuote(quote);
         assertThat(quote.getInsureds().get(0).getAgeAtSubscription()).isEqualTo(35);
@@ -123,30 +123,30 @@ public class QuoteServiceTest {
     public void should_return_empty_calculated_stuff_when_there_is_nothing_to_calculate_anymore() throws QuoteCalculationException, PolicyValidationException {
         Quote quote = getQuote(randomNumeric(20));
 
-        assertThat(quote.getPremiumsData().getLifeInsurance().getYearlyCashBacks()).hasSize(10);
-        assertThat(quote.getPremiumsData().getLifeInsurance().getEndOfContractBenefitsMinimum()).hasSize(10);
-        assertThat(quote.getPremiumsData().getLifeInsurance().getEndOfContractBenefitsAverage()).hasSize(10);
-        assertThat(quote.getPremiumsData().getLifeInsurance().getEndOfContractBenefitsMaximum()).hasSize(10);
-        assertThat(quote.getPremiumsData().getLifeInsurance().getYearlyCashBacksAverageBenefit()).hasSize(10);
-        assertThat(quote.getPremiumsData().getLifeInsurance().getYearlyCashBacksAverageDividende()).hasSize(10);
-        assertThat(quote.getPremiumsData().getLifeInsurance().getYearlyCashBacksMaximumBenefit()).hasSize(10);
-        assertThat(quote.getPremiumsData().getLifeInsurance().getYearlyCashBacksMaximumDividende()).hasSize(10);
+        assertThat(quote.getPremiumsData().getProduct10ECPremium().getYearlyCashBacks()).hasSize(10);
+        assertThat(quote.getPremiumsData().getProduct10ECPremium().getEndOfContractBenefitsMinimum()).hasSize(10);
+        assertThat(quote.getPremiumsData().getProduct10ECPremium().getEndOfContractBenefitsAverage()).hasSize(10);
+        assertThat(quote.getPremiumsData().getProduct10ECPremium().getEndOfContractBenefitsMaximum()).hasSize(10);
+        assertThat(quote.getPremiumsData().getProduct10ECPremium().getYearlyCashBacksAverageBenefit()).hasSize(10);
+        assertThat(quote.getPremiumsData().getProduct10ECPremium().getYearlyCashBacksAverageDividende()).hasSize(10);
+        assertThat(quote.getPremiumsData().getProduct10ECPremium().getYearlyCashBacksMaximumBenefit()).hasSize(10);
+        assertThat(quote.getPremiumsData().getProduct10ECPremium().getYearlyCashBacksMaximumDividende()).hasSize(10);
         assertThat(quote.getCoverages()).hasSize(1);
         assertThat(quote.getCommonData().getProductId()).isNotNull();
         assertThat(quote.getCommonData().getProductName()).isNotNull();
 
-        quote.getPremiumsData().getLifeInsurance().setSumInsured(null);
+        quote.getPremiumsData().getProduct10ECPremium().setSumInsured(null);
         quote.getPremiumsData().getFinancialScheduler().setModalAmount(null);
         quote = quoteService.updateQuote(quote);
-        assertThat(quote.getPremiumsData().getLifeInsurance().getYearlyCashBacks()).isEmpty();
-        assertThat(quote.getPremiumsData().getLifeInsurance().getEndOfContractBenefitsMinimum()).isEmpty();
-        assertThat(quote.getPremiumsData().getLifeInsurance().getEndOfContractBenefitsAverage()).isEmpty();
-        assertThat(quote.getPremiumsData().getLifeInsurance().getEndOfContractBenefitsMaximum()).isEmpty();
-        assertThat(quote.getPremiumsData().getLifeInsurance().getYearlyCashBacksAverageBenefit()).isEmpty();
-        assertThat(quote.getPremiumsData().getLifeInsurance().getYearlyCashBacksAverageDividende()).isEmpty();
-        assertThat(quote.getPremiumsData().getLifeInsurance().getYearlyCashBacksMaximumBenefit()).isEmpty();
-        assertThat(quote.getPremiumsData().getLifeInsurance().getYearlyCashBacksMaximumDividende()).isEmpty();
-        assertThat(quote.getPremiumsData().getLifeInsurance().getYearlyCashBacks()).isEmpty();
+        assertThat(quote.getPremiumsData().getProduct10ECPremium().getYearlyCashBacks()).isEmpty();
+        assertThat(quote.getPremiumsData().getProduct10ECPremium().getEndOfContractBenefitsMinimum()).isEmpty();
+        assertThat(quote.getPremiumsData().getProduct10ECPremium().getEndOfContractBenefitsAverage()).isEmpty();
+        assertThat(quote.getPremiumsData().getProduct10ECPremium().getEndOfContractBenefitsMaximum()).isEmpty();
+        assertThat(quote.getPremiumsData().getProduct10ECPremium().getYearlyCashBacksAverageBenefit()).isEmpty();
+        assertThat(quote.getPremiumsData().getProduct10ECPremium().getYearlyCashBacksAverageDividende()).isEmpty();
+        assertThat(quote.getPremiumsData().getProduct10ECPremium().getYearlyCashBacksMaximumBenefit()).isEmpty();
+        assertThat(quote.getPremiumsData().getProduct10ECPremium().getYearlyCashBacksMaximumDividende()).isEmpty();
+        assertThat(quote.getPremiumsData().getProduct10ECPremium().getYearlyCashBacks()).isEmpty();
         assertThat(quote.getCoverages()).isEmpty();
     }
 
@@ -172,7 +172,7 @@ public class QuoteServiceTest {
         assertThat(quote.getInsureds().get(0).getPerson().getBirthDate()).isEqualTo(productQuotation.getDateOfBirth());
         assertThat(quote.getInsureds().get(0).getPerson().getGenderCode()).isEqualTo(productQuotation.getGenderCode());
         assertThat(quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode()).isEqualTo(productQuotation.getPeriodicityCode());
-        assertThat(quote.getPremiumsData().getLifeInsurance().getSumInsured()).isEqualTo(productQuotation.getSumInsuredAmount());
+        assertThat(quote.getPremiumsData().getProduct10ECPremium().getSumInsured()).isEqualTo(productQuotation.getSumInsuredAmount());
     }
 
     private Quote getQuote(String sessionId) throws QuoteCalculationException, PolicyValidationException {

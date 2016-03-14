@@ -1,15 +1,13 @@
 package th.co.krungthaiaxa.elife.api.service;
 
 import com.itextpdf.text.Document;
+import com.itextpdf.text.Image;
 import com.itextpdf.text.PageSize;
-import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfWriter;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.itextpdf.text.Image;
-import org.springframework.beans.propertyeditors.StringArrayPropertyEditor;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.elife.api.model.CoverageBeneficiary;
 import th.co.krungthaiaxa.elife.api.model.GeographicalAddress;
@@ -22,17 +20,15 @@ import th.co.krungthaiaxa.elife.api.products.ProductType;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
-import java.lang.reflect.Array;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.text.DateFormatSymbols;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.*;
-import java.awt.image.BufferedImage;
-import java.io.*;
 import java.util.List;
-
-import static java.time.LocalDate.now;
 
 /**
  * Created by santilik on 3/4/2016.
@@ -214,7 +210,7 @@ public class ApplicationFormService {
             //product 10ec
             g1.drawString(MARK, 1455, 2705);
             //product 10ec sum insurance
-            g1.drawString(MONEY_FORMAT.format(pol.getPremiumsData().getLifeInsurance().getSumInsured().getValue()), 1790, 2705);
+            g1.drawString(MONEY_FORMAT.format(pol.getPremiumsData().getProduct10ECPremium().getSumInsured().getValue()), 1790, 2705);
         }
 
         //page2
@@ -227,17 +223,17 @@ public class ApplicationFormService {
         g2.drawString(String.valueOf(pol.getCommonData().getNbOfYearsOfPremium()), 1025, 130);
 
         //dividend option
-        if(pol.getPremiumsData().getLifeInsurance().getDividendOption().equals(DividendOption.YEARLY_CASH)){
+        if(pol.getPremiumsData().getProduct10ECPremium().getDividendOption().equals(DividendOption.YEARLY_CASH)){
             //divident option 1
             g2.drawString(MARK, 105, 275);
             //divident option 1.1
             g2.drawString(MARK, 165, 345);
-        }else if(pol.getPremiumsData().getLifeInsurance().getDividendOption().equals(DividendOption.YEARLY_FOR_NEXT_PREMIUM)){
+        }else if(pol.getPremiumsData().getProduct10ECPremium().getDividendOption().equals(DividendOption.YEARLY_FOR_NEXT_PREMIUM)){
             //divident option 1
             g2.drawString(MARK, 105, 275);
             //divident option 1.2
             g2.drawString(MARK, 165, 415);
-        }else if(pol.getPremiumsData().getLifeInsurance().getDividendOption().equals(DividendOption.IN_FINE)){
+        }else if(pol.getPremiumsData().getProduct10ECPremium().getDividendOption().equals(DividendOption.IN_FINE)){
             //divident option 2
             g2.drawString(MARK, 105, 555);
         }

@@ -1,6 +1,5 @@
 package th.co.krungthaiaxa.elife.api.service;
 
-import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.SpringApplicationConfiguration;
@@ -8,28 +7,14 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.elife.api.KalApiApplication;
-import th.co.krungthaiaxa.elife.api.TestUtil;
-import th.co.krungthaiaxa.elife.api.data.SessionQuote;
 import th.co.krungthaiaxa.elife.api.model.*;
 import th.co.krungthaiaxa.elife.api.model.enums.*;
-import th.co.krungthaiaxa.elife.api.products.Product;
-import th.co.krungthaiaxa.elife.api.products.ProductQuotation;
 import th.co.krungthaiaxa.elife.api.products.ProductType;
 
 import javax.inject.Inject;
-
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import static java.time.LocalDateTime.now;
-import static java.time.ZoneId.SHORT_IDS;
-import static java.time.ZoneId.of;
-import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
-import static th.co.krungthaiaxa.elife.api.TestUtil.*;
-import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
-import static th.co.krungthaiaxa.elife.api.products.ProductFactory.getProduct;
 
 
 /**
@@ -76,9 +61,9 @@ public class ApplicationFormServiceTest {
         return financialScheduler;
     }
 
-    private LifeInsurance getLifeInsurance(Integer indx, Double sumInsured, Double datedAmountValue, DividendOption dividendOption){
-        LifeInsurance lifeInsurance = new LifeInsurance();
-        lifeInsurance.setSumInsured(getAmount(sumInsured,CURRENCY_CODE));
+    private Product10ECPremium getLifeInsurance(Integer indx, Double sumInsured, Double datedAmountValue, DividendOption dividendOption){
+        Product10ECPremium product10ECPremium = new Product10ECPremium();
+        product10ECPremium.setSumInsured(getAmount(sumInsured,CURRENCY_CODE));
         List<DatedAmount> listyearlyCashBacks = new ArrayList<>();
         for(Integer a = 0;a<indx;a++){
             DatedAmount datedAmount = new DatedAmount();
@@ -87,16 +72,16 @@ public class ApplicationFormServiceTest {
             datedAmount.setDate(LocalDate.now().plusYears(a));
             listyearlyCashBacks.add(datedAmount);
         }
-        lifeInsurance.setYearlyCashBacks(listyearlyCashBacks);
-        lifeInsurance.setEndOfContractBenefitsMinimum(listyearlyCashBacks);
-        lifeInsurance.setEndOfContractBenefitsAverage(listyearlyCashBacks);
-        lifeInsurance.setEndOfContractBenefitsMaximum(listyearlyCashBacks);
-        lifeInsurance.setYearlyCashBacksAverageDividende(listyearlyCashBacks);
-        lifeInsurance.setYearlyCashBacksMaximumDividende(listyearlyCashBacks);
-        lifeInsurance.setYearlyCashBacksAverageBenefit(listyearlyCashBacks);
-        lifeInsurance.setYearlyCashBacksMaximumBenefit(listyearlyCashBacks);
-        lifeInsurance.setDividendOption(dividendOption);
-        return lifeInsurance;
+        product10ECPremium.setYearlyCashBacks(listyearlyCashBacks);
+        product10ECPremium.setEndOfContractBenefitsMinimum(listyearlyCashBacks);
+        product10ECPremium.setEndOfContractBenefitsAverage(listyearlyCashBacks);
+        product10ECPremium.setEndOfContractBenefitsMaximum(listyearlyCashBacks);
+        product10ECPremium.setYearlyCashBacksAverageDividende(listyearlyCashBacks);
+        product10ECPremium.setYearlyCashBacksMaximumDividende(listyearlyCashBacks);
+        product10ECPremium.setYearlyCashBacksAverageBenefit(listyearlyCashBacks);
+        product10ECPremium.setYearlyCashBacksMaximumBenefit(listyearlyCashBacks);
+        product10ECPremium.setDividendOption(dividendOption);
+        return product10ECPremium;
     }
 
     private Person getPerson(String giveName, String middleName, String surName, String title){
@@ -200,7 +185,7 @@ public class ApplicationFormServiceTest {
 
         PremiumsData premiumData = new PremiumsData();
         premiumData.setFinancialScheduler(getFinancialScheduler(PeriodicityCode.EVERY_HALF_YEAR,30800.0));
-        premiumData.setLifeInsurance(getLifeInsurance(10, 100000.0, 2000.0, DividendOption.YEARLY_CASH));
+        premiumData.setProduct10ECPremium(getLifeInsurance(10, 100000.0, 2000.0, DividendOption.YEARLY_CASH));
 
         pol.setPremiumsData(premiumData);
 

@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-@ApiModel(description = "Life Insurance specific Premiums Data")
-public class LifeInsurance implements Serializable {
+@ApiModel(description = "10 EC Life Insurance specific Premiums Data")
+public class Product10ECPremium implements Serializable {
     private Amount sumInsured;
     private List<DatedAmount> yearlyCashBacks = new ArrayList<>();
     private List<DatedAmount> endOfContractBenefitsMinimum = new ArrayList<>();
@@ -126,7 +126,7 @@ public class LifeInsurance implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        LifeInsurance that = (LifeInsurance) o;
+        Product10ECPremium that = (Product10ECPremium) o;
         return Objects.equals(sumInsured, that.sumInsured) &&
                 Objects.equals(yearlyCashBacks, that.yearlyCashBacks) &&
                 Objects.equals(endOfContractBenefitsMinimum, that.endOfContractBenefitsMinimum) &&

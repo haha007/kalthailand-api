@@ -18,6 +18,7 @@ public class ProductQuotation {
     private PeriodicityCode periodicityCode;
     private Integer nbOfYearsOfPayment;
     private String occupation;
+    private Boolean riskOccupation;
     private String packageName;
     private Integer declaredTaxPercentAtSubscription;
 
@@ -91,6 +92,15 @@ public class ProductQuotation {
 
     public void setOccupation(String occupation) {
         this.occupation = occupation;
+    }
+
+    @ApiModelProperty(value = "The insured occupation is considered risky")
+    public Boolean getRiskOccupation() {
+        return riskOccupation;
+    }
+
+    public void setRiskOccupation(Boolean riskOccupation) {
+        this.riskOccupation = riskOccupation;
     }
 
     @ApiModelProperty(value = "The product name (such as IFINE1, IFINE2, ...")

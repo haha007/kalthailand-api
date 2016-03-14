@@ -6,8 +6,6 @@ import th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Optional;
 import java.util.function.Function;
 
 import static th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException.*;
@@ -28,25 +26,25 @@ public class ProductUtils {
         }
     };
 
-    public static Amount getPremiumFromSumInsured(Quote quote, Double rate) {
+    public static Amount getPremiumFromSumInsured(Amount sumInsured, Double rate, PeriodicityCode periodicityCode) {
         Amount result = new Amount();
-        Double value = quote.getPremiumsData().getLifeInsurance().getSumInsured().getValue();
+        Double value = sumInsured.getValue();
         value = value * rate;
-        value = value * modalFactor.apply(quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode());
+        value = value * modalFactor.apply(periodicityCode);
         value = value / 1000;
         result.setValue((double) (Math.round(value * 100)) / 100);
-        result.setCurrencyCode(quote.getPremiumsData().getLifeInsurance().getSumInsured().getCurrencyCode());
+        result.setCurrencyCode(sumInsured.getCurrencyCode());
         return result;
     }
 
-    public static Amount getSumInsuredFromPremium(Quote quote, Double rate) {
+    public static Amount getSumInsuredFromPremium(Amount premium, Double rate, PeriodicityCode periodicityCode) {
         Amount result = new Amount();
-        Double value = quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue();
+        Double value = premium.getValue();
         value = value * 1000;
-        value = value / modalFactor.apply(quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode());
+        value = value / modalFactor.apply(periodicityCode);
         value = value / rate;
         result.setValue((double) (Math.round(value * 100)) / 100);
-        result.setCurrencyCode(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getCurrencyCode());
+        result.setCurrencyCode(premium.getCurrencyCode());
         return result;
     }
 
@@ -57,21 +55,6 @@ public class ProductUtils {
             throw ageIsTooHighException;
         } else if (insured.getAgeAtSubscription() < minAge) {
             throw ageIsTooLowException;
-        }
-    }
-
-    public static void checkSumInsured(PremiumsData premiumsData, String currency, Double sumInsuredMin, Double sumInsuredMax) throws QuoteCalculationException {
-        if (premiumsData.getLifeInsurance().getSumInsured() == null || premiumsData.getLifeInsurance().getSumInsured().getValue() == null) {
-            // no amount to check
-            return;
-        } else if (!currency.equalsIgnoreCase(premiumsData.getLifeInsurance().getSumInsured().getCurrencyCode())) {
-            throw sumInsuredCurrencyException.apply(currency);
-        }
-
-        if (premiumsData.getLifeInsurance().getSumInsured().getValue() > sumInsuredMax) {
-            throw sumInsuredTooHighException.apply(sumInsuredMax);
-        } else if (premiumsData.getLifeInsurance().getSumInsured().getValue() < sumInsuredMin) {
-            throw sumInsuredTooLowException.apply(sumInsuredMin);
         }
     }
 
