@@ -22,6 +22,7 @@ public class ErrorCode {
     public static final Error POLICY_DOES_NOT_CONTAIN_PAYMENT = new Error("40002", "The policy does not contain the given payment", "The given payment id could not be found in the list of payments within the policy");
     public static final Function<String, Error> POLICY_CANNOT_BE_CREATED = msg -> new Error("40003", "Unable to create your policy. Error is: " + msg, "The policy could not be created out of the quote for validation reasons");
     public static final Error PAYMENT_NOT_UPDATED = new Error("40004", "The payment has not been updated", "Something went wrong when updating the payment");
+    public static final Error PAYMENT_NOT_UPDATED_ERROR_DETAILS_NEEDED = new Error("40005", "The payment has not been updated, error detail is needed", "Either error code and/or error message are empty and are needed in case the payment was not successful");
     // Line token decryption
     public static final Error UNABLE_TO_DECRYPT = new Error("50001", "Unable to get your user ID", "The provided text could not be decrypted");
     // Document

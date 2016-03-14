@@ -37,6 +37,7 @@ import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpMethod.PUT;
+import static org.springframework.http.HttpStatus.NOT_ACCEPTABLE;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 import static th.co.krungthaiaxa.elife.api.TestUtil.*;
@@ -158,6 +159,37 @@ public class PolicyResourceTest {
         Policy updatedPolicy = TestUtil.getPolicyFromJSon(updatePaymentResponse.getBody());
         assertThat(updatePaymentResponse.getStatusCode().value()).isEqualTo(OK.value());
         assertThat(updatedPolicy.getPayments().get(0).getStatus()).isNotEqualTo(FUTURE);
+    }
+
+    @Test
+    public void should_not_be_able_to_update_payment_with_error_message_and_no_error_code() throws QuoteCalculationException, IOException, URISyntaxException {
+        String sessionId = randomNumeric(20);
+
+        Quote quote = quoteService.createQuote(sessionId, LINE, productQuotation());
+        quote(quote, beneficiary(100.0));
+        quote = quoteService.updateQuote(quote);
+
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUri(base)
+                .queryParam("sessionId", sessionId)
+                .queryParam("channelType", LINE.name());
+        ResponseEntity<String> response = template.exchange(builder.toUriString(), POST, new HttpEntity<>(getJSon(quote)), String.class);
+        assertThat(response.getStatusCode().value()).isEqualTo(OK.value());
+        Policy policy = TestUtil.getPolicyFromJSon(response.getBody());
+
+        URI paymentURI = new URI("http://localhost:" + port + "/policies/" + policy.getPolicyId() + "/payments/" + policy.getPayments().get(0).getPaymentId());
+        UriComponentsBuilder updatePaymentBuilder = UriComponentsBuilder.fromUri(paymentURI)
+                .queryParam("value", 200.0)
+                .queryParam("currencyCode", "THB")
+                .queryParam("registrationKey", "something")
+                .queryParam("status", ERROR)
+                .queryParam("channelType", LINE)
+                .queryParam("creditCardName", "myCreditCardName")
+                .queryParam("paymentMethod", "myPaymentMethod")
+                .queryParam("errorMessage", "myErrorMessage");
+        ResponseEntity<String> updatePaymentResponse = template.exchange(updatePaymentBuilder.toUriString(), PUT, new HttpEntity<>(getJSon(quote)), String.class);
+        Error error = TestUtil.getErrorFromJSon(updatePaymentResponse.getBody());
+        assertThat(updatePaymentResponse.getStatusCode().value()).isEqualTo(NOT_ACCEPTABLE.value());
+        assertThat(error.getCode()).isNotEqualTo(FUTURE);
     }
 
     @Test
