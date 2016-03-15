@@ -1,6 +1,7 @@
 package th.co.krungthaiaxa.elife.api;
 
 import com.google.common.base.Predicates;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import springfox.documentation.builders.ApiInfoBuilder;
@@ -30,6 +31,9 @@ public class KalApiApplication {
                 .directModelSubstitute(LocalDate.class, Date.class);
     }
 
+    public static void main(String[] args) {
+        SpringApplication.run(KalApiApplication.class, args);
+    }
 
     private ApiInfo metadata() {
         return new ApiInfoBuilder()
