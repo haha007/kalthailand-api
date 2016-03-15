@@ -120,37 +120,6 @@ public class QuoteServiceTest {
     }
 
     @Test
-    public void should_return_empty_calculated_stuff_when_there_is_nothing_to_calculate_anymore() throws QuoteCalculationException, PolicyValidationException {
-        Quote quote = getQuote(randomNumeric(20));
-
-        assertThat(quote.getPremiumsData().getProduct10ECPremium().getYearlyCashBacks()).hasSize(10);
-        assertThat(quote.getPremiumsData().getProduct10ECPremium().getEndOfContractBenefitsMinimum()).hasSize(10);
-        assertThat(quote.getPremiumsData().getProduct10ECPremium().getEndOfContractBenefitsAverage()).hasSize(10);
-        assertThat(quote.getPremiumsData().getProduct10ECPremium().getEndOfContractBenefitsMaximum()).hasSize(10);
-        assertThat(quote.getPremiumsData().getProduct10ECPremium().getYearlyCashBacksAverageBenefit()).hasSize(10);
-        assertThat(quote.getPremiumsData().getProduct10ECPremium().getYearlyCashBacksAverageDividende()).hasSize(10);
-        assertThat(quote.getPremiumsData().getProduct10ECPremium().getYearlyCashBacksMaximumBenefit()).hasSize(10);
-        assertThat(quote.getPremiumsData().getProduct10ECPremium().getYearlyCashBacksMaximumDividende()).hasSize(10);
-        assertThat(quote.getCoverages()).hasSize(1);
-        assertThat(quote.getCommonData().getProductId()).isNotNull();
-        assertThat(quote.getCommonData().getProductName()).isNotNull();
-
-        quote.getPremiumsData().getProduct10ECPremium().setSumInsured(null);
-        quote.getPremiumsData().getFinancialScheduler().setModalAmount(null);
-        quote = quoteService.updateQuote(quote);
-        assertThat(quote.getPremiumsData().getProduct10ECPremium().getYearlyCashBacks()).isEmpty();
-        assertThat(quote.getPremiumsData().getProduct10ECPremium().getEndOfContractBenefitsMinimum()).isEmpty();
-        assertThat(quote.getPremiumsData().getProduct10ECPremium().getEndOfContractBenefitsAverage()).isEmpty();
-        assertThat(quote.getPremiumsData().getProduct10ECPremium().getEndOfContractBenefitsMaximum()).isEmpty();
-        assertThat(quote.getPremiumsData().getProduct10ECPremium().getYearlyCashBacksAverageBenefit()).isEmpty();
-        assertThat(quote.getPremiumsData().getProduct10ECPremium().getYearlyCashBacksAverageDividende()).isEmpty();
-        assertThat(quote.getPremiumsData().getProduct10ECPremium().getYearlyCashBacksMaximumBenefit()).isEmpty();
-        assertThat(quote.getPremiumsData().getProduct10ECPremium().getYearlyCashBacksMaximumDividende()).isEmpty();
-        assertThat(quote.getPremiumsData().getProduct10ECPremium().getYearlyCashBacks()).isEmpty();
-        assertThat(quote.getCoverages()).isEmpty();
-    }
-
-    @Test
     public void should_return_quote_object_with_object_not_in_product_quotation_set_to_null() throws QuoteCalculationException {
         Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation());
         assertThat(quote).isNotNull();
