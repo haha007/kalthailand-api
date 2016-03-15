@@ -5,7 +5,6 @@ import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
@@ -16,7 +15,6 @@ import th.co.krungthaiaxa.elife.api.model.Quote;
 import th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode;
 
 import javax.inject.Inject;
-import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -169,8 +167,6 @@ public class SaleIllustrationService {
         document.add(table2);
         document.close();
         content.close();
-
-        FileUtils.writeByteArrayToFile(new File("D:\\test\\check-sale-illustration.pdf"), content.toByteArray());
         return Pair.of(content.toByteArray(), "proposal_" + quote.getQuoteId() + "_" + getDate() + ".pdf");
     }
 
