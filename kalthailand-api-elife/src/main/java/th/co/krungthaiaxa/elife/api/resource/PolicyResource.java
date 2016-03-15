@@ -6,10 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import th.co.krungthaiaxa.elife.api.model.Document;
-import th.co.krungthaiaxa.elife.api.model.Payment;
-import th.co.krungthaiaxa.elife.api.model.Policy;
-import th.co.krungthaiaxa.elife.api.model.Quote;
+import th.co.krungthaiaxa.elife.api.model.*;
 import th.co.krungthaiaxa.elife.api.model.enums.ChannelType;
 import th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus;
 import th.co.krungthaiaxa.elife.api.model.error.Error;
@@ -109,12 +106,13 @@ public class PolicyResource {
         return new ResponseEntity<>(JsonUtil.getJson(policy.getPayments()), OK);
     }
 
-    @ApiOperation(value = "Update Policy payment", notes = "Updates a specific payment of a Policy. " +
-            "Fields 'payment effective date' and 'payment status' will be calculated according to the given status " +
-            "and the amount compare to the amount expected.", response = Policy.class)
+    @ApiOperation(value = "Update Policy payment and documents", notes = "Generates Policy documents and updates a " +
+            "specific payment of a Policy. Fields 'payment effective date' and 'payment status' will be calculated " +
+            "according to the given status and the amount compare to the amount expected.", response = Policy.class)
     @ApiResponses({
             @ApiResponse(code = 404, message = "If the policy doesn't exist", response = Error.class),
             @ApiResponse(code = 406, message = "If the payment id is not found in the policy payment list", response = Error.class),
+            @ApiResponse(code = 406, message = "If the payment has failed and no error details have been provided", response = Error.class),
             @ApiResponse(code = 500, message = "If the payment has not been updated", response = Error.class)
     })
     @RequestMapping(value = "/policies/{policyId}/payments/{paymentId}", produces = APPLICATION_JSON_VALUE, method = PUT)
@@ -162,6 +160,7 @@ public class PolicyResource {
             }
         }
 
+        // Update the payment
         try {
             policy = policyService.updatePayment(policy, payment.get(), value, currencyCode, registrationKey, status,
                     channelType, creditCardName, paymentMethod, errorCode, errorMessage);
@@ -170,11 +169,17 @@ public class PolicyResource {
             return new ResponseEntity<>(PAYMENT_NOT_UPDATED, INTERNAL_SERVER_ERROR);
         }
 
+        // Generate documents
+        documentService.generatePolicyDocuments(policy);
+
+        // Get Ereceipt
         Optional<Document> documentPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(ERECEIPT_PDF)).findFirst();
+
+        // Send Email
         if (documentPdf.isPresent()) {
+            DocumentDownload documentDownload = documentService.downloadDocument(documentPdf.get().getId());
             try {
-                byte[] eReceiptArray = policyService.createEreceiptPDF(Base64.getDecoder().decode((documentService.downloadDocument(documentPdf.get().getId())).getContent()));
-                emailService.sendEreceiptEmail(policy, Pair.of(Base64.getDecoder().decode(eReceiptArray), "e-receipt_" + policy.getPolicyId() + ".pdf"));
+                emailService.sendEreceiptEmail(policy, Pair.of(Base64.getDecoder().decode(documentDownload.getContent()), "e-receipt_" + policy.getPolicyId() + ".pdf"));
             } catch (Exception e) {
                 logger.error(String.format("Unable to send e-receipt document while sending email with policy id is [%1$s].", policy.getPolicyId()), e);
                 return new ResponseEntity<>(UNABLE_TO_SEND_EMAIL, INTERNAL_SERVER_ERROR);

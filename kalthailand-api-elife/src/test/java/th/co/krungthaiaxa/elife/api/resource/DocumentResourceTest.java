@@ -40,6 +40,7 @@ import static org.springframework.http.HttpStatus.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.ERROR;
 import static th.co.krungthaiaxa.elife.api.TestUtil.*;
+import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.SUCCESS;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiApplication.class)
@@ -71,11 +72,7 @@ public class DocumentResourceTest {
 
     @Test
     public void should_return_error_when_base64image_is_not_base64() throws QuoteCalculationException, IOException, URISyntaxException {
-        String sessionId = randomNumeric(20);
-        Quote quote = quoteService.createQuote(sessionId, LINE, productQuotation());
-        quote(quote, beneficiary(100.0));
-        quote = quoteService.updateQuote(quote);
-        Policy policy = getPolicy(quote, sessionId);
+        Policy policy = getPolicy();
 
         URI documentUploadURI = new URI("http://localhost:" + port + "/documents/policies/" + policy.getPolicyId() + "/thai/id");
         ResponseEntity<String> response = template.exchange(documentUploadURI, POST, new HttpEntity<>("something"), String.class);
@@ -87,11 +84,7 @@ public class DocumentResourceTest {
 
     @Test
     public void should_return_error_when_image_is_too_small() throws IOException, QuoteCalculationException, URISyntaxException {
-        String sessionId = randomNumeric(20);
-        Quote quote = quoteService.createQuote(sessionId, LINE, productQuotation());
-        quote(quote, beneficiary(100.0));
-        quote = quoteService.updateQuote(quote);
-        Policy policy = getPolicy(quote, sessionId);
+        Policy policy = getPolicy();
 
         URI documentUploadURI = new URI("http://localhost:" + port + "/documents/policies/" + policy.getPolicyId() + "/thai/id");
         ResponseEntity<String> response = template.exchange(documentUploadURI, POST, new HttpEntity<>(getBase64("/images/small.png")), String.class);
@@ -103,11 +96,7 @@ public class DocumentResourceTest {
 
     @Test
     public void should_return_error_when_sending_a_file_that_is_not_an_image() throws IOException, QuoteCalculationException, URISyntaxException {
-        String sessionId = randomNumeric(20);
-        Quote quote = quoteService.createQuote(sessionId, LINE, productQuotation());
-        quote(quote, beneficiary(100.0));
-        quote = quoteService.updateQuote(quote);
-        Policy policy = getPolicy(quote, sessionId);
+        Policy policy = getPolicy();
 
         URI documentUploadURI = new URI("http://localhost:" + port + "/documents/policies/" + policy.getPolicyId() + "/thai/id");
         ResponseEntity<String> response = template.exchange(documentUploadURI, POST, new HttpEntity<>(getBase64("/texts/sampleTextFile.txt")), String.class);
@@ -119,11 +108,7 @@ public class DocumentResourceTest {
 
     @Test
     public void should_return_ok_with_png() throws IOException, QuoteCalculationException, URISyntaxException {
-        String sessionId = randomNumeric(20);
-        Quote quote = quoteService.createQuote(sessionId, LINE, productQuotation());
-        quote(quote, beneficiary(100.0));
-        quote = quoteService.updateQuote(quote);
-        Policy policy = getPolicy(quote, sessionId);
+        Policy policy = getPolicy();
 
         URI documentUploadURI = new URI("http://localhost:" + port + "/documents/policies/" + policy.getPolicyId() + "/thai/id");
         ResponseEntity<String> response = template.exchange(documentUploadURI, POST, new HttpEntity<>(getBase64("/images/image1.jpg")), String.class);
@@ -135,11 +120,7 @@ public class DocumentResourceTest {
 
     @Test
     public void should_return_ok_with_jpg() throws IOException, QuoteCalculationException, URISyntaxException {
-        String sessionId = randomNumeric(20);
-        Quote quote = quoteService.createQuote(sessionId, LINE, productQuotation());
-        quote(quote, beneficiary(100.0));
-        quote = quoteService.updateQuote(quote);
-        Policy policy = getPolicy(quote, sessionId);
+        Policy policy = getPolicy();
 
         URI documentUploadURI = new URI("http://localhost:" + port + "/documents/policies/" + policy.getPolicyId() + "/thai/id");
         ResponseEntity<String> response = template.exchange(documentUploadURI, POST, new HttpEntity<>(getBase64("/images/image2.png")), String.class);
@@ -150,13 +131,8 @@ public class DocumentResourceTest {
     }
 
     @Test
-    public void should_return_3_documents_after_a_policy_has_been_created_and_payment_updated() throws QuoteCalculationException, IOException, URISyntaxException {
-        String sessionId = randomNumeric(20);
-        Quote quote = quoteService.createQuote(sessionId, LINE, productQuotation());
-        quote(quote, beneficiary(100.0));
-        quote = quoteService.updateQuote(quote);
-
-        Policy policy = getPolicy(quote, sessionId);
+    public void should_return_0_documents_after_a_policy_has_been_created_and_payment_updated_with_error() throws QuoteCalculationException, IOException, URISyntaxException {
+        Policy policy = getPolicy();
 
         URI paymentURI = new URI("http://localhost:" + port + "/policies/" + policy.getPolicyId() + "/payments/" + policy.getPayments().get(0).getPaymentId());
         UriComponentsBuilder updatePaymentBuilder = UriComponentsBuilder.fromUri(paymentURI)
@@ -168,7 +144,30 @@ public class DocumentResourceTest {
                 .queryParam("creditCardName", "myCreditCardName")
                 .queryParam("paymentMethod", "myPaymentMethod")
                 .queryParam("errorMessage", "myErrorMessage");
-        template.exchange(updatePaymentBuilder.toUriString(), PUT, new HttpEntity<>(getJSon(quote)), String.class);
+        template.exchange(updatePaymentBuilder.toUriString(), PUT, new HttpEntity<>(""), String.class);
+
+        URI documentUploadURI = new URI("http://localhost:" + port + "/documents/policies/" + policy.getPolicyId());
+        ResponseEntity<String> response = template.getForEntity(documentUploadURI, String.class);
+        assertThat(response.getStatusCode().value()).isEqualTo(OK.value());
+
+        List<Document> documents = getDocumentsFromJSon(response.getBody());
+        assertThat(documents).hasSize(0);
+    }
+
+    @Test
+    public void should_return_3_documents_after_a_policy_has_been_created_and_payment_updated_successfully() throws QuoteCalculationException, IOException, URISyntaxException {
+        Policy policy = getPolicy();
+
+        URI paymentURI = new URI("http://localhost:" + port + "/policies/" + policy.getPolicyId() + "/payments/" + policy.getPayments().get(0).getPaymentId());
+        UriComponentsBuilder updatePaymentBuilder = UriComponentsBuilder.fromUri(paymentURI)
+                .queryParam("value", 200.0)
+                .queryParam("currencyCode", "THB")
+                .queryParam("registrationKey", "something")
+                .queryParam("status", SUCCESS)
+                .queryParam("channelType", LINE)
+                .queryParam("creditCardName", "myCreditCardName")
+                .queryParam("paymentMethod", "myPaymentMethod");
+        template.exchange(updatePaymentBuilder.toUriString(), PUT, new HttpEntity<>(""), String.class);
 
         URI documentUploadURI = new URI("http://localhost:" + port + "/documents/policies/" + policy.getPolicyId());
         ResponseEntity<String> response = template.getForEntity(documentUploadURI, String.class);
@@ -178,7 +177,12 @@ public class DocumentResourceTest {
         assertThat(documents).hasSize(3);
     }
 
-    private Policy getPolicy(Quote quote, String sessionId) throws URISyntaxException, IOException {
+    private Policy getPolicy() throws URISyntaxException, IOException, QuoteCalculationException {
+        String sessionId = randomNumeric(20);
+        Quote quote = quoteService.createQuote(sessionId, LINE, productQuotation());
+        quote(quote, beneficiary(100.0));
+        quote = quoteService.updateQuote(quote);
+
         URI quoteCreationURI = new URI("http://localhost:" + port + "/policies");
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(quoteCreationURI)
                 .queryParam("sessionId", sessionId)

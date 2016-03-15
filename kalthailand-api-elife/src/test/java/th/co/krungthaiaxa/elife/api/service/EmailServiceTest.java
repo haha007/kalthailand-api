@@ -2,7 +2,7 @@ package th.co.krungthaiaxa.elife.api.service;
 
 import com.icegreen.greenmail.junit.GreenMailRule;
 import com.icegreen.greenmail.util.ServerSetupTest;
-import org.apache.commons.io.FileUtils;
+import com.itextpdf.text.pdf.PdfReader;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -18,26 +18,29 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.elife.api.KalApiApplication;
-import th.co.krungthaiaxa.elife.api.TestUtil;
+import th.co.krungthaiaxa.elife.api.model.Document;
+import th.co.krungthaiaxa.elife.api.model.DocumentDownload;
 import th.co.krungthaiaxa.elife.api.model.Policy;
 import th.co.krungthaiaxa.elife.api.model.Quote;
-import th.co.krungthaiaxa.elife.api.utils.ImageUtil;
 
 import javax.inject.Inject;
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeUtility;
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Base64;
+import java.util.Optional;
 
 import static com.icegreen.greenmail.util.GreenMailUtil.getBody;
-import static java.lang.System.getProperty;
-import static org.apache.commons.io.FileUtils.readFileToByteArray;
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static th.co.krungthaiaxa.elife.api.TestUtil.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
+import static th.co.krungthaiaxa.elife.api.model.enums.DocumentType.ERECEIPT_PDF;
 import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_YEAR;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -52,14 +55,18 @@ public class EmailServiceTest {
     private String smtp;
     @Value("${email.name}")
     private String emailName;
-    @Value("${email.subject}")
-    private String subject;
+    @Value("${email.subject.quote}")
+    private String subjectQuote;
+    @Value("${email.subject.ereceipt.10ec}")
+    private String subjectEreceipt10EC;
     @Value("${lineid}")
     private String lineURL;
     @Value("${tmp.path.deleted.after.tests}")
     private String tmpPathDeletedAfterTests;
     @Value("${button.url.ereceipt.mail}")
     private String buttonUrlEreceiptMail;
+    @Inject
+    private DocumentService documentService;
     @Inject
     private EmailService emailService;
     @Inject
@@ -117,7 +124,7 @@ public class EmailServiceTest {
 
         assertThat(greenMail.getReceivedMessages()).hasSize(1);
         MimeMessage email = greenMail.getReceivedMessages()[0];
-        assertThat(email.getSubject()).isEqualTo(subject);
+        assertThat(email.getSubject()).isEqualTo(subjectQuote);
         String bodyAsString = decodeSimpleBody(getBody(email));
         assertThat(bodyAsString).contains("<tr><td>รวมรับผลประโยชน์ขั้นต่ำ</td><td class=\"value\" align=\"right\" valign=\"top\" >706,649.00 บาท</td></tr>");
         assertThat(bodyAsString).contains("<tr><td>รวมรับผลประโยชน์ระดับกลาง (รวมเงินปันผล**ระดับกลาง)</td><td class=\"value\" valign=\"top\" align=\"right\" >788,837.00 บาท</td></tr>");
@@ -134,7 +141,7 @@ public class EmailServiceTest {
 
         assertThat(greenMail.getReceivedMessages()).hasSize(1);
         MimeMessage email = greenMail.getReceivedMessages()[0];
-        assertThat(email.getSubject()).isEqualTo(subject);
+        assertThat(email.getSubject()).isEqualTo(subjectQuote);
         String bodyAsString = decodeSimpleBody(getBody(email));
         assertThat(bodyAsString).contains("<tr><td>รวมรับผลประโยชน์ขั้นต่ำ</td><td class=\"value\" align=\"right\" valign=\"top\" >1,009,498.00 บาท</td></tr>");
         assertThat(bodyAsString).contains("<tr><td>รวมรับผลประโยชน์ระดับกลาง (รวมเงินปันผล**ระดับกลาง)</td><td class=\"value\" valign=\"top\" align=\"right\" >1,126,910.00 บาท</td></tr>");
@@ -151,7 +158,7 @@ public class EmailServiceTest {
 
         assertThat(greenMail.getReceivedMessages()).hasSize(1);
         MimeMessage email = greenMail.getReceivedMessages()[0];
-        assertThat(email.getSubject()).isEqualTo(subject);
+        assertThat(email.getSubject()).isEqualTo(subjectQuote);
         String bodyAsString = decodeSimpleBody(getBody(email));
         assertThat(bodyAsString).contains("<tr><td>ระยะเวลาคุ้มครอง</td><td width=\"120px\" class=\"value\" align=\"right\" >10 ปี</td></tr>");
         assertThat(bodyAsString).contains("<tr><td>ระยะเวลาชำระเบี้ย</td><td class=\"value\" align=\"right\" >6 ปี</td></tr>");
@@ -170,7 +177,6 @@ public class EmailServiceTest {
 
     @Test
     public void generate_sale_illustration_pdf_file() throws Exception {
-
         Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation());
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
@@ -179,7 +185,7 @@ public class EmailServiceTest {
 
         assertThat(greenMail.getReceivedMessages()).hasSize(1);
         MimeMessage email = greenMail.getReceivedMessages()[0];
-        assertThat(email.getSubject()).isEqualTo(subject);
+        assertThat(email.getSubject()).isEqualTo(subjectQuote);
         String bodyAsString = decodeSimpleBody(getBody(email));
         assertThat(bodyAsString).contains("<tr><td>ระยะเวลาคุ้มครอง</td><td width=\"120px\" class=\"value\" align=\"right\" >" + quote.getCommonData().getNbOfYearsOfCoverage().toString() + " ปี</td></tr>");
         assertThat(bodyAsString).contains("<tr><td>ระยะเวลาชำระเบี้ย</td><td class=\"value\" align=\"right\" >" + quote.getCommonData().getNbOfYearsOfPremium().toString() + " ปี</td></tr>");
@@ -202,25 +208,21 @@ public class EmailServiceTest {
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
         Policy policy = policyService.createPolicy(quote);
-        TestUtil.policy(policy);
+        policy(policy);
 
-        byte[] bytes = policyService.createEreceipt(policy);
-        assertThat(bytes).isNotNull();
+        documentService.generatePolicyDocuments(policy);
+        Optional<Document> documentPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(ERECEIPT_PDF)).findFirst();
+        assertThat(documentPdf.isPresent()).isTrue();
 
-        FileUtils.forceMkdir(new File(tmpPathDeletedAfterTests));
-        tmpPathDeletedAfterTests = tmpPathDeletedAfterTests + getProperty("file.separator") + ERECEIPT_MERGED_FILE_NAME;
-        StringBuilder im = new StringBuilder(tmpPathDeletedAfterTests);
-        im.insert(tmpPathDeletedAfterTests.indexOf("."), "_" + policy.getPolicyId());
-        tmpPathDeletedAfterTests = im.toString();
+        DocumentDownload documentDownload = documentService.downloadDocument(documentPdf.get().getId());
+        byte[] bytes = Base64.getDecoder().decode(documentDownload.getContent());
+        assertThat(new PdfReader(bytes)).isNotNull();
 
-        ImageUtil.imageToPDF(bytes, tmpPathDeletedAfterTests);
-        File file = new File(tmpPathDeletedAfterTests);
-        assertThat(file.exists()).isTrue();
-
-        emailService.sendEreceiptEmail(policy, Pair.of(readFileToByteArray(file), file.getName()));
+        emailService.sendEreceiptEmail(policy, Pair.of(bytes, "emailServiceTest-ereceipt.pdf"));
 
         assertThat(greenMail.getReceivedMessages()).hasSize(1);
         MimeMessage email = greenMail.getReceivedMessages()[0];
+        assertThat(email.getSubject()).isEqualTo(subjectEreceipt10EC);
         assertThat(email.getFrom()).containsOnly(new InternetAddress(emailName));
 
         String bodyAsString = decodeSimpleBody(getBody(email));
@@ -234,7 +236,7 @@ public class EmailServiceTest {
                     !StringUtils.isNotBlank(bodyPart.getFileName())) {
                 //null file value
             } else {
-                assertThat(null != bodyPart.getFileName() && !bodyPart.getFileName().equals(""));
+                assertThat(bodyPart.getFileName()).isEqualTo("emailServiceTest-ereceipt.pdf");
             }
         }
     }

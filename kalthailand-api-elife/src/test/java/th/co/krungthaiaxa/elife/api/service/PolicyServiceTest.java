@@ -1,30 +1,19 @@
 package th.co.krungthaiaxa.elife.api.service;
 
-
-import com.itextpdf.text.DocumentException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.elife.api.KalApiApplication;
-import th.co.krungthaiaxa.elife.api.TestUtil;
 import th.co.krungthaiaxa.elife.api.exception.PolicyValidationException;
 import th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException;
-import th.co.krungthaiaxa.elife.api.model.Document;
 import th.co.krungthaiaxa.elife.api.model.Payment;
 import th.co.krungthaiaxa.elife.api.model.Policy;
 import th.co.krungthaiaxa.elife.api.model.Quote;
-import th.co.krungthaiaxa.elife.api.utils.ImageUtil;
 
 import javax.inject.Inject;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.Base64;
 import java.util.Optional;
 
 import static java.util.Optional.empty;
@@ -35,7 +24,6 @@ import static th.co.krungthaiaxa.elife.api.TestUtil.*;
 import static th.co.krungthaiaxa.elife.api.exception.PolicyValidationException.emptyQuote;
 import static th.co.krungthaiaxa.elife.api.exception.PolicyValidationException.noneExistingQuote;
 import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
-import static th.co.krungthaiaxa.elife.api.model.enums.DocumentType.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.PaymentStatus.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.ERROR;
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.SUCCESS;
@@ -45,16 +33,10 @@ import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.SUCCES
 @WebAppConfiguration
 @ActiveProfiles("test")
 public class PolicyServiceTest {
-    private final static String ERECEIPT_PDF_FILE_NAME = "ereceipt.pdf";
-    @Value("${tmp.path.deleted.after.tests}")
-    private String tmpPathDeletedAfterTests;
     @Inject
     private PolicyService policyService;
     @Inject
     private QuoteService quoteService;
-    @Inject
-    private DocumentService documentService;
-
 
     @Test
     public void should_return_error_when_create_policy_if_quote_not_provided() throws Exception {
@@ -97,18 +79,16 @@ public class PolicyServiceTest {
     }
 
     @Test
-    public void should_add_have_3_documents_after_updating_first_payment() throws Exception {
+    public void should_have_0_documents_after_updating_first_payment() throws Exception {
         Policy policy = getPolicy();
 
         Payment payment = policy.getPayments().get(0);
-
         policyService.updatePayment(policy, payment, 50.0, "THB", empty(), SUCCESS, LINE, empty(), empty(), empty(), empty());
-
-        assertThat(policy.getDocuments()).extracting("typeName").containsExactly(ERECEIPT_IMAGE, ERECEIPT_PDF, APPLICATION_FORM);
+        assertThat(policy.getDocuments()).hasSize(0);
     }
 
     @Test
-    public void should_still_have_only_3_documents_even_after_updating_multiple_payments() throws Exception {
+    public void should_still_have_only_0_documents_even_after_updating_multiple_payments() throws Exception {
         Policy policy = getPolicy();
 
         Payment payment1 = policy.getPayments().get(0);
@@ -120,7 +100,7 @@ public class PolicyServiceTest {
         policyService.updatePayment(policy, payment2, 50.0, "THB", empty(), SUCCESS, LINE, empty(), empty(), empty(), empty());
         policyService.updatePayment(policy, payment3, 50.0, "THB", empty(), SUCCESS, LINE, empty(), empty(), empty(), empty());
 
-        assertThat(policy.getDocuments()).extracting("typeName").containsExactly(ERECEIPT_IMAGE, ERECEIPT_PDF, APPLICATION_FORM);
+        assertThat(policy.getDocuments()).hasSize(0);
     }
 
     @Test
@@ -239,34 +219,6 @@ public class PolicyServiceTest {
         assertThat(payment.getPaymentInformations()).hasSize(1);
         assertThat(payment.getPaymentInformations()).extracting("rejectionErrorMessage").containsNull();
         assertThat(payment.getStatus()).isEqualTo(OVERPAID);
-    }
-
-    @Test
-    public void should_create_bytes_for_eReceipt() throws QuoteCalculationException, PolicyValidationException, IOException {
-        Policy policy = getPolicy();
-        TestUtil.policy(policy);
-
-        byte[] bytes = policyService.createEreceipt(policy);
-        assertThat(bytes).isNotNull();
-    }
-
-    @Test
-    public void should_create_bytes_for_eReceipt_and_can_create_pdf_file_to_file_system() throws
-            QuoteCalculationException, PolicyValidationException, IOException, DocumentException {
-        Policy policy = getPolicy();
-        TestUtil.policy(policy);
-
-        byte[] bytes = policyService.createEreceipt(policy);
-        assertThat(bytes).isNotNull();
-
-        StringBuilder im = new StringBuilder(tmpPathDeletedAfterTests);
-        im.append(File.separator + ERECEIPT_PDF_FILE_NAME);
-        im.insert(im.toString().indexOf("."), "_" + policy.getPolicyId());
-        String resultFileName = im.toString();
-
-        ImageUtil.imageToPDF(bytes, resultFileName);
-        File file = new File(resultFileName);
-        assertThat(file.exists()).isTrue();
     }
 
     private Policy getPolicy() throws QuoteCalculationException, PolicyValidationException {
