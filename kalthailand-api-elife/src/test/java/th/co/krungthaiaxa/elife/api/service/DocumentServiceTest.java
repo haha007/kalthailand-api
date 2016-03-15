@@ -55,8 +55,8 @@ public class DocumentServiceTest {
         assertThat(policy.getDocuments()).hasSize(0);
         Document document1 = documentService.addDocument(policy, Base64.getEncoder().encode("something".getBytes()), "image/jpg", ERECEIPT_IMAGE);
         Document document2 = documentService.addDocument(policy, Base64.getEncoder().encode("something".getBytes()), "image/jpg", ERECEIPT_PDF);
-        Policy savedPolicy = policyService.findPolicy(policy.getPolicyId());
-        assertThat(savedPolicy.getDocuments()).containsExactly(document1, document2);
+        Optional<Policy> savedPolicy = policyService.findPolicy(policy.getPolicyId());
+        assertThat(savedPolicy.get().getDocuments()).containsExactly(document1, document2);
     }
 
     @Test

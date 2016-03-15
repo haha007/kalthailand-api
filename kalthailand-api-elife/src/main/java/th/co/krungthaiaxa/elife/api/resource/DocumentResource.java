@@ -57,15 +57,13 @@ public class DocumentResource {
     public ResponseEntity documentsOfPolicy(
             @ApiParam(value = "The policy ID")
             @PathVariable String policyId) {
-        Policy policy;
-        try {
-            policy = policyService.findPolicy(policyId);
-        } catch (RuntimeException e) {
-            logger.error("Unable to find the policy with ID [" + policyId + "]", e);
+        Optional<Policy> policy = policyService.findPolicy(policyId);
+        if (!policy.isPresent()) {
+            logger.error("Unable to find the policy with ID [" + policyId + "]");
             return new ResponseEntity<>(POLICY_DOES_NOT_EXIST, NOT_FOUND);
         }
 
-        return new ResponseEntity<>(getJson(policy.getDocuments()), OK);
+        return new ResponseEntity<>(getJson(policy.get().getDocuments()), OK);
     }
 
     @ApiOperation(value = "Download a document", notes = "Downloads a document of a policy", response = DocumentDownload.class)
@@ -81,15 +79,13 @@ public class DocumentResource {
             @PathVariable String policyId,
             @ApiParam(value = "The document ID")
             @PathVariable String documentId) {
-        Policy policy;
-        try {
-            policy = policyService.findPolicy(policyId);
-        } catch (RuntimeException e) {
-            logger.error("Unable to find the policy with ID [" + policyId + "]", e);
+        Optional<Policy> policy = policyService.findPolicy(policyId);
+        if (!policy.isPresent()) {
+            logger.error("Unable to find the policy with ID [" + policyId + "]");
             return new ResponseEntity<>(POLICY_DOES_NOT_EXIST, NOT_FOUND);
         }
 
-        Optional<Document> document = policy.getDocuments().stream().filter(tmp -> tmp.getId().equals(documentId)).findFirst();
+        Optional<Document> document = policy.get().getDocuments().stream().filter(tmp -> tmp.getId().equals(documentId)).findFirst();
         if (!document.isPresent()) {
             logger.error("Unable to find the document with ID [" + documentId + "] in the policy with ID [" + policyId + "]");
             return new ResponseEntity<>(POLICY_DOES_NOT_CONTAIN_DOCUMENT, NOT_ACCEPTABLE);
@@ -119,11 +115,9 @@ public class DocumentResource {
             @PathVariable String policyId,
             @ApiParam(value = "The content of the image to watermark, but base 64 encoded.")
             @RequestBody String base64Image) {
-        Policy policy;
-        try {
-            policy = policyService.findPolicy(policyId);
-        } catch (RuntimeException e) {
-            logger.error("Unable to find the policy with ID [" + policyId + "]", e);
+        Optional<Policy> policy = policyService.findPolicy(policyId);
+        if (!policy.isPresent()) {
+            logger.error("Unable to find the policy with ID [" + policyId + "]");
             return new ResponseEntity<>(POLICY_DOES_NOT_EXIST, NOT_FOUND);
         }
 
@@ -158,7 +152,7 @@ public class DocumentResource {
         }
 
         byte[] encodedContent = Base64.getEncoder().encode(content);
-        documentService.addDocument(policy, encodedContent, mimeType, THAI_ID);
+        documentService.addDocument(policy.get(), encodedContent, mimeType, THAI_ID);
 
         return new ResponseEntity<>(encodedContent, OK);
     }

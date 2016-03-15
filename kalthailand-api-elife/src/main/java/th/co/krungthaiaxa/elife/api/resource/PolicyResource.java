@@ -96,14 +96,12 @@ public class PolicyResource {
     public ResponseEntity getPolicyPayments(
             @ApiParam(value = "The policy ID")
             @PathVariable String policyId) {
-        Policy policy;
-        try {
-            policy = policyService.findPolicy(policyId);
-        } catch (RuntimeException e) {
-            logger.error("Unable to find the policy with ID [" + policyId + "]", e);
+        Optional<Policy> policy = policyService.findPolicy(policyId);
+        if (!policy.isPresent()) {
+            logger.error("Unable to find the policy with ID [" + policyId + "]");
             return new ResponseEntity<>(POLICY_DOES_NOT_EXIST, NOT_FOUND);
         }
-        return new ResponseEntity<>(JsonUtil.getJson(policy.getPayments()), OK);
+        return new ResponseEntity<>(JsonUtil.getJson(policy.get().getPayments()), OK);
     }
 
     @ApiOperation(value = "Update Policy payment and documents", notes = "Generates Policy documents and updates a " +
@@ -140,15 +138,13 @@ public class PolicyResource {
             @RequestParam Optional<String> errorCode,
             @ApiParam(value = "The error message given by the channel (if any)", required = false)
             @RequestParam Optional<String> errorMessage) {
-        Policy policy;
-        try {
-            policy = policyService.findPolicy(policyId);
-        } catch (RuntimeException e) {
-            logger.error("Unable to find the policy with ID [" + policyId + "]", e);
+        Optional<Policy> policy = policyService.findPolicy(policyId);
+        if (!policy.isPresent()) {
+            logger.error("Unable to find the policy with ID [" + policyId + "]");
             return new ResponseEntity<>(POLICY_DOES_NOT_EXIST, NOT_FOUND);
         }
 
-        Optional<Payment> payment = policy.getPayments().stream().filter(tmp -> tmp.getPaymentId().equals(paymentId)).findFirst();
+        Optional<Payment> payment = policy.get().getPayments().stream().filter(tmp -> tmp.getPaymentId().equals(paymentId)).findFirst();
         if (!payment.isPresent()) {
             logger.error("Unable to find the payment with ID [" + paymentId + "] in the policy with ID [" + policyId + "]");
             return new ResponseEntity<>(POLICY_DOES_NOT_CONTAIN_PAYMENT, NOT_ACCEPTABLE);
@@ -162,31 +158,31 @@ public class PolicyResource {
 
         // Update the policy
         try {
-            policy = policyService.updatePayment(policy, payment.get(), value, currencyCode, registrationKey, status,
+            policyService.updatePayment(policy.get(), payment.get(), value, currencyCode, registrationKey, status,
                     channelType, creditCardName, paymentMethod, errorCode, errorMessage);
         } catch (IOException e) {
             logger.error("Unable to update the payment with ID [" + paymentId + "] in the policy with ID [" + policyId + "]");
             return new ResponseEntity<>(PAYMENT_NOT_UPDATED, INTERNAL_SERVER_ERROR);
         }
-        policyService.addAgentCodes(policy);
+        policyService.addAgentCodes(policy.get());
 
         // Generate documents
-        documentService.generatePolicyDocuments(policy);
+        documentService.generatePolicyDocuments(policy.get());
 
         // Get Ereceipt
-        Optional<Document> documentPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(ERECEIPT_PDF)).findFirst();
+        Optional<Document> documentPdf = policy.get().getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(ERECEIPT_PDF)).findFirst();
 
         // Send Email
         if (documentPdf.isPresent()) {
             DocumentDownload documentDownload = documentService.downloadDocument(documentPdf.get().getId());
             try {
-                emailService.sendEreceiptEmail(policy, Pair.of(Base64.getDecoder().decode(documentDownload.getContent()), "e-receipt_" + policy.getPolicyId() + ".pdf"));
+                emailService.sendEreceiptEmail(policy.get(), Pair.of(Base64.getDecoder().decode(documentDownload.getContent()), "e-receipt_" + policy.get().getPolicyId() + ".pdf"));
             } catch (Exception e) {
-                logger.error(String.format("Unable to send e-receipt document while sending email with policy id is [%1$s].", policy.getPolicyId()), e);
+                logger.error(String.format("Unable to send e-receipt document while sending email with policy id is [%1$s].", policy.get().getPolicyId()), e);
                 return new ResponseEntity<>(UNABLE_TO_SEND_EMAIL, INTERNAL_SERVER_ERROR);
             }
         } else {
-            logger.error(String.format("E-receipt of policy [%1$s] is not available.", policy.getPolicyId()));
+            logger.error(String.format("E-receipt of policy [%1$s] is not available.", policy.get().getPolicyId()));
             return new ResponseEntity<>(UNABLE_TO_CREATE_ERECEIPT, INTERNAL_SERVER_ERROR);
         }
 

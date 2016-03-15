@@ -131,6 +131,38 @@ public class DocumentResourceTest {
     }
 
     @Test
+    public void should_return_not_found_when_trying_to_list_documents_of_a_policy_that_does_not_exist() throws IOException, QuoteCalculationException, URISyntaxException {
+        URI documentUploadURI = new URI("http://localhost:" + port + "/documents/policies/12345678901234567890");
+        ResponseEntity<String> response = template.getForEntity(documentUploadURI, String.class);
+
+        Error error = TestUtil.getErrorFromJSon(response.getBody());
+        assertThat(response.getStatusCode().value()).isEqualTo(NOT_FOUND.value());
+        assertThat(error.getCode()).isEqualTo(ErrorCode.POLICY_DOES_NOT_EXIST.getCode());
+    }
+
+    @Test
+    public void should_return_not_found_when_trying_to_download_a_document_of_a_policy_that_does_not_exist() throws IOException, QuoteCalculationException, URISyntaxException {
+        URI documentUploadURI = new URI("http://localhost:" + port + "/documents/policies/12345678901234567890/1234567890");
+        ResponseEntity<String> response = template.getForEntity(documentUploadURI, String.class);
+
+        Error error = TestUtil.getErrorFromJSon(response.getBody());
+        assertThat(response.getStatusCode().value()).isEqualTo(NOT_FOUND.value());
+        assertThat(error.getCode()).isEqualTo(ErrorCode.POLICY_DOES_NOT_EXIST.getCode());
+    }
+
+    @Test
+    public void should_return_error_when_trying_to_download_a_document_that_does_not_exist() throws IOException, QuoteCalculationException, URISyntaxException {
+        Policy policy = getPolicy();
+
+        URI documentUploadURI = new URI("http://localhost:" + port + "/documents/policies/" + policy.getPolicyId() + "/1234567890");
+        ResponseEntity<String> response = template.getForEntity(documentUploadURI, String.class);
+
+        Error error = TestUtil.getErrorFromJSon(response.getBody());
+        assertThat(response.getStatusCode().value()).isEqualTo(NOT_ACCEPTABLE.value());
+        assertThat(error.getCode()).isEqualTo(ErrorCode.POLICY_DOES_NOT_CONTAIN_DOCUMENT.getCode());
+    }
+
+    @Test
     public void should_return_0_documents_after_a_policy_has_been_created_and_payment_updated_with_error() throws QuoteCalculationException, IOException, URISyntaxException {
         Policy policy = getPolicy();
 

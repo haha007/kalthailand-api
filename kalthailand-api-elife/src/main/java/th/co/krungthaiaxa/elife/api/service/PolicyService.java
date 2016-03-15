@@ -51,8 +51,9 @@ public class PolicyService {
         this.quoteRepository = quoteRepository;
     }
 
-    public Policy findPolicy(String policyId) {
-        return policyRepository.findByPolicyId(policyId);
+    public Optional<Policy> findPolicy(String policyId) {
+        Policy policy = policyRepository.findByPolicyId(policyId);
+        return policy != null ? Optional.of(policy) : Optional.empty();
     }
 
     public Policy createPolicy(Quote quote) throws PolicyValidationException, QuoteCalculationException {
@@ -95,7 +96,7 @@ public class PolicyService {
         return policy;
     }
 
-    public Policy updatePayment(Policy policy, Payment payment, Double value, String currencyCode,
+    public void updatePayment(Policy policy, Payment payment, Double value, String currencyCode,
                                 Optional<String> registrationKey, SuccessErrorStatus status, ChannelType channelType,
                                 Optional<String> creditCardName, Optional<String> paymentMethod,
                                 Optional<String> errorCode, Optional<String> errorMessage) throws IOException {
@@ -139,8 +140,6 @@ public class PolicyService {
 
         paymentRepository.save(payment);
         logger.info("Payment [" + payment.getPaymentId() + "] has been updated");
-
-        return policy;
     }
 
     public void addAgentCodes(Policy policy) {

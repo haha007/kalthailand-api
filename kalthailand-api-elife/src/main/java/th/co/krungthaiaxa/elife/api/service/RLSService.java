@@ -152,9 +152,9 @@ public class RLSService {
     }
 
     void addPaymentId(CollectionFileLine collectionFileLine) {
-        Policy policy = policyService.findPolicy(collectionFileLine.getPolicyNumber());
-        notNull(policy, "Unable to find a policy [" + collectionFileLine.getPolicyNumber() + "]");
-        isTrue(policy.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().equals(EVERY_MONTH),
+        Optional<Policy> policy = policyService.findPolicy(collectionFileLine.getPolicyNumber());
+        isTrue(policy.isPresent(), "Unable to find a policy [" + collectionFileLine.getPolicyNumber() + "]");
+        isTrue(policy.get().getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().equals(EVERY_MONTH),
                 "Policy [" + collectionFileLine.getPolicyNumber() + "] is not a monthly payment policy");
 
         // 28 is the maximum nb of days between a scheduled payment and collection file first cycle start date
@@ -162,13 +162,13 @@ public class RLSService {
         LocalDate todayMinus28Days = now.minusDays(28);
 
         // There should be a scheduled payment for which due date is within the last 28 days
-        Optional<Payment> payment = policy.getPayments()
+        Optional<Payment> payment = policy.get().getPayments()
                 .stream()
                 .filter(tmp -> tmp.getStatus().equals(FUTURE))
                 .filter(tmp -> tmp.getDueDate().isAfter(todayMinus28Days))
                 .filter(tmp -> tmp.getDueDate().isBefore(now.plusDays(1))) // plus 1 day because a.isBefore(a) = false
                 .findFirst();
-        isTrue(payment.isPresent(), "Unable to find a schedule payment for policy [" + policy.getPolicyId() + "]");
+        isTrue(payment.isPresent(), "Unable to find a schedule payment for policy [" + policy.get().getPolicyId() + "]");
         collectionFileLine.setPaymentId(payment.get().getPaymentId());
     }
 
