@@ -11,15 +11,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
+import th.co.krungthaiaxa.elife.api.model.DatedAmount;
 import th.co.krungthaiaxa.elife.api.model.Quote;
 import th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode;
 
 import javax.inject.Inject;
 import java.io.IOException;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Base64;
-import java.util.Date;
 import java.util.Locale;
 
 import static org.apache.commons.io.IOUtils.toByteArray;
@@ -170,59 +171,35 @@ public class SaleIllustrationService {
         return Pair.of(content.toByteArray(), "proposal_" + quote.getQuoteId() + "_" + getDate() + ".pdf");
     }
 
-    private Double getMinimumRefundEveryYear(Quote q) {
-        Double sum = 0.0;
-        for (Integer a = 0; a < q.getPremiumsData().getProduct10ECPremium().getYearlyCashBacks().size(); a++) {
-            sum += q.getPremiumsData().getProduct10ECPremium().getYearlyCashBacks().get(a).getValue();
-        }
-        return sum;
+    private Double getMinimumRefundEveryYear(Quote quote) {
+        return quote.getPremiumsData().getProduct10ECPremium().getYearlyCashBacks()
+                .stream()
+                .mapToDouble(DatedAmount::getValue)
+                .sum();
     }
 
-    private Double getMediumRefundEveryYear(Quote q) {
-        Double sum = 0.0;
-        for (Integer a = 0; a < q.getPremiumsData().getProduct10ECPremium().getYearlyCashBacksAverageDividende().size(); a++) {
-            sum += q.getPremiumsData().getProduct10ECPremium().getYearlyCashBacksAverageDividende().get(a).getValue();
-        }
-        sum += getMinimumRefundEveryYear(q);
-        return sum;
+    private Double getMediumRefundEveryYear(Quote quote) {
+        return quote.getPremiumsData().getProduct10ECPremium().getYearlyCashBacksAverageDividende()
+                .stream()
+                .mapToDouble(DatedAmount::getValue)
+                .sum();
     }
 
-    private Double getMaximumRefundEveryYear(Quote q) {
-        Double sum = 0.0;
-        for (Integer a = 0; a < q.getPremiumsData().getProduct10ECPremium().getYearlyCashBacksMaximumDividende().size(); a++) {
-            sum += q.getPremiumsData().getProduct10ECPremium().getYearlyCashBacksMaximumDividende().get(a).getValue();
-        }
-        sum += getMinimumRefundEveryYear(q);
-        return sum;
+    private Double getMaximumRefundEveryYear(Quote quote) {
+        return quote.getPremiumsData().getProduct10ECPremium().getYearlyCashBacksMaximumDividende()
+                .stream()
+                .mapToDouble(DatedAmount::getValue)
+                .sum();
     }
 
     private String getDate() {
-        Date d = new Date();
-        return (new SimpleDateFormat("yyyyMMdd")).format(d);
+        return LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
     }
 
     private static PdfPCell addImage(byte[] imgContent, Integer imgScale, Integer colSpan, Integer horizontalAlignment) {
         Image img;
         try {
             img = Image.getInstance(imgContent);
-        } catch (Exception e) {
-            logger.error("Unable to add image", e);
-            return new PdfPCell();
-        }
-        img.scalePercent(imgScale);
-        PdfPCell cell = new PdfPCell(img);
-        cell.setBorder(Rectangle.NO_BORDER);
-        if (colSpan != null) {
-            cell.setColspan(colSpan);
-        }
-        cell.setHorizontalAlignment(horizontalAlignment);
-        return cell;
-    }
-
-    private static PdfPCell addImage(String imgPath, Integer imgScale, Integer colSpan, Integer horizontalAlignment) {
-        Image img;
-        try {
-            img = Image.getInstance(imgPath);
         } catch (Exception e) {
             logger.error("Unable to add image", e);
             return new PdfPCell();
