@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import th.co.krungthaiaxa.elife.api.exception.PolicyValidationException;
 import th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.elife.api.model.*;
+import th.co.krungthaiaxa.elife.api.model.enums.ProductIFinePackage;
 import th.co.krungthaiaxa.elife.api.repository.ProductIFineRateRepository;
 
 import javax.inject.Inject;

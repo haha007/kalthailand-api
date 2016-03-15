@@ -58,7 +58,7 @@ public class ProductIBegin implements Product {
             Amount amount = new Amount();
             amount.setCurrencyCode(productQuotation.getSumInsuredAmount().getCurrencyCode());
             amount.setValue(productQuotation.getSumInsuredAmount().getValue());
-            quote.getPremiumsData().getProduct10ECPremium().setSumInsured(amount);
+            quote.getPremiumsData().getProductIBeginPremium().setSumInsured(amount);
         }
 
         // cannot be too young or too old
@@ -76,7 +76,7 @@ public class ProductIBegin implements Product {
 
         // calculates premium / sum insured
         //TODO this has to change and iBegin5 has to become a parameter from ProductQuotation
-        ProductIBeginRate productIBeginRate = productIBeginRateRepository.findByNbOfYearsOfPaymentAndSumInsured(5, premiumsData.getProduct10ECPremium().getSumInsured().getValue());
+        ProductIBeginRate productIBeginRate = productIBeginRateRepository.findByNbOfYearsOfPaymentAndSumInsured(5, premiumsData.getProductIBeginPremium().getSumInsured().getValue());
         List<Double> rates;
         if (insured.getPerson().getGenderCode().equals(MALE)) {
             rates = productIBeginRate.getMaleRate();
@@ -84,7 +84,7 @@ public class ProductIBegin implements Product {
             rates = productIBeginRate.getFemaleRate();
         }
         premiumsData.getFinancialScheduler().setModalAmount(getPremiumFromSumInsured(
-                quote.getPremiumsData().getProduct10ECPremium().getSumInsured(),
+                quote.getPremiumsData().getProductIBeginPremium().getSumInsured(),
                 rates.get(quote.getInsureds().get(0).getAgeAtSubscription() - MIN_AGE),
                 quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode()));
     }
@@ -115,11 +115,11 @@ public class ProductIBegin implements Product {
         FinancialScheduler financialScheduler = new FinancialScheduler();
         financialScheduler.setPeriodicity(new Periodicity());
 
-        Product10ECPremium product10ECPremium = new Product10ECPremium();
+        ProductIBeginPremium productIBeginPremium = new ProductIBeginPremium();
 
         PremiumsData premiumsData = new PremiumsData();
         premiumsData.setFinancialScheduler(financialScheduler);
-        premiumsData.setProduct10ECPremium(product10ECPremium);
+        premiumsData.setProductIBeginPremium(productIBeginPremium);
 
         return premiumsData;
     }

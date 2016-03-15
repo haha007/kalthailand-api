@@ -11,6 +11,7 @@ import java.util.Objects;
 public class PremiumsData implements Serializable {
     private FinancialScheduler financialScheduler;
     private Product10ECPremium product10ECPremium;
+    private ProductIBeginPremium productIBeginPremium;
     private ProductIFinePremium productIFinePremium;
 
     @ApiModelProperty(value = "The definition of how the premiums must be paid")
@@ -29,6 +30,15 @@ public class PremiumsData implements Serializable {
 
     public void setProduct10ECPremium(Product10ECPremium product10ECPremium) {
         this.product10ECPremium = product10ECPremium;
+    }
+
+    @ApiModelProperty(value = "iBegin specific Premiums Data")
+    public ProductIBeginPremium getProductIBeginPremium() {
+        return productIBeginPremium;
+    }
+
+    public void setProductIBeginPremium(ProductIBeginPremium productIBeginPremium) {
+        this.productIBeginPremium = productIBeginPremium;
     }
 
     @ApiModelProperty(value = "iFine specific Premiums Data")

@@ -16,7 +16,7 @@ import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static th.co.krungthaiaxa.elife.api.TestUtil.*;
-import static th.co.krungthaiaxa.elife.api.model.ProductIFinePackage.*;
+import static th.co.krungthaiaxa.elife.api.model.enums.ProductIFinePackage.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.GenderCode.FEMALE;
 import static th.co.krungthaiaxa.elife.api.model.enums.GenderCode.MALE;
 import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_MONTH;
