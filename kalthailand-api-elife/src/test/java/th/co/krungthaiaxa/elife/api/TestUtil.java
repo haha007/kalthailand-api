@@ -17,6 +17,7 @@ import static th.co.krungthaiaxa.elife.api.model.enums.DividendOption.YEARLY_FOR
 import static th.co.krungthaiaxa.elife.api.model.enums.GenderCode.FEMALE;
 import static th.co.krungthaiaxa.elife.api.model.enums.MaritalStatus.MARRIED;
 import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_HALF_YEAR;
+import static th.co.krungthaiaxa.elife.api.model.enums.RegistrationTypeName.THAI_ID_NUMBER;
 import static th.co.krungthaiaxa.elife.api.model.enums.USPermanentResident.NOT_PR;
 import static th.co.krungthaiaxa.elife.api.products.ProductType.PRODUCT_10_EC;
 import static th.co.krungthaiaxa.elife.api.products.ProductType.PRODUCT_IFINE;
@@ -311,7 +312,7 @@ public class TestUtil {
     public static Registration registration(String id) {
         Registration registration = new Registration();
         registration.setId(id);
-        registration.setTypeName("Thai ID Card number");
+        registration.setTypeName(THAI_ID_NUMBER);
         return registration;
     }
 

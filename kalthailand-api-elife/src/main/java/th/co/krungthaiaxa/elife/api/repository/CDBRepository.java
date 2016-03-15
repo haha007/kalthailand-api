@@ -21,6 +21,9 @@ public class CDBRepository {
     @Inject
     private JdbcTemplate jdbcTemplate;
 
+    /**
+     * @return Left part is the previous policy number, middle part is first agent code, right part is the second agent code
+     */
     public Optional<Triple<String, String, String>> getExistingAgentCode(String idCard, String dateOfBirth) {
         if (logger.isDebugEnabled()) {
             logger.debug(String.format("[%1$s] .....", "getExistingAgentCode"));

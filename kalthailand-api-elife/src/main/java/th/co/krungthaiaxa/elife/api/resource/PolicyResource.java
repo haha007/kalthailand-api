@@ -160,7 +160,7 @@ public class PolicyResource {
             }
         }
 
-        // Update the payment
+        // Update the policy
         try {
             policy = policyService.updatePayment(policy, payment.get(), value, currencyCode, registrationKey, status,
                     channelType, creditCardName, paymentMethod, errorCode, errorMessage);
@@ -168,6 +168,7 @@ public class PolicyResource {
             logger.error("Unable to update the payment with ID [" + paymentId + "] in the policy with ID [" + policyId + "]");
             return new ResponseEntity<>(PAYMENT_NOT_UPDATED, INTERNAL_SERVER_ERROR);
         }
+        policyService.addAgentCodes(policy);
 
         // Generate documents
         documentService.generatePolicyDocuments(policy);

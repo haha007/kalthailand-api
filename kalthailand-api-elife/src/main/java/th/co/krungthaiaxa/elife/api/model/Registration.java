@@ -2,6 +2,7 @@ package th.co.krungthaiaxa.elife.api.model;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import th.co.krungthaiaxa.elife.api.model.enums.RegistrationTypeName;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -10,7 +11,7 @@ import java.util.Objects;
         "passport, taxes identification number, insurance company registration, driver license")
 public class Registration implements Serializable {
     private String id;
-    private String typeName;
+    private RegistrationTypeName typeName;
 
     @ApiModelProperty(value = " The registration identifier assigned by the registration authority")
     public String getId() {
@@ -21,12 +22,12 @@ public class Registration implements Serializable {
         this.id = id;
     }
 
-    @ApiModelProperty(value = "The localized name of the type of registration")
-    public String getTypeName() {
+    @ApiModelProperty(value = "The type of registration")
+    public RegistrationTypeName getTypeName() {
         return typeName;
     }
 
-    public void setTypeName(String typeName) {
+    public void setTypeName(RegistrationTypeName typeName) {
         this.typeName = typeName;
     }
 
@@ -36,7 +37,7 @@ public class Registration implements Serializable {
         if (o == null || getClass() != o.getClass()) return false;
         Registration that = (Registration) o;
         return Objects.equals(id, that.id) &&
-                Objects.equals(typeName, that.typeName);
+                typeName == that.typeName;
     }
 
     @Override

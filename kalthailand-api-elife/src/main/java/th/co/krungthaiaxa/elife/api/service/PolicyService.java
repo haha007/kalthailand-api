@@ -1,5 +1,6 @@
 package th.co.krungthaiaxa.elife.api.service;
 
+import org.apache.commons.lang3.tuple.Triple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -11,10 +12,7 @@ import th.co.krungthaiaxa.elife.api.model.enums.ChannelType;
 import th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus;
 import th.co.krungthaiaxa.elife.api.products.Product;
 import th.co.krungthaiaxa.elife.api.products.ProductFactory;
-import th.co.krungthaiaxa.elife.api.repository.PaymentRepository;
-import th.co.krungthaiaxa.elife.api.repository.PolicyNumberRepository;
-import th.co.krungthaiaxa.elife.api.repository.PolicyRepository;
-import th.co.krungthaiaxa.elife.api.repository.QuoteRepository;
+import th.co.krungthaiaxa.elife.api.repository.*;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -24,7 +22,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import static java.time.format.DateTimeFormatter.ofPattern;
 import static th.co.krungthaiaxa.elife.api.model.enums.PaymentStatus.*;
+import static th.co.krungthaiaxa.elife.api.model.enums.RegistrationTypeName.THAI_ID_NUMBER;
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.ERROR;
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.SUCCESS;
 
@@ -32,14 +32,19 @@ import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.SUCCES
 public class PolicyService {
     private final static Logger logger = LoggerFactory.getLogger(PolicyService.class);
 
+    private final CDBRepository cdbRepository;
     private final PaymentRepository paymentRepository;
     private final PolicyRepository policyRepository;
     private final PolicyNumberRepository policyNumberRepository;
     private final QuoteRepository quoteRepository;
 
     @Inject
-    public PolicyService(PaymentRepository paymentRepository, PolicyRepository policyRepository,
-                         PolicyNumberRepository policyNumberRepository, QuoteRepository quoteRepository) {
+    public PolicyService(CDBRepository cdbRepository,
+                         PaymentRepository paymentRepository,
+                         PolicyRepository policyRepository,
+                         PolicyNumberRepository policyNumberRepository,
+                         QuoteRepository quoteRepository) {
+        this.cdbRepository = cdbRepository;
         this.paymentRepository = paymentRepository;
         this.policyRepository = policyRepository;
         this.policyNumberRepository = policyNumberRepository;
@@ -71,7 +76,7 @@ public class PolicyService {
 
         Policy policy = policyRepository.findByQuoteId(quote.getId());
         if (policy == null) {
-            logger.info("Creating Policy from quote [" + quote.getQuoteId()+ "]");
+            logger.info("Creating Policy from quote [" + quote.getQuoteId() + "]");
             policy = new Policy();
             policy.setPolicyId(policyNumber.get().getPolicyId());
 
@@ -84,7 +89,7 @@ public class PolicyService {
             policyNumberRepository.save(policyNumber.get());
             quote.setPolicyId(policy.getPolicyId());
             quoteRepository.save(quote);
-            logger.info("Policy has been created with id [" + policy.getPolicyId() + "] from quote [" + quote.getQuoteId()+ "]");
+            logger.info("Policy has been created with id [" + policy.getPolicyId() + "] from quote [" + quote.getQuoteId() + "]");
         }
 
         return policy;
@@ -133,8 +138,38 @@ public class PolicyService {
         }
 
         paymentRepository.save(payment);
-        logger.info("Payment [" + payment.getPaymentId()+ "] has been updated");
+        logger.info("Payment [" + payment.getPaymentId() + "] has been updated");
 
         return policy;
+    }
+
+    public void addAgentCodes(Policy policy) {
+        Optional<Registration> insuredId = policy.getInsureds().get(0).getPerson().getRegistrations()
+                .stream()
+                .filter(registration -> registration.getTypeName().equals(THAI_ID_NUMBER))
+                .findFirst();
+        String insuredDOB = policy.getInsureds().get(0).getPerson().getBirthDate().format(ofPattern("yyyyMMdd"));
+        if (!insuredId.isPresent()) {
+            // Nothing we can do
+            return;
+        }
+
+        Optional<Triple<String, String, String>> agent = cdbRepository.getExistingAgentCode(insuredId.get().getId(), insuredDOB);
+        if (!agent.isPresent()) {
+            // Nothing to do
+            return;
+        }
+
+        String agent1 = agent.get().getMiddle();
+        if (agent1 != null) {
+            policy.getInsureds().get(0).addInsuredPreviousAgent(agent1);
+        }
+
+        String agent2 = agent.get().getRight();
+        if (agent2 != null) {
+            policy.getInsureds().get(0).addInsuredPreviousAgent(agent2);
+        }
+
+        policyRepository.save(policy);
     }
 }

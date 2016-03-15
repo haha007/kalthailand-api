@@ -6,6 +6,8 @@ import th.co.krungthaiaxa.elife.api.model.enums.InsuredType;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @ApiModel(description = "Data concerning the insured user")
@@ -25,6 +27,7 @@ public class Insured implements Serializable {
     private HealthStatus healthStatus;
     private Integer declaredTaxPercentAtSubscription;
     private String additionalInformationFreeText;
+    private List<String> insuredPreviousAgents = new ArrayList<>();
 
     @ApiModelProperty(value = "Insured's type")
     public InsuredType getType() {
@@ -161,6 +164,15 @@ public class Insured implements Serializable {
         this.additionalInformationFreeText = additionalInformationFreeText;
     }
 
+    @ApiModelProperty(value = "List of previous agents of the insured. This is used to calculate commision amount.")
+    public List<String> getInsuredPreviousAgents() {
+        return insuredPreviousAgents;
+    }
+
+    public void addInsuredPreviousAgent(String insuredPreviousAgent) {
+        insuredPreviousAgents.add(insuredPreviousAgent);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -180,11 +192,12 @@ public class Insured implements Serializable {
                 Objects.equals(fatca, insured.fatca) &&
                 Objects.equals(healthStatus, insured.healthStatus) &&
                 Objects.equals(declaredTaxPercentAtSubscription, insured.declaredTaxPercentAtSubscription) &&
-                Objects.equals(additionalInformationFreeText, insured.additionalInformationFreeText);
+                Objects.equals(additionalInformationFreeText, insured.additionalInformationFreeText) &&
+                Objects.equals(insuredPreviousAgents, insured.insuredPreviousAgents);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(type, mainInsuredIndicator, startDate, endDate, ageAtSubscription, professionName, professionDescription, employerName, annualIncome, incomeSource, person, fatca, healthStatus, declaredTaxPercentAtSubscription, additionalInformationFreeText);
+        return Objects.hash(type, mainInsuredIndicator, startDate, endDate, ageAtSubscription, professionName, professionDescription, employerName, annualIncome, incomeSource, person, fatca, healthStatus, declaredTaxPercentAtSubscription, additionalInformationFreeText, insuredPreviousAgents);
     }
 }

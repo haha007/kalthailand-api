@@ -8,18 +8,16 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.elife.api.KalApiApplication;
-import th.co.krungthaiaxa.elife.api.model.Policy;
-
-import javax.inject.Inject;
-
-import java.io.FileOutputStream;
-import java.io.OutputStream;
 import th.co.krungthaiaxa.elife.api.model.*;
 import th.co.krungthaiaxa.elife.api.model.enums.*;
 import th.co.krungthaiaxa.elife.api.products.ProductType;
 
-
+import javax.inject.Inject;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.time.LocalDate;
+
+import static th.co.krungthaiaxa.elife.api.model.enums.RegistrationTypeName.THAI_ID_NUMBER;
 
 /**
  * Created by santilik on 3/10/2016.
@@ -156,7 +154,7 @@ public class DAFormServiceTest {
     private Registration getRegistration(String idNumber){
         Registration registration = new Registration();
         registration.setId(idNumber);
-        registration.setTypeName("Thai ID Card number");
+        registration.setTypeName(THAI_ID_NUMBER);
         return registration;
     }
 
@@ -201,7 +199,7 @@ public class DAFormServiceTest {
             ps.setCurrentAddress(getAddress("123 หมู่1", "ถนน ประชาอุทิศ", "", "", "", "", "ไทย"));
             Registration reg = new Registration();
             reg.setId("3101202780273");
-            reg.setTypeName("Thai ID Card number");
+            reg.setTypeName(THAI_ID_NUMBER);
             ps.addRegistration(reg);
             benefit.setPerson(ps);
             benefit.setRelationship(BeneficiaryRelationshipType.CHILD);
