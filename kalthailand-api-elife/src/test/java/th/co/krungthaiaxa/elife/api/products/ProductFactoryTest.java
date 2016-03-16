@@ -18,4 +18,16 @@ public class ProductFactoryTest {
         Product product = ProductFactory.getProduct(ProductType.PRODUCT_10_EC.getName());
         assertThat(product).isInstanceOf(Product10EC.class);
     }
+
+    @Test
+    public void should_return_iBegin_product() {
+        Product product = ProductFactory.getProduct(ProductType.PRODUCT_IBEGIN.getName());
+        assertThat(product).isInstanceOf(ProductIBegin.class);
+    }
+
+    @Test
+    public void should_return_iFine_product() {
+        Product product = ProductFactory.getProduct(ProductType.PRODUCT_IFINE.getName());
+        assertThat(product).isInstanceOf(ProductIFine.class);
+    }
 }
