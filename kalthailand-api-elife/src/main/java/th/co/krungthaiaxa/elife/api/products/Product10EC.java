@@ -107,15 +107,9 @@ public class Product10EC implements Product {
         insured.getPerson().setGenderCode(productQuotation.getGenderCode());
         insured.setDeclaredTaxPercentAtSubscription(productQuotation.getDeclaredTaxPercentAtSubscription());
         if (productQuotation.getSumInsuredAmount() != null && productQuotation.getSumInsuredAmount().getValue() != null) {
-            Amount amount = new Amount();
-            amount.setCurrencyCode(productQuotation.getSumInsuredAmount().getCurrencyCode());
-            amount.setValue(productQuotation.getSumInsuredAmount().getValue());
-            quote.getPremiumsData().getProduct10ECPremium().setSumInsured(amount);
+            quote.getPremiumsData().getProduct10ECPremium().setSumInsured(amount(productQuotation.getSumInsuredAmount().getValue()));
         } else {
-            Amount amount = new Amount();
-            amount.setCurrencyCode(productQuotation.getPremiumAmount().getCurrencyCode());
-            amount.setValue(productQuotation.getPremiumAmount().getValue());
-            quote.getPremiumsData().getFinancialScheduler().setModalAmount(amount);
+            quote.getPremiumsData().getFinancialScheduler().setModalAmount(amount(productQuotation.getPremiumAmount().getValue()));
         }
 
         // cannot be too young or too old
@@ -194,7 +188,7 @@ public class Product10EC implements Product {
         Coverage coverage = quote.getCoverages().get(0);
 
         checkBeneficiaries(insured, coverage.getBeneficiaries());
-        checkPremiumsData(quote.getPremiumsData(), insured.getStartDate());
+        check10ECPremiumsData(quote.getPremiumsData(), insured.getStartDate());
 
         // Copy from quote to Policy
         policy.setQuoteId(quote.getQuoteId());
@@ -291,8 +285,9 @@ public class Product10EC implements Product {
         isEqual(commonData.getProductName(), PRODUCT_10_EC_NAME, product10ECExpected);
     }
 
-    private static void checkPremiumsData(PremiumsData premiumsData, LocalDate startDate) throws PolicyValidationException, QuoteCalculationException {
+    private static void check10ECPremiumsData(PremiumsData premiumsData, LocalDate startDate) throws PolicyValidationException, QuoteCalculationException {
         notNull(premiumsData, premiumnsDataNone);
+        notNull(premiumsData.getProduct10ECPremium(), premiumnsDataNone);
         notNull(premiumsData.getProduct10ECPremium().getSumInsured(), premiumnsDataNoSumInsured);
         notNull(premiumsData.getProduct10ECPremium().getSumInsured().getCurrencyCode(), premiumnsSumInsuredNoCurrency);
         notNull(premiumsData.getProduct10ECPremium().getSumInsured().getValue(), premiumnsSumInsuredNoAmount);
@@ -366,10 +361,7 @@ public class Product10EC implements Product {
         PeriodicityCode periodicityCode = quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode();
         int nbOfPaymentsPerYear = 12 / periodicityCode.getNbOfMonths();
 
-        Amount amount = new Amount();
-        amount.setCurrencyCode(PRODUCT_10_EC_CURRENCY);
-        amount.setValue(Math.min(100000.0, Math.round(premium * taxRate / 100 * nbOfPaymentsPerYear)));
-        return amount;
+        return amount(Math.min(100000.0, Math.round(premium * taxRate / 100 * nbOfPaymentsPerYear)));
     }
 
     private static boolean hasEnoughTocalculate(ProductQuotation productQuotation) {

@@ -14,8 +14,7 @@ import java.util.Optional;
 import static java.time.LocalDate.now;
 import static java.time.ZoneId.SHORT_IDS;
 import static java.time.ZoneId.of;
-import static th.co.krungthaiaxa.elife.api.exception.PolicyValidationException.isEqual;
-import static th.co.krungthaiaxa.elife.api.exception.PolicyValidationException.productIFineExpected;
+import static th.co.krungthaiaxa.elife.api.exception.PolicyValidationException.*;
 import static th.co.krungthaiaxa.elife.api.products.ProductType.PRODUCT_IFINE;
 import static th.co.krungthaiaxa.elife.api.products.ProductUtils.*;
 
@@ -71,11 +70,11 @@ public class ProductIFine implements Product {
         // get iFine package from package name
         ProductIFinePackage productIFinePackage = getPackage(productQuotation.getPackageName());
 
-        // set sum insured
-        Amount amount = new Amount();
-        amount.setCurrencyCode(PRODUCT_IFINE_CURRENCY);
-        amount.setValue(productIFinePackage.getSumInsured());
-        quote.getPremiumsData().getProductIFinePremium().setSumInsured(amount);
+        // set amounts
+        quote.getPremiumsData().getProductIFinePremium().setSumInsured(amount(productIFinePackage.getSumInsured()));
+        quote.getPremiumsData().getProductIFinePremium().setAccidentSumInsured(amount(productIFinePackage.getAccidentSumInsured()));
+        quote.getPremiumsData().getProductIFinePremium().setHealthSumInsured(amount(productIFinePackage.getHealthSumInsured()));
+        quote.getPremiumsData().getProductIFinePremium().setHospitalizationSumInsured(amount(productIFinePackage.getHospitalizationSumInsured()));
 
         // calculates rates
         PremiumsData premiumsData = quote.getPremiumsData();
@@ -90,7 +89,7 @@ public class ProductIFine implements Product {
         premiumsData.getProductIFinePremium().setRiderPremiumRate(nonTaxDeductibleRate);
         premiumsData.getProductIFinePremium().setRiskOccupationCharge(riskOccupationCharge);
 
-        // calculate amounts
+        // calculate premium
         Double factor = modalFactor.apply(quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode());
         Double taxDeductible = get2DigitsDouble(productIFinePackage.getSumInsured() * taxDeductibleRate / 1000 * factor);
         Double nonTaxDeductible = get2DigitsDouble(productIFinePackage.getSumInsured() * (nonTaxDeductibleRate + riskOccupationCharge) / 1000 * factor);
@@ -122,7 +121,7 @@ public class ProductIFine implements Product {
         Coverage coverage = quote.getCoverages().get(0);
 
         checkBeneficiaries(insured, coverage.getBeneficiaries());
-//        checkPremiumsData(quote.getPremiumsData(), insured.getStartDate());
+        checkIFinePremiumsData(quote.getPremiumsData());
 
         // Copy from quote to Policy
         policy.setQuoteId(quote.getQuoteId());
@@ -226,6 +225,14 @@ public class ProductIFine implements Product {
         if (coverage.isPresent()) {
             quote.getCoverages().remove(coverage.get());
         }
+    }
+
+    private static void checkIFinePremiumsData(PremiumsData premiumsData) throws PolicyValidationException, QuoteCalculationException {
+        notNull(premiumsData, premiumnsDataNone);
+        notNull(premiumsData.getProductIFinePremium(), premiumnsDataNone);
+        notNull(premiumsData.getProductIFinePremium().getSumInsured(), premiumnsDataNoSumInsured);
+        notNull(premiumsData.getProductIFinePremium().getSumInsured().getCurrencyCode(), premiumnsSumInsuredNoCurrency);
+        notNull(premiumsData.getProductIFinePremium().getSumInsured().getValue(), premiumnsSumInsuredNoAmount);
     }
 
     private static void checkCommonData(CommonData commonData) throws PolicyValidationException {
