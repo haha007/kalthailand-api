@@ -24,21 +24,9 @@ import static org.apache.commons.io.IOUtils.toByteArray;
 
 @Service
 public class EmailService {
-
+    private final static Logger logger = LoggerFactory.getLogger(EmailService.class);
     private final EmailSender emailSender;
     private final SaleIllustrationService saleIllustrationService;
-
-    @Inject
-    private MessageSource messageSource;
-    private Locale thLocale = new Locale("th","");
-
-    @Inject
-    public EmailService(EmailSender emailSender, SaleIllustrationService saleIllustrationService) {
-        this.emailSender = emailSender;
-        this.saleIllustrationService = saleIllustrationService;
-    }
-
-    private final static Logger logger = LoggerFactory.getLogger(EmailService.class);
     @Value("${email.name}")
     private String emailName;
     @Value("${email.subject.quote}")
@@ -52,7 +40,18 @@ public class EmailService {
     @Value("${email.subject.ereceipt.ifine}")
     private String emailSubjectForIFine;
 
+    @Inject
+    private MessageSource messageSource;
+    private Locale thLocale = new Locale("th","");
+
+    @Inject
+    public EmailService(EmailSender emailSender, SaleIllustrationService saleIllustrationService) {
+        this.emailSender = emailSender;
+        this.saleIllustrationService = saleIllustrationService;
+    }
+
     public void sendQuoteEmail(Quote quote, String base64Image) throws Exception {
+        logger.info("Sending quote email");
         List<Pair<byte[], String>> base64ImgFileNames = new ArrayList<>();
         base64ImgFileNames.add(Pair.of(Base64.getDecoder().decode(base64Image), "<imageElife2>"));
         base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/benefitBlue.jpg")), "<benefitRed>"));
@@ -62,9 +61,11 @@ public class EmailService {
         List<Pair<byte[], String>> attachments = new ArrayList<>();
         attachments.add(saleIllustrationService.generatePDF(quote, base64Image));
         emailSender.sendEmail(emailName, quote.getInsureds().get(0).getPerson().getEmail(), subject, getQuoteEmailContent(quote), base64ImgFileNames, attachments);
+        logger.info("Quote email sent");
     }
 
     public void sendEreceiptEmail(Policy policy, Pair<byte[], String> attachFile) throws Exception {
+        logger.info("Sending ereceipt email");
         List<Pair<byte[], String>> base64ImgFileNames = new ArrayList<>();
         base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/logo.png")), "<imageElife>"));
         List<Pair<byte[], String>> fileList = new ArrayList<>();
@@ -76,6 +77,7 @@ public class EmailService {
             sbj = emailSubjectFor10EC;
         }
         emailSender.sendEmail(emailName, policy.getInsureds().get(0).getPerson().getEmail(), sbj, getEreceiptEmailContent(policy), base64ImgFileNames, fileList);
+        logger.info("Ereceipt email sent");
     }
 
     private String getQuoteEmailContent(Quote quote) throws IOException {

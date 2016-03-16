@@ -1,6 +1,8 @@
 package th.co.krungthaiaxa.elife.api.utils;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -20,6 +22,7 @@ import static org.springframework.util.Assert.notNull;
 
 @Component
 public class EmailSender {
+    private final static Logger logger = LoggerFactory.getLogger(EmailSender.class);
     @Value("${email.smtp.server}")
     private String smtpHost;
     @Value("${email.smtp.port}")
@@ -32,6 +35,7 @@ public class EmailSender {
         hasText(smtpPort, "smtpPort is a mandatory value and cannot be null/blank");
 
         send(generateMessage(fromEmailAddress, toEmailAddress, emailSubject, emailContent, images, attachments));
+        logger.info("Email successfully sent");
     }
 
     private MimeMessage generateMessage(String fromEmailAddress, String toEmailAddress, String emailSubject,
