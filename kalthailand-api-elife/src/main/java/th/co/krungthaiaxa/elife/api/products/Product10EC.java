@@ -1,14 +1,16 @@
 package th.co.krungthaiaxa.elife.api.products;
 
 import org.apache.commons.lang3.SerializationUtils;
-import th.co.krungthaiaxa.elife.api.exception.PolicyValidationException;
 import th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.elife.api.model.*;
 import th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 
@@ -166,7 +168,7 @@ public class Product10EC implements Product {
     }
 
     @Override
-    public void getPolicyFromQuote(Policy policy, Quote quote) throws PolicyValidationException, QuoteCalculationException {
+    public void getPolicyFromQuote(Policy policy, Quote quote) throws QuoteCalculationException {
         // check for mandatory data
         checkCommonData(getCommonData());
         checkInsured(quote);
@@ -280,12 +282,12 @@ public class Product10EC implements Product {
         }
     }
 
-    private static void checkCommonData(CommonData commonData) throws PolicyValidationException {
+    private static void checkCommonData(CommonData commonData) {
         isEqual(commonData.getProductId(), PRODUCT_10_EC.getName(), product10ECExpected);
         isEqual(commonData.getProductName(), PRODUCT_10_EC_NAME, product10ECExpected);
     }
 
-    private static void check10ECPremiumsData(PremiumsData premiumsData, LocalDate startDate) throws PolicyValidationException, QuoteCalculationException {
+    private static void check10ECPremiumsData(PremiumsData premiumsData, LocalDate startDate) throws QuoteCalculationException {
         notNull(premiumsData, premiumnsDataNone);
         notNull(premiumsData.getProduct10ECPremium(), premiumnsDataNone);
         notNull(premiumsData.getProduct10ECPremium().getSumInsured(), premiumnsDataNoSumInsured);
@@ -318,7 +320,7 @@ public class Product10EC implements Product {
         }
     }
 
-    private static void checkDatedAmounts(List<DatedAmount> datedAmounts, LocalDate startDate) throws PolicyValidationException {
+    private static void checkDatedAmounts(List<DatedAmount> datedAmounts, LocalDate startDate) {
         List<LocalDate> allowedDates = new ArrayList<>();
         IntStream.range(0, 10).forEach(value -> allowedDates.add(startDate.plusYears(value + 1)));
         List<LocalDate> filteredDates = datedAmounts.stream().map(DatedAmount::getDate).filter(date -> !allowedDates.contains(date)).collect(toList());

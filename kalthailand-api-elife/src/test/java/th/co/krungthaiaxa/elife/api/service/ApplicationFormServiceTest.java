@@ -9,7 +9,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.elife.api.KalApiApplication;
-import th.co.krungthaiaxa.elife.api.exception.PolicyValidationException;
 import th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.elife.api.model.Policy;
 import th.co.krungthaiaxa.elife.api.model.Quote;
@@ -51,7 +50,7 @@ public class ApplicationFormServiceTest {
         assertThat(new PdfReader(pdfContent)).isNotNull();
     }
 
-    private Policy getPolicy() throws QuoteCalculationException, PolicyValidationException {
+    private Policy getPolicy() throws QuoteCalculationException {
         Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation());
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateQuote(quote);

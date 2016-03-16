@@ -77,7 +77,7 @@ public class ProductUtils {
         }
     }
 
-    public static void checkInsured(Quote quote) throws PolicyValidationException {
+    public static void checkInsured(Quote quote) {
         notNull(quote.getInsureds(), noInsured);
         isNotEqual(quote.getInsureds().size(), 0, noInsured);
         isEqual(quote.getInsureds().size(), 1, insuredMoreThanOne);
@@ -99,7 +99,7 @@ public class ProductUtils {
         isTrue(checkThaiIDNumbers(insured.getPerson()), personWithInvalidThaiIdNumber);
     }
 
-    public static void checkMainInsured(Insured insured) throws PolicyValidationException {
+    public static void checkMainInsured(Insured insured) {
         notNull(insured.getDeclaredTaxPercentAtSubscription(), mainInsuredWithNoDeclaredTax);
         notNull(insured.getStartDate(), mainInsuredWithNoStartDate);
         notNull(insured.getEndDate(), mainInsuredWithNoEndDate);
@@ -129,7 +129,7 @@ public class ProductUtils {
         checkGeographicalAddress(insured.getPerson().getRegistrationAddress());
     }
 
-    public static void checkGeographicalAddress(GeographicalAddress address) throws PolicyValidationException {
+    public static void checkGeographicalAddress(GeographicalAddress address) {
         if (address == null) {
             return;
         }
@@ -141,13 +141,13 @@ public class ProductUtils {
         notNull(address.getSubdistrict(), addressWithNoSubDistrict);
     }
 
-    public static void checkCoverage(List<Coverage> coverages) throws PolicyValidationException {
+    public static void checkCoverage(List<Coverage> coverages) {
         notNull(coverages, coverageExpected);
         isFalse(coverages.size() == 0, coverageExpected);
         isTrue(coverages.size() == 1, coverageMoreThanOne);
     }
 
-    public static void checkBeneficiaries(Insured insured, List<CoverageBeneficiary> beneficiaries) throws PolicyValidationException {
+    public static void checkBeneficiaries(Insured insured, List<CoverageBeneficiary> beneficiaries) {
         notNull(beneficiaries, beneficiariesNone);
         isFalse(beneficiaries.size() == 0, beneficiariesNone);
         isFalse(beneficiaries.size() > 6, beneficiariesTooMany);

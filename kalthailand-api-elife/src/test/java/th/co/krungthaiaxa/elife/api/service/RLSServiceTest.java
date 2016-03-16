@@ -12,7 +12,6 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.elife.api.KalApiApplication;
 import th.co.krungthaiaxa.elife.api.data.CollectionFile;
 import th.co.krungthaiaxa.elife.api.data.CollectionFileLine;
-import th.co.krungthaiaxa.elife.api.exception.PolicyValidationException;
 import th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.elife.api.model.Policy;
 import th.co.krungthaiaxa.elife.api.model.Quote;
@@ -170,7 +169,7 @@ public class RLSServiceTest {
         assertThat(collectionFileLine.getPaymentId()).isNotNull();
     }
 
-    private Policy getPolicy(PeriodicityCode periodicityCode) throws QuoteCalculationException, PolicyValidationException {
+    private Policy getPolicy(PeriodicityCode periodicityCode) throws QuoteCalculationException {
         Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation(periodicityCode, 1000000.0, 5));
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateQuote(quote);

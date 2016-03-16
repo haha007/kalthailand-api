@@ -8,7 +8,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.elife.api.KalApiApplication;
 import th.co.krungthaiaxa.elife.api.data.SessionQuote;
-import th.co.krungthaiaxa.elife.api.exception.PolicyValidationException;
 import th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.elife.api.model.Amount;
 import th.co.krungthaiaxa.elife.api.model.Quote;
@@ -37,7 +36,7 @@ public class QuoteServiceTest {
     private SessionQuoteRepository sessionQuoteRepository;
 
     @Test
-    public void should_find_by_quote_id_and_session_id() throws QuoteCalculationException, PolicyValidationException {
+    public void should_find_by_quote_id_and_session_id() throws QuoteCalculationException {
         String sessionId = randomNumeric(20);
         Quote quote = getQuote(sessionId);
 
@@ -48,7 +47,7 @@ public class QuoteServiceTest {
     }
 
     @Test
-    public void should_not_find_by_quote_id_when_session_id_has_no_access_to_quote() throws QuoteCalculationException, PolicyValidationException {
+    public void should_not_find_by_quote_id_when_session_id_has_no_access_to_quote() throws QuoteCalculationException {
         String sessionId = randomNumeric(20);
         Quote quote = getQuote(sessionId);
 
@@ -58,7 +57,7 @@ public class QuoteServiceTest {
     }
 
     @Test
-    public void should_add_one_quote_in_session() throws QuoteCalculationException, PolicyValidationException {
+    public void should_add_one_quote_in_session() throws QuoteCalculationException {
         String sessionId = randomNumeric(20);
         Quote quote = getQuote(sessionId);
 
@@ -67,7 +66,7 @@ public class QuoteServiceTest {
     }
 
     @Test
-    public void should_add_two_quotes_in_session_and_ordered_by_update_time() throws QuoteCalculationException, PolicyValidationException {
+    public void should_add_two_quotes_in_session_and_ordered_by_update_time() throws QuoteCalculationException {
         String sessionId = randomNumeric(20);
         Quote quote1 = getQuote(sessionId);
         Quote quote2 = getQuote(sessionId);
@@ -85,7 +84,7 @@ public class QuoteServiceTest {
     }
 
     @Test
-    public void should_get_latest_quote() throws QuoteCalculationException, PolicyValidationException {
+    public void should_get_latest_quote() throws QuoteCalculationException {
         String sessionId = randomNumeric(20);
         getQuote(sessionId);
         Quote quote2 = getQuote(sessionId);
@@ -95,7 +94,7 @@ public class QuoteServiceTest {
     }
 
     @Test
-    public void should_get_latest_quote_that_has_not_been_transformed_into_policy() throws QuoteCalculationException, PolicyValidationException {
+    public void should_get_latest_quote_that_has_not_been_transformed_into_policy() throws QuoteCalculationException {
         String sessionId = randomNumeric(20);
         Quote quote1 = getQuote(sessionId);
         Quote quote2 = getQuote(sessionId);
@@ -106,7 +105,7 @@ public class QuoteServiceTest {
     }
 
     @Test
-    public void should_calculate_age_of_insured() throws QuoteCalculationException, PolicyValidationException {
+    public void should_calculate_age_of_insured() throws QuoteCalculationException {
         String sessionId = randomNumeric(20);
         Quote quote = getQuote(sessionId);
 
@@ -144,7 +143,7 @@ public class QuoteServiceTest {
         assertThat(quote.getPremiumsData().getProduct10ECPremium().getSumInsured()).isEqualTo(productQuotation.getSumInsuredAmount());
     }
 
-    private Quote getQuote(String sessionId) throws QuoteCalculationException, PolicyValidationException {
+    private Quote getQuote(String sessionId) throws QuoteCalculationException {
         Quote quote = quoteService.createQuote(sessionId, LINE, productQuotation(35, EVERY_MONTH, 1000000.0));
         quote(quote, beneficiary(100.0));
         return quoteService.updateQuote(quote);

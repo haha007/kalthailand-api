@@ -55,7 +55,7 @@ public class PolicyServiceTest {
     }
 
     @Test
-    public void should_update_quote_with_policy_id_when_policy_has_been_created() throws QuoteCalculationException, PolicyValidationException {
+    public void should_update_quote_with_policy_id_when_policy_has_been_created() throws QuoteCalculationException {
         String sessionId = randomNumeric(20);
 
         Quote quote1 = quoteService.createQuote(sessionId, LINE, productQuotation());
@@ -72,7 +72,7 @@ public class PolicyServiceTest {
     }
 
     @Test
-    public void should_add_generated_ids_when_saving_policy_for_first_time() throws QuoteCalculationException, PolicyValidationException {
+    public void should_add_generated_ids_when_saving_policy_for_first_time() throws QuoteCalculationException {
         Policy policy = getPolicy();
         assertThat(policy.getPolicyId()).isNotNull();
         assertThat(policy.getId()).isNotNull();
@@ -221,7 +221,7 @@ public class PolicyServiceTest {
         assertThat(payment.getStatus()).isEqualTo(OVERPAID);
     }
 
-    private Policy getPolicy() throws QuoteCalculationException, PolicyValidationException {
+    private Policy getPolicy() throws QuoteCalculationException {
         Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation());
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateQuote(quote);

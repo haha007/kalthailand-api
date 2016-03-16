@@ -2,7 +2,6 @@ package th.co.krungthaiaxa.elife.api.products;
 
 import org.apache.commons.lang3.SerializationUtils;
 import org.springframework.stereotype.Component;
-import th.co.krungthaiaxa.elife.api.exception.PolicyValidationException;
 import th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.elife.api.model.*;
 import th.co.krungthaiaxa.elife.api.model.enums.ProductIFinePackage;
@@ -99,7 +98,7 @@ public class ProductIFine implements Product {
     }
 
     @Override
-    public void getPolicyFromQuote(Policy policy, Quote quote) throws PolicyValidationException, QuoteCalculationException {
+    public void getPolicyFromQuote(Policy policy, Quote quote) throws QuoteCalculationException {
         // check for mandatory data
         checkCommonData(getCommonData());
         checkInsured(quote);
@@ -227,7 +226,7 @@ public class ProductIFine implements Product {
         }
     }
 
-    private static void checkIFinePremiumsData(PremiumsData premiumsData) throws PolicyValidationException, QuoteCalculationException {
+    private static void checkIFinePremiumsData(PremiumsData premiumsData) throws QuoteCalculationException {
         notNull(premiumsData, premiumnsDataNone);
         notNull(premiumsData.getProductIFinePremium(), premiumnsDataNone);
         notNull(premiumsData.getProductIFinePremium().getSumInsured(), premiumnsDataNoSumInsured);
@@ -235,7 +234,7 @@ public class ProductIFine implements Product {
         notNull(premiumsData.getProductIFinePremium().getSumInsured().getValue(), premiumnsSumInsuredNoAmount);
     }
 
-    private static void checkCommonData(CommonData commonData) throws PolicyValidationException {
+    private static void checkCommonData(CommonData commonData) {
         isEqual(commonData.getProductId(), PRODUCT_IFINE.getName(), productIFineExpected);
         isEqual(commonData.getProductName(), PRODUCT_IFINE_NAME, productIFineExpected);
     }

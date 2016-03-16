@@ -20,6 +20,7 @@ import static java.time.ZoneId.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static th.co.krungthaiaxa.elife.api.TestUtil.*;
+import static th.co.krungthaiaxa.elife.api.exception.PolicyValidationException.*;
 import static th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.PaymentStatus.FUTURE;
 import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.*;
@@ -759,7 +760,7 @@ public class Product10ECTest {
         quote.getInsureds().get(0).setMainInsuredIndicator(FALSE);
         assertThatThrownBy(() -> checkInsured(quote))
                 .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(PolicyValidationException.noMainInsured.getMessage());
+                .hasMessage(noMainInsured.getMessage());
     }
 
     @Test
@@ -771,7 +772,7 @@ public class Product10ECTest {
         Policy policy = new Policy();
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(PolicyValidationException.insuredMoreThanOne.getMessage());
+                .hasMessage(insuredMoreThanOne.getMessage());
     }
 
     @Test
@@ -783,7 +784,7 @@ public class Product10ECTest {
         Policy policy = new Policy();
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(PolicyValidationException.insuredWithNoType.getMessage());
+                .hasMessage(insuredWithNoType.getMessage());
     }
 
     @Test
@@ -795,7 +796,7 @@ public class Product10ECTest {
         Policy policy = new Policy();
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(PolicyValidationException.noInsured.getMessage());
+                .hasMessage(noInsured.getMessage());
     }
 
     @Test
@@ -807,7 +808,7 @@ public class Product10ECTest {
         Policy policy = new Policy();
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(PolicyValidationException.insuredWithNoPerson.getMessage());
+                .hasMessage(insuredWithNoPerson.getMessage());
     }
 
     @Test
@@ -819,7 +820,7 @@ public class Product10ECTest {
         Policy policy = new Policy();
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(PolicyValidationException.personWithNoGivenName.getMessage());
+                .hasMessage(personWithNoGivenName.getMessage());
     }
 
     @Test
@@ -831,7 +832,7 @@ public class Product10ECTest {
         Policy policy = new Policy();
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(PolicyValidationException.personWithNoSurname.getMessage());
+                .hasMessage(personWithNoSurname.getMessage());
     }
 
     @Test
@@ -843,7 +844,7 @@ public class Product10ECTest {
         Policy policy = new Policy();
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(PolicyValidationException.personWithNoTitle.getMessage());
+                .hasMessage(personWithNoTitle.getMessage());
     }
 
     @Test
@@ -855,7 +856,7 @@ public class Product10ECTest {
         Policy policy = new Policy();
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(PolicyValidationException.mainInsuredWithNoGenderCode.getMessage());
+                .hasMessage(mainInsuredWithNoGenderCode.getMessage());
     }
 
     @Test
@@ -867,7 +868,7 @@ public class Product10ECTest {
         Policy policy = new Policy();
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(PolicyValidationException.mainInsuredWithNoHeight.getMessage());
+                .hasMessage(mainInsuredWithNoHeight.getMessage());
     }
 
     @Test
@@ -879,7 +880,7 @@ public class Product10ECTest {
         Policy policy = new Policy();
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(PolicyValidationException.mainInsuredWithNoMaritalStatus.getMessage());
+                .hasMessage(mainInsuredWithNoMaritalStatus.getMessage());
     }
 
     @Test
@@ -891,7 +892,7 @@ public class Product10ECTest {
         Policy policy = new Policy();
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(PolicyValidationException.mainInsuredWithNoWeight.getMessage());
+                .hasMessage(mainInsuredWithNoWeight.getMessage());
     }
 
     @Test
@@ -903,7 +904,7 @@ public class Product10ECTest {
         Policy policy = new Policy();
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(PolicyValidationException.mainInsuredWithNoDeclaredTax.getMessage());
+                .hasMessage(mainInsuredWithNoDeclaredTax.getMessage());
     }
 
     @Test
@@ -915,7 +916,7 @@ public class Product10ECTest {
         Policy policy = new Policy();
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(PolicyValidationException.mainInsuredWithNoDisableStatus.getMessage());
+                .hasMessage(mainInsuredWithNoDisableStatus.getMessage());
     }
 
     @Test
@@ -927,7 +928,7 @@ public class Product10ECTest {
         Policy policy = new Policy();
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(PolicyValidationException.mainInsuredWithNoHospitalizedStatus.getMessage());
+                .hasMessage(mainInsuredWithNoHospitalizedStatus.getMessage());
     }
 
     @Test
@@ -939,7 +940,7 @@ public class Product10ECTest {
         Policy policy = new Policy();
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(PolicyValidationException.mainInsuredWithNoDeniedOrCounterOfferStatus.getMessage());
+                .hasMessage(mainInsuredWithNoDeniedOrCounterOfferStatus.getMessage());
     }
 
     @Test
@@ -951,7 +952,7 @@ public class Product10ECTest {
         Policy policy = new Policy();
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(PolicyValidationException.mainInsuredWithNoStartDate.getMessage());
+                .hasMessage(mainInsuredWithNoStartDate.getMessage());
     }
 
     @Test
@@ -963,7 +964,7 @@ public class Product10ECTest {
         Policy policy = new Policy();
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(PolicyValidationException.startDateNotServerDate.getMessage());
+                .hasMessage(startDateNotServerDate.getMessage());
     }
 
     @Test
@@ -975,7 +976,7 @@ public class Product10ECTest {
         Policy policy = new Policy();
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(PolicyValidationException.mainInsuredWithNoEndDate.getMessage());
+                .hasMessage(mainInsuredWithNoEndDate.getMessage());
     }
 
     @Test
@@ -999,7 +1000,7 @@ public class Product10ECTest {
         Policy policy = new Policy();
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(PolicyValidationException.mainInsuredWithNoProfessionName.getMessage());
+                .hasMessage(mainInsuredWithNoProfessionName.getMessage());
     }
 
     @Test
@@ -1011,7 +1012,7 @@ public class Product10ECTest {
         Policy policy = new Policy();
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(PolicyValidationException.mainInsuredWithNoDOB.getMessage());
+                .hasMessage(mainInsuredWithNoDOB.getMessage());
     }
 
     @Test
@@ -1023,7 +1024,7 @@ public class Product10ECTest {
         Policy policy = new Policy();
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(PolicyValidationException.mainInsuredWithNoEmail.getMessage());
+                .hasMessage(mainInsuredWithNoEmail.getMessage());
     }
 
     @Test
@@ -1035,39 +1036,39 @@ public class Product10ECTest {
         Policy policy = new Policy();
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(PolicyValidationException.mainInsuredWithInvalidEmail.getMessage());
+                .hasMessage(mainInsuredWithInvalidEmail.getMessage());
         quote.getInsureds().get(0).getPerson().setEmail("me.com");
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(PolicyValidationException.mainInsuredWithInvalidEmail.getMessage());
+                .hasMessage(mainInsuredWithInvalidEmail.getMessage());
         quote.getInsureds().get(0).getPerson().setEmail("me@me");
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(PolicyValidationException.mainInsuredWithInvalidEmail.getMessage());
+                .hasMessage(mainInsuredWithInvalidEmail.getMessage());
         quote.getInsureds().get(0).getPerson().setEmail("me@me.");
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(PolicyValidationException.mainInsuredWithInvalidEmail.getMessage());
+                .hasMessage(mainInsuredWithInvalidEmail.getMessage());
         quote.getInsureds().get(0).getPerson().setEmail("me@.com");
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(PolicyValidationException.mainInsuredWithInvalidEmail.getMessage());
+                .hasMessage(mainInsuredWithInvalidEmail.getMessage());
         quote.getInsureds().get(0).getPerson().setEmail("me@me.c");
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(PolicyValidationException.mainInsuredWithInvalidEmail.getMessage());
+                .hasMessage(mainInsuredWithInvalidEmail.getMessage());
         quote.getInsureds().get(0).getPerson().setEmail("me@*.com");
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(PolicyValidationException.mainInsuredWithInvalidEmail.getMessage());
+                .hasMessage(mainInsuredWithInvalidEmail.getMessage());
         quote.getInsureds().get(0).getPerson().setEmail("me..@me.com");
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(PolicyValidationException.mainInsuredWithInvalidEmail.getMessage());
+                .hasMessage(mainInsuredWithInvalidEmail.getMessage());
         quote.getInsureds().get(0).getPerson().setEmail("me.@me.1a");
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(PolicyValidationException.mainInsuredWithInvalidEmail.getMessage());
+                .hasMessage(mainInsuredWithInvalidEmail.getMessage());
     }
 
     @Test
@@ -1079,7 +1080,7 @@ public class Product10ECTest {
         Policy policy = new Policy();
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(PolicyValidationException.mainInsuredWithNoGeographicalAddress.getMessage());
+                .hasMessage(mainInsuredWithNoGeographicalAddress.getMessage());
     }
 
     @Test
@@ -1101,7 +1102,7 @@ public class Product10ECTest {
         Policy policy = new Policy();
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(PolicyValidationException.addressWithNoDistrict.getMessage());
+                .hasMessage(addressWithNoDistrict.getMessage());
     }
 
     @Test
@@ -1113,7 +1114,7 @@ public class Product10ECTest {
         Policy policy = new Policy();
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(PolicyValidationException.addressWithNoPostCode.getMessage());
+                .hasMessage(addressWithNoPostCode.getMessage());
     }
 
     @Test
@@ -1125,7 +1126,7 @@ public class Product10ECTest {
         Policy policy = new Policy();
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(PolicyValidationException.addressWithNoStreetAddress1.getMessage());
+                .hasMessage(addressWithNoStreetAddress1.getMessage());
     }
 
     @Test
@@ -1137,7 +1138,7 @@ public class Product10ECTest {
         Policy policy = new Policy();
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(PolicyValidationException.addressWithNoStreetAddress2.getMessage());
+                .hasMessage(addressWithNoStreetAddress2.getMessage());
     }
 
     @Test
@@ -1149,7 +1150,7 @@ public class Product10ECTest {
         Policy policy = new Policy();
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(PolicyValidationException.addressWithNoSubCountry.getMessage());
+                .hasMessage(addressWithNoSubCountry.getMessage());
     }
 
     @Test
@@ -1161,7 +1162,7 @@ public class Product10ECTest {
         Policy policy = new Policy();
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(PolicyValidationException.addressWithNoSubDistrict.getMessage());
+                .hasMessage(addressWithNoSubDistrict.getMessage());
     }
 
     @Test
@@ -1174,7 +1175,7 @@ public class Product10ECTest {
         Policy policy = new Policy();
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(PolicyValidationException.mainInsuredWithNoPhoneNumber.getMessage());
+                .hasMessage(mainInsuredWithNoPhoneNumber.getMessage());
     }
 
     @Test
@@ -1186,7 +1187,7 @@ public class Product10ECTest {
         Policy policy = new Policy();
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(PolicyValidationException.personWithInvalidThaiIdNumber.getMessage());
+                .hasMessage(personWithInvalidThaiIdNumber.getMessage());
     }
 
     @Test
@@ -1198,7 +1199,7 @@ public class Product10ECTest {
         Policy policy = new Policy();
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(PolicyValidationException.beneficiariesWithWrongIDNumber.getMessage());
+                .hasMessage(beneficiariesWithWrongIDNumber.getMessage());
     }
 
     @Test
@@ -1209,7 +1210,7 @@ public class Product10ECTest {
         Policy policy = new Policy();
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(PolicyValidationException.beneficiariesNone.getMessage());
+                .hasMessage(beneficiariesNone.getMessage());
     }
 
     @Test
@@ -1221,7 +1222,7 @@ public class Product10ECTest {
         Policy policy = new Policy();
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(PolicyValidationException.beneficiariesAgeAtSubscriptionEmpty.getMessage());
+                .hasMessage(beneficiariesAgeAtSubscriptionEmpty.getMessage());
     }
 
     @Test
@@ -1233,7 +1234,7 @@ public class Product10ECTest {
         Policy policy = new Policy();
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(PolicyValidationException.beneficiariesTooMany.getMessage());
+                .hasMessage(beneficiariesTooMany.getMessage());
     }
 
     @Test
@@ -1245,7 +1246,7 @@ public class Product10ECTest {
         Policy policy = new Policy();
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(PolicyValidationException.beneficiariesPercentSumNot100.getMessage());
+                .hasMessage(beneficiariesPercentSumNot100.getMessage());
     }
 
     @Test
@@ -1258,7 +1259,7 @@ public class Product10ECTest {
         Policy policy = new Policy();
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(PolicyValidationException.beneficiariesIdIqualToInsuredId.getMessage());
+                .hasMessage(beneficiariesIdIqualToInsuredId.getMessage());
     }
 
     @Test
@@ -1269,7 +1270,7 @@ public class Product10ECTest {
         Policy policy = new Policy();
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(PolicyValidationException.beneficiariesWithSameId.getMessage());
+                .hasMessage(beneficiariesWithSameId.getMessage());
     }
 
     @Test

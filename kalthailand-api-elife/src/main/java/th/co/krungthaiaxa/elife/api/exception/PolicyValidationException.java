@@ -2,7 +2,7 @@ package th.co.krungthaiaxa.elife.api.exception;
 
 import java.util.function.Function;
 
-public class PolicyValidationException extends Exception {
+public class PolicyValidationException extends ElifeException {
 
     public static PolicyValidationException product10ECExpected = new PolicyValidationException("Product 10 EC is expected to do validation.");
     public static PolicyValidationException productIFineExpected = new PolicyValidationException("Product iFine is expected to do validation.");

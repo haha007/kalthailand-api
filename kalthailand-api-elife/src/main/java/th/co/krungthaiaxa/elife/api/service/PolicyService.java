@@ -5,7 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.elife.api.data.PolicyNumber;
-import th.co.krungthaiaxa.elife.api.exception.PolicyValidationException;
 import th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.elife.api.model.*;
 import th.co.krungthaiaxa.elife.api.model.enums.ChannelType;
@@ -23,6 +22,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import static java.time.format.DateTimeFormatter.ofPattern;
+import static th.co.krungthaiaxa.elife.api.exception.PolicyValidationException.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.PaymentStatus.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.RegistrationTypeName.THAI_ID_NUMBER;
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.ERROR;
@@ -56,24 +56,16 @@ public class PolicyService {
         return policy != null ? Optional.of(policy) : Optional.empty();
     }
 
-    public Policy createPolicy(Quote quote) throws PolicyValidationException, QuoteCalculationException {
-        if (quote == null) {
-            throw PolicyValidationException.emptyQuote;
-        } else if (quote.getId() == null || quoteRepository.findOne(quote.getId()) == null) {
-            throw PolicyValidationException.noneExistingQuote;
-        }
+    public Policy createPolicy(Quote quote) throws QuoteCalculationException {
+        notNull(quote, emptyQuote);
+        notNull(quote.getId(), noneExistingQuote);
+        notNull(quoteRepository.findOne(quote.getId()), noneExistingQuote);
 
-        Stream<PolicyNumber> availablePolicyNumbers;
-        try {
-            availablePolicyNumbers = policyNumberRepository.findByPolicyNull();
-        } catch (RuntimeException e) {
-            throw PolicyValidationException.noPolicyNumberAccessible;
-        }
+        Stream<PolicyNumber> availablePolicyNumbers = policyNumberRepository.findByPolicyNull();
+        notNull(availablePolicyNumbers, noPolicyNumberAccessible);
 
         Optional<PolicyNumber> policyNumber = availablePolicyNumbers.sorted((p1, p2) -> p1.getPolicyId().compareTo(p2.getPolicyId())).findFirst();
-        if (!policyNumber.isPresent()) {
-            throw PolicyValidationException.noPolicyNumberAvailable;
-        }
+        isTrue(policyNumber.isPresent(), noPolicyNumberAvailable);
 
         Policy policy = policyRepository.findByQuoteId(quote.getId());
         if (policy == null) {
