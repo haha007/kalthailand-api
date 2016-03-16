@@ -1,5 +1,6 @@
 package th.co.krungthaiaxa.elife.api.products;
 
+import org.apache.commons.lang3.SerializationUtils;
 import org.springframework.stereotype.Component;
 import th.co.krungthaiaxa.elife.api.exception.PolicyValidationException;
 import th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException;
@@ -13,9 +14,10 @@ import java.util.Optional;
 import static java.time.LocalDate.now;
 import static java.time.ZoneId.SHORT_IDS;
 import static java.time.ZoneId.of;
-import static th.co.krungthaiaxa.elife.api.products.ProductUtils.checkMainInsuredAge;
-import static th.co.krungthaiaxa.elife.api.products.ProductUtils.getAge;
-import static th.co.krungthaiaxa.elife.api.products.ProductUtils.modalFactor;
+import static th.co.krungthaiaxa.elife.api.exception.PolicyValidationException.isEqual;
+import static th.co.krungthaiaxa.elife.api.exception.PolicyValidationException.productIFineExpected;
+import static th.co.krungthaiaxa.elife.api.products.ProductType.PRODUCT_IFINE;
+import static th.co.krungthaiaxa.elife.api.products.ProductUtils.*;
 
 @Component
 public class ProductIFine implements Product {
@@ -44,7 +46,7 @@ public class ProductIFine implements Product {
         // Do we have enough to calculate anything
         if (!hasEnoughTocalculate(productQuotation)) {
             // we need to delete what might have been calculated before
-//            resetCalculatedStuff(quote, hasIFineCoverage);
+            resetCalculatedStuff(quote, hasIFineCoverage);
             return;
         }
 
@@ -59,7 +61,7 @@ public class ProductIFine implements Product {
         insured.setProfessionName(productQuotation.getOccupation());
 
         // cannot be too young or too old
-        checkMainInsuredAge(insured, MIN_AGE, MAX_AGE);
+        checkInsuredAge(insured, MIN_AGE, MAX_AGE);
 
         // Set dates based on current date and product duration
         insured.setStartDate(now(of(SHORT_IDS.get("VST"))));
@@ -99,17 +101,65 @@ public class ProductIFine implements Product {
 
     @Override
     public void getPolicyFromQuote(Policy policy, Quote quote) throws PolicyValidationException, QuoteCalculationException {
+        // check for mandatory data
+        checkCommonData(getCommonData());
+        checkInsured(quote);
 
+        // There is only one insured at this point
+        Insured insured = quote.getInsureds().get(0);
+
+        // check main insured stuff
+        checkInsuredAge(insured, MIN_AGE, MAX_AGE);
+        checkMainInsured(insured);
+
+        // Recalculate the quote
+        calculateQuote(quote, null);
+
+        // check for calculated data
+        checkCoverage(quote.getCoverages());
+
+        // There is only one coverage at this point
+        Coverage coverage = quote.getCoverages().get(0);
+
+        checkBeneficiaries(insured, coverage.getBeneficiaries());
+//        checkPremiumsData(quote.getPremiumsData(), insured.getStartDate());
+
+        // Copy from quote to Policy
+        policy.setQuoteId(quote.getQuoteId());
+        policy.setCommonData(SerializationUtils.clone(quote.getCommonData()));
+        policy.setPremiumsData(SerializationUtils.clone(quote.getPremiumsData()));
+        policy.addCoverage(SerializationUtils.clone(coverage));
+        policy.addInsured(SerializationUtils.clone(insured));
+
+        // Add future payment schedule
+        addPayments(policy, DURATION_PAYMENT_IN_YEAR);
     }
 
     @Override
     public CommonData getCommonData() {
-        return null;
+        CommonData commonData = new CommonData();
+        commonData.setMaxAge(MAX_AGE);
+        commonData.setMaxPremium(amount(PREMIUM_MAX));
+        commonData.setMaxSumInsured(amount(SUM_INSURED_MAX));
+        commonData.setMinAge(MIN_AGE);
+        commonData.setMinPremium(amount(PREMIUM_MIN));
+        commonData.setMinSumInsured(amount(SUM_INSURED_MIN));
+        commonData.setNbOfYearsOfCoverage(DURATION_COVERAGE_IN_YEAR);
+        commonData.setNbOfYearsOfPremium(DURATION_PAYMENT_IN_YEAR);
+        commonData.setProductId(PRODUCT_IFINE.getName());
+        commonData.setProductName(PRODUCT_IFINE_NAME);
+        return commonData;
     }
 
     @Override
     public ProductAmounts getProductAmounts(ProductQuotation productQuotation) {
-        return null;
+        ProductAmounts productAmounts = new ProductAmounts();
+        productAmounts.setCommonData(getCommonData());
+        productAmounts.setMaxPremium(amount(PREMIUM_MAX));
+        productAmounts.setMaxSumInsured(amount(SUM_INSURED_MAX));
+        productAmounts.setMinPremium(amount(PREMIUM_MIN));
+        productAmounts.setMinSumInsured(amount(SUM_INSURED_MIN));
+        return productAmounts;
     }
 
     @Override
@@ -161,6 +211,26 @@ public class ProductIFine implements Product {
 
         // We need a periodicity
         return productQuotation.getPeriodicityCode() != null;
+    }
+
+    private static void resetCalculatedStuff(Quote quote, Optional<Coverage> coverage) {
+        if (quote.getPremiumsData().getProductIFinePremium() != null) {
+            quote.getPremiumsData().getProductIFinePremium().setNonTaxDeductible(null);
+            quote.getPremiumsData().getProductIFinePremium().setTaxDeductible(null);
+            quote.getPremiumsData().getProductIFinePremium().setBasicPremiumRate(null);
+            quote.getPremiumsData().getProductIFinePremium().setProductIFinePackage(null);
+            quote.getPremiumsData().getProductIFinePremium().setRiderPremiumRate(null);
+            quote.getPremiumsData().getProductIFinePremium().setRiskOccupationCharge(null);
+            quote.getPremiumsData().getProductIFinePremium().setSumInsured(null);
+        }
+        if (coverage.isPresent()) {
+            quote.getCoverages().remove(coverage.get());
+        }
+    }
+
+    private static void checkCommonData(CommonData commonData) throws PolicyValidationException {
+        isEqual(commonData.getProductId(), PRODUCT_IFINE.getName(), productIFineExpected);
+        isEqual(commonData.getProductName(), PRODUCT_IFINE_NAME, productIFineExpected);
     }
 
     private Double get2DigitsDouble(Double value) {

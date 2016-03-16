@@ -5,6 +5,7 @@ import java.util.function.Function;
 public class PolicyValidationException extends Exception {
 
     public static PolicyValidationException product10ECExpected = new PolicyValidationException("Product 10 EC is expected to do validation.");
+    public static PolicyValidationException productIFineExpected = new PolicyValidationException("Product iFine is expected to do validation.");
 
     public static PolicyValidationException emptyQuote = new PolicyValidationException("Policy needs a quote to be created.");
     public static PolicyValidationException noneExistingQuote = new PolicyValidationException("The quote to create the policy from does not exist.");
@@ -81,5 +82,35 @@ public class PolicyValidationException extends Exception {
 
     private PolicyValidationException(String message) {
         super(message);
+    }
+
+    public static void notNull(Object object, PolicyValidationException policyValidationException) throws PolicyValidationException {
+        if (object == null) {
+            throw policyValidationException;
+        }
+    }
+
+    public static void isEqual(Object object1, Object object2, PolicyValidationException policyValidationException) throws PolicyValidationException {
+        if (!object1.equals(object2)) {
+            throw policyValidationException;
+        }
+    }
+
+    public static void isNotEqual(Object object1, Object object2, PolicyValidationException policyValidationException) throws PolicyValidationException {
+        if (object1.equals(object2)) {
+            throw policyValidationException;
+        }
+    }
+
+    public static void isTrue(Boolean aBoolean, PolicyValidationException policyValidationException) throws PolicyValidationException {
+        if (!aBoolean) {
+            throw policyValidationException;
+        }
+    }
+
+    public static void isFalse(Boolean aBoolean, PolicyValidationException policyValidationException) throws PolicyValidationException {
+        if (aBoolean) {
+            throw policyValidationException;
+        }
     }
 }

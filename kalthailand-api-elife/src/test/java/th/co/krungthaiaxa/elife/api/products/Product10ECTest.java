@@ -24,6 +24,7 @@ import static th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException.*
 import static th.co.krungthaiaxa.elife.api.model.enums.PaymentStatus.FUTURE;
 import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.*;
 import static th.co.krungthaiaxa.elife.api.products.Product10EC.*;
+import static th.co.krungthaiaxa.elife.api.products.ProductUtils.checkInsured;
 
 public class Product10ECTest {
     private Product10EC product10EC = new Product10EC();

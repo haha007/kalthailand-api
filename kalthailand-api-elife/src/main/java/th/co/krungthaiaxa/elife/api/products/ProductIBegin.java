@@ -62,7 +62,7 @@ public class ProductIBegin implements Product {
         }
 
         // cannot be too young or too old
-        checkMainInsuredAge(insured, MIN_AGE, MAX_AGE);
+        checkInsuredAge(insured, MIN_AGE, MAX_AGE);
 
         // Set dates based on current date and product duration
         insured.setStartDate(LocalDate.now(ZoneId.of(ZoneId.SHORT_IDS.get("VST"))));

@@ -14,6 +14,7 @@ import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
+import static th.co.krungthaiaxa.elife.api.exception.PolicyValidationException.*;
 import static th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException.*;
 import static th.co.krungthaiaxa.elife.api.products.ProductType.PRODUCT_10_EC;
 import static th.co.krungthaiaxa.elife.api.products.ProductUtils.*;
@@ -118,7 +119,7 @@ public class Product10EC implements Product {
         }
 
         // cannot be too young or too old
-        checkMainInsuredAge(insured, MIN_AGE, MAX_AGE);
+        checkInsuredAge(insured, MIN_AGE, MAX_AGE);
 
         // Set dates based on current date and product duration
         LocalDate startDate = LocalDate.now(ZoneId.of(ZoneId.SHORT_IDS.get("VST")));
@@ -173,14 +174,14 @@ public class Product10EC implements Product {
     @Override
     public void getPolicyFromQuote(Policy policy, Quote quote) throws PolicyValidationException, QuoteCalculationException {
         // check for mandatory data
-        checkCommonData(quote.getCommonData());
+        checkCommonData(getCommonData());
         checkInsured(quote);
 
         // There is only one insured at this point
         Insured insured = quote.getInsureds().get(0);
 
         // check main insured stuff
-        checkMainInsuredAge(insured, MIN_AGE, MAX_AGE);
+        checkInsuredAge(insured, MIN_AGE, MAX_AGE);
         checkMainInsured(insured);
 
         // Recalculate the quote
@@ -203,7 +204,7 @@ public class Product10EC implements Product {
         policy.addInsured(SerializationUtils.clone(insured));
 
         // Add future payment schedule
-        addPayments(policy);
+        addPayments(policy, DURATION_PAYMENT_IN_YEAR);
     }
 
     @Override
@@ -253,18 +254,7 @@ public class Product10EC implements Product {
         return premiumsData;
     }
 
-    private static void addPayments(Policy policy) {
-        LocalDate startDate = policy.getInsureds().get(0).getStartDate();
-
-        PeriodicityCode periodicityCode = policy.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode();
-        Double amountValue = policy.getPremiumsData().getFinancialScheduler().getModalAmount().getValue();
-        String amountCurrency = policy.getPremiumsData().getFinancialScheduler().getModalAmount().getCurrencyCode();
-        int nbOfPayments = (12 / periodicityCode.getNbOfMonths()) * DURATION_PAYMENT_IN_YEAR;
-
-        IntStream.range(0, nbOfPayments).forEach(i -> policy.addPayment(new Payment(amountValue, amountCurrency, startDate.plusMonths(i * periodicityCode.getNbOfMonths()))));
-    }
-
-    public static void resetCalculatedStuff(Quote quote, Optional<Coverage> coverage) {
+    private static void resetCalculatedStuff(Quote quote, Optional<Coverage> coverage) {
         if (quote.getPremiumsData().getProduct10ECPremium() != null) {
             quote.getPremiumsData().getProduct10ECPremium().setYearlyCashBacksAverageBenefit(new ArrayList<>());
             quote.getPremiumsData().getProduct10ECPremium().setYearlyCashBacksAverageDividende(new ArrayList<>());
@@ -297,88 +287,16 @@ public class Product10EC implements Product {
     }
 
     private static void checkCommonData(CommonData commonData) throws PolicyValidationException {
-        if (!commonData.getProductId().equals(PRODUCT_10_EC.getName())) {
-            throw PolicyValidationException.product10ECExpected;
-        } else if (!commonData.getProductName().equals(PRODUCT_10_EC_NAME)) {
-            throw PolicyValidationException.product10ECExpected;
-        }
-    }
-
-    private static void checkCoverage(List<Coverage> coverages) throws PolicyValidationException {
-        if (coverages == null || coverages.size() == 0) {
-            throw PolicyValidationException.coverageExpected;
-        } else if (coverages.size() != 1) {
-            throw PolicyValidationException.coverageMoreThanOne;
-        }
-    }
-
-    private static void checkBeneficiaries(Insured insured, List<CoverageBeneficiary> beneficiaries) throws PolicyValidationException {
-        if (beneficiaries == null || beneficiaries.size() == 0) {
-            throw PolicyValidationException.beneficiariesNone;
-        } else if (beneficiaries.size() > 6) {
-            throw PolicyValidationException.beneficiariesTooMany;
-        } else if (beneficiaries.stream().mapToDouble(CoverageBeneficiary::getCoverageBenefitPercentage).sum() != 100.0) {
-            throw PolicyValidationException.beneficiariesPercentSumNot100;
-        } else if (beneficiaries.stream().filter(coverageBeneficiary -> coverageBeneficiary.getAgeAtSubscription() == null).findFirst().isPresent()) {
-            throw PolicyValidationException.beneficiariesAgeAtSubscriptionEmpty;
-        } else if (beneficiaries.stream().filter(coverageBeneficiary -> !checkThaiIDNumbers(coverageBeneficiary.getPerson())).findFirst().isPresent()) {
-            throw PolicyValidationException.beneficiariesWithWrongIDNumber;
-        }
-
-        List<String> insuredRegistrationIds = insured.getPerson().getRegistrations().stream()
-                .map(Registration::getId)
-                .collect(toList());
-        List<String> beneficiaryRegistrationIds = beneficiaries.stream()
-                .map(coverageBeneficiary -> coverageBeneficiary.getPerson().getRegistrations())
-                .flatMap(Collection::stream)
-                .map(Registration::getId)
-                .collect(toList());
-
-        Optional<String> hasABeneficiaryWithSameIdAsInsured = beneficiaryRegistrationIds.stream()
-                .filter(insuredRegistrationIds::contains)
-                .findFirst();
-        if (hasABeneficiaryWithSameIdAsInsured.isPresent()) {
-            throw PolicyValidationException.beneficiariesIdIqualToInsuredId;
-        }
-
-        Boolean hasDifferentBeneficiaries = beneficiaryRegistrationIds.stream()
-                .allMatch(new HashSet<>()::add);
-        if (!hasDifferentBeneficiaries) {
-            throw PolicyValidationException.beneficiariesWithSameId;
-        }
-    }
-
-    private static boolean checkThaiIDNumbers(Person person) {
-        boolean isValid = true;
-        for (Registration registration : person.getRegistrations()) {
-            isValid = isValid && checkThaiIDNumber(registration.getId());
-        }
-        return isValid;
-    }
-
-    private static boolean checkThaiIDNumber(String id) {
-        if (id.length() != 13) {
-            return false;
-        }
-
-        int sum = 0;
-        for (int i = 0; i < 12; i++) {
-            sum += Integer.parseInt(String.valueOf(id.charAt(i))) * (13 - i);
-        }
-
-        return id.charAt(12) - '0' == ((11 - (sum % 11)) % 10);
+        isEqual(commonData.getProductId(), PRODUCT_10_EC.getName(), product10ECExpected);
+        isEqual(commonData.getProductName(), PRODUCT_10_EC_NAME, product10ECExpected);
     }
 
     private static void checkPremiumsData(PremiumsData premiumsData, LocalDate startDate) throws PolicyValidationException, QuoteCalculationException {
-        if (premiumsData == null) {
-            throw PolicyValidationException.premiumnsDataNone;
-        } else if (premiumsData.getProduct10ECPremium().getSumInsured() == null) {
-            throw PolicyValidationException.premiumnsDataNoSumInsured;
-        } else if (premiumsData.getProduct10ECPremium().getSumInsured().getCurrencyCode() == null) {
-            throw PolicyValidationException.premiumnsSumInsuredNoCurrency;
-        } else if (premiumsData.getProduct10ECPremium().getSumInsured().getValue() == null) {
-            throw PolicyValidationException.premiumnsSumInsuredNoAmount;
-        }
+        notNull(premiumsData, premiumnsDataNone);
+        notNull(premiumsData.getProduct10ECPremium().getSumInsured(), premiumnsDataNoSumInsured);
+        notNull(premiumsData.getProduct10ECPremium().getSumInsured().getCurrencyCode(), premiumnsSumInsuredNoCurrency);
+        notNull(premiumsData.getProduct10ECPremium().getSumInsured().getValue(), premiumnsSumInsuredNoAmount);
+
         checkSumInsured(premiumsData, PRODUCT_10_EC_CURRENCY, SUM_INSURED_MIN, SUM_INSURED_MAX);
         checkDatedAmounts(premiumsData.getProduct10ECPremium().getEndOfContractBenefitsAverage(), startDate);
         checkDatedAmounts(premiumsData.getProduct10ECPremium().getEndOfContractBenefitsMaximum(), startDate);
@@ -409,125 +327,14 @@ public class Product10EC implements Product {
         List<LocalDate> allowedDates = new ArrayList<>();
         IntStream.range(0, 10).forEach(value -> allowedDates.add(startDate.plusYears(value + 1)));
         List<LocalDate> filteredDates = datedAmounts.stream().map(DatedAmount::getDate).filter(date -> !allowedDates.contains(date)).collect(toList());
-        if (datedAmounts == null) {
-            throw PolicyValidationException.premiumnsCalculatedAmountEmpty;
-        } else if (datedAmounts.size() != DURATION_COVERAGE_IN_YEAR) {
-            throw PolicyValidationException.premiumnsCalculatedAmountNotFor10Years;
-        } else if (datedAmounts.stream().anyMatch(datedAmount -> datedAmount.getCurrencyCode() == null)) {
-            throw PolicyValidationException.premiumnsCalculatedAmountNoCurrency;
-        } else if (datedAmounts.stream().anyMatch(datedAmount -> datedAmount.getDate() == null)) {
-            throw PolicyValidationException.premiumnsCalculatedAmountNoDate;
-        } else if (datedAmounts.stream().anyMatch(datedAmount -> datedAmount.getDate().isBefore(LocalDate.now()))) {
-            throw PolicyValidationException.premiumnsCalculatedAmountDateInThePast;
-        } else if (datedAmounts.stream().anyMatch(datedAmount -> datedAmount.getValue() == null)) {
-            throw PolicyValidationException.premiumnsCalculatedAmountNoAmount;
-        } else if (filteredDates.size() != 0) {
-            throw PolicyValidationException.premiumnsCalculatedAmountInvalidDate.apply(filteredDates.stream().map(LocalDate::toString).collect(joining(", ")));
-        }
-    }
 
-    private static void checkMainInsured(Insured insured) throws PolicyValidationException {
-        if (insured.getDeclaredTaxPercentAtSubscription() == null) {
-            throw PolicyValidationException.mainInsuredWithNoDeclaredTax;
-        } else if (insured.getStartDate() == null) {
-            throw PolicyValidationException.mainInsuredWithNoStartDate;
-        } else if (insured.getEndDate() == null) {
-            throw PolicyValidationException.mainInsuredWithNoEndDate;
-        } else if (insured.getProfessionName() == null) {
-            throw PolicyValidationException.mainInsuredWithNoProfessionName;
-        } else if (insured.getPerson().getGenderCode() == null) {
-            throw PolicyValidationException.mainInsuredWithNoGenderCode;
-        } else if (insured.getPerson().getMaritalStatus() == null) {
-            throw PolicyValidationException.mainInsuredWithNoMaritalStatus;
-        } else if (insured.getPerson().getBirthDate() == null) {
-            throw PolicyValidationException.mainInsuredWithNoDOB;
-        } else if (insured.getPerson().getEmail() == null) {
-            throw PolicyValidationException.mainInsuredWithNoEmail;
-        } else if (!insured.getStartDate().equals(LocalDate.now())) {
-            throw PolicyValidationException.startDateNotServerDate;
-        }
-
-        if (insured.getPerson().getHomePhoneNumber() == null && insured.getPerson().getMobilePhoneNumber() == null) {
-            throw PolicyValidationException.mainInsuredWithNoPhoneNumber;
-        }
-        if (!isValidEmailAddress(insured.getPerson().getEmail())) {
-            throw PolicyValidationException.mainInsuredWithInvalidEmail;
-        }
-
-        if (insured.getHealthStatus().getDisableOrImmunoDeficient() == null) {
-            throw PolicyValidationException.mainInsuredWithNoDisableStatus;
-        } else if (insured.getHealthStatus().getHospitalizedInLast6Months() == null) {
-            throw PolicyValidationException.mainInsuredWithNoHospitalizedStatus;
-        } else if (insured.getHealthStatus().getDeniedOrCounterOffer() == null) {
-            throw PolicyValidationException.mainInsuredWithNoDeniedOrCounterOfferStatus;
-        } else if (insured.getHealthStatus().getHeightInCm() == null) {
-            throw PolicyValidationException.mainInsuredWithNoHeight;
-        } else if (insured.getHealthStatus().getWeightInKg() == null) {
-            throw PolicyValidationException.mainInsuredWithNoWeight;
-        }
-
-        if (insured.getPerson().getCurrentAddress() == null && insured.getPerson().getDeliveryAddress() == null) {
-            throw PolicyValidationException.mainInsuredWithNoGeographicalAddress;
-        }
-        checkGeographicalAddress(insured.getPerson().getCurrentAddress());
-        checkGeographicalAddress(insured.getPerson().getDeliveryAddress());
-        checkGeographicalAddress(insured.getPerson().getRegistrationAddress());
-    }
-
-    private static void checkGeographicalAddress(GeographicalAddress address) throws PolicyValidationException {
-        if (address == null) {
-            return;
-        } else if (address.getDistrict() == null) {
-            throw PolicyValidationException.addressWithNoDistrict;
-        } else if (address.getPostCode() == null) {
-            throw PolicyValidationException.addressWithNoPostCode;
-        } else if (address.getStreetAddress1() == null) {
-            throw PolicyValidationException.addressWithNoStreetAddress1;
-        } else if (address.getStreetAddress2() == null) {
-            throw PolicyValidationException.addressWithNoStreetAddress2;
-        } else if (address.getSubCountry() == null) {
-            throw PolicyValidationException.addressWithNoSubCountry;
-        } else if (address.getSubdistrict() == null) {
-            throw PolicyValidationException.addressWithNoSubDistrict;
-        }
-    }
-
-    static void checkInsured(Quote quote) throws PolicyValidationException {
-        if (quote.getInsureds() == null || quote.getInsureds().size() == 0) {
-            throw PolicyValidationException.noInsured;
-        } else if (quote.getInsureds().size() != 1) {
-            throw PolicyValidationException.insuredMoreThanOne;
-        }
-
-        Insured insured = quote.getInsureds().get(0);
-        if (insured.getType() == null) {
-            throw PolicyValidationException.insuredWithNoType;
-        } else if (insured.getMainInsuredIndicator() == null) {
-            throw PolicyValidationException.insuredWithNoMainInsured;
-        } else if (!insured.getMainInsuredIndicator()) {
-            throw PolicyValidationException.noMainInsured;
-        } else if (insured.getFatca() == null) {
-            throw PolicyValidationException.insuredNoFatca;
-        } else if (insured.getFatca().isBornInUSA() == null) {
-            throw PolicyValidationException.insuredFatcaInvalid1;
-        } else if (insured.getFatca().isPayTaxInUSA() == null) {
-            throw PolicyValidationException.insuredFatcaInvalid2;
-        } else if (insured.getFatca().isPermanentResidentOfUSAForTax() == null) {
-            throw PolicyValidationException.insuredFatcaInvalid3;
-        } else if (insured.getFatca().getPermanentResidentOfUSA() == null) {
-            throw PolicyValidationException.insuredFatcaInvalid4;
-        }
-        if (insured.getPerson() == null) {
-            throw PolicyValidationException.insuredWithNoPerson;
-        } else if (insured.getPerson().getGivenName() == null) {
-            throw PolicyValidationException.personWithNoGivenName;
-        } else if (insured.getPerson().getSurName() == null) {
-            throw PolicyValidationException.personWithNoSurname;
-        } else if (insured.getPerson().getTitle() == null) {
-            throw PolicyValidationException.personWithNoTitle;
-        } else if (!checkThaiIDNumbers(insured.getPerson())) {
-            throw PolicyValidationException.personWithInvalidThaiIdNumber;
-        }
+        notNull(datedAmounts, premiumnsCalculatedAmountEmpty);
+        isEqual(datedAmounts.size(), DURATION_COVERAGE_IN_YEAR, premiumnsCalculatedAmountNotFor10Years);
+        notNull(datedAmounts.stream().anyMatch(datedAmount -> datedAmount.getCurrencyCode() == null), premiumnsCalculatedAmountNoCurrency);
+        notNull(datedAmounts.stream().anyMatch(datedAmount -> datedAmount.getDate() == null), premiumnsCalculatedAmountNoDate);
+        notNull(datedAmounts.stream().anyMatch(datedAmount -> datedAmount.getDate().isBefore(LocalDate.now())), premiumnsCalculatedAmountDateInThePast);
+        notNull(datedAmounts.stream().anyMatch(datedAmount -> datedAmount.getValue() == null), premiumnsCalculatedAmountNoAmount);
+        isEqual(filteredDates.size(), 0, premiumnsCalculatedAmountInvalidDate.apply(filteredDates.stream().map(LocalDate::toString).collect(joining(", "))));
     }
 
     private static List<DatedAmount> calculateDatedAmount(Quote quote, Integer percentRate, Function<Integer, Integer> dvdFunction) {
@@ -581,13 +388,6 @@ public class Product10EC implements Product {
 
         // We need a periodicity
         return productQuotation.getPeriodicityCode() != null;
-    }
-
-    private static boolean isValidEmailAddress(String email) {
-        String ePattern = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
-        java.util.regex.Pattern p = java.util.regex.Pattern.compile(ePattern);
-        java.util.regex.Matcher m = p.matcher(email);
-        return m.matches();
     }
 
     private static Amount amount(Double value) {
