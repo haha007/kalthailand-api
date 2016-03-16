@@ -5,7 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.elife.api.data.PolicyNumber;
-import th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.elife.api.model.*;
 import th.co.krungthaiaxa.elife.api.model.enums.ChannelType;
 import th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus;
@@ -14,7 +13,6 @@ import th.co.krungthaiaxa.elife.api.products.ProductFactory;
 import th.co.krungthaiaxa.elife.api.repository.*;
 
 import javax.inject.Inject;
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Objects;
@@ -56,7 +54,7 @@ public class PolicyService {
         return policy != null ? Optional.of(policy) : Optional.empty();
     }
 
-    public Policy createPolicy(Quote quote) throws QuoteCalculationException {
+    public Policy createPolicy(Quote quote) {
         notNull(quote, emptyQuote);
         notNull(quote.getId(), noneExistingQuote);
         notNull(quoteRepository.findOne(quote.getId()), noneExistingQuote);
@@ -88,10 +86,10 @@ public class PolicyService {
         return policy;
     }
 
-    public void updatePayment(Policy policy, Payment payment, Double value, String currencyCode,
-                                Optional<String> registrationKey, SuccessErrorStatus status, ChannelType channelType,
-                                Optional<String> creditCardName, Optional<String> paymentMethod,
-                                Optional<String> errorCode, Optional<String> errorMessage) throws IOException {
+    public void updatePayment(Payment payment, Double value, String currencyCode,
+                              Optional<String> registrationKey, SuccessErrorStatus status, ChannelType channelType,
+                              Optional<String> creditCardName, Optional<String> paymentMethod,
+                              Optional<String> errorCode, Optional<String> errorMessage) {
         if (!currencyCode.equals(payment.getAmount().getCurrencyCode())) {
             status = ERROR;
             errorMessage = Optional.of("Currencies are different");

@@ -1,7 +1,6 @@
 package th.co.krungthaiaxa.elife.api.products;
 
 import org.apache.commons.lang3.SerializationUtils;
-import th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.elife.api.model.*;
 import th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode;
 
@@ -82,7 +81,7 @@ public class Product10EC implements Product {
     };
 
     @Override
-    public void calculateQuote(Quote quote, ProductQuotation productQuotation) throws QuoteCalculationException {
+    public void calculateQuote(Quote quote, ProductQuotation productQuotation)  {
         if (productQuotation == null) {
             return;
         }
@@ -168,7 +167,7 @@ public class Product10EC implements Product {
     }
 
     @Override
-    public void getPolicyFromQuote(Policy policy, Quote quote) throws QuoteCalculationException {
+    public void getPolicyFromQuote(Policy policy, Quote quote) {
         // check for mandatory data
         checkCommonData(getCommonData());
         checkInsured(quote);
@@ -267,7 +266,7 @@ public class Product10EC implements Product {
         }
     }
 
-    private static void checkSumInsured(PremiumsData premiumsData, String currency, Double sumInsuredMin, Double sumInsuredMax) throws QuoteCalculationException {
+    private static void checkSumInsured(PremiumsData premiumsData, String currency, Double sumInsuredMin, Double sumInsuredMax) {
         if (premiumsData.getProduct10ECPremium().getSumInsured() == null || premiumsData.getProduct10ECPremium().getSumInsured().getValue() == null) {
             // no amount to check
             return;
@@ -287,7 +286,7 @@ public class Product10EC implements Product {
         isEqual(commonData.getProductName(), PRODUCT_10_EC_NAME, product10ECExpected);
     }
 
-    private static void check10ECPremiumsData(PremiumsData premiumsData, LocalDate startDate) throws QuoteCalculationException {
+    private static void check10ECPremiumsData(PremiumsData premiumsData, LocalDate startDate) {
         notNull(premiumsData, premiumnsDataNone);
         notNull(premiumsData.getProduct10ECPremium(), premiumnsDataNone);
         notNull(premiumsData.getProduct10ECPremium().getSumInsured(), premiumnsDataNoSumInsured);
@@ -305,7 +304,7 @@ public class Product10EC implements Product {
         checkDatedAmounts(premiumsData.getProduct10ECPremium().getYearlyCashBacksMaximumDividende(), startDate);
     }
 
-    private static void checkPremium(PremiumsData premiumsData) throws QuoteCalculationException {
+    private static void checkPremium(PremiumsData premiumsData) {
         if (premiumsData.getFinancialScheduler().getModalAmount() == null || premiumsData.getFinancialScheduler().getModalAmount().getValue() == null) {
             // no amount to check
             return;

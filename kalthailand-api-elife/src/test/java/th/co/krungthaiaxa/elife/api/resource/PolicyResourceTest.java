@@ -18,7 +18,6 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import th.co.krungthaiaxa.elife.api.KalApiApplication;
-import th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.elife.api.model.Payment;
 import th.co.krungthaiaxa.elife.api.model.Policy;
 import th.co.krungthaiaxa.elife.api.model.Quote;
@@ -88,7 +87,7 @@ public class PolicyResourceTest {
     }
 
     @Test
-    public void should_return_a_policy_object() throws QuoteCalculationException, IOException {
+    public void should_return_a_policy_object() throws IOException {
         Policy policy = getPolicy();
 
         // check database values
@@ -98,7 +97,7 @@ public class PolicyResourceTest {
     }
 
     @Test
-    public void should_return_policy_payment_list() throws QuoteCalculationException, IOException, URISyntaxException {
+    public void should_return_policy_payment_list() throws IOException, URISyntaxException {
         Policy policy = getPolicy();
 
         URI paymentURI = new URI("http://localhost:" + port + "/policies/" + policy.getPolicyId() + "/payments");
@@ -109,7 +108,7 @@ public class PolicyResourceTest {
     }
 
     @Test
-    public void should_be_able_to_update_payment_without_error_message() throws QuoteCalculationException, IOException, URISyntaxException {
+    public void should_be_able_to_update_payment_without_error_message() throws IOException, URISyntaxException {
         Policy policy = getPolicy();
 
         URI paymentURI = new URI("http://localhost:" + port + "/policies/" + policy.getPolicyId() + "/payments/" + policy.getPayments().get(0).getPaymentId());
@@ -129,7 +128,7 @@ public class PolicyResourceTest {
     }
 
     @Test
-    public void should_not_be_able_to_update_payment_with_error_message_and_no_error_code() throws QuoteCalculationException, IOException, URISyntaxException {
+    public void should_not_be_able_to_update_payment_with_error_message_and_no_error_code() throws IOException, URISyntaxException {
         Policy policy = getPolicy();
 
         URI paymentURI = new URI("http://localhost:" + port + "/policies/" + policy.getPolicyId() + "/payments/" + policy.getPayments().get(0).getPaymentId());
@@ -151,7 +150,7 @@ public class PolicyResourceTest {
     }
 
     @Test
-    public void should_be_able_to_update_payment_with_error_message() throws QuoteCalculationException, IOException, URISyntaxException {
+    public void should_be_able_to_update_payment_with_error_message() throws IOException, URISyntaxException {
         Policy policy = getPolicy();
 
         URI paymentURI = new URI("http://localhost:" + port + "/policies/" + policy.getPolicyId() + "/payments/" + policy.getPayments().get(0).getPaymentId());
@@ -172,7 +171,7 @@ public class PolicyResourceTest {
         assertThat(updatedPolicy.getPayments().get(0).getStatus()).isNotEqualTo(FUTURE);
     }
 
-    private Policy getPolicy() throws QuoteCalculationException, IOException {
+    private Policy getPolicy() throws IOException {
         String sessionId = randomNumeric(20);
 
         Quote quote = quoteService.createQuote(sessionId, LINE, productQuotation(35, EVERY_YEAR));

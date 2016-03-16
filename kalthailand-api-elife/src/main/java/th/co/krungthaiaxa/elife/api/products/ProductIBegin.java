@@ -1,7 +1,6 @@
 package th.co.krungthaiaxa.elife.api.products;
 
 import org.springframework.stereotype.Component;
-import th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.elife.api.model.*;
 import th.co.krungthaiaxa.elife.api.repository.ProductIBeginRateRepository;
 
@@ -32,7 +31,7 @@ public class ProductIBegin implements Product {
     private ProductIBeginRateRepository productIBeginRateRepository;
 
     @Override
-    public void calculateQuote(Quote quote, ProductQuotation productQuotation) throws QuoteCalculationException {
+    public void calculateQuote(Quote quote, ProductQuotation productQuotation) {
         Optional<Coverage> hasIBeginCoverage = quote.getCoverages()
                 .stream()
                 .filter(coverage -> coverage.getName() != null)
@@ -89,7 +88,7 @@ public class ProductIBegin implements Product {
     }
 
     @Override
-    public void getPolicyFromQuote(Policy policy, Quote quote) throws QuoteCalculationException {
+    public void getPolicyFromQuote(Policy policy, Quote quote) {
 
     }
 

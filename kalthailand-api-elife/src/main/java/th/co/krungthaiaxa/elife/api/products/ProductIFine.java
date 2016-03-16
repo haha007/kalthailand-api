@@ -34,7 +34,7 @@ public class ProductIFine implements Product {
     private ProductIFineRateRepository productIFineRateRepository;
 
     @Override
-    public void calculateQuote(Quote quote, ProductQuotation productQuotation) throws QuoteCalculationException {
+    public void calculateQuote(Quote quote, ProductQuotation productQuotation) {
         Optional<Coverage> hasIFineCoverage = quote.getCoverages()
                 .stream()
                 .filter(coverage -> coverage.getName() != null)
@@ -98,7 +98,7 @@ public class ProductIFine implements Product {
     }
 
     @Override
-    public void getPolicyFromQuote(Policy policy, Quote quote) throws QuoteCalculationException {
+    public void getPolicyFromQuote(Policy policy, Quote quote) {
         // check for mandatory data
         checkCommonData(getCommonData());
         checkInsured(quote);
@@ -174,7 +174,7 @@ public class ProductIFine implements Product {
         return premiumsData;
     }
 
-    private ProductIFinePackage getPackage(String packageName) throws QuoteCalculationException {
+    private ProductIFinePackage getPackage(String packageName) {
         ProductIFinePackage result = ProductIFinePackage.valueOf(packageName);
         if (result == null) {
             throw QuoteCalculationException.iFinePackageNameUnknown;
@@ -226,7 +226,7 @@ public class ProductIFine implements Product {
         }
     }
 
-    private static void checkIFinePremiumsData(PremiumsData premiumsData) throws QuoteCalculationException {
+    private static void checkIFinePremiumsData(PremiumsData premiumsData) {
         notNull(premiumsData, premiumnsDataNone);
         notNull(premiumsData.getProductIFinePremium(), premiumnsDataNone);
         notNull(premiumsData.getProductIFinePremium().getSumInsured(), premiumnsDataNoSumInsured);

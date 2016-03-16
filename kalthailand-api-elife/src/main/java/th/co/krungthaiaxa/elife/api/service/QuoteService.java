@@ -2,7 +2,6 @@ package th.co.krungthaiaxa.elife.api.service;
 
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.elife.api.data.SessionQuote;
-import th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.elife.api.model.*;
 import th.co.krungthaiaxa.elife.api.model.enums.ChannelType;
 import th.co.krungthaiaxa.elife.api.model.enums.InsuredType;
@@ -49,7 +48,7 @@ public class QuoteService {
                 .findFirst();
     }
 
-    public Quote createQuote(String sessionId, ChannelType channelType, ProductQuotation productQuotation) throws QuoteCalculationException {
+    public Quote createQuote(String sessionId, ChannelType channelType, ProductQuotation productQuotation) {
         Product product = getProduct(productQuotation.getProductType().getName());
 
         Insured insured = new Insured();
@@ -85,7 +84,7 @@ public class QuoteService {
         return quote;
     }
 
-    public Quote updateQuote(Quote quote) throws QuoteCalculationException {
+    public Quote updateQuote(Quote quote) {
         // common calculation
         quote = basicCalculateQuote(quote);
 

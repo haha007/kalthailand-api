@@ -8,7 +8,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.elife.api.KalApiApplication;
 import th.co.krungthaiaxa.elife.api.exception.PolicyValidationException;
-import th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.elife.api.model.Payment;
 import th.co.krungthaiaxa.elife.api.model.Policy;
 import th.co.krungthaiaxa.elife.api.model.Quote;
@@ -39,14 +38,14 @@ public class PolicyServiceTest {
     private QuoteService quoteService;
 
     @Test
-    public void should_return_error_when_create_policy_if_quote_not_provided() throws Exception {
+    public void should_return_error_when_create_policy_if_quote_not_provided() {
         assertThatThrownBy(() -> policyService.createPolicy(null))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(emptyQuote.getMessage());
     }
 
     @Test
-    public void should_return_error_when_create_policy_if_quote_does_not_exist() throws Exception {
+    public void should_return_error_when_create_policy_if_quote_does_not_exist() {
         Quote quote = new Quote();
         quote.setId("123");
         assertThatThrownBy(() -> policyService.createPolicy(quote))
@@ -55,7 +54,7 @@ public class PolicyServiceTest {
     }
 
     @Test
-    public void should_update_quote_with_policy_id_when_policy_has_been_created() throws QuoteCalculationException {
+    public void should_update_quote_with_policy_id_when_policy_has_been_created() {
         String sessionId = randomNumeric(20);
 
         Quote quote1 = quoteService.createQuote(sessionId, LINE, productQuotation());
@@ -72,46 +71,46 @@ public class PolicyServiceTest {
     }
 
     @Test
-    public void should_add_generated_ids_when_saving_policy_for_first_time() throws QuoteCalculationException {
+    public void should_add_generated_ids_when_saving_policy_for_first_time() {
         Policy policy = getPolicy();
         assertThat(policy.getPolicyId()).isNotNull();
         assertThat(policy.getId()).isNotNull();
     }
 
     @Test
-    public void should_have_0_documents_after_updating_first_payment() throws Exception {
+    public void should_have_0_documents_after_updating_first_payment() {
         Policy policy = getPolicy();
 
         Payment payment = policy.getPayments().get(0);
-        policyService.updatePayment(policy, payment, 50.0, "THB", empty(), SUCCESS, LINE, empty(), empty(), empty(), empty());
+        policyService.updatePayment(payment, 50.0, "THB", empty(), SUCCESS, LINE, empty(), empty(), empty(), empty());
         assertThat(policy.getDocuments()).hasSize(0);
     }
 
     @Test
-    public void should_still_have_only_0_documents_even_after_updating_multiple_payments() throws Exception {
+    public void should_still_have_only_0_documents_even_after_updating_multiple_payments() {
         Policy policy = getPolicy();
 
         Payment payment1 = policy.getPayments().get(0);
         Payment payment2 = policy.getPayments().get(1);
         Payment payment3 = policy.getPayments().get(2);
 
-        policyService.updatePayment(policy, payment1, 50.0, "THB", empty(), SUCCESS, LINE, empty(), empty(), empty(), empty());
-        policyService.updatePayment(policy, payment1, 50.0, "THB", empty(), SUCCESS, LINE, empty(), empty(), empty(), empty());
-        policyService.updatePayment(policy, payment2, 50.0, "THB", empty(), SUCCESS, LINE, empty(), empty(), empty(), empty());
-        policyService.updatePayment(policy, payment3, 50.0, "THB", empty(), SUCCESS, LINE, empty(), empty(), empty(), empty());
+        policyService.updatePayment(payment1, 50.0, "THB", empty(), SUCCESS, LINE, empty(), empty(), empty(), empty());
+        policyService.updatePayment(payment1, 50.0, "THB", empty(), SUCCESS, LINE, empty(), empty(), empty(), empty());
+        policyService.updatePayment(payment2, 50.0, "THB", empty(), SUCCESS, LINE, empty(), empty(), empty(), empty());
+        policyService.updatePayment(payment3, 50.0, "THB", empty(), SUCCESS, LINE, empty(), empty(), empty(), empty());
 
         assertThat(policy.getDocuments()).hasSize(0);
     }
 
     @Test
-    public void should_mark_payment_as_incomplete_when_with_error_status() throws Exception {
+    public void should_mark_payment_as_incomplete_when_with_error_status() {
         Policy policy = getPolicy();
 
         Payment payment = policy.getPayments().get(0);
         payment.getAmount().setValue(100.0);
         assertThat(payment.getStatus()).isEqualTo(FUTURE);
 
-        policyService.updatePayment(policy, payment, 100.0, "THB", empty(), ERROR, LINE, empty(), empty(), empty(), Optional.of("Error msg"));
+        policyService.updatePayment(payment, 100.0, "THB", empty(), ERROR, LINE, empty(), empty(), empty(), Optional.of("Error msg"));
         policy.getPayments().get(0);
 
         assertThat(payment.getEffectiveDate()).isNull();
@@ -121,14 +120,14 @@ public class PolicyServiceTest {
     }
 
     @Test
-    public void should_mark_payment_as_completed_if_right_amount_with_success_status() throws Exception {
+    public void should_mark_payment_as_completed_if_right_amount_with_success_status() {
         Policy policy = getPolicy();
 
         Payment payment = policy.getPayments().get(0);
         payment.getAmount().setValue(100.0);
         assertThat(payment.getStatus()).isEqualTo(FUTURE);
 
-        policyService.updatePayment(policy, payment, 100.0, "THB", empty(), SUCCESS, LINE, empty(), empty(), empty(), empty());
+        policyService.updatePayment(payment, 100.0, "THB", empty(), SUCCESS, LINE, empty(), empty(), empty(), empty());
 
         assertThat(payment.getEffectiveDate()).isEqualTo(payment.getDueDate());
         assertThat(payment.getPaymentInformations()).hasSize(1);
@@ -137,15 +136,15 @@ public class PolicyServiceTest {
     }
 
     @Test
-    public void should_mark_payment_as_completed_if_right_sum_with_success_status() throws Exception {
+    public void should_mark_payment_as_completed_if_right_sum_with_success_status() {
         Policy policy = getPolicy();
 
         Payment payment = policy.getPayments().get(0);
         payment.getAmount().setValue(100.0);
         assertThat(payment.getStatus()).isEqualTo(FUTURE);
 
-        policyService.updatePayment(policy, payment, 50.0, "THB", empty(), SUCCESS, LINE, empty(), empty(), empty(), empty());
-        policyService.updatePayment(policy, payment, 50.0, "THB", empty(), SUCCESS, LINE, empty(), empty(), empty(), empty());
+        policyService.updatePayment(payment, 50.0, "THB", empty(), SUCCESS, LINE, empty(), empty(), empty(), empty());
+        policyService.updatePayment(payment, 50.0, "THB", empty(), SUCCESS, LINE, empty(), empty(), empty(), empty());
 
         assertThat(payment.getEffectiveDate()).isEqualTo(payment.getDueDate());
         assertThat(payment.getPaymentInformations()).hasSize(2);
@@ -154,16 +153,16 @@ public class PolicyServiceTest {
     }
 
     @Test
-    public void should_mark_payment_as_completed_if_right_sum_with_minuses_and_success_status() throws Exception {
+    public void should_mark_payment_as_completed_if_right_sum_with_minuses_and_success_status() {
         Policy policy = getPolicy();
 
         Payment payment = policy.getPayments().get(0);
         payment.getAmount().setValue(100.0);
         assertThat(payment.getStatus()).isEqualTo(FUTURE);
 
-        policyService.updatePayment(policy, payment, 50.0, "THB", empty(), SUCCESS, LINE, empty(), empty(), empty(), empty());
-        policyService.updatePayment(policy, payment, 75.0, "THB", empty(), SUCCESS, LINE, empty(), empty(), empty(), empty());
-        policyService.updatePayment(policy, payment, -25.0, "THB", empty(), SUCCESS, LINE, empty(), empty(), empty(), empty());
+        policyService.updatePayment(payment, 50.0, "THB", empty(), SUCCESS, LINE, empty(), empty(), empty(), empty());
+        policyService.updatePayment(payment, 75.0, "THB", empty(), SUCCESS, LINE, empty(), empty(), empty(), empty());
+        policyService.updatePayment(payment, -25.0, "THB", empty(), SUCCESS, LINE, empty(), empty(), empty(), empty());
 
         assertThat(payment.getEffectiveDate()).isEqualTo(payment.getDueDate());
         assertThat(payment.getPaymentInformations()).hasSize(3);
@@ -172,16 +171,16 @@ public class PolicyServiceTest {
     }
 
     @Test
-    public void should_mark_payment_as_completed_if_three_payments_of_right_amount_with_success_and_error_status() throws Exception {
+    public void should_mark_payment_as_completed_if_three_payments_of_right_amount_with_success_and_error_status() {
         Policy policy = getPolicy();
 
         Payment payment = policy.getPayments().get(0);
         payment.getAmount().setValue(100.0);
         assertThat(payment.getStatus()).isEqualTo(FUTURE);
 
-        policyService.updatePayment(policy, payment, 50.0, "THB", empty(), SUCCESS, LINE, empty(), empty(), empty(), empty());
-        policyService.updatePayment(policy, payment, 50.0, "THB", empty(), ERROR, LINE, empty(), empty(), empty(), empty());
-        policyService.updatePayment(policy, payment, 50.0, "THB", empty(), SUCCESS, LINE, empty(), empty(), empty(), empty());
+        policyService.updatePayment(payment, 50.0, "THB", empty(), SUCCESS, LINE, empty(), empty(), empty(), empty());
+        policyService.updatePayment(payment, 50.0, "THB", empty(), ERROR, LINE, empty(), empty(), empty(), empty());
+        policyService.updatePayment(payment, 50.0, "THB", empty(), SUCCESS, LINE, empty(), empty(), empty(), empty());
 
         assertThat(payment.getEffectiveDate()).isEqualTo(payment.getDueDate());
         assertThat(payment.getPaymentInformations()).hasSize(3);
@@ -190,14 +189,14 @@ public class PolicyServiceTest {
     }
 
     @Test
-    public void should_mark_payment_as_incomplete_if_currency_different() throws Exception {
+    public void should_mark_payment_as_incomplete_if_currency_different() {
         Policy policy = getPolicy();
 
         Payment payment = policy.getPayments().get(0);
         payment.getAmount().setValue(100.0);
         assertThat(payment.getStatus()).isEqualTo(FUTURE);
 
-        policyService.updatePayment(policy, payment, 100.0, "EUR", empty(), SUCCESS, LINE, empty(), empty(), empty(), empty());
+        policyService.updatePayment(payment, 100.0, "EUR", empty(), SUCCESS, LINE, empty(), empty(), empty(), empty());
 
         assertThat(payment.getEffectiveDate()).isNull();
         assertThat(payment.getPaymentInformations()).hasSize(1);
@@ -206,14 +205,14 @@ public class PolicyServiceTest {
     }
 
     @Test
-    public void should_mark_payment_as_overpaid_if_sum_of_success_payment_is_over_expected_amount() throws Exception {
+    public void should_mark_payment_as_overpaid_if_sum_of_success_payment_is_over_expected_amount() {
         Policy policy = getPolicy();
 
         Payment payment = policy.getPayments().get(0);
         payment.getAmount().setValue(100.0);
         assertThat(payment.getStatus()).isEqualTo(FUTURE);
 
-        policyService.updatePayment(policy, payment, 150.0, "THB", empty(), SUCCESS, LINE, empty(), empty(), empty(), empty());
+        policyService.updatePayment(payment, 150.0, "THB", empty(), SUCCESS, LINE, empty(), empty(), empty(), empty());
 
         assertThat(payment.getEffectiveDate()).isEqualTo(payment.getDueDate());
         assertThat(payment.getPaymentInformations()).hasSize(1);
@@ -221,7 +220,7 @@ public class PolicyServiceTest {
         assertThat(payment.getStatus()).isEqualTo(OVERPAID);
     }
 
-    private Policy getPolicy() throws QuoteCalculationException {
+    private Policy getPolicy() {
         Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation());
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateQuote(quote);

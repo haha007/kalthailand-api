@@ -11,7 +11,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.elife.api.KalApiApplication;
-import th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.elife.api.model.Document;
 import th.co.krungthaiaxa.elife.api.model.DocumentDownload;
 import th.co.krungthaiaxa.elife.api.model.Policy;
@@ -47,7 +46,7 @@ public class DocumentServiceTest {
     private DocumentDownloadRepository documentDownloadRepository;
 
     @Test
-    public void should_add_2_documents_in_policy() throws QuoteCalculationException {
+    public void should_add_2_documents_in_policy() {
         Policy policy = getPolicy();
         policy(policy);
 
@@ -59,7 +58,7 @@ public class DocumentServiceTest {
     }
 
     @Test
-    public void should_get_1_document_in_policy() throws QuoteCalculationException {
+    public void should_get_1_document_in_policy() {
         Policy policy = getPolicy();
         policy(policy);
 
@@ -94,7 +93,7 @@ public class DocumentServiceTest {
     }
 
     @Test
-    public void should_create_bytes_for_eReceipt() throws QuoteCalculationException, IOException, DocumentException {
+    public void should_create_bytes_for_eReceipt() throws IOException, DocumentException {
         Policy policy = getPolicy();
         policy(policy);
 
@@ -112,7 +111,7 @@ public class DocumentServiceTest {
         assertThat(file.exists()).isTrue();
     }
 
-    private Policy getPolicy() throws QuoteCalculationException {
+    private Policy getPolicy() {
         Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation());
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateQuote(quote);

@@ -12,7 +12,6 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.elife.api.KalApiApplication;
 import th.co.krungthaiaxa.elife.api.data.CollectionFile;
 import th.co.krungthaiaxa.elife.api.data.CollectionFileLine;
-import th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.elife.api.model.Policy;
 import th.co.krungthaiaxa.elife.api.model.Quote;
 import th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode;
@@ -55,50 +54,50 @@ public class RLSServiceTest {
     }
 
     @Test
-    public void should_not_save_collection_file_when_there_is_an_error() throws Exception {
+    public void should_not_save_collection_file_when_there_is_an_error(){
         assertThatThrownBy(() -> rlsService.readExcelFile(this.getClass().getResourceAsStream("/graph.jpg")))
                 .isInstanceOf(IllegalArgumentException.class);
         assertThat(collectionFileRepository.findAll()).hasSize(0);
     }
 
     @Test
-    public void should_throw_exception_when_file_not_valid_excel_file() throws Exception {
+    public void should_throw_exception_when_file_not_valid_excel_file(){
         assertThatThrownBy(() -> rlsService.readExcelFile(this.getClass().getResourceAsStream("/graph.jpg")))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
-    public void should_throw_exception_when_file_not_found() throws Exception {
+    public void should_throw_exception_when_file_not_found(){
         assertThatThrownBy(() -> rlsService.readExcelFile(this.getClass().getResourceAsStream("/something.xls")))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
-    public void should_throw_exception_when_file_with_extra_column() throws Exception {
+    public void should_throw_exception_when_file_with_extra_column(){
         assertThatThrownBy(() -> rlsService.readExcelFile(this.getClass().getResourceAsStream("/collectionFile_extraColumn.xls")))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
-    public void should_throw_exception_when_file_with_missing_sheet() throws Exception {
+    public void should_throw_exception_when_file_with_missing_sheet(){
         assertThatThrownBy(() -> rlsService.readExcelFile(this.getClass().getResourceAsStream("/collectionFile_missingSheet.xls")))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
-    public void should_throw_exception_when_file_with_missing_column() throws Exception {
+    public void should_throw_exception_when_file_with_missing_column(){
         assertThatThrownBy(() -> rlsService.readExcelFile(this.getClass().getResourceAsStream("/collectionFile_missingColumn.xls")))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
-    public void should_throw_exception_when_file_with_wrong_column_name() throws Exception {
+    public void should_throw_exception_when_file_with_wrong_column_name(){
         assertThatThrownBy(() -> rlsService.readExcelFile(this.getClass().getResourceAsStream("/collectionFile_wrongColumnName.xls")))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
-    public void should_throw_exception_when_saving_same_file_twice() throws Exception {
+    public void should_throw_exception_when_saving_same_file_twice(){
         CollectionFile collectionFile = rlsService.readExcelFile(this.getClass().getResourceAsStream("/collectionFile_full.xls"));
         collectionFileRepository.save(collectionFile);
         assertThatThrownBy(() -> rlsService.readExcelFile(this.getClass().getResourceAsStream("/collectionFile_full.xls")))
@@ -106,19 +105,19 @@ public class RLSServiceTest {
     }
 
     @Test
-    public void should_save_empty_collection() throws Exception {
+    public void should_save_empty_collection(){
         CollectionFile collectionFile = rlsService.readExcelFile(this.getClass().getResourceAsStream("/collectionFile_empty.xls"));
         assertThat(collectionFile.getLines()).hasSize(0);
     }
 
     @Test
-    public void should_save_collection_file_with_lines() throws Exception {
+    public void should_save_collection_file_with_lines(){
         CollectionFile collectionFile = rlsService.readExcelFile(this.getClass().getResourceAsStream("/collectionFile_full.xls"));
         assertThat(collectionFile.getLines()).hasSize(50);
     }
 
     @Test
-    public void should_not_find_a_payment_for_the_policy_when_policy_does_not_exist() throws Exception {
+    public void should_not_find_a_payment_for_the_policy_when_policy_does_not_exist(){
         CollectionFileLine collectionFileLine = new CollectionFileLine();
         collectionFileLine.setPolicyNumber("123");
         assertThatThrownBy(() -> rlsService.addPaymentId(collectionFileLine))
@@ -126,7 +125,7 @@ public class RLSServiceTest {
     }
 
     @Test
-    public void should_not_find_a_payment_for_the_policy_when_policy_is_not_monthly() throws Exception {
+    public void should_not_find_a_payment_for_the_policy_when_policy_is_not_monthly(){
         Policy policy = getPolicy(EVERY_YEAR);
         CollectionFileLine collectionFileLine = new CollectionFileLine();
         collectionFileLine.setPolicyNumber(policy.getPolicyId());
@@ -136,7 +135,7 @@ public class RLSServiceTest {
     }
 
     @Test
-    public void should_not_find_a_payment_for_the_policy_when_payment_has_already_been_done() throws Exception {
+    public void should_not_find_a_payment_for_the_policy_when_payment_has_already_been_done() {
         Policy policy = getPolicy(EVERY_MONTH);
         policy.getPayments().stream().forEach(payment -> payment.setStatus(INCOMPLETE));
         paymentRepository.save(policy.getPayments());
@@ -148,7 +147,7 @@ public class RLSServiceTest {
     }
 
     @Test
-    public void should_not_find_a_payment_for_the_policy_when_payment_due_date_is_older_than_28_days() throws Exception {
+    public void should_not_find_a_payment_for_the_policy_when_payment_due_date_is_older_than_28_days() {
         Policy policy = getPolicy(EVERY_MONTH);
         policy.getPayments().stream().forEach(payment -> payment.setDueDate(now().minusDays(30)));
         paymentRepository.save(policy.getPayments());
@@ -160,7 +159,7 @@ public class RLSServiceTest {
     }
 
     @Test
-    public void should_find_a_payment_for_the_policy() throws Exception {
+    public void should_find_a_payment_for_the_policy() {
         Policy policy = getPolicy(EVERY_MONTH);
         CollectionFileLine collectionFileLine = new CollectionFileLine();
         collectionFileLine.setPolicyNumber(policy.getPolicyId());
@@ -169,7 +168,7 @@ public class RLSServiceTest {
         assertThat(collectionFileLine.getPaymentId()).isNotNull();
     }
 
-    private Policy getPolicy(PeriodicityCode periodicityCode) throws QuoteCalculationException {
+    private Policy getPolicy(PeriodicityCode periodicityCode) {
         Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation(periodicityCode, 1000000.0, 5));
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateQuote(quote);

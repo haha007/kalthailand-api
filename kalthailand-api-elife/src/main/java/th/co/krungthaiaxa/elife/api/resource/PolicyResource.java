@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import th.co.krungthaiaxa.elife.api.exception.ElifeException;
 import th.co.krungthaiaxa.elife.api.model.*;
 import th.co.krungthaiaxa.elife.api.model.enums.ChannelType;
 import th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus;
@@ -79,7 +80,7 @@ public class PolicyResource {
         Policy policy;
         try {
             policy = policyService.createPolicy(quote);
-        } catch (Exception e) {
+        } catch (ElifeException e) {
             logger.error("Unable to create a policy from the validated quote [" + jsonQuote + "]", e);
             return new ResponseEntity<>(POLICY_CANNOT_BE_CREATED.apply(e.getMessage()), NOT_ACCEPTABLE);
         }
@@ -157,13 +158,7 @@ public class PolicyResource {
         }
 
         // Update the policy
-        try {
-            policyService.updatePayment(policy.get(), payment.get(), value, currencyCode, registrationKey, status,
-                    channelType, creditCardName, paymentMethod, errorCode, errorMessage);
-        } catch (IOException e) {
-            logger.error("Unable to update the payment with ID [" + paymentId + "] in the policy with ID [" + policyId + "]");
-            return new ResponseEntity<>(PAYMENT_NOT_UPDATED, INTERNAL_SERVER_ERROR);
-        }
+        policyService.updatePayment(payment.get(), value, currencyCode, registrationKey, status, channelType, creditCardName, paymentMethod, errorCode, errorMessage);
         policyService.addAgentCodes(policy.get());
 
         // Generate documents

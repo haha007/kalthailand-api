@@ -17,7 +17,6 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import th.co.krungthaiaxa.elife.api.KalApiApplication;
 import th.co.krungthaiaxa.elife.api.TestUtil;
-import th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.elife.api.model.Document;
 import th.co.krungthaiaxa.elife.api.model.Policy;
 import th.co.krungthaiaxa.elife.api.model.Quote;
@@ -37,9 +36,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpMethod.PUT;
 import static org.springframework.http.HttpStatus.*;
+import static th.co.krungthaiaxa.elife.api.TestUtil.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.ERROR;
-import static th.co.krungthaiaxa.elife.api.TestUtil.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.SUCCESS;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -71,7 +70,7 @@ public class DocumentResourceTest {
     }
 
     @Test
-    public void should_return_error_when_base64image_is_not_base64() throws QuoteCalculationException, IOException, URISyntaxException {
+    public void should_return_error_when_base64image_is_not_base64() throws IOException, URISyntaxException {
         Policy policy = getPolicy();
 
         URI documentUploadURI = new URI("http://localhost:" + port + "/documents/policies/" + policy.getPolicyId() + "/thai/id");
@@ -83,7 +82,7 @@ public class DocumentResourceTest {
     }
 
     @Test
-    public void should_return_error_when_image_is_too_small() throws IOException, QuoteCalculationException, URISyntaxException {
+    public void should_return_error_when_image_is_too_small() throws IOException, URISyntaxException {
         Policy policy = getPolicy();
 
         URI documentUploadURI = new URI("http://localhost:" + port + "/documents/policies/" + policy.getPolicyId() + "/thai/id");
@@ -95,7 +94,7 @@ public class DocumentResourceTest {
     }
 
     @Test
-    public void should_return_error_when_sending_a_file_that_is_not_an_image() throws IOException, QuoteCalculationException, URISyntaxException {
+    public void should_return_error_when_sending_a_file_that_is_not_an_image() throws IOException, URISyntaxException {
         Policy policy = getPolicy();
 
         URI documentUploadURI = new URI("http://localhost:" + port + "/documents/policies/" + policy.getPolicyId() + "/thai/id");
@@ -107,7 +106,7 @@ public class DocumentResourceTest {
     }
 
     @Test
-    public void should_return_ok_with_png() throws IOException, QuoteCalculationException, URISyntaxException {
+    public void should_return_ok_with_png() throws IOException, URISyntaxException {
         Policy policy = getPolicy();
 
         URI documentUploadURI = new URI("http://localhost:" + port + "/documents/policies/" + policy.getPolicyId() + "/thai/id");
@@ -119,7 +118,7 @@ public class DocumentResourceTest {
     }
 
     @Test
-    public void should_return_ok_with_jpg() throws IOException, QuoteCalculationException, URISyntaxException {
+    public void should_return_ok_with_jpg() throws IOException, URISyntaxException {
         Policy policy = getPolicy();
 
         URI documentUploadURI = new URI("http://localhost:" + port + "/documents/policies/" + policy.getPolicyId() + "/thai/id");
@@ -131,7 +130,7 @@ public class DocumentResourceTest {
     }
 
     @Test
-    public void should_return_not_found_when_trying_to_list_documents_of_a_policy_that_does_not_exist() throws IOException, QuoteCalculationException, URISyntaxException {
+    public void should_return_not_found_when_trying_to_list_documents_of_a_policy_that_does_not_exist() throws IOException, URISyntaxException {
         URI documentUploadURI = new URI("http://localhost:" + port + "/documents/policies/12345678901234567890");
         ResponseEntity<String> response = template.getForEntity(documentUploadURI, String.class);
 
@@ -141,7 +140,7 @@ public class DocumentResourceTest {
     }
 
     @Test
-    public void should_return_not_found_when_trying_to_download_a_document_of_a_policy_that_does_not_exist() throws IOException, QuoteCalculationException, URISyntaxException {
+    public void should_return_not_found_when_trying_to_download_a_document_of_a_policy_that_does_not_exist() throws IOException, URISyntaxException {
         URI documentUploadURI = new URI("http://localhost:" + port + "/documents/policies/12345678901234567890/1234567890");
         ResponseEntity<String> response = template.getForEntity(documentUploadURI, String.class);
 
@@ -151,7 +150,7 @@ public class DocumentResourceTest {
     }
 
     @Test
-    public void should_return_error_when_trying_to_download_a_document_that_does_not_exist() throws IOException, QuoteCalculationException, URISyntaxException {
+    public void should_return_error_when_trying_to_download_a_document_that_does_not_exist() throws IOException, URISyntaxException {
         Policy policy = getPolicy();
 
         URI documentUploadURI = new URI("http://localhost:" + port + "/documents/policies/" + policy.getPolicyId() + "/1234567890");
@@ -163,7 +162,7 @@ public class DocumentResourceTest {
     }
 
     @Test
-    public void should_return_0_documents_after_a_policy_has_been_created_and_payment_updated_with_error() throws QuoteCalculationException, IOException, URISyntaxException {
+    public void should_return_0_documents_after_a_policy_has_been_created_and_payment_updated_with_error() throws IOException, URISyntaxException {
         Policy policy = getPolicy();
 
         URI paymentURI = new URI("http://localhost:" + port + "/policies/" + policy.getPolicyId() + "/payments/" + policy.getPayments().get(0).getPaymentId());
@@ -187,7 +186,7 @@ public class DocumentResourceTest {
     }
 
     @Test
-    public void should_return_3_documents_after_a_policy_has_been_created_and_payment_updated_successfully() throws QuoteCalculationException, IOException, URISyntaxException {
+    public void should_return_3_documents_after_a_policy_has_been_created_and_payment_updated_successfully() throws IOException, URISyntaxException {
         Policy policy = getPolicy();
 
         URI paymentURI = new URI("http://localhost:" + port + "/policies/" + policy.getPolicyId() + "/payments/" + policy.getPayments().get(0).getPaymentId());
@@ -209,7 +208,7 @@ public class DocumentResourceTest {
         assertThat(documents).hasSize(3);
     }
 
-    private Policy getPolicy() throws URISyntaxException, IOException, QuoteCalculationException {
+    private Policy getPolicy() throws URISyntaxException, IOException {
         String sessionId = randomNumeric(20);
         Quote quote = quoteService.createQuote(sessionId, LINE, productQuotation());
         quote(quote, beneficiary(100.0));

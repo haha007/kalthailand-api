@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException;
+import th.co.krungthaiaxa.elife.api.exception.ElifeException;
 import th.co.krungthaiaxa.elife.api.model.Quote;
 import th.co.krungthaiaxa.elife.api.model.enums.ChannelType;
 import th.co.krungthaiaxa.elife.api.model.error.Error;
@@ -109,7 +109,7 @@ public class QuoteResource {
             "details and calculated fields. Possible values for productType are [10EC, iFine]",
             response = Quote.class)
     @ApiResponses({
-            @ApiResponse(code = 406, message = "If product Id is unknown", response = Error.class)
+            @ApiResponse(code = 500, message = "If quote has not been created", response = Error.class)
     })
     @RequestMapping(value = "/quotes", produces = APPLICATION_JSON_VALUE, method = POST)
     public ResponseEntity createQuote(
@@ -121,9 +121,9 @@ public class QuoteResource {
             @RequestBody ProductQuotation productQuotation) {
         try {
             return new ResponseEntity<>(getJson(quoteService.createQuote(sessionId, channelType, productQuotation)), OK);
-        } catch (QuoteCalculationException e) {
+        } catch (ElifeException e) {
             logger.error("Unable to update quote", e);
-            return new ResponseEntity<>(QUOTE_NOT_CREATED, NOT_ACCEPTABLE);
+            return new ResponseEntity<>(QUOTE_NOT_CREATED, INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -132,7 +132,8 @@ public class QuoteResource {
     @ApiResponses({
             @ApiResponse(code = 404, message = "If quote Id is unknown or if sessionId user does not have access to the quote", response = Error.class),
             @ApiResponse(code = 406, message = "If either JSon is invalid or there is no quote in the given session",
-                    response = Error.class)
+                    response = Error.class),
+            @ApiResponse(code = 500, message = "If quote has not been updated", response = Error.class)
     })
     @RequestMapping(value = "/quotes/{quoteId}", produces = APPLICATION_JSON_VALUE, method = PUT)
     public ResponseEntity updateQuote(
@@ -162,9 +163,9 @@ public class QuoteResource {
         Quote updatedQuote;
         try {
             updatedQuote = quoteService.updateQuote(quote);
-        } catch (QuoteCalculationException e) {
+        } catch (ElifeException e) {
             logger.error("Unable to update quote", e);
-            return new ResponseEntity<>(QUOTE_NOT_UPDATED, NOT_ACCEPTABLE);
+            return new ResponseEntity<>(QUOTE_NOT_UPDATED, INTERNAL_SERVER_ERROR);
         }
 
         return new ResponseEntity<>(getJson(updatedQuote), OK);

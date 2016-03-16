@@ -1,7 +1,6 @@
 package th.co.krungthaiaxa.elife.api.products;
 
 import th.co.krungthaiaxa.elife.api.exception.PolicyValidationException;
-import th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.elife.api.model.*;
 import th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode;
 
@@ -67,7 +66,7 @@ public class ProductUtils {
         IntStream.range(0, nbOfPayments).forEach(i -> policy.addPayment(new Payment(amountValue, amountCurrency, startDate.plusMonths(i * periodicityCode.getNbOfMonths()))));
     }
 
-    public static void checkInsuredAge(Insured insured, int minAge, int maxAge) throws QuoteCalculationException {
+    public static void checkInsuredAge(Insured insured, int minAge, int maxAge) {
         if (insured.getAgeAtSubscription() == null) {
             throw ageIsEmptyException;
         } else if (insured.getAgeAtSubscription() > maxAge) {

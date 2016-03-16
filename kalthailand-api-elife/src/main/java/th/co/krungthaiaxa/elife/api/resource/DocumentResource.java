@@ -91,10 +91,8 @@ public class DocumentResource {
             return new ResponseEntity<>(POLICY_DOES_NOT_CONTAIN_DOCUMENT, NOT_ACCEPTABLE);
         }
 
-        DocumentDownload documentDownload;
-        try {
-            documentDownload = documentService.downloadDocument(documentId);
-        } catch (IllegalArgumentException e) {
+        DocumentDownload documentDownload = documentService.downloadDocument(documentId);
+        if (documentDownload == null) {
             logger.error("Unable to download the document with ID [" + documentId + "]");
             return new ResponseEntity<>(UNABLE_TO_DOWNLOAD_DOCUMENT, INTERNAL_SERVER_ERROR);
         }

@@ -2,7 +2,7 @@ package th.co.krungthaiaxa.elife.api.exception;
 
 import java.util.function.Function;
 
-public class QuoteCalculationException extends Exception {
+public class QuoteCalculationException extends ElifeException {
     public static Function<String, QuoteCalculationException> sumInsuredCurrencyException = currency -> new QuoteCalculationException("Sum insured must be in currency " + currency + ".");
     public static Function<Double, QuoteCalculationException> sumInsuredTooHighException = max -> new QuoteCalculationException("Sum Insured cannot be over " + max + " Baht.");
     public static Function<Double, QuoteCalculationException> sumInsuredTooLowException = min -> new QuoteCalculationException("Sum Insured cannot be lower than " + min + " Baht.");
