@@ -137,16 +137,16 @@ public class ProductIFine implements Product {
     @Override
     public CommonData getCommonData() {
         CommonData commonData = new CommonData();
+        commonData.setProductId(PRODUCT_IFINE.getName());
+        commonData.setProductName(PRODUCT_IFINE_NAME);
         commonData.setMaxAge(MAX_AGE);
-        commonData.setMaxPremium(amount(PREMIUM_MAX));
-        commonData.setMaxSumInsured(amount(SUM_INSURED_MAX));
         commonData.setMinAge(MIN_AGE);
+        commonData.setMaxPremium(amount(PREMIUM_MAX));
         commonData.setMinPremium(amount(PREMIUM_MIN));
+        commonData.setMaxSumInsured(amount(SUM_INSURED_MAX));
         commonData.setMinSumInsured(amount(SUM_INSURED_MIN));
         commonData.setNbOfYearsOfCoverage(DURATION_COVERAGE_IN_YEAR);
         commonData.setNbOfYearsOfPremium(DURATION_PAYMENT_IN_YEAR);
-        commonData.setProductId(PRODUCT_IFINE.getName());
-        commonData.setProductName(PRODUCT_IFINE_NAME);
         return commonData;
     }
 

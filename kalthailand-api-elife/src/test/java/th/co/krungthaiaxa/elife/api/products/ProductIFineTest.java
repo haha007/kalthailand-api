@@ -36,6 +36,9 @@ public class ProductIFineTest {
         productIFine.calculateQuote(quote, productQuotation(IFINE1, 18, EVERY_YEAR, MALE, FALSE));
         ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
         assertThat(productIFinePremium.getSumInsured().getValue()).isEqualTo(100000.0);
+        assertThat(productIFinePremium.getAccidentSumInsured().getValue()).isEqualTo(500000.0);
+        assertThat(productIFinePremium.getHealthSumInsured().getValue()).isEqualTo(500000.0);
+        assertThat(productIFinePremium.getHospitalizationSumInsured().getValue()).isEqualTo(1000.0);
     }
 
     @Test
@@ -44,6 +47,9 @@ public class ProductIFineTest {
         productIFine.calculateQuote(quote, productQuotation(IFINE2, 18, EVERY_YEAR, MALE, FALSE));
         ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
         assertThat(productIFinePremium.getSumInsured().getValue()).isEqualTo(150000.0);
+        assertThat(productIFinePremium.getAccidentSumInsured().getValue()).isEqualTo(750000.0);
+        assertThat(productIFinePremium.getHealthSumInsured().getValue()).isEqualTo(750000.0);
+        assertThat(productIFinePremium.getHospitalizationSumInsured().getValue()).isEqualTo(1250.0);
     }
 
     @Test
@@ -52,6 +58,9 @@ public class ProductIFineTest {
         productIFine.calculateQuote(quote, productQuotation(IFINE3, 18, EVERY_YEAR, MALE, FALSE));
         ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
         assertThat(productIFinePremium.getSumInsured().getValue()).isEqualTo(200000.0);
+        assertThat(productIFinePremium.getAccidentSumInsured().getValue()).isEqualTo(1000000.0);
+        assertThat(productIFinePremium.getHealthSumInsured().getValue()).isEqualTo(1000000.0);
+        assertThat(productIFinePremium.getHospitalizationSumInsured().getValue()).isEqualTo(1500.0);
     }
 
     @Test
@@ -60,6 +69,9 @@ public class ProductIFineTest {
         productIFine.calculateQuote(quote, productQuotation(IFINE4, 18, EVERY_YEAR, MALE, FALSE));
         ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
         assertThat(productIFinePremium.getSumInsured().getValue()).isEqualTo(250000.0);
+        assertThat(productIFinePremium.getAccidentSumInsured().getValue()).isEqualTo(2000000.0);
+        assertThat(productIFinePremium.getHealthSumInsured().getValue()).isEqualTo(2000000.0);
+        assertThat(productIFinePremium.getHospitalizationSumInsured().getValue()).isEqualTo(2000.0);
     }
 
     @Test
@@ -68,6 +80,9 @@ public class ProductIFineTest {
         productIFine.calculateQuote(quote, productQuotation(IFINE5, 18, EVERY_YEAR, MALE, FALSE));
         ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
         assertThat(productIFinePremium.getSumInsured().getValue()).isEqualTo(300000.0);
+        assertThat(productIFinePremium.getAccidentSumInsured().getValue()).isEqualTo(3000000.0);
+        assertThat(productIFinePremium.getHealthSumInsured().getValue()).isEqualTo(3000000.0);
+        assertThat(productIFinePremium.getHospitalizationSumInsured().getValue()).isEqualTo(2500.0);
     }
 
     @Test
