@@ -14,6 +14,7 @@ import java.util.function.Function;
 import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toList;
+import static th.co.krungthaiaxa.elife.api.exception.ExceptionUtils.*;
 import static th.co.krungthaiaxa.elife.api.exception.PolicyValidationException.*;
 import static th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException.*;
 
@@ -67,13 +68,9 @@ public class ProductUtils {
     }
 
     public static void checkInsuredAge(Insured insured, int minAge, int maxAge) {
-        if (insured.getAgeAtSubscription() == null) {
-            throw ageIsEmptyException;
-        } else if (insured.getAgeAtSubscription() > maxAge) {
-            throw ageIsTooHighException;
-        } else if (insured.getAgeAtSubscription() < minAge) {
-            throw ageIsTooLowException;
-        }
+        notNull(insured.getAgeAtSubscription(), ageIsEmptyException);
+        isFalse(insured.getAgeAtSubscription() > maxAge, ageIsTooHighException);
+        isFalse(insured.getAgeAtSubscription() < minAge, ageIsTooLowException);
     }
 
     public static void checkInsured(Quote quote) {

@@ -19,4 +19,5 @@ public class ElifeException extends RuntimeException {
     public ElifeException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
+
 }

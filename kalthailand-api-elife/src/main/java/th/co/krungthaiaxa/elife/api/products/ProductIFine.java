@@ -2,7 +2,6 @@ package th.co.krungthaiaxa.elife.api.products;
 
 import org.apache.commons.lang3.SerializationUtils;
 import org.springframework.stereotype.Component;
-import th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.elife.api.model.*;
 import th.co.krungthaiaxa.elife.api.model.enums.ProductIFinePackage;
 import th.co.krungthaiaxa.elife.api.repository.ProductIFineRateRepository;
@@ -13,7 +12,9 @@ import java.util.Optional;
 import static java.time.LocalDate.now;
 import static java.time.ZoneId.SHORT_IDS;
 import static java.time.ZoneId.of;
+import static th.co.krungthaiaxa.elife.api.exception.ExceptionUtils.*;
 import static th.co.krungthaiaxa.elife.api.exception.PolicyValidationException.*;
+import static th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException.iFinePackageNameUnknown;
 import static th.co.krungthaiaxa.elife.api.products.ProductType.PRODUCT_IFINE;
 import static th.co.krungthaiaxa.elife.api.products.ProductUtils.*;
 
@@ -176,10 +177,9 @@ public class ProductIFine implements Product {
 
     private ProductIFinePackage getPackage(String packageName) {
         ProductIFinePackage result = ProductIFinePackage.valueOf(packageName);
-        if (result == null) {
-            throw QuoteCalculationException.iFinePackageNameUnknown;
-        }
-         return result;
+        notNull(result, iFinePackageNameUnknown);
+
+        return result;
     }
 
     private boolean hasEnoughTocalculate(ProductQuotation productQuotation) {

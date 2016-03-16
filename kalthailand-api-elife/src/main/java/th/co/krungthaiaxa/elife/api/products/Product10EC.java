@@ -15,6 +15,7 @@ import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
+import static th.co.krungthaiaxa.elife.api.exception.ExceptionUtils.*;
 import static th.co.krungthaiaxa.elife.api.exception.PolicyValidationException.*;
 import static th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException.*;
 import static th.co.krungthaiaxa.elife.api.products.ProductType.PRODUCT_10_EC;
@@ -270,15 +271,10 @@ public class Product10EC implements Product {
         if (premiumsData.getProduct10ECPremium().getSumInsured() == null || premiumsData.getProduct10ECPremium().getSumInsured().getValue() == null) {
             // no amount to check
             return;
-        } else if (!currency.equalsIgnoreCase(premiumsData.getProduct10ECPremium().getSumInsured().getCurrencyCode())) {
-            throw sumInsuredCurrencyException.apply(currency);
         }
-
-        if (premiumsData.getProduct10ECPremium().getSumInsured().getValue() > sumInsuredMax) {
-            throw sumInsuredTooHighException.apply(sumInsuredMax);
-        } else if (premiumsData.getProduct10ECPremium().getSumInsured().getValue() < sumInsuredMin) {
-            throw sumInsuredTooLowException.apply(sumInsuredMin);
-        }
+        isEqual(currency, premiumsData.getProduct10ECPremium().getSumInsured().getCurrencyCode(), sumInsuredCurrencyException.apply(currency));
+        isFalse(premiumsData.getProduct10ECPremium().getSumInsured().getValue() > sumInsuredMax, sumInsuredTooHighException.apply(sumInsuredMax));
+        isFalse(premiumsData.getProduct10ECPremium().getSumInsured().getValue() < sumInsuredMin, sumInsuredTooLowException.apply(sumInsuredMin));
     }
 
     private static void checkCommonData(CommonData commonData) {
@@ -308,15 +304,11 @@ public class Product10EC implements Product {
         if (premiumsData.getFinancialScheduler().getModalAmount() == null || premiumsData.getFinancialScheduler().getModalAmount().getValue() == null) {
             // no amount to check
             return;
-        } else if (!PRODUCT_10_EC_CURRENCY.equalsIgnoreCase(premiumsData.getFinancialScheduler().getModalAmount().getCurrencyCode())) {
-            throw premiumCurrencyException.apply(PRODUCT_10_EC_CURRENCY);
         }
 
-        if (premiumsData.getFinancialScheduler().getModalAmount().getValue() > PREMIUM_MAX) {
-            throw premiumTooHighException.apply(PREMIUM_MAX);
-        } else if (premiumsData.getFinancialScheduler().getModalAmount().getValue() < PREMIUM_MIN) {
-            throw premiumTooLowException.apply(PREMIUM_MIN);
-        }
+        isEqual(PRODUCT_10_EC_CURRENCY, premiumsData.getFinancialScheduler().getModalAmount().getCurrencyCode(), premiumCurrencyException.apply(PRODUCT_10_EC_CURRENCY));
+        isFalse(premiumsData.getFinancialScheduler().getModalAmount().getValue() > PREMIUM_MAX, premiumTooHighException.apply(PREMIUM_MAX));
+        isFalse(premiumsData.getFinancialScheduler().getModalAmount().getValue() < PREMIUM_MIN, premiumTooLowException.apply(PREMIUM_MIN));
     }
 
     private static void checkDatedAmounts(List<DatedAmount> datedAmounts, LocalDate startDate) {

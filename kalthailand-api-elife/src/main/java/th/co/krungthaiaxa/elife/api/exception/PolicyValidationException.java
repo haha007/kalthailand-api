@@ -83,34 +83,4 @@ public class PolicyValidationException extends ElifeException {
     private PolicyValidationException(String message) {
         super(message);
     }
-
-    public static void notNull(Object object, PolicyValidationException policyValidationException) throws PolicyValidationException {
-        if (object == null) {
-            throw policyValidationException;
-        }
-    }
-
-    public static void isEqual(Object object1, Object object2, PolicyValidationException policyValidationException) throws PolicyValidationException {
-        if (!object1.equals(object2)) {
-            throw policyValidationException;
-        }
-    }
-
-    public static void isNotEqual(Object object1, Object object2, PolicyValidationException policyValidationException) throws PolicyValidationException {
-        if (object1.equals(object2)) {
-            throw policyValidationException;
-        }
-    }
-
-    public static void isTrue(Boolean aBoolean, PolicyValidationException policyValidationException) throws PolicyValidationException {
-        if (!aBoolean) {
-            throw policyValidationException;
-        }
-    }
-
-    public static void isFalse(Boolean aBoolean, PolicyValidationException policyValidationException) throws PolicyValidationException {
-        if (aBoolean) {
-            throw policyValidationException;
-        }
-    }
 }
