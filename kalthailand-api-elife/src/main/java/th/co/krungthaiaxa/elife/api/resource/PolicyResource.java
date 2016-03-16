@@ -17,7 +17,6 @@ import th.co.krungthaiaxa.elife.api.utils.JsonUtil;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.util.Base64;
-import java.util.Map;
 import java.util.Optional;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
@@ -182,15 +181,15 @@ public class PolicyResource {
         }
 
         // Send SMS
-        try {
-            Map<String,String> m = smsApiService.sendConfirmationMessage(policy.get());
-            if(!m.get("STATUS").equals("0")){
-                return new ResponseEntity<>(SMS_IS_UNAVAILABLE, INTERNAL_SERVER_ERROR);
-            }
-        } catch (IOException e) {
-            logger.error(String.format("Unable to send confirmation SMS message with policy id is [%1$s].", policy.get().getPolicyId()), e);
-            return new ResponseEntity<>(UNABLE_TO_SEND_SMS, INTERNAL_SERVER_ERROR);
-        }
+//        try {
+//            Map<String,String> m = smsApiService.sendConfirmationMessage(policy.get());
+//            if(!m.get("STATUS").equals("0")){
+//                return new ResponseEntity<>(SMS_IS_UNAVAILABLE, INTERNAL_SERVER_ERROR);
+//            }
+//        } catch (IOException e) {
+//            logger.error(String.format("Unable to send confirmation SMS message with policy id is [%1$s].", policy.get().getPolicyId()), e);
+//            return new ResponseEntity<>(UNABLE_TO_SEND_SMS, INTERNAL_SERVER_ERROR);
+//        }
 
         return new ResponseEntity<>(JsonUtil.getJson(policy.get()), OK);
 
