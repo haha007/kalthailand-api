@@ -183,12 +183,12 @@ public class PolicyResource {
 
         // Send SMS
         try {
-            Map<String,String> m = smsApiService.sendConfirmationMessage(policy);
+            Map<String,String> m = smsApiService.sendConfirmationMessage(policy.get());
             if(!m.get("STATUS").equals("0")){
                 return new ResponseEntity<>(SMS_IS_UNAVAILABLE, INTERNAL_SERVER_ERROR);
             }
         } catch (IOException e) {
-            logger.error(String.format("Unable to send confirmation SMS message with policy id is [%1$s].", policy.getPolicyId()), e);
+            logger.error(String.format("Unable to send confirmation SMS message with policy id is [%1$s].", policy.get().getPolicyId()), e);
             return new ResponseEntity<>(UNABLE_TO_SEND_SMS, INTERNAL_SERVER_ERROR);
         }
 
