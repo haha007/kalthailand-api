@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.inject.Inject;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -25,6 +26,10 @@ public class CDBRepository {
      * @return Left part is the previous policy number, middle part is first agent code, right part is the second agent code
      */
     public Optional<Triple<String, String, String>> getExistingAgentCode(String idCard, String dateOfBirth) {
+        if (isBlank(idCard) || isBlank(dateOfBirth)) {
+            return Optional.empty();
+        }
+
         if (logger.isDebugEnabled()) {
             logger.debug(String.format("[%1$s] .....", "getExistingAgentCode"));
             logger.debug(String.format("idCard is %1$s", idCard));
@@ -46,23 +51,22 @@ public class CDBRepository {
         Object[] parameters = new Object[2];
         parameters[0] = idCard;
         parameters[1] = dateOfBirth;
-        List<Map<String, Object>> l;
-        Map<String, Object> m = null;
-        if (!isBlank(idCard) && !isBlank(dateOfBirth)) {
-            try {
-                l = this.jdbcTemplate.queryForList(sql, parameters);
-                if (l.size() != 0) {
-                    m = l.get(0);
-                }
-            } catch (Exception e) {
-                logger.error(e.getMessage());
+        Map<String, Object> map = null;
+        try {
+            List<Map<String, Object>> list = this.jdbcTemplate.queryForList(sql, parameters);
+            if (list.size() != 0) {
+                map = list.get(0);
             }
+        } catch (Exception e) {
+            logger.error(e.getMessage());
         }
-        if (m == null) {
+        if (map == null) {
             return Optional.empty();
         }
         else {
-            return Optional.of(Triple.of((String) m.get("pno"), (String) m.get("pagt1"), (String) m.get("pagt2")));
+            BigDecimal agent1 = (BigDecimal) map.get("pagt1");
+            BigDecimal agent2 = (BigDecimal) map.get("pagt2");
+            return Optional.of(Triple.of((String) map.get("pno"), agent1.toString(), agent2.toString()));
         }
     }
 

@@ -186,7 +186,7 @@ public class PolicyResource {
             return new ResponseEntity<>(UNABLE_TO_CREATE_ERECEIPT, INTERNAL_SERVER_ERROR);
         }
 
-        return new ResponseEntity<>(JsonUtil.getJson(policy), OK);
+        return new ResponseEntity<>(JsonUtil.getJson(policy.get()), OK);
     }
 
 }

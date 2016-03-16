@@ -121,7 +121,7 @@ public class PolicyResourceTest {
                 .queryParam("channelType", LINE)
                 .queryParam("creditCardName", "myCreditCardName")
                 .queryParam("paymentMethod", "myPaymentMethod");
-        ResponseEntity<String> updatePaymentResponse = template.exchange(updatePaymentBuilder.toUriString(), PUT, new HttpEntity<>(""), String.class);
+        ResponseEntity<String> updatePaymentResponse = template.exchange(updatePaymentBuilder.toUriString(), PUT, null, String.class);
 
         Policy updatedPolicy = getPolicyFromJSon(updatePaymentResponse.getBody());
         assertThat(updatePaymentResponse.getStatusCode().value()).isEqualTo(OK.value());
@@ -142,7 +142,7 @@ public class PolicyResourceTest {
                 .queryParam("creditCardName", "myCreditCardName")
                 .queryParam("paymentMethod", "myPaymentMethod")
                 .queryParam("errorMessage", "myErrorMessage");
-        ResponseEntity<String> updatePaymentResponse = template.exchange(updatePaymentBuilder.toUriString(), PUT, new HttpEntity<>(""), String.class);
+        ResponseEntity<String> updatePaymentResponse = template.exchange(updatePaymentBuilder.toUriString(), PUT, null, String.class);
 
         Error error = getErrorFromJSon(updatePaymentResponse.getBody());
         assertThat(updatePaymentResponse.getStatusCode().value()).isEqualTo(NOT_ACCEPTABLE.value());
@@ -165,7 +165,7 @@ public class PolicyResourceTest {
                 .queryParam("paymentMethod", "myPaymentMethod")
                 .queryParam("errorCode", "myErrorCode")
                 .queryParam("errorMessage", "myErrorMessage");
-        ResponseEntity<String> updatePaymentResponse = template.exchange(updatePaymentBuilder.toUriString(), PUT, new HttpEntity<>(""), String.class);
+        ResponseEntity<String> updatePaymentResponse = template.exchange(updatePaymentBuilder.toUriString(), PUT, null, String.class);
 
         Policy updatedPolicy = getPolicyFromJSon(updatePaymentResponse.getBody());
         assertThat(updatePaymentResponse.getStatusCode().value()).isEqualTo(OK.value());
