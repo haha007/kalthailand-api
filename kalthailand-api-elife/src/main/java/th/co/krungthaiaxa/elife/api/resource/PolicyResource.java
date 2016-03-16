@@ -11,15 +11,13 @@ import th.co.krungthaiaxa.elife.api.model.*;
 import th.co.krungthaiaxa.elife.api.model.enums.ChannelType;
 import th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus;
 import th.co.krungthaiaxa.elife.api.model.error.Error;
-import th.co.krungthaiaxa.elife.api.service.DocumentService;
-import th.co.krungthaiaxa.elife.api.service.EmailService;
-import th.co.krungthaiaxa.elife.api.service.PolicyService;
-import th.co.krungthaiaxa.elife.api.service.QuoteService;
+import th.co.krungthaiaxa.elife.api.service.*;
 import th.co.krungthaiaxa.elife.api.utils.JsonUtil;
 
 import javax.inject.Inject;
 import java.io.IOException;
 import java.util.Base64;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
@@ -38,13 +36,15 @@ public class PolicyResource {
     private final QuoteService quoteService;
     private final EmailService emailService;
     private final DocumentService documentService;
+    private final SMSApiService smsApiService;
 
     @Inject
-    public PolicyResource(PolicyService policyService, QuoteService quoteService, EmailService emailService, DocumentService documentService) {
+    public PolicyResource(PolicyService policyService, QuoteService quoteService, EmailService emailService, DocumentService documentService, SMSApiService smsApiService) {
         this.policyService = policyService;
         this.quoteService = quoteService;
         this.emailService = emailService;
         this.documentService = documentService;
+        this.smsApiService = smsApiService;
     }
 
     @ApiOperation(value = "Creates a policy", notes = "Creates a policy out of a quote. Policy will be created only " +
@@ -181,7 +181,19 @@ public class PolicyResource {
             return new ResponseEntity<>(UNABLE_TO_CREATE_ERECEIPT, INTERNAL_SERVER_ERROR);
         }
 
+        // Send SMS
+        try {
+            Map<String,String> m = smsApiService.sendConfirmationMessage(policy);
+            if(!m.get("STATUS").equals("0")){
+                return new ResponseEntity<>(SMS_IS_UNAVAILABLE, INTERNAL_SERVER_ERROR);
+            }
+        } catch (IOException e) {
+            logger.error(String.format("Unable to send confirmation SMS message with policy id is [%1$s].", policy.getPolicyId()), e);
+            return new ResponseEntity<>(UNABLE_TO_SEND_SMS, INTERNAL_SERVER_ERROR);
+        }
+
         return new ResponseEntity<>(JsonUtil.getJson(policy.get()), OK);
+
     }
 
 }

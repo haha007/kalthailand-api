@@ -35,6 +35,9 @@ public class ErrorCode {
     public static final Function<String, Error> INVALID_PRODUCT_QUOTATION_PROVIDED = msg -> new Error("70001", "Unable to get the product details", "The given product cannot be transformed. Error message is:" + msg);
     // Watermarking
     public static final Function<String, Error> INVALID_COLLECTION_FILE = msg -> new Error("80001", "Unable to upload the collection file. Error is: [" + msg + "]", "Unable to upload the collection file. Error is: ["+msg+"]");
+    // SMS
+    public static final Function<String, Error> UNABLE_TO_SEND_SMS = msg -> new Error("90001", "Unable to send SMS", "Error message is:" + msg);
+    public static final Function<String, Error> SMS_IS_UNAVAILABLE = msg -> new Error("90002", "SMS is unavailable", "Error message is:" + msg);
 
 
 }
