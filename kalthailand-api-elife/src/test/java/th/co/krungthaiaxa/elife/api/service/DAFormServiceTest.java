@@ -13,10 +13,10 @@ import th.co.krungthaiaxa.elife.api.model.enums.*;
 import th.co.krungthaiaxa.elife.api.products.ProductType;
 
 import javax.inject.Inject;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
+import java.io.File;
 import java.time.LocalDate;
 
+import static org.apache.commons.io.FileUtils.writeByteArrayToFile;
 import static th.co.krungthaiaxa.elife.api.model.enums.RegistrationTypeName.THAI_ID_NUMBER;
 
 /**
@@ -104,9 +104,8 @@ public class DAFormServiceTest {
         pol.addCoverage(getCoverageBenefit());
 
         byte[] daByte = DAFormService.generateDAForm(pol);
-        OutputStream out = new FileOutputStream(tmpPathDeletedAfterTests + System.getProperty("file.separator") + "da_test.pdf");
-        out.write(daByte);
-        out.close();
+        File pdfFile = new File(tmpPathDeletedAfterTests + File.separator + "da-form.pdf");
+        writeByteArrayToFile(pdfFile, daByte);
     }
 
     private CommonData getCommonData(String productType, String productName, Integer productCoverageYears, Integer productPremiumYears){

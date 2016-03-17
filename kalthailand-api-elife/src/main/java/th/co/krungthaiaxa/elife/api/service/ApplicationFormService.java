@@ -35,7 +35,6 @@ import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.*;
 public class ApplicationFormService {
     private final static Logger logger = LoggerFactory.getLogger(ApplicationFormService.class);
 
-    private final String FONT_NAME = "Angsana New";
     private final Color FONT_COLOR = Color.BLACK;
     private final String ID_CARD_DOC = "Thai ID Card number";
     private final String MARK = "X";
@@ -466,15 +465,27 @@ public class ApplicationFormService {
         return m;
     }
 
-    private Graphics setGraphicColorAndFont(Graphics g) {
+    private Graphics setGraphicColorAndFont(Graphics g)throws IOException {
         g.setColor(FONT_COLOR);
-        g.setFont(new Font(FONT_NAME, Font.BOLD, 50));
+        try {
+            Font f = Font.createFont(Font.TRUETYPE_FONT,getClass().getClassLoader().getResourceAsStream("ereceipt/ANGSAB_1.TTF")).deriveFont(50f);
+            g.setFont(f);
+        } catch (FontFormatException e) {
+            logger.error("Unable to load embed font file", e);
+            throw new IOException(e);
+        }
         return g;
     }
 
-    private Graphics setGraphicColorAndFontBigText(Graphics g) {
+    private Graphics setGraphicColorAndFontBigText(Graphics g)throws IOException {
         g.setColor(FONT_COLOR);
-        g.setFont(new Font(FONT_NAME, Font.BOLD, 100));
+        try {
+            Font f = Font.createFont(Font.TRUETYPE_FONT,getClass().getClassLoader().getResourceAsStream("ereceipt/ANGSAB_1.TTF")).deriveFont(100f);
+            g.setFont(f);
+        } catch (FontFormatException e) {
+            logger.error("Unable to load embed font file", e);
+            throw new IOException(e);
+        }
         return g;
     }
 

@@ -31,9 +31,8 @@ public class DAFormService {
     private final static Logger logger = LoggerFactory.getLogger(DAFormService.class);
 
     private final String DA_IMAGE = "DA_FORM_20150311.jpg";
-    private final String FONT_NAME = "Angsana New";
-    private final Integer FONT_SIZE = 50;
-    private final Integer FONT_SIZE_BIG = 100;
+    private final Float FONT_SIZE = 50f;
+    private final Float FONT_SIZE_BIG = 100f;
     private final Color FONT_COLOR = Color.BLACK;
     private final String MARK = "X";
     private final String ID_CARD_DOC = "Thai ID Card number";
@@ -142,15 +141,27 @@ public class DAFormService {
         return content;
     }
 
-    private Graphics setGraphicColorAndFont(Graphics g){
+    private Graphics setGraphicColorAndFont(Graphics g)throws IOException {
         g.setColor(FONT_COLOR);
-        g.setFont(new Font(FONT_NAME, Font.BOLD, FONT_SIZE));
+        try {
+            Font f = Font.createFont(Font.TRUETYPE_FONT,getClass().getClassLoader().getResourceAsStream("ereceipt/ANGSAB_1.TTF")).deriveFont(FONT_SIZE);
+            g.setFont(f);
+        } catch (FontFormatException e) {
+            logger.error("Unable to load embed font file", e);
+            throw new IOException(e);
+        }
         return g;
     }
 
-    private Graphics setGraphicColorAndFontBigText(Graphics g){
+    private Graphics setGraphicColorAndFontBigText(Graphics g)throws IOException {
         g.setColor(FONT_COLOR);
-        g.setFont(new Font(FONT_NAME, Font.BOLD, FONT_SIZE_BIG));
+        try {
+            Font f = Font.createFont(Font.TRUETYPE_FONT,getClass().getClassLoader().getResourceAsStream("ereceipt/ANGSAB_1.TTF")).deriveFont(FONT_SIZE_BIG);
+            g.setFont(f);
+        } catch (FontFormatException e) {
+            logger.error("Unable to load embed font file", e);
+            throw new IOException(e);
+        }
         return g;
     }
 

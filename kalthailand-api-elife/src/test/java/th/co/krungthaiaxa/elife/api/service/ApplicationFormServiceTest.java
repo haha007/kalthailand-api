@@ -41,7 +41,7 @@ public class ApplicationFormServiceTest {
         Policy policy = getPolicy();
 
         byte[] pdfContent = appService.generatePdfForm(policy);
-        File pdfFile = new File(tmpPathDeletedAfterTests + File.separator + "ApplicationFormServiceTest.pdf");
+        File pdfFile = new File(tmpPathDeletedAfterTests + File.separator + "application-form.pdf");
         writeByteArrayToFile(pdfFile, pdfContent);
 
         // check if file exist and can read as PDF

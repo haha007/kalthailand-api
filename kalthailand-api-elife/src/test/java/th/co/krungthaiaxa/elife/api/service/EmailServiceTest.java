@@ -3,6 +3,7 @@ package th.co.krungthaiaxa.elife.api.service;
 import com.icegreen.greenmail.junit.GreenMailRule;
 import com.icegreen.greenmail.util.ServerSetupTest;
 import com.itextpdf.text.pdf.PdfReader;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -28,10 +29,8 @@ import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeUtility;
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.time.LocalDate;
 import java.util.Base64;
 import java.util.Optional;
 
@@ -209,6 +208,7 @@ public class EmailServiceTest {
         quote = quoteService.updateQuote(quote);
         Policy policy = policyService.createPolicy(quote);
         policy(policy);
+        policy.getPayments().get(0).setEffectiveDate(LocalDate.now());
 
         documentService.generatePolicyDocuments(policy);
         Optional<Document> documentPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(ERECEIPT_PDF)).findFirst();
@@ -217,6 +217,8 @@ public class EmailServiceTest {
         DocumentDownload documentDownload = documentService.downloadDocument(documentPdf.get().getId());
         byte[] bytes = Base64.getDecoder().decode(documentDownload.getContent());
         assertThat(new PdfReader(bytes)).isNotNull();
+
+        FileUtils.writeByteArrayToFile(new File(tmpPathDeletedAfterTests+"/e-receipt.pdf"), bytes);
 
         emailService.sendEreceiptEmail(policy, Pair.of(bytes, "emailServiceTest-ereceipt.pdf"));
 

@@ -1,6 +1,6 @@
 package th.co.krungthaiaxa.elife.api.service;
 
-import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.*;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfWriter;
@@ -19,15 +19,16 @@ import th.co.krungthaiaxa.elife.api.utils.ThaiBahtUtil;
 import javax.imageio.ImageIO;
 import javax.inject.Inject;
 import java.awt.*;
+import java.awt.Font;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.text.DecimalFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Base64;
-import java.util.Optional;
+import java.util.*;
 
 import static com.itextpdf.text.PageSize.A4;
 import static java.time.LocalDateTime.now;
@@ -146,6 +147,18 @@ public class DocumentService {
         return content.toByteArray();
     }
 
+    private Map<String, String> doSplitDate(LocalDate birthDate) {
+        if(null==birthDate){
+            return null;
+        }else{
+            Map<String, String> m = new HashMap<>();
+            m.put("date", (new DecimalFormat("00")).format(birthDate.getDayOfMonth()));
+            m.put("month", (new DecimalFormat("00")).format(birthDate.getMonth().getValue()));
+            m.put("year", String.valueOf(birthDate.getYear() + 543));
+            return m;
+        }
+    }
+
     private byte[] createEreceipt(Policy policy) throws IOException {
         logger.info("[createEReceipt] quoteId : " + policy.getQuoteId());
         logger.info("[createEReceipt] policyNumber : " + policy.getPolicyId());
@@ -169,11 +182,22 @@ public class DocumentService {
 
         Graphics graphics = bufferedImage.getGraphics();
         graphics.setColor(Color.BLACK);
-        graphics.setFont(new Font("Angsana New", Font.BOLD, 30));
+        try {
+            Font f = Font.createFont(Font.TRUETYPE_FONT,getClass().getClassLoader().getResourceAsStream("ereceipt/ANGSAB_1.TTF")).deriveFont(30f);
+            graphics.setFont(f);
+        } catch (FontFormatException e) {
+            logger.error("Unable to load embed font file", e);
+            throw new IOException(e);
+        }
 
         //Name
         graphics.drawString(policy.getInsureds().get(0).getPerson().getGivenName() + " " + policy.getInsureds().get(0).getPerson().getSurName(), 227, 305);
         logger.debug("Name Insure : " + policy.getInsureds().get(0).getPerson().getGivenName() + " " + policy.getInsureds().get(0).getPerson().getSurName());
+
+        //payment date
+        Map<String,String> pDate = doSplitDate(policy.getPayments().get(0).getEffectiveDate());
+        graphics.drawString(pDate.get("date") + "/" + pDate.get("month") + "/" + pDate.get("year"), 980, 365);
+        logger.debug("Payment Date : " + policy.getPayments().get(0).getEffectiveDate());
 
         //Mobile Phone
         String mobilePhone = policy.getInsureds().get(0).getPerson().getMobilePhoneNumber().getNumber();
