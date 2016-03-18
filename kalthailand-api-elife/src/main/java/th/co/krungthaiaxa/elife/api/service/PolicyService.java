@@ -3,6 +3,8 @@ package th.co.krungthaiaxa.elife.api.service;
 import org.apache.commons.lang3.tuple.Triple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.elife.api.data.PolicyNumber;
 import th.co.krungthaiaxa.elife.api.model.*;
@@ -15,12 +17,15 @@ import th.co.krungthaiaxa.elife.api.repository.*;
 import javax.inject.Inject;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 import static java.time.format.DateTimeFormatter.ofPattern;
-import static th.co.krungthaiaxa.elife.api.exception.ExceptionUtils.*;
+import static th.co.krungthaiaxa.elife.api.exception.ExceptionUtils.isTrue;
+import static th.co.krungthaiaxa.elife.api.exception.ExceptionUtils.notNull;
 import static th.co.krungthaiaxa.elife.api.exception.PolicyValidationException.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.PaymentStatus.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.RegistrationTypeName.THAI_ID_NUMBER;
@@ -48,6 +53,11 @@ public class PolicyService {
         this.policyRepository = policyRepository;
         this.policyNumberRepository = policyNumberRepository;
         this.quoteRepository = quoteRepository;
+    }
+
+    public List<Policy> findAll(Integer startIndex, Integer nbOfRecords) {
+        Page<Policy> policies = policyRepository.findAll(new PageRequest(startIndex, nbOfRecords));
+        return policies != null ? policies.getContent() : new ArrayList<>();
     }
 
     public Optional<Policy> findPolicy(String policyId) {

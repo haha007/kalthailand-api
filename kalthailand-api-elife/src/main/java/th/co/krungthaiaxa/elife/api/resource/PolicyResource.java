@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 import th.co.krungthaiaxa.elife.api.exception.ElifeException;
 import th.co.krungthaiaxa.elife.api.model.*;
 import th.co.krungthaiaxa.elife.api.model.enums.ChannelType;
@@ -26,6 +27,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.DocumentType.ERECEIPT_PDF;
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.ERROR;
 import static th.co.krungthaiaxa.elife.api.model.error.ErrorCode.*;
+import static th.co.krungthaiaxa.elife.api.utils.JsonUtil.getJson;
 
 @RestController
 @Api(value = "Policies")
@@ -44,6 +46,13 @@ public class PolicyResource {
         this.emailService = emailService;
         this.documentService = documentService;
         this.smsApiService = smsApiService;
+    }
+
+    @ApiIgnore
+    @RequestMapping(value = "/policies/admin/all", produces = APPLICATION_JSON_VALUE, method = GET)
+    @ResponseBody
+    public ResponseEntity getAllPolicies(@RequestParam Integer startIndex, @RequestParam Integer nbOfRecords) {
+        return new ResponseEntity<>(getJson(policyService.findAll(startIndex, nbOfRecords)), OK);
     }
 
     @ApiOperation(value = "Creates a policy", notes = "Creates a policy out of a quote. Policy will be created only " +
@@ -83,7 +92,7 @@ public class PolicyResource {
             logger.error("Unable to create a policy from the validated quote [" + jsonQuote + "]", e);
             return new ResponseEntity<>(POLICY_CANNOT_BE_CREATED.apply(e.getMessage()), NOT_ACCEPTABLE);
         }
-        return new ResponseEntity<>(JsonUtil.getJson(policy), OK);
+        return new ResponseEntity<>(getJson(policy), OK);
     }
 
     @ApiOperation(value = "Policy payments", notes = "Get the payments of a policy", response = Payment.class,
@@ -101,7 +110,7 @@ public class PolicyResource {
             logger.error("Unable to find the policy with ID [" + policyId + "]");
             return new ResponseEntity<>(POLICY_DOES_NOT_EXIST, NOT_FOUND);
         }
-        return new ResponseEntity<>(JsonUtil.getJson(policy.get().getPayments()), OK);
+        return new ResponseEntity<>(getJson(policy.get().getPayments()), OK);
     }
 
     @ApiOperation(value = "Update Policy payment and documents", notes = "Generates Policy documents and updates a " +
@@ -191,7 +200,7 @@ public class PolicyResource {
 //            return new ResponseEntity<>(UNABLE_TO_SEND_SMS, INTERNAL_SERVER_ERROR);
 //        }
 
-        return new ResponseEntity<>(JsonUtil.getJson(policy.get()), OK);
+        return new ResponseEntity<>(getJson(policy.get()), OK);
 
     }
 

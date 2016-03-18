@@ -16,6 +16,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private String apiUserName;
     @Value("${api.security.user.password}")
     private String apiUserPassword;
+    @Value("${admin.security.user.name}")
+    private String adminUserName;
+    @Value("${admin.security.user.password}")
+    private String adminUserPassword;
 
     /**
      * This section defines the user account configured in properties file
@@ -25,6 +29,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.inMemoryAuthentication()
                 .withUser(apiUserName).password(apiUserPassword).roles("USER");
+        auth.inMemoryAuthentication()
+                .withUser(adminUserName).password(adminUserPassword).roles("ADMIN", "UI");
     }
 
     /**
@@ -37,14 +43,18 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http
                 .httpBasic().and()
                 .authorizeRequests()
+                // ADMIN rights
+                .antMatchers(HttpMethod.GET, "/**/admin/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.GET, "/**/*.htm").hasRole("UI")
+                .antMatchers(HttpMethod.GET, "/**/*.css").hasRole("UI")
+                .antMatchers(HttpMethod.GET, "/**/*.ttf").hasRole("UI")
+                .antMatchers(HttpMethod.GET, "/**/*.woff").hasRole("UI")
+                .antMatchers(HttpMethod.GET, "/**/*.js").hasRole("UI")
+                // USER rights
                 .antMatchers(HttpMethod.DELETE, "/**").hasRole("USER")
                 .antMatchers(HttpMethod.GET, "/**").hasRole("USER")
-                .antMatchers(HttpMethod.HEAD, "/**").hasRole("USER")
-                .antMatchers(HttpMethod.OPTIONS, "/**").hasRole("USER")
-                .antMatchers(HttpMethod.PATCH, "/**").hasRole("USER")
                 .antMatchers(HttpMethod.POST, "/**").hasRole("USER")
                 .antMatchers(HttpMethod.PUT, "/**").hasRole("USER")
-                .antMatchers(HttpMethod.TRACE, "/**").hasRole("USER")
                 .and().csrf().disable();
     }
 }
