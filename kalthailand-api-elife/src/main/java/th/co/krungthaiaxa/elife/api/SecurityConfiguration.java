@@ -21,6 +21,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Value("${admin.security.user.password}")
     private String adminUserPassword;
 
+    public SecurityConfiguration() {
+        super(true);
+    }
+
     /**
      * This section defines the user account configured in properties file
      * This user will get the USER role that will be used to configure the security
@@ -30,7 +34,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         auth.inMemoryAuthentication()
                 .withUser(apiUserName).password(apiUserPassword).roles("USER");
         auth.inMemoryAuthentication()
-                .withUser(adminUserName).password(adminUserPassword).roles("ADMIN", "UI");
+                .withUser(adminUserName).password(adminUserPassword).roles("ADMIN", "USER", "UI");
     }
 
     /**
@@ -44,8 +48,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .httpBasic().and()
                 .authorizeRequests()
                 // ADMIN rights
-                .antMatchers(HttpMethod.GET, "/**/admin/**").hasRole("ADMIN")
-                .antMatchers(HttpMethod.GET, "/**/*.htm").hasRole("UI")
+                .antMatchers(HttpMethod.GET, "/admin/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.GET, "/**/*.jsp").hasRole("UI")
                 .antMatchers(HttpMethod.GET, "/**/*.css").hasRole("UI")
                 .antMatchers(HttpMethod.GET, "/**/*.ttf").hasRole("UI")
                 .antMatchers(HttpMethod.GET, "/**/*.woff").hasRole("UI")

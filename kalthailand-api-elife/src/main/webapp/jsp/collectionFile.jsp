@@ -1,5 +1,5 @@
-
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
     <meta charset="utf-8">
@@ -12,10 +12,10 @@
     <title>Elife Dashboard</title>
 
     <!-- Bootstrap core CSS -->
-    <link rel="stylesheet" href="./bower_components/bootstrap-css-only/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="../bower_components/bootstrap-css-only/css/bootstrap.min.css" />
 
     <!-- Custom styles for this template -->
-    <link href="elife.css" rel="stylesheet">
+    <link href="../elife.css" rel="stylesheet">
 </head>
 
 <body ng-app="myApp">
@@ -38,8 +38,8 @@
     <div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
             <ul class="nav nav-sidebar">
-                <li><a href="index.htm">Overview</a></li>
-                <li class="active"><a href="collectionFile.htm">Collection file upload<span class="sr-only">(current)</span></a></li>
+                <li><a href="/admin">Overview</a></li>
+                <li class="active"><a href="/admin/collectionFile">Collection file upload<span class="sr-only">(current)</span></a></li>
             </ul>
         </div>
 
@@ -94,13 +94,13 @@
 
     </div>
 </div>
-<script src="./bower_components/angular/angular.min.js"></script>
-<script src="./bower_components/angular-resource/angular-resource.min.js"></script>
-<script src="./bower_components/angular-file-model/angular-file-model.js"></script>
-<script src="./app/app.js"></script>
-<script src="./app/controllers.js"></script>
-<script src="./app/services.js"></script>
-<script src="./bower_components/jquery/dist/jquery.min.js"></script>
+<script src="../bower_components/angular/angular.min.js"></script>
+<script src="../bower_components/angular-resource/angular-resource.min.js"></script>
+<script src="../bower_components/angular-file-model/angular-file-model.js"></script>
+<script src="../app/app.js"></script>
+<script src="../app/controllers.js"></script>
+<script src="../app/services.js"></script>
+<script src="../bower_components/jquery/dist/jquery.min.js"></script>
 
 </body>
 </html>
