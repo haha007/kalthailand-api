@@ -69,15 +69,35 @@ public class ProductIFine implements Product {
 
         // get iFine package from package name
         ProductIFinePackage productIFinePackage = getPackage(productQuotation.getPackageName());
+        Double deathByAccident = productIFinePackage.getDeathByAccident();
+
+        PremiumsData premiumsData = quote.getPremiumsData();
+        ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
 
         // set amounts
-        quote.getPremiumsData().getProductIFinePremium().setSumInsured(amount(productIFinePackage.getSumInsured()));
-        quote.getPremiumsData().getProductIFinePremium().setAccidentSumInsured(amount(productIFinePackage.getAccidentSumInsured()));
-        quote.getPremiumsData().getProductIFinePremium().setHealthSumInsured(amount(productIFinePackage.getHealthSumInsured()));
-        quote.getPremiumsData().getProductIFinePremium().setHospitalizationSumInsured(amount(productIFinePackage.getHospitalizationSumInsured()));
+        productIFinePremium.setSumInsured(amount(productIFinePackage.getSumInsured()));
+        productIFinePremium.setAccidentSumInsured(amount(productIFinePackage.getAccidentSumInsured()));
+        productIFinePremium.setHealthSumInsured(amount(productIFinePackage.getHealthSumInsured()));
+        productIFinePremium.setHospitalizationSumInsured(amount(productIFinePackage.getHospitalizationSumInsured()));
+        productIFinePremium.setDeathByAccident(amount(deathByAccident));
+        productIFinePremium.setDeathByAccidentInPublicTransport(amount(deathByAccident * 2));
+        productIFinePremium.setDisabilityFromAccidentMin(amount(deathByAccident * 2 / 100));
+        productIFinePremium.setDisabilityFromAccidentMax(amount(deathByAccident));
+        productIFinePremium.setLossOfHandOrLeg(amount(deathByAccident));
+        productIFinePremium.setLossOfSight(amount(deathByAccident));
+        productIFinePremium.setLossOfHearingMin(amount(deathByAccident * 15 / 100));
+        productIFinePremium.setLossOfHearingMax(amount(deathByAccident * 75 / 100));
+        productIFinePremium.setLossOfSpeech(amount(deathByAccident * 50 / 100));
+        productIFinePremium.setLossOfCorneaForBothEyes(amount(deathByAccident * 50 / 100));
+        productIFinePremium.setLossOfFingersMin(amount(deathByAccident * 2 / 100));
+        productIFinePremium.setLossOfFingersMax(amount(deathByAccident * 70 / 100));
+        productIFinePremium.setNoneCurableBoneFracture(amount(deathByAccident * 10 / 100));
+        productIFinePremium.setLegsShortenBy5cm(amount(deathByAccident * 7.5 / 100));
+        productIFinePremium.setBurnInjuryMin(amount(deathByAccident * 25 / 100));
+        productIFinePremium.setBurnInjuryMax(amount(deathByAccident));
+        productIFinePremium.setMedicalCareCost(amount(deathByAccident * 10 / 100));
 
         // calculates rates
-        PremiumsData premiumsData = quote.getPremiumsData();
         ProductIFineRate productIFineRate = productIFineRateRepository.findByPlanNameAndGender(productQuotation.getPackageName(), insured.getPerson().getGenderCode().name());
         Double taxDeductibleRate = productIFineRate.getTaxDeductibleRate().get(age - 18);
         Double nonTaxDeductibleRate = productIFineRate.getNonTaxDeductibleRate().get(age - 18);
@@ -85,16 +105,16 @@ public class ProductIFine implements Product {
         if (productQuotation.getRiskOccupation()) {
             riskOccupationCharge = productIFineRate.getNonTaxDeductibleRiskRate().get(age - 18);
         }
-        premiumsData.getProductIFinePremium().setBasicPremiumRate(taxDeductibleRate);
-        premiumsData.getProductIFinePremium().setRiderPremiumRate(nonTaxDeductibleRate);
-        premiumsData.getProductIFinePremium().setRiskOccupationCharge(riskOccupationCharge);
+        productIFinePremium.setBasicPremiumRate(taxDeductibleRate);
+        productIFinePremium.setRiderPremiumRate(nonTaxDeductibleRate);
+        productIFinePremium.setRiskOccupationCharge(riskOccupationCharge);
 
         // calculate premium
         Double factor = modalFactor.apply(quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode());
         Double taxDeductible = get2DigitsDouble(productIFinePackage.getSumInsured() * taxDeductibleRate / 1000 * factor);
         Double nonTaxDeductible = get2DigitsDouble(productIFinePackage.getSumInsured() * (nonTaxDeductibleRate + riskOccupationCharge) / 1000 * factor);
-        premiumsData.getProductIFinePremium().setTaxDeductible(amount(taxDeductible));
-        premiumsData.getProductIFinePremium().setNonTaxDeductible(amount(nonTaxDeductible));
+        productIFinePremium.setTaxDeductible(amount(taxDeductible));
+        productIFinePremium.setNonTaxDeductible(amount(nonTaxDeductible));
         quote.getPremiumsData().getFinancialScheduler().setModalAmount(amount(taxDeductible + nonTaxDeductible));
     }
 

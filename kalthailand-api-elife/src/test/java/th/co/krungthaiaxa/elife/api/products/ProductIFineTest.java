@@ -34,55 +34,140 @@ public class ProductIFineTest {
     public void should_get_sum_insured_from_package_name_ifine1() throws Exception {
         Quote quote = quote(productIFine());
         productIFine.calculateQuote(quote, productQuotation(IFINE1, 18, EVERY_YEAR, MALE, FALSE));
-        ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
-        assertThat(productIFinePremium.getSumInsured().getValue()).isEqualTo(100000.0);
-        assertThat(productIFinePremium.getAccidentSumInsured().getValue()).isEqualTo(500000.0);
-        assertThat(productIFinePremium.getHealthSumInsured().getValue()).isEqualTo(500000.0);
-        assertThat(productIFinePremium.getHospitalizationSumInsured().getValue()).isEqualTo(1000.0);
+        ProductIFinePremium premium = quote.getPremiumsData().getProductIFinePremium();
+        assertThat(premium.getSumInsured().getValue()).isEqualTo(100000.0);
+        assertThat(premium.getAccidentSumInsured().getValue()).isEqualTo(500000.0);
+        assertThat(premium.getHealthSumInsured().getValue()).isEqualTo(500000.0);
+        assertThat(premium.getHospitalizationSumInsured().getValue()).isEqualTo(1000.0);
+        assertThat(premium.getDeathByAccident().getValue()).isEqualTo(500000.0);
+        assertThat(premium.getDeathByAccidentInPublicTransport().getValue()).isEqualTo(1000000.0);
+        assertThat(premium.getDisabilityFromAccidentMin().getValue()).isEqualTo(10000.0);
+        assertThat(premium.getDisabilityFromAccidentMax().getValue()).isEqualTo(500000.0);
+        assertThat(premium.getLossOfHandOrLeg().getValue()).isEqualTo(500000.0);
+        assertThat(premium.getLossOfSight().getValue()).isEqualTo(500000.0);
+        assertThat(premium.getLossOfHearingMin().getValue()).isEqualTo(75000.0);
+        assertThat(premium.getLossOfHearingMax().getValue()).isEqualTo(375000.0);
+        assertThat(premium.getLossOfSpeech().getValue()).isEqualTo(250000.0);
+        assertThat(premium.getLossOfCorneaForBothEyes().getValue()).isEqualTo(250000.0);
+        assertThat(premium.getLossOfFingersMin().getValue()).isEqualTo(10000.0);
+        assertThat(premium.getLossOfFingersMax().getValue()).isEqualTo(350000.0);
+        assertThat(premium.getNoneCurableBoneFracture().getValue()).isEqualTo(50000.0);
+        assertThat(premium.getLegsShortenBy5cm().getValue()).isEqualTo(37500.0);
+        assertThat(premium.getBurnInjuryMin().getValue()).isEqualTo(125000.0);
+        assertThat(premium.getBurnInjuryMax().getValue()).isEqualTo(500000.0);
+        assertThat(premium.getMedicalCareCost().getValue()).isEqualTo(50000.0);
     }
 
     @Test
     public void should_get_sum_insured_from_package_name_ifine2() throws Exception {
         Quote quote = quote(productIFine());
         productIFine.calculateQuote(quote, productQuotation(IFINE2, 18, EVERY_YEAR, MALE, FALSE));
-        ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
-        assertThat(productIFinePremium.getSumInsured().getValue()).isEqualTo(150000.0);
-        assertThat(productIFinePremium.getAccidentSumInsured().getValue()).isEqualTo(750000.0);
-        assertThat(productIFinePremium.getHealthSumInsured().getValue()).isEqualTo(750000.0);
-        assertThat(productIFinePremium.getHospitalizationSumInsured().getValue()).isEqualTo(1250.0);
+        ProductIFinePremium premium = quote.getPremiumsData().getProductIFinePremium();
+        assertThat(premium.getSumInsured().getValue()).isEqualTo(150000.0);
+        assertThat(premium.getAccidentSumInsured().getValue()).isEqualTo(750000.0);
+        assertThat(premium.getHealthSumInsured().getValue()).isEqualTo(750000.0);
+        assertThat(premium.getHospitalizationSumInsured().getValue()).isEqualTo(1250.0);
+        assertThat(premium.getDeathByAccident().getValue()).isEqualTo(750000.0);
+        assertThat(premium.getDeathByAccidentInPublicTransport().getValue()).isEqualTo(1500000.0);
+        assertThat(premium.getDisabilityFromAccidentMin().getValue()).isEqualTo(15000.0);
+        assertThat(premium.getDisabilityFromAccidentMax().getValue()).isEqualTo(750000.0);
+        assertThat(premium.getLossOfHandOrLeg().getValue()).isEqualTo(750000.0);
+        assertThat(premium.getLossOfSight().getValue()).isEqualTo(750000.0);
+        assertThat(premium.getLossOfHearingMin().getValue()).isEqualTo(112500.0);
+        assertThat(premium.getLossOfHearingMax().getValue()).isEqualTo(562500.0);
+        assertThat(premium.getLossOfSpeech().getValue()).isEqualTo(375000.0);
+        assertThat(premium.getLossOfCorneaForBothEyes().getValue()).isEqualTo(375000.0);
+        assertThat(premium.getLossOfFingersMin().getValue()).isEqualTo(15000.0);
+        assertThat(premium.getLossOfFingersMax().getValue()).isEqualTo(525000.0);
+        assertThat(premium.getNoneCurableBoneFracture().getValue()).isEqualTo(75000.0);
+        assertThat(premium.getLegsShortenBy5cm().getValue()).isEqualTo(56250.0);
+        assertThat(premium.getBurnInjuryMin().getValue()).isEqualTo(187500.0);
+        assertThat(premium.getBurnInjuryMax().getValue()).isEqualTo(750000.0);
+        assertThat(premium.getMedicalCareCost().getValue()).isEqualTo(75000.0);
     }
 
     @Test
     public void should_get_sum_insured_from_package_name_ifine3() throws Exception {
         Quote quote = quote(productIFine());
         productIFine.calculateQuote(quote, productQuotation(IFINE3, 18, EVERY_YEAR, MALE, FALSE));
-        ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
-        assertThat(productIFinePremium.getSumInsured().getValue()).isEqualTo(200000.0);
-        assertThat(productIFinePremium.getAccidentSumInsured().getValue()).isEqualTo(1000000.0);
-        assertThat(productIFinePremium.getHealthSumInsured().getValue()).isEqualTo(1000000.0);
-        assertThat(productIFinePremium.getHospitalizationSumInsured().getValue()).isEqualTo(1500.0);
+        ProductIFinePremium premium = quote.getPremiumsData().getProductIFinePremium();
+        assertThat(premium.getSumInsured().getValue()).isEqualTo(200000.0);
+        assertThat(premium.getAccidentSumInsured().getValue()).isEqualTo(1000000.0);
+        assertThat(premium.getHealthSumInsured().getValue()).isEqualTo(1000000.0);
+        assertThat(premium.getHospitalizationSumInsured().getValue()).isEqualTo(1500.0);
+        assertThat(premium.getDeathByAccident().getValue()).isEqualTo(1000000.0);
+        assertThat(premium.getDeathByAccidentInPublicTransport().getValue()).isEqualTo(2000000.0);
+        assertThat(premium.getDisabilityFromAccidentMin().getValue()).isEqualTo(20000.0);
+        assertThat(premium.getDisabilityFromAccidentMax().getValue()).isEqualTo(1000000.0);
+        assertThat(premium.getLossOfHandOrLeg().getValue()).isEqualTo(1000000.0);
+        assertThat(premium.getLossOfSight().getValue()).isEqualTo(1000000.0);
+        assertThat(premium.getLossOfHearingMin().getValue()).isEqualTo(150000.0);
+        assertThat(premium.getLossOfHearingMax().getValue()).isEqualTo(750000.0);
+        assertThat(premium.getLossOfSpeech().getValue()).isEqualTo(500000.0);
+        assertThat(premium.getLossOfCorneaForBothEyes().getValue()).isEqualTo(500000.0);
+        assertThat(premium.getLossOfFingersMin().getValue()).isEqualTo(20000.0);
+        assertThat(premium.getLossOfFingersMax().getValue()).isEqualTo(700000.0);
+        assertThat(premium.getNoneCurableBoneFracture().getValue()).isEqualTo(100000.0);
+        assertThat(premium.getLegsShortenBy5cm().getValue()).isEqualTo(75000.0);
+        assertThat(premium.getBurnInjuryMin().getValue()).isEqualTo(250000.0);
+        assertThat(premium.getBurnInjuryMax().getValue()).isEqualTo(1000000.0);
+        assertThat(premium.getMedicalCareCost().getValue()).isEqualTo(100000.0);
     }
 
     @Test
     public void should_get_sum_insured_from_package_name_ifine4() throws Exception {
         Quote quote = quote(productIFine());
         productIFine.calculateQuote(quote, productQuotation(IFINE4, 18, EVERY_YEAR, MALE, FALSE));
-        ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
-        assertThat(productIFinePremium.getSumInsured().getValue()).isEqualTo(250000.0);
-        assertThat(productIFinePremium.getAccidentSumInsured().getValue()).isEqualTo(2000000.0);
-        assertThat(productIFinePremium.getHealthSumInsured().getValue()).isEqualTo(2000000.0);
-        assertThat(productIFinePremium.getHospitalizationSumInsured().getValue()).isEqualTo(2000.0);
+        ProductIFinePremium premium = quote.getPremiumsData().getProductIFinePremium();
+        assertThat(premium.getSumInsured().getValue()).isEqualTo(250000.0);
+        assertThat(premium.getAccidentSumInsured().getValue()).isEqualTo(2000000.0);
+        assertThat(premium.getHealthSumInsured().getValue()).isEqualTo(2000000.0);
+        assertThat(premium.getHospitalizationSumInsured().getValue()).isEqualTo(2000.0);
+        assertThat(premium.getDeathByAccident().getValue()).isEqualTo(2000000.0);
+        assertThat(premium.getDeathByAccidentInPublicTransport().getValue()).isEqualTo(4000000.0);
+        assertThat(premium.getDisabilityFromAccidentMin().getValue()).isEqualTo(40000.0);
+        assertThat(premium.getDisabilityFromAccidentMax().getValue()).isEqualTo(2000000.0);
+        assertThat(premium.getLossOfHandOrLeg().getValue()).isEqualTo(2000000.0);
+        assertThat(premium.getLossOfSight().getValue()).isEqualTo(2000000.0);
+        assertThat(premium.getLossOfHearingMin().getValue()).isEqualTo(300000.0);
+        assertThat(premium.getLossOfHearingMax().getValue()).isEqualTo(1500000.0);
+        assertThat(premium.getLossOfSpeech().getValue()).isEqualTo(1000000.0);
+        assertThat(premium.getLossOfCorneaForBothEyes().getValue()).isEqualTo(1000000.0);
+        assertThat(premium.getLossOfFingersMin().getValue()).isEqualTo(40000.0);
+        assertThat(premium.getLossOfFingersMax().getValue()).isEqualTo(1400000.0);
+        assertThat(premium.getNoneCurableBoneFracture().getValue()).isEqualTo(200000.0);
+        assertThat(premium.getLegsShortenBy5cm().getValue()).isEqualTo(150000.0);
+        assertThat(premium.getBurnInjuryMin().getValue()).isEqualTo(500000.0);
+        assertThat(premium.getBurnInjuryMax().getValue()).isEqualTo(2000000.0);
+        assertThat(premium.getMedicalCareCost().getValue()).isEqualTo(200000.0);
     }
 
     @Test
     public void should_get_sum_insured_from_package_name_ifine5() throws Exception {
         Quote quote = quote(productIFine());
         productIFine.calculateQuote(quote, productQuotation(IFINE5, 18, EVERY_YEAR, MALE, FALSE));
-        ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
-        assertThat(productIFinePremium.getSumInsured().getValue()).isEqualTo(300000.0);
-        assertThat(productIFinePremium.getAccidentSumInsured().getValue()).isEqualTo(3000000.0);
-        assertThat(productIFinePremium.getHealthSumInsured().getValue()).isEqualTo(3000000.0);
-        assertThat(productIFinePremium.getHospitalizationSumInsured().getValue()).isEqualTo(2500.0);
+        ProductIFinePremium premium = quote.getPremiumsData().getProductIFinePremium();
+        assertThat(premium.getSumInsured().getValue()).isEqualTo(300000.0);
+        assertThat(premium.getAccidentSumInsured().getValue()).isEqualTo(3000000.0);
+        assertThat(premium.getHealthSumInsured().getValue()).isEqualTo(3000000.0);
+        assertThat(premium.getHospitalizationSumInsured().getValue()).isEqualTo(2500.0);
+        assertThat(premium.getDeathByAccident().getValue()).isEqualTo(3000000.0);
+        assertThat(premium.getDeathByAccidentInPublicTransport().getValue()).isEqualTo(6000000.0);
+        assertThat(premium.getDisabilityFromAccidentMin().getValue()).isEqualTo(60000.0);
+        assertThat(premium.getDisabilityFromAccidentMax().getValue()).isEqualTo(3000000.0);
+        assertThat(premium.getLossOfHandOrLeg().getValue()).isEqualTo(3000000.0);
+        assertThat(premium.getLossOfSight().getValue()).isEqualTo(3000000.0);
+        assertThat(premium.getLossOfHearingMin().getValue()).isEqualTo(450000.0);
+        assertThat(premium.getLossOfHearingMax().getValue()).isEqualTo(2250000.0);
+        assertThat(premium.getLossOfSpeech().getValue()).isEqualTo(1500000.0);
+        assertThat(premium.getLossOfCorneaForBothEyes().getValue()).isEqualTo(1500000.0);
+        assertThat(premium.getLossOfFingersMin().getValue()).isEqualTo(60000.0);
+        assertThat(premium.getLossOfFingersMax().getValue()).isEqualTo(2100000.0);
+        assertThat(premium.getNoneCurableBoneFracture().getValue()).isEqualTo(300000.0);
+        assertThat(premium.getLegsShortenBy5cm().getValue()).isEqualTo(225000.0);
+        assertThat(premium.getBurnInjuryMin().getValue()).isEqualTo(750000.0);
+        assertThat(premium.getBurnInjuryMax().getValue()).isEqualTo(3000000.0);
+        assertThat(premium.getMedicalCareCost().getValue()).isEqualTo(300000.0);
     }
 
     @Test
