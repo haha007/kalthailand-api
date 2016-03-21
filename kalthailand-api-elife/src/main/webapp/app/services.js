@@ -1,7 +1,9 @@
 (function() {
     'use strict';
 
-    angular.module('myApp').factory('Item', function($resource) {
+    var app = angular.module('myApp');
+
+    app.factory('Item', function($resource) {
         return $resource('/RLS/collectionFile', {}, {
             save: {
                 method: 'POST',
@@ -20,5 +22,9 @@
                 }
             }
         });
+    });
+
+    app.factory('PolicyDetail', function($resource) {
+        return $resource('/admin/policies/:id', {id : '@id'}, {});
     });
 })();

@@ -6,7 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import springfox.documentation.annotations.ApiIgnore;
 import th.co.krungthaiaxa.elife.api.exception.ElifeException;
 import th.co.krungthaiaxa.elife.api.model.*;
 import th.co.krungthaiaxa.elife.api.model.enums.ChannelType;
@@ -46,13 +45,6 @@ public class PolicyResource {
         this.emailService = emailService;
         this.documentService = documentService;
         this.smsApiService = smsApiService;
-    }
-
-    @ApiIgnore
-    @RequestMapping(value = "/policies/admin/all", produces = APPLICATION_JSON_VALUE, method = GET)
-    @ResponseBody
-    public ResponseEntity getAllPolicies(@RequestParam Integer startIndex, @RequestParam Integer nbOfRecords) {
-        return new ResponseEntity<>(getJson(policyService.findAll(startIndex, nbOfRecords)), OK);
     }
 
     @ApiOperation(value = "Creates a policy", notes = "Creates a policy out of a quote. Policy will be created only " +

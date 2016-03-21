@@ -40,6 +40,7 @@
             <ul class="nav nav-sidebar">
                 <li><a href="/admin">Overview</a></li>
                 <li class="active"><a href="/admin/collectionFile">Collection file upload<span class="sr-only">(current)</span></a></li>
+                <li><a href="/admin/policyValidation">Policy Validation</a></li>
             </ul>
         </div>
 
