@@ -25,6 +25,6 @@
     });
 
     app.factory('PolicyDetail', function($resource) {
-        return $resource('/admin/policies/:id', {id : '@id'}, {});
+        return $resource('/admin/policies/validate/:id', {id : '@id'}, {});
     });
 })();

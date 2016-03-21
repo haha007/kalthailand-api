@@ -13,11 +13,15 @@ import th.co.krungthaiaxa.elife.api.service.PolicyService;
 import javax.inject.Inject;
 import java.util.Optional;
 
+import static org.springframework.http.HttpStatus.NOT_ACCEPTABLE;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static th.co.krungthaiaxa.elife.api.model.error.ErrorCode.POLICY_DOES_NOT_EXIST;
+import static th.co.krungthaiaxa.elife.api.model.enums.PolicyStatus.CANCELED;
+import static th.co.krungthaiaxa.elife.api.model.enums.PolicyStatus.PENDING_PAYMENT;
+import static th.co.krungthaiaxa.elife.api.model.enums.PolicyStatus.VALIDATED;
+import static th.co.krungthaiaxa.elife.api.model.error.ErrorCode.*;
 import static th.co.krungthaiaxa.elife.api.utils.JsonUtil.getJson;
 
 @ApiIgnore
@@ -46,15 +50,20 @@ public class AdminController {
     }
 
     @ApiIgnore
-    @RequestMapping(value = "/admin/policies/{policyId}", produces = APPLICATION_JSON_VALUE, method = GET)
+    @RequestMapping(value = "/admin/policies/validate/{policyId}", produces = APPLICATION_JSON_VALUE, method = GET)
     @ResponseBody
     public ResponseEntity getPolicy(@PathVariable String policyId) {
         Optional<Policy> policy = policyService.findPolicy(policyId);
-        if (policy.isPresent()) {
-            return new ResponseEntity<>(getJson(policy.get()), OK);
-        }
-        else {
+        if (!policy.isPresent()) {
             return new ResponseEntity<>(getJson(POLICY_DOES_NOT_EXIST), NOT_FOUND);
+        } else if (policy.get().getStatus().equals(CANCELED)) {
+            return new ResponseEntity<>(getJson(POLICY_IS_CANCELED.apply(policyId)), NOT_ACCEPTABLE);
+        } else if (policy.get().getStatus().equals(PENDING_PAYMENT)) {
+            return new ResponseEntity<>(getJson(POLICY_IS_PENDING_PAYMENT.apply(policyId)), NOT_ACCEPTABLE);
+        } else if (policy.get().getStatus().equals(VALIDATED)) {
+            return new ResponseEntity<>(getJson(POLICY_IS_VALIDATED.apply(policyId)), NOT_ACCEPTABLE);
+        } else {
+            return new ResponseEntity<>(getJson(policy.get()), OK);
         }
     }
 

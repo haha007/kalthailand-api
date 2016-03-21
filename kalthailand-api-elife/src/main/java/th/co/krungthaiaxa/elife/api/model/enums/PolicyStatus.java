@@ -1,5 +1,5 @@
 package th.co.krungthaiaxa.elife.api.model.enums;
 
 public enum PolicyStatus {
-    PENDING_VALIDATION, VALIDATED, CANCELED
+    PENDING_PAYMENT, PENDING_VALIDATION, VALIDATED, CANCELED
 }

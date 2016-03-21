@@ -21,8 +21,10 @@ public class ErrorCode {
     public static final Error POLICY_DOES_NOT_EXIST = new Error("40001", "The policy does not exist", "The policy does not exist");
     public static final Error POLICY_DOES_NOT_CONTAIN_PAYMENT = new Error("40002", "The policy does not contain the given payment", "The given payment id could not be found in the list of payments within the policy");
     public static final Function<String, Error> POLICY_CANNOT_BE_CREATED = msg -> new Error("40003", "Unable to create your policy. Error is: " + msg, "The policy could not be created out of the quote for validation reasons");
-    public static final Error PAYMENT_NOT_UPDATED = new Error("40004", "The payment has not been updated", "Something went wrong when updating the payment");
-    public static final Error PAYMENT_NOT_UPDATED_ERROR_DETAILS_NEEDED = new Error("40005", "The payment has not been updated, error detail is needed", "Either error code and/or error message are empty and are needed in case the payment was not successful");
+    public static final Error PAYMENT_NOT_UPDATED_ERROR_DETAILS_NEEDED = new Error("40004", "The payment has not been updated, error detail is needed", "Either error code and/or error message are empty and are needed in case the payment was not successful");
+    public static final Function<String, Error> POLICY_IS_CANCELED = msg -> new Error("40005", "The policy [" + msg + "] is canceled", "The policy [" + msg + "] is canceled");
+    public static final Function<String, Error> POLICY_IS_PENDING_PAYMENT = msg -> new Error("40005", "The policy [" + msg + "] is waiting for payment registration", "The policy [" + msg + "] is waiting for payment registration");
+    public static final Function<String, Error> POLICY_IS_VALIDATED = msg -> new Error("40005", "The policy [" + msg + "] is already validated", "The policy [" + msg + "] is already validated");
     // Line token decryption
     public static final Error UNABLE_TO_DECRYPT = new Error("50001", "Unable to get your user ID", "The provided text could not be decrypted");
     // Document
@@ -34,7 +36,7 @@ public class ErrorCode {
     // Product
     public static final Function<String, Error> INVALID_PRODUCT_QUOTATION_PROVIDED = msg -> new Error("70001", "Unable to get the product details", "The given product cannot be transformed. Error message is:" + msg);
     // Watermarking
-    public static final Function<String, Error> INVALID_COLLECTION_FILE = msg -> new Error("80001", "Unable to upload the collection file. Error is: [" + msg + "]", "Unable to upload the collection file. Error is: ["+msg+"]");
+    public static final Function<String, Error> INVALID_COLLECTION_FILE = msg -> new Error("80001", "Unable to upload the collection file. Error is: [" + msg + "]", "Unable to upload the collection file. Error is: [" + msg + "]");
     // SMS
     public static final Function<String, Error> UNABLE_TO_SEND_SMS = msg -> new Error("90001", "Unable to send SMS", "Error message is:" + msg);
     public static final Function<String, Error> SMS_IS_UNAVAILABLE = msg -> new Error("90002", "SMS is unavailable", "Error message is:" + msg);

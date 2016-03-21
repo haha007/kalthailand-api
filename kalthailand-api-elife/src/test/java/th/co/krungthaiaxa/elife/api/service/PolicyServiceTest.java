@@ -24,7 +24,7 @@ import static th.co.krungthaiaxa.elife.api.exception.PolicyValidationException.e
 import static th.co.krungthaiaxa.elife.api.exception.PolicyValidationException.noneExistingQuote;
 import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
 import static th.co.krungthaiaxa.elife.api.model.enums.PaymentStatus.*;
-import static th.co.krungthaiaxa.elife.api.model.enums.PolicyStatus.PENDING_VALIDATION;
+import static th.co.krungthaiaxa.elife.api.model.enums.PolicyStatus.PENDING_PAYMENT;
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.ERROR;
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.SUCCESS;
 
@@ -91,7 +91,7 @@ public class PolicyServiceTest {
     public void should_create_policy_with_default_pending_status() {
         Policy policy = getPolicy();
 
-        assertThat(policy.getStatus()).isEqualTo(PENDING_VALIDATION);
+        assertThat(policy.getStatus()).isEqualTo(PENDING_PAYMENT);
     }
 
     @Test

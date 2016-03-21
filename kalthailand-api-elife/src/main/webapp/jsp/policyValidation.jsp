@@ -58,13 +58,13 @@
             </div>
             <form class="form-horizontal" ng-submit="search($event)">
                 <div class="form-group">
-                    <label for="policyID" class="col-sm-2 control-label">Policy number</label>
-                    <div class="col-md-4">
+                    <label for="policyID" class="col-sm-4 control-label">Policy number</label>
+                    <div class="col-sm-4">
                         <input type="text" class="form-control" id="policyID" ng-model="policyID">
                     </div>
                 </div>
                 <div class="form-group">
-                    <div class="col-sm-offset-2 col-sm-10">
+                    <div class="col-sm-offset-4 col-sm-8">
                         <button type="submit" class="btn btn-default">Search</button>
                     </div>
                 </div>
@@ -77,32 +77,32 @@
                 <div class="row">
                     <div class="col-sm-6">
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">Policy ID</label>
-                            <div class="col-sm-10">
+                            <label class="col-sm-4 control-label">Policy ID</label>
+                            <div class="col-sm-8">
                                 <p class="form-control-static">{{ policyDetail.policyId }}</p>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">First Name</label>
-                            <div class="col-sm-10">
+                            <label class="col-sm-4 control-label">First Name</label>
+                            <div class="col-sm-8">
                                 <p class="form-control-static">{{ policyDetail.insureds[0].person.givenName }}</p>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">Date of birth</label>
-                            <div class="col-sm-10">
+                            <label class="col-sm-4 control-label">Date of birth</label>
+                            <div class="col-sm-8">
                                 <p class="form-control-static">{{ policyDetail.insureds[0].person.birthDate }}</p>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">Premium amount</label>
-                            <div class="col-sm-10">
+                            <label class="col-sm-4 control-label">Premium amount</label>
+                            <div class="col-sm-8">
                                 <p class="form-control-static">{{ policyDetail.premiumsData.financialScheduler.modalAmount.value }}</p>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">Premium periodicity</label>
-                            <div class="col-sm-10">
+                            <label class="col-sm-4 control-label">Premium periodicity</label>
+                            <div class="col-sm-8">
                                 <p class="form-control-static">{{ policyDetail.premiumsData.financialScheduler.modalAmount.periodicity.code }}</p>
                             </div>
                         </div>
@@ -115,26 +115,26 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">Last Name</label>
-                            <div class="col-sm-10">
+                            <label class="col-sm-4 control-label">Last Name</label>
+                            <div class="col-sm-8">
                                 <p class="form-control-static">{{ policyDetail.insureds[0].person.surName }}</p>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">Thai ID</label>
-                            <div class="col-sm-10">
+                            <label class="col-sm-4 control-label">Thai ID</label>
+                            <div class="col-sm-8">
                                 <p class="form-control-static">{{ policyDetail.insureds[0].person.registrations[0].id }}</p>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">Premium currency</label>
-                            <div class="col-sm-10">
+                            <label class="col-sm-4 control-label">Premium currency</label>
+                            <div class="col-sm-8">
                                 <p class="form-control-static">{{ policyDetail.premiumsData.financialScheduler.modalAmount.currencyCode }}</p>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">Premium end date</label>
-                            <div class="col-sm-10">
+                            <label class="col-sm-4 control-label">Premium end date</label>
+                            <div class="col-sm-8">
                                 <p class="form-control-static">{{ policyDetail.premiumsData.financialScheduler.modalAmount.endDate }}</p>
                             </div>
                         </div>
@@ -145,7 +145,7 @@
                 <div class="col-md-12">
                     <form class="form">
                         <div class="form-group">
-                            <div class="col-sm-offset-2 col-sm-10">
+                            <div class="col-sm-offset-4 col-sm-8">
                                 <button type="submit" class="btn btn-default btn-success">Validate</button>
                             </div>
                         </div>
