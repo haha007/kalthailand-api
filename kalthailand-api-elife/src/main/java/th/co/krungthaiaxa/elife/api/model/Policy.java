@@ -6,6 +6,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
+import th.co.krungthaiaxa.elife.api.model.enums.PolicyStatus;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ public class Policy implements Serializable {
     private String policyId;
     @Indexed
     private String quoteId;
+    private PolicyStatus status;
     private CommonData commonData;
     private PremiumsData premiumsData;
     private List<Insured> insureds = new ArrayList<>();
@@ -55,6 +57,15 @@ public class Policy implements Serializable {
 
     public void setQuoteId(String quoteId) {
         this.quoteId = quoteId;
+    }
+
+    @ApiModelProperty(required = true, value = "The status of the policy")
+    public PolicyStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(PolicyStatus status) {
+        this.status = status;
     }
 
     @ApiModelProperty(required = true, value = "Data common to all policies commercial types")

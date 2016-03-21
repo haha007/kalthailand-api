@@ -28,6 +28,7 @@ import static th.co.krungthaiaxa.elife.api.exception.ExceptionUtils.isTrue;
 import static th.co.krungthaiaxa.elife.api.exception.ExceptionUtils.notNull;
 import static th.co.krungthaiaxa.elife.api.exception.PolicyValidationException.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.PaymentStatus.*;
+import static th.co.krungthaiaxa.elife.api.model.enums.PolicyStatus.PENDING_VALIDATION;
 import static th.co.krungthaiaxa.elife.api.model.enums.RegistrationTypeName.THAI_ID_NUMBER;
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.ERROR;
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.SUCCESS;
@@ -86,6 +87,7 @@ public class PolicyService {
             product.getPolicyFromQuote(policy, quote);
 
             policy.getPayments().stream().forEach(paymentRepository::save);
+            policy.setStatus(PENDING_VALIDATION);
             policy = policyRepository.save(policy);
             policyNumber.get().setPolicy(policy);
             policyNumberRepository.save(policyNumber.get());
