@@ -19,34 +19,22 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.chrono.ThaiBuddhistDate;
 import java.util.Locale;
 
 import static java.time.format.DateTimeFormatter.ofPattern;
 
-/**
- * Created by santilik on 3/10/2016.
- */
 @Service
 public class DAFormService {
 
     private final static Logger logger = LoggerFactory.getLogger(DAFormService.class);
 
-    private final String DA_IMAGE = "DA_FORM_20150311.jpg";
-    private final Float FONT_SIZE = 50f;
-    private final Float FONT_SIZE_BIG = 100f;
     private final Color FONT_COLOR = Color.BLACK;
-    private final String MARK = "X";
-    private final String ID_CARD_DOC = "Thai ID Card number";
-    private final Integer INDX = 0;
-    private final DecimalFormat MONEY_FORMAT = new DecimalFormat("#,##0.00");
 
-    public byte[] generateDAForm(Policy pol)throws Exception{
-
-        logger.info(String.format("[%1$s] ...","generateDAForm"));
-        logger.info(String.format("policy is %1$s ...",pol.getPolicyId()));
+    public byte[] generateDAForm(Policy pol) throws Exception {
+        logger.info(String.format("[%1$s] ...", "generateDAForm"));
+        logger.info(String.format("policy is %1$s ...", pol.getPolicyId()));
 
         ByteArrayOutputStream content = new ByteArrayOutputStream();
         Document document = new Document(PageSize.A4);
@@ -60,7 +48,6 @@ public class DAFormService {
         document.close();
         content.close();
         return content.toByteArray();
-
     }
 
     private Image getPdfImage(byte[] imageConent) throws IOException, BadElementException {
@@ -71,7 +58,7 @@ public class DAFormService {
     }
 
     private byte[] getPageContent(Policy pol) throws Exception {
-        InputStream is1 = getClass().getClassLoader().getResourceAsStream("da-form/" + DA_IMAGE);
+        InputStream is1 = getClass().getClassLoader().getResourceAsStream("da-form/DA_FORM_20150311.jpg");
         BufferedImage bf1 = ImageIO.read(is1);
         Graphics g1 = bf1.getGraphics();
         g1 = setGraphicColorAndFont(g1);
@@ -91,11 +78,17 @@ public class DAFormService {
 
         g1.drawString(person.getRegistrations().get(0).getId(), 1870, 695);
 
-        g1.drawString(person.getHomePhoneNumber().getNumber(), 290, 785);
+        if (person.getHomePhoneNumber().getNumber() != null) {
+            g1.drawString(person.getHomePhoneNumber().getNumber(), 290, 785);
+        }
 
-        g1.drawString(person.getWorkPhoneNumber().getNumber(), 690, 785);
+        if (person.getWorkPhoneNumber().getNumber() != null) {
+            g1.drawString(person.getWorkPhoneNumber().getNumber(), 690, 785);
+        }
 
-        g1.drawString(person.getMobilePhoneNumber().getNumber(), 1080, 785);
+        if (person.getMobilePhoneNumber().getNumber() != null) {
+            g1.drawString(person.getMobilePhoneNumber().getNumber(), 1080, 785);
+        }
 
         g1.drawString(person.getEmail(), 1440, 785);
 
@@ -144,10 +137,10 @@ public class DAFormService {
         return content;
     }
 
-    private Graphics setGraphicColorAndFont(Graphics g)throws IOException {
+    private Graphics setGraphicColorAndFont(Graphics g) throws IOException {
         g.setColor(FONT_COLOR);
         try {
-            Font f = Font.createFont(Font.TRUETYPE_FONT,getClass().getClassLoader().getResourceAsStream("ereceipt/ANGSAB_1.TTF")).deriveFont(FONT_SIZE);
+            Font f = Font.createFont(Font.TRUETYPE_FONT, getClass().getClassLoader().getResourceAsStream("ereceipt/ANGSAB_1.TTF")).deriveFont(50f);
             g.setFont(f);
         } catch (FontFormatException e) {
             logger.error("Unable to load embed font file", e);
@@ -156,10 +149,10 @@ public class DAFormService {
         return g;
     }
 
-    private Graphics setGraphicColorAndFontBigText(Graphics g)throws IOException {
+    private Graphics setGraphicColorAndFontBigText(Graphics g) throws IOException {
         g.setColor(FONT_COLOR);
         try {
-            Font f = Font.createFont(Font.TRUETYPE_FONT,getClass().getClassLoader().getResourceAsStream("ereceipt/ANGSAB_1.TTF")).deriveFont(FONT_SIZE_BIG);
+            Font f = Font.createFont(Font.TRUETYPE_FONT, getClass().getClassLoader().getResourceAsStream("ereceipt/ANGSAB_1.TTF")).deriveFont(100f);
             g.setFont(f);
         } catch (FontFormatException e) {
             logger.error("Unable to load embed font file", e);

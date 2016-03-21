@@ -39,7 +39,8 @@ public class PolicyResource {
     private final SMSApiService smsApiService;
 
     @Inject
-    public PolicyResource(PolicyService policyService, QuoteService quoteService, EmailService emailService, DocumentService documentService, SMSApiService smsApiService) {
+    public PolicyResource(PolicyService policyService, QuoteService quoteService, EmailService emailService,
+                          DocumentService documentService, SMSApiService smsApiService) {
         this.policyService = policyService;
         this.quoteService = quoteService;
         this.emailService = emailService;

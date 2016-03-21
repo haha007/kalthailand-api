@@ -48,16 +48,19 @@ public class DocumentService {
     private final DocumentDownloadRepository documentDownloadRepository;
     private final PolicyRepository policyRepository;
     private final ApplicationFormService applicationFormService;
+    private final DAFormService daFormService;
 
     @Inject
     public DocumentService(DocumentRepository documentRepository,
                            DocumentDownloadRepository documentDownloadRepository,
                            PolicyRepository policyRepository,
-                           ApplicationFormService applicationFormService) {
+                           ApplicationFormService applicationFormService,
+                           DAFormService daFormService) {
         this.documentRepository = documentRepository;
         this.documentDownloadRepository = documentDownloadRepository;
         this.policyRepository = policyRepository;
         this.applicationFormService = applicationFormService;
+        this.daFormService = daFormService;
     }
 
     public DocumentDownload downloadDocument(String documentId) {
@@ -126,6 +129,17 @@ public class DocumentService {
                 addDocument(policy, content, "application/pdf", APPLICATION_FORM);
             } catch (Exception e) {
                 logger.error("Application form for Policy [" + policy.getPolicyId() + "] has not been generated.", e);
+            }
+        }
+
+        // Generate Application Form
+        Optional<Document> daForm = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(DA_FORM)).findFirst();
+        if (!daForm.isPresent()) {
+            try {
+                byte[] content = daFormService.generateDAForm(policy);
+                addDocument(policy, content, "application/pdf", DA_FORM);
+            } catch (Exception e) {
+                logger.error("DA form for Policy [" + policy.getPolicyId() + "] has not been generated.", e);
             }
         }
     }
