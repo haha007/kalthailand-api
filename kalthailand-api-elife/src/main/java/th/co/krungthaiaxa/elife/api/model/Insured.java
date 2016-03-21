@@ -21,7 +21,7 @@ public class Insured implements Serializable {
     private String professionDescription;
     private String employerName;
     private String annualIncome;
-    private String incomeSource;
+    private List<String> incomeSources;
     private Person person;
     private Fatca fatca;
     private HealthStatus healthStatus;
@@ -111,12 +111,12 @@ public class Insured implements Serializable {
     }
 
     @ApiModelProperty(value = "Income Source")
-    public String getIncomeSource() {
-        return incomeSource;
+    public List<String> getIncomeSources() {
+        return incomeSources;
     }
 
-    public void setIncomeSource(String incomeSource) {
-        this.incomeSource = incomeSource;
+    public void addIncomeSource(String incomeSource) {
+        this.incomeSources.add(incomeSource);
     }
 
     @ApiModelProperty(value = "Declared tax percentage the insured pays at subscription")
@@ -187,7 +187,7 @@ public class Insured implements Serializable {
                 Objects.equals(professionDescription, insured.professionDescription) &&
                 Objects.equals(employerName, insured.employerName) &&
                 Objects.equals(annualIncome, insured.annualIncome) &&
-                Objects.equals(incomeSource, insured.incomeSource) &&
+                Objects.equals(incomeSources, insured.incomeSources) &&
                 Objects.equals(person, insured.person) &&
                 Objects.equals(fatca, insured.fatca) &&
                 Objects.equals(healthStatus, insured.healthStatus) &&
@@ -198,6 +198,6 @@ public class Insured implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(type, mainInsuredIndicator, startDate, endDate, ageAtSubscription, professionName, professionDescription, employerName, annualIncome, incomeSource, person, fatca, healthStatus, declaredTaxPercentAtSubscription, additionalInformationFreeText, insuredPreviousAgents);
+        return Objects.hash(type, mainInsuredIndicator, startDate, endDate, ageAtSubscription, professionName, professionDescription, employerName, annualIncome, incomeSources, person, fatca, healthStatus, declaredTaxPercentAtSubscription, additionalInformationFreeText, insuredPreviousAgents);
     }
 }

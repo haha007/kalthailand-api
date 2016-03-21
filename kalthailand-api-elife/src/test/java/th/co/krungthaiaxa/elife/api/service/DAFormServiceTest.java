@@ -77,7 +77,7 @@ public class DAFormServiceTest {
         insured.setProfessionName("Something");
         insured.setProfessionDescription("Something");
         insured.setAnnualIncome("9999999");
-        insured.setIncomeSource("Something");
+        insured.addIncomeSource("Something");
         insured.setEmployerName("Something");
 
         Person person = getPerson("สันติ", "ณเคชน์", "ลิขิตมงคลสกุล", "นาย");

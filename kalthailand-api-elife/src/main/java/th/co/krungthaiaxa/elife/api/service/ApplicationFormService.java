@@ -28,6 +28,7 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.List;
 
+import static java.util.stream.Collectors.joining;
 import static th.co.krungthaiaxa.elife.api.model.enums.DividendOption.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.*;
 
@@ -206,8 +207,8 @@ public class ApplicationFormService {
             g1.drawString(MONEY_FORMAT.format(Integer.parseInt(insured.getAnnualIncome(), 10)), 310, 2375);
         }
         //source income
-        if (insured.getIncomeSource() != null) {
-            g1.drawString(insured.getIncomeSource(), 1230, 2375);
+        if (insured.getIncomeSources() != null) {
+            g1.drawString(insured.getIncomeSources().stream().collect(joining(",")), 1230, 2375);
         }
         //working location
         if (insured.getEmployerName() != null) {
