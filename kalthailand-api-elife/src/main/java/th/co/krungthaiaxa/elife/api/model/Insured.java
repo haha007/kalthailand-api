@@ -21,7 +21,7 @@ public class Insured implements Serializable {
     private String professionDescription;
     private String employerName;
     private String annualIncome;
-    private List<String> incomeSources;
+    private List<String> incomeSources = new ArrayList<>();
     private Person person;
     private Fatca fatca;
     private HealthStatus healthStatus;

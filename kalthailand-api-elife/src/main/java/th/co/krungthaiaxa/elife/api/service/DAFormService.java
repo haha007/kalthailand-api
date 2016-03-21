@@ -1,7 +1,9 @@
 package th.co.krungthaiaxa.elife.api.service;
 
-import com.itextpdf.text.*;
+import com.itextpdf.text.BadElementException;
+import com.itextpdf.text.Document;
 import com.itextpdf.text.Image;
+import com.itextpdf.text.PageSize;
 import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfWriter;
 import org.apache.commons.io.output.ByteArrayOutputStream;
@@ -11,16 +13,18 @@ import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.elife.api.model.Insured;
 import th.co.krungthaiaxa.elife.api.model.Person;
 import th.co.krungthaiaxa.elife.api.model.Policy;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.Font;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.DateFormatSymbols;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
+import java.time.chrono.ThaiBuddhistDate;
 import java.util.Locale;
+
+import static java.time.format.DateTimeFormatter.ofPattern;
 
 /**
  * Created by santilik on 3/10/2016.
@@ -75,14 +79,13 @@ public class DAFormService {
         Insured insured = pol.getInsureds().get(0);
         Person person = insured.getPerson();
 
-        LocalDate now = LocalDate.now();
+        ThaiBuddhistDate thaiDateOfNow = ThaiBuddhistDate.from(LocalDate.now());
 
-        g1.drawString((new DecimalFormat("00")).format(now.getDayOfMonth()), 1620, 535);
+        g1.drawString(thaiDateOfNow.format(ofPattern("dd")), 1620, 535);
 
-        DateFormatSymbols dfs = new DateFormatSymbols(new Locale("th", "TH"));
-        g1.drawString(dfs.getMonths()[(now.getMonthValue()-1)], 1885, 535);
+        g1.drawString(thaiDateOfNow.format(ofPattern("MMMM", new Locale("th", "TH"))), 1885, 535);
 
-        g1.drawString(String.valueOf(now.getYear()+543), 2240, 535);
+        g1.drawString(thaiDateOfNow.format(ofPattern("yyyy")), 2240, 535);
 
         g1.drawString(person.getGivenName() + " " + person.getSurName(), 530, 695);
 

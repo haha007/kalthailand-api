@@ -1,6 +1,6 @@
 package th.co.krungthaiaxa.elife.api.service;
 
-import com.itextpdf.text.*;
+import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfWriter;
@@ -19,7 +19,6 @@ import th.co.krungthaiaxa.elife.api.utils.ThaiBahtUtil;
 import javax.imageio.ImageIO;
 import javax.inject.Inject;
 import java.awt.*;
-import java.awt.Font;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -28,15 +27,16 @@ import java.nio.charset.Charset;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.time.chrono.ThaiBuddhistDate;
+import java.util.Base64;
+import java.util.Optional;
 
 import static com.itextpdf.text.PageSize.A4;
 import static java.time.LocalDateTime.now;
 import static java.time.ZoneId.SHORT_IDS;
 import static java.time.ZoneId.of;
-import static th.co.krungthaiaxa.elife.api.model.enums.DocumentType.APPLICATION_FORM;
-import static th.co.krungthaiaxa.elife.api.model.enums.DocumentType.ERECEIPT_IMAGE;
-import static th.co.krungthaiaxa.elife.api.model.enums.DocumentType.ERECEIPT_PDF;
+import static java.time.format.DateTimeFormatter.ofPattern;
+import static th.co.krungthaiaxa.elife.api.model.enums.DocumentType.*;
 
 @Service
 public class DocumentService {
@@ -66,6 +66,7 @@ public class DocumentService {
 
     /**
      * This moethods encodes the content in Base64 by default
+     *
      * @param policy
      * @param decodedContent
      * @param mimeType
@@ -147,16 +148,9 @@ public class DocumentService {
         return content.toByteArray();
     }
 
-    private Map<String, String> doSplitDate(LocalDate birthDate) {
-        if(null==birthDate){
-            return null;
-        }else{
-            Map<String, String> m = new HashMap<>();
-            m.put("date", (new DecimalFormat("00")).format(birthDate.getDayOfMonth()));
-            m.put("month", (new DecimalFormat("00")).format(birthDate.getMonth().getValue()));
-            m.put("year", String.valueOf(birthDate.getYear() + 543));
-            return m;
-        }
+    private String getThaiDate(LocalDate localDate) {
+        ThaiBuddhistDate tdate = ThaiBuddhistDate.from(localDate);
+        return tdate.format(ofPattern("ddMMyyyy"));
     }
 
     private byte[] createEreceipt(Policy policy) throws IOException {
@@ -183,7 +177,7 @@ public class DocumentService {
         Graphics graphics = bufferedImage.getGraphics();
         graphics.setColor(Color.BLACK);
         try {
-            Font f = Font.createFont(Font.TRUETYPE_FONT,getClass().getClassLoader().getResourceAsStream("ereceipt/ANGSAB_1.TTF")).deriveFont(30f);
+            Font f = Font.createFont(Font.TRUETYPE_FONT, getClass().getClassLoader().getResourceAsStream("ereceipt/ANGSAB_1.TTF")).deriveFont(30f);
             graphics.setFont(f);
         } catch (FontFormatException e) {
             logger.error("Unable to load embed font file", e);
@@ -195,9 +189,10 @@ public class DocumentService {
         logger.debug("Name Insure : " + policy.getInsureds().get(0).getPerson().getGivenName() + " " + policy.getInsureds().get(0).getPerson().getSurName());
 
         //payment date
-        Map<String,String> pDate = doSplitDate(policy.getPayments().get(0).getEffectiveDate());
-        graphics.drawString(pDate.get("date") + "/" + pDate.get("month") + "/" + pDate.get("year"), 980, 365);
-        logger.debug("Payment Date : " + policy.getPayments().get(0).getEffectiveDate());
+        if (policy.getPayments().get(0).getEffectiveDate() != null) {
+            graphics.drawString(getThaiDate(policy.getPayments().get(0).getEffectiveDate()), 980, 365);
+            logger.debug("Payment Date : " + policy.getPayments().get(0).getEffectiveDate());
+        }
 
         //Mobile Phone
         String mobilePhone = policy.getInsureds().get(0).getPerson().getMobilePhoneNumber().getNumber();

@@ -22,22 +22,23 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.DateFormatSymbols;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
+import java.time.chrono.ThaiBuddhistDate;
 import java.util.*;
 import java.util.List;
 
+import static java.time.format.DateTimeFormatter.ofPattern;
 import static java.util.stream.Collectors.joining;
 import static th.co.krungthaiaxa.elife.api.model.enums.DividendOption.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.*;
+import static th.co.krungthaiaxa.elife.api.model.enums.RegistrationTypeName.THAI_ID_NUMBER;
 
 @Service
 public class ApplicationFormService {
     private final static Logger logger = LoggerFactory.getLogger(ApplicationFormService.class);
 
     private final Color FONT_COLOR = Color.BLACK;
-    private final String ID_CARD_DOC = "Thai ID Card number";
     private final String MARK = "X";
     private final DecimalFormat MONEY_FORMAT = new DecimalFormat("#,##0.00");
 
@@ -123,7 +124,7 @@ public class ApplicationFormService {
         g1.drawString(birthDate.get("year"), 2100, 845);
 
         //document display
-        if (person.getRegistrations().get(0).getTypeName().equals(ID_CARD_DOC)) {
+        if (person.getRegistrations().get(0).getTypeName().equals(THAI_ID_NUMBER)) {
             //document display id card
             g1.drawString(MARK, 395, 915);
         }
@@ -458,11 +459,11 @@ public class ApplicationFormService {
     }
 
     private Map<String, String> doSplitDateOfBirth(LocalDate birthDate) {
+        ThaiBuddhistDate thaiBirthDate = ThaiBuddhistDate.from(birthDate);
         Map<String, String> m = new HashMap<>();
-        m.put("date", (new DecimalFormat("00")).format(birthDate.getDayOfMonth()));
-        DateFormatSymbols dfs = new DateFormatSymbols(new Locale("th", "TH"));
-        m.put("month", dfs.getMonths()[(birthDate.getMonthValue() - 1)]);
-        m.put("year", String.valueOf(birthDate.getYear() + 543));
+        m.put("date", thaiBirthDate.format(ofPattern("dd")));
+        m.put("month", thaiBirthDate.format(ofPattern("MMMM", new Locale("th", "TH"))));
+        m.put("year", thaiBirthDate.format(ofPattern("yyyy")));
         return m;
     }
 
