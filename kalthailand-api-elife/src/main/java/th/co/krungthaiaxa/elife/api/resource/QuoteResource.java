@@ -45,13 +45,13 @@ public class QuoteResource {
     })
     @ResponseBody
     public ResponseEntity sendEmail(
-            @ApiParam(value = "The quote Id")
+            @ApiParam(value = "The quote Id", required = true)
             @PathVariable String quoteId,
-            @ApiParam(value = "The content of the graph image in base 64 encoded.")
+            @ApiParam(value = "The content of the graph image in base 64 encoded.", required = true)
             @RequestBody String base64Image,
-            @ApiParam(value = "The session id the quote is in")
+            @ApiParam(value = "The session id the quote is in", required = true)
             @RequestParam String sessionId,
-            @ApiParam(value = "The channel being used to create the quote.")
+            @ApiParam(value = "The channel being used to create the quote.", required = true)
             @RequestParam ChannelType channelType) {
         Optional<Quote> quote = quoteService.findByQuoteId(quoteId, sessionId, channelType);
         if (!quote.isPresent()) {
@@ -91,11 +91,11 @@ public class QuoteResource {
     @RequestMapping(value = "/quotes/{quoteId}", produces = APPLICATION_JSON_VALUE, method = GET)
     @ResponseBody
     public ResponseEntity getQuote(
-            @ApiParam(value = "The quote Id")
+            @ApiParam(value = "The quote Id", required = true)
             @PathVariable String quoteId,
-            @ApiParam(value = "The session id the quote is in")
+            @ApiParam(value = "The session id the quote is in", required = true)
             @RequestParam String sessionId,
-            @ApiParam(value = "The channel being used to create the quote.")
+            @ApiParam(value = "The channel being used to create the quote.", required = true)
             @RequestParam ChannelType channelType) {
         Optional<Quote> quote = quoteService.findByQuoteId(quoteId, sessionId, channelType);
         if (!quote.isPresent()) {
@@ -137,13 +137,13 @@ public class QuoteResource {
     })
     @RequestMapping(value = "/quotes/{quoteId}", produces = APPLICATION_JSON_VALUE, method = PUT)
     public ResponseEntity updateQuote(
-            @ApiParam(value = "The quote Id")
+            @ApiParam(value = "The quote Id", required = true)
             @PathVariable String quoteId,
-            @ApiParam(value = "The session id the quote is in")
+            @ApiParam(value = "The session id the quote is in", required = true)
             @RequestParam String sessionId,
-            @ApiParam(value = "The channel being used to create the quote.")
+            @ApiParam(value = "The channel being used to create the quote.", required = true)
             @RequestParam ChannelType channelType,
-            @ApiParam(value = "The json of the quote. This quote will be updated with given values and will go through minimal validations")
+            @ApiParam(value = "The json of the quote. This quote will be updated with given values and will go through minimal validations", required = true)
             @RequestBody String jsonQuote) {
         Optional<Quote> tmp = quoteService.findByQuoteId(quoteId, sessionId, channelType);
         if (!tmp.isPresent()) {

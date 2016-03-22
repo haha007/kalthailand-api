@@ -55,7 +55,7 @@ public class DocumentResource {
     @RequestMapping(value = "/documents/policies/{policyId}", produces = APPLICATION_JSON_VALUE, method = GET)
     @ResponseBody
     public ResponseEntity documentsOfPolicy(
-            @ApiParam(value = "The policy ID")
+            @ApiParam(value = "The policy ID", required = true)
             @PathVariable String policyId) {
         Optional<Policy> policy = policyService.findPolicy(policyId);
         if (!policy.isPresent()) {
@@ -75,9 +75,9 @@ public class DocumentResource {
     @RequestMapping(value = "/documents/policies/{policyId}/{documentId}", produces = APPLICATION_JSON_VALUE, method = GET)
     @ResponseBody
     public ResponseEntity documentDownloadOfPolicy(
-            @ApiParam(value = "The policy ID")
+            @ApiParam(value = "The policy ID", required = true)
             @PathVariable String policyId,
-            @ApiParam(value = "The document ID")
+            @ApiParam(value = "The document ID", required = true)
             @PathVariable String documentId) {
         Optional<Policy> policy = policyService.findPolicy(policyId);
         if (!policy.isPresent()) {
@@ -109,9 +109,9 @@ public class DocumentResource {
     @RequestMapping(value = "/documents/policies/{policyId}/thai/id", produces = APPLICATION_JSON_VALUE, method = POST)
     @ResponseBody
     public ResponseEntity uploadThaiId(
-            @ApiParam(value = "The policy ID")
+            @ApiParam(value = "The policy ID", required = true)
             @PathVariable String policyId,
-            @ApiParam(value = "The content of the image to watermark, but base 64 encoded.")
+            @ApiParam(value = "The content of the image to watermark, but base 64 encoded.", required = true)
             @RequestBody String base64Image) {
         Optional<Policy> policy = policyService.findPolicy(policyId);
         if (!policy.isPresent()) {
