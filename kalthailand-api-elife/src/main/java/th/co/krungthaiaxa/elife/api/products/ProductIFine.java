@@ -71,10 +71,8 @@ public class ProductIFine implements Product {
         ProductIFinePackage productIFinePackage = getPackage(productQuotation.getPackageName());
         Double deathByAccident = productIFinePackage.getDeathByAccident();
 
-        PremiumsData premiumsData = quote.getPremiumsData();
-        ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
-
         // set amounts
+        ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
         productIFinePremium.setSumInsured(amount(productIFinePackage.getSumInsured()));
         productIFinePremium.setAccidentSumInsured(amount(productIFinePackage.getAccidentSumInsured()));
         productIFinePremium.setHealthSumInsured(amount(productIFinePackage.getHealthSumInsured()));

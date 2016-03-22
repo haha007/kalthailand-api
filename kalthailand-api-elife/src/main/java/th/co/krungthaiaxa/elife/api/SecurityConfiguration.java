@@ -47,13 +47,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http
                 .httpBasic().and()
                 .authorizeRequests()
-                // ADMIN rights
-                .antMatchers(HttpMethod.GET, "/admin/**").hasRole("ADMIN")
-                .antMatchers(HttpMethod.GET, "/**/*.jsp").hasRole("UI")
+                // UI rights
+                .antMatchers(HttpMethod.GET, "/**/*.htm").hasRole("UI")
                 .antMatchers(HttpMethod.GET, "/**/*.css").hasRole("UI")
                 .antMatchers(HttpMethod.GET, "/**/*.ttf").hasRole("UI")
                 .antMatchers(HttpMethod.GET, "/**/*.woff").hasRole("UI")
                 .antMatchers(HttpMethod.GET, "/**/*.js").hasRole("UI")
+                // ADMIN rights
+                .antMatchers(HttpMethod.GET, "/admin/**").hasRole("ADMIN")
                 // USER rights
                 .antMatchers(HttpMethod.DELETE, "/**").hasRole("USER")
                 .antMatchers(HttpMethod.GET, "/**").hasRole("USER")

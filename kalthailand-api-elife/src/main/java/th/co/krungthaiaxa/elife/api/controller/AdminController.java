@@ -1,6 +1,8 @@
 package th.co.krungthaiaxa.elife.api.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,16 +13,13 @@ import th.co.krungthaiaxa.elife.api.model.Policy;
 import th.co.krungthaiaxa.elife.api.service.PolicyService;
 
 import javax.inject.Inject;
+import java.util.Collection;
 import java.util.Optional;
 
-import static org.springframework.http.HttpStatus.NOT_ACCEPTABLE;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
-import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static th.co.krungthaiaxa.elife.api.model.enums.PolicyStatus.CANCELED;
-import static th.co.krungthaiaxa.elife.api.model.enums.PolicyStatus.PENDING_PAYMENT;
-import static th.co.krungthaiaxa.elife.api.model.enums.PolicyStatus.VALIDATED;
+import static th.co.krungthaiaxa.elife.api.model.enums.PolicyStatus.*;
 import static th.co.krungthaiaxa.elife.api.model.error.ErrorCode.*;
 import static th.co.krungthaiaxa.elife.api.utils.JsonUtil.getJson;
 
@@ -34,25 +33,11 @@ public class AdminController {
         this.policyService = policyService;
     }
 
-    @RequestMapping(value = "/admin", method = GET)
-    public String index() {
-        return "index";
-    }
-
-    @RequestMapping(value = "/admin/collectionFile", method = GET)
-    public String collectionFile() {
-        return "collectionFile";
-    }
-
-    @RequestMapping(value = "/admin/policyValidation", method = GET)
-    public String validatePolicy() {
-        return "policyValidation";
-    }
-
     @ApiIgnore
     @RequestMapping(value = "/admin/policies/validate/{policyId}", produces = APPLICATION_JSON_VALUE, method = GET)
     @ResponseBody
-    public ResponseEntity getPolicy(@PathVariable String policyId) {
+    public ResponseEntity<byte[]> getPolicy(@PathVariable String policyId) {
+        Collection<GrantedAuthority> roles = (Collection<GrantedAuthority>) SecurityContextHolder.getContext().getAuthentication().getAuthorities();
         Optional<Policy> policy = policyService.findPolicy(policyId);
         if (!policy.isPresent()) {
             return new ResponseEntity<>(getJson(POLICY_DOES_NOT_EXIST), NOT_FOUND);
@@ -70,7 +55,7 @@ public class AdminController {
     @ApiIgnore
     @RequestMapping(value = "/admin/all", produces = APPLICATION_JSON_VALUE, method = GET)
     @ResponseBody
-    public ResponseEntity getAllPolicies(@RequestParam Integer startIndex, @RequestParam Integer nbOfRecords) {
+    public ResponseEntity<byte[]> getAllPolicies(@RequestParam Integer startIndex, @RequestParam Integer nbOfRecords) {
         return new ResponseEntity<>(getJson(policyService.findAll(startIndex, nbOfRecords)), OK);
     }
 }
