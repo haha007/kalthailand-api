@@ -77,19 +77,35 @@ public class DocumentServiceTest {
     }
 
     @Test
-    public void should_have_3_documents_generated_by_default() throws Exception {
+    public void should_have_2_documents_generated_when_policy_is_waiting_for_payment() throws Exception {
         Policy policy = getPolicy();
-        documentService.generatePolicyDocuments(policy);
-        assertThat(policy.getDocuments()).extracting("typeName").containsExactly(ERECEIPT_IMAGE, ERECEIPT_PDF, APPLICATION_FORM);
+        documentService.generateNotValidatedPolicyDocuments(policy);
+        assertThat(policy.getDocuments()).extracting("typeName").containsExactly(APPLICATION_FORM, DA_FORM);
     }
 
     @Test
-    public void should_still_have_only_3_documents_even_after_generating_more_than_once() throws Exception {
+    public void should_still_have_only_2_documents_even_after_generating_more_than_once() throws Exception {
         Policy policy = getPolicy();
-        documentService.generatePolicyDocuments(policy);
-        documentService.generatePolicyDocuments(policy);
-        documentService.generatePolicyDocuments(policy);
-        assertThat(policy.getDocuments()).extracting("typeName").containsExactly(ERECEIPT_IMAGE, ERECEIPT_PDF, APPLICATION_FORM);
+        documentService.generateNotValidatedPolicyDocuments(policy);
+        documentService.generateNotValidatedPolicyDocuments(policy);
+        documentService.generateNotValidatedPolicyDocuments(policy);
+        assertThat(policy.getDocuments()).extracting("typeName").containsExactly(APPLICATION_FORM, DA_FORM);
+    }
+
+    @Test
+    public void should_have_4_documents_generated_when_policy_is_validated() throws Exception {
+        Policy policy = getPolicy();
+        documentService.generateValidatedPolicyDocuments(policy);
+        assertThat(policy.getDocuments()).extracting("typeName").containsExactly(APPLICATION_FORM, DA_FORM, ERECEIPT_IMAGE, ERECEIPT_PDF);
+    }
+
+    @Test
+    public void should_still_have_only_4_documents_even_after_generating_more_than_once() throws Exception {
+        Policy policy = getPolicy();
+        documentService.generateValidatedPolicyDocuments(policy);
+        documentService.generateValidatedPolicyDocuments(policy);
+        documentService.generateValidatedPolicyDocuments(policy);
+        assertThat(policy.getDocuments()).extracting("typeName").containsExactly(APPLICATION_FORM, DA_FORM, ERECEIPT_IMAGE, ERECEIPT_PDF);
     }
 
     @Test
@@ -97,7 +113,7 @@ public class DocumentServiceTest {
         Policy policy = getPolicy();
         policy(policy);
 
-        documentService.generatePolicyDocuments(policy);
+        documentService.generateValidatedPolicyDocuments(policy);
         Optional<Document> documentPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(ERECEIPT_PDF)).findFirst();
         assertThat(documentPdf.isPresent()).isTrue();
 

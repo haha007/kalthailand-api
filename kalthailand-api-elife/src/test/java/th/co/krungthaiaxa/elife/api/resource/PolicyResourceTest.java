@@ -111,8 +111,9 @@ public class PolicyResourceTest {
     public void should_be_able_to_update_payment_without_error_message() throws IOException, URISyntaxException {
         Policy policy = getPolicy();
 
-        URI paymentURI = new URI("http://localhost:" + port + "/policies/" + policy.getPolicyId() + "/payments/" + policy.getPayments().get(0).getPaymentId());
+        URI paymentURI = new URI("http://localhost:" + port + "/policies/" + policy.getPolicyId() + "/update/status/pendingValidation");
         UriComponentsBuilder updatePaymentBuilder = UriComponentsBuilder.fromUri(paymentURI)
+                .queryParam("paymentId", policy.getPayments().get(0).getPaymentId())
                 .queryParam("value", 200.0)
                 .queryParam("currencyCode", "THB")
                 .queryParam("registrationKey", "something")
@@ -121,6 +122,7 @@ public class PolicyResourceTest {
                 .queryParam("creditCardName", "myCreditCardName")
                 .queryParam("paymentMethod", "myPaymentMethod");
         ResponseEntity<String> updatePaymentResponse = template.exchange(updatePaymentBuilder.toUriString(), PUT, null, String.class);
+        assertThat(updatePaymentResponse.getStatusCode().value()).isEqualTo(OK.value());
 
         Policy updatedPolicy = getPolicyFromJSon(updatePaymentResponse.getBody());
         assertThat(updatePaymentResponse.getStatusCode().value()).isEqualTo(OK.value());
@@ -131,8 +133,9 @@ public class PolicyResourceTest {
     public void should_not_be_able_to_update_payment_with_error_message_and_no_error_code() throws IOException, URISyntaxException {
         Policy policy = getPolicy();
 
-        URI paymentURI = new URI("http://localhost:" + port + "/policies/" + policy.getPolicyId() + "/payments/" + policy.getPayments().get(0).getPaymentId());
+        URI paymentURI = new URI("http://localhost:" + port + "/policies/" + policy.getPolicyId() + "/update/status/pendingValidation");
         UriComponentsBuilder updatePaymentBuilder = UriComponentsBuilder.fromUri(paymentURI)
+                .queryParam("paymentId", policy.getPayments().get(0).getPaymentId())
                 .queryParam("value", 200.0)
                 .queryParam("currencyCode", "THB")
                 .queryParam("registrationKey", "something")
@@ -153,8 +156,9 @@ public class PolicyResourceTest {
     public void should_be_able_to_update_payment_with_error_message() throws IOException, URISyntaxException {
         Policy policy = getPolicy();
 
-        URI paymentURI = new URI("http://localhost:" + port + "/policies/" + policy.getPolicyId() + "/payments/" + policy.getPayments().get(0).getPaymentId());
+        URI paymentURI = new URI("http://localhost:" + port + "/policies/" + policy.getPolicyId() + "/update/status/pendingValidation");
         UriComponentsBuilder updatePaymentBuilder = UriComponentsBuilder.fromUri(paymentURI)
+                .queryParam("paymentId", policy.getPayments().get(0).getPaymentId())
                 .queryParam("value", 200.0)
                 .queryParam("currencyCode", "THB")
                 .queryParam("registrationKey", "something")
@@ -165,6 +169,7 @@ public class PolicyResourceTest {
                 .queryParam("errorCode", "myErrorCode")
                 .queryParam("errorMessage", "myErrorMessage");
         ResponseEntity<String> updatePaymentResponse = template.exchange(updatePaymentBuilder.toUriString(), PUT, null, String.class);
+        assertThat(updatePaymentResponse.getStatusCode().value()).isEqualTo(OK.value());
 
         Policy updatedPolicy = getPolicyFromJSon(updatePaymentResponse.getBody());
         assertThat(updatePaymentResponse.getStatusCode().value()).isEqualTo(OK.value());

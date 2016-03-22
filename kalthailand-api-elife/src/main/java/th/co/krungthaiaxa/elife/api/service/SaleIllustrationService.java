@@ -55,7 +55,7 @@ public class SaleIllustrationService {
     private MessageSource messageSource;
     private Locale thLocale = new Locale("th","");
 
-    public Pair<byte[], String> generatePDF(Quote quote, String imgBase64) throws Exception {
+    public Pair<byte[], String> generatePDF(Quote quote, String imgBase64) throws DocumentException, IOException {
         byte[] graphContent = Base64.getDecoder().decode(imgBase64.getBytes());
 
         if (logger.isDebugEnabled()) {

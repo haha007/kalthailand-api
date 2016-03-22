@@ -210,7 +210,7 @@ public class EmailServiceTest {
         policy(policy);
         policy.getPayments().get(0).setEffectiveDate(LocalDate.now());
 
-        documentService.generatePolicyDocuments(policy);
+        documentService.generateValidatedPolicyDocuments(policy);
         Optional<Document> documentPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(ERECEIPT_PDF)).findFirst();
         assertThat(documentPdf.isPresent()).isTrue();
 

@@ -1,8 +1,6 @@
 package th.co.krungthaiaxa.elife.api.controller;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,7 +11,6 @@ import th.co.krungthaiaxa.elife.api.model.Policy;
 import th.co.krungthaiaxa.elife.api.service.PolicyService;
 
 import javax.inject.Inject;
-import java.util.Collection;
 import java.util.Optional;
 
 import static org.springframework.http.HttpStatus.*;
@@ -37,7 +34,6 @@ public class AdminController {
     @RequestMapping(value = "/admin/policies/validate/{policyId}", produces = APPLICATION_JSON_VALUE, method = GET)
     @ResponseBody
     public ResponseEntity<byte[]> getPolicy(@PathVariable String policyId) {
-        Collection<GrantedAuthority> roles = (Collection<GrantedAuthority>) SecurityContextHolder.getContext().getAuthentication().getAuthorities();
         Optional<Policy> policy = policyService.findPolicy(policyId);
         if (!policy.isPresent()) {
             return new ResponseEntity<>(getJson(POLICY_DOES_NOT_EXIST), NOT_FOUND);

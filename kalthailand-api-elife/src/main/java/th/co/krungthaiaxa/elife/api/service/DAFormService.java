@@ -78,15 +78,15 @@ public class DAFormService {
 
         g1.drawString(person.getRegistrations().get(0).getId(), 1870, 695);
 
-        if (person.getHomePhoneNumber().getNumber() != null) {
+        if (person.getHomePhoneNumber() != null && person.getHomePhoneNumber().getNumber() != null) {
             g1.drawString(person.getHomePhoneNumber().getNumber(), 290, 785);
         }
 
-        if (person.getWorkPhoneNumber().getNumber() != null) {
+        if (person.getWorkPhoneNumber() != null && person.getWorkPhoneNumber().getNumber() != null) {
             g1.drawString(person.getWorkPhoneNumber().getNumber(), 690, 785);
         }
 
-        if (person.getMobilePhoneNumber().getNumber() != null) {
+        if (person.getMobilePhoneNumber() != null && person.getMobilePhoneNumber().getNumber() != null) {
             g1.drawString(person.getMobilePhoneNumber().getNumber(), 1080, 785);
         }
 

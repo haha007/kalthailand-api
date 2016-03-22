@@ -1,5 +1,6 @@
 package th.co.krungthaiaxa.elife.api.service;
 
+import com.itextpdf.text.DocumentException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
@@ -13,6 +14,7 @@ import th.co.krungthaiaxa.elife.api.products.ProductType;
 import th.co.krungthaiaxa.elife.api.utils.EmailSender;
 
 import javax.inject.Inject;
+import javax.mail.MessagingException;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -50,7 +52,7 @@ public class EmailService {
         this.saleIllustrationService = saleIllustrationService;
     }
 
-    public void sendQuoteEmail(Quote quote, String base64Image) throws Exception {
+    public void sendQuoteEmail(Quote quote, String base64Image) throws IOException, MessagingException, DocumentException {
         logger.info("Sending quote email");
         List<Pair<byte[], String>> base64ImgFileNames = new ArrayList<>();
         base64ImgFileNames.add(Pair.of(Base64.getDecoder().decode(base64Image), "<imageElife2>"));
@@ -64,7 +66,7 @@ public class EmailService {
         logger.info("Quote email sent");
     }
 
-    public void sendEreceiptEmail(Policy policy, Pair<byte[], String> attachFile) throws Exception {
+    public void sendEreceiptEmail(Policy policy, Pair<byte[], String> attachFile) throws IOException, MessagingException {
         logger.info("Sending ereceipt email");
         List<Pair<byte[], String>> base64ImgFileNames = new ArrayList<>();
         base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/logo.png")), "<imageElife>"));

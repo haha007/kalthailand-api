@@ -96,7 +96,34 @@ public class DocumentService {
         return document;
     }
 
-    public void generatePolicyDocuments(Policy policy) {
+    public void generateNotValidatedPolicyDocuments(Policy policy) {
+        // Generate Application Form
+        Optional<Document> applicationForm = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(APPLICATION_FORM)).findFirst();
+        if (!applicationForm.isPresent()) {
+            try {
+                byte[] content = applicationFormService.generatePdfForm(policy);
+                addDocument(policy, content, "application/pdf", APPLICATION_FORM);
+            } catch (Exception e) {
+                logger.error("Application form for Policy [" + policy.getPolicyId() + "] has not been generated.", e);
+            }
+        }
+
+        // Generate DA Form
+        Optional<Document> daForm = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(DA_FORM)).findFirst();
+        if (!daForm.isPresent()) {
+            try {
+                byte[] content = daFormService.generateDAForm(policy);
+                addDocument(policy, content, "application/pdf", DA_FORM);
+            } catch (Exception e) {
+                logger.error("DA form for Policy [" + policy.getPolicyId() + "] has not been generated.", e);
+            }
+        }
+    }
+
+    public void generateValidatedPolicyDocuments(Policy policy) {
+        // In case previous documents were not generated
+        generateNotValidatedPolicyDocuments(policy);
+
         // Generate Ereceipt as Image
         byte[] ereceiptImage = null;
         Optional<Document> documentImage = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(ERECEIPT_IMAGE)).findFirst();
@@ -118,28 +145,6 @@ public class DocumentService {
                 addDocument(policy, createEreceiptPDF(ereceiptImage), "application/pdf", ERECEIPT_PDF);
             } catch (DocumentException | IOException e) {
                 logger.error("PDF Ereceipt for Policy [" + policy.getPolicyId() + "] has not been generated.", e);
-            }
-        }
-
-        // Generate Application Form
-        Optional<Document> applicationForm = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(APPLICATION_FORM)).findFirst();
-        if (!applicationForm.isPresent()) {
-            try {
-                byte[] content = applicationFormService.generatePdfForm(policy);
-                addDocument(policy, content, "application/pdf", APPLICATION_FORM);
-            } catch (Exception e) {
-                logger.error("Application form for Policy [" + policy.getPolicyId() + "] has not been generated.", e);
-            }
-        }
-
-        // Generate Application Form
-        Optional<Document> daForm = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(DA_FORM)).findFirst();
-        if (!daForm.isPresent()) {
-            try {
-                byte[] content = daFormService.generateDAForm(policy);
-                addDocument(policy, content, "application/pdf", DA_FORM);
-            } catch (Exception e) {
-                logger.error("DA form for Policy [" + policy.getPolicyId() + "] has not been generated.", e);
             }
         }
     }

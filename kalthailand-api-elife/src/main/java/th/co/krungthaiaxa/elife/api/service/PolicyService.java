@@ -1,5 +1,6 @@
 package th.co.krungthaiaxa.elife.api.service;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,12 +16,11 @@ import th.co.krungthaiaxa.elife.api.products.ProductFactory;
 import th.co.krungthaiaxa.elife.api.repository.*;
 
 import javax.inject.Inject;
+import javax.mail.MessagingException;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static java.time.format.DateTimeFormatter.ofPattern;
@@ -28,7 +28,7 @@ import static th.co.krungthaiaxa.elife.api.exception.ExceptionUtils.isTrue;
 import static th.co.krungthaiaxa.elife.api.exception.ExceptionUtils.notNull;
 import static th.co.krungthaiaxa.elife.api.exception.PolicyValidationException.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.PaymentStatus.*;
-import static th.co.krungthaiaxa.elife.api.model.enums.PolicyStatus.PENDING_PAYMENT;
+import static th.co.krungthaiaxa.elife.api.model.enums.PolicyStatus.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.RegistrationTypeName.THAI_ID_NUMBER;
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.ERROR;
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.SUCCESS;
@@ -42,18 +42,27 @@ public class PolicyService {
     private final PolicyRepository policyRepository;
     private final PolicyNumberRepository policyNumberRepository;
     private final QuoteRepository quoteRepository;
+    private final EmailService emailService;
+    private final DocumentService documentService;
+    private final SMSApiService smsApiService;
 
     @Inject
     public PolicyService(CDBRepository cdbRepository,
                          PaymentRepository paymentRepository,
                          PolicyRepository policyRepository,
                          PolicyNumberRepository policyNumberRepository,
-                         QuoteRepository quoteRepository) {
+                         QuoteRepository quoteRepository,
+                         EmailService emailService,
+                         DocumentService documentService,
+                         SMSApiService smsApiService) {
         this.cdbRepository = cdbRepository;
         this.paymentRepository = paymentRepository;
         this.policyRepository = policyRepository;
         this.policyNumberRepository = policyNumberRepository;
         this.quoteRepository = quoteRepository;
+        this.emailService = emailService;
+        this.documentService = documentService;
+        this.smsApiService = smsApiService;
     }
 
     public List<Policy> findAll(Integer startIndex, Integer nbOfRecords) {
@@ -145,33 +154,59 @@ public class PolicyService {
         logger.info("Payment [" + payment.getPaymentId() + "] has been updated");
     }
 
-    public void addAgentCodes(Policy policy) {
+    public void updatePolicyAfterFirstPaymentValidated(Policy policy) {
+        // Generate documents
+        documentService.generateNotValidatedPolicyDocuments(policy);
+
+        // Update the policy
         Optional<Registration> insuredId = policy.getInsureds().get(0).getPerson().getRegistrations()
                 .stream()
                 .filter(registration -> registration.getTypeName().equals(THAI_ID_NUMBER))
                 .findFirst();
         String insuredDOB = policy.getInsureds().get(0).getPerson().getBirthDate().format(ofPattern("yyyyMMdd"));
-        if (!insuredId.isPresent()) {
-            // Nothing we can do
-            return;
+        if (insuredId.isPresent()) {
+            Optional<Triple<String, String, String>> agent = cdbRepository.getExistingAgentCode(insuredId.get().getId(), insuredDOB);
+            if (agent.isPresent()) {
+                String agent1 = agent.get().getMiddle();
+                if (agent1 != null) {
+                    policy.getInsureds().get(0).addInsuredPreviousAgent(agent1);
+                }
+
+                String agent2 = agent.get().getRight();
+                if (agent2 != null) {
+                    policy.getInsureds().get(0).addInsuredPreviousAgent(agent2);
+                }
+            }
         }
 
-        Optional<Triple<String, String, String>> agent = cdbRepository.getExistingAgentCode(insuredId.get().getId(), insuredDOB);
-        if (!agent.isPresent()) {
-            // Nothing to do
-            return;
+        policy.setStatus(PENDING_VALIDATION);
+        policyRepository.save(policy);
+    }
+
+    public void updatePolicyAfterPolicyHasBeenValidated(Policy policy, Document ereceiptPdf) {
+        // Generate documents
+        documentService.generateValidatedPolicyDocuments(policy);
+
+        // Send Email
+        DocumentDownload documentDownload = documentService.downloadDocument(ereceiptPdf.getId());
+        try {
+            emailService.sendEreceiptEmail(policy, Pair.of(Base64.getDecoder().decode(documentDownload.getContent()), "e-receipt_" + policy.getPolicyId() + ".pdf"));
+        } catch (IOException | MessagingException e) {
+            logger.error(String.format("Unable to send e-receipt document while sending email with policy id is [%1$s].", policy.getPolicyId()), e);
         }
 
-        String agent1 = agent.get().getMiddle();
-        if (agent1 != null) {
-            policy.getInsureds().get(0).addInsuredPreviousAgent(agent1);
-        }
+        // Send SMS
+//        try {
+//            Map<String,String> m = smsApiService.sendConfirmationMessage(policy.get());
+//            if(!m.get("STATUS").equals("0")){
+//                return new ResponseEntity<>(SMS_IS_UNAVAILABLE, INTERNAL_SERVER_ERROR);
+//            }
+//        } catch (IOException e) {
+//            logger.error(String.format("Unable to send confirmation SMS message with policy id is [%1$s].", policy.get().getPolicyId()), e);
+//            return new ResponseEntity<>(UNABLE_TO_SEND_SMS, INTERNAL_SERVER_ERROR);
+//        }
 
-        String agent2 = agent.get().getRight();
-        if (agent2 != null) {
-            policy.getInsureds().get(0).addInsuredPreviousAgent(agent2);
-        }
-
+        policy.setStatus(VALIDATED);
         policyRepository.save(policy);
     }
 }

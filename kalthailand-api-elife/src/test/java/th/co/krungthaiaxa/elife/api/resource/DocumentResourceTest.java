@@ -1,7 +1,10 @@
 package th.co.krungthaiaxa.elife.api.resource;
 
+import com.icegreen.greenmail.junit.GreenMailRule;
+import com.icegreen.greenmail.util.ServerSetupTest;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,6 +41,8 @@ import static org.springframework.http.HttpMethod.PUT;
 import static org.springframework.http.HttpStatus.*;
 import static th.co.krungthaiaxa.elife.api.TestUtil.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
+import static th.co.krungthaiaxa.elife.api.model.enums.PolicyStatus.PENDING_PAYMENT;
+import static th.co.krungthaiaxa.elife.api.model.enums.PolicyStatus.PENDING_VALIDATION;
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.ERROR;
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.SUCCESS;
 
@@ -47,6 +52,8 @@ import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.SUCCES
 @ActiveProfiles("test")
 @IntegrationTest({"server.port=0"})
 public class DocumentResourceTest {
+    @Rule
+    public final GreenMailRule greenMail = new GreenMailRule(ServerSetupTest.SMTP_IMAP);
     @Value("${api.security.user.name}")
     private String apiUserName;
     @Value("${api.security.user.password}")
@@ -162,11 +169,12 @@ public class DocumentResourceTest {
     }
 
     @Test
-    public void should_return_0_documents_after_a_policy_has_been_created_and_payment_updated_with_error() throws IOException, URISyntaxException {
+    public void should_return_0_documents_after_a_policy_has_been_created_and_payment_request_returned_error() throws IOException, URISyntaxException {
         Policy policy = getPolicy();
 
-        URI paymentURI = new URI("http://localhost:" + port + "/policies/" + policy.getPolicyId() + "/payments/" + policy.getPayments().get(0).getPaymentId());
+        URI paymentURI = new URI("http://localhost:" + port + "/policies/" + policy.getPolicyId() + "/update/status/pendingValidation");
         UriComponentsBuilder updatePaymentBuilder = UriComponentsBuilder.fromUri(paymentURI)
+                .queryParam("paymentId", policy.getPayments().get(0).getPaymentId())
                 .queryParam("value", 200.0)
                 .queryParam("currencyCode", "THB")
                 .queryParam("registrationKey", "something")
@@ -174,10 +182,14 @@ public class DocumentResourceTest {
                 .queryParam("channelType", LINE)
                 .queryParam("creditCardName", "myCreditCardName")
                 .queryParam("paymentMethod", "myPaymentMethod")
-                .queryParam("errorMessage", "myErrorMessage");
-        template.exchange(updatePaymentBuilder.toUriString(), PUT, new HttpEntity<>(""), String.class);
+                .queryParam("errorMessage", "myErrorMessage")
+                .queryParam("errorCode", "myErrorCode");
+        ResponseEntity<String> paymentResponse = template.exchange(updatePaymentBuilder.toUriString(), PUT, null, String.class);
+        assertThat(paymentResponse.getStatusCode().value()).isEqualTo(OK.value());
+        Policy updatedPolicy = getPolicyFromJSon(paymentResponse.getBody());
+        assertThat(updatedPolicy.getStatus()).isEqualTo(PENDING_PAYMENT);
 
-        URI documentUploadURI = new URI("http://localhost:" + port + "/documents/policies/" + policy.getPolicyId());
+        URI documentUploadURI = new URI("http://localhost:" + port + "/documents/policies/" + updatedPolicy.getPolicyId());
         ResponseEntity<String> response = template.getForEntity(documentUploadURI, String.class);
         assertThat(response.getStatusCode().value()).isEqualTo(OK.value());
 
@@ -186,11 +198,12 @@ public class DocumentResourceTest {
     }
 
     @Test
-    public void should_return_3_documents_after_a_policy_has_been_created_and_payment_updated_successfully() throws IOException, URISyntaxException {
+    public void should_return_2_documents_when_policy_is_waiting_for_validation() throws IOException, URISyntaxException {
         Policy policy = getPolicy();
 
-        URI paymentURI = new URI("http://localhost:" + port + "/policies/" + policy.getPolicyId() + "/payments/" + policy.getPayments().get(0).getPaymentId());
+        URI paymentURI = new URI("http://localhost:" + port + "/policies/" + policy.getPolicyId() + "/update/status/pendingValidation");
         UriComponentsBuilder updatePaymentBuilder = UriComponentsBuilder.fromUri(paymentURI)
+                .queryParam("paymentId", policy.getPayments().get(0).getPaymentId())
                 .queryParam("value", 200.0)
                 .queryParam("currencyCode", "THB")
                 .queryParam("registrationKey", "something")
@@ -198,14 +211,17 @@ public class DocumentResourceTest {
                 .queryParam("channelType", LINE)
                 .queryParam("creditCardName", "myCreditCardName")
                 .queryParam("paymentMethod", "myPaymentMethod");
-        template.exchange(updatePaymentBuilder.toUriString(), PUT, new HttpEntity<>(""), String.class);
+        ResponseEntity<String> paymentResponse = template.exchange(updatePaymentBuilder.toUriString(), PUT, null, String.class);
+        assertThat(paymentResponse.getStatusCode().value()).isEqualTo(OK.value());
+        Policy updatedPolicy = getPolicyFromJSon(paymentResponse.getBody());
+        assertThat(updatedPolicy.getStatus()).isEqualTo(PENDING_VALIDATION);
 
         URI documentUploadURI = new URI("http://localhost:" + port + "/documents/policies/" + policy.getPolicyId());
         ResponseEntity<String> response = template.getForEntity(documentUploadURI, String.class);
         assertThat(response.getStatusCode().value()).isEqualTo(OK.value());
 
         List<Document> documents = getDocumentsFromJSon(response.getBody());
-        assertThat(documents).hasSize(3);
+        assertThat(documents).hasSize(2);
     }
 
     private Policy getPolicy() throws URISyntaxException, IOException {
