@@ -21,10 +21,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Value("${admin.security.user.password}")
     private String adminUserPassword;
 
-    public SecurityConfiguration() {
-        super(true);
-    }
-
     /**
      * This section defines the user account configured in properties file
      * This user will get the USER role that will be used to configure the security
@@ -49,6 +45,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 // UI rights
                 .antMatchers(HttpMethod.GET, "/**/*.htm").hasRole("UI")
+                .antMatchers(HttpMethod.GET, "/**/*.html").hasRole("UI")
                 .antMatchers(HttpMethod.GET, "/**/*.css").hasRole("UI")
                 .antMatchers(HttpMethod.GET, "/**/*.ttf").hasRole("UI")
                 .antMatchers(HttpMethod.GET, "/**/*.woff").hasRole("UI")
