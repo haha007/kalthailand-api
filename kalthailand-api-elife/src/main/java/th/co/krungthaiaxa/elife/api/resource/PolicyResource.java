@@ -10,6 +10,7 @@ import th.co.krungthaiaxa.elife.api.model.Payment;
 import th.co.krungthaiaxa.elife.api.model.Policy;
 import th.co.krungthaiaxa.elife.api.model.Quote;
 import th.co.krungthaiaxa.elife.api.model.enums.ChannelType;
+import th.co.krungthaiaxa.elife.api.model.enums.PolicyStatus;
 import th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus;
 import th.co.krungthaiaxa.elife.api.model.error.Error;
 import th.co.krungthaiaxa.elife.api.service.PolicyService;
@@ -24,6 +25,7 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
+import static th.co.krungthaiaxa.elife.api.model.enums.PolicyStatus.PENDING_VALIDATION;
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.ERROR;
 import static th.co.krungthaiaxa.elife.api.model.error.ErrorCode.*;
 import static th.co.krungthaiaxa.elife.api.utils.JsonUtil.getJson;
@@ -89,7 +91,7 @@ public class PolicyResource {
     @RequestMapping(value = "/policies/{policyId}/payments", produces = APPLICATION_JSON_VALUE, method = GET)
     @ResponseBody
     public ResponseEntity getPolicyPayments(
-            @ApiParam(value = "The policy ID")
+            @ApiParam(value = "The policy ID", required = true)
             @PathVariable String policyId) {
         Optional<Policy> policy = policyService.findPolicy(policyId);
         if (!policy.isPresent()) {
@@ -140,6 +142,11 @@ public class PolicyResource {
             return new ResponseEntity<>(POLICY_DOES_NOT_EXIST, NOT_FOUND);
         }
 
+        if (!policy.get().getStatus().equals(PolicyStatus.PENDING_PAYMENT)) {
+            logger.error("The policy is in status [" + policy.get().getStatus().name() + "] and cannot be updated to " + PENDING_VALIDATION + " status.");
+            return new ResponseEntity<>(POLICY_IS_NOT_PENDING_FOR_PAYMENT.apply(policyId), NOT_ACCEPTABLE);
+        }
+
         Optional<Payment> payment = policy.get().getPayments().stream().filter(tmp -> tmp.getPaymentId().equals(paymentId)).findFirst();
         if (!payment.isPresent()) {
             logger.error("Unable to find the payment with ID [" + paymentId + "] in the policy with ID [" + policyId + "]");
@@ -150,9 +157,8 @@ public class PolicyResource {
             if (!errorCode.isPresent() || !errorMessage.isPresent() || isEmpty(errorCode.get()) || isEmpty(errorMessage.get())) {
                 return new ResponseEntity<>(PAYMENT_NOT_UPDATED_ERROR_DETAILS_NEEDED, NOT_ACCEPTABLE);
             }
-        }
-        else {
-            if (!registrationKey.isPresent()  || isEmpty(registrationKey.get())) {
+        } else {
+            if (!registrationKey.isPresent() || isEmpty(registrationKey.get())) {
                 return new ResponseEntity<>(PAYMENT_NOT_UPDATED_REG_KEY_NEEDED, NOT_ACCEPTABLE);
             }
         }
@@ -166,6 +172,49 @@ public class PolicyResource {
         }
 
         policyService.updatePolicyAfterFirstPaymentValidated(policy.get());
+
+        return new ResponseEntity<>(getJson(policy.get()), OK);
+    }
+
+    @ApiOperation(value = "Update Policy status", notes = "Updates the Policy status to VALIDATED. If " +
+            "susuccessful, it also generates the eReceipt form document (image and PDF) and eReceipt pdf is sent to " +
+            "Tele sale API. LINE Pay API is called to confirm the payment booking made earlier using the " +
+            "registration key. Payment will be updated with amount and effective date. Finally, it sends " +
+            "notifications through email, SMS and LINE push notifications", response = Policy.class)
+    @ApiResponses({
+            @ApiResponse(code = 404, message = "If the policy doesn't exist", response = Error.class),
+            @ApiResponse(code = 406, message = "If the payment id is not found in the policy payment list", response = Error.class),
+            @ApiResponse(code = 500, message = "If there was some internal error", response = Error.class)
+    })
+    @RequestMapping(value = "/policies/{policyId}/update/status/validated", produces = APPLICATION_JSON_VALUE, method = PUT)
+    @ResponseBody
+    public ResponseEntity updatePolicyToPendingValidation(
+            @ApiParam(value = "The policy ID", required = true)
+            @PathVariable String policyId,
+            @ApiParam(value = "The payment ID", required = true)
+            @RequestParam String paymentId,
+            @ApiParam(value = "The amount registered through the channel", required = true, defaultValue = "0.0")
+            @RequestParam Double value,
+            @ApiParam(value = "The currency registered through the channel", required = true)
+            @RequestParam String currencyCode) {
+        Optional<Policy> policy = policyService.findPolicy(policyId);
+        if (!policy.isPresent()) {
+            logger.error("Unable to find the policy with ID [" + policyId + "]");
+            return new ResponseEntity<>(POLICY_DOES_NOT_EXIST, NOT_FOUND);
+        }
+
+        Optional<Payment> payment = policy.get().getPayments().stream().filter(tmp -> tmp.getPaymentId().equals(paymentId)).findFirst();
+        if (!payment.isPresent()) {
+            logger.error("Unable to find the payment with ID [" + paymentId + "] in the policy with ID [" + policyId + "]");
+            return new ResponseEntity<>(POLICY_DOES_NOT_CONTAIN_PAYMENT, NOT_ACCEPTABLE);
+        }
+
+        //TODO : call LINE Pay API
+
+        // Update the payment if confirm is success
+//        policyService.updatePayment(payment.get(), value, currencyCode);
+
+//        policyService.updatePolicyAfterPolicyHasBeenValidated(policy.get());
 
         return new ResponseEntity<>(getJson(policy.get()), OK);
     }
