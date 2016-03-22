@@ -105,15 +105,16 @@ public class PolicyResource {
     @ApiResponses({
             @ApiResponse(code = 404, message = "If the policy doesn't exist", response = Error.class),
             @ApiResponse(code = 406, message = "If the payment id is not found in the policy payment list", response = Error.class),
-            @ApiResponse(code = 406, message = "If the payment has failed and no error details have been provided", response = Error.class),
+            @ApiResponse(code = 406, message = "If the payment booking has failed and error details have not been provided", response = Error.class),
+            @ApiResponse(code = 406, message = "If the payment booking is successful and no registration key has been provided", response = Error.class),
             @ApiResponse(code = 500, message = "If there was some internal error", response = Error.class)
     })
     @RequestMapping(value = "/policies/{policyId}/update/status/pendingValidation", produces = APPLICATION_JSON_VALUE, method = PUT)
     @ResponseBody
     public ResponseEntity updatePolicyToPendingValidation(
-            @ApiParam(value = "The policy ID")
+            @ApiParam(value = "The policy ID", required = true)
             @PathVariable String policyId,
-            @ApiParam(value = "The payment ID")
+            @ApiParam(value = "The payment ID", required = true)
             @RequestParam String paymentId,
             @ApiParam(value = "The amount registered through the channel", required = true, defaultValue = "0.0")
             @RequestParam Double value,
@@ -148,6 +149,11 @@ public class PolicyResource {
         if (ERROR.equals(status)) {
             if (!errorCode.isPresent() || !errorMessage.isPresent() || isEmpty(errorCode.get()) || isEmpty(errorMessage.get())) {
                 return new ResponseEntity<>(PAYMENT_NOT_UPDATED_ERROR_DETAILS_NEEDED, NOT_ACCEPTABLE);
+            }
+        }
+        else {
+            if (!registrationKey.isPresent()  || isEmpty(registrationKey.get())) {
+                return new ResponseEntity<>(PAYMENT_NOT_UPDATED_REG_KEY_NEEDED, NOT_ACCEPTABLE);
             }
         }
 
