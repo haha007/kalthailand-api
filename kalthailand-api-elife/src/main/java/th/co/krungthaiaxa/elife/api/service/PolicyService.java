@@ -6,7 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.elife.api.data.PolicyNumber;
 import th.co.krungthaiaxa.elife.api.exception.ElifeException;
@@ -34,8 +33,6 @@ import static th.co.krungthaiaxa.elife.api.model.enums.PolicyStatus.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.RegistrationTypeName.THAI_ID_NUMBER;
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.ERROR;
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.SUCCESS;
-import static th.co.krungthaiaxa.elife.api.model.error.ErrorCode.*;
-import static org.springframework.http.HttpStatus.*;
 
 @Service
 public class PolicyService {
@@ -112,10 +109,21 @@ public class PolicyService {
         return policy;
     }
 
-    public void updatePayment(Payment payment, Double value, String currencyCode,
-                              Optional<String> registrationKey, SuccessErrorStatus status, ChannelType channelType,
-                              Optional<String> creditCardName, Optional<String> paymentMethod,
-                              Optional<String> errorCode, Optional<String> errorMessage) {
+    public void reservePayments(Policy policy, Optional<String> registrationKey, SuccessErrorStatus status,
+                                ChannelType channelType, Optional<String> errorCode, Optional<String> errorMessage) {
+        for (Payment payment : policy.getPayments()) {
+            if (registrationKey.isPresent() && !registrationKey.get().equals(payment.getRegistrationKey())) {
+                payment.setRegistrationKey(registrationKey.get());
+            }
+
+            paymentRepository.save(payment);
+        }
+        logger.info("Payments in policy [" + policy.getPolicyId() + "] have been booked");
+    }
+
+    public void confirmPayment(Payment payment, Double value, String currencyCode, SuccessErrorStatus status,
+                               ChannelType channelType, Optional<String> creditCardName, Optional<String> paymentMethod,
+                               Optional<String> errorCode, Optional<String> errorMessage) {
         if (!currencyCode.equals(payment.getAmount().getCurrencyCode())) {
             status = ERROR;
             errorMessage = Optional.of("Currencies are different");
@@ -135,9 +143,6 @@ public class PolicyService {
         paymentInformation.setRejectionErrorMessage(errorMessage.isPresent() ? errorMessage.get() : null);
         paymentInformation.setStatus(status);
         payment.getPaymentInformations().add(paymentInformation);
-        if (registrationKey.isPresent() && !registrationKey.get().equals(payment.getRegistrationKey())) {
-            payment.setRegistrationKey(registrationKey.get());
-        }
 
         Double totalSuccesfulPayments = payment.getPaymentInformations()
                 .stream()
@@ -155,7 +160,7 @@ public class PolicyService {
         }
 
         paymentRepository.save(payment);
-        logger.info("Payment [" + payment.getPaymentId() + "] has been updated");
+        logger.info("Payment [" + payment.getPaymentId() + "] has been confirmed");
     }
 
     public void updatePolicyAfterFirstPaymentValidated(Policy policy) {

@@ -25,6 +25,7 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
+import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
 import static th.co.krungthaiaxa.elife.api.model.enums.PolicyStatus.PENDING_VALIDATION;
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.ERROR;
 import static th.co.krungthaiaxa.elife.api.model.error.ErrorCode.*;
@@ -128,10 +129,6 @@ public class PolicyResource {
             @RequestParam SuccessErrorStatus status,
             @ApiParam(value = "The Channel", required = true)
             @RequestParam ChannelType channelType,
-            @ApiParam(value = "The credit card name given by the channel (if any)", required = false)
-            @RequestParam Optional<String> creditCardName,
-            @ApiParam(value = "The payment method given by the channel (if any)", required = false)
-            @RequestParam Optional<String> paymentMethod,
             @ApiParam(value = "The error message given by the channel (if any)", required = false)
             @RequestParam Optional<String> errorCode,
             @ApiParam(value = "The error message given by the channel (if any)", required = false)
@@ -164,7 +161,7 @@ public class PolicyResource {
         }
 
         // Update the payment whatever the status of the payment is
-        policyService.updatePayment(payment.get(), value, currencyCode, registrationKey, status, channelType, creditCardName, paymentMethod, errorCode, errorMessage);
+        policyService.reservePayments(policy.get(), registrationKey, status, channelType, errorCode, errorMessage);
 
         // If in error, nothing else should be done
         if (ERROR.equals(status)) {
@@ -188,7 +185,7 @@ public class PolicyResource {
     })
     @RequestMapping(value = "/policies/{policyId}/update/status/validated", produces = APPLICATION_JSON_VALUE, method = PUT)
     @ResponseBody
-    public ResponseEntity updatePolicyToPendingValidation(
+    public ResponseEntity updatePolicyToValidated(
             @ApiParam(value = "The policy ID", required = true)
             @PathVariable String policyId,
             @ApiParam(value = "The payment ID", required = true)
@@ -210,16 +207,22 @@ public class PolicyResource {
         }
 
         //TODO : call LINE Pay API
+        Optional<String> creditCardName = Optional.empty();
+        Optional<String> paymentMethod = Optional.empty();
+        Optional<String> errorCode = Optional.empty();
+        Optional<String> errorMessage = Optional.empty();
+        SuccessErrorStatus status = ERROR;
+        ChannelType channelType = LINE;
 
         // Update the payment if confirm is success
-//        policyService.updatePayment(payment.get(), value, currencyCode);
-/*
-        try{
-            policyService.updatePolicyAfterPolicyHasBeenValidated(policy.get());
-        }catch(ElifeException e){
+        policyService.confirmPayment(payment.get(), value, currencyCode, status, channelType, creditCardName, paymentMethod, errorCode, errorMessage);
+
+        //TODO get the ereceipt pdf
+        try {
+            policyService.updatePolicyAfterPolicyHasBeenValidated(policy.get(), null);
+        } catch (ElifeException e) {
             return new ResponseEntity<>(SMS_IS_UNAVAILABLE, INTERNAL_SERVER_ERROR);
         }
-*/
 
         return new ResponseEntity<>(getJson(policy.get()), OK);
     }

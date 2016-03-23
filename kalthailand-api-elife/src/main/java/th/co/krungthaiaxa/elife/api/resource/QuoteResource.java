@@ -106,7 +106,7 @@ public class QuoteResource {
     }
 
     @ApiOperation(value = "Create a quote", notes = "Creates a quote, attached to the session ID, with product " +
-            "details and calculated fields. Possible values for productType are [10EC, iFine]",
+            "details and calculated fields.",
             response = Quote.class)
     @ApiResponses({
             @ApiResponse(code = 500, message = "If quote has not been created", response = Error.class)
