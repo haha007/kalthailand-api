@@ -2,8 +2,10 @@ package th.co.krungthaiaxa.elife.api.products;
 
 import org.apache.commons.lang3.SerializationUtils;
 import org.springframework.stereotype.Component;
+import th.co.krungthaiaxa.elife.api.data.OccupationType;
 import th.co.krungthaiaxa.elife.api.model.*;
 import th.co.krungthaiaxa.elife.api.model.enums.ProductIFinePackage;
+import th.co.krungthaiaxa.elife.api.repository.OccupationTypeRepository;
 import th.co.krungthaiaxa.elife.api.repository.ProductIFineRateRepository;
 
 import javax.inject.Inject;
@@ -12,7 +14,8 @@ import java.util.Optional;
 import static java.time.LocalDate.now;
 import static java.time.ZoneId.SHORT_IDS;
 import static java.time.ZoneId.of;
-import static th.co.krungthaiaxa.elife.api.exception.ExceptionUtils.*;
+import static th.co.krungthaiaxa.elife.api.exception.ExceptionUtils.isEqual;
+import static th.co.krungthaiaxa.elife.api.exception.ExceptionUtils.notNull;
 import static th.co.krungthaiaxa.elife.api.exception.PolicyValidationException.*;
 import static th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException.iFinePackageNameUnknown;
 import static th.co.krungthaiaxa.elife.api.products.ProductType.PRODUCT_IFINE;
@@ -33,6 +36,8 @@ public class ProductIFine implements Product {
 
     @Inject
     private ProductIFineRateRepository productIFineRateRepository;
+    @Inject
+    private OccupationTypeRepository occupationTypeRepository;
 
     @Override
     public void calculateQuote(Quote quote, ProductQuotation productQuotation) {
@@ -49,6 +54,8 @@ public class ProductIFine implements Product {
             return;
         }
 
+        OccupationType occupationType = occupationTypeRepository.findByOccId(productQuotation.getOccupationId());
+
         Insured insured = quote.getInsureds().stream().filter(Insured::getMainInsuredIndicator).findFirst().get();
 
         // copy data already gathered in ProductQuotation
@@ -57,7 +64,7 @@ public class ProductIFine implements Product {
         insured.getPerson().setBirthDate(productQuotation.getDateOfBirth());
         insured.setAgeAtSubscription(age);
         insured.getPerson().setGenderCode(productQuotation.getGenderCode());
-        insured.setProfessionName(productQuotation.getOccupation());
+        insured.setProfessionName(occupationType.getOccTextTh());
 
         // cannot be too young or too old
         checkInsuredAge(insured, MIN_AGE, MAX_AGE);
@@ -100,7 +107,7 @@ public class ProductIFine implements Product {
         Double taxDeductibleRate = productIFineRate.getTaxDeductibleRate().get(age - 18);
         Double nonTaxDeductibleRate = productIFineRate.getNonTaxDeductibleRate().get(age - 18);
         Double riskOccupationCharge = 0.0;
-        if (productQuotation.getRiskOccupation()) {
+        if (occupationType.getOccRisk()) {
             riskOccupationCharge = productIFineRate.getNonTaxDeductibleRiskRate().get(age - 18);
         }
         productIFinePremium.setBasicPremiumRate(taxDeductibleRate);
@@ -214,7 +221,7 @@ public class ProductIFine implements Product {
         }
 
         // we need an occupation
-        boolean hasOccupation = productQuotation.getOccupation() != null;
+        boolean hasOccupation = productQuotation.getOccupationId() != null;
         if (!hasOccupation) {
             return false;
         }
