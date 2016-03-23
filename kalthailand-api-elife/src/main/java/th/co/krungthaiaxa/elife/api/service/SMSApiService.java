@@ -1,5 +1,6 @@
 package th.co.krungthaiaxa.elife.api.service;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -35,9 +36,17 @@ public class SMSApiService {
     @Value("${sms.config.pass}")
     private String smsPass;
 
-    public Map<String,String> sendConfirmationMessage(Policy pol) throws IOException {
-        logger.info(String.format("[%1$s] ...","sendConfirmationMessage"));
-        logger.info(String.format("policy id is %1$s, mobile number is %2$s",pol.getPolicyId(),pol.getInsureds().get(0).getPerson().getMobilePhoneNumber().getNumber()));
+    public Map<String, String> sendConfirmationMessage(Policy pol) throws IOException {
+
+        logger.info(String.format("[%1$s] ...", "sendConfirmationMessage"));
+        logger.info(String.format("policy id is %1$s, mobile number is %2$s", pol.getPolicyId(), pol.getInsureds().get(0).getPerson().getMobilePhoneNumber().getNumber()));
+
+        Map<String, String> res = new HashMap<>();
+
+        if (StringUtils.isBlank(smsUrl)) {
+            res.put("STATUS", "0");
+            return res;
+        }
 
         HttpClient httpclient = HttpClients.createDefault();
         HttpPost httppost = new HttpPost(smsUrl);
@@ -55,13 +64,14 @@ public class SMSApiService {
         HttpEntity entity = response.getEntity();
         String responseAsString = EntityUtils.toString(response.getEntity());
         String[] splitTest = responseAsString.split("\\n");
-        Map<String,String> res = new HashMap<>();
-        for(Integer a = 0; a < splitTest.length; a++){
+        for (Integer a = 0; a < splitTest.length; a++) {
             String[] keyValue = splitTest[a].split("=");
-            res.put(keyValue[0],keyValue[1]);
+            res.put(keyValue[0], keyValue[1]);
         }
 
-        //{STATUS=0, MESSAGE_ID=356976723, END=OK, TASK_ID=22777652}
+        //{STATUS=0, MESSAGE_ID=356976723, END=OK, TASK_ID=22777652} = working properly
+        //{STATUS=502, END=OK} = user name or password is wrong
+        //{STATUS=504, END=OK} = credit is out
         logger.info(res.toString());
 
         return res;

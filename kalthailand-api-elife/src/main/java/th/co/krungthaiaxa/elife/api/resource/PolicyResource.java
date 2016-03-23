@@ -213,8 +213,13 @@ public class PolicyResource {
 
         // Update the payment if confirm is success
 //        policyService.updatePayment(payment.get(), value, currencyCode);
-
-//        policyService.updatePolicyAfterPolicyHasBeenValidated(policy.get());
+/*
+        try{
+            policyService.updatePolicyAfterPolicyHasBeenValidated(policy.get());
+        }catch(ElifeException e){
+            return new ResponseEntity<>(SMS_IS_UNAVAILABLE, INTERNAL_SERVER_ERROR);
+        }
+*/
 
         return new ResponseEntity<>(getJson(policy.get()), OK);
     }

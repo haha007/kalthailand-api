@@ -6,8 +6,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.elife.api.data.PolicyNumber;
+import th.co.krungthaiaxa.elife.api.exception.ElifeException;
 import th.co.krungthaiaxa.elife.api.model.*;
 import th.co.krungthaiaxa.elife.api.model.enums.ChannelType;
 import th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus;
@@ -32,6 +34,8 @@ import static th.co.krungthaiaxa.elife.api.model.enums.PolicyStatus.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.RegistrationTypeName.THAI_ID_NUMBER;
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.ERROR;
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.SUCCESS;
+import static th.co.krungthaiaxa.elife.api.model.error.ErrorCode.*;
+import static org.springframework.http.HttpStatus.*;
 
 @Service
 public class PolicyService {
@@ -196,15 +200,17 @@ public class PolicyService {
         }
 
         // Send SMS
-//        try {
-//            Map<String,String> m = smsApiService.sendConfirmationMessage(policy.get());
-//            if(!m.get("STATUS").equals("0")){
-//                return new ResponseEntity<>(SMS_IS_UNAVAILABLE, INTERNAL_SERVER_ERROR);
-//            }
-//        } catch (IOException e) {
-//            logger.error(String.format("Unable to send confirmation SMS message with policy id is [%1$s].", policy.get().getPolicyId()), e);
-//            return new ResponseEntity<>(UNABLE_TO_SEND_SMS, INTERNAL_SERVER_ERROR);
-//        }
+        try {
+            Map<String,String> m = smsApiService.sendConfirmationMessage(policy);
+            if(!m.get("STATUS").equals("0")){
+                //return new ResponseEntity<>(SMS_IS_UNAVAILABLE, INTERNAL_SERVER_ERROR);
+                throw new ElifeException();
+            }
+        } catch (IOException e) {
+            logger.error(String.format("Unable to send confirmation SMS message with policy id is [%1$s].", policy.getPolicyId()), e);
+            //return new ResponseEntity<>(UNABLE_TO_SEND_SMS, INTERNAL_SERVER_ERROR);
+            throw new ElifeException("Unexpected error",e);
+        }
 
         policy.setStatus(VALIDATED);
         policyRepository.save(policy);
