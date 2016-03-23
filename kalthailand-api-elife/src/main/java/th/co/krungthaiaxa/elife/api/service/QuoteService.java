@@ -21,18 +21,18 @@ import static java.time.LocalDateTime.now;
 import static java.time.ZoneId.SHORT_IDS;
 import static java.time.ZoneId.of;
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
-import static th.co.krungthaiaxa.elife.api.products.ProductFactory.getProduct;
-
 
 @Service
 public class QuoteService {
     private final SessionQuoteRepository sessionQuoteRepository;
     private final QuoteRepository quoteRepository;
+    private final ProductFactory productFactory;
 
     @Inject
-    public QuoteService(SessionQuoteRepository sessionQuoteRepository, QuoteRepository quoteRepository) {
+    public QuoteService(SessionQuoteRepository sessionQuoteRepository, QuoteRepository quoteRepository, ProductFactory productFactory) {
         this.sessionQuoteRepository = sessionQuoteRepository;
         this.quoteRepository = quoteRepository;
+        this.productFactory = productFactory;
     }
 
     public Optional<Quote> getLatestQuote(String sessionId, ChannelType channelType) {
@@ -49,7 +49,7 @@ public class QuoteService {
     }
 
     public Quote createQuote(String sessionId, ChannelType channelType, ProductQuotation productQuotation) {
-        Product product = getProduct(productQuotation.getProductType().getName());
+        Product product = productFactory.getProduct(productQuotation.getProductType().getName());
 
         Insured insured = new Insured();
         insured.setMainInsuredIndicator(true);
@@ -88,7 +88,7 @@ public class QuoteService {
         // common calculation
         quote = basicCalculateQuote(quote);
 
-        Product product = ProductFactory.getProduct(quote.getCommonData().getProductId());
+        Product product = productFactory.getProduct(quote.getCommonData().getProductId());
         product.calculateQuote(quote, null);
         quote.setLastUpdateDateTime(now(of(SHORT_IDS.get("VST"))));
 

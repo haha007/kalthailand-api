@@ -46,6 +46,7 @@ public class PolicyService {
     private final EmailService emailService;
     private final DocumentService documentService;
     private final SMSApiService smsApiService;
+    private final ProductFactory productFactory;
 
     @Inject
     public PolicyService(CDBRepository cdbRepository,
@@ -55,7 +56,8 @@ public class PolicyService {
                          QuoteRepository quoteRepository,
                          EmailService emailService,
                          DocumentService documentService,
-                         SMSApiService smsApiService) {
+                         SMSApiService smsApiService,
+                         ProductFactory productFactory) {
         this.cdbRepository = cdbRepository;
         this.paymentRepository = paymentRepository;
         this.policyRepository = policyRepository;
@@ -64,6 +66,7 @@ public class PolicyService {
         this.emailService = emailService;
         this.documentService = documentService;
         this.smsApiService = smsApiService;
+        this.productFactory = productFactory;
     }
 
     public List<Policy> findAll(Integer startIndex, Integer nbOfRecords) {
@@ -93,7 +96,7 @@ public class PolicyService {
             policy = new Policy();
             policy.setPolicyId(policyNumber.get().getPolicyId());
 
-            Product product = ProductFactory.getProduct(quote.getCommonData().getProductId());
+            Product product = productFactory.getProduct(quote.getCommonData().getProductId());
             product.getPolicyFromQuote(policy, quote);
 
             policy.getPayments().stream().forEach(paymentRepository::save);

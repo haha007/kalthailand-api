@@ -63,9 +63,9 @@ public class TestUtil {
     public static ProductQuotation productQuotation(ProductIFinePackage productIFinePackage, Integer age, PeriodicityCode periodicityCode, GenderCode genderCode, Boolean riskOccupation) {
         ProductQuotation productQuotation = productQuotation(PRODUCT_IFINE, age, periodicityCode, productIFinePackage.getSumInsured(), true, 23, genderCode);
         if (riskOccupation) {
-            productQuotation.setOccupationId(1);
+            productQuotation.setOccupationId(21);
         } else {
-            productQuotation.setOccupationId(2);
+            productQuotation.setOccupationId(1);
         }
         productQuotation.setPackageName(productIFinePackage.name());
         return productQuotation;

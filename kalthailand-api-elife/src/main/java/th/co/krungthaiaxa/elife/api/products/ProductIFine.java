@@ -80,6 +80,7 @@ public class ProductIFine implements Product {
 
         // set amounts
         ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
+        productIFinePremium.setProductIFinePackage(productIFinePackage);
         productIFinePremium.setSumInsured(amount(productIFinePackage.getSumInsured()));
         productIFinePremium.setAccidentSumInsured(amount(productIFinePackage.getAccidentSumInsured()));
         productIFinePremium.setHealthSumInsured(amount(productIFinePackage.getHealthSumInsured()));
