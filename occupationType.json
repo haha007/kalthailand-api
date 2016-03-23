@@ -18,7 +18,7 @@
 {"occId":18,"occRisk":false,"occTextTh":"ค้าขาย-ร้าน/แผงค้าที่ตลาดสด,ตลาดนัด","occTextEn":"Commerce/Trade - kios in the market"}
 {"occId":19,"occRisk":false,"occTextTh":"ค้าขาย-ร้านค้าในห้างสรรพสินค้า,อาคารสำนักงาน","occTextEn":"Commerce/Trade - shop in dept store, office building"}
 {"occId":20,"occRisk":false,"occTextTh":"ช่างติดตั้ง,แก้ไข,ซ่อมแซมคอมพิวเตอร์","occTextEn":"Computer technician, install, maintain and fix"}
-{"occId":21,"occRisk":false,"occTextTh":"คนงานก่อสร้าง","occTextEn":"Construction Worker"}
+{"occId":21,"occRisk":true,"occTextTh":"คนงานก่อสร้าง","occTextEn":"Construction Worker"}
 {"occId":22,"occRisk":false,"occTextTh":"ผู้รับเหมาก่อสร้าง","occTextEn":"Contractor"}
 {"occId":23,"occRisk":false,"occTextTh":"นายกเทศมนตรี,นายก อ.บ.จ.","occTextEn":"County Council mayor or deputy"}
 {"occId":24,"occRisk":false,"occTextTh":"สมาชิกสภาจังหวัด,สภาเขต","occTextEn":"County Council member"}
@@ -205,3 +205,5 @@
 {"occId":205,"occRisk":false,"occTextTh":"สัตวแพทย์","occTextEn":"Veterinary"}
 {"occId":206,"occRisk":false,"occTextTh":"ช่างเชื่อม(โครงเหล็ก หลังคา)","occTextEn":"Welder (Rack, Rooftop)"}
 {"occId":207,"occRisk":false,"occTextTh":"เจ้าหน้าที่กองถ่ายภาพยนตร์-รายการโทรทัศน์","occTextEn":"Worker-Show business-Movie,TV"}
+{"occId":208,"occRisk":true,"occTextTh":"คนขับรถแท๊กซี่ / คนขับรถมอเตอร์ไซค์รับจ้าง","occTextEn":"Taxi services"}
+{"occId":209,"occRisk":true,"occTextTh":"คนงานเหมือง / สำรวจหาน้ำมัน","occTextEn":"Mining Worker / Oil Surveyor"}
