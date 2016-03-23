@@ -10,10 +10,12 @@ import static th.co.krungthaiaxa.elife.api.products.ProductType.PRODUCT_IFINE;
 
 @Component
 public class ProductFactory {
+    private final ProductIBegin productIBegin;
     private final ProductIFine productIFine;
 
     @Inject
-    public ProductFactory(ProductIFine productIFine) {
+    public ProductFactory(ProductIBegin productIBegin, ProductIFine productIFine) {
+        this.productIBegin = productIBegin;
         this.productIFine = productIFine;
     }
 
@@ -21,7 +23,7 @@ public class ProductFactory {
         if (productId.equals(PRODUCT_10_EC.getName())) {
             return new Product10EC();
         } else if (productId.equals(PRODUCT_IBEGIN.getName())) {
-            return new ProductIBegin();
+            return productIBegin;
         } else if (productId.equals(PRODUCT_IFINE.getName())) {
             return productIFine;
         } else {

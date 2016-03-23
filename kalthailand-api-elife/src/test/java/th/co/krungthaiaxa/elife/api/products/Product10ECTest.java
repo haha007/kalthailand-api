@@ -117,7 +117,7 @@ public class Product10ECTest {
 
         assertThatThrownBy(() -> product10EC.calculateQuote(quote, productQuotation(19, EVERY_YEAR, 1000000.0)))
                 .isInstanceOf(QuoteCalculationException.class)
-                .hasMessage(ageIsTooLowException.getMessage());
+                .hasMessage(ageIsTooLowException.apply(20).getMessage());
     }
 
     @Test
@@ -126,7 +126,7 @@ public class Product10ECTest {
 
         assertThatThrownBy(() -> product10EC.calculateQuote(quote, productQuotation(71, EVERY_YEAR, 1000000.0)))
                 .isInstanceOf(QuoteCalculationException.class)
-                .hasMessage(ageIsTooHighException.getMessage());
+                .hasMessage(ageIsTooHighException.apply(70).getMessage());
     }
 
     @Test
@@ -1283,7 +1283,7 @@ public class Product10ECTest {
         Policy policy = new Policy();
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(QuoteCalculationException.class)
-                .hasMessage(ageIsTooLowException.getMessage());
+                .hasMessage(ageIsTooLowException.apply(20).getMessage());
     }
 
     @Test
@@ -1296,7 +1296,7 @@ public class Product10ECTest {
         Policy policy = new Policy();
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(QuoteCalculationException.class)
-                .hasMessage(ageIsTooHighException.getMessage());
+                .hasMessage(ageIsTooHighException.apply(70).getMessage());
     }
 
     @Test

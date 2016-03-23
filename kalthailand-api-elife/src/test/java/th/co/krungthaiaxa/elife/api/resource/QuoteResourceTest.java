@@ -50,6 +50,9 @@ import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
 import static th.co.krungthaiaxa.elife.api.model.enums.GenderCode.FEMALE;
 import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_YEAR;
 import static th.co.krungthaiaxa.elife.api.model.error.ErrorCode.QUOTE_DOES_NOT_EXIST_OR_ACCESS_DENIED;
+import static th.co.krungthaiaxa.elife.api.products.ProductType.PRODUCT_10_EC;
+import static th.co.krungthaiaxa.elife.api.products.ProductType.PRODUCT_IBEGIN;
+import static th.co.krungthaiaxa.elife.api.products.ProductType.PRODUCT_IFINE;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiApplication.class)
@@ -81,6 +84,51 @@ public class QuoteResourceTest {
     @After
     public void tearDown() {
         greenMail.stop();
+    }
+
+    @Test
+    public void should_return_a_10ec_product() throws IOException, URISyntaxException {
+        String sessionId = randomNumeric(20);
+
+        URI createURI = new URI("http://localhost:" + port + "/quotes");
+        UriComponentsBuilder createBuilder = UriComponentsBuilder.fromUri(createURI)
+                .queryParam("sessionId", sessionId)
+                .queryParam("channelType", LINE.name());
+        ResponseEntity<String> createResponse = template.exchange(createBuilder.toUriString(), POST, new HttpEntity<>(productQuotation(PRODUCT_10_EC)), String.class);
+        Quote quote = getQuoteFromJSon(createResponse.getBody());
+        assertThat(quote.getPremiumsData().getProduct10ECPremium()).isNotNull();
+        assertThat(quote.getPremiumsData().getProductIBeginPremium()).isNull();
+        assertThat(quote.getPremiumsData().getProductIFinePremium()).isNull();
+    }
+
+    @Test
+    public void should_return_a_iBegin_product() throws IOException, URISyntaxException {
+        String sessionId = randomNumeric(20);
+
+        URI createURI = new URI("http://localhost:" + port + "/quotes");
+        UriComponentsBuilder createBuilder = UriComponentsBuilder.fromUri(createURI)
+                .queryParam("sessionId", sessionId)
+                .queryParam("channelType", LINE.name());
+        ResponseEntity<String> createResponse = template.exchange(createBuilder.toUriString(), POST, new HttpEntity<>(productQuotation(PRODUCT_IBEGIN)), String.class);
+        Quote quote = getQuoteFromJSon(createResponse.getBody());
+        assertThat(quote.getPremiumsData().getProduct10ECPremium()).isNull();
+        assertThat(quote.getPremiumsData().getProductIBeginPremium()).isNotNull();
+        assertThat(quote.getPremiumsData().getProductIFinePremium()).isNull();
+    }
+
+    @Test
+    public void should_return_a_iFine_product() throws IOException, URISyntaxException {
+        String sessionId = randomNumeric(20);
+
+        URI createURI = new URI("http://localhost:" + port + "/quotes");
+        UriComponentsBuilder createBuilder = UriComponentsBuilder.fromUri(createURI)
+                .queryParam("sessionId", sessionId)
+                .queryParam("channelType", LINE.name());
+        ResponseEntity<String> createResponse = template.exchange(createBuilder.toUriString(), POST, new HttpEntity<>(productQuotation(PRODUCT_IFINE)), String.class);
+        Quote quote = getQuoteFromJSon(createResponse.getBody());
+        assertThat(quote.getPremiumsData().getProduct10ECPremium()).isNull();
+        assertThat(quote.getPremiumsData().getProductIBeginPremium()).isNull();
+        assertThat(quote.getPremiumsData().getProductIFinePremium()).isNotNull();
     }
 
     @Test

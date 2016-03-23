@@ -29,7 +29,7 @@ public class TestUtil {
     }
 
     public static ProductQuotation productQuotation(ProductType productType) {
-        return productQuotation(productType, 43, EVERY_HALF_YEAR, 350000.0, true, 23, FEMALE);
+        return productQuotation(productType, 55, EVERY_HALF_YEAR, 100000.0, true, 23, FEMALE);
     }
 
     public static ProductQuotation productQuotation() {

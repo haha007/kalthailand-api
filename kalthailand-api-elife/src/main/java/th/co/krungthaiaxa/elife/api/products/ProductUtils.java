@@ -69,8 +69,8 @@ public class ProductUtils {
 
     public static void checkInsuredAge(Insured insured, int minAge, int maxAge) {
         notNull(insured.getAgeAtSubscription(), ageIsEmptyException);
-        isFalse(insured.getAgeAtSubscription() > maxAge, ageIsTooHighException);
-        isFalse(insured.getAgeAtSubscription() < minAge, ageIsTooLowException);
+        isFalse(insured.getAgeAtSubscription() > maxAge, ageIsTooHighException.apply(maxAge));
+        isFalse(insured.getAgeAtSubscription() < minAge, ageIsTooLowException.apply(minAge));
     }
 
     public static void checkInsured(Quote quote) {
