@@ -42,7 +42,7 @@ import static org.springframework.http.HttpStatus.*;
 import static th.co.krungthaiaxa.elife.api.TestUtil.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
 import static th.co.krungthaiaxa.elife.api.model.enums.PolicyStatus.PENDING_PAYMENT;
-import static th.co.krungthaiaxa.elife.api.model.enums.PolicyStatus.PENDING_VALIDATION;
+import static th.co.krungthaiaxa.elife.api.model.enums.PolicyStatus.VALIDATED;
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.ERROR;
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.SUCCESS;
 
@@ -198,7 +198,7 @@ public class DocumentResourceTest {
     }
 
     @Test
-    public void should_return_2_documents_when_policy_is_waiting_for_validation() throws IOException, URISyntaxException {
+    public void should_return_4_documents_when_policy_validated() throws IOException, URISyntaxException {
         Policy policy = getPolicy();
 
         URI paymentURI = new URI("http://localhost:" + port + "/policies/" + policy.getPolicyId() + "/update/status/pendingValidation");
@@ -214,14 +214,14 @@ public class DocumentResourceTest {
         ResponseEntity<String> paymentResponse = template.exchange(updatePaymentBuilder.toUriString(), PUT, null, String.class);
         assertThat(paymentResponse.getStatusCode().value()).isEqualTo(OK.value());
         Policy updatedPolicy = getPolicyFromJSon(paymentResponse.getBody());
-        assertThat(updatedPolicy.getStatus()).isEqualTo(PENDING_VALIDATION);
+        assertThat(updatedPolicy.getStatus()).isEqualTo(VALIDATED);
 
         URI documentUploadURI = new URI("http://localhost:" + port + "/documents/policies/" + policy.getPolicyId());
         ResponseEntity<String> response = template.getForEntity(documentUploadURI, String.class);
         assertThat(response.getStatusCode().value()).isEqualTo(OK.value());
 
         List<Document> documents = getDocumentsFromJSon(response.getBody());
-        assertThat(documents).hasSize(2);
+        assertThat(documents).hasSize(4);
     }
 
     private Policy getPolicy() throws URISyntaxException, IOException {

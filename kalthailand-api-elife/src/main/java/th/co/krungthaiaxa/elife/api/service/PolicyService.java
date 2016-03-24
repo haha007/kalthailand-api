@@ -28,6 +28,7 @@ import static java.time.format.DateTimeFormatter.ofPattern;
 import static th.co.krungthaiaxa.elife.api.exception.ExceptionUtils.isTrue;
 import static th.co.krungthaiaxa.elife.api.exception.ExceptionUtils.notNull;
 import static th.co.krungthaiaxa.elife.api.exception.PolicyValidationException.*;
+import static th.co.krungthaiaxa.elife.api.model.enums.DocumentType.ERECEIPT_PDF;
 import static th.co.krungthaiaxa.elife.api.model.enums.PaymentStatus.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.PolicyStatus.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.RegistrationTypeName.THAI_ID_NUMBER;
@@ -195,12 +196,18 @@ public class PolicyService {
         policyRepository.save(policy);
     }
 
-    public void updatePolicyAfterPolicyHasBeenValidated(Policy policy, Document ereceiptPdf) {
+    public void updatePolicyAfterPolicyHasBeenValidated(Policy policy) {
         // Generate documents
         documentService.generateValidatedPolicyDocuments(policy);
 
+        // Get eReceipt
+        Optional<Document> documentPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(ERECEIPT_PDF)).findFirst();
+        if (!documentPdf.isPresent()) {
+            throw new ElifeException("Can't find eReceipt for the policy ["+policy.getPolicyId()+"]");
+        }
+
         // Send Email
-        DocumentDownload documentDownload = documentService.downloadDocument(ereceiptPdf.getId());
+        DocumentDownload documentDownload = documentService.downloadDocument(documentPdf.get().getId());
         try {
             emailService.sendEreceiptEmail(policy, Pair.of(Base64.getDecoder().decode(documentDownload.getContent()), "e-receipt_" + policy.getPolicyId() + ".pdf"));
         } catch (IOException | MessagingException e) {
@@ -212,7 +219,7 @@ public class PolicyService {
             Map<String,String> m = smsApiService.sendConfirmationMessage(policy);
             if(!m.get("STATUS").equals("0")){
                 //return new ResponseEntity<>(SMS_IS_UNAVAILABLE, INTERNAL_SERVER_ERROR);
-                throw new ElifeException();
+                throw new ElifeException("SMS could not be sent");
             }
         } catch (IOException e) {
             logger.error(String.format("Unable to send confirmation SMS message with policy id is [%1$s].", policy.getPolicyId()), e);

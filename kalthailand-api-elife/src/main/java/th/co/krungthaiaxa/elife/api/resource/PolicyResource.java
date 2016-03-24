@@ -129,6 +129,10 @@ public class PolicyResource {
             @RequestParam SuccessErrorStatus status,
             @ApiParam(value = "The Channel", required = true)
             @RequestParam ChannelType channelType,
+            @ApiParam(value = "The credit card name given by the channel (if any)", required = false)
+            @RequestParam Optional<String> creditCardName,
+            @ApiParam(value = "The payment method given by the channel (if any)", required = false)
+            @RequestParam Optional<String> paymentMethod,
             @ApiParam(value = "The error message given by the channel (if any)", required = false)
             @RequestParam Optional<String> errorCode,
             @ApiParam(value = "The error message given by the channel (if any)", required = false)
@@ -168,7 +172,17 @@ public class PolicyResource {
             return new ResponseEntity<>(getJson(policy.get()), OK);
         }
 
+        // Update the payment if confirm is success
         policyService.updatePolicyAfterFirstPaymentValidated(policy.get());
+        policyService.confirmPayment(payment.get(), value, currencyCode, status, channelType, creditCardName, paymentMethod, errorCode, errorMessage);
+
+        // Send email, sms and update status
+        try {
+            policyService.updatePolicyAfterPolicyHasBeenValidated(policy.get());
+        } catch (ElifeException e) {
+            logger.error("There was an error whil trying to update policy status.", e);
+            return new ResponseEntity<>(SMS_IS_UNAVAILABLE, INTERNAL_SERVER_ERROR);
+        }
 
         return new ResponseEntity<>(getJson(policy.get()), OK);
     }
@@ -217,9 +231,8 @@ public class PolicyResource {
         // Update the payment if confirm is success
         policyService.confirmPayment(payment.get(), value, currencyCode, status, channelType, creditCardName, paymentMethod, errorCode, errorMessage);
 
-        //TODO get the ereceipt pdf
         try {
-            policyService.updatePolicyAfterPolicyHasBeenValidated(policy.get(), null);
+            policyService.updatePolicyAfterPolicyHasBeenValidated(policy.get());
         } catch (ElifeException e) {
             return new ResponseEntity<>(SMS_IS_UNAVAILABLE, INTERNAL_SERVER_ERROR);
         }

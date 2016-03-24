@@ -173,7 +173,7 @@ public class PolicyResourceTest {
 
         Policy updatedPolicy = getPolicyFromJSon(updatePaymentResponse.getBody());
         assertThat(updatePaymentResponse.getStatusCode().value()).isEqualTo(OK.value());
-        assertThat(updatedPolicy.getPayments().get(0).getStatus()).isNotEqualTo(FUTURE);
+        assertThat(updatedPolicy.getPayments().get(0).getStatus()).isEqualTo(FUTURE);
     }
 
     private Policy getPolicy() throws IOException {
