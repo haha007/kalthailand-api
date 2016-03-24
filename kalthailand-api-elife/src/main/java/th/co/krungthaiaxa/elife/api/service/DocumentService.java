@@ -118,6 +118,7 @@ public class DocumentService {
                 logger.error("DA form for Policy [" + policy.getPolicyId() + "] has not been generated.", e);
             }
         }
+        logger.info("Default documents for policy [" + policy.getPolicyId() + "] have been created.");
     }
 
     public void generateValidatedPolicyDocuments(Policy policy) {
@@ -147,6 +148,7 @@ public class DocumentService {
                 logger.error("PDF Ereceipt for Policy [" + policy.getPolicyId() + "] has not been generated.", e);
             }
         }
+        logger.info("Extra documents for policy [" + policy.getPolicyId() + "] have been created.");
     }
 
     private byte[] createEreceiptPDF(byte[] eReceiptImage) throws DocumentException, IOException {

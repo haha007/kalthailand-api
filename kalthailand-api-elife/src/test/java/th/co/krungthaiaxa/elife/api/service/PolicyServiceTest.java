@@ -15,6 +15,7 @@ import th.co.krungthaiaxa.elife.api.model.Quote;
 import javax.inject.Inject;
 
 import static java.util.Optional.empty;
+import static java.util.Optional.of;
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -120,11 +121,12 @@ public class PolicyServiceTest {
         assertThat(payment.getStatus()).isEqualTo(FUTURE);
 
         policyService.reservePayments(policy, empty(), SUCCESS, LINE, empty(), empty());
-        policyService.confirmPayment(payment, 50.0, "THB", ERROR, LINE, empty(), empty(), empty(), empty());
+        policyService.confirmPayment(payment, 50.0, "THB", ERROR, LINE, empty(), empty(), of("Error code"), of("Error msg"));
         policy.getPayments().get(0);
 
         assertThat(payment.getEffectiveDate()).isNull();
         assertThat(payment.getPaymentInformations()).hasSize(1);
+        assertThat(payment.getPaymentInformations()).extracting("rejectionErrorCode").containsOnly("Error code");
         assertThat(payment.getPaymentInformations()).extracting("rejectionErrorMessage").containsOnly("Error msg");
         assertThat(payment.getStatus()).isEqualTo(INCOMPLETE);
     }
