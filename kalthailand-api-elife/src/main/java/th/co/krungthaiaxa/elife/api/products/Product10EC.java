@@ -179,6 +179,7 @@ public class Product10EC implements Product {
         // check main insured stuff
         checkInsuredAge(insured, MIN_AGE, MAX_AGE);
         checkMainInsured(insured);
+        checkMainInsured10ECSpecific(insured);
 
         // Recalculate the quote
         calculateQuote(quote, null);
@@ -265,6 +266,10 @@ public class Product10EC implements Product {
         if (coverage.isPresent()) {
             quote.getCoverages().remove(coverage.get());
         }
+    }
+
+    public static void checkMainInsured10ECSpecific(Insured insured) {
+        notNull(insured.getDeclaredTaxPercentAtSubscription(), mainInsuredWithNoDeclaredTax);
     }
 
     private static void checkSumInsured(PremiumsData premiumsData, String currency, Double sumInsuredMin, Double sumInsuredMax) {

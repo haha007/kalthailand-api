@@ -96,7 +96,6 @@ public class ProductUtils {
     }
 
     public static void checkMainInsured(Insured insured) {
-        notNull(insured.getDeclaredTaxPercentAtSubscription(), mainInsuredWithNoDeclaredTax);
         notNull(insured.getStartDate(), mainInsuredWithNoStartDate);
         notNull(insured.getEndDate(), mainInsuredWithNoEndDate);
         notNull(insured.getProfessionName(), mainInsuredWithNoProfessionName);
