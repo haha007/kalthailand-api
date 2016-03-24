@@ -41,6 +41,10 @@ public class ProductIFine implements Product {
 
     @Override
     public void calculateQuote(Quote quote, ProductQuotation productQuotation) {
+        if (productQuotation == null) {
+            return;
+        }
+
         Optional<Coverage> hasIFineCoverage = quote.getCoverages()
                 .stream()
                 .filter(coverage -> coverage.getName() != null)
