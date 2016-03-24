@@ -31,6 +31,15 @@ public class ProductIFineTest {
     private ProductIFine productIFine;
 
     @Test
+    public void should_create_ifine_quote_with_default_structure() throws Exception {
+        Quote quote = quote(productIFine());
+        productIFine.calculateQuote(quote, productQuotation(IFINE1, 18, EVERY_YEAR, MALE, FALSE));
+        assertThat(quote.getCoverages()).extracting("name").containsExactly("Product iFine");
+        assertThat(quote.getPremiumsData().getProductIFinePremium()).isNotNull();
+        assertThat(quote.getPremiumsData().getProductIFinePremium().getSumInsured().getValue()).isNotNull();
+    }
+
+    @Test
     public void should_get_sum_insured_from_package_name_ifine1() throws Exception {
         Quote quote = quote(productIFine());
         productIFine.calculateQuote(quote, productQuotation(IFINE1, 18, EVERY_YEAR, MALE, FALSE));

@@ -126,6 +126,12 @@ public class ProductIFine implements Product {
         productIFinePremium.setTaxDeductible(amount(taxDeductible));
         productIFinePremium.setNonTaxDeductible(amount(nonTaxDeductible));
         quote.getPremiumsData().getFinancialScheduler().setModalAmount(amount(taxDeductible + nonTaxDeductible));
+
+        if (!hasIFineCoverage.isPresent()) {
+            Coverage coverage = new Coverage();
+            coverage.setName(PRODUCT_IFINE_NAME);
+            quote.addCoverage(coverage);
+        }
     }
 
     @Override
