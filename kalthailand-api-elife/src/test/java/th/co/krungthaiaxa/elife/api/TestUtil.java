@@ -56,6 +56,10 @@ public class TestUtil {
         return productQuotation(PRODUCT_10_EC, age, periodicityCode, amount, isSumInsured, 23, FEMALE);
     }
 
+    public static ProductQuotation productQuotation(ProductType productType, Integer age, PeriodicityCode periodicityCode, Double amount) {
+        return productQuotation(productType, age, periodicityCode, amount, true, 23, FEMALE);
+    }
+
     public static ProductQuotation productQuotation(ProductType productType, Integer age, PeriodicityCode periodicityCode, Double amount, GenderCode genderCode) {
         return productQuotation(productType, age, periodicityCode, amount, true, 23, genderCode);
     }

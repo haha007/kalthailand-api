@@ -32,6 +32,10 @@ public class ProductIBegin implements Product {
 
     @Override
     public void calculateQuote(Quote quote, ProductQuotation productQuotation) {
+        if (productQuotation == null) {
+            return;
+        }
+        
         Optional<Coverage> hasIBeginCoverage = quote.getCoverages()
                 .stream()
                 .filter(coverage -> coverage.getName() != null)

@@ -11,6 +11,7 @@ import th.co.krungthaiaxa.elife.api.data.SessionQuote;
 import th.co.krungthaiaxa.elife.api.model.Amount;
 import th.co.krungthaiaxa.elife.api.model.Quote;
 import th.co.krungthaiaxa.elife.api.products.ProductQuotation;
+import th.co.krungthaiaxa.elife.api.products.ProductType;
 import th.co.krungthaiaxa.elife.api.repository.SessionQuoteRepository;
 
 import javax.inject.Inject;
@@ -21,6 +22,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static th.co.krungthaiaxa.elife.api.TestUtil.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
 import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_MONTH;
+import static th.co.krungthaiaxa.elife.api.products.ProductType.PRODUCT_10_EC;
+import static th.co.krungthaiaxa.elife.api.products.ProductType.PRODUCT_IBEGIN;
+import static th.co.krungthaiaxa.elife.api.products.ProductType.PRODUCT_IFINE;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiApplication.class)
@@ -35,9 +39,36 @@ public class QuoteServiceTest {
     private SessionQuoteRepository sessionQuoteRepository;
 
     @Test
+    public void should_be_able_to_update_a_10ec_quote() {
+        String sessionId = randomNumeric(20);
+        Quote quote = getQuote(sessionId, PRODUCT_10_EC);
+
+        quoteService.updateQuote(quote);
+        assertThat(quote).isNotNull();
+    }
+
+    @Test
+    public void should_be_able_to_update_a_iBegin_quote() {
+        String sessionId = randomNumeric(20);
+        Quote quote = getQuote(sessionId, PRODUCT_IBEGIN);
+
+        quoteService.updateQuote(quote);
+        assertThat(quote).isNotNull();
+    }
+
+    @Test
+    public void should_be_able_to_update_a_iFine_quote() {
+        String sessionId = randomNumeric(20);
+        Quote quote = getQuote(sessionId, PRODUCT_IFINE);
+
+        quoteService.updateQuote(quote);
+        assertThat(quote).isNotNull();
+    }
+
+    @Test
     public void should_find_by_quote_id_and_session_id() {
         String sessionId = randomNumeric(20);
-        Quote quote = getQuote(sessionId);
+        Quote quote = getQuote(sessionId, PRODUCT_10_EC);
 
         Optional<Quote> savedQuote = quoteService.findByQuoteId(quote.getQuoteId(), sessionId, LINE);
         assertThat(savedQuote).isNotNull();
@@ -47,8 +78,7 @@ public class QuoteServiceTest {
 
     @Test
     public void should_not_find_by_quote_id_when_session_id_has_no_access_to_quote() {
-        String sessionId = randomNumeric(20);
-        Quote quote = getQuote(sessionId);
+        Quote quote = getQuote(randomNumeric(20), PRODUCT_10_EC);
 
         Optional<Quote> savedQuote = quoteService.findByQuoteId(quote.getQuoteId(), "something", LINE);
         assertThat(savedQuote).isNotNull();
@@ -58,7 +88,7 @@ public class QuoteServiceTest {
     @Test
     public void should_add_one_quote_in_session() {
         String sessionId = randomNumeric(20);
-        Quote quote = getQuote(sessionId);
+        Quote quote = getQuote(sessionId, PRODUCT_10_EC);
 
         SessionQuote sessionQuote = sessionQuoteRepository.findBySessionIdAndChannelType(sessionId, LINE);
         assertThat(sessionQuote.getQuotes()).containsExactly(quote);
@@ -67,8 +97,8 @@ public class QuoteServiceTest {
     @Test
     public void should_add_two_quotes_in_session_and_ordered_by_update_time() {
         String sessionId = randomNumeric(20);
-        Quote quote1 = getQuote(sessionId);
-        Quote quote2 = getQuote(sessionId);
+        Quote quote1 = getQuote(sessionId, PRODUCT_10_EC);
+        Quote quote2 = getQuote(sessionId, PRODUCT_10_EC);
 
         SessionQuote sessionQuote = sessionQuoteRepository.findBySessionIdAndChannelType(sessionId, LINE);
         assertThat(sessionQuote.getQuotes()).containsExactly(quote2, quote1);
@@ -76,17 +106,15 @@ public class QuoteServiceTest {
 
     @Test
     public void should_not_get_latest_quote() {
-        String sessionId = randomNumeric(20);
-
-        Optional<Quote> quote = quoteService.getLatestQuote(sessionId, LINE);
+        Optional<Quote> quote = quoteService.getLatestQuote(randomNumeric(20), LINE);
         assertThat(quote.isPresent()).isFalse();
     }
 
     @Test
     public void should_get_latest_quote() {
         String sessionId = randomNumeric(20);
-        getQuote(sessionId);
-        Quote quote2 = getQuote(sessionId);
+        getQuote(sessionId, PRODUCT_10_EC);
+        Quote quote2 = getQuote(sessionId, PRODUCT_10_EC);
 
         Optional<Quote> quote = quoteService.getLatestQuote(sessionId, LINE);
         assertThat(quote.get()).isEqualTo(quote2);
@@ -95,8 +123,8 @@ public class QuoteServiceTest {
     @Test
     public void should_get_latest_quote_that_has_not_been_transformed_into_policy() {
         String sessionId = randomNumeric(20);
-        Quote quote1 = getQuote(sessionId);
-        Quote quote2 = getQuote(sessionId);
+        Quote quote1 = getQuote(sessionId, PRODUCT_10_EC);
+        Quote quote2 = getQuote(sessionId, PRODUCT_10_EC);
         policyService.createPolicy(quote2);
 
         Optional<Quote> quote = quoteService.getLatestQuote(sessionId, LINE);
@@ -105,8 +133,7 @@ public class QuoteServiceTest {
 
     @Test
     public void should_calculate_age_of_insured() {
-        String sessionId = randomNumeric(20);
-        Quote quote = getQuote(sessionId);
+        Quote quote = getQuote(randomNumeric(20), PRODUCT_10_EC);
 
         Amount amount = new Amount();
         amount.setCurrencyCode("THB");
@@ -114,7 +141,7 @@ public class QuoteServiceTest {
         quote.getPremiumsData().getProduct10ECPremium().setSumInsured(amount);
 
         quote = quoteService.updateQuote(quote);
-        assertThat(quote.getInsureds().get(0).getAgeAtSubscription()).isEqualTo(35);
+        assertThat(quote.getInsureds().get(0).getAgeAtSubscription()).isEqualTo(55);
     }
 
     @Test
@@ -142,8 +169,8 @@ public class QuoteServiceTest {
         assertThat(quote.getPremiumsData().getProduct10ECPremium().getSumInsured()).isEqualTo(productQuotation.getSumInsuredAmount());
     }
 
-    private Quote getQuote(String sessionId) {
-        Quote quote = quoteService.createQuote(sessionId, LINE, productQuotation(35, EVERY_MONTH, 1000000.0));
+    private Quote getQuote(String sessionId, ProductType productType) {
+        Quote quote = quoteService.createQuote(sessionId, LINE, productQuotation(productType, 55, EVERY_MONTH, 100000.0));
         quote(quote, beneficiary(100.0));
         return quoteService.updateQuote(quote);
     }
