@@ -200,7 +200,7 @@ public class Product10EC implements Product {
         policy.addCoverage(SerializationUtils.clone(coverage));
         policy.addInsured(SerializationUtils.clone(insured));
 
-        // Add future payment schedule
+        // Add payment schedule
         addPayments(policy, DURATION_PAYMENT_IN_YEAR);
     }
 

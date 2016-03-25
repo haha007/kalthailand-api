@@ -1,7 +1,7 @@
 package th.co.krungthaiaxa.elife.api.model.enums;
 
 public enum PaymentStatus {
-    FUTURE,
+    NOT_PROCESSED,
     INCOMPLETE,
     COMPLETED,
     OVERPAID

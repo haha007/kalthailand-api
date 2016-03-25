@@ -38,7 +38,7 @@ import static org.springframework.http.HttpMethod.PUT;
 import static org.springframework.http.HttpStatus.*;
 import static th.co.krungthaiaxa.elife.api.TestUtil.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
-import static th.co.krungthaiaxa.elife.api.model.enums.PaymentStatus.FUTURE;
+import static th.co.krungthaiaxa.elife.api.model.enums.PaymentStatus.NOT_PROCESSED;
 import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_YEAR;
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.ERROR;
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.SUCCESS;
@@ -126,7 +126,7 @@ public class PolicyResourceTest {
 
         Policy updatedPolicy = getPolicyFromJSon(updatePaymentResponse.getBody());
         assertThat(updatePaymentResponse.getStatusCode().value()).isEqualTo(OK.value());
-        assertThat(updatedPolicy.getPayments().get(0).getStatus()).isNotEqualTo(FUTURE);
+        assertThat(updatedPolicy.getPayments().get(0).getStatus()).isNotEqualTo(NOT_PROCESSED);
     }
 
     @Test
@@ -149,7 +149,7 @@ public class PolicyResourceTest {
         Error error = getErrorFromJSon(updatePaymentResponse.getBody());
         assertThat(updatePaymentResponse.getStatusCode().value()).isEqualTo(NOT_ACCEPTABLE.value());
         assertThat(error.getCode()).isEqualTo(PAYMENT_NOT_UPDATED_ERROR_DETAILS_NEEDED.getCode());
-        assertThat(error.getCode()).isNotEqualTo(FUTURE);
+        assertThat(error.getCode()).isNotEqualTo(NOT_PROCESSED);
     }
 
     @Test
@@ -173,7 +173,7 @@ public class PolicyResourceTest {
 
         Policy updatedPolicy = getPolicyFromJSon(updatePaymentResponse.getBody());
         assertThat(updatePaymentResponse.getStatusCode().value()).isEqualTo(OK.value());
-        assertThat(updatedPolicy.getPayments().get(0).getStatus()).isEqualTo(FUTURE);
+        assertThat(updatedPolicy.getPayments().get(0).getStatus()).isEqualTo(NOT_PROCESSED);
     }
 
     private Policy getPolicy() throws IOException {
