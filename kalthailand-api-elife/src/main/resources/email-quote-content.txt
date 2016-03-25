@@ -47,7 +47,7 @@
         </table>
 
         <div style="margin-top:50px;text-align:center;">
-            <img src="cid:imageLife">
+            <img src="cid:imageElife2">
         </div>
 
         <table align="center" border="0">
