@@ -32,7 +32,7 @@ public class ProductIFine implements Product {
     public static final Double PREMIUM_MIN = null;
     public static final Double PREMIUM_MAX = null;
     public static final int MAX_AGE = 59;
-    public static final int MIN_AGE = 18;
+    public static final int MIN_AGE = 20;
 
     @Inject
     private ProductIFineRateRepository productIFineRateRepository;

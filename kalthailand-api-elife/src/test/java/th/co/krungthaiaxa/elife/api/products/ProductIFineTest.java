@@ -33,7 +33,7 @@ public class ProductIFineTest {
     @Test
     public void should_create_ifine_quote_with_default_structure() throws Exception {
         Quote quote = quote(productIFine());
-        productIFine.calculateQuote(quote, productQuotation(IFINE1, 18, EVERY_YEAR, MALE, FALSE));
+        productIFine.calculateQuote(quote, productQuotation(IFINE1, 20, EVERY_YEAR, MALE, FALSE));
         assertThat(quote.getCoverages()).extracting("name").containsExactly("Product iFine");
         assertThat(quote.getPremiumsData().getProductIFinePremium()).isNotNull();
         assertThat(quote.getPremiumsData().getProductIFinePremium().getSumInsured().getValue()).isNotNull();
@@ -42,7 +42,7 @@ public class ProductIFineTest {
     @Test
     public void should_get_sum_insured_from_package_name_ifine1() throws Exception {
         Quote quote = quote(productIFine());
-        productIFine.calculateQuote(quote, productQuotation(IFINE1, 18, EVERY_YEAR, MALE, FALSE));
+        productIFine.calculateQuote(quote, productQuotation(IFINE1, 20, EVERY_YEAR, MALE, FALSE));
         ProductIFinePremium premium = quote.getPremiumsData().getProductIFinePremium();
         assertThat(premium.getSumInsured().getValue()).isEqualTo(100000.0);
         assertThat(premium.getAccidentSumInsured().getValue()).isEqualTo(500000.0);
@@ -70,7 +70,7 @@ public class ProductIFineTest {
     @Test
     public void should_get_sum_insured_from_package_name_ifine2() throws Exception {
         Quote quote = quote(productIFine());
-        productIFine.calculateQuote(quote, productQuotation(IFINE2, 18, EVERY_YEAR, MALE, FALSE));
+        productIFine.calculateQuote(quote, productQuotation(IFINE2, 20, EVERY_YEAR, MALE, FALSE));
         ProductIFinePremium premium = quote.getPremiumsData().getProductIFinePremium();
         assertThat(premium.getSumInsured().getValue()).isEqualTo(150000.0);
         assertThat(premium.getAccidentSumInsured().getValue()).isEqualTo(750000.0);
@@ -98,7 +98,7 @@ public class ProductIFineTest {
     @Test
     public void should_get_sum_insured_from_package_name_ifine3() throws Exception {
         Quote quote = quote(productIFine());
-        productIFine.calculateQuote(quote, productQuotation(IFINE3, 18, EVERY_YEAR, MALE, FALSE));
+        productIFine.calculateQuote(quote, productQuotation(IFINE3, 20, EVERY_YEAR, MALE, FALSE));
         ProductIFinePremium premium = quote.getPremiumsData().getProductIFinePremium();
         assertThat(premium.getSumInsured().getValue()).isEqualTo(200000.0);
         assertThat(premium.getAccidentSumInsured().getValue()).isEqualTo(1000000.0);
@@ -126,7 +126,7 @@ public class ProductIFineTest {
     @Test
     public void should_get_sum_insured_from_package_name_ifine4() throws Exception {
         Quote quote = quote(productIFine());
-        productIFine.calculateQuote(quote, productQuotation(IFINE4, 18, EVERY_YEAR, MALE, FALSE));
+        productIFine.calculateQuote(quote, productQuotation(IFINE4, 20, EVERY_YEAR, MALE, FALSE));
         ProductIFinePremium premium = quote.getPremiumsData().getProductIFinePremium();
         assertThat(premium.getSumInsured().getValue()).isEqualTo(250000.0);
         assertThat(premium.getAccidentSumInsured().getValue()).isEqualTo(2000000.0);
@@ -154,7 +154,7 @@ public class ProductIFineTest {
     @Test
     public void should_get_sum_insured_from_package_name_ifine5() throws Exception {
         Quote quote = quote(productIFine());
-        productIFine.calculateQuote(quote, productQuotation(IFINE5, 18, EVERY_YEAR, MALE, FALSE));
+        productIFine.calculateQuote(quote, productQuotation(IFINE5, 20, EVERY_YEAR, MALE, FALSE));
         ProductIFinePremium premium = quote.getPremiumsData().getProductIFinePremium();
         assertThat(premium.getSumInsured().getValue()).isEqualTo(300000.0);
         assertThat(premium.getAccidentSumInsured().getValue()).isEqualTo(3000000.0);
@@ -180,132 +180,132 @@ public class ProductIFineTest {
     }
 
     @Test
-    public void should_calculate_from_yearly_periodicity_male_age_18_not_risky_ifine1() throws Exception {
+    public void should_calculate_from_yearly_periodicity_male_age_20_not_risky_ifine1() throws Exception {
         Quote quote = quote(productIFine());
-        productIFine.calculateQuote(quote, productQuotation(IFINE1, 18, EVERY_YEAR, MALE, FALSE));
+        productIFine.calculateQuote(quote, productQuotation(IFINE1, 20, EVERY_YEAR, MALE, FALSE));
         ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
-        assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(3162.0);
-        assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(5.63);
+        assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(3183.0);
+        assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(5.84);
         assertThat(productIFinePremium.getRiderPremiumRate()).isEqualTo(25.99);
         assertThat(productIFinePremium.getRiskOccupationCharge()).isEqualTo(0.0);
-        assertThat(productIFinePremium.getTaxDeductible().getValue()).isEqualTo(563.0);
+        assertThat(productIFinePremium.getTaxDeductible().getValue()).isEqualTo(584.0);
         assertThat(productIFinePremium.getNonTaxDeductible().getValue()).isEqualTo(2599.0);
     }
 
     @Test
-    public void should_calculate_from_yearly_periodicity_male_age_18_risky_ifine1() throws Exception {
+    public void should_calculate_from_yearly_periodicity_male_age_20_risky_ifine1() throws Exception {
         Quote quote = quote(productIFine());
-        productIFine.calculateQuote(quote, productQuotation(IFINE1, 18, EVERY_YEAR, MALE, TRUE));
+        productIFine.calculateQuote(quote, productQuotation(IFINE1, 20, EVERY_YEAR, MALE, TRUE));
         ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
-        assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(7061.0);
-        assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(5.63);
+        assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(7082.0);
+        assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(5.84);
         assertThat(productIFinePremium.getRiderPremiumRate()).isEqualTo(25.99);
         assertThat(productIFinePremium.getRiskOccupationCharge()).isEqualTo(38.99);
-        assertThat(productIFinePremium.getTaxDeductible().getValue()).isEqualTo(563.0);
+        assertThat(productIFinePremium.getTaxDeductible().getValue()).isEqualTo(584.0);
         assertThat(productIFinePremium.getNonTaxDeductible().getValue()).isEqualTo(6498.0);
     }
 
     @Test
-    public void should_calculate_from_yearly_periodicity_male_age_18_not_risky_ifine2() throws Exception {
+    public void should_calculate_from_yearly_periodicity_male_age_20_not_risky_ifine2() throws Exception {
         Quote quote = quote(productIFine());
-        productIFine.calculateQuote(quote, productQuotation(IFINE2, 18, EVERY_YEAR, MALE, FALSE));
+        productIFine.calculateQuote(quote, productQuotation(IFINE2, 20, EVERY_YEAR, MALE, FALSE));
         ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
-        assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(4534.5);
-        assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(5.63);
+        assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(4566.0);
+        assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(5.84);
         assertThat(productIFinePremium.getRiderPremiumRate()).isEqualTo(24.6);
         assertThat(productIFinePremium.getRiskOccupationCharge()).isEqualTo(0.0);
-        assertThat(productIFinePremium.getTaxDeductible().getValue()).isEqualTo(844.5);
+        assertThat(productIFinePremium.getTaxDeductible().getValue()).isEqualTo(876.0);
         assertThat(productIFinePremium.getNonTaxDeductible().getValue()).isEqualTo(3690.0);
     }
 
     @Test
-    public void should_calculate_from_yearly_periodicity_male_age_18_risky_ifine2() throws Exception {
+    public void should_calculate_from_yearly_periodicity_male_age_20_risky_ifine2() throws Exception {
         Quote quote = quote(productIFine());
-        productIFine.calculateQuote(quote, productQuotation(IFINE2, 18, EVERY_YEAR, MALE, TRUE));
+        productIFine.calculateQuote(quote, productQuotation(IFINE2, 20, EVERY_YEAR, MALE, TRUE));
         ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
-        assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(10069.5);
-        assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(5.63);
+        assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(10101.0);
+        assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(5.84);
         assertThat(productIFinePremium.getRiderPremiumRate()).isEqualTo(24.6);
         assertThat(productIFinePremium.getRiskOccupationCharge()).isEqualTo(36.9);
-        assertThat(productIFinePremium.getTaxDeductible().getValue()).isEqualTo(844.5);
+        assertThat(productIFinePremium.getTaxDeductible().getValue()).isEqualTo(876.0);
         assertThat(productIFinePremium.getNonTaxDeductible().getValue()).isEqualTo(9225.0);
     }
 
     @Test
-    public void should_calculate_from_yearly_periodicity_male_age_18_not_risky_ifine3() throws Exception {
+    public void should_calculate_from_yearly_periodicity_male_age_20_not_risky_ifine3() throws Exception {
         Quote quote = quote(productIFine());
-        productIFine.calculateQuote(quote, productQuotation(IFINE3, 18, EVERY_YEAR, MALE, FALSE));
+        productIFine.calculateQuote(quote, productQuotation(IFINE3, 20, EVERY_YEAR, MALE, FALSE));
         ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
-        assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(5908.0);
-        assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(5.63);
+        assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(5950.0);
+        assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(5.84);
         assertThat(productIFinePremium.getRiderPremiumRate()).isEqualTo(23.91);
         assertThat(productIFinePremium.getRiskOccupationCharge()).isEqualTo(0.0);
-        assertThat(productIFinePremium.getTaxDeductible().getValue()).isEqualTo(1126.0);
+        assertThat(productIFinePremium.getTaxDeductible().getValue()).isEqualTo(1168.0);
         assertThat(productIFinePremium.getNonTaxDeductible().getValue()).isEqualTo(4782.0);
     }
 
     @Test
-    public void should_calculate_from_yearly_periodicity_male_age_18_risky_ifine3() throws Exception {
+    public void should_calculate_from_yearly_periodicity_male_age_20_risky_ifine3() throws Exception {
         Quote quote = quote(productIFine());
-        productIFine.calculateQuote(quote, productQuotation(IFINE3, 18, EVERY_YEAR, MALE, TRUE));
+        productIFine.calculateQuote(quote, productQuotation(IFINE3, 20, EVERY_YEAR, MALE, TRUE));
         ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
-        assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(13078.0);
-        assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(5.63);
+        assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(13120.0);
+        assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(5.84);
         assertThat(productIFinePremium.getRiderPremiumRate()).isEqualTo(23.91);
         assertThat(productIFinePremium.getRiskOccupationCharge()).isEqualTo(35.85);
-        assertThat(productIFinePremium.getTaxDeductible().getValue()).isEqualTo(1126.0);
+        assertThat(productIFinePremium.getTaxDeductible().getValue()).isEqualTo(1168.0);
         assertThat(productIFinePremium.getNonTaxDeductible().getValue()).isEqualTo(11952.0);
     }
 
     @Test
-    public void should_calculate_from_yearly_periodicity_male_age_18_not_risky_ifine4() throws Exception {
+    public void should_calculate_from_yearly_periodicity_male_age_20_not_risky_ifine4() throws Exception {
         Quote quote = quote(productIFine());
-        productIFine.calculateQuote(quote, productQuotation(IFINE4, 18, EVERY_YEAR, MALE, FALSE));
+        productIFine.calculateQuote(quote, productQuotation(IFINE4, 20, EVERY_YEAR, MALE, FALSE));
         ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
-        assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(10495.0);
-        assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(5.63);
+        assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(10547.5);
+        assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(5.84);
         assertThat(productIFinePremium.getRiderPremiumRate()).isEqualTo(36.35);
         assertThat(productIFinePremium.getRiskOccupationCharge()).isEqualTo(0.0);
-        assertThat(productIFinePremium.getTaxDeductible().getValue()).isEqualTo(1407.5);
+        assertThat(productIFinePremium.getTaxDeductible().getValue()).isEqualTo(1460.0);
         assertThat(productIFinePremium.getNonTaxDeductible().getValue()).isEqualTo(9087.5);
     }
 
     @Test
-    public void should_calculate_from_yearly_periodicity_male_age_18_risky_ifine4() throws Exception {
+    public void should_calculate_from_yearly_periodicity_male_age_20_risky_ifine4() throws Exception {
         Quote quote = quote(productIFine());
-        productIFine.calculateQuote(quote, productQuotation(IFINE4, 18, EVERY_YEAR, MALE, TRUE));
+        productIFine.calculateQuote(quote, productQuotation(IFINE4, 20, EVERY_YEAR, MALE, TRUE));
         ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
-        assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(24127.5);
-        assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(5.63);
+        assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(24180.0);
+        assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(5.84);
         assertThat(productIFinePremium.getRiderPremiumRate()).isEqualTo(36.35);
         assertThat(productIFinePremium.getRiskOccupationCharge()).isEqualTo(54.53);
-        assertThat(productIFinePremium.getTaxDeductible().getValue()).isEqualTo(1407.5);
+        assertThat(productIFinePremium.getTaxDeductible().getValue()).isEqualTo(1460.0);
         assertThat(productIFinePremium.getNonTaxDeductible().getValue()).isEqualTo(22720.0);
     }
 
     @Test
-    public void should_calculate_from_yearly_periodicity_male_age_18_not_risky_ifine5() throws Exception {
+    public void should_calculate_from_yearly_periodicity_male_age_20_not_risky_ifine5() throws Exception {
         Quote quote = quote(productIFine());
-        productIFine.calculateQuote(quote, productQuotation(IFINE5, 18, EVERY_YEAR, MALE, FALSE));
+        productIFine.calculateQuote(quote, productQuotation(IFINE5, 20, EVERY_YEAR, MALE, FALSE));
         ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
-        assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(15084.0);
-        assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(5.63);
+        assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(15147.0);
+        assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(5.84);
         assertThat(productIFinePremium.getRiderPremiumRate()).isEqualTo(44.65);
         assertThat(productIFinePremium.getRiskOccupationCharge()).isEqualTo(0.0);
-        assertThat(productIFinePremium.getTaxDeductible().getValue()).isEqualTo(1689.0);
+        assertThat(productIFinePremium.getTaxDeductible().getValue()).isEqualTo(1752.0);
         assertThat(productIFinePremium.getNonTaxDeductible().getValue()).isEqualTo(13395.0);
     }
 
     @Test
-    public void should_calculate_from_yearly_periodicity_male_age_18_risky_ifine5() throws Exception {
+    public void should_calculate_from_yearly_periodicity_male_age_20_risky_ifine5() throws Exception {
         Quote quote = quote(productIFine());
-        productIFine.calculateQuote(quote, productQuotation(IFINE5, 18, EVERY_YEAR, MALE, TRUE));
+        productIFine.calculateQuote(quote, productQuotation(IFINE5, 20, EVERY_YEAR, MALE, TRUE));
         ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
-        assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(35178.0);
-        assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(5.63);
+        assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(35241.0);
+        assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(5.84);
         assertThat(productIFinePremium.getRiderPremiumRate()).isEqualTo(44.65);
         assertThat(productIFinePremium.getRiskOccupationCharge()).isEqualTo(66.98);
-        assertThat(productIFinePremium.getTaxDeductible().getValue()).isEqualTo(1689.0);
+        assertThat(productIFinePremium.getTaxDeductible().getValue()).isEqualTo(1752.0);
         assertThat(productIFinePremium.getNonTaxDeductible().getValue()).isEqualTo(33489.0);
     }
 
