@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static th.co.krungthaiaxa.elife.api.TestUtil.*;
 import static th.co.krungthaiaxa.elife.api.exception.PolicyValidationException.*;
 import static th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException.*;
-import static th.co.krungthaiaxa.elife.api.model.enums.PaymentStatus.FUTURE;
+import static th.co.krungthaiaxa.elife.api.model.enums.PaymentStatus.NOT_PROCESSED;
 import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.*;
 import static th.co.krungthaiaxa.elife.api.products.Product10EC.*;
 import static th.co.krungthaiaxa.elife.api.products.ProductUtils.checkInsured;
@@ -1327,7 +1327,7 @@ public class Product10ECTest {
 
         assertThat(policy.getPayments()).hasSize(6);
         assertThat(policy.getPayments()).extracting("dueDate").containsOnly(allowedDates.toArray());
-        assertThat(policy.getPayments()).extracting("status").containsOnly(FUTURE);
+        assertThat(policy.getPayments()).extracting("status").containsOnly(NOT_PROCESSED);
         assertThat(policy.getPayments()).extracting("effectiveDate").containsNull();
         assertThat(policy.getPayments()).extracting("amount").extracting("currencyCode").containsOnly(policy.getPremiumsData().getFinancialScheduler().getModalAmount().getCurrencyCode());
         assertThat(policy.getPayments()).extracting("amount").extracting("value").containsOnly(policy.getPremiumsData().getFinancialScheduler().getModalAmount().getValue());
@@ -1349,7 +1349,7 @@ public class Product10ECTest {
 
         assertThat(policy.getPayments()).hasSize(12);
         assertThat(policy.getPayments()).extracting("dueDate").containsOnly(allowedDates.toArray());
-        assertThat(policy.getPayments()).extracting("status").containsOnly(FUTURE);
+        assertThat(policy.getPayments()).extracting("status").containsOnly(NOT_PROCESSED);
         assertThat(policy.getPayments()).extracting("effectiveDate").containsNull();
         assertThat(policy.getPayments()).extracting("amount").extracting("currencyCode").containsOnly(policy.getPremiumsData().getFinancialScheduler().getModalAmount().getCurrencyCode());
         assertThat(policy.getPayments()).extracting("amount").extracting("value").containsOnly(policy.getPremiumsData().getFinancialScheduler().getModalAmount().getValue());
@@ -1371,7 +1371,7 @@ public class Product10ECTest {
 
         assertThat(policy.getPayments()).hasSize(24);
         assertThat(policy.getPayments()).extracting("dueDate").containsOnly(allowedDates.toArray());
-        assertThat(policy.getPayments()).extracting("status").containsOnly(FUTURE);
+        assertThat(policy.getPayments()).extracting("status").containsOnly(NOT_PROCESSED);
         assertThat(policy.getPayments()).extracting("effectiveDate").containsNull();
         assertThat(policy.getPayments()).extracting("amount").extracting("currencyCode").containsOnly(policy.getPremiumsData().getFinancialScheduler().getModalAmount().getCurrencyCode());
         assertThat(policy.getPayments()).extracting("amount").extracting("value").containsOnly(policy.getPremiumsData().getFinancialScheduler().getModalAmount().getValue());
@@ -1393,7 +1393,7 @@ public class Product10ECTest {
 
         assertThat(policy.getPayments()).hasSize(72);
         assertThat(policy.getPayments()).extracting("dueDate").containsOnly(allowedDates.toArray());
-        assertThat(policy.getPayments()).extracting("status").containsOnly(FUTURE);
+        assertThat(policy.getPayments()).extracting("status").containsOnly(NOT_PROCESSED);
         assertThat(policy.getPayments()).extracting("effectiveDate").containsNull();
         assertThat(policy.getPayments()).extracting("amount").extracting("currencyCode").containsOnly(policy.getPremiumsData().getFinancialScheduler().getModalAmount().getCurrencyCode());
         assertThat(policy.getPayments()).extracting("amount").extracting("value").containsOnly(policy.getPremiumsData().getFinancialScheduler().getModalAmount().getValue());

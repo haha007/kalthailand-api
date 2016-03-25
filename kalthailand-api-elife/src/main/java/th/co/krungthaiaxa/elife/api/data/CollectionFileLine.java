@@ -6,7 +6,7 @@ public class CollectionFileLine {
     private String bankCode;
     private String policyNumber;
     private String paymentMode;
-    private String premiumAmount;
+    private Double premiumAmount;
     private String paymentId;
 
     public String getCollectionDate() {
@@ -49,11 +49,11 @@ public class CollectionFileLine {
         this.paymentMode = paymentMode;
     }
 
-    public String getPremiumAmount() {
+    public Double getPremiumAmount() {
         return premiumAmount;
     }
 
-    public void setPremiumAmount(String premiumAmount) {
+    public void setPremiumAmount(Double premiumAmount) {
         this.premiumAmount = premiumAmount;
     }
 

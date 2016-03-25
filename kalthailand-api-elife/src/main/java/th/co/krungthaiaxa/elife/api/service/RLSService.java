@@ -14,11 +14,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.elife.api.data.CollectionFile;
 import th.co.krungthaiaxa.elife.api.data.CollectionFileLine;
+import th.co.krungthaiaxa.elife.api.data.DeductionFile;
+import th.co.krungthaiaxa.elife.api.data.DeductionFileLine;
 import th.co.krungthaiaxa.elife.api.model.Payment;
 import th.co.krungthaiaxa.elife.api.model.PaymentInformation;
 import th.co.krungthaiaxa.elife.api.model.Policy;
 import th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode;
 import th.co.krungthaiaxa.elife.api.repository.CollectionFileRepository;
+import th.co.krungthaiaxa.elife.api.repository.PaymentRepository;
+import th.co.krungthaiaxa.elife.api.repository.PolicyRepository;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -32,10 +36,12 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import static java.time.LocalDate.now;
+import static java.time.ZoneId.SHORT_IDS;
+import static java.time.ZoneId.of;
 import static org.apache.commons.codec.digest.DigestUtils.sha256Hex;
 import static org.springframework.util.Assert.isTrue;
 import static org.springframework.util.Assert.notNull;
-import static th.co.krungthaiaxa.elife.api.model.enums.PaymentStatus.FUTURE;
+import static th.co.krungthaiaxa.elife.api.model.enums.PaymentStatus.NOT_PROCESSED;
 import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_MONTH;
 import static th.co.krungthaiaxa.elife.api.utils.ExcelUtils.*;
 
@@ -52,6 +58,8 @@ public class RLSService {
     private final static String COLLECTION_FILE_COLUMN_NAME_6 = "M92PRM6";
 
     private final CollectionFileRepository collectionFileRepository;
+    private final PaymentRepository paymentRepository;
+    private final PolicyRepository policyRepository;
     private final PolicyService policyService;
 
     private Function<PeriodicityCode, String> paymentMode = periodicityCode -> {
@@ -67,8 +75,10 @@ public class RLSService {
     };
 
     @Inject
-    public RLSService(CollectionFileRepository collectionFileRepository, PolicyService policyService) {
+    public RLSService(CollectionFileRepository collectionFileRepository, PaymentRepository paymentRepository, PolicyRepository policyRepository, PolicyService policyService) {
         this.collectionFileRepository = collectionFileRepository;
+        this.paymentRepository = paymentRepository;
+        this.policyRepository = policyRepository;
         this.policyService = policyService;
     }
 
@@ -80,6 +90,24 @@ public class RLSService {
 
     public List<CollectionFile> getCollectionFiles() {
         return collectionFileRepository.findAll();
+    }
+
+//    @Scheduled(cron = "0 0 1 * * MON-SUN")
+    public void processLatestCollectionFile() {
+        List<CollectionFile> collectionFiles = collectionFileRepository.findByJobStartedDateNull();
+        for (CollectionFile collectionFile : collectionFiles) {
+            collectionFile.setJobStartedDate(LocalDateTime.now(of(SHORT_IDS.get("VST"))));
+            DeductionFile deductionFile = new DeductionFile();
+            collectionFile.setDeductionFile(deductionFile);
+            for (CollectionFileLine collectionFileLine : collectionFile.getLines()) {
+                // TODO : call LINE Pay API
+
+                // TODO : error code is coming from LINE Pay
+                deductionFile.addLine(getDeductionFileLine(collectionFileLine, ""));
+            }
+            collectionFile.setJobEndedDate(LocalDateTime.now(of(SHORT_IDS.get("VST"))));
+            collectionFileRepository.save(collectionFile);
+        }
     }
 
     CollectionFile readExcelFile(InputStream is) {
@@ -123,7 +151,7 @@ public class RLSService {
             String bankCode = getCellValueAsString(currentRow.getCell(2));
             String policyNumber = getCellValueAsString(currentRow.getCell(3));
             String paymentMode = getCellValueAsString(currentRow.getCell(4));
-            String premiumAmount = getCellValueAsString(currentRow.getCell(5));
+            Double premiumAmount = getCellValueAsDouble(currentRow.getCell(5));
 
             stringBuilder.append(collectionDate);
             stringBuilder.append(collectionBank);
@@ -164,12 +192,34 @@ public class RLSService {
         // There should be a scheduled payment for which due date is within the last 28 days
         Optional<Payment> payment = policy.get().getPayments()
                 .stream()
-                .filter(tmp -> tmp.getStatus().equals(FUTURE))
+                .filter(tmp -> tmp.getStatus().equals(NOT_PROCESSED))
                 .filter(tmp -> tmp.getDueDate().isAfter(todayMinus28Days))
                 .filter(tmp -> tmp.getDueDate().isBefore(now.plusDays(1))) // plus 1 day because a.isBefore(a) = false
                 .findFirst();
-        isTrue(payment.isPresent(), "Unable to find a schedule payment for policy [" + policy.get().getPolicyId() + "]");
-        collectionFileLine.setPaymentId(payment.get().getPaymentId());
+
+        if (!payment.isPresent()) {
+            // If payment isn't found, Collection file "always win", and the payment received in the collection has to go through anyway
+            logger.info("Unable to find a schedule payment for policy [" + policy.get().getPolicyId() + "], will create one from scratch");
+            Payment newPayment = new Payment(collectionFileLine.getPremiumAmount(), "THB", LocalDate.now(of(SHORT_IDS.get("VST"))));
+            paymentRepository.save(newPayment);
+            policy.get().addPayment(newPayment);
+            policyRepository.save(policy.get());
+            collectionFileLine.setPaymentId(newPayment.getPaymentId());
+        }
+        else {
+            collectionFileLine.setPaymentId(payment.get().getPaymentId());
+        }
+    }
+
+    private DeductionFileLine getDeductionFileLine(CollectionFileLine collectionFileLine, String errorCode) {
+        DeductionFileLine deductionFileLine = new DeductionFileLine();
+        deductionFileLine.setAmount(collectionFileLine.getPremiumAmount());
+        deductionFileLine.setBankCode(collectionFileLine.getBankCode());
+        deductionFileLine.setPaymentMode(collectionFileLine.getPaymentMode());
+        deductionFileLine.setPolicyNumber(collectionFileLine.getPolicyNumber());
+        deductionFileLine.setProcessDate(LocalDate.now(of(SHORT_IDS.get("VST"))));
+        deductionFileLine.setRejectionCode(errorCode);
+        return deductionFileLine;
     }
 
     public byte[] exportPayments(List<Pair<Policy, PaymentInformation>> payments) {
@@ -209,6 +259,15 @@ public class RLSService {
                 return cell.getStringCellValue();
             case Cell.CELL_TYPE_NUMERIC:
                 return String.valueOf(cell.getNumericCellValue());
+            default:
+                return null;
+        }
+    }
+
+    private Double getCellValueAsDouble(Cell cell) {
+        switch (cell.getCellType()) {
+            case Cell.CELL_TYPE_NUMERIC:
+                return cell.getNumericCellValue();
             default:
                 return null;
         }

@@ -28,7 +28,7 @@ public class Payment {
     }
 
     public Payment(Double value, String currencyCode, LocalDate dueDate) {
-        this.status = PaymentStatus.FUTURE;
+        this.status = PaymentStatus.NOT_PROCESSED;
         this.dueDate = dueDate;
         this.amount = new Amount();
         amount.setValue(value);
