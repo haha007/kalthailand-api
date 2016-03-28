@@ -2,7 +2,7 @@ package th.co.krungthaiaxa.elife.api.data;
 
 import org.springframework.data.annotation.Id;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class DeductionFileLine {
     @Id
@@ -11,7 +11,7 @@ public class DeductionFileLine {
     private String bankCode;
     private String paymentMode;
     private Double amount;
-    private LocalDate processDate;
+    private LocalDateTime processDate;
     private String rejectionCode;
 
     public String getId() {
@@ -54,11 +54,11 @@ public class DeductionFileLine {
         this.amount = amount;
     }
 
-    public LocalDate getProcessDate() {
+    public LocalDateTime getProcessDate() {
         return processDate;
     }
 
-    public void setProcessDate(LocalDate processDate) {
+    public void setProcessDate(LocalDateTime processDate) {
         this.processDate = processDate;
     }
 

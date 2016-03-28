@@ -1,11 +1,10 @@
 package th.co.krungthaiaxa.elife.api.service;
 
 
-import org.apache.commons.io.FileUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.SpringApplicationConfiguration;
@@ -26,7 +25,6 @@ import th.co.krungthaiaxa.elife.api.repository.PolicyRepository;
 
 import javax.inject.Inject;
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -63,10 +61,10 @@ public class RLSServiceTest {
     @Inject
     private MongoTemplate mongoTemplate;
 
-    @After
-    public void tearDown() {
-        mongoTemplate.dropCollection(CollectionFile.class);
-    }
+//    @After
+//    public void tearDown() {
+//        mongoTemplate.dropCollection(CollectionFile.class);
+//    }
 
     @Test
     public void should_not_save_collection_file_when_there_is_an_error() {
@@ -247,7 +245,6 @@ public class RLSServiceTest {
         CollectionFile updatedCollectionFile = collectionFileRepository.findOne(collectionFile.getId());
         byte[] excelFileContent = rlsService.createDeductionExcelFile(updatedCollectionFile.getDeductionFile());
 
-        FileUtils.writeByteArrayToFile(new File("deductionFile.xlsx"), excelFileContent);
         assertThat(excelFileContent).isNotNull();
         Workbook wb = WorkbookFactory.create(new ByteArrayInputStream(excelFileContent));
         assertThat(wb.getSheet("LFPATPTDR6")).isNotNull();
@@ -279,27 +276,30 @@ public class RLSServiceTest {
         Workbook wb = WorkbookFactory.create(new ByteArrayInputStream(excelFileContent));
         assertThat(wb.getSheet("LFPATPTDR6")).isNotNull();
         assertThat(wb.getSheet("LFPATPTDR6").getLastRowNum()).isEqualTo(3);
-        assertThat(wb.getSheet("LFPATPTDR6").getRow(1).getCell(0).getStringCellValue()).isEqualTo(policy1.getPolicyId());
-        assertThat(wb.getSheet("LFPATPTDR6").getRow(1).getCell(1).getStringCellValue()).isEqualTo("myBankCode");
-        assertThat(wb.getSheet("LFPATPTDR6").getRow(1).getCell(2).getStringCellValue()).isEqualTo("M");
-        assertThat(wb.getSheet("LFPATPTDR6").getRow(1).getCell(3).getStringCellValue()).isEqualTo("100.0");
-        assertThat(wb.getSheet("LFPATPTDR6").getRow(1).getCell(4).getStringCellValue()).isEqualTo(now().toString());
-        assertThat(wb.getSheet("LFPATPTDR6").getRow(1).getCell(5).getStringCellValue()).isEqualTo("");
-        assertThat(wb.getSheet("LFPATPTDR6").getRow(2).getCell(0).getStringCellValue()).isEqualTo(policy2.getPolicyId());
-        assertThat(wb.getSheet("LFPATPTDR6").getRow(2).getCell(1).getStringCellValue()).isEqualTo("myBankCode");
-        assertThat(wb.getSheet("LFPATPTDR6").getRow(2).getCell(2).getStringCellValue()).isEqualTo("M");
-        assertThat(wb.getSheet("LFPATPTDR6").getRow(2).getCell(3).getStringCellValue()).isEqualTo("150.0");
-        assertThat(wb.getSheet("LFPATPTDR6").getRow(2).getCell(4).getStringCellValue()).isEqualTo(now().toString());
-        assertThat(wb.getSheet("LFPATPTDR6").getRow(2).getCell(5).getStringCellValue()).isEqualTo("");
-        assertThat(wb.getSheet("LFPATPTDR6").getRow(3).getCell(0).getStringCellValue()).isEqualTo(policy2.getPolicyId());
-        assertThat(wb.getSheet("LFPATPTDR6").getRow(3).getCell(1).getStringCellValue()).isEqualTo("myBankCode");
-        assertThat(wb.getSheet("LFPATPTDR6").getRow(3).getCell(2).getStringCellValue()).isEqualTo("M");
-        assertThat(wb.getSheet("LFPATPTDR6").getRow(3).getCell(3).getStringCellValue()).isEqualTo("200.0");
-        assertThat(wb.getSheet("LFPATPTDR6").getRow(3).getCell(4).getStringCellValue()).isEqualTo(now().toString());
-        assertThat(wb.getSheet("LFPATPTDR6").getRow(3).getCell(5).getStringCellValue()).isEqualTo("");
+        Row row1 = wb.getSheet("LFPATPTDR6").getRow(1);
+        assertThat(row1.getCell(0).getStringCellValue()).isEqualTo(policy1.getPolicyId());
+        assertThat(row1.getCell(1).getStringCellValue()).isEqualTo("myBankCode");
+        assertThat(row1.getCell(2).getStringCellValue()).isEqualTo("M");
+        assertThat(row1.getCell(3).getStringCellValue()).isEqualTo("100.0");
+        assertThat(row1.getCell(4).getStringCellValue()).isEqualTo(now().toString());
+        assertThat(row1.getCell(5).getStringCellValue()).isEqualTo("");
+        Row row2 = wb.getSheet("LFPATPTDR6").getRow(2);
+        assertThat(row2.getCell(0).getStringCellValue()).isEqualTo(policy2.getPolicyId());
+        assertThat(row2.getCell(1).getStringCellValue()).isEqualTo("myBankCode");
+        assertThat(row2.getCell(2).getStringCellValue()).isEqualTo("M");
+        assertThat(row2.getCell(3).getStringCellValue()).isEqualTo("150.0");
+        assertThat(row2.getCell(4).getStringCellValue()).isEqualTo(now().toString());
+        assertThat(row2.getCell(5).getStringCellValue()).isEqualTo("");
+        Row row3 = wb.getSheet("LFPATPTDR6").getRow(3);
+        assertThat(row3.getCell(0).getStringCellValue()).isEqualTo(policy2.getPolicyId());
+        assertThat(row3.getCell(1).getStringCellValue()).isEqualTo("myBankCode");
+        assertThat(row3.getCell(2).getStringCellValue()).isEqualTo("M");
+        assertThat(row3.getCell(3).getStringCellValue()).isEqualTo("200.0");
+        assertThat(row3.getCell(4).getStringCellValue()).isEqualTo(now().toString());
+        assertThat(row3.getCell(5).getStringCellValue()).isEqualTo("");
     }
 
-    private CollectionFile collectionFile(CollectionFileLine ... collectionFileLines) {
+    private static CollectionFile collectionFile(CollectionFileLine ... collectionFileLines) {
         CollectionFile collectionFile = new CollectionFile();
         collectionFile.setReceivedDate(LocalDateTime.now());
         for (CollectionFileLine collectionFileLine : collectionFileLines) {

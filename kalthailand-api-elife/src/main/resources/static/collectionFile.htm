@@ -54,7 +54,7 @@
         </style>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" ng-controller="AppController">
             <div class="page-header">
-                <h1>List of all Collection file</h1>
+                <h1>Auto Pay files</h1>
             </div>
             <form name="formUpload" ng-submit="upload($event)" class="form-inline form-upload">
                 <div class="form-group">
@@ -72,11 +72,12 @@
             </div>
             <table class="table table-bordered table-striped table-hover table-condensed">
                 <tr>
-                    <td>Received Date</td>
+                    <td>Collection File<br>Received Date</td>
+                    <td>Collection File<br>Nb Line</td>
                     <td>Job Starting Date</td>
                     <td>Job Ending Date</td>
-                    <td>Number of lines</td>
                     <td>Generated lines</td>
+                    <td>Deduction File</td>
                 </tr>
                 <tr ng-repeat="collectionFile in collectionFiles"
                     ng-class="{
@@ -84,10 +85,11 @@
                         'danger': collectionFile.deductionFile.lines.length && collectionFile.lines.length != collectionFile.deductionFile.lines.length
                     }">
                     <td>{{ collectionFile.receivedDate | date:'yyyy-MM-dd HH:mm:ss Z'}}</td>
+                    <td>{{ collectionFile.lines.length }}</td>
                     <td>{{ collectionFile.jobStartedDate | date:'yyyy-MM-dd HH:mm:ss Z'}}</td>
                     <td>{{ collectionFile.jobEndedDate | date:'yyyy-MM-dd HH:mm:ss Z'}}</td>
-                    <td>{{ collectionFile.lines.length }}</td>
                     <td>{{ collectionFile.deductionFile.lines.length }}</td>
+                    <td><a href="RLS/deduction/download/{{collectionFile.id}}" ng-show="collectionFile.deductionFile.lines">Download</a></td>
                 </tr>
             </table>
         </div>

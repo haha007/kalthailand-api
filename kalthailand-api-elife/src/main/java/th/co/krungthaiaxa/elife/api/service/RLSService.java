@@ -10,6 +10,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.elife.api.data.CollectionFile;
 import th.co.krungthaiaxa.elife.api.data.CollectionFileLine;
@@ -36,6 +37,7 @@ import java.util.function.Function;
 import static java.time.LocalDate.now;
 import static java.time.ZoneId.SHORT_IDS;
 import static java.time.ZoneId.of;
+import static java.time.format.DateTimeFormatter.ofPattern;
 import static org.apache.commons.codec.digest.DigestUtils.sha256Hex;
 import static org.springframework.util.Assert.isTrue;
 import static org.springframework.util.Assert.notNull;
@@ -87,8 +89,12 @@ public class RLSService {
         collectionFileRepository.save(collectionFile);
     }
 
+    public CollectionFile findOne(String collectionFileId) {
+        return collectionFileRepository.findOne(collectionFileId);
+    }
+
     public List<CollectionFile> getCollectionFiles() {
-        return collectionFileRepository.findAll();
+        return collectionFileRepository.findAll(new Sort(Sort.Direction.DESC, "receivedDate"));
     }
 
     public void processLatestCollectionFile() {
@@ -244,7 +250,7 @@ public class RLSService {
         deductionFileLine.setBankCode(collectionFileLine.getBankCode());
         deductionFileLine.setPaymentMode(paymentMode.apply(periodicityCode));
         deductionFileLine.setPolicyNumber(collectionFileLine.getPolicyNumber());
-        deductionFileLine.setProcessDate(LocalDate.now(of(SHORT_IDS.get("VST"))));
+        deductionFileLine.setProcessDate(LocalDateTime.now());
         deductionFileLine.setRejectionCode(errorCode);
         return deductionFileLine;
     }
@@ -255,7 +261,7 @@ public class RLSService {
                 text(deductionFileLine.getBankCode()),
                 text(deductionFileLine.getPaymentMode()),
                 text(deductionFileLine.getAmount().toString()),
-                text(deductionFileLine.getProcessDate().toString()),
+                text(ofPattern("yyyyMMdd_hhmmss").format(deductionFileLine.getProcessDate())),
                 text(deductionFileLine.getRejectionCode()));
     }
 

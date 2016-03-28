@@ -2,25 +2,28 @@ package th.co.krungthaiaxa.elife.api.resource;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import th.co.krungthaiaxa.elife.api.data.CollectionFile;
 import th.co.krungthaiaxa.elife.api.model.error.ErrorCode;
 import th.co.krungthaiaxa.elife.api.service.RLSService;
 
 import javax.inject.Inject;
-
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URLConnection;
 
-import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.HttpStatus.NOT_ACCEPTABLE;
-import static org.springframework.http.HttpStatus.OK;
+import static java.time.LocalDateTime.now;
+import static java.time.format.DateTimeFormatter.ofPattern;
+import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
@@ -58,4 +61,35 @@ public class RLSResource {
         return new ResponseEntity<>(getJson(rlsService.getCollectionFiles()), OK);
     }
 
+    @ApiOperation(value = "Get Deduction file", notes = "Get a Deduction file")
+    @RequestMapping(value = "/RLS/deduction/download/{collectionFileId}", produces = APPLICATION_JSON_VALUE, method = GET)
+    public void getDeductionFile(@PathVariable String collectionFileId, HttpServletRequest request,
+                                 HttpServletResponse response) {
+        logger.info("Downloading deduction File");
+        CollectionFile collectionFile = rlsService.findOne(collectionFileId);
+        byte[] excelFileContent = rlsService.createDeductionExcelFile(collectionFile.getDeductionFile());
+
+        String mimeType;
+        try (InputStream in = new ByteArrayInputStream(excelFileContent)) {
+            mimeType = URLConnection.guessContentTypeFromStream(in);
+        } catch (IOException e) {
+            logger.error("Unable to download the deduction file", e);
+            return;
+        }
+
+        response.setContentType(mimeType);
+        response.setContentLength(excelFileContent.length);
+
+        String fileName = "deductionFile_" + ofPattern("yyyyMMdd_hhmmss").format(now()) + ".xlsx";
+        // set headers for the response
+        String headerKey = "Content-Disposition";
+        String headerValue = String.format("attachment; filename=\"%s\"", fileName);
+        response.setHeader(headerKey, headerValue);
+
+        try (OutputStream outStream = response.getOutputStream()) {
+            IOUtils.write(excelFileContent, outStream);
+        } catch (IOException e) {
+            logger.error("Unable to download the deduction file", e);
+        }
+    }
 }
