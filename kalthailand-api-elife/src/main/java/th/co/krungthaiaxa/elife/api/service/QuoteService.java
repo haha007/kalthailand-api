@@ -12,9 +12,7 @@ import th.co.krungthaiaxa.elife.api.repository.QuoteRepository;
 import th.co.krungthaiaxa.elife.api.repository.SessionQuoteRepository;
 
 import javax.inject.Inject;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 import static java.time.LocalDateTime.now;
@@ -85,13 +83,7 @@ public class QuoteService {
     }
 
     public Quote updateQuote(Quote quote) {
-        // common calculation
-        quote = basicCalculateQuote(quote);
-
-        Product product = productFactory.getProduct(quote.getCommonData().getProductId());
-        product.calculateQuote(quote, null);
         quote.setLastUpdateDateTime(now(of(SHORT_IDS.get("VST"))));
-
         return quoteRepository.save(quote);
     }
 
@@ -103,20 +95,5 @@ public class QuoteService {
         return sessionQuote.getQuotes().stream()
                 .filter(quote -> quote.getQuoteId().equals(quoteId))
                 .findFirst();
-    }
-
-    private Quote basicCalculateQuote(Quote quote) {
-        // calculate age
-        quote.getInsureds().stream()
-                .filter(insured -> insured != null)
-                .filter(insured -> insured.getPerson() != null)
-                .filter(insured -> insured.getPerson().getBirthDate() != null)
-                .forEach(insured -> insured.setAgeAtSubscription(getAge(insured.getPerson().getBirthDate())));
-
-        return quote;
-    }
-
-    private Integer getAge(LocalDate birthDate) {
-        return ((Long) ChronoUnit.YEARS.between(birthDate, LocalDate.now())).intValue();
     }
 }
