@@ -5,6 +5,7 @@ import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.SpringApplicationConfiguration;
@@ -26,10 +27,11 @@ import th.co.krungthaiaxa.elife.api.repository.PolicyRepository;
 import javax.inject.Inject;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static java.time.LocalDate.now;
+import static java.time.LocalDateTime.now;
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -61,10 +63,10 @@ public class RLSServiceTest {
     @Inject
     private MongoTemplate mongoTemplate;
 
-//    @After
-//    public void tearDown() {
-//        mongoTemplate.dropCollection(CollectionFile.class);
-//    }
+    @After
+    public void tearDown() {
+        mongoTemplate.dropCollection(CollectionFile.class);
+    }
 
     @Test
     public void should_not_save_collection_file_when_there_is_an_error() {
@@ -125,7 +127,7 @@ public class RLSServiceTest {
 
     @Test
     public void should_save_collection_file_with_lines_hash_code_and_dates() {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = now();
         CollectionFile collectionFile = rlsService.readCollectionExcelFile(this.getClass().getResourceAsStream("/collectionFile_full.xls"));
         assertThat(collectionFile.getLines()).hasSize(50);
         assertThat(collectionFile.getFileHashCode()).isNotNull();
@@ -166,7 +168,7 @@ public class RLSServiceTest {
     @Test
     public void should_add_a_payment_for_the_policy_when_payment_due_date_is_older_than_28_days() {
         Policy policy = getValidatedPolicy(EVERY_MONTH);
-        policy.getPayments().stream().forEach(payment -> payment.setDueDate(now().minusDays(30)));
+        policy.getPayments().stream().forEach(payment -> payment.setDueDate(LocalDate.now().minusDays(30)));
         paymentRepository.save(policy.getPayments());
         CollectionFileLine collectionFileLine = collectionFileLine(policy, 100.0);
         rlsService.addPaymentId(collectionFileLine);
@@ -220,7 +222,7 @@ public class RLSServiceTest {
         assertThat(deductionFileLines).extracting("bankCode").containsExactly("myBankCode", "myBankCode", "myBankCode");
         assertThat(deductionFileLines).extracting("paymentMode").containsExactly("M", "M", "M");
         assertThat(deductionFileLines).extracting("amount").containsExactly(100.0, 150.0, 200.0);
-        assertThat(deductionFileLines).extracting("processDate").containsExactly(now(), now(), now());
+        assertThat(deductionFileLines).extracting("processDate").doesNotContainNull();
         assertThat(deductionFileLines).extracting("rejectionCode").containsExactly("", "", "");
     }
 
@@ -281,27 +283,27 @@ public class RLSServiceTest {
         assertThat(row1.getCell(1).getStringCellValue()).isEqualTo("myBankCode");
         assertThat(row1.getCell(2).getStringCellValue()).isEqualTo("M");
         assertThat(row1.getCell(3).getStringCellValue()).isEqualTo("100.0");
-        assertThat(row1.getCell(4).getStringCellValue()).isEqualTo(now().toString());
+        assertThat(row1.getCell(4).getStringCellValue()).isNotNull();
         assertThat(row1.getCell(5).getStringCellValue()).isEqualTo("");
         Row row2 = wb.getSheet("LFPATPTDR6").getRow(2);
         assertThat(row2.getCell(0).getStringCellValue()).isEqualTo(policy2.getPolicyId());
         assertThat(row2.getCell(1).getStringCellValue()).isEqualTo("myBankCode");
         assertThat(row2.getCell(2).getStringCellValue()).isEqualTo("M");
         assertThat(row2.getCell(3).getStringCellValue()).isEqualTo("150.0");
-        assertThat(row2.getCell(4).getStringCellValue()).isEqualTo(now().toString());
+        assertThat(row2.getCell(4).getStringCellValue()).isNotNull();
         assertThat(row2.getCell(5).getStringCellValue()).isEqualTo("");
         Row row3 = wb.getSheet("LFPATPTDR6").getRow(3);
         assertThat(row3.getCell(0).getStringCellValue()).isEqualTo(policy2.getPolicyId());
         assertThat(row3.getCell(1).getStringCellValue()).isEqualTo("myBankCode");
         assertThat(row3.getCell(2).getStringCellValue()).isEqualTo("M");
         assertThat(row3.getCell(3).getStringCellValue()).isEqualTo("200.0");
-        assertThat(row3.getCell(4).getStringCellValue()).isEqualTo(now().toString());
+        assertThat(row3.getCell(4).getStringCellValue()).isNotNull();
         assertThat(row3.getCell(5).getStringCellValue()).isEqualTo("");
     }
 
     private static CollectionFile collectionFile(CollectionFileLine ... collectionFileLines) {
         CollectionFile collectionFile = new CollectionFile();
-        collectionFile.setReceivedDate(LocalDateTime.now());
+        collectionFile.setReceivedDate(now());
         for (CollectionFileLine collectionFileLine : collectionFileLines) {
             collectionFile.addLine(collectionFileLine);
         }
@@ -313,7 +315,7 @@ public class RLSServiceTest {
         collectionFileLine.setPaymentMode("myPaymentMode");
         collectionFileLine.setBankCode("myBankCode");
         collectionFileLine.setCollectionBank("collectionBank");
-        collectionFileLine.setCollectionDate(now().toString());
+        collectionFileLine.setCollectionDate(LocalDate.now().toString());
         collectionFileLine.setPolicyNumber(policy.getPolicyId());
         collectionFileLine.setPremiumAmount(amount);
         return collectionFileLine;

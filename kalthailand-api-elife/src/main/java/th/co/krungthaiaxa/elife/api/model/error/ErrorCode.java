@@ -27,6 +27,7 @@ public class ErrorCode {
     public static final Function<String, Error> POLICY_IS_PENDING_PAYMENT = msg -> new Error("40007", "The policy [" + msg + "] is waiting for payment registration", "The policy [" + msg + "] is waiting for payment registration");
     public static final Function<String, Error> POLICY_IS_VALIDATED = msg -> new Error("40008", "The policy [" + msg + "] is already validated", "The policy [" + msg + "] is already validated");
     public static final Function<String, Error> POLICY_IS_NOT_PENDING_FOR_PAYMENT = msg -> new Error("40009", "The policy [" + msg + "] is not pending for payment and cannot be updated to pending for validation", "The policy [" + msg + "] is not pending for payment and cannot be updated to pending for validation");
+    public static final Function<String, Error> ORDER_ID_NOT_PROVIDED = msg -> new Error("40010", "The order id was not provided", "The order id was not provided");
 
     // Line token decryption
     public static final Error UNABLE_TO_DECRYPT = new Error("50001", "Unable to get your user ID", "The provided text could not be decrypted");

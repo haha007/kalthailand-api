@@ -24,7 +24,6 @@ import th.co.krungthaiaxa.elife.api.model.Document;
 import th.co.krungthaiaxa.elife.api.model.Policy;
 import th.co.krungthaiaxa.elife.api.model.Quote;
 import th.co.krungthaiaxa.elife.api.model.error.Error;
-import th.co.krungthaiaxa.elife.api.model.error.ErrorCode;
 import th.co.krungthaiaxa.elife.api.service.QuoteService;
 
 import javax.inject.Inject;
@@ -45,6 +44,7 @@ import static th.co.krungthaiaxa.elife.api.model.enums.PolicyStatus.PENDING_PAYM
 import static th.co.krungthaiaxa.elife.api.model.enums.PolicyStatus.VALIDATED;
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.ERROR;
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.SUCCESS;
+import static th.co.krungthaiaxa.elife.api.model.error.ErrorCode.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiApplication.class)
@@ -85,7 +85,7 @@ public class DocumentResourceTest {
 
         Error error = TestUtil.getErrorFromJSon(response.getBody());
         assertThat(response.getStatusCode().value()).isEqualTo(BAD_REQUEST.value());
-        assertThat(error.getCode()).isEqualTo(ErrorCode.WATERMARK_IMAGE_INPUT_NOT_READABLE.getCode());
+        assertThat(error.getCode()).isEqualTo(WATERMARK_IMAGE_INPUT_NOT_READABLE.getCode());
     }
 
     @Test
@@ -97,7 +97,7 @@ public class DocumentResourceTest {
 
         Error error = TestUtil.getErrorFromJSon(response.getBody());
         assertThat(response.getStatusCode().value()).isEqualTo(NOT_ACCEPTABLE.value());
-        assertThat(error.getCode()).isEqualTo(ErrorCode.WATERMARK_IMAGE_INPUT_TOO_SMALL.getCode());
+        assertThat(error.getCode()).isEqualTo(WATERMARK_IMAGE_INPUT_TOO_SMALL.getCode());
     }
 
     @Test
@@ -109,7 +109,7 @@ public class DocumentResourceTest {
 
         Error error = TestUtil.getErrorFromJSon(response.getBody());
         assertThat(response.getStatusCode().value()).isEqualTo(UNSUPPORTED_MEDIA_TYPE.value());
-        assertThat(error.getCode()).isEqualTo(ErrorCode.WATERMARK_IMAGE_INPUT_NOT_SUPPORTED.getCode());
+        assertThat(error.getCode()).isEqualTo(WATERMARK_IMAGE_INPUT_NOT_SUPPORTED.getCode());
     }
 
     @Test
@@ -143,7 +143,7 @@ public class DocumentResourceTest {
 
         Error error = TestUtil.getErrorFromJSon(response.getBody());
         assertThat(response.getStatusCode().value()).isEqualTo(NOT_FOUND.value());
-        assertThat(error.getCode()).isEqualTo(ErrorCode.POLICY_DOES_NOT_EXIST.getCode());
+        assertThat(error.getCode()).isEqualTo(POLICY_DOES_NOT_EXIST.getCode());
     }
 
     @Test
@@ -153,7 +153,7 @@ public class DocumentResourceTest {
 
         Error error = TestUtil.getErrorFromJSon(response.getBody());
         assertThat(response.getStatusCode().value()).isEqualTo(NOT_FOUND.value());
-        assertThat(error.getCode()).isEqualTo(ErrorCode.POLICY_DOES_NOT_EXIST.getCode());
+        assertThat(error.getCode()).isEqualTo(POLICY_DOES_NOT_EXIST.getCode());
     }
 
     @Test
@@ -165,7 +165,7 @@ public class DocumentResourceTest {
 
         Error error = TestUtil.getErrorFromJSon(response.getBody());
         assertThat(response.getStatusCode().value()).isEqualTo(NOT_ACCEPTABLE.value());
-        assertThat(error.getCode()).isEqualTo(ErrorCode.POLICY_DOES_NOT_CONTAIN_DOCUMENT.getCode());
+        assertThat(error.getCode()).isEqualTo(POLICY_DOES_NOT_CONTAIN_DOCUMENT.getCode());
     }
 
     @Test
@@ -175,6 +175,7 @@ public class DocumentResourceTest {
         URI paymentURI = new URI("http://localhost:" + port + "/policies/" + policy.getPolicyId() + "/update/status/pendingValidation");
         UriComponentsBuilder updatePaymentBuilder = UriComponentsBuilder.fromUri(paymentURI)
                 .queryParam("paymentId", policy.getPayments().get(0).getPaymentId())
+                .queryParam("orderId", "myOrderId")
                 .queryParam("value", 200.0)
                 .queryParam("currencyCode", "THB")
                 .queryParam("registrationKey", "something")
@@ -204,6 +205,7 @@ public class DocumentResourceTest {
         URI paymentURI = new URI("http://localhost:" + port + "/policies/" + policy.getPolicyId() + "/update/status/pendingValidation");
         UriComponentsBuilder updatePaymentBuilder = UriComponentsBuilder.fromUri(paymentURI)
                 .queryParam("paymentId", policy.getPayments().get(0).getPaymentId())
+                .queryParam("orderId", "myOrderId")
                 .queryParam("value", 200.0)
                 .queryParam("currencyCode", "THB")
                 .queryParam("registrationKey", "something")

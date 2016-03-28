@@ -119,6 +119,8 @@ public class PolicyResource {
             @PathVariable String policyId,
             @ApiParam(value = "The payment ID", required = true)
             @RequestParam String paymentId,
+            @ApiParam(value = "The order id used to book the payment", required = true)
+            @RequestParam String orderId,
             @ApiParam(value = "The amount registered through the channel", required = true, defaultValue = "0.0")
             @RequestParam Double value,
             @ApiParam(value = "The currency registered through the channel", required = true)
@@ -137,6 +139,11 @@ public class PolicyResource {
             @RequestParam Optional<String> errorCode,
             @ApiParam(value = "The error message given by the channel (if any)", required = false)
             @RequestParam Optional<String> errorMessage) {
+        if (isEmpty(orderId)) {
+            logger.error("The order ID was not received");
+            return new ResponseEntity<>(ORDER_ID_NOT_PROVIDED, NOT_ACCEPTABLE);
+        }
+
         Optional<Policy> policy = policyService.findPolicy(policyId);
         if (!policy.isPresent()) {
             logger.error("Unable to find the policy with ID [" + policyId + "]");
@@ -165,7 +172,7 @@ public class PolicyResource {
         }
 
         // Update the payment whatever the status of the payment is
-        policyService.reservePayments(policy.get(), registrationKey, status, channelType, errorCode, errorMessage);
+        policyService.reservePayments(policy.get(), orderId, registrationKey, status, channelType, errorCode, errorMessage);
 
         // If in error, nothing else should be done
         if (ERROR.equals(status)) {

@@ -16,6 +16,7 @@ import java.util.Objects;
 public class Payment {
     @Id
     private String paymentId;
+    private String orderId;
     private PaymentStatus status;
     private LocalDate dueDate;
     private LocalDate effectiveDate;
@@ -42,6 +43,15 @@ public class Payment {
 
     public void setPaymentId(String paymentId) {
         this.paymentId = paymentId;
+    }
+
+    @ApiModelProperty(required = true, value = "The order Id used to book the payment (if any)")
+    public String getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
     }
 
     @ApiModelProperty(required = true, value = "Status of the payment")

@@ -113,13 +113,13 @@ public class PolicyService {
         return policy;
     }
 
-    public void reservePayments(Policy policy, Optional<String> registrationKey, SuccessErrorStatus status,
+    public void reservePayments(Policy policy, String orderId, Optional<String> registrationKey, SuccessErrorStatus status,
                                 ChannelType channelType, Optional<String> errorCode, Optional<String> errorMessage) {
         for (Payment payment : policy.getPayments()) {
             if (registrationKey.isPresent() && !registrationKey.get().equals(payment.getRegistrationKey())) {
                 payment.setRegistrationKey(registrationKey.get());
             }
-
+            payment.setOrderId(orderId);
             paymentRepository.save(payment);
         }
         logger.info("Payments in policy [" + policy.getPolicyId() + "] have been booked");

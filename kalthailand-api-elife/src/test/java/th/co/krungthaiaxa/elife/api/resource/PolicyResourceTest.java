@@ -114,6 +114,7 @@ public class PolicyResourceTest {
         URI paymentURI = new URI("http://localhost:" + port + "/policies/" + policy.getPolicyId() + "/update/status/pendingValidation");
         UriComponentsBuilder updatePaymentBuilder = UriComponentsBuilder.fromUri(paymentURI)
                 .queryParam("paymentId", policy.getPayments().get(0).getPaymentId())
+                .queryParam("orderId", "myOrderId")
                 .queryParam("value", 200.0)
                 .queryParam("currencyCode", "THB")
                 .queryParam("registrationKey", "something")
@@ -136,6 +137,7 @@ public class PolicyResourceTest {
         URI paymentURI = new URI("http://localhost:" + port + "/policies/" + policy.getPolicyId() + "/update/status/pendingValidation");
         UriComponentsBuilder updatePaymentBuilder = UriComponentsBuilder.fromUri(paymentURI)
                 .queryParam("paymentId", policy.getPayments().get(0).getPaymentId())
+                .queryParam("orderId", "myOrderId")
                 .queryParam("value", 200.0)
                 .queryParam("currencyCode", "THB")
                 .queryParam("registrationKey", "something")
@@ -159,6 +161,7 @@ public class PolicyResourceTest {
         URI paymentURI = new URI("http://localhost:" + port + "/policies/" + policy.getPolicyId() + "/update/status/pendingValidation");
         UriComponentsBuilder updatePaymentBuilder = UriComponentsBuilder.fromUri(paymentURI)
                 .queryParam("paymentId", policy.getPayments().get(0).getPaymentId())
+                .queryParam("orderId", "myOrderId")
                 .queryParam("value", 200.0)
                 .queryParam("currencyCode", "THB")
                 .queryParam("registrationKey", "something")
