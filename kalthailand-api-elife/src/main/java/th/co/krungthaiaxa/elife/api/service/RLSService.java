@@ -1,7 +1,6 @@
 package th.co.krungthaiaxa.elife.api.service;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
@@ -17,7 +16,6 @@ import th.co.krungthaiaxa.elife.api.data.CollectionFileLine;
 import th.co.krungthaiaxa.elife.api.data.DeductionFile;
 import th.co.krungthaiaxa.elife.api.data.DeductionFileLine;
 import th.co.krungthaiaxa.elife.api.model.Payment;
-import th.co.krungthaiaxa.elife.api.model.PaymentInformation;
 import th.co.krungthaiaxa.elife.api.model.Policy;
 import th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode;
 import th.co.krungthaiaxa.elife.api.repository.CollectionFileRepository;
@@ -43,6 +41,7 @@ import static org.springframework.util.Assert.isTrue;
 import static org.springframework.util.Assert.notNull;
 import static th.co.krungthaiaxa.elife.api.model.enums.PaymentStatus.NOT_PROCESSED;
 import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_MONTH;
+import static th.co.krungthaiaxa.elife.api.model.enums.PolicyStatus.VALIDATED;
 import static th.co.krungthaiaxa.elife.api.utils.ExcelUtils.*;
 
 @Service
@@ -83,7 +82,7 @@ public class RLSService {
     }
 
     public void importCollectionFile(InputStream is) {
-        CollectionFile collectionFile = readExcelFile(is);
+        CollectionFile collectionFile = readCollectionExcelFile(is);
         collectionFile.getLines().forEach(this::addPaymentId);
         collectionFileRepository.save(collectionFile);
     }
@@ -92,7 +91,6 @@ public class RLSService {
         return collectionFileRepository.findAll();
     }
 
-//    @Scheduled(cron = "0 0 1 * * MON-SUN")
     public void processLatestCollectionFile() {
         List<CollectionFile> collectionFiles = collectionFileRepository.findByJobStartedDateNull();
         for (CollectionFile collectionFile : collectionFiles) {
@@ -106,11 +104,34 @@ public class RLSService {
                 deductionFile.addLine(getDeductionFileLine(collectionFileLine, ""));
             }
             collectionFile.setJobEndedDate(LocalDateTime.now(of(SHORT_IDS.get("VST"))));
+            collectionFile.setDeductionFile(deductionFile);
             collectionFileRepository.save(collectionFile);
         }
     }
 
-    CollectionFile readExcelFile(InputStream is) {
+    public byte[] createDeductionExcelFile(DeductionFile deductionFile) {
+        notNull(deductionFile, "No deduction file has been created");
+
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("LFPATPTDR6");
+        appendRow(sheet, //
+                text("M93RPNO6"), // Policy ID
+                text("M93RBKCD6"), // Bank Code
+                text("M93RPMOD6"), // Payment Mode
+                text("M93RPRM6"), // Deposit amount
+                text("M93RDOC6"), // Process date
+                text("M93RJCD6")); // Rejection Code
+        deductionFile.getLines().stream().forEach(deductionFileLine -> createDeductionExcelFileLine(sheet, deductionFileLine));
+        autoWidthAllColumns(workbook);
+        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+            workbook.write(byteArrayOutputStream);
+            return byteArrayOutputStream.toByteArray();
+        } catch (IOException e) {
+            throw new IllegalStateException("Unable to write content of excel deduction file", e);
+        }
+    }
+
+    CollectionFile readCollectionExcelFile(InputStream is) {
         notNull(is, "The file excel file is not available");
         HSSFWorkbook workbook;
         try {
@@ -182,6 +203,8 @@ public class RLSService {
     void addPaymentId(CollectionFileLine collectionFileLine) {
         Optional<Policy> policy = policyService.findPolicy(collectionFileLine.getPolicyNumber());
         isTrue(policy.isPresent(), "Unable to find a policy [" + collectionFileLine.getPolicyNumber() + "]");
+        isTrue(policy.get().getStatus().equals(VALIDATED), "The policy [" +
+                collectionFileLine.getPolicyNumber() + "] has not been validated and payments can't go through without validation");
         isTrue(policy.get().getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().equals(EVERY_MONTH),
                 "Policy [" + collectionFileLine.getPolicyNumber() + "] is not a monthly payment policy");
 
@@ -212,45 +235,28 @@ public class RLSService {
     }
 
     private DeductionFileLine getDeductionFileLine(CollectionFileLine collectionFileLine, String errorCode) {
+        Optional<Policy> policy = policyService.findPolicy(collectionFileLine.getPolicyNumber());
+        isTrue(policy.isPresent(), "Unable to find a policy [" + collectionFileLine.getPolicyNumber() + "]");
+
+        PeriodicityCode periodicityCode = policy.get().getPremiumsData().getFinancialScheduler().getPeriodicity().getCode();
         DeductionFileLine deductionFileLine = new DeductionFileLine();
         deductionFileLine.setAmount(collectionFileLine.getPremiumAmount());
         deductionFileLine.setBankCode(collectionFileLine.getBankCode());
-        deductionFileLine.setPaymentMode(collectionFileLine.getPaymentMode());
+        deductionFileLine.setPaymentMode(paymentMode.apply(periodicityCode));
         deductionFileLine.setPolicyNumber(collectionFileLine.getPolicyNumber());
         deductionFileLine.setProcessDate(LocalDate.now(of(SHORT_IDS.get("VST"))));
         deductionFileLine.setRejectionCode(errorCode);
         return deductionFileLine;
     }
 
-    public byte[] exportPayments(List<Pair<Policy, PaymentInformation>> payments) {
-        Workbook workbook = new XSSFWorkbook();
-        Sheet sheet = workbook.createSheet("LFPATPTDR6");
-        appendRow(sheet, //
-                text("M93RPNO6"), // Policy ID
-                text("M93RBKCD6"), // Bank Code
-                text("M93RPMOD6"), // Payment Mode
-                text("M93RPRM6"), // Deposit amount
-                text("M93RDOC6"), // Process date
-                text("M93RJCD6")); // Rejection Code
-        payments.stream().forEach(data -> exportPayment(sheet, data.getLeft(), data.getRight()));
-        autoWidthAllColumns(workbook);
-        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
-            workbook.write(byteArrayOutputStream);
-            return byteArrayOutputStream.toByteArray();
-        } catch (IOException e) {
-            logger.error("Unable to write content of excel file", e);
-            throw new IllegalStateException("Unable to write content of excel file", e);
-        }
-    }
-
-    private void exportPayment(Sheet sheet, Policy policy, PaymentInformation paymentInformation) {
+    private void createDeductionExcelFileLine(Sheet sheet, DeductionFileLine deductionFileLine) {
         appendRow(sheet,
-                text(policy.getPolicyId()),
-                empty(),
-                text(paymentMode.apply(policy.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode())),
-                text(paymentInformation.getAmount().getValue().toString()),
-                time(paymentInformation.getDate()),
-                text(paymentInformation.getRejectionErrorMessage()));
+                text(deductionFileLine.getPolicyNumber()),
+                text(deductionFileLine.getBankCode()),
+                text(deductionFileLine.getPaymentMode()),
+                text(deductionFileLine.getAmount().toString()),
+                text(deductionFileLine.getProcessDate().toString()),
+                text(deductionFileLine.getRejectionCode()));
     }
 
     private String getCellValueAsString(Cell cell) {
