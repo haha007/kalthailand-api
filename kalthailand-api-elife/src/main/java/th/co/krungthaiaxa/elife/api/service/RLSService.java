@@ -138,7 +138,7 @@ public class RLSService {
     }
 
     CollectionFile readCollectionExcelFile(InputStream is) {
-        notNull(is, "The file excel file is not available");
+        notNull(is, "The excel file is not available");
         HSSFWorkbook workbook;
         try {
             workbook = new HSSFWorkbook(is);

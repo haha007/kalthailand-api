@@ -58,8 +58,8 @@ public class EmailServiceTest {
     private String subjectQuote;
     @Value("${email.subject.ereceipt.10ec}")
     private String subjectEreceipt10EC;
-    @Value("${lineid}")
-    private String lineURL;
+    @Value("${line.app.id}")
+    private String lineId;
     @Value("${tmp.path.deleted.after.tests}")
     private String tmpPathDeletedAfterTests;
     @Value("${button.url.ereceipt.mail}")
@@ -148,6 +148,23 @@ public class EmailServiceTest {
     }
 
     @Test
+    public void should_send_quote_email_containing_links_to_line_app() throws Exception {
+        Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation(55, EVERY_YEAR, 500000.0));
+        quote(quote, beneficiary(100.0));
+        quote = quoteService.updateQuote(quote);
+
+        emailService.sendQuoteEmail(quote, base64Graph);
+
+        assertThat(greenMail.getReceivedMessages()).hasSize(1);
+        MimeMessage email = greenMail.getReceivedMessages()[0];
+        assertThat(email.getSubject()).isEqualTo(subjectQuote);
+        String bodyAsString = decodeSimpleBody(getBody(email));
+        assertThat(bodyAsString).contains("href='https://line.me/R/ch/" + lineId + "/elife/th/'");
+        assertThat(bodyAsString).contains("href='https://line.me/R/ch/" + lineId + "/elife/th/fatca-questions/" + quote.getQuoteId() + "'");
+        assertThat(bodyAsString).contains("https://line.me/R/ch/" + lineId + "/elife/th/quote-product/line-10-ec'");
+    }
+
+    @Test
     public void should_send_quote_email_with_product_information() throws Exception {
         Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation(55, EVERY_YEAR, 500000.0));
         quote(quote, beneficiary(100.0));
@@ -218,7 +235,7 @@ public class EmailServiceTest {
         byte[] bytes = Base64.getDecoder().decode(documentDownload.getContent());
         assertThat(new PdfReader(bytes)).isNotNull();
 
-        FileUtils.writeByteArrayToFile(new File(tmpPathDeletedAfterTests+"/e-receipt.pdf"), bytes);
+        FileUtils.writeByteArrayToFile(new File(tmpPathDeletedAfterTests + "/e-receipt.pdf"), bytes);
 
         emailService.sendEreceiptEmail(policy, Pair.of(bytes, "emailServiceTest-ereceipt.pdf"));
 

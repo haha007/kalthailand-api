@@ -33,8 +33,8 @@ public class EmailService {
     private String emailName;
     @Value("${email.subject.quote}")
     private String subject;
-    @Value("${lineid}")
-    private String lineURL;
+    @Value("${line.app.id}")
+    private String lineId;
     @Value("${button.url.ereceipt.mail}")
     private String uploadDocURL;
     @Value("${email.subject.ereceipt.10ec}")
@@ -44,7 +44,7 @@ public class EmailService {
 
     @Inject
     private MessageSource messageSource;
-    private Locale thLocale = new Locale("th","");
+    private Locale thLocale = new Locale("th", "");
 
     @Inject
     public EmailService(EmailSender emailSender, SaleIllustration10ECService saleIllustration10ECService) {
@@ -88,21 +88,25 @@ public class EmailService {
         return emailContent.replace("%1$s", quote.getCommonData().getNbOfYearsOfCoverage().toString())
                 .replace("%2$s", quote.getCommonData().getNbOfYearsOfPremium().toString())
                 .replace("%3$s", quote.getInsureds().get(0).getAgeAtSubscription().toString())
-                .replace("%4$s", messageSource.getMessage("payment.mode."+quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().toString(), null, thLocale))
+                .replace("%4$s", messageSource.getMessage("payment.mode." + quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().toString(), null, thLocale))
                 .replace("%5$s", (new DecimalFormat(decimalFormat)).format(quote.getPremiumsData().getProduct10ECPremium().getSumInsured().getValue()))
                 .replace("%6$s", (new DecimalFormat(decimalFormat)).format(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()))
                 .replace("%7$s", (new DecimalFormat(decimalFormat)).format(quote.getPremiumsData().getProduct10ECPremium().getEndOfContractBenefitsMinimum().get(9).getValue()))
-                .replace("%8$s", (new DecimalFormat(decimalFormat)).format(quote.getPremiumsData().getProduct10ECPremium().getEndOfContractBenefitsAverage().get(9).getValue()+quote.getPremiumsData().getProduct10ECPremium().getYearlyCashBacksAverageBenefit().get(9).getValue()))
-                .replace("%9$s", (new DecimalFormat(decimalFormat)).format(quote.getPremiumsData().getProduct10ECPremium().getEndOfContractBenefitsMaximum().get(9).getValue()+quote.getPremiumsData().getProduct10ECPremium().getYearlyCashBacksMaximumBenefit().get(9).getValue()))
-                .replace("%10$s", "'" + lineURL + "'")
-                .replace("%11$s", "'" + lineURL + "fatca-questions/" + quote.getQuoteId() + "'")
-                .replace("%12$s", "'" + lineURL + "quote-product/line-10-ec" + "'");
+                .replace("%8$s", (new DecimalFormat(decimalFormat)).format(quote.getPremiumsData().getProduct10ECPremium().getEndOfContractBenefitsAverage().get(9).getValue() + quote.getPremiumsData().getProduct10ECPremium().getYearlyCashBacksAverageBenefit().get(9).getValue()))
+                .replace("%9$s", (new DecimalFormat(decimalFormat)).format(quote.getPremiumsData().getProduct10ECPremium().getEndOfContractBenefitsMaximum().get(9).getValue() + quote.getPremiumsData().getProduct10ECPremium().getYearlyCashBacksMaximumBenefit().get(9).getValue()))
+                .replace("%10$s", "'" + getLineURL() + "'")
+                .replace("%11$s", "'" + getLineURL() + "fatca-questions/" + quote.getQuoteId() + "'")
+                .replace("%12$s", "'" + getLineURL() + "quote-product/line-10-ec" + "'");
     }
 
     private String getEreceiptEmailContent(Policy policy) throws IOException {
         String emailContent = IOUtils.toString(this.getClass().getResourceAsStream("/email-ereceipt-content.txt"));
         return emailContent.replace("%1$s", policy.getInsureds().get(0).getPerson().getGivenName() + " " + policy.getInsureds().get(0).getPerson().getSurName())
                 .replace("%2$s", policy.getInsureds().get(0).getPerson().getGivenName() + " " + policy.getInsureds().get(0).getPerson().getSurName());
+    }
+
+    private String getLineURL() {
+        return "https://line.me/R/ch/" + lineId + "/elife/th/";
     }
 
 }

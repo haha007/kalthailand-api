@@ -22,7 +22,7 @@ import static th.co.krungthaiaxa.elife.api.model.error.ErrorCode.UNABLE_TO_DECRY
 public class LineResource {
     private final static Logger logger = LoggerFactory.getLogger(LineResource.class);
 
-    @Value("${line.secret.key}")
+    @Value("${line.app.secret.key}")
     private String secretkey;
 
     @ApiOperation(value = "Decrypt line token", notes = "Decrypts line token to get the mid", response = Mid.class)
