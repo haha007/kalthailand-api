@@ -23,11 +23,12 @@ public class ErrorCode {
     public static final Function<String, Error> POLICY_CANNOT_BE_CREATED = msg -> new Error("40003", "Unable to create your policy. Error is: " + msg, "The policy could not be created out of the quote for validation reasons");
     public static final Error PAYMENT_NOT_UPDATED_ERROR_DETAILS_NEEDED = new Error("40004", "The payment has not been updated, error detail is needed", "Either error code and/or error message are empty and are needed in case the payment was not successful");
     public static final Error PAYMENT_NOT_UPDATED_REG_KEY_NEEDED = new Error("40005", "The payment has not been updated, registration key is needed", "When payment booking from LINE Pay is successful, the registration key must be sent");
-    public static final Function<String, Error> POLICY_IS_CANCELED = msg -> new Error("40006", "The policy [" + msg + "] is canceled", "The policy [" + msg + "] is canceled");
-    public static final Function<String, Error> POLICY_IS_PENDING_PAYMENT = msg -> new Error("40007", "The policy [" + msg + "] is waiting for payment registration", "The policy [" + msg + "] is waiting for payment registration");
-    public static final Function<String, Error> POLICY_IS_VALIDATED = msg -> new Error("40008", "The policy [" + msg + "] is already validated", "The policy [" + msg + "] is already validated");
-    public static final Function<String, Error> POLICY_IS_NOT_PENDING_FOR_PAYMENT = msg -> new Error("40009", "The policy [" + msg + "] is not pending for payment and cannot be updated to pending for validation", "The policy [" + msg + "] is not pending for payment and cannot be updated to pending for validation");
-    public static final Function<String, Error> ORDER_ID_NOT_PROVIDED = msg -> new Error("40010", "The order id was not provided", "The order id was not provided");
+    public static final Error PAYMENT_NOT_UPDATED_TRANSACTION_NEEDED = new Error("40006", "The payment has not been updated, transaction id is needed", "When payment booking from LINE Pay is successful, the transaction id must be sent");
+    public static final Function<String, Error> POLICY_IS_CANCELED = msg -> new Error("40007", "The policy [" + msg + "] is canceled", "The policy [" + msg + "] is canceled");
+    public static final Function<String, Error> POLICY_IS_PENDING_PAYMENT = msg -> new Error("40008", "The policy [" + msg + "] is waiting for payment registration", "The policy [" + msg + "] is waiting for payment registration");
+    public static final Function<String, Error> POLICY_IS_VALIDATED = msg -> new Error("40009", "The policy [" + msg + "] is already validated", "The policy [" + msg + "] is already validated");
+    public static final Function<String, Error> POLICY_IS_NOT_PENDING_FOR_PAYMENT = msg -> new Error("40010", "The policy [" + msg + "] is not pending for payment and cannot be updated to pending for validation", "The policy [" + msg + "] is not pending for payment and cannot be updated to pending for validation");
+    public static final Function<String, Error> ORDER_ID_NOT_PROVIDED = msg -> new Error("40011", "The order id was not provided", "The order id was not provided");
 
     // Line token decryption
     public static final Error UNABLE_TO_DECRYPT = new Error("50001", "Unable to get your user ID", "The provided text could not be decrypted");

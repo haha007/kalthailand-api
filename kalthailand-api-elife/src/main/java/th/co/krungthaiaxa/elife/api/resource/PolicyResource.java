@@ -121,11 +121,13 @@ public class PolicyResource {
             @RequestParam String paymentId,
             @ApiParam(value = "The order id used to book the payment", required = true)
             @RequestParam String orderId,
+            @ApiParam(value = "The transaction id to use to confirm the payment. Must be sent of status id SUCCESS", required = false)
+            @RequestParam Optional<String> transactionId,
             @ApiParam(value = "The amount registered through the channel", required = true, defaultValue = "0.0")
             @RequestParam Double value,
             @ApiParam(value = "The currency registered through the channel", required = true)
             @RequestParam String currencyCode,
-            @ApiParam(value = "The registration key given by the channel (if any)", required = false)
+            @ApiParam(value = "The registration key given by the channel (if any). Must be sent of status id SUCCESS", required = false)
             @RequestParam Optional<String> registrationKey,
             @ApiParam(value = "The status of the transaction through the channel", required = true)
             @RequestParam SuccessErrorStatus status,
@@ -168,6 +170,9 @@ public class PolicyResource {
         } else {
             if (!registrationKey.isPresent() || isEmpty(registrationKey.get())) {
                 return new ResponseEntity<>(PAYMENT_NOT_UPDATED_REG_KEY_NEEDED, NOT_ACCEPTABLE);
+            }
+            if (!transactionId.isPresent() || isEmpty(transactionId.get())) {
+                return new ResponseEntity<>(PAYMENT_NOT_UPDATED_TRANSACTION_NEEDED, NOT_ACCEPTABLE);
             }
         }
 

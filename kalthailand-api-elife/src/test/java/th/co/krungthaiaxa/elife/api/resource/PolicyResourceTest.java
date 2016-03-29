@@ -115,6 +115,7 @@ public class PolicyResourceTest {
         UriComponentsBuilder updatePaymentBuilder = UriComponentsBuilder.fromUri(paymentURI)
                 .queryParam("paymentId", policy.getPayments().get(0).getPaymentId())
                 .queryParam("orderId", "myOrderId")
+                .queryParam("transactionId", "myTransactionId")
                 .queryParam("value", 200.0)
                 .queryParam("currencyCode", "THB")
                 .queryParam("registrationKey", "something")
