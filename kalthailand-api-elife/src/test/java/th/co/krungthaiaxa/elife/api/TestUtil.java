@@ -86,6 +86,8 @@ public class TestUtil {
         productQuotation.setDeclaredTaxPercentAtSubscription(taxRate);
         productQuotation.setGenderCode(genderCode);
         productQuotation.setPeriodicityCode(periodicityCode);
+        productQuotation.setOccupationId(1);
+        productQuotation.setPackageName(ProductIFinePackage.IFINE1.name());
         if (isSumInsured) {
             productQuotation.setSumInsuredAmount(amount);
         }

@@ -26,20 +26,20 @@ import java.util.Locale;
 import static org.apache.commons.io.IOUtils.toByteArray;
 
 @Service
-public class SaleIllustrationService {
-    private final static Logger logger = LoggerFactory.getLogger(SaleIllustrationService.class);
+public class SaleIllustration10ECService {
 
+    private final static Logger logger = LoggerFactory.getLogger(SaleIllustration10ECService.class);
     private static final BaseColor BORDER_COLOR = new BaseColor(218, 218, 218);
     private static final String _fontNormal = "/saleillustration/PSL094.TTF";
     private static final String _fontBold = "/saleillustration/PSL096.TTF";
-    private static final String IMG_SYMBOL_1 = "/saleillustration/symbol1.png";
-    private static final String IMG_SYMBOL_2 = "/saleillustration/symbol2.png";
-    private static final String IMG_SYMBOL_3 = "/saleillustration/symbol3.png";
-    private static final String IMG_BENEFIT_1 = "/saleillustration/benefit1.png";
-    private static final String IMG_BENEFIT_2 = "/saleillustration/benefit2.png";
-    private static final String IMG_BENEFIT_3 = "/saleillustration/benefit3.png";
-    private static final String IMG_BENEFIT_4 = "/saleillustration/benefit4.png";
-    private static final String IMG_BENEFIT_5 = "/saleillustration/benefit5.png";
+    private static final String IMG_SYMBOL_1 = "/saleillustration/10ec/symbol1.png";
+    private static final String IMG_SYMBOL_2 = "/saleillustration/10ec/symbol2.png";
+    private static final String IMG_SYMBOL_3 = "/saleillustration/10ec/symbol3.png";
+    private static final String IMG_BENEFIT_1 = "/saleillustration/10ec/benefit1.png";
+    private static final String IMG_BENEFIT_2 = "/saleillustration/10ec/benefit2.png";
+    private static final String IMG_BENEFIT_3 = "/saleillustration/10ec/benefit3.png";
+    private static final String IMG_BENEFIT_4 = "/saleillustration/10ec/benefit4.png";
+    private static final String IMG_BENEFIT_5 = "/saleillustration/10ec/benefit5.png";
     private static final Integer TB_HORIZONTAL_ALIGN_LEFT = 0;
     private static final Integer TB_HORIZONTAL_ALIGN_CENTER = 1;
     private static final Integer TB_HORIZONTAL_ALIGN_RIGHT = 2;
@@ -50,7 +50,6 @@ public class SaleIllustrationService {
     private static final Integer SYMBOL_IMG_SIZE = 35;
     private static final String TAB = "     ";
     private static final String NEW_LINE = System.getProperty("line.separator");
-
     @Inject
     private MessageSource messageSource;
     private Locale thLocale = new Locale("th","");

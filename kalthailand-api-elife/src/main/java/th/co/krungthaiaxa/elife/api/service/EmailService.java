@@ -28,7 +28,7 @@ import static org.apache.commons.io.IOUtils.toByteArray;
 public class EmailService {
     private final static Logger logger = LoggerFactory.getLogger(EmailService.class);
     private final EmailSender emailSender;
-    private final SaleIllustrationService saleIllustrationService;
+    private final SaleIllustration10ECService saleIllustration10ECService;
     @Value("${email.name}")
     private String emailName;
     @Value("${email.subject.quote}")
@@ -47,9 +47,9 @@ public class EmailService {
     private Locale thLocale = new Locale("th","");
 
     @Inject
-    public EmailService(EmailSender emailSender, SaleIllustrationService saleIllustrationService) {
+    public EmailService(EmailSender emailSender, SaleIllustration10ECService saleIllustration10ECService) {
         this.emailSender = emailSender;
-        this.saleIllustrationService = saleIllustrationService;
+        this.saleIllustration10ECService = saleIllustration10ECService;
     }
 
     public void sendQuoteEmail(Quote quote, String base64Image) throws IOException, MessagingException, DocumentException {
@@ -61,7 +61,7 @@ public class EmailService {
         base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/benefitPoint.jpg")), "<benefitPoint>"));
         //generate sale illustration pdf file
         List<Pair<byte[], String>> attachments = new ArrayList<>();
-        attachments.add(saleIllustrationService.generatePDF(quote, base64Image));
+        attachments.add(saleIllustration10ECService.generatePDF(quote, base64Image));
         emailSender.sendEmail(emailName, quote.getInsureds().get(0).getPerson().getEmail(), subject, getQuoteEmailContent(quote), base64ImgFileNames, attachments);
         logger.info("Quote email sent");
     }
