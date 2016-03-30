@@ -11,6 +11,7 @@ import th.co.krungthaiaxa.elife.api.model.Document;
 import th.co.krungthaiaxa.elife.api.model.DocumentDownload;
 import th.co.krungthaiaxa.elife.api.model.Policy;
 import th.co.krungthaiaxa.elife.api.model.enums.DocumentType;
+import th.co.krungthaiaxa.elife.api.products.ProductType;
 import th.co.krungthaiaxa.elife.api.repository.DocumentDownloadRepository;
 import th.co.krungthaiaxa.elife.api.repository.DocumentRepository;
 import th.co.krungthaiaxa.elife.api.repository.PolicyRepository;
@@ -225,7 +226,13 @@ public class DocumentService {
         logger.debug("ProductName : " + policy.getCommonData().getProductName());
 
         //SumInsured
-        graphics.drawString(formatter.format(policy.getPremiumsData().getProduct10ECPremium().getSumInsured().getValue()), 553, 353);
+        Double premium = 0.0;
+        if(policy.getCommonData().getProductId().equals(ProductType.PRODUCT_10_EC.getName())){
+            premium = policy.getPremiumsData().getProduct10ECPremium().getSumInsured().getValue();
+        }else if(policy.getCommonData().getProductId().equals(ProductType.PRODUCT_IFINE.getName())){
+            premium = policy.getPremiumsData().getProductIFinePremium().getSumInsured().getValue();
+        }
+        graphics.drawString(formatter.format(premium), 553, 353);
 
         //PolicyNo
         char[] numberPNO = policy.getPolicyId().toCharArray();

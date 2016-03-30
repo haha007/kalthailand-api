@@ -23,6 +23,7 @@ import th.co.krungthaiaxa.elife.api.model.Document;
 import th.co.krungthaiaxa.elife.api.model.DocumentDownload;
 import th.co.krungthaiaxa.elife.api.model.Policy;
 import th.co.krungthaiaxa.elife.api.model.Quote;
+import th.co.krungthaiaxa.elife.api.model.enums.DividendOption;
 
 import javax.inject.Inject;
 import javax.mail.*;
@@ -62,6 +63,8 @@ public class EmailServiceTest {
     private String subjectEreceipt10EC;
     @Value("${line.app.id}")
     private String lineId;
+    @Value("${email.subject.ereceipt.ifine}")
+    private String subjectEreceiptiFine;
     @Value("${tmp.path.deleted.after.tests}")
     private String tmpPathDeletedAfterTests;
     @Value("${button.url.ereceipt.mail}")
@@ -233,7 +236,7 @@ public class EmailServiceTest {
     }
 
     @Test
-    public void should_send_ereceipt_pdf_file_attachment_in_email() throws Exception {
+    public void should_send_10ec_ereceipt_pdf_file_attachment_in_email() throws Exception {
         Quote quote = quoteService.createQuote(RandomStringUtils.randomNumeric(20), LINE, productQuotation());
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
@@ -249,9 +252,9 @@ public class EmailServiceTest {
         byte[] bytes = Base64.getDecoder().decode(documentDownload.getContent());
         assertThat(new PdfReader(bytes)).isNotNull();
 
-        FileUtils.writeByteArrayToFile(new File(tmpPathDeletedAfterTests + "/e-receipt.pdf"), bytes);
+        FileUtils.writeByteArrayToFile(new File(tmpPathDeletedAfterTests+"/e-receipt-10ec.pdf"), bytes);
 
-        emailService.sendEreceiptEmail(policy, Pair.of(bytes, "emailServiceTest-ereceipt.pdf"));
+        emailService.sendEreceiptEmail(policy, Pair.of(bytes, "emailServiceTest-e-receipt-10ec.pdf"));
 
         assertThat(greenMail.getReceivedMessages()).hasSize(1);
         MimeMessage email = greenMail.getReceivedMessages()[0];
@@ -269,7 +272,49 @@ public class EmailServiceTest {
                     !StringUtils.isNotBlank(bodyPart.getFileName())) {
                 //null file value
             } else {
-                assertThat(bodyPart.getFileName()).isEqualTo("emailServiceTest-ereceipt.pdf");
+                assertThat(bodyPart.getFileName()).isEqualTo("emailServiceTest-e-receipt-10ec.pdf");
+            }
+        }
+    }
+
+    @Test
+    public void should_send_ifine_ereceipt_pdf_file_attachment_in_email() throws Exception {
+        Quote quote = quoteService.createQuote("xxx", LINE, productQuotation(PRODUCT_IFINE, 50, EVERY_MONTH, 10000.0));
+        quote(quote, beneficiary(100.0));
+        quote = quoteService.updateQuote(quote);
+        Policy policy = policyService.createPolicy(quote);
+        policy(policy);
+        policy.getPayments().get(0).setEffectiveDate(LocalDate.now());
+
+        documentService.generateValidatedPolicyDocuments(policy);
+        Optional<Document> documentPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(ERECEIPT_PDF)).findFirst();
+        assertThat(documentPdf.isPresent()).isTrue();
+
+        DocumentDownload documentDownload = documentService.downloadDocument(documentPdf.get().getId());
+        byte[] bytes = Base64.getDecoder().decode(documentDownload.getContent());
+        assertThat(new PdfReader(bytes)).isNotNull();
+
+        FileUtils.writeByteArrayToFile(new File(tmpPathDeletedAfterTests+"/e-receipt-ifine.pdf"), bytes);
+
+        emailService.sendEreceiptEmail(policy, Pair.of(bytes, "emailServiceTest-e-receipt-ifine.pdf"));
+
+        assertThat(greenMail.getReceivedMessages()).hasSize(1);
+        MimeMessage email = greenMail.getReceivedMessages()[0];
+        assertThat(email.getSubject()).isEqualTo(subjectEreceiptiFine);
+        assertThat(email.getFrom()).containsOnly(new InternetAddress(emailName));
+
+        String bodyAsString = decodeSimpleBody(getBody(email));
+        assertThat(bodyAsString).contains("กรุงไทย-แอกซ่า ประกันชีวิต ขอขอบคุณ " + policy.getInsureds().get(0).getPerson().getGivenName() + " " + policy.getInsureds().get(0).getPerson().getSurName() + "<br/>");
+        assertThat(bodyAsString).contains("กรุงไทย-แอกซ่า ประกันชีวิต");
+
+        Multipart multipart = (Multipart) email.getContent();
+        for (int i = 0; i < multipart.getCount(); i++) {
+            BodyPart bodyPart = multipart.getBodyPart(i);
+            if (!Part.ATTACHMENT.equalsIgnoreCase(bodyPart.getDisposition()) &&
+                    !StringUtils.isNotBlank(bodyPart.getFileName())) {
+                //null file value
+            } else {
+                assertThat(bodyPart.getFileName()).isEqualTo("emailServiceTest-e-receipt-ifine.pdf");
             }
         }
     }

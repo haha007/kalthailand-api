@@ -10,6 +10,7 @@ import th.co.krungthaiaxa.elife.api.model.Quote;
 import th.co.krungthaiaxa.elife.api.model.enums.ChannelType;
 import th.co.krungthaiaxa.elife.api.model.error.Error;
 import th.co.krungthaiaxa.elife.api.products.ProductQuotation;
+import th.co.krungthaiaxa.elife.api.products.ProductType;
 import th.co.krungthaiaxa.elife.api.service.EmailService;
 import th.co.krungthaiaxa.elife.api.service.QuoteService;
 import th.co.krungthaiaxa.elife.api.utils.JsonUtil;
@@ -59,7 +60,11 @@ public class QuoteResource {
         }
 
         try {
-            emailService.sendQuote10ECEmail(quote.get(), base64Image);
+            if(quote.get().getCommonData().getProductId().equals(ProductType.PRODUCT_10_EC.getName())){
+                emailService.sendQuote10ECEmail(quote.get(), base64Image);
+            }else if(quote.get().getCommonData().getProductId().equals(ProductType.PRODUCT_IFINE.getName())){
+                emailService.sendQuoteiFineEmail(quote.get());
+            }
         } catch (Exception e) {
             logger.error("Unable to send email for [" + quote.get().getInsureds().get(0).getPerson().getEmail() + "]", e);
             return new ResponseEntity<>(UNABLE_TO_SEND_EMAIL.apply(e.getMessage()), INTERNAL_SERVER_ERROR);

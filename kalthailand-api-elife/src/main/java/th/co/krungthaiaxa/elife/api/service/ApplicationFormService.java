@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.elife.api.model.*;
+import th.co.krungthaiaxa.elife.api.model.enums.DividendOption;
 import th.co.krungthaiaxa.elife.api.model.enums.GenderCode;
 import th.co.krungthaiaxa.elife.api.model.enums.MaritalStatus;
 import th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode;
@@ -255,19 +256,21 @@ public class ApplicationFormService {
         g2.drawString(String.valueOf(pol.getCommonData().getNbOfYearsOfPremium()), 1025, 130);
 
         //dividend option
-        if (pol.getPremiumsData().getProduct10ECPremium().getDividendOption().equals(YEARLY_CASH)) {
-            //divident option 1
-            g2.drawString(MARK, 105, 275);
-            //divident option 1.1
-            g2.drawString(MARK, 165, 345);
-        } else if (pol.getPremiumsData().getProduct10ECPremium().getDividendOption().equals(YEARLY_FOR_NEXT_PREMIUM)) {
-            //divident option 1
-            g2.drawString(MARK, 105, 275);
-            //divident option 1.2
-            g2.drawString(MARK, 165, 415);
-        } else if (pol.getPremiumsData().getProduct10ECPremium().getDividendOption().equals(IN_FINE)) {
-            //divident option 2
-            g2.drawString(MARK, 105, 555);
+        if(pol.getCommonData().getProductId().equals(ProductType.PRODUCT_10_EC.getName())){
+            if (pol.getPremiumsData().getProduct10ECPremium().getDividendOption().equals(YEARLY_CASH)) {
+                //divident option 1
+                g2.drawString(MARK, 105, 275);
+                //divident option 1.1
+                g2.drawString(MARK, 165, 345);
+            } else if (pol.getPremiumsData().getProduct10ECPremium().getDividendOption().equals(YEARLY_FOR_NEXT_PREMIUM)) {
+                //divident option 1
+                g2.drawString(MARK, 105, 275);
+                //divident option 1.2
+                g2.drawString(MARK, 165, 415);
+            } else if (pol.getPremiumsData().getProduct10ECPremium().getDividendOption().equals(IN_FINE)) {
+                //divident option 2
+                g2.drawString(MARK, 105, 555);
+            }
         }
 
         //payment mode
