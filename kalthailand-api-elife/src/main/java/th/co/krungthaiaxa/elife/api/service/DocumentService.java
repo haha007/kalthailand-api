@@ -171,7 +171,7 @@ public class DocumentService {
 
     private String getThaiDate(LocalDate localDate) {
         ThaiBuddhistDate tdate = ThaiBuddhistDate.from(localDate);
-        return tdate.format(ofPattern("ddMMyyyy"));
+        return tdate.format(ofPattern("dd/MM/yyyy"));
     }
 
     private byte[] createEreceipt(Policy policy) throws IOException {
