@@ -66,6 +66,14 @@ public class QuoteServiceTest {
     }
 
     @Test
+    public void should_assign_session_id_to_insured_person_line_id_when_channel_type_is_line() {
+        String sessionId = randomNumeric(20);
+        Quote quote = quoteService.createQuote(sessionId, LINE, productQuotation(PRODUCT_10_EC, 55, EVERY_MONTH, 100000.0));
+
+        assertThat(quote.getInsureds().get(0).getPerson().getLineId()).isEqualTo(sessionId);
+    }
+
+    @Test
     public void should_find_by_quote_id_and_session_id() {
         String sessionId = randomNumeric(20);
         Quote quote = getQuote(sessionId, PRODUCT_10_EC);

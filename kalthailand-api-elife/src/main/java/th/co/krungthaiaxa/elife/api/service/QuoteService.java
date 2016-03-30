@@ -19,6 +19,7 @@ import static java.time.LocalDateTime.now;
 import static java.time.ZoneId.SHORT_IDS;
 import static java.time.ZoneId.of;
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
+import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
 
 @Service
 public class QuoteService {
@@ -49,11 +50,16 @@ public class QuoteService {
     public Quote createQuote(String sessionId, ChannelType channelType, ProductQuotation productQuotation) {
         Product product = productFactory.getProduct(productQuotation.getProductType().getName());
 
+        Person person = new Person();
+        if (LINE.equals(channelType)) {
+            person.setLineId(sessionId);
+        }
+
         Insured insured = new Insured();
         insured.setMainInsuredIndicator(true);
         insured.setFatca(new Fatca());
         insured.setHealthStatus(new HealthStatus());
-        insured.setPerson(new Person());
+        insured.setPerson(person);
         insured.setType(InsuredType.Insured);
 
         Quote quote = new Quote();
