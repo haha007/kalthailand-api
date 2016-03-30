@@ -48,8 +48,8 @@ public class QuoteResource {
     public ResponseEntity sendEmail(
             @ApiParam(value = "The quote Id", required = true)
             @PathVariable String quoteId,
-            @ApiParam(value = "The content of the graph image in base 64 encoded.", required = true)
-            @RequestBody String base64Image,
+            @ApiParam(value = "The content of the graph image in base 64 encoded.", required = false)
+            @RequestBody(required = false) Optional<String> base64Image,
             @ApiParam(value = "The session id the quote is in", required = true)
             @RequestParam String sessionId,
             @ApiParam(value = "The channel being used to create the quote.", required = true)
@@ -61,7 +61,7 @@ public class QuoteResource {
 
         try {
             if(quote.get().getCommonData().getProductId().equals(ProductType.PRODUCT_10_EC.getName())){
-                emailService.sendQuote10ECEmail(quote.get(), base64Image);
+                emailService.sendQuote10ECEmail(quote.get(), base64Image.get());
             }else if(quote.get().getCommonData().getProductId().equals(ProductType.PRODUCT_IFINE.getName())){
                 emailService.sendQuoteiFineEmail(quote.get());
             }
