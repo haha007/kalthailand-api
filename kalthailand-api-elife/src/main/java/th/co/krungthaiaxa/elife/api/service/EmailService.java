@@ -148,7 +148,8 @@ public class EmailService {
     private String getEreceiptEmailContent(Policy policy) throws IOException {
         String emailContent = IOUtils.toString(this.getClass().getResourceAsStream("/email-content/email-ereceipt-content.txt"));
         return emailContent.replace("%1$s", policy.getInsureds().get(0).getPerson().getGivenName() + " " + policy.getInsureds().get(0).getPerson().getSurName())
-                .replace("%2$s", policy.getInsureds().get(0).getPerson().getGivenName() + " " + policy.getInsureds().get(0).getPerson().getSurName());
+                .replace("%2$s", policy.getInsureds().get(0).getPerson().getGivenName() + " " + policy.getInsureds().get(0).getPerson().getSurName())
+                .replace("%3$s", policy.getCommonData().getProductId() + " " + messageSource.getMessage("product.id." + policy.getCommonData().getProductId(), null, thLocale));
     }
 
     private String getLineURL() {
