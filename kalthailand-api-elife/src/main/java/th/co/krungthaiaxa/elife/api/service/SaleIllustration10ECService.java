@@ -313,7 +313,7 @@ public class SaleIllustration10ECService {
         try {
             outPut = toByteArray(this.getClass().getResourceAsStream(imgPath));
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Unable to get resource as byte", e);
         }
         return outPut;
     }

@@ -1,0 +1,209 @@
+<html>
+    <head>
+        <meta charset="TIS-620">
+        <title></title>
+        <style type="text/css">
+            body{
+				padding:10px;
+			}
+            .header{
+                color: #0D1366;
+                font-weight:bold;
+                font-size:1.5em;
+            }
+            .value{
+                color: #0081CB;
+            }
+            .btn{
+                diplay:block;
+                background-color: #0D1366;
+                color: white;
+                padding:15px;
+                text-decoration:none;
+                border-radius:5px;
+                margin:5px;
+            }
+			.bd-text{
+				margin-top:20px;
+			}
+			.bd-header{
+				color:#0E2F7B;
+				font-weight:bold;
+			}
+			.tb-value{
+				color:#0092CB;
+				text-align:right;
+			}
+			.tb-field{
+			}
+			table tr td{
+				padding-top:10px;
+			}
+        </style>
+    </head>
+    <body>
+        <table align="center">
+            <picture>
+                <div style="margin-top:50px;text-align:center;">
+                    <img src="cid:imageLogo">
+                </div>
+            </picture>
+            <br/><br/>
+        </table>
+		<div class="bd-text">
+			เรียนคุณ %1$s
+		</div>
+		<div class="bd-text">
+			กรุงไทย-แอกซ่า ประกันชีวิต ยินดีนำเสนอแบบแผนประกันตามรายละเอียดที่คุณเลือก ในวันที่ %2$s
+		</div>
+		<div class="bd-text">
+			เพื่อแบบแผนประกันที่ตรงตามความต้องการของคุณ กรุณาตรวจสอบรายละเอียดอีกครั้ง และทำความเข้าใจในรายละเอียดก่อนดำเนินการ
+		</div>
+		<div class="bd-text">
+			เพื่อสมัครรับความคุ้มครองตามแบบแผนประกันภัยนี้
+กรุณากรอกใบยื่นขอประกันภัยเพื่อดำเนินการต่อ ที่นี่:
+<a href=%3$s >คลิก</a>
+		</div>
+		<div class="bd-text">
+			หากมีข้อสงสัยใดๆ สามารถติดต่อศูนย์บริการลูกค้าได้ที่ 1159
+		</div>
+		<div class="bd-text">
+			ขอแสดงความนับถือ
+			<br/>
+            กรุงไทย-แอกซ่า ประกันชีวิต
+		</div>
+		<hr/>
+		<table width="100%">
+			<tr>
+				<td colspan="2" class="bd-header">แบบประกันสุขภาพไอไฟน์ iFine</td>
+			</tr>
+			<tr>
+				<td class="tb-field">ระยะเวลาคุ้มครอง</td>
+				<td class="tb-value" valign="top">%4$s ปี</td>
+			</tr>
+			<tr>
+				<td class="tb-field">ระยะเวลาชำระเบี้ยประกัน</td>
+				<td class="tb-value" valign="top">%5$s ปี</td>
+			</tr>
+			<tr>
+				<td class="tb-field">อายุผู้เอาประกัน</td>
+				<td class="tb-value" valign="top">%6$s ปี</td>
+			</tr>
+			<tr>
+				<td class="tb-field">งวดชำระเบี้ย</td>
+				<td class="tb-value" valign="top">%7$s</td>
+			</tr>
+			<tr>
+				<td colspan="2" class="bd-header">ผลประโยชน์กรณีเสียชีวิต</td>
+			</tr>
+			<tr>
+				<td class="tb-field">จากทุกสาเหตุ</td>
+				<td class="tb-value" valign="top">%8$s บาท</td>
+			</tr>
+			<tr>
+				<td class="tb-field">เนื่องจากอุบัติเหตุ<br/>(เพิ่มเติมจากทุกสาเหตุ)</td>
+				<td class="tb-value" valign="top">%9$s บาท</td>
+			</tr>
+			<tr>
+				<td class="tb-field">เนื่องจากอุบัติเหตุสาธารณะ *<br/>(เพิ่มเติมจากทุกสาเหตุ)</td>
+				<td class="tb-value" valign="top">%10$s บาท</td>
+			</tr>
+			<tr>
+				<td colspan="2" class="bd-header">ความคุ้มครองกรณีสูญเสียอวัยวะ<br/>จากอุบัติเหตุ</td>
+			</tr>
+			<tr>
+				<td class="tb-field">สูญเสียมือหรือเท้า 1 ข้างหรือมากกว่า</td>
+				<td class="tb-value" valign="top">%11$s บาท</td>
+			</tr>
+			<tr>
+				<td class="tb-field">สูญเสียสายตา 1 ข้างหรือมากกว่า</td>
+				<td class="tb-value" valign="top">%12$s บาท</td>
+			</tr>
+			<tr>
+				<td class="tb-field">สูญเสียการได้ยิน</td>
+				<td class="tb-value" valign="top">%13$s บาท</td>
+			</tr>
+			<tr>
+				<td class="tb-field">สูญเสียการพูด</td>
+				<td class="tb-value" valign="top">%14$s บาท</td>
+			</tr>
+			<tr>
+				<td class="tb-field">สูญเสียกระจกตาทั้งสองข้าง</td>
+				<td class="tb-value" valign="top">%15$s บาท</td>
+			</tr>
+			<tr>
+				<td class="tb-field">สูญเสียนิ้วมือหรือนิ้วเท้า<br/>(ขึ้นอยู่กับจำนวนข้อที่สูญเสีย)</td>
+				<td class="tb-value" valign="top">%16$s บาท</td>
+			</tr>
+			<tr>
+				<td class="tb-field">กระดูกขาหรือสะบ้า แตกหักและรักษาไม่หาย</td>
+				<td class="tb-value" valign="top">%17$s บาท</td>
+			</tr>
+			<tr>
+				<td class="tb-field">ขาหดสั้นลงอย่างน้อย 5 เซนติเมตร</td>
+				<td class="tb-value" valign="top">%18$s บาท</td>
+			</tr>
+			<tr>
+				<td class="tb-field">บาดแผลไฟไหม้ฉกรรจ์<br/>(เสียหายตั้งแต่ 2% ขึ้นไปของผิวหนังทั้งหมด)</td>
+				<td class="tb-value" valign="top">%19$s บาท</td>
+			</tr>
+			<tr>
+				<td colspan="2" class="bd-header">ค่ารักษาพยาบาลเนื่องจากอุบัติเหตุ</td>
+			</tr>
+			<tr>
+				<td class="tb-field">ตามที่เกิดขึ้นจริง แต่ไม่เกินครั้งละ</td>
+				<td class="tb-value" valign="top">%20$s บาท</td>
+			</tr>
+			<tr>
+				<td colspan="2" class="bd-header">ผลประโยชน์ชดเชยรายวัน</td>
+			</tr>
+			<tr>
+				<td class="tb-field">กรณีเข้ารักษาตัวในโรงพยาบาล<br/>(จำนวนวันสูงสุด ไม่เกิน 365 วัน)</td>
+				<td class="tb-value" valign="top">%21$s บาท</td>
+			</tr>
+		</table>
+		<hr/>
+		<div class="bd-text">
+			* หมายเหตุ:
+		</div>
+		<div class="bd-text">
+			ข้อยกเว้นที่สำคัญ:<br/>
+			1) การฆ่าตัวตาย หรือทำร้ายตัวเอง<br/>
+			2) ขณะที่มีการล่าสัตว์ แข่งรถ แข่งเรือ แข่งม้า เล่นหรือแข่งสกีทุกชนิด เล่น/แข่งสเก็ต ชกมวย โดดร่ม ขึ้น/ลง/โดยสารในบอลลูน เครื่องร่อน บันจี้จั๊มพ์ ปีนหรือไต่เขาที่ต้องใช้เครื่องมือช่วย ดำน้ำที่ต้องใช้ถังอากาศและเครื่องช่วยหายใจใต้น้ำ<br/>
+			3) ขึ้นหรือลงหรือโดยสาร อยู่ในอากาศยานที่มิได้จดทะเบียนเพื่อบรรทุกผู้โดยสาร
+		</div>
+		<div class="bd-text">
+			คุ้มครอง 2 เท่า กรณีเสียชีวิตจากอุบัติเหตุ<br/>
+			1) อุบัติเหตุที่เกิดขึ้นจากยานพาหนะสาธารณะทางบก<br/>
+			2) ขณะที่อยู่ในลิฟท์<br/>
+			3) การเสียชีวิตที่เกิดขึ้น เนื่องจากไฟไหม้โรงมหรศพ โรงแรม หรืออาคารสาธารณะ
+		</div>
+		<div class="bd-text">
+			อุบัติเหตุสาธารณะ ได้แก่<br/>
+			1) ผู้เอาประกันภัยโดยสารในฐานะผู้โดยสารในยานพาหนะสาธารณะที่ขับเคลื่อนด้วยเครื่องจักรกล ซึ่งผู้ทำการขนส่งสาธารณะเป็นผู้รับจ้างทำการขนส่งบนเส้นทางขนส่งทางบกที่ได้กำหนดไว้ หรือ<br/>
+			2) ขณะที่ผู้เอาประกันภัยอยู่ในลิฟท์ (ยกเว้นลิฟท์ที่ใช้ในเหมืองแร่หรือสถานที่ก่อสร้าง) หรือ<br/>
+			3) เกิดขึ้นเนื่องจากไฟไหม้โรงมหรสพ โรงแรม หรืออาคารสาธารณะอื่นใด ซึ่งผู้เอาประกันภัยอยู่ ณ สถานที่นั้น ในขณะที่เริ่มไฟไหม้
+		</div>
+		<div style="text-align:center;margin-top:50px;margin-bottom:50px;">
+              <table align="center" border="0">
+                        <tr>
+                            <td colspan="3" align="center">
+                                <a href=%22$s style="width:400px;" class="btn btn-top" >ดูแบบประกันอื่นๆ</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" ><div style="height:40px;" ></div></td>
+                        </tr>
+                        <tr>
+                            <td align="left">
+                                <a href=%23$s style="width:195px;" class="btn" >สั่งซื้อ</a>
+                            </td>
+                            <td></td>
+                            <td align="right">
+                                <a href=%24$s style="width:195px;" class="btn" >คำนวณใหม่</a>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+    </body>
+</html>

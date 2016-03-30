@@ -59,7 +59,7 @@ public class QuoteResource {
         }
 
         try {
-            emailService.sendQuoteEmail(quote.get(), base64Image);
+            emailService.sendQuote10ECEmail(quote.get(), base64Image);
         } catch (Exception e) {
             logger.error("Unable to send email for [" + quote.get().getInsureds().get(0).getPerson().getEmail() + "]", e);
             return new ResponseEntity<>(UNABLE_TO_SEND_EMAIL.apply(e.getMessage()), INTERNAL_SERVER_ERROR);

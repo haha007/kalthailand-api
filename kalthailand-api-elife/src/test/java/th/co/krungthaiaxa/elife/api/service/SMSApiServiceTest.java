@@ -41,17 +41,13 @@ public class SMSApiServiceTest {
     private QuoteService quoteService;
 
     @Test
-    public void should_return_0_when_sending_comfirmation_message_successfully(){
+    public void should_return_0_when_sending_comfirmation_message_successfully()throws Exception{
         Map<String,String> m;
-        try {
-            Policy pol = getPolicy();
-            pol.getInsureds().get(0).getPerson().getMobilePhoneNumber().setNumber("0863878803");
-            pol.setPolicyId("555-55555555");
-            m = smsApiService.sendConfirmationMessage(pol);
-            assertThat(m.get("STATUS")).contains("0");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        Policy pol = getPolicy();
+        pol.getInsureds().get(0).getPerson().getMobilePhoneNumber().setNumber("0863878803");
+        pol.setPolicyId("555-55555555");
+        m = smsApiService.sendConfirmationMessage(pol);
+        assertThat(m.get("STATUS")).contains("0");
     }
 
     private Policy getPolicy() throws QuoteCalculationException, PolicyValidationException {

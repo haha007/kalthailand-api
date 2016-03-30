@@ -40,7 +40,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static th.co.krungthaiaxa.elife.api.TestUtil.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
 import static th.co.krungthaiaxa.elife.api.model.enums.DocumentType.ERECEIPT_PDF;
+import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_MONTH;
 import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_YEAR;
+import static th.co.krungthaiaxa.elife.api.products.ProductType.PRODUCT_IFINE;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiApplication.class)
@@ -88,12 +90,24 @@ public class EmailServiceTest {
     }
 
     @Test
-    public void should_send_quote_email_with_proper_from_address() throws Exception {
+    public void should_send_quote_ifine_email_with_proper_from_address() throws Exception {
+        Quote quote = quoteService.createQuote("xxx", LINE, productQuotation(PRODUCT_IFINE, 55, EVERY_YEAR, 100000.0));
+        quote(quote, beneficiary(100.0));
+        quote = quoteService.updateQuote(quote);
+        quote.getInsureds().get(0).getPerson().setEmail("santi.lik@krungthai-axa.co.th");
+        emailService.sendQuoteiFineEmail(quote);
+        assertThat(greenMail.getReceivedMessages()).hasSize(1);
+        MimeMessage email = greenMail.getReceivedMessages()[0];
+        assertThat(email.getFrom()).containsOnly(new InternetAddress(emailName));
+    }
+
+    @Test
+    public void should_send_quote_10ec_email_with_proper_from_address() throws Exception {
         Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation());
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 
-        emailService.sendQuoteEmail(quote, base64Graph);
+        emailService.sendQuote10ECEmail(quote, base64Graph);
 
         assertThat(greenMail.getReceivedMessages()).hasSize(1);
         MimeMessage email = greenMail.getReceivedMessages()[0];
@@ -101,12 +115,12 @@ public class EmailServiceTest {
     }
 
     @Test
-    public void should_send_quote_email_to_insured_email_address() throws Exception {
+    public void should_send_quote_10ec_email_to_insured_email_address() throws Exception {
         Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation());
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 
-        emailService.sendQuoteEmail(quote, base64Graph);
+        emailService.sendQuote10ECEmail(quote, base64Graph);
 
         assertThat(greenMail.getReceivedMessages()).hasSize(1);
         MimeMessage email = greenMail.getReceivedMessages()[0];
@@ -114,12 +128,12 @@ public class EmailServiceTest {
     }
 
     @Test
-    public void should_send_quote_email_containing_amounts_for_1_million_baht_with_insured_of_35_years_old() throws Exception {
+    public void should_send_quote_10ec_email_containing_amounts_for_1_million_baht_with_insured_of_35_years_old() throws Exception {
         Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation());
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 
-        emailService.sendQuoteEmail(quote, base64Graph);
+        emailService.sendQuote10ECEmail(quote, base64Graph);
 
         assertThat(greenMail.getReceivedMessages()).hasSize(1);
         MimeMessage email = greenMail.getReceivedMessages()[0];
@@ -131,12 +145,12 @@ public class EmailServiceTest {
     }
 
     @Test
-    public void should_send_quote_email_containing_amounts_for_500_thousand_baht_with_insured_of_55_years_old() throws Exception {
+    public void should_send_quote_10ec_email_containing_amounts_for_500_thousand_baht_with_insured_of_55_years_old() throws Exception {
         Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation(55, EVERY_YEAR, 500000.0));
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 
-        emailService.sendQuoteEmail(quote, base64Graph);
+        emailService.sendQuote10ECEmail(quote, base64Graph);
 
         assertThat(greenMail.getReceivedMessages()).hasSize(1);
         MimeMessage email = greenMail.getReceivedMessages()[0];
@@ -153,7 +167,7 @@ public class EmailServiceTest {
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 
-        emailService.sendQuoteEmail(quote, base64Graph);
+        emailService.sendQuote10ECEmail(quote, base64Graph);
 
         assertThat(greenMail.getReceivedMessages()).hasSize(1);
         MimeMessage email = greenMail.getReceivedMessages()[0];
@@ -165,12 +179,12 @@ public class EmailServiceTest {
     }
 
     @Test
-    public void should_send_quote_email_with_product_information() throws Exception {
+    public void should_send_quote_10ec_email_with_product_information() throws Exception {
         Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation(55, EVERY_YEAR, 500000.0));
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 
-        emailService.sendQuoteEmail(quote, base64Graph);
+        emailService.sendQuote10ECEmail(quote, base64Graph);
 
         assertThat(greenMail.getReceivedMessages()).hasSize(1);
         MimeMessage email = greenMail.getReceivedMessages()[0];
@@ -192,12 +206,12 @@ public class EmailServiceTest {
     }
 
     @Test
-    public void generate_sale_illustration_pdf_file() throws Exception {
+    public void generate_sale_illustration_10ec_pdf_file() throws Exception {
         Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation());
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 
-        emailService.sendQuoteEmail(quote, base64Graph);
+        emailService.sendQuote10ECEmail(quote, base64Graph);
 
         assertThat(greenMail.getReceivedMessages()).hasSize(1);
         MimeMessage email = greenMail.getReceivedMessages()[0];
