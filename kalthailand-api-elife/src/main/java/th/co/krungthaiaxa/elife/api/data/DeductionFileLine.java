@@ -1,26 +1,14 @@
 package th.co.krungthaiaxa.elife.api.data;
 
-import org.springframework.data.annotation.Id;
-
 import java.time.LocalDateTime;
 
 public class DeductionFileLine {
-    @Id
-    private String id;
     private String policyNumber;
     private String bankCode;
     private String paymentMode;
     private Double amount;
     private LocalDateTime processDate;
     private String rejectionCode;
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public String getPolicyNumber() {
         return policyNumber;

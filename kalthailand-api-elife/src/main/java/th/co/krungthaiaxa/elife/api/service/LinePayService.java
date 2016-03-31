@@ -52,7 +52,7 @@ public class LinePayService {
         headers.set("X-LINE-ChannelSecret", linePaySecretKey);
         headers.set("Content-Type", "application/json; charset=UTF-8");
 
-        HttpEntity<String> entity = new HttpEntity<>(new String(JsonUtil.getJson(linePayBookingRequest)), headers);
+        HttpEntity<String> entity = new HttpEntity<String>(new String(JsonUtil.getJson(linePayBookingRequest)), headers);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(linePayUrl + "/request");
         ResponseEntity<String> response = restTemplate.exchange(builder.toUriString(), POST, entity, String.class);
@@ -67,11 +67,11 @@ public class LinePayService {
         return Optional.of(linePayResponse);
     }
 
-    public Optional<LinePayResponse> confirmPayment(String transactionId, String amount, String currency) {
+    public Optional<LinePayResponse> confirmPayment(String transactionId, Double amount, String currency) {
         logger.info("Confirming payment");
         RestTemplate restTemplate = new RestTemplate();
         LinePayConfirmingRequest linePayConfirmingRequest = new LinePayConfirmingRequest();
-        linePayConfirmingRequest.setAmount(amount);
+        linePayConfirmingRequest.setAmount(amount.toString());
         linePayConfirmingRequest.setCurrency(currency);
 
         HttpHeaders headers = new HttpHeaders();
@@ -79,7 +79,7 @@ public class LinePayService {
         headers.set("X-LINE-ChannelSecret", linePaySecretKey);
         headers.set("Content-Type", "application/json; charset=UTF-8");
 
-        HttpEntity<String> entity = new HttpEntity<>(new String(JsonUtil.getJson(linePayConfirmingRequest)), headers);
+        HttpEntity<String> entity = new HttpEntity<String>(new String(JsonUtil.getJson(linePayConfirmingRequest)), headers);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(linePayUrl + "/" + transactionId + "/confirm");
         ResponseEntity<String> response = restTemplate.exchange(builder.toUriString(), POST, entity, String.class);
@@ -229,5 +229,4 @@ public class LinePayService {
             this.currency = currency;
         }
     }
-
 }

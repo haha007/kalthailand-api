@@ -16,7 +16,7 @@ public class CollectionFile {
     private LocalDateTime jobStartedDate;
     private LocalDateTime jobEndedDate;
     private List<CollectionFileLine> lines = new ArrayList<>();
-    private DeductionFile deductionFile;
+    private DeductionFile deductionFile = new DeductionFile();
 
     public String getId() {
         return id;

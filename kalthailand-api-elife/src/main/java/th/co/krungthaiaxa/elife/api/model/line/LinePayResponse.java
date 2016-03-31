@@ -3,7 +3,7 @@ package th.co.krungthaiaxa.elife.api.model.line;
 public class LinePayResponse {
     private String returnCode;
     private String returnMessage;
-    private LinePayResponseInfo info;
+    private LinePayResponseInfo info = new LinePayResponseInfo();
 
     public String getReturnCode() {
         return returnCode;

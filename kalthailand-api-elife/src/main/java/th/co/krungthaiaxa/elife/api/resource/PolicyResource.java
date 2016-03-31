@@ -177,7 +177,7 @@ public class PolicyResource {
         }
 
         // Update the payment whatever the status of the payment is
-        policyService.reservePayments(policy.get(), orderId, registrationKey, status, channelType, errorCode, errorMessage);
+        policyService.updatePayment(policy.get(), orderId, registrationKey, status, channelType, errorCode, errorMessage);
 
         // If in error, nothing else should be done
         if (ERROR.equals(status)) {
@@ -186,7 +186,7 @@ public class PolicyResource {
 
         // Update the payment if confirm is success
         policyService.updatePolicyAfterFirstPaymentValidated(policy.get());
-        policyService.confirmPayment(payment.get(), value, currencyCode, status, channelType, creditCardName, paymentMethod, errorCode, errorMessage);
+        policyService.updatePayment(payment.get(), value, currencyCode, status, channelType, creditCardName, paymentMethod, errorCode, errorMessage);
 
         // Send email, sms and update status
         try {
@@ -241,7 +241,7 @@ public class PolicyResource {
         ChannelType channelType = LINE;
 
         // Update the payment if confirm is success
-        policyService.confirmPayment(payment.get(), value, currencyCode, status, channelType, creditCardName, paymentMethod, errorCode, errorMessage);
+        policyService.updatePayment(payment.get(), value, currencyCode, status, channelType, creditCardName, paymentMethod, errorCode, errorMessage);
 
         try {
             policyService.updatePolicyAfterPolicyHasBeenValidated(policy.get());

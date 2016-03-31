@@ -113,8 +113,8 @@ public class PolicyService {
         return policy;
     }
 
-    public void reservePayments(Policy policy, String orderId, Optional<String> registrationKey, SuccessErrorStatus status,
-                                ChannelType channelType, Optional<String> errorCode, Optional<String> errorMessage) {
+    public void updatePayment(Policy policy, String orderId, Optional<String> registrationKey, SuccessErrorStatus status,
+                              ChannelType channelType, Optional<String> errorCode, Optional<String> errorMessage) {
         for (Payment payment : policy.getPayments()) {
             if (registrationKey.isPresent() && !registrationKey.get().equals(payment.getRegistrationKey())) {
                 payment.setRegistrationKey(registrationKey.get());
@@ -125,9 +125,9 @@ public class PolicyService {
         logger.info("Payments in policy [" + policy.getPolicyId() + "] have been booked");
     }
 
-    public void confirmPayment(Payment payment, Double value, String currencyCode, SuccessErrorStatus status,
-                               ChannelType channelType, Optional<String> creditCardName, Optional<String> paymentMethod,
-                               Optional<String> errorCode, Optional<String> errorMessage) {
+    public void updatePayment(Payment payment, Double value, String currencyCode, SuccessErrorStatus status,
+                              ChannelType channelType, Optional<String> creditCardName, Optional<String> paymentMethod,
+                              Optional<String> errorCode, Optional<String> errorMessage) {
         if (!currencyCode.equals(payment.getAmount().getCurrencyCode())) {
             status = ERROR;
             errorMessage = Optional.of("Currencies are different");
@@ -164,7 +164,7 @@ public class PolicyService {
         }
 
         paymentRepository.save(payment);
-        logger.info("Payment [" + payment.getPaymentId() + "] has been confirmed");
+        logger.info("Payment [" + payment.getPaymentId() + "] has been updated");
     }
 
     public void updatePolicyAfterFirstPaymentValidated(Policy policy) {

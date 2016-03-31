@@ -5,8 +5,8 @@ public class LinePayResponseInfo {
     private String transactionId;
     private String paymentAccessToken;
     private String regKey;
-    private LinePayResponsePayment paymentUrl;
-    private LinePayResponsePaymentInfo payInfo;
+    private LinePayResponsePayment paymentUrl = new LinePayResponsePayment();
+    private LinePayResponsePaymentInfo payInfo = new LinePayResponsePaymentInfo();
 
     public String getOrderId() {
         return orderId;

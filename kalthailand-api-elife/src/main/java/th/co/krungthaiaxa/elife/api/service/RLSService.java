@@ -19,6 +19,7 @@ import th.co.krungthaiaxa.elife.api.data.DeductionFileLine;
 import th.co.krungthaiaxa.elife.api.model.Payment;
 import th.co.krungthaiaxa.elife.api.model.Policy;
 import th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode;
+import th.co.krungthaiaxa.elife.api.model.line.LinePayResponse;
 import th.co.krungthaiaxa.elife.api.repository.CollectionFileRepository;
 import th.co.krungthaiaxa.elife.api.repository.PaymentRepository;
 import th.co.krungthaiaxa.elife.api.repository.PolicyRepository;
@@ -41,13 +42,18 @@ import static java.time.format.DateTimeFormatter.ofPattern;
 import static org.apache.commons.codec.digest.DigestUtils.sha256Hex;
 import static org.springframework.util.Assert.isTrue;
 import static org.springframework.util.Assert.notNull;
+import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
 import static th.co.krungthaiaxa.elife.api.model.enums.PaymentStatus.NOT_PROCESSED;
 import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_MONTH;
 import static th.co.krungthaiaxa.elife.api.model.enums.PolicyStatus.VALIDATED;
+import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.ERROR;
+import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.SUCCESS;
 import static th.co.krungthaiaxa.elife.api.utils.ExcelUtils.*;
 
 @Service
 public class RLSService {
+    public static final String RLS_INTERNAL_ERROR = "9000";
+
     private final static Logger logger = LoggerFactory.getLogger(RLSService.class);
     private final static String COLLECTION_FILE_SHEET_NAME = "LFDISC6";
     private final static Integer COLLECTION_FILE_NUMBER_OF_COLUMNS = 6;
@@ -57,11 +63,13 @@ public class RLSService {
     private final static String COLLECTION_FILE_COLUMN_NAME_4 = "M92PNO6";
     private final static String COLLECTION_FILE_COLUMN_NAME_5 = "M92PMOD6";
     private final static String COLLECTION_FILE_COLUMN_NAME_6 = "M92PRM6";
+    public static final String ERROR_NO_REGISTRATION_KEY_FOUND = "No registration key found to process the payment. Payment is not successful";
 
     private final CollectionFileRepository collectionFileRepository;
     private final PaymentRepository paymentRepository;
     private final PolicyRepository policyRepository;
     private final PolicyService policyService;
+    private LinePayService linePayService;
 
     private Function<PeriodicityCode, String> paymentMode = periodicityCode -> {
         if (periodicityCode.equals(PeriodicityCode.EVERY_YEAR)) {
@@ -76,11 +84,12 @@ public class RLSService {
     };
 
     @Inject
-    public RLSService(CollectionFileRepository collectionFileRepository, PaymentRepository paymentRepository, PolicyRepository policyRepository, PolicyService policyService) {
+    public RLSService(CollectionFileRepository collectionFileRepository, PaymentRepository paymentRepository, PolicyRepository policyRepository, PolicyService policyService, LinePayService linePayService) {
         this.collectionFileRepository = collectionFileRepository;
         this.paymentRepository = paymentRepository;
         this.policyRepository = policyRepository;
         this.policyService = policyService;
+        this.linePayService = linePayService;
     }
 
     public void importCollectionFile(InputStream is) {
@@ -104,10 +113,7 @@ public class RLSService {
             DeductionFile deductionFile = new DeductionFile();
             collectionFile.setDeductionFile(deductionFile);
             for (CollectionFileLine collectionFileLine : collectionFile.getLines()) {
-                // TODO : call LINE Pay API
-
-                // TODO : error code is coming from LINE Pay
-                deductionFile.addLine(getDeductionFileLine(collectionFileLine, ""));
+                processCollectionFileLine(deductionFile, collectionFileLine);
             }
             collectionFile.setJobEndedDate(LocalDateTime.now(of(SHORT_IDS.get("VST"))));
             collectionFile.setDeductionFile(deductionFile);
@@ -117,6 +123,8 @@ public class RLSService {
 
     public byte[] createDeductionExcelFile(DeductionFile deductionFile) {
         notNull(deductionFile, "No deduction file has been created");
+        notNull(deductionFile.getLines(), "No deduction file has been created");
+        isTrue(deductionFile.getLines().size() != 0, "No deduction file has been created");
 
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("LFPATPTDR6");
@@ -226,17 +234,85 @@ public class RLSService {
                 .filter(tmp -> tmp.getDueDate().isBefore(now.plusDays(1))) // plus 1 day because a.isBefore(a) = false
                 .findFirst();
 
-        if (!payment.isPresent()) {
-            // If payment isn't found, Collection file "always win", and the payment received in the collection has to go through anyway
-            logger.info("Unable to find a schedule payment for policy [" + policy.get().getPolicyId() + "], will create one from scratch");
-            Payment newPayment = new Payment(collectionFileLine.getPremiumAmount(), "THB", LocalDate.now(of(SHORT_IDS.get("VST"))));
-            paymentRepository.save(newPayment);
-            policy.get().addPayment(newPayment);
-            policyRepository.save(policy.get());
-            collectionFileLine.setPaymentId(newPayment.getPaymentId());
-        }
-        else {
+        if (payment.isPresent()) {
             collectionFileLine.setPaymentId(payment.get().getPaymentId());
+            logger.info("Existing payment id [" + payment.get().getPaymentId() + "] has been added for the " +
+                    "collection file line about policy [" + policy.get().getPolicyId() + "] ");
+            return;
+        }
+
+        // If payment isn't found, Collection file "always win", and the payment received in the collection has to go through
+        // But for the payment to go through, we need to find the registration key that used previously
+        Optional<String> lastRegistrationKey = policy.get().getPayments()
+                .stream()
+                .filter(tmp -> tmp.getRegistrationKey() != null)
+                .sorted((o1, o2) -> o1.getDueDate().compareTo(o2.getDueDate()))
+                .map(Payment::getRegistrationKey)
+                .findFirst();
+
+        Payment newPayment = new Payment(collectionFileLine.getPremiumAmount(), "THB", LocalDate.now(of(SHORT_IDS.get("VST"))));
+        if (!lastRegistrationKey.isPresent()) {
+            logger.info("Unable to find a schedule payment for policy [" + policy.get().getPolicyId() + "] and a " +
+                    "previously used registration key, will create one payment from scratch, byt payment will fail " +
+                    "since it has no registration key");
+        } else {
+            newPayment.setRegistrationKey(lastRegistrationKey.get());
+            logger.info("Unable to find a schedule payment for policy [" + policy.get().getPolicyId() + "], will " +
+                    "create one from scratch");
+        }
+        paymentRepository.save(newPayment);
+        policy.get().addPayment(newPayment);
+        policyRepository.save(policy.get());
+        collectionFileLine.setPaymentId(newPayment.getPaymentId());
+        logger.info("A new payment with id [" + newPayment.getPaymentId() + "] has been created and used for the " +
+                "collection file line about policy [" + policy.get().getPolicyId() + "] ");
+    }
+
+    void processCollectionFileLine(DeductionFile deductionFile, CollectionFileLine collectionFileLine) {
+        String paymentId = collectionFileLine.getPaymentId();
+        Double amount = collectionFileLine.getPremiumAmount();
+        Payment payment = paymentRepository.findOne(paymentId);
+
+        if (payment.getRegistrationKey() == null) {
+            // This should not happen since the registration key should always be found
+            deductionFile.addLine(getDeductionFileLine(collectionFileLine, RLS_INTERNAL_ERROR));
+            policyService.updatePayment(payment, amount, "THB", ERROR, LINE,
+                    Optional.empty(), Optional.empty(),
+                    Optional.of(RLS_INTERNAL_ERROR), Optional.of(ERROR_NO_REGISTRATION_KEY_FOUND));
+        } else {
+            try {
+                Optional<LinePayResponse> linePayResponse = linePayService.confirmPayment(payment.getRegistrationKey(), collectionFileLine.getPremiumAmount(), "THB");
+                if (linePayResponse.isPresent()) {
+                    if (linePayResponse.get().getReturnCode().equals("0000")) {
+                        deductionFile.addLine(getDeductionFileLine(collectionFileLine, linePayResponse.get().getReturnCode()));
+                        policyService.updatePayment(payment, amount, "THB", SUCCESS, LINE,
+                                Optional.of(linePayResponse.get().getInfo().getPayInfo().getCreditCardName()),
+                                Optional.of(linePayResponse.get().getInfo().getPayInfo().getMethod()),
+                                Optional.empty(), Optional.empty());
+                    } else {
+                        deductionFile.addLine(getDeductionFileLine(collectionFileLine, linePayResponse.get().getReturnCode()));
+                        policyService.updatePayment(payment, amount, "THB", ERROR, LINE,
+                                Optional.of(linePayResponse.get().getInfo().getPayInfo().getCreditCardName()),
+                                Optional.of(linePayResponse.get().getInfo().getPayInfo().getMethod()),
+                                Optional.of(linePayResponse.get().getReturnCode()),
+                                Optional.of(linePayResponse.get().getReturnMessage()));
+                    }
+                } else {
+                    // For some reason, couldn't get a clear response from Line Pay. But the payment may have gone through
+                    // This case should never happen
+                    deductionFile.addLine(getDeductionFileLine(collectionFileLine, RLS_INTERNAL_ERROR));
+                    policyService.updatePayment(payment, amount, "THB", ERROR, LINE,
+                            Optional.empty(), Optional.empty(),
+                            Optional.of(RLS_INTERNAL_ERROR), Optional.of("Unable to get proper response from Line Pay API. Payment may be successful"));
+                }
+            } catch (RuntimeException e) {
+                logger.error("An error occured while trying to contact LinePay", e);
+                // An error occured while trying to contact LinePay
+                deductionFile.addLine(getDeductionFileLine(collectionFileLine, RLS_INTERNAL_ERROR));
+                policyService.updatePayment(payment, amount, "THB", ERROR, LINE,
+                        Optional.empty(), Optional.empty(),
+                        Optional.of(RLS_INTERNAL_ERROR), Optional.of("Unable to contact Line Pay API. Payment is not successful"));
+            }
         }
     }
 
@@ -283,5 +359,9 @@ public class RLSService {
             default:
                 return null;
         }
+    }
+
+    public void setLinePayService(LinePayService linePayService) {
+        this.linePayService = linePayService;
     }
 }

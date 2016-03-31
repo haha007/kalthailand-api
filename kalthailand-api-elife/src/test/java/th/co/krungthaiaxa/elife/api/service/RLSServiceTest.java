@@ -6,6 +6,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.SpringApplicationConfiguration;
@@ -16,7 +17,9 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.elife.api.KalApiApplication;
 import th.co.krungthaiaxa.elife.api.data.CollectionFile;
 import th.co.krungthaiaxa.elife.api.data.CollectionFileLine;
+import th.co.krungthaiaxa.elife.api.data.DeductionFile;
 import th.co.krungthaiaxa.elife.api.data.DeductionFileLine;
+import th.co.krungthaiaxa.elife.api.model.Payment;
 import th.co.krungthaiaxa.elife.api.model.Policy;
 import th.co.krungthaiaxa.elife.api.model.Quote;
 import th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode;
@@ -30,18 +33,24 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static java.time.LocalDateTime.now;
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Matchers.anyDouble;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static th.co.krungthaiaxa.elife.api.TestUtil.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
-import static th.co.krungthaiaxa.elife.api.model.enums.PaymentStatus.INCOMPLETE;
-import static th.co.krungthaiaxa.elife.api.model.enums.PaymentStatus.NOT_PROCESSED;
+import static th.co.krungthaiaxa.elife.api.model.enums.PaymentStatus.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_MONTH;
 import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_YEAR;
 import static th.co.krungthaiaxa.elife.api.model.enums.PolicyStatus.VALIDATED;
+import static th.co.krungthaiaxa.elife.api.service.RLSService.ERROR_NO_REGISTRATION_KEY_FOUND;
+import static th.co.krungthaiaxa.elife.api.service.RLSService.RLS_INTERNAL_ERROR;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiApplication.class)
@@ -61,7 +70,15 @@ public class RLSServiceTest {
     @Inject
     private CollectionFileRepository collectionFileRepository;
     @Inject
+    private LinePayService linePayService;
+    @Inject
     private MongoTemplate mongoTemplate;
+
+    @Before
+    public void setup() {
+        linePayService = mock(LinePayService.class);
+        rlsService.setLinePayService(linePayService);
+    }
 
     @After
     public void tearDown() {
@@ -153,6 +170,37 @@ public class RLSServiceTest {
     }
 
     @Test
+    public void should_add_a_payment_with_null_registration_key() {
+        Policy policy = getValidatedPolicy(EVERY_MONTH);
+        policy.getPayments().stream().forEach(payment -> payment.setRegistrationKey(null));
+        policy.getPayments().stream().forEach(payment -> payment.setStatus(INCOMPLETE));
+        paymentRepository.save(policy.getPayments());
+        CollectionFileLine collectionFileLine = collectionFileLine(policy, 100.0);
+        rlsService.addPaymentId(collectionFileLine);
+        Policy updatedPolicy = policyRepository.findByPolicyId(policy.getPolicyId());
+
+        Optional<Payment> newPayment = updatedPolicy.getPayments().stream().filter(payment -> !policy.getPayments().contains(payment)).findFirst();
+        assertThat(updatedPolicy.getPayments()).hasSize(policy.getPayments().size() + 1);
+        assertThat(newPayment.isPresent()).isTrue();
+        assertThat(newPayment.get().getRegistrationKey()).isNull();
+    }
+
+    @Test
+    public void should_add_a_payment_with_none_null_registration_key() {
+        Policy policy = getValidatedPolicy(EVERY_MONTH);
+        policy.getPayments().stream().forEach(payment -> payment.setStatus(INCOMPLETE));
+        paymentRepository.save(policy.getPayments());
+        CollectionFileLine collectionFileLine = collectionFileLine(policy, 100.0);
+        rlsService.addPaymentId(collectionFileLine);
+        Policy updatedPolicy = policyRepository.findByPolicyId(policy.getPolicyId());
+
+        Optional<Payment> newPayment = updatedPolicy.getPayments().stream().filter(payment -> !policy.getPayments().contains(payment)).findFirst();
+        assertThat(updatedPolicy.getPayments()).hasSize(policy.getPayments().size() + 1);
+        assertThat(newPayment.isPresent()).isTrue();
+        assertThat(newPayment.get().getRegistrationKey()).isEqualTo("something");
+    }
+
+    @Test
     public void should_add_a_payment_for_the_policy_when_payment_has_already_been_done() {
         Policy policy = getValidatedPolicy(EVERY_MONTH);
         policy.getPayments().stream().forEach(payment -> payment.setStatus(INCOMPLETE));
@@ -160,9 +208,12 @@ public class RLSServiceTest {
         CollectionFileLine collectionFileLine = collectionFileLine(policy, 100.0);
         rlsService.addPaymentId(collectionFileLine);
         Policy updatedPolicy = policyRepository.findByPolicyId(policy.getPolicyId());
+
+        Optional<Payment> newPayment = updatedPolicy.getPayments().stream().filter(payment -> !policy.getPayments().contains(payment)).findFirst();
         assertThat(updatedPolicy.getPayments()).hasSize(policy.getPayments().size() + 1);
-        assertThat(updatedPolicy.getPayments()).extracting("status").contains(NOT_PROCESSED);
-        assertThat(updatedPolicy.getPayments()).extracting("amount").extracting("value").contains(100.0);
+        assertThat(newPayment.isPresent()).isTrue();
+        assertThat(newPayment.get().getStatus()).isEqualTo(NOT_PROCESSED);
+        assertThat(newPayment.get().getAmount().getValue()).isEqualTo(100.0);
     }
 
     @Test
@@ -173,9 +224,12 @@ public class RLSServiceTest {
         CollectionFileLine collectionFileLine = collectionFileLine(policy, 100.0);
         rlsService.addPaymentId(collectionFileLine);
         Policy updatedPolicy = policyRepository.findByPolicyId(policy.getPolicyId());
+
+        Optional<Payment> newPayment = updatedPolicy.getPayments().stream().filter(payment -> !policy.getPayments().contains(payment)).findFirst();
         assertThat(updatedPolicy.getPayments()).hasSize(policy.getPayments().size() + 1);
-        assertThat(updatedPolicy.getPayments()).extracting("status").contains(NOT_PROCESSED);
-        assertThat(updatedPolicy.getPayments()).extracting("amount").extracting("value").contains(100.0);
+        assertThat(newPayment.isPresent()).isTrue();
+        assertThat(newPayment.get().getStatus()).isEqualTo(NOT_PROCESSED);
+        assertThat(newPayment.get().getAmount().getValue()).isEqualTo(100.0);
     }
 
     @Test
@@ -187,15 +241,81 @@ public class RLSServiceTest {
     }
 
     @Test
+    public void should_create_a_deduction_file_line_with_error_when_no_registration_key() {
+        when(linePayService.confirmPayment(anyString(), anyDouble(), anyString())).thenReturn(linePayResponse("0000", "success"));
+
+        Policy policy = getValidatedPolicy(EVERY_MONTH);
+        policy.getPayments().stream().forEach(payment -> payment.setRegistrationKey(null));
+        paymentRepository.save(policy.getPayments());
+        CollectionFileLine collectionFileLine = collectionFileLine(policy, 100.0);
+        rlsService.addPaymentId(collectionFileLine);
+        DeductionFile deductionFile = new DeductionFile();
+        rlsService.processCollectionFileLine(deductionFile, collectionFileLine);
+
+        assertThat(deductionFile.getLines()).hasSize(1);
+        assertThat(deductionFile.getLines().get(0).getAmount()).isEqualTo(100.0);
+        assertThat(deductionFile.getLines().get(0).getBankCode()).isEqualTo("myBankCode");
+        assertThat(deductionFile.getLines().get(0).getPaymentMode()).isEqualTo("M");
+        assertThat(deductionFile.getLines().get(0).getPolicyNumber()).isEqualTo(policy.getPolicyId());
+        assertThat(deductionFile.getLines().get(0).getProcessDate()).isEqualToIgnoringMinutes(LocalDateTime.now());
+        assertThat(deductionFile.getLines().get(0).getRejectionCode()).isEqualTo(RLS_INTERNAL_ERROR);
+
+        Payment payment = paymentRepository.findOne(collectionFileLine.getPaymentId());
+        assertThat(payment.getStatus()).isEqualTo(INCOMPLETE);
+        assertThat(payment.getEffectiveDate()).isNull();
+        assertThat(payment.getPaymentInformations()).hasSize(1);
+        assertThat(payment.getPaymentInformations().get(0).getAmount().getValue()).isEqualTo(100.0);
+        assertThat(payment.getPaymentInformations().get(0).getAmount().getCurrencyCode()).isEqualTo("THB");
+        assertThat(payment.getPaymentInformations().get(0).getChannel()).isEqualTo(LINE);
+        assertThat(payment.getPaymentInformations().get(0).getCreditCardName()).isNull();
+        assertThat(payment.getPaymentInformations().get(0).getDate()).isEqualTo(LocalDate.now());
+        assertThat(payment.getPaymentInformations().get(0).getMethod()).isNull();
+        assertThat(payment.getPaymentInformations().get(0).getRejectionErrorCode()).isEqualTo(RLS_INTERNAL_ERROR);
+        assertThat(payment.getPaymentInformations().get(0).getRejectionErrorMessage()).isEqualTo(ERROR_NO_REGISTRATION_KEY_FOUND);
+    }
+
+    @Test
+    public void should_create_a_deduction_file_line_with_success() {
+        when(linePayService.confirmPayment(anyString(), anyDouble(), anyString())).thenReturn(linePayResponse("0000", "success"));
+
+        Policy policy = getValidatedPolicy(EVERY_MONTH);
+        CollectionFileLine collectionFileLine = collectionFileLine(policy, 100.0);
+        rlsService.addPaymentId(collectionFileLine);
+        DeductionFile deductionFile = new DeductionFile();
+        rlsService.processCollectionFileLine(deductionFile, collectionFileLine);
+
+        assertThat(deductionFile.getLines()).hasSize(1);
+        assertThat(deductionFile.getLines().get(0).getAmount()).isEqualTo(100.0);
+        assertThat(deductionFile.getLines().get(0).getBankCode()).isEqualTo("myBankCode");
+        assertThat(deductionFile.getLines().get(0).getPaymentMode()).isEqualTo("M");
+        assertThat(deductionFile.getLines().get(0).getPolicyNumber()).isEqualTo(policy.getPolicyId());
+        assertThat(deductionFile.getLines().get(0).getProcessDate()).isEqualToIgnoringMinutes(LocalDateTime.now());
+        assertThat(deductionFile.getLines().get(0).getRejectionCode()).isEqualTo("0000");
+
+        Payment payment = paymentRepository.findOne(collectionFileLine.getPaymentId());
+        assertThat(payment.getStatus()).isEqualTo(INCOMPLETE);
+        assertThat(payment.getEffectiveDate()).isNull();
+        assertThat(payment.getPaymentInformations()).hasSize(1);
+        assertThat(payment.getPaymentInformations().get(0).getAmount().getValue()).isEqualTo(100.0);
+        assertThat(payment.getPaymentInformations().get(0).getAmount().getCurrencyCode()).isEqualTo("THB");
+        assertThat(payment.getPaymentInformations().get(0).getChannel()).isEqualTo(LINE);
+        assertThat(payment.getPaymentInformations().get(0).getCreditCardName()).isEqualTo("myCreditCardName");
+        assertThat(payment.getPaymentInformations().get(0).getDate()).isEqualTo(LocalDate.now());
+        assertThat(payment.getPaymentInformations().get(0).getMethod()).isEqualTo("myMethod");
+        assertThat(payment.getPaymentInformations().get(0).getRejectionErrorCode()).isNull();
+        assertThat(payment.getPaymentInformations().get(0).getRejectionErrorMessage()).isNull();
+    }
+
+    @Test
     public void should_mark_collection_file_as_processed() {
+        when(linePayService.confirmPayment(anyString(), anyDouble(), anyString())).thenReturn(linePayResponse("0000", "success"));
         Policy policy = getValidatedPolicy(EVERY_MONTH);
 
-        CollectionFile collectionFile = collectionFileRepository.save(
-                collectionFile(
-                        collectionFileLine(policy, 100.0),
-                        collectionFileLine(policy, 150.0),
-                        collectionFileLine(policy, 200.0)
-                ));
+        CollectionFile collectionFile = getValidatedCollectionFile(
+                collectionFileLine(policy, 100.0),
+                collectionFileLine(policy, 150.0),
+                collectionFileLine(policy, 200.0)
+        );
         rlsService.processLatestCollectionFile();
 
         CollectionFile updatedCollectionFile = collectionFileRepository.findOne(collectionFile.getId());
@@ -205,15 +325,16 @@ public class RLSServiceTest {
 
     @Test
     public void should_process_collection_file() {
+        when(linePayService.confirmPayment(anyString(), anyDouble(), anyString())).thenReturn(linePayResponse("0000", "success"));
+
         Policy policy1 = getValidatedPolicy(EVERY_MONTH);
         Policy policy2 = getValidatedPolicy(EVERY_MONTH);
 
-        CollectionFile collectionFile = collectionFileRepository.save(
-                collectionFile(
-                        collectionFileLine(policy1, 100.0),
-                        collectionFileLine(policy2, 150.0),
-                        collectionFileLine(policy2, 200.0)
-                ));
+        CollectionFile collectionFile = getValidatedCollectionFile(
+                collectionFileLine(policy1, 100.0),
+                collectionFileLine(policy2, 150.0),
+                collectionFileLine(policy2, 200.0)
+        );
         rlsService.processLatestCollectionFile();
 
         CollectionFile updatedCollectionFile = collectionFileRepository.findOne(collectionFile.getId());
@@ -223,25 +344,25 @@ public class RLSServiceTest {
         assertThat(deductionFileLines).extracting("paymentMode").containsExactly("M", "M", "M");
         assertThat(deductionFileLines).extracting("amount").containsExactly(100.0, 150.0, 200.0);
         assertThat(deductionFileLines).extracting("processDate").doesNotContainNull();
-        assertThat(deductionFileLines).extracting("rejectionCode").containsExactly("", "", "");
+        assertThat(deductionFileLines).extracting("rejectionCode").containsExactly("0000", "0000", "0000");
     }
 
     @Test
     public void should_not_create_deduction_file_line_when_no_deduction_line_created() {
         Policy policy = getValidatedPolicy(EVERY_MONTH);
-        CollectionFile collectionFile = collectionFile(collectionFileLine(policy, 100.0));
+        CollectionFile collectionFile = getValidatedCollectionFile(collectionFileLine(policy, 100.0));
         assertThatThrownBy(() -> rlsService.createDeductionExcelFile(collectionFile.getDeductionFile()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     public void should_create_deduction_file_with_proper_header() throws IOException, InvalidFormatException {
+        when(linePayService.confirmPayment(anyString(), anyDouble(), anyString())).thenReturn(linePayResponse("0000", "success"));
         Policy policy = getValidatedPolicy(EVERY_MONTH);
 
-        CollectionFile collectionFile = collectionFileRepository.save(
-                collectionFile(
-                        collectionFileLine(policy, 100.0)
-                ));
+        CollectionFile collectionFile = getValidatedCollectionFile(
+                collectionFileLine(policy, 100.0)
+        );
         rlsService.processLatestCollectionFile();
 
         CollectionFile updatedCollectionFile = collectionFileRepository.findOne(collectionFile.getId());
@@ -261,15 +382,15 @@ public class RLSServiceTest {
 
     @Test
     public void should_create_deduction_file() throws IOException, InvalidFormatException {
+        when(linePayService.confirmPayment(anyString(), anyDouble(), anyString())).thenReturn(linePayResponse("0000", "success"));
         Policy policy1 = getValidatedPolicy(EVERY_MONTH);
         Policy policy2 = getValidatedPolicy(EVERY_MONTH);
 
-        CollectionFile collectionFile = collectionFileRepository.save(
-                collectionFile(
-                        collectionFileLine(policy1, 100.0),
-                        collectionFileLine(policy2, 150.0),
-                        collectionFileLine(policy2, 200.0)
-                ));
+        CollectionFile collectionFile = getValidatedCollectionFile(
+                collectionFileLine(policy1, 100.0),
+                collectionFileLine(policy2, 150.0),
+                collectionFileLine(policy2, 200.0)
+        );
         rlsService.processLatestCollectionFile();
 
         CollectionFile updatedCollectionFile = collectionFileRepository.findOne(collectionFile.getId());
@@ -284,30 +405,21 @@ public class RLSServiceTest {
         assertThat(row1.getCell(2).getStringCellValue()).isEqualTo("M");
         assertThat(row1.getCell(3).getStringCellValue()).isEqualTo("100.0");
         assertThat(row1.getCell(4).getStringCellValue()).isNotNull();
-        assertThat(row1.getCell(5).getStringCellValue()).isEqualTo("");
+        assertThat(row1.getCell(5).getStringCellValue()).isEqualTo("0000");
         Row row2 = wb.getSheet("LFPATPTDR6").getRow(2);
         assertThat(row2.getCell(0).getStringCellValue()).isEqualTo(policy2.getPolicyId());
         assertThat(row2.getCell(1).getStringCellValue()).isEqualTo("myBankCode");
         assertThat(row2.getCell(2).getStringCellValue()).isEqualTo("M");
         assertThat(row2.getCell(3).getStringCellValue()).isEqualTo("150.0");
         assertThat(row2.getCell(4).getStringCellValue()).isNotNull();
-        assertThat(row2.getCell(5).getStringCellValue()).isEqualTo("");
+        assertThat(row2.getCell(5).getStringCellValue()).isEqualTo("0000");
         Row row3 = wb.getSheet("LFPATPTDR6").getRow(3);
         assertThat(row3.getCell(0).getStringCellValue()).isEqualTo(policy2.getPolicyId());
         assertThat(row3.getCell(1).getStringCellValue()).isEqualTo("myBankCode");
         assertThat(row3.getCell(2).getStringCellValue()).isEqualTo("M");
         assertThat(row3.getCell(3).getStringCellValue()).isEqualTo("200.0");
         assertThat(row3.getCell(4).getStringCellValue()).isNotNull();
-        assertThat(row3.getCell(5).getStringCellValue()).isEqualTo("");
-    }
-
-    private static CollectionFile collectionFile(CollectionFileLine ... collectionFileLines) {
-        CollectionFile collectionFile = new CollectionFile();
-        collectionFile.setReceivedDate(now());
-        for (CollectionFileLine collectionFileLine : collectionFileLines) {
-            collectionFile.addLine(collectionFileLine);
-        }
-        return collectionFile;
+        assertThat(row3.getCell(5).getStringCellValue()).isEqualTo("0000");
     }
 
     private static CollectionFileLine collectionFileLine(Policy policy, Double amount) {
@@ -321,6 +433,17 @@ public class RLSServiceTest {
         return collectionFileLine;
     }
 
+    private CollectionFile getValidatedCollectionFile(CollectionFileLine... collectionFileLines) {
+        CollectionFile collectionFile = new CollectionFile();
+        collectionFile.setReceivedDate(now());
+        for (CollectionFileLine collectionFileLine : collectionFileLines) {
+            rlsService.addPaymentId(collectionFileLine);
+            collectionFile.addLine(collectionFileLine);
+        }
+
+        return collectionFileRepository.save(collectionFile);
+    }
+
     private Policy getValidatedPolicy(PeriodicityCode periodicityCode) {
         Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation(periodicityCode, 1000000.0, 5));
         quote(quote, beneficiary(100.0));
@@ -328,8 +451,9 @@ public class RLSServiceTest {
 
         Policy policy = policyService.createPolicy(quote);
         policy.setStatus(VALIDATED);
-        policyRepository.save(policy);
+        policy.getPayments().stream().forEach(payment -> payment.setRegistrationKey("something"));
+        paymentRepository.save(policy.getPayments());
 
-        return policy;
+        return policyRepository.save(policy);
     }
 }

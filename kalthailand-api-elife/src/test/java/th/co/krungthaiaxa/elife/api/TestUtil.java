@@ -4,11 +4,15 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import th.co.krungthaiaxa.elife.api.model.*;
 import th.co.krungthaiaxa.elife.api.model.enums.*;
 import th.co.krungthaiaxa.elife.api.model.error.Error;
+import th.co.krungthaiaxa.elife.api.model.line.LinePayResponse;
+import th.co.krungthaiaxa.elife.api.model.line.LinePayResponseInfo;
+import th.co.krungthaiaxa.elife.api.model.line.LinePayResponsePaymentInfo;
 import th.co.krungthaiaxa.elife.api.products.*;
 import th.co.krungthaiaxa.elife.api.utils.JsonUtil;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
@@ -329,5 +333,26 @@ public class TestUtil {
         PaymentInformation paymentInformation = new PaymentInformation();
         paymentInformation.setMethod("12");
         policy.getPayments().get(0).addPaymentInformation(paymentInformation);
+    }
+
+    public static Optional<LinePayResponse> linePayResponse(String returnCode, String returnMessage) {
+        return linePayResponse(returnCode, returnMessage, "myTransactionId");
+    }
+
+    public static Optional<LinePayResponse> linePayResponse(String returnCode, String returnMessage, String transactionId) {
+        LinePayResponsePaymentInfo payInfo = new LinePayResponsePaymentInfo();
+        payInfo.setCreditCardName("myCreditCardName");
+        payInfo.setMethod("myMethod");
+
+        LinePayResponseInfo info = new LinePayResponseInfo();
+        info.setTransactionId(transactionId);
+        info.setPayInfo(payInfo);
+
+        LinePayResponse linePayResponse = new LinePayResponse();
+        linePayResponse.setReturnCode(returnCode);
+        linePayResponse.setReturnMessage(returnMessage);
+        linePayResponse.setInfo(info);
+
+        return Optional.of(linePayResponse);
     }
 }
