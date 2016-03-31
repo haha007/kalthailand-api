@@ -119,8 +119,7 @@ public class EmailService {
         String decimalFormat = "#,##0.00";
         String emailContent = IOUtils.toString(this.getClass().getResourceAsStream("/email-content/email-quote-ifine-content.txt"));
         ProductIFinePremium p = quote.getPremiumsData().getProductIFinePremium();
-        return emailContent.replace("%1$s", quote.getInsureds().get(0).getPerson().getGivenName() + " " + quote.getInsureds().get(0).getPerson().getSurName())
-                .replace("%2$s", getThaiDate(quote.getInsureds().get(0).getStartDate()))
+        return emailContent.replace("%2$s", getThaiDate(quote.getInsureds().get(0).getStartDate()))
                 .replace("%3$s", "'" + getLineURL() + "fatca-questions/" + quote.getQuoteId() + "'")
                 .replace("%4$s", String.valueOf(quote.getCommonData().getNbOfYearsOfCoverage()))
                 .replace("%5$s", String.valueOf(quote.getCommonData().getNbOfYearsOfPremium()))
