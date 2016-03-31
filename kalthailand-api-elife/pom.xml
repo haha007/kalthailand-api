@@ -5,7 +5,7 @@
 
     <groupId>th.co.krungthaiaxa.api</groupId>
     <artifactId>elife</artifactId>
-    <version>1.1.7-SNAPSHOT</version>
+    <version>1.1.7</version>
     <packaging>war</packaging>
 
     <name>kalthailand-api-elife</name>
