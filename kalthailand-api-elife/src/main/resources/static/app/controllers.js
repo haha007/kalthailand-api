@@ -37,6 +37,25 @@
                 function (successResponse) {
                     $scope.errorMessage = null;
                     $scope.policyDetail = successResponse;
+                    if (successResponse.premiumsData.product10ECPremium) {
+                        $scope.sumInsured = successResponse.premiumsData.product10ECPremium.sumInsured.value + " " + successResponse.premiumsData.product10ECPremium.sumInsured.currencyCode;
+                    }
+                    else {
+                        $scope.sumInsured = successResponse.premiumsData.productIFinePremium.sumInsured.value + " " + successResponse.premiumsData.productIFinePremium.sumInsured.currencyCode;
+                    }
+                    var periodicity = '' + successResponse.premiumsData.financialScheduler.periodicity.code;
+                    $scope.periodicity = periodicity;
+                    var premium = successResponse.premiumsData.financialScheduler.modalAmount.value;
+                    if (periodicity == 'EVERY_MONTH') {
+                        $scope.annualPremium = (premium * 12) + " " + successResponse.premiumsData.financialScheduler.modalAmount.currencyCode;
+                    } else if (periodicity == 'EVERY_QUARTER') {
+                        $scope.annualPremium =  (premium * 4) + " " + successResponse.premiumsData.financialScheduler.modalAmount.currencyCode;
+                    } else if (periodicity == 'EVERY_HALF_YEAR') {
+                        $scope.annualPremium =  (premium * 2) + " " + successResponse.premiumsData.financialScheduler.modalAmount.currencyCode;
+                    }
+                    else {
+                        $scope.annualPremium =  premium + " " + successResponse.premiumsData.financialScheduler.modalAmount.currencyCode;
+                    }
                 },
                 function (errorResponse) {
                     $scope.errorMessage = errorResponse.data.userMessage;

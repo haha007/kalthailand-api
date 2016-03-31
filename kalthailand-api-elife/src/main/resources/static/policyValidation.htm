@@ -95,15 +95,21 @@
                             </div>
                         </div>
                         <div class="form-group">
+                            <label class="col-sm-4 control-label">Product name</label>
+                            <div class="col-sm-8">
+                                <p class="form-control-static">{{ policyDetail.commonData.productName }}</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
                             <label class="col-sm-4 control-label">Premium amount</label>
                             <div class="col-sm-8">
-                                <p class="form-control-static">{{ policyDetail.premiumsData.financialScheduler.modalAmount.value }}</p>
+                                <p class="form-control-static">{{ policyDetail.premiumsData.financialScheduler.modalAmount.value }} {{ policyDetail.premiumsData.financialScheduler.modalAmount.currencyCode }}</p>
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="col-sm-4 control-label">Premium periodicity</label>
                             <div class="col-sm-8">
-                                <p class="form-control-static">{{ policyDetail.premiumsData.financialScheduler.modalAmount.periodicity.code }}</p>
+                                <p class="form-control-static">{{ policyDetail.premiumsData.financialScheduler.periodicity.code }}</p>
                             </div>
                         </div>
                     </div>
@@ -127,15 +133,21 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-sm-4 control-label">Premium currency</label>
+                            <label class="col-sm-4 control-label">Sum insured</label>
                             <div class="col-sm-8">
-                                <p class="form-control-static">{{ policyDetail.premiumsData.financialScheduler.modalAmount.currencyCode }}</p>
+                                <p class="form-control-static">{{ sumInsured }} </p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">Annual premium</label>
+                            <div class="col-sm-8">
+                                <p class="form-control-static">{{ annualPremium }}</p>
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="col-sm-4 control-label">Premium end date</label>
                             <div class="col-sm-8">
-                                <p class="form-control-static">{{ policyDetail.premiumsData.financialScheduler.modalAmount.endDate }}</p>
+                                <p class="form-control-static">{{ policyDetail.premiumsData.financialScheduler.endDate }}</p>
                             </div>
                         </div>
                     </div>
@@ -146,7 +158,7 @@
                     <form class="form">
                         <div class="form-group">
                             <div class="col-sm-offset-4 col-sm-8">
-                                <button type="submit" class="btn btn-default btn-success">Validate</button>
+                                <button type="submit" class="btn btn-default btn-danger">Validate</button>
                             </div>
                         </div>
                     </form>
