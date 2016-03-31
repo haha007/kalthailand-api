@@ -1,6 +1,6 @@
 <html>
     <head>
-        <meta charset="TIS-620">
+        <meta charset="UTF-8">
         <title></title>
         <style type="text/css">
             body{
