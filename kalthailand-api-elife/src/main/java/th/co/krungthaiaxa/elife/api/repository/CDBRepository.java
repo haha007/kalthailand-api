@@ -21,14 +21,7 @@ public class CDBRepository {
     private final static Logger logger = LoggerFactory.getLogger(CDBRepository.class);
 
     @Inject
-    @Qualifier("cdbDataSource")
-    private DataSource cdbDataSource;
-
     private JdbcTemplate jdbcTemplate;
-
-    public CDBRepository() {
-        jdbcTemplate = new JdbcTemplate(cdbDataSource);
-    }
 
     /**
      * @return Left part is the previous policy number, middle part is first agent code, right part is the second agent code
