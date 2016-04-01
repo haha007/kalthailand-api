@@ -21,7 +21,8 @@ public class CDBRepository {
     private final static Logger logger = LoggerFactory.getLogger(CDBRepository.class);
 
     @Inject
-    private JdbcTemplate jdbcTemplate;
+    @Qualifier("cdbDataSource")
+    private DataSource cdbDataSource;
 
     /**
      * @return Left part is the previous policy number, middle part is first agent code, right part is the second agent code
@@ -53,8 +54,9 @@ public class CDBRepository {
         parameters[0] = idCard;
         parameters[1] = dateOfBirth;
         Map<String, Object> map = null;
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(cdbDataSource);
         try {
-            List<Map<String, Object>> list = this.jdbcTemplate.queryForList(sql, parameters);
+            List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, parameters);
             if (list.size() != 0) {
                 map = list.get(0);
             }
