@@ -2,7 +2,7 @@
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
 <log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
     <appender name="FILE" class="org.apache.log4j.DailyRollingFileAppender">
-        <param name="file" value="D:/jboss-eap-6.4/EAP-6.4/standalone/log"/>
+        <param name="file" value="D:/jboss-eap-6.4/EAP-6.4/standalone/log/elife.log"/>
         <layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern" value="[%p] %d{ISO8601} [%t] %C - %m%n"/>
         </layout>
