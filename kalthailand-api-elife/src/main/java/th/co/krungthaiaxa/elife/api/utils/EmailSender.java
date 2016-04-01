@@ -57,8 +57,7 @@ public class EmailSender {
                 multipart.addBodyPart(getAttachmentBodyPart(attachment));
             }
         }
-        //multipart.addBodyPart(getContentBodyPart(emailContent, "text/html;charset=UTF-8"));
-        multipart.addBodyPart(getContentBodyPart(emailContent, "text/html;charset=TIS-620"));
+        multipart.addBodyPart(getContentBodyPart(emailContent, "text/html;charset=UTF-8"));
 
         // Get an SMTP Session Object based on the properties defined
         Session session = getSession(fromEmailAddress);
