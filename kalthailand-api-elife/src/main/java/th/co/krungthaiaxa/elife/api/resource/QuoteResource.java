@@ -3,6 +3,7 @@ package th.co.krungthaiaxa.elife.api.resource;
 import io.swagger.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import th.co.krungthaiaxa.elife.api.exception.ElifeException;
@@ -81,8 +82,14 @@ public class QuoteResource {
             @RequestParam String sessionId,
             @ApiParam(value = "The channel being used to create the quote.")
             @RequestParam ChannelType channelType) {
-        Optional<Quote> quote = quoteService.getLatestQuote(sessionId, channelType);
-        if (!quote.isPresent()) {
+        Optional<Quote> quote = null;
+        try {
+            quote = quoteService.getLatestQuote(sessionId, channelType);
+        }
+        catch (DataAccessException e) {
+            logger.error("Unable to get latest quote", e);
+        }
+        if (quote == null || !quote.isPresent()) {
             return new ResponseEntity<>(getJson(""), OK);
         } else {
             return new ResponseEntity<>(getJson(quote.get()), OK);
