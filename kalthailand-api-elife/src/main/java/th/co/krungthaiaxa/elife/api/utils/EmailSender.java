@@ -57,7 +57,8 @@ public class EmailSender {
                 multipart.addBodyPart(getAttachmentBodyPart(attachment));
             }
         }
-        multipart.addBodyPart(getContentBodyPart(emailContent, "text/html;charset=utf-8"));
+        //multipart.addBodyPart(getContentBodyPart(emailContent, "text/html;charset=utf-8"));
+        multipart.addBodyPart(getContentBodyPart(emailContent, "text/html;charset=ISO-8859-7"));
 
         // Get an SMTP Session Object based on the properties defined
         Session session = getSession(fromEmailAddress);
@@ -67,8 +68,7 @@ public class EmailSender {
 
         // Set From: header field of the header.
         message.setFrom(new InternetAddress(fromEmailAddress));
-        //message.setHeader("Content-Type", "text/html; charset=UTF-8");
-        message.setHeader("Content-Type", "text/html; charset=ISO-8859-7");
+        message.setHeader("Content-Type", "text/html; charset=UTF-8");
         message.setHeader("Content-Transfer-Encoding", "quoted-printable");
         message.setRecipients(Message.RecipientType.TO, toEmailAddress);
 
