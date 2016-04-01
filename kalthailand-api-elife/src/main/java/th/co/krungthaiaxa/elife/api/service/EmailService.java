@@ -17,6 +17,7 @@ import th.co.krungthaiaxa.elife.api.utils.EmailSender;
 import javax.inject.Inject;
 import javax.mail.MessagingException;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.chrono.ThaiBuddhistDate;
@@ -100,7 +101,7 @@ public class EmailService {
 
     private String getQuote10ECEmailContent(Quote quote) throws IOException {
         String decimalFormat = "#,##0.00";
-        String emailContent = IOUtils.toString(this.getClass().getResourceAsStream("/email-content/email-quote-10ec-content.txt"));
+        String emailContent = IOUtils.toString(this.getClass().getResourceAsStream("/email-content/email-quote-10ec-content.txt"), Charset.forName("UTF-8"));
         return emailContent.replace("%1$s", quote.getCommonData().getNbOfYearsOfCoverage().toString())
                 .replace("%2$s", quote.getCommonData().getNbOfYearsOfPremium().toString())
                 .replace("%3$s", quote.getInsureds().get(0).getAgeAtSubscription().toString())
@@ -117,7 +118,7 @@ public class EmailService {
 
     private String getQuoteiFineEmailContent(Quote quote) throws IOException {
         String decimalFormat = "#,##0.00";
-        String emailContent = IOUtils.toString(this.getClass().getResourceAsStream("/email-content/email-quote-ifine-content.txt"));
+        String emailContent = IOUtils.toString(this.getClass().getResourceAsStream("/email-content/email-quote-ifine-content.txt"), Charset.forName("UTF-8"));
         ProductIFinePremium p = quote.getPremiumsData().getProductIFinePremium();
         return emailContent.replace("%2$s", getThaiDate(quote.getInsureds().get(0).getStartDate()))
                 .replace("%3$s", "'" + getLineURL() + "fatca-questions/" + quote.getQuoteId() + "'")
@@ -145,7 +146,7 @@ public class EmailService {
     }
 
     private String getEreceiptEmailContent(Policy policy) throws IOException {
-        String emailContent = IOUtils.toString(this.getClass().getResourceAsStream("/email-content/email-ereceipt-content.txt"));
+        String emailContent = IOUtils.toString(this.getClass().getResourceAsStream("/email-content/email-ereceipt-content.txt"), Charset.forName("UTF-8"));
         return emailContent.replace("%1$s", policy.getInsureds().get(0).getPerson().getGivenName() + " " + policy.getInsureds().get(0).getPerson().getSurName())
                 .replace("%2$s", policy.getInsureds().get(0).getPerson().getGivenName() + " " + policy.getInsureds().get(0).getPerson().getSurName())
                 .replace("%3$s", policy.getCommonData().getProductId() + " " + messageSource.getMessage("product.id." + policy.getCommonData().getProductId(), null, thLocale));
