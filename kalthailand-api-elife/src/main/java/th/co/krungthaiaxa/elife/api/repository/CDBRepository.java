@@ -3,10 +3,12 @@ package th.co.krungthaiaxa.elife.api.repository;
 import org.apache.commons.lang3.tuple.Triple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.inject.Inject;
+import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
@@ -16,11 +18,17 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Repository
 public class CDBRepository {
-
     private final static Logger logger = LoggerFactory.getLogger(CDBRepository.class);
 
     @Inject
+    @Qualifier("cdbDataSource")
+    private DataSource cdbDataSource;
+
     private JdbcTemplate jdbcTemplate;
+
+    public CDBRepository() {
+        jdbcTemplate = new JdbcTemplate(cdbDataSource);
+    }
 
     /**
      * @return Left part is the previous policy number, middle part is first agent code, right part is the second agent code
