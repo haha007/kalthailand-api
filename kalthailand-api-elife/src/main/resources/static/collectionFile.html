@@ -62,7 +62,7 @@
 
         <div ng-hide="accessErrorMessage" class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" ng-controller="AppController">
             <div class="page-header">
-                <h1>Auto Pay files</h1>
+                <h1>Collection files</h1>
             </div>
             <form name="formUpload" ng-submit="upload($event)" class="form-inline form-upload">
                 <div class="form-group">
@@ -98,7 +98,7 @@
                     <td>{{ collectionFile.jobStartedDate | date:'yyyy-MM-dd HH:mm:ss Z'}}</td>
                     <td>{{ collectionFile.jobEndedDate | date:'yyyy-MM-dd HH:mm:ss Z'}}</td>
                     <td>{{ collectionFile.deductionFile.lines.length }}</td>
-                    <td><a href="RLS/deduction/download/{{collectionFile.id}}" ng-show="collectionFile.deductionFile.lines">Download</a></td>
+                    <td><a href="RLS/deduction/download/{{collectionFile.id}}" ng-show="collectionFile.deductionFile.lines && collectionFile.deductionFile.lines.length != 0">Download</a></td>
                 </tr>
             </table>
         </div>

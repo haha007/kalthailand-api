@@ -97,6 +97,8 @@
                 function (errorResponse) {
                     $scope.errorMessage = errorResponse.data.userMessage;
                     $scope.policyDetail = null;
+                    $scope.annualPremium = null;
+                    $scope.sumInsured = null;
                 });
         };
     });
