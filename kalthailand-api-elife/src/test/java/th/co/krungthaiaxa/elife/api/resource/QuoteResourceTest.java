@@ -62,9 +62,9 @@ import static th.co.krungthaiaxa.elife.api.products.ProductType.PRODUCT_IFINE;
 public class QuoteResourceTest {
     @Rule
     public final GreenMailRule greenMail = new GreenMailRule(ServerSetupTest.SMTP_IMAP);
-    @Value("${api.security.user.name}")
+    @Value("${security.ui.api.user.name}")
     private String apiUserName;
-    @Value("${api.security.user.password}")
+    @Value("${security.ui.api.user.password}")
     private String apiUserPassword;
     @Value("${local.server.port}")
     private int port;

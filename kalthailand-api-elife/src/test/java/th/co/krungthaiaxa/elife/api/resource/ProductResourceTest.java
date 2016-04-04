@@ -33,9 +33,9 @@ import static th.co.krungthaiaxa.elife.api.TestUtil.productQuotation;
 @ActiveProfiles("test")
 @IntegrationTest({"server.port=0"})
 public class ProductResourceTest {
-    @Value("${api.security.user.name}")
+    @Value("${security.api.user.name}")
     private String apiUserName;
-    @Value("${api.security.user.password}")
+    @Value("${security.api.user.password}")
     private String apiUserPassword;
     @Value("${local.server.port}")
     private int port;

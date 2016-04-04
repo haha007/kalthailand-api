@@ -54,4 +54,13 @@ public class AdminController {
     public ResponseEntity<byte[]> getAllPolicies(@RequestParam Integer startIndex, @RequestParam Integer nbOfRecords) {
         return new ResponseEntity<>(getJson(policyService.findAll(startIndex, nbOfRecords)), OK);
     }
+
+    @ApiIgnore
+    @RequestMapping(value = "/admin/check/access", produces = APPLICATION_JSON_VALUE, method = GET)
+    @ResponseBody
+    public ResponseEntity<byte[]> checkAccessRights() {
+        return new ResponseEntity<>(getJson(POLICY_IS_VALIDATED.apply("somthing")), NOT_ACCEPTABLE);
+//        return new ResponseEntity<>(getJson(""), OK);
+    }
+
 }

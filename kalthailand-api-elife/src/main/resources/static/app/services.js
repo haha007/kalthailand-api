@@ -27,4 +27,8 @@
     app.factory('PolicyDetail', function($resource) {
         return $resource('/admin/policies/validate/:id', {id : '@id'}, {});
     });
+
+    app.factory('AccessRights', function($resource) {
+        return $resource('/admin/check/access', {}, {});
+    });
 })();

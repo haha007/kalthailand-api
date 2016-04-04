@@ -12,13 +12,13 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    @Value("${api.security.user.name}")
+    @Value("${security.api.user.name}")
     private String apiUserName;
-    @Value("${api.security.user.password}")
+    @Value("${security.api.user.password}")
     private String apiUserPassword;
-    @Value("${admin.security.user.name}")
+    @Value("${security.ui.admin.user.name}")
     private String adminUserName;
-    @Value("${admin.security.user.password}")
+    @Value("${security.ui.admin.user.password}")
     private String adminUserPassword;
 
     /**
