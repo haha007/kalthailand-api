@@ -1,6 +1,8 @@
 package th.co.krungthaiaxa.elife.api.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -56,11 +58,51 @@ public class AdminController {
     }
 
     @ApiIgnore
-    @RequestMapping(value = "/admin/check/access", produces = APPLICATION_JSON_VALUE, method = GET)
+    @RequestMapping(value = "/admin/check/access/autopay", produces = APPLICATION_JSON_VALUE, method = GET)
     @ResponseBody
-    public ResponseEntity<byte[]> checkAccessRights() {
-        return new ResponseEntity<>(getJson(POLICY_IS_VALIDATED.apply("somthing")), NOT_ACCEPTABLE);
-//        return new ResponseEntity<>(getJson(""), OK);
+    public ResponseEntity<byte[]> checkAccessRightsAutopay() {
+        Optional<? extends GrantedAuthority> role = SecurityContextHolder.getContext().getAuthentication().getAuthorities()
+                .stream()
+                .filter(tmp -> tmp.getAuthority().contains("ADMIN") || tmp.getAuthority().contains("AUTOPAY"))
+                .findAny();
+        if (role.isPresent()) {
+            return new ResponseEntity<>(getJson(""), ACCEPTED);
+        }
+        else {
+            return new ResponseEntity<>(getJson(UI_UNAUTHORIZED), UNAUTHORIZED);
+        }
+    }
+
+    @ApiIgnore
+    @RequestMapping(value = "/admin/check/access/validation", produces = APPLICATION_JSON_VALUE, method = GET)
+    @ResponseBody
+    public ResponseEntity<byte[]> checkAccessRightsValidation() {
+        Optional<? extends GrantedAuthority> role =  SecurityContextHolder.getContext().getAuthentication().getAuthorities()
+                .stream()
+                .filter(tmp -> tmp.getAuthority().contains("ADMIN") || tmp.getAuthority().contains("VALIDATION"))
+                .findAny();
+        if (role.isPresent()) {
+            return new ResponseEntity<>(getJson(""), ACCEPTED);
+        }
+        else {
+            return new ResponseEntity<>(getJson(UI_UNAUTHORIZED), UNAUTHORIZED);
+        }
+    }
+
+    @ApiIgnore
+    @RequestMapping(value = "/admin/check/access/dashboard", produces = APPLICATION_JSON_VALUE, method = GET)
+    @ResponseBody
+    public ResponseEntity<byte[]> checkAccessRightsDashboard() {
+        Optional<? extends GrantedAuthority> role =  SecurityContextHolder.getContext().getAuthentication().getAuthorities()
+                .stream()
+                .filter(tmp -> tmp.getAuthority().contains("ADMIN"))
+                .findAny();
+        if (role.isPresent()) {
+            return new ResponseEntity<>(getJson(""), ACCEPTED);
+        }
+        else {
+            return new ResponseEntity<>(getJson(UI_UNAUTHORIZED), UNAUTHORIZED);
+        }
     }
 
 }

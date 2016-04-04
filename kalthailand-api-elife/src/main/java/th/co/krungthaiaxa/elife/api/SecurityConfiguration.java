@@ -20,6 +20,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private String adminUserName;
     @Value("${security.ui.admin.user.password}")
     private String adminUserPassword;
+    @Value("${security.ui.autopay.user.name}")
+    private String autopayUserName;
+    @Value("${security.ui.autopay.user.password}")
+    private String autopayUserPassword;
+    @Value("${security.ui.validation.user.name}")
+    private String validationUserName;
+    @Value("${security.ui.validation.user.password}")
+    private String validationUserPassword;
 
     /**
      * This section defines the user account configured in properties file
@@ -28,9 +36,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.inMemoryAuthentication()
-                .withUser(apiUserName).password(apiUserPassword).roles("USER", "UI");
-        auth.inMemoryAuthentication()
                 .withUser(adminUserName).password(adminUserPassword).roles("ADMIN", "USER", "UI");
+        auth.inMemoryAuthentication()
+                .withUser(autopayUserName).password(autopayUserPassword).roles("AUTOPAY", "USER", "UI");
+        auth.inMemoryAuthentication()
+                .withUser(validationUserName).password(validationUserPassword).roles("VALIDATION", "USER", "UI");
+        auth.inMemoryAuthentication()
+                .withUser(apiUserName).password(apiUserPassword).roles("USER", "UI");
     }
 
     /**
@@ -51,7 +63,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/**/*.woff").hasRole("UI")
                 .antMatchers(HttpMethod.GET, "/**/*.js").hasRole("UI")
                 // ADMIN rights
-                .antMatchers(HttpMethod.GET, "/admin/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.GET, "/admin/**").hasAnyRole("ADMIN", "AUTOPAY", "VALIDATION")
                 // USER rights
                 .antMatchers(HttpMethod.DELETE, "/**").hasRole("USER")
                 .antMatchers(HttpMethod.GET, "/**").hasRole("USER")

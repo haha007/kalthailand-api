@@ -4,23 +4,43 @@
     var app = angular.module('myApp');
 
     app.controller('MainController', function($rootScope, $scope) {
-        $rootScope.errorMessage = null;
+        $rootScope.accessErrorMessage = null;
     });
 
-    app.controller('AccessRightsController', function($rootScope, $scope, AccessRights) {
-        AccessRights.get(
+    app.controller('AccessRightsDashboardController', function($rootScope, $scope, AccessRightsDashboard) {
+        AccessRightsDashboard.get(
             {},
             function(successResponse) {
-                console.log("success");
-                $rootScope.errorMessage = null;
+                $rootScope.accessErrorMessage = null;
             },
             function(errorResponse) {
-                console.log("error");
-                $rootScope.errorMessage = errorResponse.data.userMessage;
+                $rootScope.accessErrorMessage = errorResponse.data.userMessage ? errorResponse.data.userMessage : errorResponse.data.message;
             })
     });
 
-    app.controller('AppController', function($scope, Item) {
+    app.controller('AccessRightsAutopayController', function($rootScope, $scope, AccessRightsAutopay) {
+        AccessRightsAutopay.get(
+            {},
+            function(successResponse) {
+                $rootScope.accessErrorMessage = null;
+            },
+            function(errorResponse) {
+                $rootScope.accessErrorMessage = errorResponse.data.userMessage ? errorResponse.data.userMessage : errorResponse.data.message;
+            })
+    });
+
+    app.controller('AccessRightsValidationController', function($rootScope, $scope, AccessRightsValidation) {
+        AccessRightsValidation.get(
+            {},
+            function(successResponse) {
+                $rootScope.accessErrorMessage = null;
+            },
+            function(errorResponse) {
+                $rootScope.accessErrorMessage = errorResponse.data.userMessage ? errorResponse.data.userMessage : errorResponse.data.message;
+            })
+    });
+
+    app.controller('AppController', function($rootScope, $scope, Item) {
         Item.query(function(response) {
             $scope.collectionFiles = response;
         });
@@ -47,7 +67,7 @@
         }
     });
 
-    app.controller('ValidationController', function($scope, PolicyDetail) {
+    app.controller('ValidationController', function($rootScope, $scope, PolicyDetail) {
         $scope.search = function(event) {
             event.preventDefault();
             PolicyDetail.get({id: $scope.policyID},

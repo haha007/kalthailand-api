@@ -18,7 +18,7 @@
     <link href="elife.css" rel="stylesheet">
 </head>
 
-<body ng-app="myApp">
+<body ng-app="myApp" ng-controller="MainController">
 
 <nav class="navbar navbar-inverse navbar-fixed-top">
     <div class="container-fluid">
@@ -52,7 +52,15 @@
                 padding: 5px;
             }
         </style>
-        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" ng-controller="ValidationController">
+
+        <div class="col-sm-9 col-sm-offiset-3 col-md-10 col-md-offset-2 main" ng-controller="AccessRightsValidationController">
+            <div class="alert alert-danger" role="alert" ng-show="accessErrorMessage">
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                {{ accessErrorMessage }}
+            </div>
+        </div>
+
+        <div ng-hide="accessErrorMessage" class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" ng-controller="ValidationController">
             <div class="page-header">
                 <h1>Search for Policy to validate</h1>
             </div>
