@@ -3,6 +3,23 @@
 
     var app = angular.module('myApp');
 
+    app.controller('MainController', function($rootScope, $scope) {
+        $rootScope.errorMessage = null;
+    });
+
+    app.controller('AccessRightsController', function($rootScope, $scope, AccessRights) {
+        AccessRights.get(
+            {},
+            function(successResponse) {
+                console.log("success");
+                $rootScope.errorMessage = null;
+            },
+            function(errorResponse) {
+                console.log("error");
+                $rootScope.errorMessage = errorResponse.data.userMessage;
+            })
+    });
+
     app.controller('AppController', function($scope, Item) {
         Item.query(function(response) {
             $scope.collectionFiles = response;

@@ -53,9 +53,9 @@ import static th.co.krungthaiaxa.elife.api.model.error.ErrorCode.QUOTE_DOES_NOT_
 public class PolicyResourceTest {
     @Rule
     public final GreenMailRule greenMail = new GreenMailRule(ServerSetupTest.SMTP_IMAP);
-    @Value("${api.security.user.name}")
+    @Value("${security.api.user.name}")
     private String apiUserName;
-    @Value("${api.security.user.password}")
+    @Value("${security.api.user.password}")
     private String apiUserPassword;
     @Value("${local.server.port}")
     private int port;
