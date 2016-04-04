@@ -8,14 +8,21 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import th.co.krungthaiaxa.elife.api.model.LineBC;
 import th.co.krungthaiaxa.elife.api.model.Mid;
 import th.co.krungthaiaxa.elife.api.model.error.Error;
+import th.co.krungthaiaxa.elife.api.service.LineBCService;
 import th.co.krungthaiaxa.elife.api.utils.Decrypt;
 import th.co.krungthaiaxa.elife.api.utils.JsonUtil;
 
+import javax.inject.Inject;
+import java.util.Optional;
+
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static th.co.krungthaiaxa.elife.api.model.error.ErrorCode.INVALID_LINE_ID;
 import static th.co.krungthaiaxa.elife.api.model.error.ErrorCode.UNABLE_TO_DECRYPT;
+import static th.co.krungthaiaxa.elife.api.model.error.ErrorCode.UNABLE_TO_GET_LINE_BC;
 
 @RestController
 @Api(value = "Line")
@@ -24,6 +31,30 @@ public class LineResource {
 
     @Value("${line.app.secret.key}")
     private String secretkey;
+
+    private final LineBCService lineBCService;
+
+    @Inject
+    public LineResource(LineBCService lineBCService) {
+        this.lineBCService = lineBCService;
+    }
+
+    @ApiOperation(value = "Get Line BC Information along with MID", response = LineBC.class)
+    @ApiResponses({
+            @ApiResponse(code = 404, message = "If unable to get line bc information", response = Error.class)
+    })
+    @RequestMapping(value = "/line/bc", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity getLineBC(
+            @ApiParam(value = "The MID value")
+            @RequestParam String mid) {
+        Optional<LineBC> lineBCData = lineBCService.getLineBCInfo(mid);
+        if (lineBCData.isPresent()) {
+            return new ResponseEntity<>(JsonUtil.getJson(lineBCData.get()), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(UNABLE_TO_GET_LINE_BC, NOT_FOUND);
+        }
+    }
 
     @ApiOperation(value = "Decrypt line token", notes = "Decrypts line token to get the mid", response = Mid.class)
     @ApiResponses({

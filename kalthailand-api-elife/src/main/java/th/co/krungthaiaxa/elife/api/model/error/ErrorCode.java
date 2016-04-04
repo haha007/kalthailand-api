@@ -31,6 +31,7 @@ public class ErrorCode {
     public static final Function<String, Error> ORDER_ID_NOT_PROVIDED = msg -> new Error("0411", "The order id was not provided", "The order id was not provided");
     // Line token decryption
     public static final Error UNABLE_TO_DECRYPT = new Error("0501", "Unable to get your user ID", "The provided text could not be decrypted");
+    public static final Error UNABLE_TO_GET_LINE_BC = new Error("0502", "Unable to get line bc", "The provided mid is not valid or have no line bc data along with input mid");
     // Document
     public static final Error POLICY_DOES_NOT_CONTAIN_DOCUMENT = new Error("0601", "Unable to locate the document", "The given document id does not exist for the given policy");
     public static final Error UNABLE_TO_CREATE_ERECEIPT = new Error("0602", "Unable to create e-receipt", "Processing for create e-receipt fail");

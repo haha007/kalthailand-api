@@ -15,15 +15,21 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import th.co.krungthaiaxa.elife.api.KalApiApplication;
 import th.co.krungthaiaxa.elife.api.TestUtil;
+import th.co.krungthaiaxa.elife.api.model.LineBC;
 import th.co.krungthaiaxa.elife.api.model.error.Error;
+import th.co.krungthaiaxa.elife.api.utils.JsonUtil;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 import static th.co.krungthaiaxa.elife.api.model.error.ErrorCode.UNABLE_TO_DECRYPT;
+import static th.co.krungthaiaxa.elife.api.model.error.ErrorCode.UNABLE_TO_GET_LINE_BC;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiApplication.class)
@@ -66,4 +72,36 @@ public class LineResourceTest {
         assertThat(response.getStatusCode().value()).isEqualTo(BAD_REQUEST.value());
         assertThat(error.getCode()).isEqualTo(UNABLE_TO_DECRYPT.getCode());
     }
+
+    @Test
+    public void should_get_line_bc_information_data() throws IOException, URISyntaxException {
+        String sessionId = "u53cb613d9269dd6875f60249402b4542";
+
+        URI createURI = new URI("http://localhost:" + port + "/line/bc");
+        UriComponentsBuilder createBuilder = UriComponentsBuilder.fromUri(createURI)
+                .queryParam("mid", sessionId);
+        ResponseEntity<String> createResponse = template.exchange(createBuilder.toUriString(), GET, null, String.class);
+        LineBC lineBC = JsonUtil.mapper.readValue(createResponse.getBody(), LineBC.class);
+        assertThat(lineBC.getPid()).isEqualTo("3100902286661");
+        assertThat(lineBC.getMobile()).isEqualTo("0815701554");
+        assertThat(lineBC.getFirstName()).isEqualTo("พิมพมภรณ์");
+        assertThat(lineBC.getLastName()).isEqualTo("อาภาศิริผล");
+        assertThat(lineBC.getEmail()).isEqualTo("Pimpaporn_a@hotmail.com");
+        assertThat(lineBC.getDob()).isEqualTo("30/11/1976");
+
+    }
+
+    @Test
+    public void should_return_error() throws IOException, URISyntaxException {
+        String sessionId = " u53cb613d9269dd6875f60249402b4542";
+
+        URI createURI = new URI("http://localhost:" + port + "/line/bc");
+        UriComponentsBuilder createBuilder = UriComponentsBuilder.fromUri(createURI)
+                .queryParam("mid", sessionId);
+        ResponseEntity<String> response = template.exchange(createBuilder.toUriString(), GET, null, String.class);
+        Error error = TestUtil.getErrorFromJSon(response.getBody());
+        assertThat(response.getStatusCode().value()).isEqualTo(NOT_FOUND.value());
+        assertThat(error.getCode()).isEqualTo(UNABLE_TO_GET_LINE_BC.getCode());
+    }
+
 }

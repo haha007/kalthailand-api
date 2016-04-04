@@ -3,6 +3,7 @@ package th.co.krungthaiaxa.elife.api.repository;
 import org.apache.commons.lang3.tuple.Triple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -20,7 +21,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 public class CDBRepository {
     private final static Logger logger = LoggerFactory.getLogger(CDBRepository.class);
 
-    @Inject
+    @Autowired
     @Qualifier("cdbDataSource")
     private DataSource cdbDataSource;
 
