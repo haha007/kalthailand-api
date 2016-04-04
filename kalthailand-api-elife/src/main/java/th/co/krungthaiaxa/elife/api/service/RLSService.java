@@ -11,6 +11,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.elife.api.data.CollectionFile;
 import th.co.krungthaiaxa.elife.api.data.CollectionFileLine;
@@ -106,6 +107,7 @@ public class RLSService {
         return collectionFileRepository.findAll(new Sort(Sort.Direction.DESC, "receivedDate"));
     }
 
+    @Scheduled(cron = "0 0 10 * * ?")
     public void processLatestCollectionFile() {
         List<CollectionFile> collectionFiles = collectionFileRepository.findByJobStartedDateNull();
         for (CollectionFile collectionFile : collectionFiles) {
@@ -116,9 +118,9 @@ public class RLSService {
                 processCollectionFileLine(deductionFile, collectionFileLine);
             }
             collectionFile.setJobEndedDate(LocalDateTime.now(of(SHORT_IDS.get("VST"))));
-            collectionFile.setDeductionFile(deductionFile);
             collectionFileRepository.save(collectionFile);
         }
+        logger.info("Finished processing [" + collectionFiles.size() + "] collection(s) file.");
     }
 
     public byte[] createDeductionExcelFile(DeductionFile deductionFile) {

@@ -4,6 +4,7 @@ import com.google.common.base.Predicates;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -17,6 +18,7 @@ import java.util.Date;
 
 @SpringBootApplication
 @EnableSwagger2
+@EnableScheduling
 public class KalApiApplication {
     @Bean
     public Docket configureSwagger() {
