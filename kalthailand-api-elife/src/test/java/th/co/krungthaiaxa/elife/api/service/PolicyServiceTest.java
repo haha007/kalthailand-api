@@ -1,5 +1,8 @@
 package th.co.krungthaiaxa.elife.api.service;
 
+import com.icegreen.greenmail.junit.GreenMailRule;
+import com.icegreen.greenmail.util.ServerSetupTest;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.SpringApplicationConfiguration;
@@ -7,6 +10,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.elife.api.KalApiApplication;
+import th.co.krungthaiaxa.elife.api.exception.ElifeException;
 import th.co.krungthaiaxa.elife.api.exception.PolicyValidationException;
 import th.co.krungthaiaxa.elife.api.model.Payment;
 import th.co.krungthaiaxa.elife.api.model.Policy;
@@ -18,12 +22,11 @@ import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static th.co.krungthaiaxa.elife.api.TestUtil.*;
-import static th.co.krungthaiaxa.elife.api.TestUtil.linePayResponse;
 import static th.co.krungthaiaxa.elife.api.exception.PolicyValidationException.emptyQuote;
 import static th.co.krungthaiaxa.elife.api.exception.PolicyValidationException.noneExistingQuote;
 import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
 import static th.co.krungthaiaxa.elife.api.model.enums.PaymentStatus.*;
-import static th.co.krungthaiaxa.elife.api.model.enums.PolicyStatus.PENDING_PAYMENT;
+import static th.co.krungthaiaxa.elife.api.model.enums.PolicyStatus.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiApplication.class)
@@ -34,6 +37,8 @@ public class PolicyServiceTest {
     private PolicyService policyService;
     @Inject
     private QuoteService quoteService;
+    @Rule
+    public final GreenMailRule greenMail = new GreenMailRule(ServerSetupTest.SMTP_IMAP);
 
     @Test
     public void should_return_error_when_create_policy_if_quote_not_provided() {
@@ -224,6 +229,36 @@ public class PolicyServiceTest {
         assertThat(payment.getPaymentInformations()).hasSize(1);
         assertThat(payment.getPaymentInformations()).extracting("rejectionErrorMessage").containsOnly("OK");
         assertThat(payment.getStatus()).isEqualTo(OVERPAID);
+    }
+
+    @Test
+    public void should_update_policy_status_to_pending_validation_and_attach_2_documents() {
+        Policy policy = getPolicy();
+
+        policyService.updatePolicyAfterFirstPaymentValidated(policy);
+
+        assertThat(policy.getStatus()).isEqualTo(PENDING_VALIDATION);
+        assertThat(policy.getDocuments()).hasSize(2);
+    }
+
+    @Test
+    public void should_update_policy_status_to_validated_and_attach_4_documents() {
+        Policy policy = getPolicy();
+
+        policyService.updatePolicyAfterFirstPaymentValidated(policy);
+        policyService.updatePolicyAfterPolicyHasBeenValidated(policy);
+
+        assertThat(policy.getStatus()).isEqualTo(VALIDATED);
+        assertThat(policy.getDocuments()).hasSize(4);
+    }
+
+    @Test
+    public void should_not_update_policy_status_to_validated_when_previous_status_is_not_pending_validation() {
+        Policy policy = getPolicy();
+
+        assertThatThrownBy(() -> policyService.updatePolicyAfterPolicyHasBeenValidated(policy))
+                .isInstanceOf(ElifeException.class);
+        assertThat(policy.getDocuments()).hasSize(0);
     }
 
     private Policy getPolicy() {

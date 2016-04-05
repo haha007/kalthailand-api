@@ -117,10 +117,8 @@ public class PolicyService {
         return policy;
     }
 
-    public void updatePayment(Payment payment, String orderId, Optional<String> transactionId) {
-        if (transactionId.isPresent() && !isEmpty(transactionId.get())) {
-            payment.setTransactionId(transactionId.get());
-        }
+    public void updatePayment(Payment payment, String orderId, String transactionId) {
+        payment.setTransactionId(transactionId);
         payment.setOrderId(orderId);
         paymentRepository.save(payment);
         logger.info("Payment [" + payment.getPaymentId() + "] has been booked with transactionId [" + payment.getTransactionId() + "]");
@@ -186,6 +184,10 @@ public class PolicyService {
     }
 
     public void updatePolicyAfterPolicyHasBeenValidated(Policy policy) {
+        if (!policy.getStatus().equals(PENDING_VALIDATION)) {
+            throw new ElifeException("Can't validate policy [" + policy.getPolicyId() + "], it is not pending for validation.");
+        }
+
         // Generate documents
         documentService.generateValidatedPolicyDocuments(policy);
 

@@ -145,7 +145,7 @@ public class PolicyResource {
         Optional<Payment> payment = policy.get().getPayments().stream().filter(tmp -> tmp.getPaymentId().equals(paymentId)).findFirst();
         if (!payment.isPresent()) {
             logger.error("Unable to find the payment with ID [" + paymentId + "] in the policy with ID [" + policyId + "]");
-            return new ResponseEntity<>(POLICY_DOES_NOT_CONTAIN_PAYMENT, NOT_ACCEPTABLE);
+            return new ResponseEntity<>(POLICY_DOES_NOT_CONTAIN_A_PAYMENT_WITH_TRANSACTION_ID, NOT_ACCEPTABLE);
         }
 
         // If no transaction id, then in error, nothing else should be done since we don't have a status (error / success)
@@ -153,10 +153,9 @@ public class PolicyResource {
             return new ResponseEntity<>(getJson(policy.get()), OK);
         }
 
-        // Update the payment whatever
-        policyService.updatePayment(payment.get(), orderId, transactionId);
-
-        // Update the policy status if confirm is success
+        // Update the payment
+        policyService.updatePayment(payment.get(), orderId, transactionId.get());
+        // Update the policy status
         policyService.updatePolicyAfterFirstPaymentValidated(policy.get());
 
         return new ResponseEntity<>(getJson(policy.get()), OK);
@@ -176,13 +175,7 @@ public class PolicyResource {
     @ResponseBody
     public ResponseEntity updatePolicyToValidated(
             @ApiParam(value = "The policy ID", required = true)
-            @PathVariable String policyId,
-            @ApiParam(value = "The payment ID", required = true)
-            @RequestParam String paymentId,
-            @ApiParam(value = "The amount registered through the channel", required = true, defaultValue = "0.0")
-            @RequestParam Double value,
-            @ApiParam(value = "The currency registered through the channel", required = true)
-            @RequestParam String currencyCode) {
+            @PathVariable String policyId) {
         Optional<Policy> policy = policyService.findPolicy(policyId);
         if (!policy.isPresent()) {
             logger.error("Unable to find the policy with ID [" + policyId + "]");
@@ -191,31 +184,32 @@ public class PolicyResource {
 
         Optional<Payment> paymentOptional = policy.get().getPayments()
                 .stream()
-                .filter(tmp -> tmp.getPaymentId().equals(paymentId))
+                .filter(tmp -> tmp.getTransactionId() != null)
                 .findFirst();
         if (!paymentOptional.isPresent()) {
-            logger.error("Unable to find the payment with ID [" + paymentId + "] in the policy with ID [" + policyId + "]");
-            return new ResponseEntity<>(POLICY_DOES_NOT_CONTAIN_PAYMENT, NOT_ACCEPTABLE);
+            logger.error("Unable to find a payment with a transaction id pending for confirmation in the policy with ID [" + policyId + "]");
+            return new ResponseEntity<>(POLICY_DOES_NOT_CONTAIN_A_PAYMENT_WITH_TRANSACTION_ID, NOT_ACCEPTABLE);
         }
 
         Payment payment = paymentOptional.get();
+        logger.info("Will try to confirm payment with ID [" + payment.getPaymentId() + "] and transation ID [" + payment.getTransactionId() + "] on the policy with ID [" + policyId + "]");
         LinePayResponse linePayResponse;
         try {
             linePayResponse = linePayService.confirmPayment(payment.getRegistrationKey(), payment.getAmount().getValue(), payment.getAmount().getCurrencyCode());
         } catch (IOException e) {
-            logger.error("Unable to confirm the payment with ID [" + paymentId + "] in the policy with ID [" + policyId + "]");
+            logger.error("Unable to confirm the payment with ID [" + payment.getPaymentId() + "] in the policy with ID [" + policyId + "]");
             return new ResponseEntity<>(UNABLE_TO_CONFIRM_AYMENT.apply(e.getMessage()), NOT_ACCEPTABLE);
         }
 
         // Update the payment if confirm is success
-        policyService.updatePayment(payment, value, currencyCode, LINE, linePayResponse);
+        policyService.updatePayment(payment, payment.getAmount().getValue(), payment.getAmount().getCurrencyCode(), LINE, linePayResponse);
         policyService.updateRegistrationForAllNotProcessedPayment(policy.get(), linePayResponse.getInfo().getRegKey());
 
         try {
             policyService.updatePolicyAfterPolicyHasBeenValidated(policy.get());
         } catch (ElifeException e) {
             logger.error("There was an error whil trying to update policy status.", e);
-            return new ResponseEntity<>(SMS_IS_UNAVAILABLE, INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(POLICY_VALIDATION_ERROR.apply(e.getMessage()), INTERNAL_SERVER_ERROR);
         }
 
         return new ResponseEntity<>(getJson(policy.get()), OK);

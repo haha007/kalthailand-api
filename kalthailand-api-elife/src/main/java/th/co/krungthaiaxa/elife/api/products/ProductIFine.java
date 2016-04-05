@@ -174,6 +174,7 @@ public class ProductIFine implements Product {
     public CommonData getCommonData() {
         CommonData commonData = new CommonData();
         commonData.setProductId(PRODUCT_IFINE.getName());
+        commonData.setProductCurrency(PRODUCT_IFINE_CURRENCY);
         commonData.setProductName(PRODUCT_IFINE_NAME);
         commonData.setMaxAge(MAX_AGE);
         commonData.setMinAge(MIN_AGE);

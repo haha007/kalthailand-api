@@ -10,6 +10,7 @@ import java.util.Objects;
 public class CommonData implements Serializable {
     private String productId;
     private String productName;
+    private String productCurrency;
     private Integer nbOfYearsOfCoverage;
     private Integer nbOfYearsOfPremium;
     private Amount minPremium;
@@ -36,6 +37,15 @@ public class CommonData implements Serializable {
 
     public void setProductName(String productName) {
         this.productName = productName;
+    }
+
+    @ApiModelProperty(required = true, value = "The default currency for the product")
+    public String getProductCurrency() {
+        return productCurrency;
+    }
+
+    public void setProductCurrency(String productCurrency) {
+        this.productCurrency = productCurrency;
     }
 
     @ApiModelProperty(required = true, value = "The number of years of coverage for the product")

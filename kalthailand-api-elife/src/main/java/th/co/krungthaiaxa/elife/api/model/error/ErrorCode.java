@@ -19,33 +19,25 @@ public class ErrorCode {
     public static final Error QUOTE_DOES_NOT_EXIST_OR_ACCESS_DENIED = new Error("0304", "Unable to access given quote", "The quote could not be found or given mid does not have access to the quote");
     // Policy
     public static final Error POLICY_DOES_NOT_EXIST = new Error("0401", "The policy does not exist", "The policy does not exist");
-    public static final Error POLICY_DOES_NOT_CONTAIN_PAYMENT = new Error("0402", "The policy does not contain the given payment", "The given payment id could not be found in the list of payments within the policy");
+    public static final Error POLICY_DOES_NOT_CONTAIN_A_PAYMENT_WITH_TRANSACTION_ID = new Error("0402", "The policy does not contain a payment with a transaction id", "The policy does not contain a payment with a transaction id");
     public static final Function<String, Error> POLICY_CANNOT_BE_CREATED = msg -> new Error("0403", "Unable to create your policy. Error is: " + msg, "The policy could not be created out of the quote for validation reasons");
-    public static final Error PAYMENT_NOT_UPDATED_ERROR_DETAILS_NEEDED = new Error("0404", "The payment has not been updated, error detail is needed", "Either error code and/or error message are empty and are needed in case the payment was not successful");
-    public static final Error PAYMENT_NOT_UPDATED_REG_KEY_NEEDED = new Error("0405", "The payment has not been updated, registration key is needed", "When payment booking from LINE Pay is successful, the registration key must be sent");
-    public static final Error PAYMENT_NOT_UPDATED_TRANSACTION_NEEDED = new Error("0406", "The payment has not been updated, transaction id is needed", "When payment booking from LINE Pay is successful, the transaction id must be sent");
-    public static final Function<String, Error> POLICY_IS_CANCELED = msg -> new Error("0407", "The policy [" + msg + "] is canceled", "The policy [" + msg + "] is canceled");
-    public static final Function<String, Error> POLICY_IS_PENDING_PAYMENT = msg -> new Error("0408", "The policy [" + msg + "] is waiting for payment registration", "The policy [" + msg + "] is waiting for payment registration");
-    public static final Function<String, Error> POLICY_IS_VALIDATED = msg -> new Error("0409", "The policy [" + msg + "] is already validated", "The policy [" + msg + "] is already validated");
-    public static final Function<String, Error> POLICY_IS_NOT_PENDING_FOR_PAYMENT = msg -> new Error("0410", "The policy [" + msg + "] is not pending for payment and cannot be updated to pending for validation", "The policy [" + msg + "] is not pending for payment and cannot be updated to pending for validation");
-    public static final Function<String, Error> ORDER_ID_NOT_PROVIDED = msg -> new Error("0411", "The order id was not provided", "The order id was not provided");
+    public static final Function<String, Error> POLICY_IS_CANCELED = msg -> new Error("0404", "The policy [" + msg + "] is canceled", "The policy [" + msg + "] is canceled");
+    public static final Function<String, Error> POLICY_IS_PENDING_PAYMENT = msg -> new Error("0405", "The policy [" + msg + "] is waiting for payment registration", "The policy [" + msg + "] is waiting for payment registration");
+    public static final Function<String, Error> POLICY_IS_VALIDATED = msg -> new Error("0406", "The policy [" + msg + "] is already validated", "The policy [" + msg + "] is already validated");
+    public static final Function<String, Error> POLICY_IS_NOT_PENDING_FOR_PAYMENT = msg -> new Error("0407", "The policy [" + msg + "] is not pending for payment and cannot be updated to pending for validation", "The policy [" + msg + "] is not pending for payment and cannot be updated to pending for validation");
+    public static final Function<String, Error> ORDER_ID_NOT_PROVIDED = msg -> new Error("0408", "The order id was not provided", "The order id was not provided");
+    public static final Function<String, Error> POLICY_VALIDATION_ERROR = msg -> new Error("0409", "There was an error while trying to validate the policy. Error is [" + msg + "].", "There was an error while trying to validate the policy. Error is [" + msg + "].");
     // Line
     public static final Error UNABLE_TO_DECRYPT = new Error("0501", "Unable to get your user ID", "The provided text could not be decrypted");
     public static final Error UNABLE_TO_GET_LINE_BC = new Error("0502", "Unable to get line bc", "The provided mid is not valid or have no line bc data along with input mid");
     public static final Function<String, Error> UNABLE_TO_CONFIRM_AYMENT = msg -> new Error("0503", "Unable to confirm the payment", "Unable to confirm the payment. Error is [" + msg + "]");
     // Document
     public static final Error POLICY_DOES_NOT_CONTAIN_DOCUMENT = new Error("0601", "Unable to locate the document", "The given document id does not exist for the given policy");
-    public static final Error UNABLE_TO_CREATE_ERECEIPT = new Error("0602", "Unable to create e-receipt", "Processing for create e-receipt fail");
-    public static final Error UNABLE_TO_DOWNLOAD_DOCUMENT = new Error("0603", "Unable to download the document", "Processing for create e-receipt fail");
+    public static final Error UNABLE_TO_DOWNLOAD_DOCUMENT = new Error("0602", "Unable to download the document", "Processing for create e-receipt fail");
     // Email
     public static final Function<String, Error> UNABLE_TO_SEND_EMAIL = msg -> new Error("0701", "Unable to send email", "Error message is:" + msg);
-    // Product
-    public static final Function<String, Error> INVALID_PRODUCT_QUOTATION_PROVIDED = msg -> new Error("0801", "Unable to get the product details", "The given product cannot be transformed. Error message is:" + msg);
     // Watermarking
     public static final Function<String, Error> INVALID_COLLECTION_FILE = msg -> new Error("0901", "Unable to upload the collection file. Error is: [" + msg + "]", "Unable to upload the collection file. Error is: [" + msg + "]");
-    // SMS
-    public static final Function<String, Error> UNABLE_TO_SEND_SMS = msg -> new Error("1001", "Unable to send SMS", "Error message is:" + msg);
-    public static final Function<String, Error> SMS_IS_UNAVAILABLE = msg -> new Error("1002", "SMS is unavailable", "Error message is:" + msg);
 
 
     // ADMIN UI

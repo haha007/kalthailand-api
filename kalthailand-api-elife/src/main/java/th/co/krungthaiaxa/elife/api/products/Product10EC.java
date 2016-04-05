@@ -216,6 +216,7 @@ public class Product10EC implements Product {
         commonData.setNbOfYearsOfCoverage(DURATION_COVERAGE_IN_YEAR);
         commonData.setNbOfYearsOfPremium(DURATION_PAYMENT_IN_YEAR);
         commonData.setProductId(PRODUCT_10_EC.getName());
+        commonData.setProductCurrency(PRODUCT_10_EC_CURRENCY);
         commonData.setProductName(PRODUCT_10_EC_NAME);
         return commonData;
     }

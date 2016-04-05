@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static th.co.krungthaiaxa.elife.api.model.enums.GenderCode.MALE;
+import static th.co.krungthaiaxa.elife.api.products.ProductType.PRODUCT_IBEGIN;
 import static th.co.krungthaiaxa.elife.api.products.ProductUtils.*;
 
 @Component
@@ -107,7 +108,8 @@ public class ProductIBegin implements Product {
         commonData.setMinSumInsured(amount(SUM_INSURED_MIN));
         commonData.setNbOfYearsOfCoverage(DURATION_COVERAGE_IN_YEAR);
         commonData.setNbOfYearsOfPremium(DURATION_PAYMENT_IN_YEAR);
-        commonData.setProductId(PRODUCT_IBEGIN_ID);
+        commonData.setProductId(PRODUCT_IBEGIN.name());
+        commonData.setProductCurrency(PRODUCT_IBEGIN_CURRENCY);
         commonData.setProductName(PRODUCT_IBEGIN_NAME);
         return commonData;
     }

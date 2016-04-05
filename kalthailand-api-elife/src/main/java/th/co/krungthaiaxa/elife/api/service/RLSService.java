@@ -249,7 +249,9 @@ public class RLSService {
                 .map(Payment::getRegistrationKey)
                 .findFirst();
 
-        Payment newPayment = new Payment(collectionFileLine.getPremiumAmount(), "THB", LocalDate.now(of(SHORT_IDS.get("VST"))));
+        Payment newPayment = new Payment(collectionFileLine.getPremiumAmount(),
+                policy.get().getCommonData().getProductCurrency(),
+                LocalDate.now(of(SHORT_IDS.get("VST"))));
         if (!lastRegistrationKey.isPresent()) {
             logger.info("Unable to find a schedule payment for policy [" + policy.get().getPolicyId() + "] and a " +
                     "previously used registration key, will create one payment from scratch, byt payment will fail " +
@@ -275,29 +277,29 @@ public class RLSService {
         if (payment.getRegistrationKey() == null) {
             // This should not happen since the registration key should always be found
             deductionFile.addLine(getDeductionFileLine(collectionFileLine, LINE_PAY_INTERNAL_ERROR));
-            policyService.updatePaymentWithErrorStatus(payment, amount, "THB", LINE, LINE_PAY_INTERNAL_ERROR,
+            policyService.updatePaymentWithErrorStatus(payment, amount, payment.getAmount().getCurrencyCode(), LINE, LINE_PAY_INTERNAL_ERROR,
                     ERROR_NO_REGISTRATION_KEY_FOUND);
             return;
         }
 
         LinePayResponse linePayResponse;
         try {
-            linePayResponse = linePayService.confirmPayment(payment.getRegistrationKey(), collectionFileLine.getPremiumAmount(), "THB");
+            linePayResponse = linePayService.confirmPayment(payment.getRegistrationKey(), collectionFileLine.getPremiumAmount(), payment.getAmount().getCurrencyCode());
         } catch (IOException | RuntimeException e) {
             logger.error("An error occured while trying to contact LinePay", e);
             // An error occured while trying to contact LinePay
             deductionFile.addLine(getDeductionFileLine(collectionFileLine, LINE_PAY_INTERNAL_ERROR));
-            policyService.updatePaymentWithErrorStatus(payment, amount, "THB", LINE, LINE_PAY_INTERNAL_ERROR,
+            policyService.updatePaymentWithErrorStatus(payment, amount, payment.getAmount().getCurrencyCode(), LINE, LINE_PAY_INTERNAL_ERROR,
                     "Error while contacting Line Pay API. Payment may be successful. Error is [" + e.getMessage() + "].");
             return;
         }
 
         if (linePayResponse.getReturnCode().equals("0000")) {
             deductionFile.addLine(getDeductionFileLine(collectionFileLine, linePayResponse.getReturnCode()));
-            policyService.updatePayment(payment, amount, "THB", LINE, linePayResponse);
+            policyService.updatePayment(payment, amount, payment.getAmount().getCurrencyCode(), LINE, linePayResponse);
         } else {
             deductionFile.addLine(getDeductionFileLine(collectionFileLine, linePayResponse.getReturnCode()));
-            policyService.updatePayment(payment, amount, "THB", LINE, linePayResponse);
+            policyService.updatePayment(payment, amount, payment.getAmount().getCurrencyCode(), LINE, linePayResponse);
         }
     }
 
