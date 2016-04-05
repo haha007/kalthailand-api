@@ -1,5 +1,7 @@
 package th.co.krungthaiaxa.elife.api.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.elife.api.data.SessionQuote;
 import th.co.krungthaiaxa.elife.api.model.*;
@@ -23,6 +25,7 @@ import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
 
 @Service
 public class QuoteService {
+    private final static Logger logger = LoggerFactory.getLogger(QuoteService.class);
     private final SessionQuoteRepository sessionQuoteRepository;
     private final QuoteRepository quoteRepository;
     private final ProductFactory productFactory;
@@ -85,17 +88,21 @@ public class QuoteService {
         sessionQuote.addQuote(quote);
         sessionQuoteRepository.save(sessionQuote);
 
+        logger.info("Quote has been successfully created with id [" + quote.getId() + "] and policyId [" + quote.getPolicyId() + "]");
+
         return quote;
     }
 
     public Quote updateQuote(Quote quote) {
         quote.setLastUpdateDateTime(now(of(SHORT_IDS.get("VST"))));
+        logger.info("Quote with id [" + quote.getId() + "] and policyId [" + quote.getPolicyId() + "] has been successfully updated");
         return quoteRepository.save(quote);
     }
 
     public Optional<Quote> findByQuoteId(String quoteId, String sessionId, ChannelType channelType) {
         SessionQuote sessionQuote = sessionQuoteRepository.findBySessionIdAndChannelType(sessionId, channelType);
         if (sessionQuote == null || sessionQuote.getQuotes() == null) {
+            logger.error("There is no quote with id [" + quoteId + "] for the session id [" + sessionId + "] has been successfully updated");
             return Optional.empty();
         }
         return sessionQuote.getQuotes().stream()
