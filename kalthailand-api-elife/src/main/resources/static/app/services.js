@@ -4,7 +4,7 @@
     var app = angular.module('myApp');
 
     app.factory('Item', function($resource) {
-        return $resource('/RLS/collectionFile', {}, {
+        return $resource('RLS/collectionFile', {}, {
             save: {
                 method: 'POST',
                 transformRequest: function(data) {
@@ -25,18 +25,18 @@
     });
 
     app.factory('PolicyDetail', function($resource) {
-        return $resource('/admin/policies/validate/:id', {id : '@id'}, {});
+        return $resource('admin/policies/validate/:id', {id : '@id'}, {});
     });
 
     app.factory('AccessRightsDashboard', function($resource) {
-        return $resource('/admin/check/access/dashboard', {}, {});
+        return $resource('admin/check/access/dashboard', {}, {});
     });
 
     app.factory('AccessRightsAutopay', function($resource) {
-        return $resource('/admin/check/access/autopay', {}, {});
+        return $resource('admin/check/access/autopay', {}, {});
     });
 
     app.factory('AccessRightsValidation', function($resource) {
-        return $resource('/admin/check/access/validation', {}, {});
+        return $resource('admin/check/access/validation', {}, {});
     });
 })();

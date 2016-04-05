@@ -66,7 +66,7 @@
     app.controller('ValidationController', function ($rootScope, $scope, $http, PolicyDetail) {
         $scope.onClickValidate = function (policyNumber) {
             $http({
-                url: '/policies/' + policyNumber + '/update/status/validated',
+                url: 'policies/' + policyNumber + '/update/status/validated',
                 method: 'PUT'
             })
                 .then(
