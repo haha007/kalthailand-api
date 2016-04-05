@@ -12,6 +12,7 @@ import th.co.krungthaiaxa.elife.api.exception.ElifeException;
 import th.co.krungthaiaxa.elife.api.model.*;
 import th.co.krungthaiaxa.elife.api.model.enums.ChannelType;
 import th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus;
+import th.co.krungthaiaxa.elife.api.model.line.LinePayResponse;
 import th.co.krungthaiaxa.elife.api.products.Product;
 import th.co.krungthaiaxa.elife.api.products.ProductFactory;
 import th.co.krungthaiaxa.elife.api.repository.*;
@@ -25,6 +26,8 @@ import java.util.*;
 import java.util.stream.Stream;
 
 import static java.time.format.DateTimeFormatter.ofPattern;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static th.co.krungthaiaxa.elife.api.exception.ExceptionUtils.isTrue;
 import static th.co.krungthaiaxa.elife.api.exception.ExceptionUtils.notNull;
 import static th.co.krungthaiaxa.elife.api.exception.PolicyValidationException.*;
@@ -34,6 +37,7 @@ import static th.co.krungthaiaxa.elife.api.model.enums.PolicyStatus.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.RegistrationTypeName.THAI_ID_NUMBER;
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.ERROR;
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.SUCCESS;
+import static th.co.krungthaiaxa.elife.api.service.LinePayService.LINE_PAY_INTERNAL_ERROR;
 
 @Service
 public class PolicyService {
@@ -113,58 +117,43 @@ public class PolicyService {
         return policy;
     }
 
-    public void updatePayment(Policy policy, String orderId, Optional<String> registrationKey, SuccessErrorStatus status,
-                              ChannelType channelType, Optional<String> errorCode, Optional<String> errorMessage) {
-        for (Payment payment : policy.getPayments()) {
-            if (registrationKey.isPresent() && !registrationKey.get().equals(payment.getRegistrationKey())) {
-                payment.setRegistrationKey(registrationKey.get());
-            }
-            payment.setOrderId(orderId);
-            paymentRepository.save(payment);
+    public void updatePayment(Payment payment, String orderId, Optional<String> transactionId) {
+        if (transactionId.isPresent() && !isEmpty(transactionId.get())) {
+            payment.setTransactionId(transactionId.get());
         }
-        logger.info("Payments in policy [" + policy.getPolicyId() + "] have been booked");
+        payment.setOrderId(orderId);
+        paymentRepository.save(payment);
+        logger.info("Payment [" + payment.getPaymentId() + "] has been booked with transactionId [" + payment.getTransactionId() + "]");
     }
 
-    public void updatePayment(Payment payment, Double value, String currencyCode, SuccessErrorStatus status,
-                              ChannelType channelType, Optional<String> creditCardName, Optional<String> paymentMethod,
-                              Optional<String> errorCode, Optional<String> errorMessage) {
-        if (!currencyCode.equals(payment.getAmount().getCurrencyCode())) {
-            status = ERROR;
-            errorMessage = Optional.of("Currencies are different");
+    public void updatePaymentWithErrorStatus(Payment payment, Double amount, String currencyCode, ChannelType channelType,
+                                             String errorCode, String errorMessage) {
+        updatePayment(payment, amount, currencyCode, channelType,
+                errorCode,
+                errorMessage,
+                null,
+                null,
+                null);
+    }
+
+    public void updatePayment(Payment payment, Double amount, String currencyCode, ChannelType channelType,
+                              LinePayResponse linePayResponse) {
+        // Update the confirmed payment
+        updatePayment(payment, amount, currencyCode, channelType,
+                linePayResponse.getReturnCode(),
+                linePayResponse.getReturnMessage(),
+                linePayResponse.getInfo().getRegKey(),
+                linePayResponse.getInfo().getPayInfo().getCreditCardName(),
+                linePayResponse.getInfo().getPayInfo().getMethod());
+    }
+
+    public void updateRegistrationForAllNotProcessedPayment(Policy policy, String registrationKey) {
+        // Save the registration key in all other payments
+        for (Payment tmp : policy.getPayments()) {
+            if (tmp.getStatus().equals(NOT_PROCESSED)) {
+                updatePaymentRegistrationKey(tmp, registrationKey);
+            }
         }
-
-        Amount amount = new Amount();
-        amount.setCurrencyCode(currencyCode);
-        amount.setValue(value);
-
-        PaymentInformation paymentInformation = new PaymentInformation();
-        paymentInformation.setAmount(amount);
-        paymentInformation.setChannel(channelType);
-        paymentInformation.setCreditCardName(creditCardName.isPresent() ? creditCardName.get() : null);
-        paymentInformation.setDate(LocalDate.now(ZoneId.of(ZoneId.SHORT_IDS.get("VST"))));
-        paymentInformation.setMethod(paymentMethod.isPresent() ? paymentMethod.get() : null);
-        paymentInformation.setRejectionErrorCode(errorCode.isPresent() ? errorCode.get() : null);
-        paymentInformation.setRejectionErrorMessage(errorMessage.isPresent() ? errorMessage.get() : null);
-        paymentInformation.setStatus(status);
-        payment.getPaymentInformations().add(paymentInformation);
-
-        Double totalSuccesfulPayments = payment.getPaymentInformations()
-                .stream()
-                .filter(tmp -> tmp.getStatus() != null && tmp.getStatus().equals(SUCCESS))
-                .mapToDouble(tmp -> tmp.getAmount().getValue())
-                .sum();
-        if (totalSuccesfulPayments < payment.getAmount().getValue()) {
-            payment.setStatus(INCOMPLETE);
-        } else if (Objects.equals(totalSuccesfulPayments, payment.getAmount().getValue())) {
-            payment.setStatus(COMPLETED);
-            payment.setEffectiveDate(paymentInformation.getDate());
-        } else if (totalSuccesfulPayments > payment.getAmount().getValue()) {
-            payment.setStatus(OVERPAID);
-            payment.setEffectiveDate(paymentInformation.getDate());
-        }
-
-        paymentRepository.save(payment);
-        logger.info("Payment [" + payment.getPaymentId() + "] has been updated");
     }
 
     public void updatePolicyAfterFirstPaymentValidated(Policy policy) {
@@ -203,7 +192,7 @@ public class PolicyService {
         // Get eReceipt
         Optional<Document> documentPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(ERECEIPT_PDF)).findFirst();
         if (!documentPdf.isPresent()) {
-            throw new ElifeException("Can't find eReceipt for the policy ["+policy.getPolicyId()+"]");
+            throw new ElifeException("Can't find eReceipt for the policy [" + policy.getPolicyId() + "]");
         }
 
         // Send Email
@@ -216,18 +205,74 @@ public class PolicyService {
 
         // Send SMS
         try {
-            Map<String,String> m = smsApiService.sendConfirmationMessage(policy);
-            if(!m.get("STATUS").equals("0")){
+            Map<String, String> m = smsApiService.sendConfirmationMessage(policy);
+            if (!m.get("STATUS").equals("0")) {
                 //return new ResponseEntity<>(SMS_IS_UNAVAILABLE, INTERNAL_SERVER_ERROR);
                 throw new ElifeException("SMS could not be sent");
             }
         } catch (IOException e) {
             logger.error(String.format("Unable to send confirmation SMS message with policy id is [%1$s].", policy.getPolicyId()), e);
             //return new ResponseEntity<>(UNABLE_TO_SEND_SMS, INTERNAL_SERVER_ERROR);
-            throw new ElifeException("Unexpected error",e);
+            throw new ElifeException("Unexpected error", e);
         }
 
         policy.setStatus(VALIDATED);
         policyRepository.save(policy);
     }
+
+    private void updatePayment(Payment payment, Double value, String currencyCode, ChannelType channelType, String errorCode, String errorMessage, String registrationKey, String creditCardName, String paymentMethod) {
+        SuccessErrorStatus status;
+        if (!currencyCode.equals(payment.getAmount().getCurrencyCode())) {
+            status = ERROR;
+            errorMessage = "Currencies are different";
+            errorCode = LINE_PAY_INTERNAL_ERROR;
+        } else if (!isEmpty(errorCode) && !errorCode.equals("0000")) {
+            status = ERROR;
+        } else {
+            status = SUCCESS;
+        }
+
+        Amount amount = new Amount();
+        amount.setCurrencyCode(currencyCode);
+        amount.setValue(value);
+
+        // registration key might have to be updated
+        updatePaymentRegistrationKey(payment, registrationKey);
+
+        PaymentInformation paymentInformation = new PaymentInformation();
+        paymentInformation.setAmount(amount);
+        paymentInformation.setChannel(channelType);
+        paymentInformation.setCreditCardName(creditCardName);
+        paymentInformation.setDate(LocalDate.now(ZoneId.of(ZoneId.SHORT_IDS.get("VST"))));
+        paymentInformation.setMethod(paymentMethod);
+        paymentInformation.setRejectionErrorCode(errorCode);
+        paymentInformation.setRejectionErrorMessage(errorMessage);
+        paymentInformation.setStatus(status);
+        payment.getPaymentInformations().add(paymentInformation);
+
+        Double totalSuccesfulPayments = payment.getPaymentInformations()
+                .stream()
+                .filter(tmp -> tmp.getStatus() != null && tmp.getStatus().equals(SUCCESS))
+                .mapToDouble(tmp -> tmp.getAmount().getValue())
+                .sum();
+        if (totalSuccesfulPayments < payment.getAmount().getValue()) {
+            payment.setStatus(INCOMPLETE);
+        } else if (Objects.equals(totalSuccesfulPayments, payment.getAmount().getValue())) {
+            payment.setStatus(COMPLETED);
+            payment.setEffectiveDate(paymentInformation.getDate());
+        } else if (totalSuccesfulPayments > payment.getAmount().getValue()) {
+            payment.setStatus(OVERPAID);
+            payment.setEffectiveDate(paymentInformation.getDate());
+        }
+
+        paymentRepository.save(payment);
+        logger.info("Payment [" + payment.getPaymentId() + "] has been updated");
+    }
+
+    private void updatePaymentRegistrationKey(Payment payment, String registrationKey) {
+        if (!isBlank(registrationKey) && !registrationKey.equals(payment.getRegistrationKey())) {
+            payment.setRegistrationKey(registrationKey);
+        }
+    }
+
 }

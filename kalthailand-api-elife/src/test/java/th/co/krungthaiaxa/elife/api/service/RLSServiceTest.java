@@ -50,8 +50,8 @@ import static th.co.krungthaiaxa.elife.api.model.enums.PaymentStatus.NOT_PROCESS
 import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_MONTH;
 import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_YEAR;
 import static th.co.krungthaiaxa.elife.api.model.enums.PolicyStatus.VALIDATED;
+import static th.co.krungthaiaxa.elife.api.service.LinePayService.LINE_PAY_INTERNAL_ERROR;
 import static th.co.krungthaiaxa.elife.api.service.RLSService.ERROR_NO_REGISTRATION_KEY_FOUND;
-import static th.co.krungthaiaxa.elife.api.service.RLSService.RLS_INTERNAL_ERROR;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiApplication.class)
@@ -242,7 +242,7 @@ public class RLSServiceTest {
     }
 
     @Test
-    public void should_create_a_deduction_file_line_with_error_when_no_registration_key() {
+    public void should_create_a_deduction_file_line_with_error_when_no_registration_key() throws IOException {
         when(linePayService.confirmPayment(anyString(), anyDouble(), anyString())).thenReturn(linePayResponse("0000", "success"));
 
         Policy policy = getValidatedPolicy(EVERY_MONTH);
@@ -259,7 +259,7 @@ public class RLSServiceTest {
         assertThat(deductionFile.getLines().get(0).getPaymentMode()).isEqualTo("M");
         assertThat(deductionFile.getLines().get(0).getPolicyNumber()).isEqualTo(policy.getPolicyId());
         assertThat(deductionFile.getLines().get(0).getProcessDate()).isEqualToIgnoringMinutes(LocalDateTime.now());
-        assertThat(deductionFile.getLines().get(0).getRejectionCode()).isEqualTo(RLS_INTERNAL_ERROR);
+        assertThat(deductionFile.getLines().get(0).getRejectionCode()).isEqualTo(LINE_PAY_INTERNAL_ERROR);
 
         Payment payment = paymentRepository.findOne(collectionFileLine.getPaymentId());
         assertThat(payment.getStatus()).isEqualTo(INCOMPLETE);
@@ -271,12 +271,12 @@ public class RLSServiceTest {
         assertThat(payment.getPaymentInformations().get(0).getCreditCardName()).isNull();
         assertThat(payment.getPaymentInformations().get(0).getDate()).isEqualTo(LocalDate.now());
         assertThat(payment.getPaymentInformations().get(0).getMethod()).isNull();
-        assertThat(payment.getPaymentInformations().get(0).getRejectionErrorCode()).isEqualTo(RLS_INTERNAL_ERROR);
+        assertThat(payment.getPaymentInformations().get(0).getRejectionErrorCode()).isEqualTo(LINE_PAY_INTERNAL_ERROR);
         assertThat(payment.getPaymentInformations().get(0).getRejectionErrorMessage()).isEqualTo(ERROR_NO_REGISTRATION_KEY_FOUND);
     }
 
     @Test
-    public void should_create_a_deduction_file_line_with_success() {
+    public void should_create_a_deduction_file_line_with_success() throws IOException {
         when(linePayService.confirmPayment(anyString(), anyDouble(), anyString())).thenReturn(linePayResponse("0000", "success"));
 
         Policy policy = getValidatedPolicy(EVERY_MONTH);
@@ -303,12 +303,12 @@ public class RLSServiceTest {
         assertThat(payment.getPaymentInformations().get(0).getCreditCardName()).isEqualTo("myCreditCardName");
         assertThat(payment.getPaymentInformations().get(0).getDate()).isEqualTo(LocalDate.now());
         assertThat(payment.getPaymentInformations().get(0).getMethod()).isEqualTo("myMethod");
-        assertThat(payment.getPaymentInformations().get(0).getRejectionErrorCode()).isNull();
-        assertThat(payment.getPaymentInformations().get(0).getRejectionErrorMessage()).isNull();
+        assertThat(payment.getPaymentInformations().get(0).getRejectionErrorCode()).isEqualTo("0000");
+        assertThat(payment.getPaymentInformations().get(0).getRejectionErrorMessage()).isEqualTo("success");
     }
 
     @Test
-    public void should_mark_collection_file_as_processed() {
+    public void should_mark_collection_file_as_processed() throws IOException {
         when(linePayService.confirmPayment(anyString(), anyDouble(), anyString())).thenReturn(linePayResponse("0000", "success"));
         Policy policy = getValidatedPolicy(EVERY_MONTH);
 
@@ -325,7 +325,7 @@ public class RLSServiceTest {
     }
 
     @Test
-    public void should_process_collection_file() {
+    public void should_process_collection_file() throws IOException {
         when(linePayService.confirmPayment(anyString(), anyDouble(), anyString())).thenReturn(linePayResponse("0000", "success"));
 
         Policy policy1 = getValidatedPolicy(EVERY_MONTH);

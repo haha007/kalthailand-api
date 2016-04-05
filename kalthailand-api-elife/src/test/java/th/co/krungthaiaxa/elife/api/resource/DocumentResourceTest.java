@@ -41,9 +41,7 @@ import static org.springframework.http.HttpStatus.*;
 import static th.co.krungthaiaxa.elife.api.TestUtil.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
 import static th.co.krungthaiaxa.elife.api.model.enums.PolicyStatus.PENDING_PAYMENT;
-import static th.co.krungthaiaxa.elife.api.model.enums.PolicyStatus.VALIDATED;
-import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.ERROR;
-import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.SUCCESS;
+import static th.co.krungthaiaxa.elife.api.model.enums.PolicyStatus.PENDING_VALIDATION;
 import static th.co.krungthaiaxa.elife.api.model.error.ErrorCode.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -175,16 +173,7 @@ public class DocumentResourceTest {
         URI paymentURI = new URI("http://localhost:" + port + "/policies/" + policy.getPolicyId() + "/update/status/pendingValidation");
         UriComponentsBuilder updatePaymentBuilder = UriComponentsBuilder.fromUri(paymentURI)
                 .queryParam("paymentId", policy.getPayments().get(0).getPaymentId())
-                .queryParam("orderId", "myOrderId")
-                .queryParam("value", 200.0)
-                .queryParam("currencyCode", "THB")
-                .queryParam("registrationKey", "something")
-                .queryParam("status", ERROR)
-                .queryParam("channelType", LINE)
-                .queryParam("creditCardName", "myCreditCardName")
-                .queryParam("paymentMethod", "myPaymentMethod")
-                .queryParam("errorMessage", "myErrorMessage")
-                .queryParam("errorCode", "myErrorCode");
+                .queryParam("orderId", "myOrderId");
         ResponseEntity<String> paymentResponse = template.exchange(updatePaymentBuilder.toUriString(), PUT, null, String.class);
         assertThat(paymentResponse.getStatusCode().value()).isEqualTo(OK.value());
         Policy updatedPolicy = getPolicyFromJSon(paymentResponse.getBody());
@@ -199,32 +188,25 @@ public class DocumentResourceTest {
     }
 
     @Test
-    public void should_return_4_documents_when_policy_validated() throws IOException, URISyntaxException {
+    public void should_return_2_documents_when_policy_validated() throws IOException, URISyntaxException {
         Policy policy = getPolicy();
 
         URI paymentURI = new URI("http://localhost:" + port + "/policies/" + policy.getPolicyId() + "/update/status/pendingValidation");
         UriComponentsBuilder updatePaymentBuilder = UriComponentsBuilder.fromUri(paymentURI)
                 .queryParam("paymentId", policy.getPayments().get(0).getPaymentId())
                 .queryParam("orderId", "myOrderId")
-                .queryParam("transactionId", "myTransactionId")
-                .queryParam("value", 200.0)
-                .queryParam("currencyCode", "THB")
-                .queryParam("registrationKey", "something")
-                .queryParam("status", SUCCESS)
-                .queryParam("channelType", LINE)
-                .queryParam("creditCardName", "myCreditCardName")
-                .queryParam("paymentMethod", "myPaymentMethod");
+                .queryParam("transactionId", "myTransactionId");
         ResponseEntity<String> paymentResponse = template.exchange(updatePaymentBuilder.toUriString(), PUT, null, String.class);
         assertThat(paymentResponse.getStatusCode().value()).isEqualTo(OK.value());
         Policy updatedPolicy = getPolicyFromJSon(paymentResponse.getBody());
-        assertThat(updatedPolicy.getStatus()).isEqualTo(VALIDATED);
+        assertThat(updatedPolicy.getStatus()).isEqualTo(PENDING_VALIDATION);
 
         URI documentUploadURI = new URI("http://localhost:" + port + "/documents/policies/" + policy.getPolicyId());
         ResponseEntity<String> response = template.getForEntity(documentUploadURI, String.class);
         assertThat(response.getStatusCode().value()).isEqualTo(OK.value());
 
         List<Document> documents = getDocumentsFromJSon(response.getBody());
-        assertThat(documents).hasSize(4);
+        assertThat(documents).hasSize(2);
     }
 
     private Policy getPolicy() throws URISyntaxException, IOException {

@@ -16,13 +16,13 @@ import th.co.krungthaiaxa.elife.api.utils.JsonUtil;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Optional;
 
 import static org.springframework.http.HttpMethod.POST;
 
 @Service
 public class LinePayService {
     private final static Logger logger = LoggerFactory.getLogger(LinePayService.class);
+    public static final String LINE_PAY_INTERNAL_ERROR = "9000";
     @Value("${line.pay.id}")
     private String linePayId;
     @Value("${line.pay.secret.key}")
@@ -32,7 +32,7 @@ public class LinePayService {
     @Value("${line.app.id}")
     private String lineAppId;
 
-    public Optional<LinePayResponse> bookPayment(String mid, Policy policy, String amount, String currency) {
+    public LinePayResponse bookPayment(String mid, Policy policy, String amount, String currency) throws IOException {
         logger.info("Booking payment");
         RestTemplate restTemplate = new RestTemplate();
         LinePayBookingRequest linePayBookingRequest = new LinePayBookingRequest();
@@ -52,22 +52,14 @@ public class LinePayService {
         headers.set("X-LINE-ChannelSecret", linePaySecretKey);
         headers.set("Content-Type", "application/json; charset=UTF-8");
 
-        HttpEntity<String> entity = new HttpEntity<String>(new String(JsonUtil.getJson(linePayBookingRequest)), headers);
+        HttpEntity<String> entity = new HttpEntity<>(new String(JsonUtil.getJson(linePayBookingRequest)), headers);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(linePayUrl + "/request");
         ResponseEntity<String> response = restTemplate.exchange(builder.toUriString(), POST, entity, String.class);
-        LinePayResponse linePayResponse;
-        try {
-            linePayResponse = getBookingResponseFromJSon(response.getBody());
-        } catch (IOException e) {
-            logger.info("Payment has not been booked", e);
-            return Optional.empty();
-        }
-
-        return Optional.of(linePayResponse);
+        return getBookingResponseFromJSon(response.getBody());
     }
 
-    public Optional<LinePayResponse> confirmPayment(String transactionId, Double amount, String currency) {
+    public LinePayResponse confirmPayment(String registrationKey, Double amount, String currency) throws IOException {
         logger.info("Confirming payment");
         RestTemplate restTemplate = new RestTemplate();
         LinePayConfirmingRequest linePayConfirmingRequest = new LinePayConfirmingRequest();
@@ -79,19 +71,11 @@ public class LinePayService {
         headers.set("X-LINE-ChannelSecret", linePaySecretKey);
         headers.set("Content-Type", "application/json; charset=UTF-8");
 
-        HttpEntity<String> entity = new HttpEntity<String>(new String(JsonUtil.getJson(linePayConfirmingRequest)), headers);
+        HttpEntity<String> entity = new HttpEntity<>(new String(JsonUtil.getJson(linePayConfirmingRequest)), headers);
 
-        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(linePayUrl + "/" + transactionId + "/confirm");
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(linePayUrl + "/" + registrationKey + "/confirm");
         ResponseEntity<String> response = restTemplate.exchange(builder.toUriString(), POST, entity, String.class);
-        LinePayResponse linePayResponse;
-        try {
-            linePayResponse = getBookingResponseFromJSon(response.getBody());
-        } catch (IOException e) {
-            logger.info("Payment with transaction id [" + transactionId + "] has not been confirmed", e);
-            return Optional.empty();
-        }
-
-        return Optional.of(linePayResponse);
+        return getBookingResponseFromJSon(response.getBody());
     }
 
     private LinePayResponse getBookingResponseFromJSon(String json) throws IOException {

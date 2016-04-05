@@ -11,8 +11,9 @@ import th.co.krungthaiaxa.elife.api.model.Policy;
 import th.co.krungthaiaxa.elife.api.model.Quote;
 import th.co.krungthaiaxa.elife.api.model.enums.ChannelType;
 import th.co.krungthaiaxa.elife.api.model.enums.PolicyStatus;
-import th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus;
 import th.co.krungthaiaxa.elife.api.model.error.Error;
+import th.co.krungthaiaxa.elife.api.model.line.LinePayResponse;
+import th.co.krungthaiaxa.elife.api.service.LinePayService;
 import th.co.krungthaiaxa.elife.api.service.PolicyService;
 import th.co.krungthaiaxa.elife.api.service.QuoteService;
 import th.co.krungthaiaxa.elife.api.utils.JsonUtil;
@@ -27,7 +28,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
 import static th.co.krungthaiaxa.elife.api.model.enums.PolicyStatus.PENDING_VALIDATION;
-import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.ERROR;
 import static th.co.krungthaiaxa.elife.api.model.error.ErrorCode.*;
 import static th.co.krungthaiaxa.elife.api.utils.JsonUtil.getJson;
 
@@ -35,11 +35,13 @@ import static th.co.krungthaiaxa.elife.api.utils.JsonUtil.getJson;
 @Api(value = "Policies")
 public class PolicyResource {
     private final static Logger logger = LoggerFactory.getLogger(PolicyResource.class);
+    private final LinePayService linePayService;
     private final PolicyService policyService;
     private final QuoteService quoteService;
 
     @Inject
-    public PolicyResource(PolicyService policyService, QuoteService quoteService) {
+    public PolicyResource(LinePayService linePayService, PolicyService policyService, QuoteService quoteService) {
+        this.linePayService = linePayService;
         this.policyService = policyService;
         this.quoteService = quoteService;
     }
@@ -103,8 +105,9 @@ public class PolicyResource {
     }
 
     @ApiOperation(value = "Update Policy status", notes = "Updates the Policy status to PENDING_VALIDATION. If " +
-            "susuccessful, it also generates the DA form and Application form documents. Payment will be updated to " +
-            "store the registration key which will be used later on for recurrent payments.", response = Policy.class)
+            "susccessful, it also generates the DA form and Application form documents. Payment will be updated to " +
+            "store the registration key which will be used later on for recurrent payments. Payment will also store " +
+            "orderId and transactionId for trackign purprose.", response = Policy.class)
     @ApiResponses({
             @ApiResponse(code = 404, message = "If the policy doesn't exist", response = Error.class),
             @ApiResponse(code = 406, message = "If the payment id is not found in the policy payment list", response = Error.class),
@@ -122,25 +125,7 @@ public class PolicyResource {
             @ApiParam(value = "The order id used to book the payment", required = true)
             @RequestParam String orderId,
             @ApiParam(value = "The transaction id to use to confirm the payment. Must be sent of status id SUCCESS", required = false)
-            @RequestParam Optional<String> transactionId,
-            @ApiParam(value = "The amount registered through the channel", required = true, defaultValue = "0.0")
-            @RequestParam Double value,
-            @ApiParam(value = "The currency registered through the channel", required = true)
-            @RequestParam String currencyCode,
-            @ApiParam(value = "The registration key given by the channel (if any). Must be sent of status id SUCCESS", required = false)
-            @RequestParam Optional<String> registrationKey,
-            @ApiParam(value = "The status of the transaction through the channel", required = true)
-            @RequestParam SuccessErrorStatus status,
-            @ApiParam(value = "The Channel", required = true)
-            @RequestParam ChannelType channelType,
-            @ApiParam(value = "The credit card name given by the channel (if any)", required = false)
-            @RequestParam Optional<String> creditCardName,
-            @ApiParam(value = "The payment method given by the channel (if any)", required = false)
-            @RequestParam Optional<String> paymentMethod,
-            @ApiParam(value = "The error message given by the channel (if any)", required = false)
-            @RequestParam Optional<String> errorCode,
-            @ApiParam(value = "The error message given by the channel (if any)", required = false)
-            @RequestParam Optional<String> errorMessage) {
+            @RequestParam(required = false) Optional<String> transactionId) {
         if (isEmpty(orderId)) {
             logger.error("The order ID was not received");
             return new ResponseEntity<>(ORDER_ID_NOT_PROVIDED, NOT_ACCEPTABLE);
@@ -163,38 +148,16 @@ public class PolicyResource {
             return new ResponseEntity<>(POLICY_DOES_NOT_CONTAIN_PAYMENT, NOT_ACCEPTABLE);
         }
 
-        if (ERROR.equals(status)) {
-            if (!errorCode.isPresent() || !errorMessage.isPresent() || isEmpty(errorCode.get()) || isEmpty(errorMessage.get())) {
-                return new ResponseEntity<>(PAYMENT_NOT_UPDATED_ERROR_DETAILS_NEEDED, NOT_ACCEPTABLE);
-            }
-        } else {
-            if (!registrationKey.isPresent() || isEmpty(registrationKey.get())) {
-                return new ResponseEntity<>(PAYMENT_NOT_UPDATED_REG_KEY_NEEDED, NOT_ACCEPTABLE);
-            }
-            if (!transactionId.isPresent() || isEmpty(transactionId.get())) {
-                return new ResponseEntity<>(PAYMENT_NOT_UPDATED_TRANSACTION_NEEDED, NOT_ACCEPTABLE);
-            }
-        }
-
-        // Update the payment whatever the status of the payment is
-        policyService.updatePayment(policy.get(), orderId, registrationKey, status, channelType, errorCode, errorMessage);
-
-        // If in error, nothing else should be done
-        if (ERROR.equals(status)) {
+        // If no transaction id, then in error, nothing else should be done since we don't have a status (error / success)
+        if (!transactionId.isPresent() || isEmpty(transactionId.get())) {
             return new ResponseEntity<>(getJson(policy.get()), OK);
         }
 
-        // Update the payment if confirm is success
-        policyService.updatePolicyAfterFirstPaymentValidated(policy.get());
-        policyService.updatePayment(payment.get(), value, currencyCode, status, channelType, creditCardName, paymentMethod, errorCode, errorMessage);
+        // Update the payment whatever
+        policyService.updatePayment(payment.get(), orderId, transactionId);
 
-        // Send email, sms and update status
-        try {
-            policyService.updatePolicyAfterPolicyHasBeenValidated(policy.get());
-        } catch (ElifeException e) {
-            logger.error("There was an error whil trying to update policy status.", e);
-            return new ResponseEntity<>(SMS_IS_UNAVAILABLE, INTERNAL_SERVER_ERROR);
-        }
+        // Update the policy status if confirm is success
+        policyService.updatePolicyAfterFirstPaymentValidated(policy.get());
 
         return new ResponseEntity<>(getJson(policy.get()), OK);
     }
@@ -226,26 +189,32 @@ public class PolicyResource {
             return new ResponseEntity<>(POLICY_DOES_NOT_EXIST, NOT_FOUND);
         }
 
-        Optional<Payment> payment = policy.get().getPayments().stream().filter(tmp -> tmp.getPaymentId().equals(paymentId)).findFirst();
-        if (!payment.isPresent()) {
+        Optional<Payment> paymentOptional = policy.get().getPayments()
+                .stream()
+                .filter(tmp -> tmp.getPaymentId().equals(paymentId))
+                .findFirst();
+        if (!paymentOptional.isPresent()) {
             logger.error("Unable to find the payment with ID [" + paymentId + "] in the policy with ID [" + policyId + "]");
             return new ResponseEntity<>(POLICY_DOES_NOT_CONTAIN_PAYMENT, NOT_ACCEPTABLE);
         }
 
-        //TODO : call LINE Pay API
-        Optional<String> creditCardName = Optional.empty();
-        Optional<String> paymentMethod = Optional.empty();
-        Optional<String> errorCode = Optional.empty();
-        Optional<String> errorMessage = Optional.empty();
-        SuccessErrorStatus status = ERROR;
-        ChannelType channelType = LINE;
+        Payment payment = paymentOptional.get();
+        LinePayResponse linePayResponse;
+        try {
+            linePayResponse = linePayService.confirmPayment(payment.getRegistrationKey(), payment.getAmount().getValue(), payment.getAmount().getCurrencyCode());
+        } catch (IOException e) {
+            logger.error("Unable to confirm the payment with ID [" + paymentId + "] in the policy with ID [" + policyId + "]");
+            return new ResponseEntity<>(UNABLE_TO_CONFIRM_AYMENT.apply(e.getMessage()), NOT_ACCEPTABLE);
+        }
 
         // Update the payment if confirm is success
-        policyService.updatePayment(payment.get(), value, currencyCode, status, channelType, creditCardName, paymentMethod, errorCode, errorMessage);
+        policyService.updatePayment(payment, value, currencyCode, LINE, linePayResponse);
+        policyService.updateRegistrationForAllNotProcessedPayment(policy.get(), linePayResponse.getInfo().getRegKey());
 
         try {
             policyService.updatePolicyAfterPolicyHasBeenValidated(policy.get());
         } catch (ElifeException e) {
+            logger.error("There was an error whil trying to update policy status.", e);
             return new ResponseEntity<>(SMS_IS_UNAVAILABLE, INTERNAL_SERVER_ERROR);
         }
 

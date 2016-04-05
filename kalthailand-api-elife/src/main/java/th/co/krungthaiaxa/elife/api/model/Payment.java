@@ -17,11 +17,12 @@ public class Payment {
     @Id
     private String paymentId;
     private String orderId;
+    private String transactionId;
+    private String registrationKey;
     private PaymentStatus status;
     private LocalDate dueDate;
     private LocalDate effectiveDate;
     private Amount amount;
-    private String registrationKey;
     private List<PaymentInformation> paymentInformations = new ArrayList<>();
 
     // Used by Jackson
@@ -45,13 +46,31 @@ public class Payment {
         this.paymentId = paymentId;
     }
 
-    @ApiModelProperty(required = true, value = "The order Id used to book the payment (if any)")
+    @ApiModelProperty(required = true, value = "The order Id used to book the payment (if any). This is used by pay gateway like LINE Pay.")
     public String getOrderId() {
         return orderId;
     }
 
     public void setOrderId(String orderId) {
         this.orderId = orderId;
+    }
+
+    @ApiModelProperty(required = true, value = "The transaction Id of the payment (if any). This is used by pay gateway like LINE Pay.")
+    public String getTransactionId() {
+        return transactionId;
+    }
+
+    public void setTransactionId(String transactionId) {
+        this.transactionId = transactionId;
+    }
+
+    @ApiModelProperty(value = "The payment's registration key in case of recurring payment. This is used by pay gateway like LINE Pay.")
+    public String getRegistrationKey() {
+        return registrationKey;
+    }
+
+    public void setRegistrationKey(String registrationKey) {
+        this.registrationKey = registrationKey;
     }
 
     @ApiModelProperty(required = true, value = "Status of the payment")
@@ -88,16 +107,6 @@ public class Payment {
 
     public void setAmount(Amount amount) {
         this.amount = amount;
-    }
-
-    @ApiModelProperty(value = "The payment's registration key in case of recurring payment. This is used by pay " +
-            "gateway like LINE Pay.")
-    public String getRegistrationKey() {
-        return registrationKey;
-    }
-
-    public void setRegistrationKey(String registrationKey) {
-        this.registrationKey = registrationKey;
     }
 
     @ApiModelProperty(value = "List of payment status done for the specific payment. If not empty, " +

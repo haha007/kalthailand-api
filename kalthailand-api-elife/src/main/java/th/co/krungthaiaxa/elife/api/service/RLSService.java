@@ -47,14 +47,11 @@ import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
 import static th.co.krungthaiaxa.elife.api.model.enums.PaymentStatus.NOT_PROCESSED;
 import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_MONTH;
 import static th.co.krungthaiaxa.elife.api.model.enums.PolicyStatus.VALIDATED;
-import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.ERROR;
-import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.SUCCESS;
+import static th.co.krungthaiaxa.elife.api.service.LinePayService.LINE_PAY_INTERNAL_ERROR;
 import static th.co.krungthaiaxa.elife.api.utils.ExcelUtils.*;
 
 @Service
 public class RLSService {
-    public static final String RLS_INTERNAL_ERROR = "9000";
-
     private final static Logger logger = LoggerFactory.getLogger(RLSService.class);
     private final static String COLLECTION_FILE_SHEET_NAME = "LFDISC6";
     private final static Integer COLLECTION_FILE_NUMBER_OF_COLUMNS = 6;
@@ -277,44 +274,30 @@ public class RLSService {
 
         if (payment.getRegistrationKey() == null) {
             // This should not happen since the registration key should always be found
-            deductionFile.addLine(getDeductionFileLine(collectionFileLine, RLS_INTERNAL_ERROR));
-            policyService.updatePayment(payment, amount, "THB", ERROR, LINE,
-                    Optional.empty(), Optional.empty(),
-                    Optional.of(RLS_INTERNAL_ERROR), Optional.of(ERROR_NO_REGISTRATION_KEY_FOUND));
+            deductionFile.addLine(getDeductionFileLine(collectionFileLine, LINE_PAY_INTERNAL_ERROR));
+            policyService.updatePaymentWithErrorStatus(payment, amount, "THB", LINE, LINE_PAY_INTERNAL_ERROR,
+                    ERROR_NO_REGISTRATION_KEY_FOUND);
+            return;
+        }
+
+        LinePayResponse linePayResponse;
+        try {
+            linePayResponse = linePayService.confirmPayment(payment.getRegistrationKey(), collectionFileLine.getPremiumAmount(), "THB");
+        } catch (IOException | RuntimeException e) {
+            logger.error("An error occured while trying to contact LinePay", e);
+            // An error occured while trying to contact LinePay
+            deductionFile.addLine(getDeductionFileLine(collectionFileLine, LINE_PAY_INTERNAL_ERROR));
+            policyService.updatePaymentWithErrorStatus(payment, amount, "THB", LINE, LINE_PAY_INTERNAL_ERROR,
+                    "Error while contacting Line Pay API. Payment may be successful. Error is [" + e.getMessage() + "].");
+            return;
+        }
+
+        if (linePayResponse.getReturnCode().equals("0000")) {
+            deductionFile.addLine(getDeductionFileLine(collectionFileLine, linePayResponse.getReturnCode()));
+            policyService.updatePayment(payment, amount, "THB", LINE, linePayResponse);
         } else {
-            try {
-                Optional<LinePayResponse> linePayResponse = linePayService.confirmPayment(payment.getRegistrationKey(), collectionFileLine.getPremiumAmount(), "THB");
-                if (linePayResponse.isPresent()) {
-                    if (linePayResponse.get().getReturnCode().equals("0000")) {
-                        deductionFile.addLine(getDeductionFileLine(collectionFileLine, linePayResponse.get().getReturnCode()));
-                        policyService.updatePayment(payment, amount, "THB", SUCCESS, LINE,
-                                Optional.of(linePayResponse.get().getInfo().getPayInfo().getCreditCardName()),
-                                Optional.of(linePayResponse.get().getInfo().getPayInfo().getMethod()),
-                                Optional.empty(), Optional.empty());
-                    } else {
-                        deductionFile.addLine(getDeductionFileLine(collectionFileLine, linePayResponse.get().getReturnCode()));
-                        policyService.updatePayment(payment, amount, "THB", ERROR, LINE,
-                                Optional.of(linePayResponse.get().getInfo().getPayInfo().getCreditCardName()),
-                                Optional.of(linePayResponse.get().getInfo().getPayInfo().getMethod()),
-                                Optional.of(linePayResponse.get().getReturnCode()),
-                                Optional.of(linePayResponse.get().getReturnMessage()));
-                    }
-                } else {
-                    // For some reason, couldn't get a clear response from Line Pay. But the payment may have gone through
-                    // This case should never happen
-                    deductionFile.addLine(getDeductionFileLine(collectionFileLine, RLS_INTERNAL_ERROR));
-                    policyService.updatePayment(payment, amount, "THB", ERROR, LINE,
-                            Optional.empty(), Optional.empty(),
-                            Optional.of(RLS_INTERNAL_ERROR), Optional.of("Unable to get proper response from Line Pay API. Payment may be successful"));
-                }
-            } catch (RuntimeException e) {
-                logger.error("An error occured while trying to contact LinePay", e);
-                // An error occured while trying to contact LinePay
-                deductionFile.addLine(getDeductionFileLine(collectionFileLine, RLS_INTERNAL_ERROR));
-                policyService.updatePayment(payment, amount, "THB", ERROR, LINE,
-                        Optional.empty(), Optional.empty(),
-                        Optional.of(RLS_INTERNAL_ERROR), Optional.of("Unable to contact Line Pay API. Payment is not successful"));
-            }
+            deductionFile.addLine(getDeductionFileLine(collectionFileLine, linePayResponse.getReturnCode()));
+            policyService.updatePayment(payment, amount, "THB", LINE, linePayResponse);
         }
     }
 

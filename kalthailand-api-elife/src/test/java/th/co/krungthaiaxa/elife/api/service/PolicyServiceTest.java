@@ -14,19 +14,16 @@ import th.co.krungthaiaxa.elife.api.model.Quote;
 
 import javax.inject.Inject;
 
-import static java.util.Optional.empty;
-import static java.util.Optional.of;
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static th.co.krungthaiaxa.elife.api.TestUtil.*;
+import static th.co.krungthaiaxa.elife.api.TestUtil.linePayResponse;
 import static th.co.krungthaiaxa.elife.api.exception.PolicyValidationException.emptyQuote;
 import static th.co.krungthaiaxa.elife.api.exception.PolicyValidationException.noneExistingQuote;
 import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
 import static th.co.krungthaiaxa.elife.api.model.enums.PaymentStatus.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.PolicyStatus.PENDING_PAYMENT;
-import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.ERROR;
-import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.SUCCESS;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiApplication.class)
@@ -83,8 +80,7 @@ public class PolicyServiceTest {
         Policy policy = getPolicy();
 
         Payment payment = policy.getPayments().get(0);
-        policyService.updatePayment(policy, "1234", empty(), SUCCESS, LINE, empty(), empty());
-        policyService.updatePayment(payment, 50.0, "THB", SUCCESS, LINE, empty(), empty(), empty(), empty());
+        policyService.updatePayment(payment, 50.0, "THB", LINE, linePayResponse("0000", "OK"));
         assertThat(policy.getDocuments()).hasSize(0);
     }
 
@@ -103,11 +99,10 @@ public class PolicyServiceTest {
         Payment payment2 = policy.getPayments().get(1);
         Payment payment3 = policy.getPayments().get(2);
 
-        policyService.updatePayment(policy, "1234", empty(), SUCCESS, LINE, empty(), empty());
-        policyService.updatePayment(payment1, 50.0, "THB", SUCCESS, LINE, empty(), empty(), empty(), empty());
-        policyService.updatePayment(payment1, 50.0, "THB", SUCCESS, LINE, empty(), empty(), empty(), empty());
-        policyService.updatePayment(payment2, 50.0, "THB", SUCCESS, LINE, empty(), empty(), empty(), empty());
-        policyService.updatePayment(payment3, 50.0, "THB", SUCCESS, LINE, empty(), empty(), empty(), empty());
+        policyService.updatePayment(payment1, 50.0, "THB", LINE, linePayResponse("0000", "OK"));
+        policyService.updatePayment(payment1, 50.0, "THB", LINE, linePayResponse("0000", "OK"));
+        policyService.updatePayment(payment2, 50.0, "THB", LINE, linePayResponse("0000", "OK"));
+        policyService.updatePayment(payment3, 50.0, "THB", LINE, linePayResponse("0000", "OK"));
 
         assertThat(policy.getDocuments()).hasSize(0);
     }
@@ -120,8 +115,7 @@ public class PolicyServiceTest {
         payment.getAmount().setValue(100.0);
         assertThat(payment.getStatus()).isEqualTo(NOT_PROCESSED);
 
-        policyService.updatePayment(policy, "1234", empty(), SUCCESS, LINE, empty(), empty());
-        policyService.updatePayment(payment, 50.0, "THB", ERROR, LINE, empty(), empty(), of("Error code"), of("Error msg"));
+        policyService.updatePayment(payment, 50.0, "THB", LINE, linePayResponse("Error code", "Error msg"));
         policy.getPayments().get(0);
 
         assertThat(payment.getEffectiveDate()).isNull();
@@ -139,12 +133,11 @@ public class PolicyServiceTest {
         payment.getAmount().setValue(100.0);
         assertThat(payment.getStatus()).isEqualTo(NOT_PROCESSED);
 
-        policyService.updatePayment(policy, "1234", empty(), SUCCESS, LINE, empty(), empty());
-        policyService.updatePayment(payment, 100.0, "THB", SUCCESS, LINE, empty(), empty(), empty(), empty());
+        policyService.updatePayment(payment, 100.0, "THB", LINE, linePayResponse("0000", "OK"));
 
         assertThat(payment.getEffectiveDate()).isEqualTo(payment.getDueDate());
         assertThat(payment.getPaymentInformations()).hasSize(1);
-        assertThat(payment.getPaymentInformations()).extracting("rejectionErrorMessage").containsNull();
+        assertThat(payment.getPaymentInformations()).extracting("rejectionErrorMessage").containsExactly("OK");
         assertThat(payment.getStatus()).isEqualTo(COMPLETED);
     }
 
@@ -156,13 +149,12 @@ public class PolicyServiceTest {
         payment.getAmount().setValue(100.0);
         assertThat(payment.getStatus()).isEqualTo(NOT_PROCESSED);
 
-        policyService.updatePayment(policy, "1234", empty(), SUCCESS, LINE, empty(), empty());
-        policyService.updatePayment(payment, 50.0, "THB", SUCCESS, LINE, empty(), empty(), empty(), empty());
-        policyService.updatePayment(payment, 50.0, "THB", SUCCESS, LINE, empty(), empty(), empty(), empty());
+        policyService.updatePayment(payment, 50.0, "THB", LINE, linePayResponse("0000", "OK"));
+        policyService.updatePayment(payment, 50.0, "THB", LINE, linePayResponse("0000", "OK"));
 
         assertThat(payment.getEffectiveDate()).isEqualTo(payment.getDueDate());
         assertThat(payment.getPaymentInformations()).hasSize(2);
-        assertThat(payment.getPaymentInformations()).extracting("rejectionErrorMessage").containsNull();
+        assertThat(payment.getPaymentInformations()).extracting("rejectionErrorMessage").containsExactly("OK", "OK");
         assertThat(payment.getStatus()).isEqualTo(COMPLETED);
     }
 
@@ -174,14 +166,13 @@ public class PolicyServiceTest {
         payment.getAmount().setValue(100.0);
         assertThat(payment.getStatus()).isEqualTo(NOT_PROCESSED);
 
-        policyService.updatePayment(policy, "1234", empty(), SUCCESS, LINE, empty(), empty());
-        policyService.updatePayment(payment, 50.0, "THB", SUCCESS, LINE, empty(), empty(), empty(), empty());
-        policyService.updatePayment(payment, 75.0, "THB", SUCCESS, LINE, empty(), empty(), empty(), empty());
-        policyService.updatePayment(payment, -25.0, "THB", SUCCESS, LINE, empty(), empty(), empty(), empty());
+        policyService.updatePayment(payment, 50.0, "THB", LINE, linePayResponse("0000", "OK"));
+        policyService.updatePayment(payment, 75.0, "THB", LINE, linePayResponse("0000", "OK"));
+        policyService.updatePayment(payment, -25.0, "THB", LINE, linePayResponse("0000", "OK"));
 
         assertThat(payment.getEffectiveDate()).isEqualTo(payment.getDueDate());
         assertThat(payment.getPaymentInformations()).hasSize(3);
-        assertThat(payment.getPaymentInformations()).extracting("rejectionErrorMessage").containsNull();
+        assertThat(payment.getPaymentInformations()).extracting("rejectionErrorMessage").containsOnly("OK", "OK", "OK");
         assertThat(payment.getStatus()).isEqualTo(COMPLETED);
     }
 
@@ -193,14 +184,13 @@ public class PolicyServiceTest {
         payment.getAmount().setValue(100.0);
         assertThat(payment.getStatus()).isEqualTo(NOT_PROCESSED);
 
-        policyService.updatePayment(policy, "1234", empty(), SUCCESS, LINE, empty(), empty());
-        policyService.updatePayment(payment, 50.0, "THB", SUCCESS, LINE, empty(), empty(), empty(), empty());
-        policyService.updatePayment(payment, 50.0, "THB", ERROR, LINE, empty(), empty(), empty(), empty());
-        policyService.updatePayment(payment, 50.0, "THB", SUCCESS, LINE, empty(), empty(), empty(), empty());
+        policyService.updatePayment(payment, 50.0, "THB", LINE, linePayResponse("0000", "OK"));
+        policyService.updatePayment(payment, 50.0, "THB", LINE, linePayResponse("someErrorCode", "someErrorMessage"));
+        policyService.updatePayment(payment, 50.0, "THB", LINE, linePayResponse("0000", "OK"));
 
         assertThat(payment.getEffectiveDate()).isEqualTo(payment.getDueDate());
         assertThat(payment.getPaymentInformations()).hasSize(3);
-        assertThat(payment.getPaymentInformations()).extracting("rejectionErrorMessage").containsNull();
+        assertThat(payment.getPaymentInformations()).extracting("rejectionErrorMessage").containsOnly("OK", "someErrorMessage", "OK");
         assertThat(payment.getStatus()).isEqualTo(COMPLETED);
     }
 
@@ -212,8 +202,7 @@ public class PolicyServiceTest {
         payment.getAmount().setValue(100.0);
         assertThat(payment.getStatus()).isEqualTo(NOT_PROCESSED);
 
-        policyService.updatePayment(policy, "1234", empty(), SUCCESS, LINE, empty(), empty());
-        policyService.updatePayment(payment, 100.0, "EUR", SUCCESS, LINE, empty(), empty(), empty(), empty());
+        policyService.updatePayment(payment, 100.0, "EUR", LINE, linePayResponse("0000", "OK"));
 
         assertThat(payment.getEffectiveDate()).isNull();
         assertThat(payment.getPaymentInformations()).hasSize(1);
@@ -229,12 +218,11 @@ public class PolicyServiceTest {
         payment.getAmount().setValue(100.0);
         assertThat(payment.getStatus()).isEqualTo(NOT_PROCESSED);
 
-        policyService.updatePayment(policy, "1234", empty(), SUCCESS, LINE, empty(), empty());
-        policyService.updatePayment(payment, 150.0, "THB", SUCCESS, LINE, empty(), empty(), empty(), empty());
+        policyService.updatePayment(payment, 150.0, "THB", LINE, linePayResponse("0000", "OK"));
 
         assertThat(payment.getEffectiveDate()).isEqualTo(payment.getDueDate());
         assertThat(payment.getPaymentInformations()).hasSize(1);
-        assertThat(payment.getPaymentInformations()).extracting("rejectionErrorMessage").containsNull();
+        assertThat(payment.getPaymentInformations()).extracting("rejectionErrorMessage").containsOnly("OK");
         assertThat(payment.getStatus()).isEqualTo(OVERPAID);
     }
 

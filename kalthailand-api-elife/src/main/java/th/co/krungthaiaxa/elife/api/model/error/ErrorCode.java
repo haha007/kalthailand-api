@@ -29,9 +29,10 @@ public class ErrorCode {
     public static final Function<String, Error> POLICY_IS_VALIDATED = msg -> new Error("0409", "The policy [" + msg + "] is already validated", "The policy [" + msg + "] is already validated");
     public static final Function<String, Error> POLICY_IS_NOT_PENDING_FOR_PAYMENT = msg -> new Error("0410", "The policy [" + msg + "] is not pending for payment and cannot be updated to pending for validation", "The policy [" + msg + "] is not pending for payment and cannot be updated to pending for validation");
     public static final Function<String, Error> ORDER_ID_NOT_PROVIDED = msg -> new Error("0411", "The order id was not provided", "The order id was not provided");
-    // Line token decryption
+    // Line
     public static final Error UNABLE_TO_DECRYPT = new Error("0501", "Unable to get your user ID", "The provided text could not be decrypted");
     public static final Error UNABLE_TO_GET_LINE_BC = new Error("0502", "Unable to get line bc", "The provided mid is not valid or have no line bc data along with input mid");
+    public static final Function<String, Error> UNABLE_TO_CONFIRM_AYMENT = msg -> new Error("0503", "Unable to confirm the payment", "Unable to confirm the payment. Error is [" + msg + "]");
     // Document
     public static final Error POLICY_DOES_NOT_CONTAIN_DOCUMENT = new Error("0601", "Unable to locate the document", "The given document id does not exist for the given policy");
     public static final Error UNABLE_TO_CREATE_ERECEIPT = new Error("0602", "Unable to create e-receipt", "Processing for create e-receipt fail");
@@ -45,8 +46,6 @@ public class ErrorCode {
     // SMS
     public static final Function<String, Error> UNABLE_TO_SEND_SMS = msg -> new Error("1001", "Unable to send SMS", "Error message is:" + msg);
     public static final Function<String, Error> SMS_IS_UNAVAILABLE = msg -> new Error("1002", "SMS is unavailable", "Error message is:" + msg);
-
-
 
 
     // ADMIN UI

@@ -12,7 +12,6 @@ import th.co.krungthaiaxa.elife.api.utils.JsonUtil;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
@@ -335,11 +334,11 @@ public class TestUtil {
         policy.getPayments().get(0).addPaymentInformation(paymentInformation);
     }
 
-    public static Optional<LinePayResponse> linePayResponse(String returnCode, String returnMessage) {
+    public static LinePayResponse linePayResponse(String returnCode, String returnMessage) {
         return linePayResponse(returnCode, returnMessage, "myTransactionId");
     }
 
-    public static Optional<LinePayResponse> linePayResponse(String returnCode, String returnMessage, String transactionId) {
+    public static LinePayResponse linePayResponse(String returnCode, String returnMessage, String transactionId) {
         LinePayResponsePaymentInfo payInfo = new LinePayResponsePaymentInfo();
         payInfo.setCreditCardName("myCreditCardName");
         payInfo.setMethod("myMethod");
@@ -353,6 +352,6 @@ public class TestUtil {
         linePayResponse.setReturnMessage(returnMessage);
         linePayResponse.setInfo(info);
 
-        return Optional.of(linePayResponse);
+        return linePayResponse;
     }
 }

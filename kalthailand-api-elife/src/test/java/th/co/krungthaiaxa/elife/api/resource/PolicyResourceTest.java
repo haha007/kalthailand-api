@@ -35,14 +35,12 @@ import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpMethod.PUT;
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.OK;
 import static th.co.krungthaiaxa.elife.api.TestUtil.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
 import static th.co.krungthaiaxa.elife.api.model.enums.PaymentStatus.NOT_PROCESSED;
 import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_YEAR;
-import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.ERROR;
-import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.SUCCESS;
-import static th.co.krungthaiaxa.elife.api.model.error.ErrorCode.PAYMENT_NOT_UPDATED_ERROR_DETAILS_NEEDED;
 import static th.co.krungthaiaxa.elife.api.model.error.ErrorCode.QUOTE_DOES_NOT_EXIST_OR_ACCESS_DENIED;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -108,51 +106,21 @@ public class PolicyResourceTest {
     }
 
     @Test
-    public void should_be_able_to_update_payment_without_error_message() throws IOException, URISyntaxException {
+    public void should_update_payment_transaction_id_and_not_the_status() throws IOException, URISyntaxException {
         Policy policy = getPolicy();
 
         URI paymentURI = new URI("http://localhost:" + port + "/policies/" + policy.getPolicyId() + "/update/status/pendingValidation");
         UriComponentsBuilder updatePaymentBuilder = UriComponentsBuilder.fromUri(paymentURI)
                 .queryParam("paymentId", policy.getPayments().get(0).getPaymentId())
                 .queryParam("orderId", "myOrderId")
-                .queryParam("transactionId", "myTransactionId")
-                .queryParam("value", 200.0)
-                .queryParam("currencyCode", "THB")
-                .queryParam("registrationKey", "something")
-                .queryParam("status", SUCCESS)
-                .queryParam("channelType", LINE)
-                .queryParam("creditCardName", "myCreditCardName")
-                .queryParam("paymentMethod", "myPaymentMethod");
+                .queryParam("transactionId", "myTransactionId");
         ResponseEntity<String> updatePaymentResponse = template.exchange(updatePaymentBuilder.toUriString(), PUT, null, String.class);
         assertThat(updatePaymentResponse.getStatusCode().value()).isEqualTo(OK.value());
 
         Policy updatedPolicy = getPolicyFromJSon(updatePaymentResponse.getBody());
         assertThat(updatePaymentResponse.getStatusCode().value()).isEqualTo(OK.value());
-        assertThat(updatedPolicy.getPayments().get(0).getStatus()).isNotEqualTo(NOT_PROCESSED);
-    }
-
-    @Test
-    public void should_not_be_able_to_update_payment_with_error_message_and_no_error_code() throws IOException, URISyntaxException {
-        Policy policy = getPolicy();
-
-        URI paymentURI = new URI("http://localhost:" + port + "/policies/" + policy.getPolicyId() + "/update/status/pendingValidation");
-        UriComponentsBuilder updatePaymentBuilder = UriComponentsBuilder.fromUri(paymentURI)
-                .queryParam("paymentId", policy.getPayments().get(0).getPaymentId())
-                .queryParam("orderId", "myOrderId")
-                .queryParam("value", 200.0)
-                .queryParam("currencyCode", "THB")
-                .queryParam("registrationKey", "something")
-                .queryParam("status", ERROR)
-                .queryParam("channelType", LINE)
-                .queryParam("creditCardName", "myCreditCardName")
-                .queryParam("paymentMethod", "myPaymentMethod")
-                .queryParam("errorMessage", "myErrorMessage");
-        ResponseEntity<String> updatePaymentResponse = template.exchange(updatePaymentBuilder.toUriString(), PUT, null, String.class);
-
-        Error error = getErrorFromJSon(updatePaymentResponse.getBody());
-        assertThat(updatePaymentResponse.getStatusCode().value()).isEqualTo(NOT_ACCEPTABLE.value());
-        assertThat(error.getCode()).isEqualTo(PAYMENT_NOT_UPDATED_ERROR_DETAILS_NEEDED.getCode());
-        assertThat(error.getCode()).isNotEqualTo(NOT_PROCESSED);
+        assertThat(updatedPolicy.getPayments().get(0).getStatus()).isEqualTo(NOT_PROCESSED);
+        assertThat(updatedPolicy.getPayments().get(0).getTransactionId()).isEqualTo("myTransactionId");
     }
 
     @Test
@@ -163,15 +131,7 @@ public class PolicyResourceTest {
         UriComponentsBuilder updatePaymentBuilder = UriComponentsBuilder.fromUri(paymentURI)
                 .queryParam("paymentId", policy.getPayments().get(0).getPaymentId())
                 .queryParam("orderId", "myOrderId")
-                .queryParam("value", 200.0)
-                .queryParam("currencyCode", "THB")
-                .queryParam("registrationKey", "something")
-                .queryParam("status", ERROR)
-                .queryParam("channelType", LINE)
-                .queryParam("creditCardName", "myCreditCardName")
-                .queryParam("paymentMethod", "myPaymentMethod")
-                .queryParam("errorCode", "myErrorCode")
-                .queryParam("errorMessage", "myErrorMessage");
+                .queryParam("transactionId", "myTransactionId");
         ResponseEntity<String> updatePaymentResponse = template.exchange(updatePaymentBuilder.toUriString(), PUT, null, String.class);
         assertThat(updatePaymentResponse.getStatusCode().value()).isEqualTo(OK.value());
 
