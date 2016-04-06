@@ -1,5 +1,6 @@
 package th.co.krungthaiaxa.elife.api.service;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.slf4j.Logger;
@@ -20,6 +21,7 @@ import th.co.krungthaiaxa.elife.api.repository.*;
 import javax.inject.Inject;
 import javax.mail.MessagingException;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
@@ -37,7 +39,7 @@ import static th.co.krungthaiaxa.elife.api.model.enums.PolicyStatus.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.RegistrationTypeName.THAI_ID_NUMBER;
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.ERROR;
 import static th.co.krungthaiaxa.elife.api.model.enums.SuccessErrorStatus.SUCCESS;
-import static th.co.krungthaiaxa.elife.api.service.LinePayService.LINE_PAY_INTERNAL_ERROR;
+import static th.co.krungthaiaxa.elife.api.service.LineService.LINE_PAY_INTERNAL_ERROR;
 
 @Service
 public class PolicyService {
@@ -49,6 +51,7 @@ public class PolicyService {
     private final PolicyNumberRepository policyNumberRepository;
     private final QuoteRepository quoteRepository;
     private final EmailService emailService;
+    private final LineService lineService;
     private final DocumentService documentService;
     private final SMSApiService smsApiService;
     private final ProductFactory productFactory;
@@ -60,7 +63,7 @@ public class PolicyService {
                          PolicyNumberRepository policyNumberRepository,
                          QuoteRepository quoteRepository,
                          EmailService emailService,
-                         DocumentService documentService,
+                         LineService lineService, DocumentService documentService,
                          SMSApiService smsApiService,
                          ProductFactory productFactory) {
         this.cdbRepository = cdbRepository;
@@ -69,6 +72,7 @@ public class PolicyService {
         this.policyNumberRepository = policyNumberRepository;
         this.quoteRepository = quoteRepository;
         this.emailService = emailService;
+        this.lineService = lineService;
         this.documentService = documentService;
         this.smsApiService = smsApiService;
         this.productFactory = productFactory;
@@ -209,13 +213,18 @@ public class PolicyService {
         try {
             Map<String, String> m = smsApiService.sendConfirmationMessage(policy);
             if (!m.get("STATUS").equals("0")) {
-                //return new ResponseEntity<>(SMS_IS_UNAVAILABLE, INTERNAL_SERVER_ERROR);
-                throw new ElifeException("SMS could not be sent");
+                logger.error(String.format("SMS could not be sent for policy id is [%1$s].", policy.getPolicyId()));
             }
         } catch (IOException e) {
             logger.error(String.format("Unable to send confirmation SMS message with policy id is [%1$s].", policy.getPolicyId()), e);
-            //return new ResponseEntity<>(UNABLE_TO_SEND_SMS, INTERNAL_SERVER_ERROR);
-            throw new ElifeException("Unexpected error", e);
+        }
+
+        // send push notification
+        try {
+            String pushContent = IOUtils.toString(this.getClass().getResourceAsStream("/pushnotification-content/policy-purchased-notification.txt"), Charset.forName("UTF-8"));
+            lineService.sendPushNotification(policy.getInsureds().get(0).getPerson().getLineId(), pushContent.replace("%POLICY_ID%", policy.getPolicyId()));
+        } catch (IOException e) {
+            logger.error(String.format("Unable to send push notification with policy id is [%1$s].", policy.getPolicyId()), e);
         }
 
         policy.setStatus(VALIDATED);

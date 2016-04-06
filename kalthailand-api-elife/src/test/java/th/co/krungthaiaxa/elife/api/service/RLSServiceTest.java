@@ -50,7 +50,7 @@ import static th.co.krungthaiaxa.elife.api.model.enums.PaymentStatus.NOT_PROCESS
 import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_MONTH;
 import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_YEAR;
 import static th.co.krungthaiaxa.elife.api.model.enums.PolicyStatus.VALIDATED;
-import static th.co.krungthaiaxa.elife.api.service.LinePayService.LINE_PAY_INTERNAL_ERROR;
+import static th.co.krungthaiaxa.elife.api.service.LineService.LINE_PAY_INTERNAL_ERROR;
 import static th.co.krungthaiaxa.elife.api.service.RLSService.ERROR_NO_REGISTRATION_KEY_FOUND;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -71,14 +71,14 @@ public class RLSServiceTest {
     @Inject
     private CollectionFileRepository collectionFileRepository;
     @Inject
-    private LinePayService linePayService;
+    private LineService lineService;
     @Inject
     private MongoTemplate mongoTemplate;
 
     @Before
     public void setup() {
-        linePayService = mock(LinePayService.class);
-        rlsService.setLinePayService(linePayService);
+        lineService = mock(LineService.class);
+        rlsService.setLineService(lineService);
     }
 
     @After
@@ -243,7 +243,7 @@ public class RLSServiceTest {
 
     @Test
     public void should_create_a_deduction_file_line_with_error_when_no_registration_key() throws IOException {
-        when(linePayService.confirmPayment(anyString(), anyDouble(), anyString())).thenReturn(linePayResponse("0000", "success"));
+        when(lineService.confirmPayment(anyString(), anyDouble(), anyString())).thenReturn(linePayResponse("0000", "success"));
 
         Policy policy = getValidatedPolicy(EVERY_MONTH);
         policy.getPayments().stream().forEach(payment -> payment.setRegistrationKey(null));
@@ -277,7 +277,7 @@ public class RLSServiceTest {
 
     @Test
     public void should_create_a_deduction_file_line_with_success() throws IOException {
-        when(linePayService.confirmPayment(anyString(), anyDouble(), anyString())).thenReturn(linePayResponse("0000", "success"));
+        when(lineService.confirmPayment(anyString(), anyDouble(), anyString())).thenReturn(linePayResponse("0000", "success"));
 
         Policy policy = getValidatedPolicy(EVERY_MONTH);
         CollectionFileLine collectionFileLine = collectionFileLine(policy, 100.0);
@@ -309,7 +309,7 @@ public class RLSServiceTest {
 
     @Test
     public void should_mark_collection_file_as_processed() throws IOException {
-        when(linePayService.confirmPayment(anyString(), anyDouble(), anyString())).thenReturn(linePayResponse("0000", "success"));
+        when(lineService.confirmPayment(anyString(), anyDouble(), anyString())).thenReturn(linePayResponse("0000", "success"));
         Policy policy = getValidatedPolicy(EVERY_MONTH);
 
         CollectionFile collectionFile = getValidatedCollectionFile(
@@ -326,7 +326,7 @@ public class RLSServiceTest {
 
     @Test
     public void should_process_collection_file() throws IOException {
-        when(linePayService.confirmPayment(anyString(), anyDouble(), anyString())).thenReturn(linePayResponse("0000", "success"));
+        when(lineService.confirmPayment(anyString(), anyDouble(), anyString())).thenReturn(linePayResponse("0000", "success"));
 
         Policy policy1 = getValidatedPolicy(EVERY_MONTH);
         Policy policy2 = getValidatedPolicy(EVERY_MONTH);
@@ -358,7 +358,7 @@ public class RLSServiceTest {
 
     @Test
     public void should_create_deduction_file_with_proper_header() throws IOException, InvalidFormatException {
-        when(linePayService.confirmPayment(anyString(), anyDouble(), anyString())).thenReturn(linePayResponse("0000", "success"));
+        when(lineService.confirmPayment(anyString(), anyDouble(), anyString())).thenReturn(linePayResponse("0000", "success"));
         Policy policy = getValidatedPolicy(EVERY_MONTH);
 
         CollectionFile collectionFile = getValidatedCollectionFile(
@@ -383,7 +383,7 @@ public class RLSServiceTest {
 
     @Test
     public void should_create_deduction_file() throws IOException, InvalidFormatException {
-        when(linePayService.confirmPayment(anyString(), anyDouble(), anyString())).thenReturn(linePayResponse("0000", "success"));
+        when(lineService.confirmPayment(anyString(), anyDouble(), anyString())).thenReturn(linePayResponse("0000", "success"));
         Policy policy1 = getValidatedPolicy(EVERY_MONTH);
         Policy policy2 = getValidatedPolicy(EVERY_MONTH);
 

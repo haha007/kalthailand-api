@@ -3,6 +3,7 @@ package th.co.krungthaiaxa.elife.api.service;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -20,7 +21,6 @@ import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static th.co.krungthaiaxa.elife.api.TestUtil.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
@@ -29,26 +29,26 @@ import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
 @SpringApplicationConfiguration(classes = KalApiApplication.class)
 @WebAppConfiguration
 @ActiveProfiles("test")
-public class LinePayServiceTest {
+public class LineServiceTest {
     @Inject
     private PolicyService policyService;
     @Inject
     private QuoteService quoteService;
     @Inject
-    private LinePayService linePayService;
+    private LineService lineService;
 
     @Before
     public void setup() {
-        linePayService = mock(LinePayService.class);
+        lineService = Mockito.mock(LineService.class);
     }
 
     @Test
     public void should_book_a_payment() throws IOException {
-        when(linePayService.bookPayment(anyString(), any(), anyString(), anyString())).thenReturn(linePayResponse("0000", "success", "123"));
+        when(lineService.bookPayment(anyString(), any(), anyString(), anyString())).thenReturn(linePayResponse("0000", "success", "123"));
 
         Policy policy = getPolicy();
         Amount amount = policy.getPayments().get(0).getAmount();
-        LinePayResponse linePayBookingResponse = linePayService.bookPayment("123", policy, amount.getValue().toString(), amount.getCurrencyCode());
+        LinePayResponse linePayBookingResponse = lineService.bookPayment("123", policy, amount.getValue().toString(), amount.getCurrencyCode());
         assertThat(linePayBookingResponse.getReturnCode()).isEqualTo("0000");
         assertThat(linePayBookingResponse.getReturnMessage()).isEqualTo("success");
         assertThat(linePayBookingResponse.getInfo().getTransactionId()).isEqualTo("123");
@@ -56,13 +56,13 @@ public class LinePayServiceTest {
 
     @Test
     public void should_confirm_a_payment() throws IOException {
-        when(linePayService.bookPayment(anyString(), any(), anyString(), anyString())).thenReturn(linePayResponse("0000", "success", "123"));
-        when(linePayService.confirmPayment("123", 100.0, "THB")).thenReturn(linePayResponse("0000", "success"));
+        when(lineService.bookPayment(anyString(), any(), anyString(), anyString())).thenReturn(linePayResponse("0000", "success", "123"));
+        when(lineService.confirmPayment("123", 100.0, "THB")).thenReturn(linePayResponse("0000", "success"));
 
         Policy policy = getPolicy();
         Amount amount = policy.getPayments().get(0).getAmount();
-        LinePayResponse linePayBookingResponse = linePayService.bookPayment("123", policy, amount.getValue().toString(), amount.getCurrencyCode());
-        LinePayResponse linePayConfirmingResponse = linePayService.confirmPayment(linePayBookingResponse.getInfo().getTransactionId(), 100.0, "THB");
+        LinePayResponse linePayBookingResponse = lineService.bookPayment("123", policy, amount.getValue().toString(), amount.getCurrencyCode());
+        LinePayResponse linePayConfirmingResponse = lineService.confirmPayment(linePayBookingResponse.getInfo().getTransactionId(), 100.0, "THB");
         assertThat(linePayConfirmingResponse.getReturnCode()).isEqualTo("0000");
         assertThat(linePayConfirmingResponse.getReturnMessage()).isEqualTo("success");
     }

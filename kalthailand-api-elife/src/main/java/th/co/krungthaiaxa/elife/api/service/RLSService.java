@@ -47,7 +47,7 @@ import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
 import static th.co.krungthaiaxa.elife.api.model.enums.PaymentStatus.NOT_PROCESSED;
 import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_MONTH;
 import static th.co.krungthaiaxa.elife.api.model.enums.PolicyStatus.VALIDATED;
-import static th.co.krungthaiaxa.elife.api.service.LinePayService.LINE_PAY_INTERNAL_ERROR;
+import static th.co.krungthaiaxa.elife.api.service.LineService.LINE_PAY_INTERNAL_ERROR;
 import static th.co.krungthaiaxa.elife.api.utils.ExcelUtils.*;
 
 @Service
@@ -67,7 +67,7 @@ public class RLSService {
     private final PaymentRepository paymentRepository;
     private final PolicyRepository policyRepository;
     private final PolicyService policyService;
-    private LinePayService linePayService;
+    private LineService lineService;
 
     private Function<PeriodicityCode, String> paymentMode = periodicityCode -> {
         if (periodicityCode.equals(PeriodicityCode.EVERY_YEAR)) {
@@ -82,12 +82,12 @@ public class RLSService {
     };
 
     @Inject
-    public RLSService(CollectionFileRepository collectionFileRepository, PaymentRepository paymentRepository, PolicyRepository policyRepository, PolicyService policyService, LinePayService linePayService) {
+    public RLSService(CollectionFileRepository collectionFileRepository, PaymentRepository paymentRepository, PolicyRepository policyRepository, PolicyService policyService, LineService lineService) {
         this.collectionFileRepository = collectionFileRepository;
         this.paymentRepository = paymentRepository;
         this.policyRepository = policyRepository;
         this.policyService = policyService;
-        this.linePayService = linePayService;
+        this.lineService = lineService;
     }
 
     public void importCollectionFile(InputStream is) {
@@ -284,7 +284,7 @@ public class RLSService {
 
         LinePayResponse linePayResponse;
         try {
-            linePayResponse = linePayService.confirmPayment(payment.getRegistrationKey(), collectionFileLine.getPremiumAmount(), payment.getAmount().getCurrencyCode());
+            linePayResponse = lineService.confirmPayment(payment.getRegistrationKey(), collectionFileLine.getPremiumAmount(), payment.getAmount().getCurrencyCode());
         } catch (IOException | RuntimeException e) {
             logger.error("An error occured while trying to contact LinePay", e);
             // An error occured while trying to contact LinePay
@@ -348,7 +348,7 @@ public class RLSService {
         }
     }
 
-    public void setLinePayService(LinePayService linePayService) {
-        this.linePayService = linePayService;
+    public void setLineService(LineService lineService) {
+        this.lineService = lineService;
     }
 }

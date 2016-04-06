@@ -13,7 +13,7 @@ import th.co.krungthaiaxa.elife.api.model.enums.ChannelType;
 import th.co.krungthaiaxa.elife.api.model.enums.PolicyStatus;
 import th.co.krungthaiaxa.elife.api.model.error.Error;
 import th.co.krungthaiaxa.elife.api.model.line.LinePayResponse;
-import th.co.krungthaiaxa.elife.api.service.LinePayService;
+import th.co.krungthaiaxa.elife.api.service.LineService;
 import th.co.krungthaiaxa.elife.api.service.PolicyService;
 import th.co.krungthaiaxa.elife.api.service.QuoteService;
 import th.co.krungthaiaxa.elife.api.utils.JsonUtil;
@@ -35,13 +35,13 @@ import static th.co.krungthaiaxa.elife.api.utils.JsonUtil.getJson;
 @Api(value = "Policies")
 public class PolicyResource {
     private final static Logger logger = LoggerFactory.getLogger(PolicyResource.class);
-    private final LinePayService linePayService;
+    private final LineService lineService;
     private final PolicyService policyService;
     private final QuoteService quoteService;
 
     @Inject
-    public PolicyResource(LinePayService linePayService, PolicyService policyService, QuoteService quoteService) {
-        this.linePayService = linePayService;
+    public PolicyResource(LineService lineService, PolicyService policyService, QuoteService quoteService) {
+        this.lineService = lineService;
         this.policyService = policyService;
         this.quoteService = quoteService;
     }
@@ -195,7 +195,7 @@ public class PolicyResource {
         logger.info("Will try to confirm payment with ID [" + payment.getPaymentId() + "] and transation ID [" + payment.getTransactionId() + "] on the policy with ID [" + policyId + "]");
         LinePayResponse linePayResponse;
         try {
-            linePayResponse = linePayService.confirmPayment(payment.getTransactionId(), payment.getAmount().getValue(), payment.getAmount().getCurrencyCode());
+            linePayResponse = lineService.confirmPayment(payment.getTransactionId(), payment.getAmount().getValue(), payment.getAmount().getCurrencyCode());
         } catch (RuntimeException | IOException e) {
             logger.error("Unable to confirm the payment with ID [" + payment.getPaymentId() + "] in the policy with ID [" + policyId + "]", e);
             return new ResponseEntity<>(UNABLE_TO_CONFIRM_AYMENT.apply(e.getMessage()), NOT_ACCEPTABLE);
