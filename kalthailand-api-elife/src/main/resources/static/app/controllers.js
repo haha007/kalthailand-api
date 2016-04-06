@@ -94,6 +94,7 @@
             PolicyDetail.get({id: $scope.policyID},
                 function (successResponse) {
                     $scope.errorMessage = null;
+                    $scope.successMessage = null;
                     $scope.policyDetail = successResponse;
                     if (successResponse.premiumsData.product10ECPremium) {
                         $scope.sumInsured = successResponse.premiumsData.product10ECPremium.sumInsured.value + " " + successResponse.premiumsData.product10ECPremium.sumInsured.currencyCode;
@@ -116,6 +117,7 @@
                     }
                 },
                 function (errorResponse) {
+                    $scope.successMessage = null;
                     $scope.errorMessage = errorResponse.data.userMessage;
                     $scope.policyDetail = null;
                     $scope.annualPremium = null;
