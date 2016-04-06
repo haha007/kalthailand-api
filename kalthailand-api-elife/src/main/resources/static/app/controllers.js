@@ -52,13 +52,13 @@
             newItem.file = $scope.file;
 
             newItem.$save()
-                .then(function (resp) {
+                .then(function (successResponse) {
                     // For successfully state
                     $scope.errorMessage = null;
                 })
-                .catch(function (resp) {
+                .catch(function (errorResponse) {
                     // For error state
-                    $scope.errorMessage = resp.data.userMessage;
+                    $scope.errorMessage = errorResponse.data.userMessage;
                 });
         }
     });
@@ -69,13 +69,16 @@
                 url: 'policies/' + policyNumber + '/update/status/validated',
                 method: 'PUT'
             })
-                .then(
-                    function (successResponse) {
-                        alert("Policy has been validated");
-                    },
-                    function (errorResponse) {
-                        alert("Policy has NOT been validated");
-                    });
+            .then(
+                function (successResponse) {
+                    $scope.policyDetail = null;
+                    $scope.successMessage = "Policy [" + successResponse.data.policyId + "] has been validated";
+                },
+                function (errorResponse) {
+                    console.log(errorResponse);
+                    $scope.policyDetail = null;
+                    $scope.errorMessage = errorResponse.data.userMessage;
+                });
         };
 
         $scope.search = function (event) {

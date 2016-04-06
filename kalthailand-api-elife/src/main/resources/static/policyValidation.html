@@ -81,6 +81,10 @@
                 <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
                 Unable to validate this policy. {{ errorMessage }}
             </div>
+            <div class="alert alert-success" role="alert" ng-show="successMessage">
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                {{ successMessage }}
+            </div>
             <form class="form-horizontal">
                 <div class="row">
                     <div class="col-sm-6">
