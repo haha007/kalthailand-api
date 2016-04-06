@@ -53,8 +53,8 @@ public class LineService {
         linePushNotificationRequest.setContent(linePushNotificationContentRequest);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Content-Type", "application/json; charset=UTF-8");
         headers.set("X-Line-ChannelToken", lineAppNotificationAccessToken);
+        headers.set("Content-Type", "application/json; charset=UTF-8");
 
         HttpEntity<String> entity = new HttpEntity<>(new String(JsonUtil.getJson(linePushNotificationRequest)), headers);
 
