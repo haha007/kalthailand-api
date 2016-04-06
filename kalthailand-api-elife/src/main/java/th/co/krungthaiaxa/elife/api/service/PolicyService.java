@@ -211,7 +211,8 @@ public class PolicyService {
 
         // Send SMS
         try {
-            Map<String, String> m = smsApiService.sendConfirmationMessage(policy);
+            String smsContent = IOUtils.toString(this.getClass().getResourceAsStream("/sms-content/policy-purchased-sms.txt"), Charset.forName("UTF-8"));
+            Map<String, String> m = smsApiService.sendConfirmationMessage(policy, smsContent.replace("%POLICY_ID%", policy.getPolicyId()));
             if (!m.get("STATUS").equals("0")) {
                 logger.error(String.format("SMS could not be sent for policy id is [%1$s].", policy.getPolicyId()));
             }
