@@ -195,9 +195,9 @@ public class PolicyResource {
         logger.info("Will try to confirm payment with ID [" + payment.getPaymentId() + "] and transation ID [" + payment.getTransactionId() + "] on the policy with ID [" + policyId + "]");
         LinePayResponse linePayResponse;
         try {
-            linePayResponse = linePayService.confirmPayment(payment.getRegistrationKey(), payment.getAmount().getValue(), payment.getAmount().getCurrencyCode());
-        } catch (IOException e) {
-            logger.error("Unable to confirm the payment with ID [" + payment.getPaymentId() + "] in the policy with ID [" + policyId + "]");
+            linePayResponse = linePayService.confirmPayment(payment.getTransactionId(), payment.getAmount().getValue(), payment.getAmount().getCurrencyCode());
+        } catch (RuntimeException | IOException e) {
+            logger.error("Unable to confirm the payment with ID [" + payment.getPaymentId() + "] in the policy with ID [" + policyId + "]", e);
             return new ResponseEntity<>(UNABLE_TO_CONFIRM_AYMENT.apply(e.getMessage()), NOT_ACCEPTABLE);
         }
 

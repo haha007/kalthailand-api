@@ -59,7 +59,7 @@ public class LinePayService {
         return getBookingResponseFromJSon(response.getBody());
     }
 
-    public LinePayResponse confirmPayment(String registrationKey, Double amount, String currency) throws IOException {
+    public LinePayResponse confirmPayment(String transactionId, Double amount, String currency) throws IOException {
         logger.info("Confirming payment");
         RestTemplate restTemplate = new RestTemplate();
         LinePayConfirmingRequest linePayConfirmingRequest = new LinePayConfirmingRequest();
@@ -73,7 +73,7 @@ public class LinePayService {
 
         HttpEntity<String> entity = new HttpEntity<>(new String(JsonUtil.getJson(linePayConfirmingRequest)), headers);
 
-        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(linePayUrl + "/" + registrationKey + "/confirm");
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(linePayUrl + "/" + transactionId + "/confirm");
         ResponseEntity<String> response = restTemplate.exchange(builder.toUriString(), POST, entity, String.class);
         return getBookingResponseFromJSon(response.getBody());
     }
