@@ -46,7 +46,7 @@ public class SMSApiServiceTest {
         Policy pol = getPolicy();
         pol.getInsureds().get(0).getPerson().getMobilePhoneNumber().setNumber("0863878803");
         pol.setPolicyId("555-55555555");
-        m = smsApiService.sendConfirmationMessage(pol);
+        m = smsApiService.sendConfirmationMessage(pol, "messageContent");
         assertThat(m.get("STATUS")).contains("0");
     }
 
