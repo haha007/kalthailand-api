@@ -71,21 +71,20 @@
             })
             .then(
                 function (successResponse) {
-                    $scope.policyDetail = null;
-                    $scope.successMessage = null;
-                    $scope.annualPremium = null;
-                    $scope.sumInsured = null;
                     $scope.successMessage = "Policy [" + successResponse.data.policyId + "] has been validated";
                     $scope.errorMessage = null;
-                },
-                function (errorResponse) {
-                    console.log(errorResponse);
                     $scope.policyDetail = null;
                     $scope.successMessage = null;
                     $scope.annualPremium = null;
                     $scope.sumInsured = null;
+                },
+                function (errorResponse) {
                     $scope.successMessage = null;
                     $scope.errorMessage = errorResponse.data.userMessage;
+                    $scope.policyDetail = null;
+                    $scope.successMessage = null;
+                    $scope.annualPremium = null;
+                    $scope.sumInsured = null;
                 });
         };
 
