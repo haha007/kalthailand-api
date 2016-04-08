@@ -1,12 +1,15 @@
 package th.co.krungthaiaxa.elife.api.model.line;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class LinePayResponseInfo {
     private String orderId;
     private String transactionId;
     private String paymentAccessToken;
     private String regKey;
     private LinePayResponsePayment paymentUrl = new LinePayResponsePayment();
-    private LinePayResponsePaymentInfo payInfo = new LinePayResponsePaymentInfo();
+    private List<LinePayResponsePaymentInfo> payInfo = new ArrayList<>();
 
     public String getOrderId() {
         return orderId;
@@ -48,11 +51,11 @@ public class LinePayResponseInfo {
         this.paymentUrl = paymentUrl;
     }
 
-    public LinePayResponsePaymentInfo getPayInfo() {
+    public List<LinePayResponsePaymentInfo> getPayInfo() {
         return payInfo;
     }
 
-    public void setPayInfo(LinePayResponsePaymentInfo payInfo) {
-        this.payInfo = payInfo;
+    public void addPayInfo(LinePayResponsePaymentInfo payInfo) {
+        this.payInfo.add(payInfo);
     }
 }

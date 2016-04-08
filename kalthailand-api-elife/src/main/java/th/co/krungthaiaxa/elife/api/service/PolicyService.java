@@ -145,8 +145,8 @@ public class PolicyService {
                 linePayResponse.getReturnCode(),
                 linePayResponse.getReturnMessage(),
                 linePayResponse.getInfo().getRegKey(),
-                linePayResponse.getInfo().getPayInfo().getCreditCardName(),
-                linePayResponse.getInfo().getPayInfo().getMethod());
+                linePayResponse.getInfo().getPayInfo().get(0).getCreditCardName(),
+                linePayResponse.getInfo().getPayInfo().get(0).getMethod());
     }
 
     public void updateRegistrationForAllNotProcessedPayment(Policy policy, String registrationKey) {

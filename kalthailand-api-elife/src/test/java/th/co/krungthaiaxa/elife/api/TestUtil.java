@@ -345,7 +345,7 @@ public class TestUtil {
 
         LinePayResponseInfo info = new LinePayResponseInfo();
         info.setTransactionId(transactionId);
-        info.setPayInfo(payInfo);
+        info.addPayInfo(payInfo);
 
         LinePayResponse linePayResponse = new LinePayResponse();
         linePayResponse.setReturnCode(returnCode);
