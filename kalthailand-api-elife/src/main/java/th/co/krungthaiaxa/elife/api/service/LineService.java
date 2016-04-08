@@ -61,10 +61,16 @@ public class LineService {
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(lineAppNotificationUrl);
         RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<String> response = restTemplate.exchange(builder.toUriString(), POST, entity, String.class);
+        ResponseEntity<String> response;
+        try {
+            response = restTemplate.exchange(builder.toUriString(), POST, entity, String.class);
+        } catch (RuntimeException e) {
+            throw new IOException("Unable to send push notification", e);
+        }
         if (!response.getStatusCode().equals(OK)) {
             throw new IOException("Line's repsonse for push notification is [" + response.getStatusCode() + "]. Response body is [" + response.getBody() + "]");
         }
+        logger.info("Notificartion is sent with success");
     }
 
     public LinePayResponse bookPayment(String mid, Policy policy, String amount, String currency) throws IOException {
@@ -90,11 +96,17 @@ public class LineService {
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(linePayUrl + "/request");
         RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<String> response = restTemplate.exchange(builder.toUriString(), POST, entity, String.class);
+        ResponseEntity<String> response;
+        try {
+            response = restTemplate.exchange(builder.toUriString(), POST, entity, String.class);
+        } catch (RuntimeException e) {
+            throw new IOException("Unable to book payment", e);
+        }
         if (!response.getStatusCode().equals(OK)) {
             throw new IOException("Line's repsonse for booking payment is [" + response.getStatusCode() + "]. Response body is [" + response.getBody() + "]");
         }
 
+        logger.info("Payment is booked with success");
         return getBookingResponseFromJSon(response.getBody());
     }
 
@@ -113,11 +125,17 @@ public class LineService {
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(linePayUrl + "/" + transactionId + "/confirm");
         RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<String> response = restTemplate.exchange(builder.toUriString(), POST, entity, String.class);
+        ResponseEntity<String> response;
+        try {
+            response = restTemplate.exchange(builder.toUriString(), POST, entity, String.class);
+        } catch (RuntimeException e) {
+            throw new IOException("Unable to confirm payment", e);
+        }
         if (!response.getStatusCode().equals(OK)) {
             throw new IOException("Line's repsonse for confirming payment is [" + response.getStatusCode() + "]. Response body is [" + response.getBody() + "]");
         }
 
+        logger.info("Payment is confirmed with success");
         return getBookingResponseFromJSon(response.getBody());
     }
 
