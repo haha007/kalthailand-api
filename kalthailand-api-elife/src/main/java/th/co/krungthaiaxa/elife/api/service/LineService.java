@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpStatus.OK;
 
 @Service
 public class LineService {
@@ -60,7 +61,10 @@ public class LineService {
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(lineAppNotificationUrl);
         RestTemplate restTemplate = new RestTemplate();
-        restTemplate.exchange(builder.toUriString(), POST, entity, String.class);
+        ResponseEntity<String> response = restTemplate.exchange(builder.toUriString(), POST, entity, String.class);
+        if (!response.getStatusCode().equals(OK)) {
+            throw new IOException("Line's repsonse for push notification is [" + response.getStatusCode() + "]. Response body is [" + response.getBody() + "]");
+        }
     }
 
     public LinePayResponse bookPayment(String mid, Policy policy, String amount, String currency) throws IOException {
@@ -87,6 +91,10 @@ public class LineService {
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(linePayUrl + "/request");
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> response = restTemplate.exchange(builder.toUriString(), POST, entity, String.class);
+        if (!response.getStatusCode().equals(OK)) {
+            throw new IOException("Line's repsonse for booking payment is [" + response.getStatusCode() + "]. Response body is [" + response.getBody() + "]");
+        }
+
         return getBookingResponseFromJSon(response.getBody());
     }
 
@@ -106,6 +114,10 @@ public class LineService {
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(linePayUrl + "/" + transactionId + "/confirm");
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> response = restTemplate.exchange(builder.toUriString(), POST, entity, String.class);
+        if (!response.getStatusCode().equals(OK)) {
+            throw new IOException("Line's repsonse for confirming payment is [" + response.getStatusCode() + "]. Response body is [" + response.getBody() + "]");
+        }
+
         return getBookingResponseFromJSon(response.getBody());
     }
 
