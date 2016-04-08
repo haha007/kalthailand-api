@@ -65,6 +65,7 @@
 
     app.controller('ValidationController', function ($rootScope, $scope, $http, PolicyDetail) {
         $scope.onClickValidate = function (policyNumber) {
+            $scope.isValidating = true;
             $http({
                 url: 'policies/' + policyNumber + '/update/status/validated',
                 method: 'PUT'
@@ -74,17 +75,17 @@
                     $scope.successMessage = "Policy [" + successResponse.data.policyId + "] has been validated";
                     $scope.errorMessage = null;
                     $scope.policyDetail = null;
-                    $scope.successMessage = null;
                     $scope.annualPremium = null;
                     $scope.sumInsured = null;
+                    $scope.isValidating = null;
                 },
                 function (errorResponse) {
                     $scope.successMessage = null;
                     $scope.errorMessage = errorResponse.data.userMessage;
                     $scope.policyDetail = null;
-                    $scope.successMessage = null;
                     $scope.annualPremium = null;
                     $scope.sumInsured = null;
+                    $scope.isValidating = null;
                 });
         };
 
