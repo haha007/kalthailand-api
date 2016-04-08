@@ -85,7 +85,7 @@
                 <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
                 {{ successMessage }}
             </div>
-            <form class="form-horizontal">
+            <form class="form-horizontal" ng-show="policyDetail">
                 <div class="row">
                     <div class="col-sm-6">
                         <div class="form-group">
@@ -170,7 +170,7 @@
                     <form class="form">
                         <div class="form-group">
                             <div class="col-sm-offset-4 col-sm-8">
-                                <button type="button" ng-click="onClickValidate(policyDetail.policyId)" ng-disabled="isValidating" class="btn btn-default btn-danger">Validate</button>
+                                <button type="button" ng-click="onClickValidate(policyDetail.policyId)" ng-disabled="isValidating" ng-show="policyDetail" class="btn btn-default btn-danger">Validate</button>
                             </div>
                         </div>
                     </form>
