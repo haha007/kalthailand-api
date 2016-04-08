@@ -198,12 +198,12 @@ public class PolicyResource {
             linePayResponse = lineService.confirmPayment(payment.getTransactionId(), payment.getAmount().getValue(), payment.getAmount().getCurrencyCode());
         } catch (RuntimeException | IOException e) {
             logger.error("Unable to confirm the payment in the policy with ID [" + policyId + "]", e);
-            return new ResponseEntity<>(UNABLE_TO_CONFIRM_AYMENT.apply(e.getMessage()), NOT_ACCEPTABLE);
+            return new ResponseEntity<>(UNABLE_TO_CONFIRM_PAYMENT.apply(e.getMessage()), NOT_ACCEPTABLE);
         }
 
         if (!linePayResponse.getReturnCode().equals("0000")) {
             String msg = "Confirming payment didn't go through. Error code is [" + linePayResponse.getReturnCode() + "], error message is [" + linePayResponse.getReturnMessage() + "]";
-            return new ResponseEntity<>(UNABLE_TO_CONFIRM_AYMENT.apply(msg), NOT_ACCEPTABLE);
+            return new ResponseEntity<>(UNABLE_TO_CONFIRM_PAYMENT.apply(msg), NOT_ACCEPTABLE);
         }
 
         // Update the payment if confirm is success

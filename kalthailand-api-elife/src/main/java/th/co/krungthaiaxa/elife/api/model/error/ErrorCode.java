@@ -30,7 +30,7 @@ public class ErrorCode {
     // Line
     public static final Error UNABLE_TO_DECRYPT = new Error("0501", "Unable to get your user ID", "The provided text could not be decrypted");
     public static final Error UNABLE_TO_GET_LINE_BC = new Error("0502", "Unable to get line bc", "The provided mid is not valid or have no line bc data along with input mid");
-    public static final Function<String, Error> UNABLE_TO_CONFIRM_AYMENT = msg -> new Error("0503", "Unable to confirm the payment. Error is [" + msg + "]", "Unable to confirm the payment. Error is [" + msg + "]");
+    public static final Function<String, Error> UNABLE_TO_CONFIRM_PAYMENT = msg -> new Error("0503", "Unable to confirm the payment. Error is [" + msg + "]", "Unable to confirm the payment. Error is [" + msg + "]");
     // Document
     public static final Error POLICY_DOES_NOT_CONTAIN_DOCUMENT = new Error("0601", "Unable to locate the document", "The given document id does not exist for the given policy");
     public static final Error UNABLE_TO_DOWNLOAD_DOCUMENT = new Error("0602", "Unable to download the document", "Processing for create e-receipt fail");
