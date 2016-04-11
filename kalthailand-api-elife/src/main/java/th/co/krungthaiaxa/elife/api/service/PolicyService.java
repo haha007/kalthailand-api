@@ -183,6 +183,32 @@ public class PolicyService {
             }
         }
 
+        // Send Email
+        try {
+            emailService.sendPolicyBookedEmail(policy);
+        } catch (IOException | MessagingException e) {
+            logger.error(String.format("Unable to send email for booking policy [%1$s].", policy.getPolicyId()), e);
+        }
+
+        // Send SMS
+        try {
+            String smsContent = IOUtils.toString(this.getClass().getResourceAsStream("/sms-content/policy-booked-sms.txt"), Charset.forName("UTF-8"));
+            Map<String, String> m = smsApiService.sendConfirmationMessage(policy, smsContent.replace("%POLICY_ID%", policy.getPolicyId()));
+            if (!m.get("STATUS").equals("0")) {
+                logger.error(String.format("SMS for policy booking could not be sent on policy [%1$s].", policy.getPolicyId()));
+            }
+        } catch (IOException e) {
+            logger.error(String.format("Unable to send policy booking SMS message on policy [%1$s].", policy.getPolicyId()), e);
+        }
+
+        // Send push notification
+        try {
+            String pushContent = IOUtils.toString(this.getClass().getResourceAsStream("/pushnotification-content/policy-booked-notification.txt"), Charset.forName("UTF-8"));
+            lineService.sendPushNotification(pushContent.replace("%POLICY_ID%", policy.getPolicyId()), policy.getInsureds().get(0).getPerson().getLineId());
+        } catch (IOException e) {
+            logger.error(String.format("Unable to send push notification for policy booking on policy [%1$s].", policy.getPolicyId()), e);
+        }
+
         policy.setStatus(PENDING_VALIDATION);
         policyRepository.save(policy);
     }
@@ -206,7 +232,7 @@ public class PolicyService {
         try {
             emailService.sendEreceiptEmail(policy, Pair.of(Base64.getDecoder().decode(documentDownload.getContent()), "e-receipt_" + policy.getPolicyId() + ".pdf"));
         } catch (IOException | MessagingException e) {
-            logger.error(String.format("Unable to send e-receipt document while sending email with policy id is [%1$s].", policy.getPolicyId()), e);
+            logger.error(String.format("Unable to send email for validation of policy [%1$s].", policy.getPolicyId()), e);
         }
 
         // Send SMS
@@ -214,10 +240,10 @@ public class PolicyService {
             String smsContent = IOUtils.toString(this.getClass().getResourceAsStream("/sms-content/policy-purchased-sms.txt"), Charset.forName("UTF-8"));
             Map<String, String> m = smsApiService.sendConfirmationMessage(policy, smsContent.replace("%POLICY_ID%", policy.getPolicyId()));
             if (!m.get("STATUS").equals("0")) {
-                logger.error(String.format("SMS could not be sent for policy id is [%1$s].", policy.getPolicyId()));
+                logger.error(String.format("SMS for policy validation could not be sent on policy [%1$s].", policy.getPolicyId()));
             }
         } catch (IOException e) {
-            logger.error(String.format("Unable to send confirmation SMS message with policy id is [%1$s].", policy.getPolicyId()), e);
+            logger.error(String.format("Unable to send policy validation SMS message on policy [%1$s].", policy.getPolicyId()), e);
         }
 
         // Send push notification
@@ -225,7 +251,7 @@ public class PolicyService {
             String pushContent = IOUtils.toString(this.getClass().getResourceAsStream("/pushnotification-content/policy-purchased-notification.txt"), Charset.forName("UTF-8"));
             lineService.sendPushNotification(pushContent.replace("%POLICY_ID%", policy.getPolicyId()), policy.getInsureds().get(0).getPerson().getLineId());
         } catch (IOException e) {
-            logger.error(String.format("Unable to send push notification with policy id is [%1$s].", policy.getPolicyId()), e);
+            logger.error(String.format("Unable to send push notification for policy validation on policy [%1$s].", policy.getPolicyId()), e);
         }
 
         policy.setStatus(VALIDATED);

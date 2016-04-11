@@ -1,0 +1,2 @@
+The content of this notification has not been provided yet
+Policy number is %POLICY_ID%

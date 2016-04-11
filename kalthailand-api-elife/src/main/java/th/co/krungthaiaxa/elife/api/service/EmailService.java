@@ -83,6 +83,11 @@ public class EmailService {
         emailSender.sendEmail(emailName, quote.getInsureds().get(0).getPerson().getEmail(), subject, getQuoteiFineEmailContent(quote), base64ImgFileNames, attachments);
     }
 
+    public void sendPolicyBookedEmail(Policy policy) throws IOException, MessagingException {
+        logger.info("Sending policy booked email");
+        emailSender.sendEmail(emailName, policy.getInsureds().get(0).getPerson().getEmail(), subject, "The content of this email has not been provided yet", new ArrayList<>(), new ArrayList<>());
+    }
+
     public void sendEreceiptEmail(Policy policy, Pair<byte[], String> attachFile) throws IOException, MessagingException {
         logger.info("Sending ereceipt email");
         List<Pair<byte[], String>> base64ImgFileNames = new ArrayList<>();

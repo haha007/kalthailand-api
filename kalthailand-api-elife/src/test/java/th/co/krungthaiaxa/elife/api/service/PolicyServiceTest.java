@@ -242,6 +242,15 @@ public class PolicyServiceTest {
     }
 
     @Test
+    public void should_send_one_email_when_policy_status_is_set_to_pending_validation() {
+        Policy policy = getPolicy();
+
+        policyService.updatePolicyAfterFirstPaymentValidated(policy);
+
+        assertThat(greenMail.getReceivedMessages()).hasSize(1);
+    }
+
+    @Test
     public void should_update_policy_status_to_validated_and_attach_4_documents() {
         Policy policy = getPolicy();
 
@@ -250,6 +259,16 @@ public class PolicyServiceTest {
 
         assertThat(policy.getStatus()).isEqualTo(VALIDATED);
         assertThat(policy.getDocuments()).hasSize(4);
+    }
+
+    @Test
+    public void should_send_two_emails_when_policy_status_is_set_to_validated() {
+        Policy policy = getPolicy();
+
+        policyService.updatePolicyAfterFirstPaymentValidated(policy);
+        policyService.updatePolicyAfterPolicyHasBeenValidated(policy);
+
+        assertThat(greenMail.getReceivedMessages()).hasSize(2);
     }
 
     @Test
