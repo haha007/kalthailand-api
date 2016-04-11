@@ -23,7 +23,6 @@ import th.co.krungthaiaxa.elife.api.model.Document;
 import th.co.krungthaiaxa.elife.api.model.DocumentDownload;
 import th.co.krungthaiaxa.elife.api.model.Policy;
 import th.co.krungthaiaxa.elife.api.model.Quote;
-import th.co.krungthaiaxa.elife.api.model.enums.DividendOption;
 
 import javax.inject.Inject;
 import javax.mail.*;
@@ -233,6 +232,19 @@ public class EmailServiceTest {
                 assertThat(null != bodyPart.getFileName() && !bodyPart.getFileName().equals(""));
             }
         }
+    }
+
+    @Test
+    public void should_send_policy_booked_email_with_proper_from_address() throws Exception {
+        Quote quote = quoteService.createQuote(RandomStringUtils.randomNumeric(20), LINE, productQuotation());
+        quote(quote, beneficiary(100.0));
+        quote = quoteService.updateQuote(quote);
+        Policy policy = policyService.createPolicy(quote);
+
+        emailService.sendPolicyBookedEmail(policy);
+        assertThat(greenMail.getReceivedMessages()).hasSize(1);
+        MimeMessage email = greenMail.getReceivedMessages()[0];
+        assertThat(email.getFrom()).containsOnly(new InternetAddress(emailName));
     }
 
     @Test
