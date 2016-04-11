@@ -83,7 +83,7 @@
                 {{ successMessage }}
             </div>
             <div class="page-header" ng-show="policyDetail">
-                <h3>Policy details</h3>
+                <h3>Insured details</h3>
             </div>
             <form class="form-horizontal" ng-show="policyDetail">
                 <div class="row">
@@ -112,24 +112,6 @@
                                 <p class="form-control-static">{{ policyDetail.insureds[0].person.email }}</p>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label class="col-sm-4 control-label">Product name</label>
-                            <div class="col-sm-8">
-                                <p class="form-control-static">{{ policyDetail.commonData.productName }}</p>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-4 control-label">Premium amount</label>
-                            <div class="col-sm-8">
-                                <p class="form-control-static">{{ policyDetail.premiumsData.financialScheduler.modalAmount.value }} {{ policyDetail.premiumsData.financialScheduler.modalAmount.currencyCode }}</p>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-4 control-label">Premium periodicity</label>
-                            <div class="col-sm-8">
-                                <p class="form-control-static">{{ policyDetail.premiumsData.financialScheduler.periodicity.code }}</p>
-                            </div>
-                        </div>
                     </div>
                     <div class="col-sm-6">
                         <div class="form-group">
@@ -156,6 +138,35 @@
                                 <p class="form-control-static">{{ policyDetail.insureds[0].person.mobilePhoneNumber.number }}</p>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </form>
+            <div class="page-header" ng-show="policyDetail">
+                <h3>Policy details</h3>
+            </div>
+            <form class="form-horizontal" ng-show="policyDetail">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">Product name</label>
+                            <div class="col-sm-8">
+                                <p class="form-control-static">{{ policyDetail.commonData.productName }}</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">Premium amount</label>
+                            <div class="col-sm-8">
+                                <p class="form-control-static">{{ policyDetail.premiumsData.financialScheduler.modalAmount.value }} {{ policyDetail.premiumsData.financialScheduler.modalAmount.currencyCode }}</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">Premium periodicity</label>
+                            <div class="col-sm-8">
+                                <p class="form-control-static">{{ policyDetail.premiumsData.financialScheduler.periodicity.code }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
                         <div class="form-group">
                             <label class="col-sm-4 control-label">Sum insured</label>
                             <div class="col-sm-8">
