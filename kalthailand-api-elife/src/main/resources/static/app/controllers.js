@@ -69,7 +69,7 @@
             console.log($scope);
             PolicyReminder.get({id: $scope.policyID, reminderId: $scope.scenarioID},
                 function (successResponse) {
-                    $scope.successMessage = "Reminders have been sent to the insured of Policy [" + successResponse.data.policyId + "]";
+                    $scope.successMessage = "Reminders have been sent to the insured of Policy [" + $scope.policyID + "]";
                     $scope.errorMessage = null;
                     $scope.isValidating = null;
                 },
