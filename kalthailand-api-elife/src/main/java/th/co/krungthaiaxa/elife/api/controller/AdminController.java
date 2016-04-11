@@ -13,6 +13,8 @@ import th.co.krungthaiaxa.elife.api.model.Policy;
 import th.co.krungthaiaxa.elife.api.service.PolicyService;
 
 import javax.inject.Inject;
+import javax.mail.MessagingException;
+import java.io.IOException;
 import java.util.Optional;
 
 import static org.springframework.http.HttpStatus.*;
@@ -66,13 +68,17 @@ public class AdminController {
             return new ResponseEntity<>(getJson(POLICY_DOES_NOT_EXIST), NOT_FOUND);
         }
 
-        switch (reminderId) {
-            case 1:
-                policyService.sendNotificationsWhenUserNotRespondingToCalls(policy.get());
-                break;
-            case 2:
-                policyService.sendNotificationsWhenPhoneNumberIsWrong(policy.get());
-                break;
+        try {
+            switch (reminderId) {
+                case 1:
+                    policyService.sendNotificationsWhenUserNotRespondingToCalls(policy.get());
+                    break;
+                case 2:
+                    policyService.sendNotificationsWhenPhoneNumberIsWrong(policy.get());
+                    break;
+            }
+        } catch (MessagingException | IOException e) {
+            return new ResponseEntity<>(getJson(NOTIFICATION_NOT_SENT.apply(e.getMessage())), INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity<>(getJson("Notifications have been sent"), OK);
     }

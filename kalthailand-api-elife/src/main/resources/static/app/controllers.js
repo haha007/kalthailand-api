@@ -72,11 +72,13 @@
                     $scope.successMessage = "Reminders have been sent to the insured of Policy [" + $scope.policyID + "]";
                     $scope.errorMessage = null;
                     $scope.isValidating = null;
+                    $(window).scrollTop(0);
                 },
                 function (errorResponse) {
                     $scope.successMessage = null;
                     $scope.errorMessage = errorResponse.data.userMessage;
                     $scope.isValidating = null;
+                    $(window).scrollTop(0);
                 });
         };
 

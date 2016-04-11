@@ -258,49 +258,29 @@ public class PolicyService {
         policyRepository.save(policy);
     }
 
-    public void sendNotificationsWhenUserNotRespondingToCalls(Policy policy) {
+    public void sendNotificationsWhenUserNotRespondingToCalls(Policy policy) throws IOException, MessagingException {
         // Send Email
-        try {
-            emailService.sendUserNotRespondingEmail(policy);
-        } catch (IOException | MessagingException e) {
-            logger.error(String.format("Unable to send email when user not responding for policy [%1$s].", policy.getPolicyId()), e);
-        }
+        emailService.sendUserNotRespondingEmail(policy);
 
         // Send SMS
-        try {
-            String smsContent = IOUtils.toString(this.getClass().getResourceAsStream("/sms-content/user-not-responging-sms.txt"), Charset.forName("UTF-8"));
-            Map<String, String> m = smsApiService.sendConfirmationMessage(policy, smsContent.replace("%POLICY_ID%", policy.getPolicyId()));
-            if (!m.get("STATUS").equals("0")) {
-                logger.error(String.format("SMS when user not responding could not be sent on policy [%1$s].", policy.getPolicyId()));
-            }
-        } catch (IOException e) {
-            logger.error(String.format("Unable to send SMS when user not responding on policy [%1$s].", policy.getPolicyId()), e);
+        String smsContent = IOUtils.toString(this.getClass().getResourceAsStream("/sms-content/user-not-responging-sms.txt"), Charset.forName("UTF-8"));
+        Map<String, String> m = smsApiService.sendConfirmationMessage(policy, smsContent.replace("%POLICY_ID%", policy.getPolicyId()));
+        if (!m.get("STATUS").equals("0")) {
+            throw new IOException(String.format("SMS when user not responding could not be sent on policy [%1$s].", policy.getPolicyId()));
         }
 
         // Send push notification
-        try {
-            String pushContent = IOUtils.toString(this.getClass().getResourceAsStream("/pushnotification-content/user-not-responging-notification.txt"), Charset.forName("UTF-8"));
-            lineService.sendPushNotification(pushContent.replace("%POLICY_ID%", policy.getPolicyId()), policy.getInsureds().get(0).getPerson().getLineId());
-        } catch (IOException e) {
-            logger.error(String.format("Unable to send push notification when user not responding for policy [%1$s].", policy.getPolicyId()), e);
-        }
+        String pushContent = IOUtils.toString(this.getClass().getResourceAsStream("/pushnotification-content/user-not-responging-notification.txt"), Charset.forName("UTF-8"));
+        lineService.sendPushNotification(pushContent.replace("%POLICY_ID%", policy.getPolicyId()), policy.getInsureds().get(0).getPerson().getLineId());
     }
 
-    public void sendNotificationsWhenPhoneNumberIsWrong(Policy policy) {
+    public void sendNotificationsWhenPhoneNumberIsWrong(Policy policy) throws IOException, MessagingException {
         // Send Email
-        try {
-            emailService.sendPhoneNumberIsWrongEmail(policy);
-        } catch (IOException | MessagingException e) {
-            logger.error(String.format("Unable to send email when phone number is wrong for policy [%1$s].", policy.getPolicyId()), e);
-        }
+        emailService.sendPhoneNumberIsWrongEmail(policy);
 
         // Send push notification
-        try {
-            String pushContent = IOUtils.toString(this.getClass().getResourceAsStream("/pushnotification-content/phone-number-wrong-notification.txt"), Charset.forName("UTF-8"));
-            lineService.sendPushNotification(pushContent.replace("%POLICY_ID%", policy.getPolicyId()), policy.getInsureds().get(0).getPerson().getLineId());
-        } catch (IOException e) {
-            logger.error(String.format("Unable to send push notification when phone number is wrong for policy [%1$s].", policy.getPolicyId()), e);
-        }
+        String pushContent = IOUtils.toString(this.getClass().getResourceAsStream("/pushnotification-content/phone-number-wrong-notification.txt"), Charset.forName("UTF-8"));
+        lineService.sendPushNotification(pushContent.replace("%POLICY_ID%", policy.getPolicyId()), policy.getInsureds().get(0).getPerson().getLineId());
     }
 
     private void updatePayment(Payment payment, Double value, String currencyCode, ChannelType channelType, String errorCode, String errorMessage, String registrationKey, String creditCardName, String paymentMethod) {
