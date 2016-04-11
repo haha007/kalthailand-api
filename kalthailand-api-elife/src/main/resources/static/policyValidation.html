@@ -61,9 +61,6 @@
         </div>
 
         <div ng-hide="accessErrorMessage" class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" ng-controller="ValidationController">
-            <div class="page-header">
-                <h1>Search for Policy to validate</h1>
-            </div>
             <form class="form-horizontal" ng-submit="search($event)">
                 <div class="form-group">
                     <label for="policyID" class="col-sm-4 control-label">Policy number</label>
@@ -84,6 +81,9 @@
             <div class="alert alert-success" role="alert" ng-show="successMessage">
                 <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
                 {{ successMessage }}
+            </div>
+            <div class="page-header" ng-show="policyDetail">
+                <h3>Policy details</h3>
             </div>
             <form class="form-horizontal" ng-show="policyDetail">
                 <div class="row">
@@ -177,7 +177,7 @@
                     </div>
                 </div>
             </form>
-            <div ng-show="policyDetail">
+            <div class="page-header" ng-show="policyDetail">
                 <h3>Notifications</h3>
             </div>
             <div class="row" ng-show="policyDetail">
@@ -195,6 +195,9 @@
                         </div>
                     </div>
                 </form>
+            </div>
+            <div class="page-header" ng-show="policyDetail">
+                <h3>Validation</h3>
             </div>
             <div class="row" ng-show="policyDetail">
                 <div class="col-md-12">
