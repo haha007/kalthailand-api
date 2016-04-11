@@ -96,6 +96,7 @@
                     $scope.annualPremium = null;
                     $scope.sumInsured = null;
                     $scope.isValidating = null;
+                    $(window).scrollTop(0);
                 },
                 function (errorResponse) {
                     $scope.successMessage = null;
@@ -104,6 +105,7 @@
                     $scope.annualPremium = null;
                     $scope.sumInsured = null;
                     $scope.isValidating = null;
+                    $(window).scrollTop(0);
                 });
         };
 
