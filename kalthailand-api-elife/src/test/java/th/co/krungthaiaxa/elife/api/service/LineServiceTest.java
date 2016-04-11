@@ -42,6 +42,12 @@ public class LineServiceTest {
         lineService = Mockito.mock(LineService.class);
     }
 
+//    @Test
+//    public void should_send_push_notification() throws IOException {
+//        String pushContent = IOUtils.toString(this.getClass().getResourceAsStream("/pushnotification-content/policy-purchased-notification.txt"), Charset.forName("UTF-8"));
+//        lineService.sendPushNotification(pushContent.replace("%POLICY_ID%", "1234321DED"), "u999c6b4ac77dd287e52675a58ccae0db");
+//    }
+
     @Test
     public void should_book_a_payment() throws IOException {
         when(lineService.bookPayment(anyString(), any(), anyString(), anyString())).thenReturn(linePayResponse("0000", "success", "123"));
