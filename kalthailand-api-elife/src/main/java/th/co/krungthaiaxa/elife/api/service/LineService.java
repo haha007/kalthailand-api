@@ -68,9 +68,9 @@ public class LineService {
             throw new IOException("Unable to send push notification", e);
         }
         if (!response.getStatusCode().equals(OK)) {
-            throw new IOException("Line's repsonse for push notification is [" + response.getStatusCode() + "]. Response body is [" + response.getBody() + "]");
+            throw new IOException("Line's response for push notification is [" + response.getStatusCode() + "]. Response body is [" + response.getBody() + "]");
         }
-        logger.info("Notificartion is sent with success");
+        logger.info("Notification is sent with success");
     }
 
     public LinePayResponse bookPayment(String mid, Policy policy, String amount, String currency) throws IOException {
@@ -103,7 +103,7 @@ public class LineService {
             throw new IOException("Unable to book payment", e);
         }
         if (!response.getStatusCode().equals(OK)) {
-            throw new IOException("Line's repsonse for booking payment is [" + response.getStatusCode() + "]. Response body is [" + response.getBody() + "]");
+            throw new IOException("Line's response for booking payment is [" + response.getStatusCode() + "]. Response body is [" + response.getBody() + "]");
         }
 
         logger.info("Payment is booked with success");
@@ -132,7 +132,7 @@ public class LineService {
             throw new IOException("Unable to confirm payment", e);
         }
         if (!response.getStatusCode().equals(OK)) {
-            throw new IOException("Line's repsonse for confirming payment is [" + response.getStatusCode() + "]. Response body is [" + response.getBody() + "]");
+            throw new IOException("Line's response for confirming payment is [" + response.getStatusCode() + "]. Response body is [" + response.getBody() + "]");
         }
 
         logger.info("Payment is confirmed with success");
