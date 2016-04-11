@@ -1,5 +1,6 @@
 package th.co.krungthaiaxa.elife.api.model.line;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +11,7 @@ public class LinePayResponseInfo {
     private String regKey;
     private LinePayResponsePayment paymentUrl = new LinePayResponsePayment();
     private List<LinePayResponsePaymentInfo> payInfo = new ArrayList<>();
+    private LocalDate authorizationExpireDate;
 
     public String getOrderId() {
         return orderId;
@@ -57,5 +59,13 @@ public class LinePayResponseInfo {
 
     public void addPayInfo(LinePayResponsePaymentInfo payInfo) {
         this.payInfo.add(payInfo);
+    }
+
+    public LocalDate getAuthorizationExpireDate() {
+        return authorizationExpireDate;
+    }
+
+    public void setAuthorizationExpireDate(LocalDate authorizationExpireDate) {
+        this.authorizationExpireDate = authorizationExpireDate;
     }
 }
