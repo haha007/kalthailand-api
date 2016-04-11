@@ -66,7 +66,6 @@
     app.controller('ValidationController', function ($rootScope, $scope, $http, PolicyDetail, PolicyReminder) {
         $scope.onClickReminder = function () {
             $scope.isValidating = true;
-            console.log($scope);
             PolicyReminder.get({id: $scope.policyID, reminderId: $scope.scenarioID},
                 function (successResponse) {
                     $scope.successMessage = "Reminders have been sent to the insured of Policy [" + $scope.policyID + "]";

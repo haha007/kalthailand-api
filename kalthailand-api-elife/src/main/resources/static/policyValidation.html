@@ -184,13 +184,13 @@
                 <form class="form-horizontal" ng-submit="search($event)">
                     <div class="form-group">
                         <label for="scenario" class="col-md-1 control-label">Scenario</label>
-                        <div class="col-md-9">
+                        <div class="col-md-6">
                             <select class="form-control" id="scenario" ng-model="scenarioID">
                                 <option value="1">1 - No answer ----> Send SMS + Email + Line</option>
                                 <option value="2">2 - Wrong phone number ----> Send Email + Line</option>
                             </select>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-md-5">
                             <button type="button" ng-click="onClickReminder()" ng-disabled="isValidating" ng-show="policyDetail" class="btn">Send Notifications</button>
                         </div>
                     </div>
