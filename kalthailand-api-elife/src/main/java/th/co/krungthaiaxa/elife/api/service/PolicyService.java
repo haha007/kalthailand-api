@@ -223,7 +223,7 @@ public class PolicyService {
         // Send push notification
         try {
             String pushContent = IOUtils.toString(this.getClass().getResourceAsStream("/pushnotification-content/policy-purchased-notification.txt"), Charset.forName("UTF-8"));
-            lineService.sendPushNotification(policy.getInsureds().get(0).getPerson().getLineId(), pushContent.replace("%POLICY_ID%", policy.getPolicyId()));
+            lineService.sendPushNotification(pushContent.replace("%POLICY_ID%", policy.getPolicyId()), policy.getInsureds().get(0).getPerson().getLineId());
         } catch (IOException e) {
             logger.error(String.format("Unable to send push notification with policy id is [%1$s].", policy.getPolicyId()), e);
         }
