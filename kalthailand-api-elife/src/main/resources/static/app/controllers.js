@@ -63,7 +63,23 @@
         }
     });
 
-    app.controller('ValidationController', function ($rootScope, $scope, $http, PolicyDetail) {
+    app.controller('ValidationController', function ($rootScope, $scope, $http, PolicyDetail, PolicyReminder) {
+        $scope.onClickReminder = function () {
+            $scope.isValidating = true;
+            console.log($scope);
+            PolicyReminder.get({id: $scope.policyID, reminderId: $scope.scenarioID},
+                function (successResponse) {
+                    $scope.successMessage = "Reminders have been sent to the insured of Policy [" + successResponse.data.policyId + "]";
+                    $scope.errorMessage = null;
+                    $scope.isValidating = null;
+                },
+                function (errorResponse) {
+                    $scope.successMessage = null;
+                    $scope.errorMessage = errorResponse.data.userMessage;
+                    $scope.isValidating = null;
+                });
+        };
+
         $scope.onClickValidate = function (policyNumber) {
             $scope.isValidating = true;
             $http({
@@ -93,6 +109,7 @@
             event.preventDefault();
             PolicyDetail.get({id: $scope.policyID},
                 function (successResponse) {
+                    $scope.scenarioID = 1;
                     $scope.errorMessage = null;
                     $scope.successMessage = null;
                     $scope.policyDetail = successResponse;

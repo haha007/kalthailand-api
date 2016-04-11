@@ -88,6 +88,16 @@ public class EmailService {
         emailSender.sendEmail(emailName, policy.getInsureds().get(0).getPerson().getEmail(), subject, "The content of this email has not been provided yet", new ArrayList<>(), new ArrayList<>());
     }
 
+    public void sendUserNotRespondingEmail(Policy policy) throws IOException, MessagingException {
+        logger.info("Sending user is not responding email");
+        emailSender.sendEmail(emailName, policy.getInsureds().get(0).getPerson().getEmail(), subject, "The content of this email has not been provided yet", new ArrayList<>(), new ArrayList<>());
+    }
+
+    public void sendPhoneNumberIsWrongEmail(Policy policy) throws IOException, MessagingException {
+        logger.info("Sending phone number is wrong email");
+        emailSender.sendEmail(emailName, policy.getInsureds().get(0).getPerson().getEmail(), subject, "The content of this email has not been provided yet", new ArrayList<>(), new ArrayList<>());
+    }
+
     public void sendEreceiptEmail(Policy policy, Pair<byte[], String> attachFile) throws IOException, MessagingException {
         logger.info("Sending ereceipt email");
         List<Pair<byte[], String>> base64ImgFileNames = new ArrayList<>();
@@ -165,5 +175,4 @@ public class EmailService {
         ThaiBuddhistDate tdate = ThaiBuddhistDate.from(localDate);
         return tdate.format(ofPattern("dd/MM/yyyy"));
     }
-
 }

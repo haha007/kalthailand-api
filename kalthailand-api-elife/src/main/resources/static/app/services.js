@@ -28,6 +28,10 @@
         return $resource('admin/policies/validate/:id', {id : '@id'}, {});
     });
 
+    app.factory('PolicyReminder', function($resource) {
+        return $resource('admin/policies/:id/reminder/:reminderId', {id : '@id', reminderId : '@reminderId'}, {});
+    });
+
     app.factory('AccessRightsDashboard', function($resource) {
         return $resource('admin/check/access/dashboard', {}, {});
     });

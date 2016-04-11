@@ -1,0 +1,3 @@
+Phone number is wrong
+The content of this personal message has not been provided yet
+Policy number is %POLICY_ID%

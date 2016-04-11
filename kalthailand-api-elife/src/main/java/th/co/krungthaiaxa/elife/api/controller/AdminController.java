@@ -58,6 +58,26 @@ public class AdminController {
     }
 
     @ApiIgnore
+    @RequestMapping(value = "admin/policies/{policyId}/reminder/{reminderId}", produces = APPLICATION_JSON_VALUE, method = GET)
+    @ResponseBody
+    public ResponseEntity<byte[]> sendReminder(@PathVariable String policyId, @PathVariable Integer reminderId) {
+        Optional<Policy> policy = policyService.findPolicy(policyId);
+        if (!policy.isPresent()) {
+            return new ResponseEntity<>(getJson(POLICY_DOES_NOT_EXIST), NOT_FOUND);
+        }
+
+        switch (reminderId) {
+            case 1:
+                policyService.sendNotificationsWhenUserNotRespondingToCalls(policy.get());
+                break;
+            case 2:
+                policyService.sendNotificationsWhenPhoneNumberIsWrong(policy.get());
+                break;
+        }
+        return new ResponseEntity<>(getJson("Notifications have been sent"), OK);
+    }
+
+    @ApiIgnore
     @RequestMapping(value = "/admin/check/access/autopay", produces = APPLICATION_JSON_VALUE, method = GET)
     @ResponseBody
     public ResponseEntity<byte[]> checkAccessRightsAutopay() {
