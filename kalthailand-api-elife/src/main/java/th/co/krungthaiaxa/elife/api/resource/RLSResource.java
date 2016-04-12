@@ -52,7 +52,7 @@ public class RLSResource {
     @ApiOperation(value = "Get Collection files", notes = "Get a list of all collection files", response = CollectionFile.class, responseContainer = "List")
     @RequestMapping(value = "/RLS/collectionFile", produces = APPLICATION_JSON_VALUE, method = GET)
     @ResponseBody
-    public ResponseEntity getCollectionFiles() {
+    public ResponseEntity<byte[]> getCollectionFiles() {
         logger.info("Getting all collection File");
         return new ResponseEntity<>(getJson(rlsService.getCollectionFiles()), OK);
     }

@@ -55,7 +55,7 @@ public class PolicyResource {
     })
     @RequestMapping(value = "/policies", produces = APPLICATION_JSON_VALUE, method = POST)
     @ResponseBody
-    public ResponseEntity createPolicy(
+    public ResponseEntity<byte[]> createPolicy(
             @ApiParam(value = "The session id the quote is in")
             @RequestParam String sessionId,
             @ApiParam(value = "The channel being used to create the quote.")
@@ -68,12 +68,12 @@ public class PolicyResource {
             quote = JsonUtil.mapper.readValue(jsonQuote, Quote.class);
         } catch (IOException e) {
             logger.error("Unable to get a quote out of [" + jsonQuote + "]", e);
-            return new ResponseEntity<>(INVALID_QUOTE_PROVIDED, NOT_ACCEPTABLE);
+            return new ResponseEntity<>(getJson(INVALID_QUOTE_PROVIDED), NOT_ACCEPTABLE);
         }
 
         Optional<Quote> tmp = quoteService.findByQuoteId(quote.getQuoteId(), sessionId, channelType);
         if (!tmp.isPresent()) {
-            return new ResponseEntity<>(QUOTE_DOES_NOT_EXIST_OR_ACCESS_DENIED, NOT_FOUND);
+            return new ResponseEntity<>(getJson(QUOTE_DOES_NOT_EXIST_OR_ACCESS_DENIED), NOT_FOUND);
         }
 
         Policy policy;
@@ -81,7 +81,7 @@ public class PolicyResource {
             policy = policyService.createPolicy(quote);
         } catch (ElifeException e) {
             logger.error("Unable to create a policy from the validated quote [" + jsonQuote + "]", e);
-            return new ResponseEntity<>(POLICY_CANNOT_BE_CREATED.apply(e.getMessage()), NOT_ACCEPTABLE);
+            return new ResponseEntity<>(getJson(POLICY_CANNOT_BE_CREATED.apply(e.getMessage())), NOT_ACCEPTABLE);
         }
         return new ResponseEntity<>(getJson(policy), OK);
     }
@@ -93,13 +93,13 @@ public class PolicyResource {
     })
     @RequestMapping(value = "/policies/{policyId}/payments", produces = APPLICATION_JSON_VALUE, method = GET)
     @ResponseBody
-    public ResponseEntity getPolicyPayments(
+    public ResponseEntity<byte[]> getPolicyPayments(
             @ApiParam(value = "The policy ID", required = true)
             @PathVariable String policyId) {
         Optional<Policy> policy = policyService.findPolicy(policyId);
         if (!policy.isPresent()) {
             logger.error("Unable to find the policy with ID [" + policyId + "]");
-            return new ResponseEntity<>(POLICY_DOES_NOT_EXIST, NOT_FOUND);
+            return new ResponseEntity<>(getJson(POLICY_DOES_NOT_EXIST), NOT_FOUND);
         }
         return new ResponseEntity<>(getJson(policy.get().getPayments()), OK);
     }
@@ -117,7 +117,7 @@ public class PolicyResource {
     })
     @RequestMapping(value = "/policies/{policyId}/update/status/pendingValidation", produces = APPLICATION_JSON_VALUE, method = PUT)
     @ResponseBody
-    public ResponseEntity updatePolicyToPendingValidation(
+    public ResponseEntity<byte[]> updatePolicyToPendingValidation(
             @ApiParam(value = "The policy ID", required = true)
             @PathVariable String policyId,
             @ApiParam(value = "The payment ID", required = true)
@@ -128,24 +128,24 @@ public class PolicyResource {
             @RequestParam(required = false) Optional<String> transactionId) {
         if (isEmpty(orderId)) {
             logger.error("The order ID was not received");
-            return new ResponseEntity<>(ORDER_ID_NOT_PROVIDED, NOT_ACCEPTABLE);
+            return new ResponseEntity<>(getJson(ORDER_ID_NOT_PROVIDED), NOT_ACCEPTABLE);
         }
 
         Optional<Policy> policy = policyService.findPolicy(policyId);
         if (!policy.isPresent()) {
             logger.error("Unable to find the policy with ID [" + policyId + "]");
-            return new ResponseEntity<>(POLICY_DOES_NOT_EXIST, NOT_FOUND);
+            return new ResponseEntity<>(getJson(POLICY_DOES_NOT_EXIST), NOT_FOUND);
         }
 
         if (!policy.get().getStatus().equals(PolicyStatus.PENDING_PAYMENT)) {
             logger.error("The policy is in status [" + policy.get().getStatus().name() + "] and cannot be updated to " + PENDING_VALIDATION + " status.");
-            return new ResponseEntity<>(POLICY_IS_NOT_PENDING_FOR_PAYMENT.apply(policyId), NOT_ACCEPTABLE);
+            return new ResponseEntity<>(getJson(POLICY_IS_NOT_PENDING_FOR_PAYMENT.apply(policyId)), NOT_ACCEPTABLE);
         }
 
         Optional<Payment> payment = policy.get().getPayments().stream().filter(tmp -> tmp.getPaymentId().equals(paymentId)).findFirst();
         if (!payment.isPresent()) {
             logger.error("Unable to find the payment with ID [" + paymentId + "] in the policy with ID [" + policyId + "]");
-            return new ResponseEntity<>(POLICY_DOES_NOT_CONTAIN_A_PAYMENT_WITH_TRANSACTION_ID, NOT_ACCEPTABLE);
+            return new ResponseEntity<>(getJson(POLICY_DOES_NOT_CONTAIN_A_PAYMENT_WITH_TRANSACTION_ID), NOT_ACCEPTABLE);
         }
 
         // If no transaction id, then in error, nothing else should be done since we don't have a status (error / success)
@@ -173,13 +173,13 @@ public class PolicyResource {
     })
     @RequestMapping(value = "/policies/{policyId}/update/status/validated", produces = APPLICATION_JSON_VALUE, method = PUT)
     @ResponseBody
-    public ResponseEntity updatePolicyToValidated(
+    public ResponseEntity<byte[]> updatePolicyToValidated(
             @ApiParam(value = "The policy ID", required = true)
             @PathVariable String policyId) {
         Optional<Policy> policy = policyService.findPolicy(policyId);
         if (!policy.isPresent()) {
             logger.error("Unable to find the policy with ID [" + policyId + "]");
-            return new ResponseEntity<>(POLICY_DOES_NOT_EXIST, NOT_FOUND);
+            return new ResponseEntity<>(getJson(POLICY_DOES_NOT_EXIST), NOT_FOUND);
         }
 
         Optional<Payment> paymentOptional = policy.get().getPayments()
@@ -188,7 +188,7 @@ public class PolicyResource {
                 .findFirst();
         if (!paymentOptional.isPresent()) {
             logger.error("Unable to find a payment with a transaction id pending for confirmation in the policy with ID [" + policyId + "]");
-            return new ResponseEntity<>(POLICY_DOES_NOT_CONTAIN_A_PAYMENT_WITH_TRANSACTION_ID, NOT_ACCEPTABLE);
+            return new ResponseEntity<>(getJson(POLICY_DOES_NOT_CONTAIN_A_PAYMENT_WITH_TRANSACTION_ID), NOT_ACCEPTABLE);
         }
 
         Payment payment = paymentOptional.get();
@@ -198,12 +198,12 @@ public class PolicyResource {
             linePayResponse = lineService.confirmPayment(payment.getTransactionId(), payment.getAmount().getValue(), payment.getAmount().getCurrencyCode());
         } catch (RuntimeException | IOException e) {
             logger.error("Unable to confirm the payment in the policy with ID [" + policyId + "]", e);
-            return new ResponseEntity<>(UNABLE_TO_CONFIRM_PAYMENT.apply(e.getMessage()), NOT_ACCEPTABLE);
+            return new ResponseEntity<>(getJson(UNABLE_TO_CONFIRM_PAYMENT.apply(e.getMessage())), NOT_ACCEPTABLE);
         }
 
         if (!linePayResponse.getReturnCode().equals("0000")) {
             String msg = "Confirming payment didn't go through. Error code is [" + linePayResponse.getReturnCode() + "], error message is [" + linePayResponse.getReturnMessage() + "]";
-            return new ResponseEntity<>(UNABLE_TO_CONFIRM_PAYMENT.apply(msg), NOT_ACCEPTABLE);
+            return new ResponseEntity<>(getJson(UNABLE_TO_CONFIRM_PAYMENT.apply(msg)), NOT_ACCEPTABLE);
         }
 
         // Update the payment if confirm is success
@@ -214,7 +214,7 @@ public class PolicyResource {
             policyService.updatePolicyAfterPolicyHasBeenValidated(policy.get());
         } catch (ElifeException e) {
             logger.error("There was an error whil trying to update policy status.", e);
-            return new ResponseEntity<>(POLICY_VALIDATION_ERROR.apply(e.getMessage()), INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(getJson(POLICY_VALIDATION_ERROR.apply(e.getMessage())), INTERNAL_SERVER_ERROR);
         }
 
         return new ResponseEntity<>(getJson(policy.get()), OK);

@@ -46,7 +46,7 @@ public class QuoteResource {
             @ApiResponse(code = 500, message = "If email could not be sent", response = Error.class)
     })
     @ResponseBody
-    public ResponseEntity sendEmail(
+    public ResponseEntity<byte[]> sendEmail(
             @ApiParam(value = "The quote Id", required = true)
             @PathVariable String quoteId,
             @ApiParam(value = "The content of the graph image in base 64 encoded.", required = false)
@@ -57,7 +57,7 @@ public class QuoteResource {
             @RequestParam ChannelType channelType) {
         Optional<Quote> quote = quoteService.findByQuoteId(quoteId, sessionId, channelType);
         if (!quote.isPresent()) {
-            return new ResponseEntity<>(QUOTE_DOES_NOT_EXIST_OR_ACCESS_DENIED, NOT_FOUND);
+            return new ResponseEntity<>(getJson(QUOTE_DOES_NOT_EXIST_OR_ACCESS_DENIED), NOT_FOUND);
         }
 
         try {
@@ -68,7 +68,7 @@ public class QuoteResource {
             }
         } catch (Exception e) {
             logger.error("Unable to send email for [" + quote.get().getInsureds().get(0).getPerson().getEmail() + "]", e);
-            return new ResponseEntity<>(UNABLE_TO_SEND_EMAIL.apply(e.getMessage()), INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(getJson(UNABLE_TO_SEND_EMAIL.apply(e.getMessage())), INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity<>(getJson(""), OK);
     }
@@ -77,7 +77,7 @@ public class QuoteResource {
             "Returns empty result if nothing found.", response = Quote.class)
     @RequestMapping(value = "/quotes/latest", produces = APPLICATION_JSON_VALUE, method = GET)
     @ResponseBody
-    public ResponseEntity getLatestQuote(
+    public ResponseEntity<byte[]> getLatestQuote(
             @ApiParam(value = "The session id the quote is in")
             @RequestParam String sessionId,
             @ApiParam(value = "The channel being used to create the quote.")
@@ -102,7 +102,7 @@ public class QuoteResource {
     })
     @RequestMapping(value = "/quotes/{quoteId}", produces = APPLICATION_JSON_VALUE, method = GET)
     @ResponseBody
-    public ResponseEntity getQuote(
+    public ResponseEntity<byte[]> getQuote(
             @ApiParam(value = "The quote Id", required = true)
             @PathVariable String quoteId,
             @ApiParam(value = "The session id the quote is in", required = true)
@@ -111,7 +111,7 @@ public class QuoteResource {
             @RequestParam ChannelType channelType) {
         Optional<Quote> quote = quoteService.findByQuoteId(quoteId, sessionId, channelType);
         if (!quote.isPresent()) {
-            return new ResponseEntity<>(QUOTE_DOES_NOT_EXIST_OR_ACCESS_DENIED, NOT_FOUND);
+            return new ResponseEntity<>(getJson(QUOTE_DOES_NOT_EXIST_OR_ACCESS_DENIED), NOT_FOUND);
         }
 
         return new ResponseEntity<>(getJson(quote.get()), OK);
@@ -124,7 +124,7 @@ public class QuoteResource {
             @ApiResponse(code = 500, message = "If quote has not been created", response = Error.class)
     })
     @RequestMapping(value = "/quotes", produces = APPLICATION_JSON_VALUE, method = POST)
-    public ResponseEntity createQuote(
+    public ResponseEntity<byte[]> createQuote(
             @ApiParam(value = "The session id. Must be unique through the Channel.")
             @RequestParam String sessionId,
             @ApiParam(value = "The channel being used to create the quote.")
@@ -135,7 +135,7 @@ public class QuoteResource {
             return new ResponseEntity<>(getJson(quoteService.createQuote(sessionId, channelType, productQuotation)), OK);
         } catch (ElifeException e) {
             logger.error("Unable to update quote", e);
-            return new ResponseEntity<>(QUOTE_NOT_CREATED, INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(getJson(QUOTE_NOT_CREATED), INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -148,7 +148,7 @@ public class QuoteResource {
             @ApiResponse(code = 500, message = "If quote has not been updated", response = Error.class)
     })
     @RequestMapping(value = "/quotes/{quoteId}", produces = APPLICATION_JSON_VALUE, method = PUT)
-    public ResponseEntity updateQuote(
+    public ResponseEntity<byte[]> updateQuote(
             @ApiParam(value = "The quote Id", required = true)
             @PathVariable String quoteId,
             @ApiParam(value = "The session id the quote is in", required = true)
@@ -159,7 +159,7 @@ public class QuoteResource {
             @RequestBody String jsonQuote) {
         Optional<Quote> tmp = quoteService.findByQuoteId(quoteId, sessionId, channelType);
         if (!tmp.isPresent()) {
-            return new ResponseEntity<>(QUOTE_DOES_NOT_EXIST_OR_ACCESS_DENIED, NOT_FOUND);
+            return new ResponseEntity<>(getJson(QUOTE_DOES_NOT_EXIST_OR_ACCESS_DENIED), NOT_FOUND);
         }
 
         Quote quote;
@@ -167,7 +167,7 @@ public class QuoteResource {
             quote = JsonUtil.mapper.readValue(jsonQuote, Quote.class);
         } catch (IOException e) {
             logger.error("Unable to get a quote out of [" + jsonQuote + "]", e);
-            return new ResponseEntity<>(INVALID_QUOTE_PROVIDED, NOT_ACCEPTABLE);
+            return new ResponseEntity<>(getJson(INVALID_QUOTE_PROVIDED), NOT_ACCEPTABLE);
         }
         quote.setId(tmp.get().getId());
         quote.setQuoteId(tmp.get().getQuoteId());
@@ -177,7 +177,7 @@ public class QuoteResource {
             updatedQuote = quoteService.updateQuote(quote);
         } catch (ElifeException e) {
             logger.error("Unable to update quote", e);
-            return new ResponseEntity<>(QUOTE_NOT_UPDATED, INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(getJson(QUOTE_NOT_UPDATED), INTERNAL_SERVER_ERROR);
         }
 
         return new ResponseEntity<>(getJson(updatedQuote), OK);

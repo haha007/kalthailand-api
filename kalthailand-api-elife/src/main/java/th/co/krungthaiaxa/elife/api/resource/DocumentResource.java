@@ -54,13 +54,13 @@ public class DocumentResource {
     })
     @RequestMapping(value = "/documents/policies/{policyId}", produces = APPLICATION_JSON_VALUE, method = GET)
     @ResponseBody
-    public ResponseEntity documentsOfPolicy(
+    public ResponseEntity<byte[]> documentsOfPolicy(
             @ApiParam(value = "The policy ID", required = true)
             @PathVariable String policyId) {
         Optional<Policy> policy = policyService.findPolicy(policyId);
         if (!policy.isPresent()) {
             logger.error("Unable to find the policy with ID [" + policyId + "]");
-            return new ResponseEntity<>(POLICY_DOES_NOT_EXIST, NOT_FOUND);
+            return new ResponseEntity<>(getJson(POLICY_DOES_NOT_EXIST), NOT_FOUND);
         }
 
         return new ResponseEntity<>(getJson(policy.get().getDocuments()), OK);
@@ -74,7 +74,7 @@ public class DocumentResource {
     })
     @RequestMapping(value = "/documents/policies/{policyId}/{documentId}", produces = APPLICATION_JSON_VALUE, method = GET)
     @ResponseBody
-    public ResponseEntity documentDownloadOfPolicy(
+    public ResponseEntity<byte[]> documentDownloadOfPolicy(
             @ApiParam(value = "The policy ID", required = true)
             @PathVariable String policyId,
             @ApiParam(value = "The document ID", required = true)
@@ -82,19 +82,19 @@ public class DocumentResource {
         Optional<Policy> policy = policyService.findPolicy(policyId);
         if (!policy.isPresent()) {
             logger.error("Unable to find the policy with ID [" + policyId + "]");
-            return new ResponseEntity<>(POLICY_DOES_NOT_EXIST, NOT_FOUND);
+            return new ResponseEntity<>(getJson(POLICY_DOES_NOT_EXIST), NOT_FOUND);
         }
 
         Optional<Document> document = policy.get().getDocuments().stream().filter(tmp -> tmp.getId().equals(documentId)).findFirst();
         if (!document.isPresent()) {
             logger.error("Unable to find the document with ID [" + documentId + "] in the policy with ID [" + policyId + "]");
-            return new ResponseEntity<>(POLICY_DOES_NOT_CONTAIN_DOCUMENT, NOT_ACCEPTABLE);
+            return new ResponseEntity<>(getJson(POLICY_DOES_NOT_CONTAIN_DOCUMENT), NOT_ACCEPTABLE);
         }
 
         DocumentDownload documentDownload = documentService.downloadDocument(documentId);
         if (documentDownload == null) {
             logger.error("Unable to download the document with ID [" + documentId + "]");
-            return new ResponseEntity<>(UNABLE_TO_DOWNLOAD_DOCUMENT, INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(getJson(UNABLE_TO_DOWNLOAD_DOCUMENT), INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity<>(getJson(documentDownload), OK);
     }
@@ -108,7 +108,7 @@ public class DocumentResource {
     })
     @RequestMapping(value = "/documents/policies/{policyId}/thai/id", produces = APPLICATION_JSON_VALUE, method = POST)
     @ResponseBody
-    public ResponseEntity uploadThaiId(
+    public ResponseEntity<byte[]> uploadThaiId(
             @ApiParam(value = "The policy ID", required = true)
             @PathVariable String policyId,
             @ApiParam(value = "The content of the image to watermark, but base 64 encoded.", required = true)
@@ -116,14 +116,14 @@ public class DocumentResource {
         Optional<Policy> policy = policyService.findPolicy(policyId);
         if (!policy.isPresent()) {
             logger.error("Unable to find the policy with ID [" + policyId + "]");
-            return new ResponseEntity<>(POLICY_DOES_NOT_EXIST, NOT_FOUND);
+            return new ResponseEntity<>(getJson(POLICY_DOES_NOT_EXIST), NOT_FOUND);
         }
 
         byte[] inputImage;
         try {
             inputImage = Base64.getDecoder().decode(base64Image);
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(WATERMARK_IMAGE_INPUT_NOT_READABLE, BAD_REQUEST);
+            return new ResponseEntity<>(getJson(WATERMARK_IMAGE_INPUT_NOT_READABLE), BAD_REQUEST);
         }
 
         InputStream in = new ByteArrayInputStream(inputImage);
@@ -133,20 +133,20 @@ public class DocumentResource {
         try {
             mimeType = URLConnection.guessContentTypeFromStream(in);
         } catch (IOException e) {
-            return new ResponseEntity<>(WATERMARK_IMAGE_MIME_TYPE_UNKNOWN, BAD_REQUEST);
+            return new ResponseEntity<>(getJson(WATERMARK_IMAGE_MIME_TYPE_UNKNOWN), BAD_REQUEST);
         }
 
         byte[] content;
         try {
             content = WatermarkUtil.addTextWatermark(watermarkImage, mimeType, in);
         } catch (InputImageException e) {
-            return new ResponseEntity<>(WATERMARK_IMAGE_INPUT_NOT_BUFFERABLE, BAD_REQUEST);
+            return new ResponseEntity<>(getJson(WATERMARK_IMAGE_INPUT_NOT_BUFFERABLE), BAD_REQUEST);
         } catch (OutputImageException e) {
-            return new ResponseEntity<>(WATERMARK_IMAGE_OUTPUT_NOT_WRITTEN, BAD_REQUEST);
+            return new ResponseEntity<>(getJson(WATERMARK_IMAGE_OUTPUT_NOT_WRITTEN), BAD_REQUEST);
         } catch (ImageTooSmallException e) {
-            return new ResponseEntity<>(WATERMARK_IMAGE_INPUT_TOO_SMALL, NOT_ACCEPTABLE);
+            return new ResponseEntity<>(getJson(WATERMARK_IMAGE_INPUT_TOO_SMALL), NOT_ACCEPTABLE);
         } catch (UnsupportedImageException e) {
-            return new ResponseEntity<>(WATERMARK_IMAGE_INPUT_NOT_SUPPORTED, UNSUPPORTED_MEDIA_TYPE);
+            return new ResponseEntity<>(getJson(WATERMARK_IMAGE_INPUT_NOT_SUPPORTED), UNSUPPORTED_MEDIA_TYPE);
         }
 
         byte[] encodedContent = Base64.getEncoder().encode(content);

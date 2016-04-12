@@ -13,16 +13,14 @@ import th.co.krungthaiaxa.elife.api.model.Mid;
 import th.co.krungthaiaxa.elife.api.model.error.Error;
 import th.co.krungthaiaxa.elife.api.service.LineBCService;
 import th.co.krungthaiaxa.elife.api.utils.Decrypt;
-import th.co.krungthaiaxa.elife.api.utils.JsonUtil;
 
 import javax.inject.Inject;
 import java.util.Optional;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
-import static th.co.krungthaiaxa.elife.api.model.error.ErrorCode.INVALID_LINE_ID;
-import static th.co.krungthaiaxa.elife.api.model.error.ErrorCode.UNABLE_TO_DECRYPT;
-import static th.co.krungthaiaxa.elife.api.model.error.ErrorCode.UNABLE_TO_GET_LINE_BC;
+import static th.co.krungthaiaxa.elife.api.model.error.ErrorCode.*;
+import static th.co.krungthaiaxa.elife.api.utils.JsonUtil.getJson;
 
 @RestController
 @Api(value = "Line")
@@ -45,14 +43,14 @@ public class LineResource {
     })
     @RequestMapping(value = "/line/bc", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity getLineBC(
+    public ResponseEntity<byte[]> getLineBC(
             @ApiParam(value = "The MID value")
             @RequestParam String mid) {
         Optional<LineBC> lineBCData = lineBCService.getLineBCInfo(mid);
         if (lineBCData.isPresent()) {
-            return new ResponseEntity<>(JsonUtil.getJson(lineBCData.get()), HttpStatus.OK);
+            return new ResponseEntity<>(getJson(lineBCData.get()), HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(UNABLE_TO_GET_LINE_BC, NOT_FOUND);
+            return new ResponseEntity<>(getJson(UNABLE_TO_GET_LINE_BC), NOT_FOUND);
         }
     }
 
@@ -62,7 +60,7 @@ public class LineResource {
     })
     @RequestMapping(value = "/decrypt", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity decryptLineId(
+    public ResponseEntity<byte[]> decryptLineId(
             @ApiParam(value = "The encrypted line token")
             @RequestParam String value) {
         String decrypted;
@@ -70,17 +68,17 @@ public class LineResource {
             decrypted = Decrypt.decrypt(value, secretkey);
         } catch (Exception e) {
             logger.error("Unable to decrypt [" + value + "]", e);
-            return new ResponseEntity<>(UNABLE_TO_DECRYPT, BAD_REQUEST);
+            return new ResponseEntity<>(getJson(UNABLE_TO_DECRYPT), BAD_REQUEST);
         }
 
         if (!decrypted.contains(".")) {
             logger.error("Decrypted value doesn't contain a '.'");
-            return new ResponseEntity<>(INVALID_LINE_ID, BAD_REQUEST);
+            return new ResponseEntity<>(getJson(INVALID_LINE_ID), BAD_REQUEST);
         }
 
         logger.info("Value has been successfuly decrypted");
         Mid result = new Mid(decrypted.substring(0, decrypted.indexOf(".")));
-        return new ResponseEntity<>(JsonUtil.getJson(result), HttpStatus.OK);
+        return new ResponseEntity<>(getJson(result), HttpStatus.OK);
     }
 
 }
