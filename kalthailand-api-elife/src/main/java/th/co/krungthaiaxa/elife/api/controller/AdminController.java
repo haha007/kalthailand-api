@@ -115,7 +115,7 @@ public class AdminController {
         response.setContentType("application/pdf");
         response.setContentLength(documentContent.length);
 
-        String fileName = documentType + "_" + ofPattern("yyyyMMdd_hhmmss").format(now()) + "_" + policyId + ".pdf";
+        String fileName = policyId + "-" + documentType + "_" + ofPattern("yyyyMMdd_hhmmss").format(now()) + ".pdf";
         response.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\"", fileName));
 
         try (OutputStream outStream = response.getOutputStream()) {
