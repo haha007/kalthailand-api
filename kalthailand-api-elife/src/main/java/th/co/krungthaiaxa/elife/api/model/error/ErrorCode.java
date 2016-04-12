@@ -23,7 +23,6 @@ public class ErrorCode {
     public static final Function<String, Error> POLICY_CANNOT_BE_CREATED = msg -> new Error("0403", "Unable to create your policy. Error is: " + msg, "The policy could not be created out of the quote for validation reasons");
     public static final Function<String, Error> POLICY_IS_CANCELED = msg -> new Error("0404", "The policy [" + msg + "] is canceled", "The policy [" + msg + "] is canceled");
     public static final Function<String, Error> POLICY_IS_PENDING_PAYMENT = msg -> new Error("0405", "The policy [" + msg + "] is waiting for payment registration", "The policy [" + msg + "] is waiting for payment registration");
-    public static final Function<String, Error> POLICY_IS_VALIDATED = msg -> new Error("0406", "The policy [" + msg + "] is already validated", "The policy [" + msg + "] is already validated");
     public static final Function<String, Error> POLICY_IS_NOT_PENDING_FOR_PAYMENT = msg -> new Error("0407", "The policy [" + msg + "] is not pending for payment and cannot be updated to pending for validation", "The policy [" + msg + "] is not pending for payment and cannot be updated to pending for validation");
     public static final Function<String, Error> ORDER_ID_NOT_PROVIDED = msg -> new Error("0408", "The order id was not provided", "The order id was not provided");
     public static final Function<String, Error> POLICY_VALIDATION_ERROR = msg -> new Error("0409", "There was an error while trying to validate the policy. Error is [" + msg + "].", "There was an error while trying to validate the policy. Error is [" + msg + "].");
@@ -43,4 +42,5 @@ public class ErrorCode {
     // ADMIN UI
     public static final Error UI_UNAUTHORIZED = new Error("9001", "You are not authorized to see this page", "User's credentials do not allow the user to see this page");
     public static final Function<String, Error> NOTIFICATION_NOT_SENT = msg -> new Error("9002", "Notification was not sent. Error is: " + msg, "Notification was not sent. Error is: " + msg);
+
 }

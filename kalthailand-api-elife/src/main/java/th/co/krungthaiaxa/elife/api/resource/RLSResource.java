@@ -13,13 +13,9 @@ import th.co.krungthaiaxa.elife.api.model.error.ErrorCode;
 import th.co.krungthaiaxa.elife.api.service.RLSService;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URLConnection;
 
 import static java.time.LocalDateTime.now;
 import static java.time.format.DateTimeFormatter.ofPattern;
@@ -63,21 +59,12 @@ public class RLSResource {
 
     @ApiOperation(value = "Get Deduction file", notes = "Get a Deduction file")
     @RequestMapping(value = "/RLS/deduction/download/{collectionFileId}", produces = APPLICATION_JSON_VALUE, method = GET)
-    public void getDeductionFile(@PathVariable String collectionFileId, HttpServletRequest request,
-                                 HttpServletResponse response) {
+    public void getDeductionFile(@PathVariable String collectionFileId, HttpServletResponse response) {
         logger.info("Downloading deduction File");
         CollectionFile collectionFile = rlsService.findOne(collectionFileId);
         byte[] excelFileContent = rlsService.createDeductionExcelFile(collectionFile.getDeductionFile());
 
-        String mimeType;
-        try (InputStream in = new ByteArrayInputStream(excelFileContent)) {
-            mimeType = URLConnection.guessContentTypeFromStream(in);
-        } catch (IOException e) {
-            logger.error("Unable to download the deduction file", e);
-            return;
-        }
-
-        response.setContentType(mimeType);
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         response.setContentLength(excelFileContent.length);
 
         String fileName = "deductionFile_" + ofPattern("yyyyMMdd_hhmmss").format(now()) + ".xlsx";
