@@ -3,6 +3,7 @@ package th.co.krungthaiaxa.elife.api;
 import com.google.common.base.Predicates;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import springfox.documentation.builders.ApiInfoBuilder;
@@ -12,7 +13,9 @@ import springfox.documentation.service.ApiInfo;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
+import th.co.krungthaiaxa.elife.api.filter.ClientSideRoleFilter;
 
+import javax.inject.Inject;
 import java.time.LocalDate;
 import java.util.Date;
 
@@ -20,6 +23,13 @@ import java.util.Date;
 @EnableSwagger2
 @EnableScheduling
 public class KalApiApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(KalApiApplication.class, args);
+    }
+
+    @Inject
+    private ClientSideRoleFilter clientSideRoleFilter;
+
     @Bean
     public Docket configureSwagger() {
         return new Docket(DocumentationType.SWAGGER_2)
@@ -33,8 +43,13 @@ public class KalApiApplication {
                 .directModelSubstitute(LocalDate.class, Date.class);
     }
 
-    public static void main(String[] args) {
-        SpringApplication.run(KalApiApplication.class, args);
+    @Bean
+    public FilterRegistrationBean someFilterRegistration() {
+        FilterRegistrationBean registration = new FilterRegistrationBean();
+        registration.setFilter(clientSideRoleFilter);
+        registration.addUrlPatterns("*");
+        registration.setName("Client side role filter");
+        return registration;
     }
 
     private ApiInfo metadata() {

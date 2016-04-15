@@ -32,15 +32,4 @@
         return $resource('admin/policies/:id/reminder/:reminderId', {id: '@id', reminderId: '@reminderId'}, {});
     });
 
-    app.factory('AccessRightsDashboard', function ($resource) {
-        return $resource('admin/check/access/dashboard', {}, {});
-    });
-
-    app.factory('AccessRightsAutopay', function ($resource) {
-        return $resource('admin/check/access/autopay', {}, {});
-    });
-
-    app.factory('AccessRightsValidation', function ($resource) {
-        return $resource('admin/check/access/validation', {}, {});
-    });
 })();

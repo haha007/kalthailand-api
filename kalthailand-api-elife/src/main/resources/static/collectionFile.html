@@ -18,7 +18,7 @@
     <link href="elife.css" rel="stylesheet">
 </head>
 
-<body ng-app="myApp" ng-controller="MainController">
+<body ng-app="myApp">
 
 <nav class="navbar navbar-inverse navbar-fixed-top">
     <div class="container-fluid">
@@ -34,13 +34,13 @@
     </div>
 </nav>
 
-<div class="container-fluid" id="dashboardContent">
+<div class="container-fluid">
     <div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
             <ul class="nav nav-sidebar">
-                <li><a href="index.html">Dashboard</a></li>
-                <li class="active"><a href="collectionFile.html">Collection file upload<span class="sr-only">(current)</span></a></li>
-                <li><a href="policyDetail.html">Policy Detail</a></li>
+                <li id="dashboardLink"><a href="index.html">Dashboard</a></li>
+                <li id="collectionFileLink" class="active"><a href="collectionFile.html">Collection file upload<span class="sr-only">(current)</span></a></li>
+                <li id="policyDetailLink"><a href="policyDetail.html">Policy Detail</a></li>
             </ul>
         </div>
 
@@ -53,14 +53,7 @@
             }
         </style>
 
-        <div class="col-sm-9 col-sm-offiset-3 col-md-10 col-md-offset-2 main" ng-controller="AccessRightsAutopayController">
-            <div class="alert alert-danger" role="alert" ng-show="accessErrorMessage">
-                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-                {{ accessErrorMessage }}
-            </div>
-        </div>
-
-        <div ng-hide="accessErrorMessage" class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" ng-controller="AppController">
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" ng-controller="AppController" id="collectionFileListContainer">
             <div class="page-header">
                 <h1>Collection files</h1>
             </div>

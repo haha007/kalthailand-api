@@ -3,43 +3,6 @@
 
     var app = angular.module('myApp');
 
-    app.controller('MainController', function ($rootScope, $scope) {
-        $rootScope.accessErrorMessage = null;
-    });
-
-    app.controller('AccessRightsDashboardController', function ($rootScope, $scope, AccessRightsDashboard) {
-        AccessRightsDashboard.get(
-            {},
-            function (successResponse) {
-                $rootScope.accessErrorMessage = null;
-            },
-            function (errorResponse) {
-                $rootScope.accessErrorMessage = errorResponse.data.userMessage ? errorResponse.data.userMessage : errorResponse.data.message;
-            })
-    });
-
-    app.controller('AccessRightsAutopayController', function ($rootScope, $scope, AccessRightsAutopay) {
-        AccessRightsAutopay.get(
-            {},
-            function (successResponse) {
-                $rootScope.accessErrorMessage = null;
-            },
-            function (errorResponse) {
-                $rootScope.accessErrorMessage = errorResponse.data.userMessage ? errorResponse.data.userMessage : errorResponse.data.message;
-            })
-    });
-
-    app.controller('AccessRightsValidationController', function ($rootScope, $scope, AccessRightsValidation) {
-        AccessRightsValidation.get(
-            {},
-            function (successResponse) {
-                $rootScope.accessErrorMessage = null;
-            },
-            function (errorResponse) {
-                $rootScope.accessErrorMessage = errorResponse.data.userMessage ? errorResponse.data.userMessage : errorResponse.data.message;
-            })
-    });
-
     app.controller('AppController', function ($rootScope, $scope, Item) {
         Item.query(function (response) {
             $scope.collectionFiles = response;
