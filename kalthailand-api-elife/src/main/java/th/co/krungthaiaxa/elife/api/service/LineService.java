@@ -32,6 +32,8 @@ public class LineService {
     private String linePaySecretKey;
     @Value("${line.pay.url}")
     private String linePayUrl;
+    @Value("${line.pay.capture}")
+    private String linePayCapture;
     @Value("${line.app.id}")
     private String lineAppId;
     @Value("${line.app.notification.url}")
@@ -79,7 +81,7 @@ public class LineService {
         linePayBookingRequest.setProductName(policy.getCommonData().getProductName());
         linePayBookingRequest.setAmount(amount);
         linePayBookingRequest.setCurrency(currency);
-        linePayBookingRequest.setCapture("false");
+        linePayBookingRequest.setCapture(linePayCapture);
         linePayBookingRequest.setMid(mid);
         linePayBookingRequest.setPayType("PREAPPROVED");
         linePayBookingRequest.setCheckConfirmUrlBrowser("true");
