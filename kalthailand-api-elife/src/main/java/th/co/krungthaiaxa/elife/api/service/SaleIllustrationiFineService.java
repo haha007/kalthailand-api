@@ -182,7 +182,7 @@ public class SaleIllustrationiFineService {
         table1.addCell(addData("3) เกิดขึ้นเนื่องจากไฟไหม้โรงมหรสพ โรงแรม หรืออาคารสาธารณะอื่นใด ซึ่งผู้เอาประกันภัยอยู่ ณ สถานที่นั้น ในขณะที่เริ่มไฟไหม้", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
         table1.addCell(addLine(false, tbCols));
         table1.addCell(addData(TAB + "- โปรดศึกษา อ่าน และทำความเข้าใจรายละเอียดเพิ่มเติมในเอกสารประกอบการขายของบริษัทฯ", getFontNormalGrayStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table1.addCell(addData(TAB + "- อายุขณะขอเอาประกันภัย 20 - 60 ปี", getFontNormalGrayStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
+        table1.addCell(addData(TAB + "- อายุขณะขอเอาประกันภัย 20 - 59 ปี", getFontNormalGrayStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
         table1.addCell(addData(TAB + "- จำนวนเงินเอาประกันภัยขั้นต่ำ 100,000 บาท", getFontNormalGrayStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
 
 

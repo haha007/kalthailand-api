@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+
 import javax.sql.DataSource;
 import java.util.List;
 import java.util.Map;
@@ -58,7 +59,7 @@ public class LineBCRepository {
             logger.error("Unable to get Line BC information along with [" + mid + "] .....", e);
         }
 
-        if(list.size()==0||list==null){
+        if (list == null || list.size() == 0) {
             return Optional.empty();
         }else{
             return Optional.of(list);
