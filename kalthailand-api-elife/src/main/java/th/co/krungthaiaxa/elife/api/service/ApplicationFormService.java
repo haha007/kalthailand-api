@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.elife.api.model.*;
-import th.co.krungthaiaxa.elife.api.model.enums.DividendOption;
 import th.co.krungthaiaxa.elife.api.model.enums.GenderCode;
 import th.co.krungthaiaxa.elife.api.model.enums.MaritalStatus;
 import th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode;
@@ -43,7 +42,32 @@ public class ApplicationFormService {
     private final String MARK = "X";
     private final DecimalFormat MONEY_FORMAT = new DecimalFormat("#,##0.00");
 
-    public byte[] generatePdfForm(Policy pol) throws Exception {
+    public byte[] generateNotValidatedApplicationForm(Policy pol) throws Exception {
+        ByteArrayOutputStream content = new ByteArrayOutputStream();
+        Document document = new Document(PageSize.A4);
+        PdfWriter writer = PdfWriter.getInstance(document, content);
+        document.open();
+
+        // page1
+        PdfContentByte canvas1 = writer.getDirectContentUnder();
+        canvas1.addImage(getPdfImage(getPage1(pol)));
+
+        // page2
+        document.newPage();
+        PdfContentByte canvas2 = writer.getDirectContentUnder();
+        canvas2.addImage(getPdfImage(getPage2(pol)));
+
+        // page3
+        document.newPage();
+        PdfContentByte canvas3 = writer.getDirectContentUnder();
+        canvas3.addImage(getPdfImage(getPage3()));
+
+        document.close();
+        content.close();
+        return content.toByteArray();
+    }
+
+    public byte[] generateValidatedApplicationForm(Policy pol) throws Exception {
         ByteArrayOutputStream content = new ByteArrayOutputStream();
         Document document = new Document(PageSize.A4);
         PdfWriter writer = PdfWriter.getInstance(document, content);

@@ -98,14 +98,14 @@ public class DocumentService {
     }
 
     public void generateNotValidatedPolicyDocuments(Policy policy) {
-        // Generate Application Form
-        Optional<Document> applicationForm = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(APPLICATION_FORM)).findFirst();
-        if (!applicationForm.isPresent()) {
+        // Generate NOT validated Application Form
+        Optional<Document> notValidatedApplicationForm = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(APPLICATION_FORM)).findFirst();
+        if (!notValidatedApplicationForm.isPresent()) {
             try {
-                byte[] content = applicationFormService.generatePdfForm(policy);
+                byte[] content = applicationFormService.generateNotValidatedApplicationForm(policy);
                 addDocument(policy, content, "application/pdf", APPLICATION_FORM);
             } catch (Exception e) {
-                logger.error("Application form for Policy [" + policy.getPolicyId() + "] has not been generated.", e);
+                logger.error("NOT validated Application form for Policy [" + policy.getPolicyId() + "] has not been generated.", e);
             }
         }
 
@@ -125,6 +125,17 @@ public class DocumentService {
     public void generateValidatedPolicyDocuments(Policy policy) {
         // In case previous documents were not generated
         generateNotValidatedPolicyDocuments(policy);
+
+        // Generate validated Application Form
+        Optional<Document> validatedApplicationForm = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(APPLICATION_FORM_VALIDATED)).findFirst();
+        if (!validatedApplicationForm.isPresent()) {
+            try {
+                byte[] content = applicationFormService.generateValidatedApplicationForm(policy);
+                addDocument(policy, content, "application/pdf", APPLICATION_FORM_VALIDATED);
+            } catch (Exception e) {
+                logger.error("Validated Application form for Policy [" + policy.getPolicyId() + "] has not been generated.", e);
+            }
+        }
 
         // Generate Ereceipt as Image
         byte[] ereceiptImage = null;

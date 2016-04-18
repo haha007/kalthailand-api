@@ -40,7 +40,7 @@ public class ApplicationFormServiceTest {
     public void should_generate_application_pdf_file() throws Exception {
         Policy policy = getPolicy();
 
-        byte[] pdfContent = appService.generatePdfForm(policy);
+        byte[] pdfContent = appService.generateNotValidatedApplicationForm(policy);
         File pdfFile = new File(tmpPathDeletedAfterTests + File.separator + "application-form.pdf");
         writeByteArrayToFile(pdfFile, pdfContent);
 

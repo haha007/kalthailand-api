@@ -213,7 +213,7 @@ public class PolicyService {
         policyRepository.save(policy);
     }
 
-    public void updatePolicyAfterPolicyHasBeenValidated(Policy policy) {
+    public void updatePolicyAfterPolicyHasBeenValidated(Policy policy, String agentCode) {
         if (!policy.getStatus().equals(PENDING_VALIDATION)) {
             throw new ElifeException("Can't validate policy [" + policy.getPolicyId() + "], it is not pending for validation.");
         }
@@ -254,6 +254,7 @@ public class PolicyService {
             logger.error(String.format("Unable to send push notification for policy validation on policy [%1$s].", policy.getPolicyId()), e);
         }
 
+        policy.setValidationAgentCode(agentCode);
         policy.setStatus(VALIDATED);
         policyRepository.save(policy);
     }

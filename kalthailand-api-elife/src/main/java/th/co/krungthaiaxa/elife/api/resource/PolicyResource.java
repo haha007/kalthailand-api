@@ -21,6 +21,8 @@ import th.co.krungthaiaxa.elife.api.utils.JsonUtil;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.springframework.http.HttpStatus.*;
@@ -168,14 +170,24 @@ public class PolicyResource {
             "notifications through email, SMS and LINE push notifications", response = Policy.class)
     @ApiResponses({
             @ApiResponse(code = 404, message = "If the policy doesn't exist", response = Error.class),
-            @ApiResponse(code = 406, message = "If the payment id is not found in the policy payment list", response = Error.class),
+            @ApiResponse(code = 406, message = "If the agent code is not in format '123456-12-123456'", response = Error.class),
             @ApiResponse(code = 500, message = "If there was some internal error", response = Error.class)
     })
     @RequestMapping(value = "/policies/{policyId}/update/status/validated", produces = APPLICATION_JSON_VALUE, method = PUT)
     @ResponseBody
     public ResponseEntity<byte[]> updatePolicyToValidated(
             @ApiParam(value = "The policy ID", required = true)
-            @PathVariable String policyId) {
+            @PathVariable String policyId,
+            @ApiParam(value = "The code of validating agent", required = true)
+            @RequestParam String agentCode) {
+
+        Pattern pattern = Pattern.compile("[0-9]{6}-[0-9]{2}-[0-9]{6}$");
+        Matcher matcher = pattern.matcher(agentCode);
+        if (!matcher.find()) {
+            logger.error("Agent code [" + policyId + "] is not following format '123456-12-123456'.");
+            return new ResponseEntity<>(getJson(AGENT_CODE_FORMAT_ERROR), NOT_ACCEPTABLE);
+        }
+
         Optional<Policy> policy = policyService.findPolicy(policyId);
         if (!policy.isPresent()) {
             logger.error("Unable to find the policy with ID [" + policyId + "]");
@@ -211,7 +223,7 @@ public class PolicyResource {
         policyService.updateRegistrationForAllNotProcessedPayment(policy.get(), linePayResponse.getInfo().getRegKey());
 
         try {
-            policyService.updatePolicyAfterPolicyHasBeenValidated(policy.get());
+            policyService.updatePolicyAfterPolicyHasBeenValidated(policy.get(), agentCode);
         } catch (ElifeException e) {
             logger.error("There was an error whil trying to update policy status.", e);
             return new ResponseEntity<>(getJson(POLICY_VALIDATION_ERROR.apply(e.getMessage())), INTERNAL_SERVER_ERROR);

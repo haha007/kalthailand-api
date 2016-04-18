@@ -3,7 +3,7 @@
 
     var app = angular.module('myApp');
 
-    app.controller('AppController', function ($rootScope, $scope, Item) {
+    app.controller('AppController', function ($scope, Item) {
         Item.query(function (response) {
             $scope.collectionFiles = response;
         });
@@ -26,7 +26,7 @@
         }
     });
 
-    app.controller('DetailController', function ($rootScope, $scope, $http, PolicyDetail, PolicyNotification) {
+    app.controller('DetailController', function ($scope, $http, PolicyDetail, PolicyNotification) {
         $scope.onClickNotification = function () {
             $scope.isValidating = true;
             PolicyNotification.get({id: $scope.policyID, reminderId: $scope.scenarioID},
@@ -48,7 +48,9 @@
             $scope.isValidating = true;
             $http({
                 url: 'policies/' + policyNumber + '/update/status/validated',
-                method: 'PUT'
+                method: 'PUT',
+                data: $.param({ agentCode: $scope.agentCode }),
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'}
             })
             .then(
                 function (successResponse) {

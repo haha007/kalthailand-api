@@ -29,46 +29,29 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Value("${security.ui.validation.user.password}")
     private String validationUserPassword;
 
-    /**
-     * This section defines the user account configured in properties file
-     * This user will get the USER role that will be used to configure the security
-     */
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.inMemoryAuthentication()
-                .withUser(adminUserName).password(adminUserPassword).roles("ADMIN", "USER", "UI");
+                .withUser(adminUserName).password(adminUserPassword).roles("ADMIN", "UI");
         auth.inMemoryAuthentication()
-                .withUser(autopayUserName).password(autopayUserPassword).roles("AUTOPAY", "USER", "UI");
+                .withUser(autopayUserName).password(autopayUserPassword).roles("AUTOPAY", "UI");
         auth.inMemoryAuthentication()
-                .withUser(validationUserName).password(validationUserPassword).roles("VALIDATION", "USER", "UI");
+                .withUser(validationUserName).password(validationUserPassword).roles("VALIDATION", "UI");
         auth.inMemoryAuthentication()
-                .withUser(apiUserName).password(apiUserPassword).roles("USER", "UI");
+                .withUser(apiUserName).password(apiUserPassword).roles("UI");
     }
 
-    /**
-     * This section defines the security policy for the app.
-     * - USER role is needed for every type of requests to any URL
-     * - CSRF headers are disabled since we are only testing the REST interface, not a web one
-     */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .httpBasic().and()
-                .authorizeRequests()
-                // UI rights
-                .antMatchers(HttpMethod.GET, "/**/*.htm").hasRole("UI")
-                .antMatchers(HttpMethod.GET, "/**/*.html").hasRole("UI")
-                .antMatchers(HttpMethod.GET, "/**/*.css").hasRole("UI")
-                .antMatchers(HttpMethod.GET, "/**/*.ttf").hasRole("UI")
-                .antMatchers(HttpMethod.GET, "/**/*.woff").hasRole("UI")
-                .antMatchers(HttpMethod.GET, "/**/*.js").hasRole("UI")
+            .httpBasic()
+            .and().authorizeRequests()
                 // ADMIN rights
                 .antMatchers(HttpMethod.GET, "/admin/**").hasAnyRole("ADMIN", "AUTOPAY", "VALIDATION")
                 // USER rights
-                .antMatchers(HttpMethod.DELETE, "/**").hasRole("USER")
-                .antMatchers(HttpMethod.GET, "/**").hasRole("USER")
-                .antMatchers(HttpMethod.POST, "/**").hasRole("USER")
-                .antMatchers(HttpMethod.PUT, "/**").hasRole("USER")
-                .and().csrf().disable();
+                .antMatchers(HttpMethod.GET, "/**").authenticated()
+                .antMatchers(HttpMethod.POST, "/**").authenticated()
+                .antMatchers(HttpMethod.PUT, "/**").authenticated()
+            .and().csrf().disable();
     }
 }

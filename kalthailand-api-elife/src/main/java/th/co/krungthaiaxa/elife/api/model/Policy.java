@@ -32,6 +32,7 @@ public class Policy implements Serializable {
     private List<Payment> payments = new ArrayList<>();
     @DBRef
     private List<th.co.krungthaiaxa.elife.api.model.Document> documents = new ArrayList<>();
+    private String validationAgentCode;
 
     public String getId() {
         return id;
@@ -122,6 +123,15 @@ public class Policy implements Serializable {
         documents.add(document);
     }
 
+    @ApiModelProperty(value = "The agent code of the agent who validate the policy")
+    public String getValidationAgentCode() {
+        return validationAgentCode;
+    }
+
+    public void setValidationAgentCode(String validationAgentCode) {
+        this.validationAgentCode = validationAgentCode;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -130,16 +140,18 @@ public class Policy implements Serializable {
         return Objects.equals(id, policy.id) &&
                 Objects.equals(policyId, policy.policyId) &&
                 Objects.equals(quoteId, policy.quoteId) &&
+                status == policy.status &&
                 Objects.equals(commonData, policy.commonData) &&
                 Objects.equals(premiumsData, policy.premiumsData) &&
                 Objects.equals(insureds, policy.insureds) &&
                 Objects.equals(coverages, policy.coverages) &&
                 Objects.equals(payments, policy.payments) &&
-                Objects.equals(documents, policy.documents);
+                Objects.equals(documents, policy.documents) &&
+                Objects.equals(validationAgentCode, policy.validationAgentCode);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, policyId, quoteId, commonData, premiumsData, insureds, coverages, payments, documents);
+        return Objects.hash(id, policyId, quoteId, status, commonData, premiumsData, insureds, coverages, payments, documents, validationAgentCode);
     }
 }
