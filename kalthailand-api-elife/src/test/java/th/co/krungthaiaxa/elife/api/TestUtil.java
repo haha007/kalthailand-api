@@ -93,8 +93,7 @@ public class TestUtil {
         productQuotation.setPackageName(ProductIFinePackage.IFINE1.name());
         if (isSumInsured) {
             productQuotation.setSumInsuredAmount(amount);
-        }
-        else {
+        } else {
             productQuotation.setPremiumAmount(amount);
         }
         return productQuotation;
@@ -166,7 +165,7 @@ public class TestUtil {
         quote.getInsureds().get(0).getPerson().setMiddleName("Else");
         quote.getInsureds().get(0).getPerson().setMobilePhoneNumber(phoneNumber);
         quote.getInsureds().get(0).getPerson().setSurName("ศรีสุข");
-        quote.getInsureds().get(0).getPerson().setTitle("M");
+        quote.getInsureds().get(0).getPerson().setTitle("MR");
         quote.getInsureds().get(0).getPerson().addRegistration(registration("3841200364454"));
 
         if (quote.getPremiumsData().getProduct10ECPremium() != null) {
@@ -233,7 +232,7 @@ public class TestUtil {
         person.setGivenName("Beneficiary");
         person.setMiddleName("");
         person.setSurName("Benf Last name");
-        person.setTitle("M");
+        person.setTitle("MR");
         person.addRegistration(registration(registrationId));
 
         CoverageBeneficiary result = new CoverageBeneficiary();
@@ -313,7 +312,7 @@ public class TestUtil {
         person.setMiddleName("Else");
         person.setMobilePhoneNumber(phoneNumber);
         person.setSurName("ศรีสุข");
-        person.setTitle("M");
+        person.setTitle("MR");
 
         person.addRegistration(registration(registrationId));
 
