@@ -126,6 +126,7 @@ public class ApplicationFormServiceTest {
         Periodicity p = new Periodicity();
         p.setCode(PeriodicityCode.EVERY_QUARTER);
         policy.getPremiumsData().getFinancialScheduler().setPeriodicity(p);
+        policy.setValidationAgentCode("000000-00-000000");
 
         byte[] pdfContent = appService.generateValidatedApplicationForm(policy);
         File pdfFile = new File(tmpPathDeletedAfterTests + File.separator + "application-validated-10ec-form.pdf");
@@ -160,6 +161,7 @@ public class ApplicationFormServiceTest {
         policy.getInsureds().get(0).addIncomeSource("test source income");
         policy.getInsureds().get(0).setEmployerName("test workplace");
         policy.getPremiumsData().getProductIFinePremium().setProductIFinePackage(ProductIFinePackage.IFINE5);
+        policy.setValidationAgentCode("000000-00-000000");
 
         byte[] pdfContent = appService.generateValidatedApplicationForm(policy);
         File pdfFile = new File(tmpPathDeletedAfterTests + File.separator + "application-validated-ifine-form.pdf");
