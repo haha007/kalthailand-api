@@ -134,7 +134,7 @@ public class QuoteResource {
         try {
             return new ResponseEntity<>(getJson(quoteService.createQuote(sessionId, channelType, productQuotation)), OK);
         } catch (ElifeException e) {
-            logger.error("Unable to update quote", e);
+            logger.error("Unable to create a quote", e);
             return new ResponseEntity<>(getJson(QUOTE_NOT_CREATED), INTERNAL_SERVER_ERROR);
         }
     }
