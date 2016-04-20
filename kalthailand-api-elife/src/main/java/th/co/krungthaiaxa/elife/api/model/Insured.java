@@ -17,6 +17,7 @@ public class Insured implements Serializable {
     private LocalDate startDate;
     private LocalDate endDate;
     private Integer ageAtSubscription;
+    private Integer professionId;
     private String professionName;
     private String professionDescription;
     private String employerName;
@@ -74,7 +75,16 @@ public class Insured implements Serializable {
         this.ageAtSubscription = ageAtSubscription;
     }
 
-    @ApiModelProperty(value = "Profession of the self-insured")
+    @ApiModelProperty(value = "Profession ID of the self-insured")
+    public Integer getProfessionId() {
+        return professionId;
+    }
+
+    public void setProfessionId(Integer professionId) {
+        this.professionId = professionId;
+    }
+
+    @ApiModelProperty(value = "Profession of the self-insured. This is calculated by back end API and cannot be set by client.")
     public String getProfessionName() {
         return professionName;
     }

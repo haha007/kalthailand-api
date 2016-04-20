@@ -992,6 +992,18 @@ public class Product10ECTest {
     }
 
     @Test
+    public void should_return_error_when_create_policy_with_main_insured_with_no_profession_id() throws Exception {
+        Quote quote = quote(product10EC());
+        product10EC.calculateQuote(quote, productQuotation(25, EVERY_YEAR, 1000000.0));
+        quote(quote, beneficiary(100.0));
+        quote.getInsureds().get(0).setProfessionId(null);
+        Policy policy = new Policy();
+        assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
+                .isInstanceOf(PolicyValidationException.class)
+                .hasMessage(mainInsuredWithNoProfessionId.getMessage());
+    }
+
+    @Test
     public void should_return_error_when_create_policy_with_main_insured_with_no_profession_name() throws Exception {
         Quote quote = quote(product10EC());
         product10EC.calculateQuote(quote, productQuotation(25, EVERY_YEAR, 1000000.0));

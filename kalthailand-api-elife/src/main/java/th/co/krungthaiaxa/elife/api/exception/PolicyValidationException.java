@@ -39,6 +39,7 @@ public class PolicyValidationException extends ElifeException {
     public static PolicyValidationException mainInsuredWithNoDeniedOrCounterOfferStatus = new PolicyValidationException("Denied policy status of main insured is empty.");
     public static PolicyValidationException mainInsuredWithNoStartDate = new PolicyValidationException("Start date of main insured is empty.");
     public static PolicyValidationException mainInsuredWithNoEndDate = new PolicyValidationException("End date of main insured is empty.");
+    public static PolicyValidationException mainInsuredWithNoProfessionId = new PolicyValidationException("Profession ID of main insured is empty.");
     public static PolicyValidationException mainInsuredWithNoProfessionName = new PolicyValidationException("Profession name of main insured is empty.");
     public static PolicyValidationException mainInsuredWithNoDOB = new PolicyValidationException("Date of birth of main insured is empty.");
     public static PolicyValidationException mainInsuredWithNoEmail = new PolicyValidationException("Email of main insured is empty.");

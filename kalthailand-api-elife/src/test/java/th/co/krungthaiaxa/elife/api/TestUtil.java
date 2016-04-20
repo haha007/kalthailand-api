@@ -154,6 +154,7 @@ public class TestUtil {
         quote.getInsureds().get(0).getHealthStatus().setWeightInKg(100);
         quote.getInsureds().get(0).setEndDate(now().plusYears(10));
         quote.getInsureds().get(0).setMainInsuredIndicator(TRUE);
+        quote.getInsureds().get(0).setProfessionId(1);
         quote.getInsureds().get(0).setProfessionName("Something");
         quote.getInsureds().get(0).setStartDate(now());
         quote.getInsureds().get(0).setType(InsuredType.Insured);
@@ -282,6 +283,7 @@ public class TestUtil {
         insured.setDeclaredTaxPercentAtSubscription(taxRate);
         insured.setEndDate(now().plusYears(10));
         insured.setMainInsuredIndicator(mainInsured);
+        insured.setProfessionId(1);
         insured.setProfessionName("Something");
         insured.setStartDate(now());
         insured.setType(InsuredType.Insured);

@@ -3,7 +3,9 @@ package th.co.krungthaiaxa.elife.api.products;
 import org.apache.commons.lang3.SerializationUtils;
 import th.co.krungthaiaxa.elife.api.model.*;
 import th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode;
+import th.co.krungthaiaxa.elife.api.repository.OccupationTypeRepository;
 
+import javax.inject.Inject;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;

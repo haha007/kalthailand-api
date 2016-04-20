@@ -98,6 +98,7 @@ public class ProductUtils {
     public static void checkMainInsured(Insured insured) {
         notNull(insured.getStartDate(), mainInsuredWithNoStartDate);
         notNull(insured.getEndDate(), mainInsuredWithNoEndDate);
+        notNull(insured.getProfessionId(), mainInsuredWithNoProfessionId);
         notNull(insured.getProfessionName(), mainInsuredWithNoProfessionName);
         notNull(insured.getPerson().getGenderCode(), mainInsuredWithNoGenderCode);
         notNull(insured.getPerson().getMaritalStatus(), mainInsuredWithNoMaritalStatus);
