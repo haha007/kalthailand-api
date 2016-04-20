@@ -27,10 +27,11 @@ public class ErrorCode {
     public static final Function<String, Error> ORDER_ID_NOT_PROVIDED = msg -> new Error("0408", "The order id was not provided", "The order id was not provided");
     public static final Function<String, Error> POLICY_VALIDATION_ERROR = msg -> new Error("0409", "There was an error while trying to validate the policy. Error is [" + msg + "].", "There was an error while trying to validate the policy. Error is [" + msg + "].");
     public static final Error AGENT_CODE_FORMAT_ERROR = new Error("0410", "Agent code is not in format '123456-12-123456'.", "Agent code is not in format '123456-12-123456'.");
+    public static final Error REAL_CAPTURE_API_HAS_TO_BE_USED = new Error("0411", "When validating a Policy in Production, only real call to Line Pay is allowed.", "When validating a Policy in Production, only real call to Line Pay is allowed.");
     // Line
     public static final Error UNABLE_TO_DECRYPT = new Error("0501", "Unable to get your user ID", "The provided text could not be decrypted");
     public static final Error UNABLE_TO_GET_LINE_BC = new Error("0502", "Unable to get line bc", "The provided mid is not valid or have no line bc data along with input mid");
-    public static final Function<String, Error> UNABLE_TO_CONFIRM_PAYMENT = msg -> new Error("0503", "Unable to confirm the payment. Error is [" + msg + "]", "Unable to confirm the payment. Error is [" + msg + "]");
+    public static final Function<String, Error> UNABLE_TO_CAPTURE_PAYMENT = msg -> new Error("0503", "Unable to confirm the payment. Error is [" + msg + "]", "Unable to confirm the payment. Error is [" + msg + "]");
     // Document
     public static final Error POLICY_DOES_NOT_CONTAIN_DOCUMENT = new Error("0601", "Unable to locate the document", "The given document id does not exist for the given policy");
     public static final Error UNABLE_TO_DOWNLOAD_DOCUMENT = new Error("0602", "Unable to download the document", "Processing for create e-receipt fail");

@@ -73,6 +73,22 @@ public class LineServiceTest {
         assertThat(linePayConfirmingResponse.getReturnMessage()).isEqualTo("success");
     }
 
+    @Test
+    public void should_capture_a_payment() throws IOException {
+        when(lineService.bookPayment(anyString(), any(), anyString(), anyString())).thenReturn(linePayResponse("0000", "success", "123"));
+        when(lineService.confirmPayment("123", 100.0, "THB")).thenReturn(linePayResponse("0000", "success"));
+        when(lineService.capturePayment("123", 100.0, "THB")).thenReturn(linePayResponse("0000", "success"));
+
+        Policy policy = getPolicy();
+        Amount amount = policy.getPayments().get(0).getAmount();
+        LinePayResponse linePayBookingResponse = lineService.bookPayment("123", policy, amount.getValue().toString(), amount.getCurrencyCode());
+        LinePayResponse linePayConfirmingResponse = lineService.confirmPayment(linePayBookingResponse.getInfo().getTransactionId(), 100.0, "THB");
+        LinePayResponse linePayCaptureResponse = lineService.capturePayment(linePayBookingResponse.getInfo().getTransactionId(), 100.0, "THB");
+        assertThat(linePayConfirmingResponse.getReturnCode()).isEqualTo("0000");
+        assertThat(linePayConfirmingResponse.getReturnMessage()).isEqualTo("success");
+        assertThat(linePayCaptureResponse.getReturnMessage()).isEqualTo("success");
+    }
+
     private Policy getPolicy() {
         Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation());
         quote(quote, beneficiary(100.0));

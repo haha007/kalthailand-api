@@ -3,6 +3,7 @@ package th.co.krungthaiaxa.elife.api.resource;
 import io.swagger.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import th.co.krungthaiaxa.elife.api.exception.ElifeException;
@@ -12,7 +13,10 @@ import th.co.krungthaiaxa.elife.api.model.Quote;
 import th.co.krungthaiaxa.elife.api.model.enums.ChannelType;
 import th.co.krungthaiaxa.elife.api.model.enums.PolicyStatus;
 import th.co.krungthaiaxa.elife.api.model.error.Error;
+import th.co.krungthaiaxa.elife.api.model.line.LinePayCaptureMode;
 import th.co.krungthaiaxa.elife.api.model.line.LinePayResponse;
+import th.co.krungthaiaxa.elife.api.model.line.LinePayResponseInfo;
+import th.co.krungthaiaxa.elife.api.model.line.LinePayResponsePaymentInfo;
 import th.co.krungthaiaxa.elife.api.service.LineService;
 import th.co.krungthaiaxa.elife.api.service.PolicyService;
 import th.co.krungthaiaxa.elife.api.service.QuoteService;
@@ -31,6 +35,9 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
 import static th.co.krungthaiaxa.elife.api.model.enums.PolicyStatus.PENDING_VALIDATION;
 import static th.co.krungthaiaxa.elife.api.model.error.ErrorCode.*;
+import static th.co.krungthaiaxa.elife.api.model.line.LinePayCaptureMode.FAKE_WITH_ERROR;
+import static th.co.krungthaiaxa.elife.api.model.line.LinePayCaptureMode.FAKE_WITH_SUCCESS;
+import static th.co.krungthaiaxa.elife.api.model.line.LinePayCaptureMode.REAL;
 import static th.co.krungthaiaxa.elife.api.utils.JsonUtil.getJson;
 
 @RestController
@@ -40,6 +47,9 @@ public class PolicyResource {
     private final LineService lineService;
     private final PolicyService policyService;
     private final QuoteService quoteService;
+
+    @Value("${environment.name}")
+    private String environmentName;
 
     @Inject
     public PolicyResource(LineService lineService, PolicyService policyService, QuoteService quoteService) {
@@ -179,13 +189,19 @@ public class PolicyResource {
             @ApiParam(value = "The policy ID", required = true)
             @PathVariable String policyId,
             @ApiParam(value = "The code of validating agent", required = true)
-            @RequestParam String agentCode) {
+            @RequestParam String agentCode,
+            @ApiParam(value = "The type of call to Line Pay Capture API", required = true)
+            @RequestParam LinePayCaptureMode linePayCaptureMode) {
 
         Pattern pattern = Pattern.compile("[0-9]{6}-[0-9]{2}-[0-9]{6}$");
         Matcher matcher = pattern.matcher(agentCode);
         if (!matcher.find()) {
             logger.error("Agent code [" + policyId + "] is not following format '123456-12-123456'.");
             return new ResponseEntity<>(getJson(AGENT_CODE_FORMAT_ERROR), NOT_ACCEPTABLE);
+        }
+
+        if (environmentName.equals("PRD") && !linePayCaptureMode.equals(REAL)) {
+            return new ResponseEntity<>(getJson(REAL_CAPTURE_API_HAS_TO_BE_USED), NOT_ACCEPTABLE);
         }
 
         Optional<Policy> policy = policyService.findPolicy(policyId);
@@ -204,18 +220,42 @@ public class PolicyResource {
         }
 
         Payment payment = paymentOptional.get();
-        logger.info("Will try to confirm payment with ID [" + payment.getPaymentId() + "] and transation ID [" + payment.getTransactionId() + "] on the policy with ID [" + policyId + "]");
-        LinePayResponse linePayResponse;
-        try {
-            linePayResponse = lineService.confirmPayment(payment.getTransactionId(), payment.getAmount().getValue(), payment.getAmount().getCurrencyCode());
-        } catch (RuntimeException | IOException e) {
-            logger.error("Unable to confirm the payment in the policy with ID [" + policyId + "]", e);
-            return new ResponseEntity<>(getJson(UNABLE_TO_CONFIRM_PAYMENT.apply(e.getMessage())), NOT_ACCEPTABLE);
+        LinePayResponse linePayResponse = null;
+        if (linePayCaptureMode.equals(REAL)) {
+            logger.info("Will try to confirm payment with ID [" + payment.getPaymentId() + "] and transation ID [" + payment.getTransactionId() + "] on the policy with ID [" + policyId + "]");
+            try {
+                linePayResponse = lineService.capturePayment(payment.getTransactionId(), payment.getAmount().getValue(), payment.getAmount().getCurrencyCode());
+            } catch (RuntimeException | IOException e) {
+                logger.error("Unable to confirm the payment in the policy with ID [" + policyId + "]", e);
+                return new ResponseEntity<>(getJson(UNABLE_TO_CAPTURE_PAYMENT.apply(e.getMessage())), NOT_ACCEPTABLE);
+            }
+        }
+        else if (linePayCaptureMode.equals(FAKE_WITH_ERROR)) {
+            linePayResponse = new LinePayResponse();
+            linePayResponse.setReturnCode("9999");
+            linePayResponse.setReturnMessage("This is a fake call to Line Pay API with an error as a result");
+        }
+        else if (linePayCaptureMode.equals(FAKE_WITH_SUCCESS)) {
+            LinePayResponsePaymentInfo payResponsePaymentInfo = new LinePayResponsePaymentInfo();
+            payResponsePaymentInfo.setMethod("someMethodAfterFakeCallToLinePayCaptureAPI");
+            payResponsePaymentInfo.setCreditCardName("someCreditCardNameAfterFakeCallToLinePayCaptureAPI");
+
+            LinePayResponseInfo info = new LinePayResponseInfo();
+            info.setRegKey("someRegistrationKeyAfterFakeCallToLinePayCaptureAPI");
+            info.addPayInfo(payResponsePaymentInfo);
+
+            linePayResponse = new LinePayResponse();
+            linePayResponse.setReturnCode("0000");
+            linePayResponse.setReturnMessage("This is a fake call to Line Pay API with success");
+            linePayResponse.setInfo(info);
         }
 
-        if (!linePayResponse.getReturnCode().equals("0000")) {
+        if (linePayResponse == null) {
+            return new ResponseEntity<>(getJson(UNABLE_TO_CAPTURE_PAYMENT.apply("No way to call Line Pay capture API has been provided")), NOT_ACCEPTABLE);
+        }
+        else if (!linePayResponse.getReturnCode().equals("0000")) {
             String msg = "Confirming payment didn't go through. Error code is [" + linePayResponse.getReturnCode() + "], error message is [" + linePayResponse.getReturnMessage() + "]";
-            return new ResponseEntity<>(getJson(UNABLE_TO_CONFIRM_PAYMENT.apply(msg)), NOT_ACCEPTABLE);
+            return new ResponseEntity<>(getJson(UNABLE_TO_CAPTURE_PAYMENT.apply(msg)), NOT_ACCEPTABLE);
         }
 
         // Update the payment if confirm is success

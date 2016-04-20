@@ -284,7 +284,7 @@ public class RLSService {
 
         LinePayResponse linePayResponse;
         try {
-            linePayResponse = lineService.confirmPayment(payment.getRegistrationKey(), collectionFileLine.getPremiumAmount(), payment.getAmount().getCurrencyCode());
+            linePayResponse = lineService.capturePayment(payment.getRegistrationKey(), collectionFileLine.getPremiumAmount(), payment.getAmount().getCurrencyCode());
         } catch (IOException | RuntimeException e) {
             logger.error("An error occured while trying to contact LinePay", e);
             // An error occured while trying to contact LinePay
