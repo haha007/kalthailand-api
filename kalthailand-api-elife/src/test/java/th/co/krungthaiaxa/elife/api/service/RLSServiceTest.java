@@ -243,7 +243,7 @@ public class RLSServiceTest {
 
     @Test
     public void should_create_a_deduction_file_line_with_error_when_no_registration_key() throws IOException {
-        when(lineService.confirmPayment(anyString(), anyDouble(), anyString())).thenReturn(linePayResponse("0000", "success"));
+        when(lineService.capturePayment(anyString(), anyDouble(), anyString())).thenReturn(linePayResponse("0000", "success"));
 
         Policy policy = getValidatedPolicy(EVERY_MONTH);
         policy.getPayments().stream().forEach(payment -> payment.setRegistrationKey(null));
@@ -277,7 +277,7 @@ public class RLSServiceTest {
 
     @Test
     public void should_create_a_deduction_file_line_with_success() throws IOException {
-        when(lineService.confirmPayment(anyString(), anyDouble(), anyString())).thenReturn(linePayResponse("0000", "success"));
+        when(lineService.capturePayment(anyString(), anyDouble(), anyString())).thenReturn(linePayResponse("0000", "success"));
 
         Policy policy = getValidatedPolicy(EVERY_MONTH);
         CollectionFileLine collectionFileLine = collectionFileLine(policy, 100.0);
@@ -309,7 +309,7 @@ public class RLSServiceTest {
 
     @Test
     public void should_mark_collection_file_as_processed() throws IOException {
-        when(lineService.confirmPayment(anyString(), anyDouble(), anyString())).thenReturn(linePayResponse("0000", "success"));
+        when(lineService.capturePayment(anyString(), anyDouble(), anyString())).thenReturn(linePayResponse("0000", "success"));
         Policy policy = getValidatedPolicy(EVERY_MONTH);
 
         CollectionFile collectionFile = getValidatedCollectionFile(
@@ -326,7 +326,7 @@ public class RLSServiceTest {
 
     @Test
     public void should_process_collection_file() throws IOException {
-        when(lineService.confirmPayment(anyString(), anyDouble(), anyString())).thenReturn(linePayResponse("0000", "success"));
+        when(lineService.capturePayment(anyString(), anyDouble(), anyString())).thenReturn(linePayResponse("0000", "success"));
 
         Policy policy1 = getValidatedPolicy(EVERY_MONTH);
         Policy policy2 = getValidatedPolicy(EVERY_MONTH);
@@ -358,7 +358,7 @@ public class RLSServiceTest {
 
     @Test
     public void should_create_deduction_file_with_proper_header() throws IOException, InvalidFormatException {
-        when(lineService.confirmPayment(anyString(), anyDouble(), anyString())).thenReturn(linePayResponse("0000", "success"));
+        when(lineService.capturePayment(anyString(), anyDouble(), anyString())).thenReturn(linePayResponse("0000", "success"));
         Policy policy = getValidatedPolicy(EVERY_MONTH);
 
         CollectionFile collectionFile = getValidatedCollectionFile(
@@ -383,7 +383,7 @@ public class RLSServiceTest {
 
     @Test
     public void should_create_deduction_file() throws IOException, InvalidFormatException {
-        when(lineService.confirmPayment(anyString(), anyDouble(), anyString())).thenReturn(linePayResponse("0000", "success"));
+        when(lineService.capturePayment(anyString(), anyDouble(), anyString())).thenReturn(linePayResponse("0000", "success"));
         Policy policy1 = getValidatedPolicy(EVERY_MONTH);
         Policy policy2 = getValidatedPolicy(EVERY_MONTH);
 

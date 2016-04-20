@@ -141,6 +141,35 @@ public class LineService {
         return getBookingResponseFromJSon(response.getBody());
     }
 
+    public LinePayResponse capturePayment(String transactionId, Double amount, String currency) throws IOException {
+        logger.info("Capturing payment");
+        LinePayConfirmingRequest linePayConfirmingRequest = new LinePayConfirmingRequest();
+        linePayConfirmingRequest.setAmount(amount.toString());
+        linePayConfirmingRequest.setCurrency(currency);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("X-LINE-ChannelId", linePayId);
+        headers.set("X-LINE-ChannelSecret", linePaySecretKey);
+        headers.set("Content-Type", "application/json; charset=UTF-8");
+
+        HttpEntity<String> entity = new HttpEntity<>(new String(JsonUtil.getJson(linePayConfirmingRequest)), headers);
+
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(linePayUrl + "/" + transactionId + "/capture");
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<String> response;
+        try {
+            response = restTemplate.exchange(builder.toUriString(), POST, entity, String.class);
+        } catch (RuntimeException e) {
+            throw new IOException("Unable to capture payment", e);
+        }
+        if (!response.getStatusCode().equals(OK)) {
+            throw new IOException("Line's response for capturing payment is [" + response.getStatusCode() + "]. Response body is [" + response.getBody() + "]");
+        }
+
+        logger.info("Payment is captured with success");
+        return getBookingResponseFromJSon(response.getBody());
+    }
+
     private LinePayResponse getBookingResponseFromJSon(String json) throws IOException {
         return JsonUtil.mapper.readValue(json, LinePayResponse.class);
     }
