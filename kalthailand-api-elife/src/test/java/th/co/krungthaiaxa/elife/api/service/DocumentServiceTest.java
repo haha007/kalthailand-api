@@ -95,6 +95,7 @@ public class DocumentServiceTest {
     @Test
     public void should_have_5_documents_generated_when_policy_is_validated() throws Exception {
         Policy policy = getPolicy();
+        policy.setValidationAgentCode("123456-12-123456");
         documentService.generateValidatedPolicyDocuments(policy);
         assertThat(policy.getDocuments()).extracting("typeName").containsExactly(APPLICATION_FORM, DA_FORM, APPLICATION_FORM_VALIDATED, ERECEIPT_IMAGE, ERECEIPT_PDF);
     }
@@ -102,6 +103,7 @@ public class DocumentServiceTest {
     @Test
     public void should_still_have_only_5_documents_even_after_generating_more_than_once() throws Exception {
         Policy policy = getPolicy();
+        policy.setValidationAgentCode("123456-12-123456");
         documentService.generateValidatedPolicyDocuments(policy);
         documentService.generateValidatedPolicyDocuments(policy);
         documentService.generateValidatedPolicyDocuments(policy);

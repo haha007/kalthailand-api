@@ -218,6 +218,9 @@ public class PolicyService {
             throw new ElifeException("Can't validate policy [" + policy.getPolicyId() + "], it is not pending for validation.");
         }
 
+        // This has to be set asap since it is used to generate document
+        policy.setValidationAgentCode(agentCode);
+
         // Generate documents
         documentService.generateValidatedPolicyDocuments(policy);
 
@@ -254,7 +257,6 @@ public class PolicyService {
             logger.error(String.format("Unable to send push notification for policy validation on policy [%1$s].", policy.getPolicyId()), e);
         }
 
-        policy.setValidationAgentCode(agentCode);
         policy.setStatus(VALIDATED);
         policyRepository.save(policy);
     }
