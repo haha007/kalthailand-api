@@ -8,7 +8,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.elife.api.KalApiApplication;
 import th.co.krungthaiaxa.elife.api.data.SessionQuote;
-import th.co.krungthaiaxa.elife.api.model.Amount;
+import th.co.krungthaiaxa.elife.api.exception.ElifeException;
 import th.co.krungthaiaxa.elife.api.model.Quote;
 import th.co.krungthaiaxa.elife.api.products.ProductQuotation;
 import th.co.krungthaiaxa.elife.api.products.ProductType;
@@ -19,12 +19,11 @@ import java.util.Optional;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static th.co.krungthaiaxa.elife.api.TestUtil.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
 import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_MONTH;
-import static th.co.krungthaiaxa.elife.api.products.ProductType.PRODUCT_10_EC;
-import static th.co.krungthaiaxa.elife.api.products.ProductType.PRODUCT_IBEGIN;
-import static th.co.krungthaiaxa.elife.api.products.ProductType.PRODUCT_IFINE;
+import static th.co.krungthaiaxa.elife.api.products.ProductType.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiApplication.class)
@@ -143,13 +142,28 @@ public class QuoteServiceTest {
     public void should_calculate_age_of_insured() {
         Quote quote = getQuote(randomNumeric(20), PRODUCT_10_EC);
 
-        Amount amount = new Amount();
-        amount.setCurrencyCode("THB");
-        amount.setValue(1000000.0);
-        quote.getPremiumsData().getProduct10ECPremium().setSumInsured(amount);
-
         quote = quoteService.updateQuote(quote);
         assertThat(quote.getInsureds().get(0).getAgeAtSubscription()).isEqualTo(55);
+    }
+
+    @Test
+    public void should_set_profession_name_from_profession_id() {
+        Quote quote = getQuote(randomNumeric(20), PRODUCT_10_EC);
+        quote.getInsureds().get(0).setProfessionId(1);
+
+        quote = quoteService.updateQuote(quote);
+        assertThat(quote.getInsureds().get(0).getProfessionName()).isNotNull();
+    }
+
+    @Test
+    public void should_forbid_blacklisted_thai_id() {
+        Quote quote = getQuote(randomNumeric(20), PRODUCT_10_EC);
+
+//        registration.setTypeName(THAI_ID_NUMBER);
+        quote.getInsureds().get(0).getPerson().getRegistrations().get(0).setId("00000017");
+
+        assertThatThrownBy(() -> quoteService.updateQuote(quote))
+                .isInstanceOf(ElifeException.class);
     }
 
     @Test

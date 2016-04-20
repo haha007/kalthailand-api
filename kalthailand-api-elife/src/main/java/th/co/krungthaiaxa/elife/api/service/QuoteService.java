@@ -5,6 +5,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.elife.api.data.OccupationType;
 import th.co.krungthaiaxa.elife.api.data.SessionQuote;
+import th.co.krungthaiaxa.elife.api.data.ThaiIdBlackList;
+import th.co.krungthaiaxa.elife.api.exception.ElifeException;
 import th.co.krungthaiaxa.elife.api.model.*;
 import th.co.krungthaiaxa.elife.api.model.enums.ChannelType;
 import th.co.krungthaiaxa.elife.api.model.enums.InsuredType;
@@ -14,6 +16,7 @@ import th.co.krungthaiaxa.elife.api.products.ProductQuotation;
 import th.co.krungthaiaxa.elife.api.repository.OccupationTypeRepository;
 import th.co.krungthaiaxa.elife.api.repository.QuoteRepository;
 import th.co.krungthaiaxa.elife.api.repository.SessionQuoteRepository;
+import th.co.krungthaiaxa.elife.api.repository.ThaiIdBlackListRepository;
 
 import javax.inject.Inject;
 import java.time.LocalDateTime;
@@ -24,6 +27,7 @@ import static java.time.ZoneId.SHORT_IDS;
 import static java.time.ZoneId.of;
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
+import static th.co.krungthaiaxa.elife.api.model.enums.RegistrationTypeName.THAI_ID_NUMBER;
 
 @Service
 public class QuoteService {
@@ -32,14 +36,15 @@ public class QuoteService {
     private final QuoteRepository quoteRepository;
     private final ProductFactory productFactory;
     private final OccupationTypeRepository occupationTypeRepository;
-
+    private final ThaiIdBlackListRepository thaiIdBlackListRepository;
 
     @Inject
-    public QuoteService(SessionQuoteRepository sessionQuoteRepository, QuoteRepository quoteRepository, ProductFactory productFactory, OccupationTypeRepository occupationTypeRepository) {
+    public QuoteService(SessionQuoteRepository sessionQuoteRepository, QuoteRepository quoteRepository, ProductFactory productFactory, OccupationTypeRepository occupationTypeRepository, ThaiIdBlackListRepository thaiIdBlackListRepository) {
         this.sessionQuoteRepository = sessionQuoteRepository;
         this.quoteRepository = quoteRepository;
         this.productFactory = productFactory;
         this.occupationTypeRepository = occupationTypeRepository;
+        this.thaiIdBlackListRepository = thaiIdBlackListRepository;
     }
 
     public Optional<Quote> getLatestQuote(String sessionId, ChannelType channelType) {
@@ -104,6 +109,20 @@ public class QuoteService {
         if (quote.getInsureds().get(0).getProfessionId() != null) {
             OccupationType occupationType = occupationTypeRepository.findByOccId(quote.getInsureds().get(0).getProfessionId());
             quote.getInsureds().get(0).setProfessionName(occupationType.getOccTextTh());
+        }
+
+        // Some Thai ID are black listed and Policy / Quote should be forbidden
+        if (quote.getInsureds().get(0).getPerson().getRegistrations() != null) {
+            Optional<String> insuredRegistrationId = quote.getInsureds().get(0).getPerson().getRegistrations().stream()
+                    .filter(registration -> registration.getTypeName().equals(THAI_ID_NUMBER))
+                    .map(Registration::getId)
+                    .findFirst();
+            if (insuredRegistrationId.isPresent()) {
+                ThaiIdBlackList thaiIdBlackList = thaiIdBlackListRepository.findByIdNumber(insuredRegistrationId.get());
+                if (thaiIdBlackList != null) {
+                    throw new ElifeException("The Thai ID [" + insuredRegistrationId.get() + "] is not allowed to purchase Policy.");
+                }
+            }
         }
 
         quote.setLastUpdateDateTime(now(of(SHORT_IDS.get("VST"))));
