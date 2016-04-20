@@ -49,7 +49,7 @@
             $http({
                 url: 'policies/' + policyNumber + '/update/status/validated',
                 method: 'PUT',
-                data: $.param({ agentCode: $scope.agentCode }),
+                data: $.param({ agentCode: $scope.agentCode, linePayCaptureMode: $scope.linePayCaptureMode }),
                 headers: {'Content-Type': 'application/x-www-form-urlencoded'}
             })
             .then(
@@ -78,6 +78,7 @@
             PolicyDetail.get({id: $scope.policyID},
                 function (successResponse) {
                     $scope.scenarioID = 1;
+                    $scope.linePayCaptureMode = 'FAKE_WITH_SUCCESS';
                     $scope.errorMessage = null;
                     $scope.successMessage = null;
                     $scope.policyDetail = successResponse;
