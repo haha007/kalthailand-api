@@ -49,7 +49,7 @@
             $http({
                 url: 'policies/' + policyNumber + '/update/status/validated',
                 method: 'PUT',
-                data: $.param({ agentCode: $scope.agentCode }),
+                data: $.param({ agentCode: $scope.agentCode, linePayCaptureMode: 'FAKE_WITH_SUCCESS' }),
                 headers: {'Content-Type': 'application/x-www-form-urlencoded'}
             })
             .then(
