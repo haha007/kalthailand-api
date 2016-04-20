@@ -43,32 +43,15 @@ public class ApplicationFormService {
     private final String MARK = "X";
     private final DecimalFormat MONEY_FORMAT = new DecimalFormat("#,##0.00");
 
-    public byte[] generateNotValidatedApplicationForm(Policy pol) throws Exception {
-        ByteArrayOutputStream content = new ByteArrayOutputStream();
-        Document document = new Document(PageSize.A4);
-        PdfWriter writer = PdfWriter.getInstance(document, content);
-        document.open();
-
-        // page1
-        PdfContentByte canvas1 = writer.getDirectContentUnder();
-        canvas1.addImage(getPdfImage(getPage1(pol, false)));
-
-        // page2
-        document.newPage();
-        PdfContentByte canvas2 = writer.getDirectContentUnder();
-        canvas2.addImage(getPdfImage(getPage2(pol)));
-
-        // page3
-        document.newPage();
-        PdfContentByte canvas3 = writer.getDirectContentUnder();
-        canvas3.addImage(getPdfImage(getPage3(pol)));
-
-        document.close();
-        content.close();
-        return content.toByteArray();
+    public byte[] generateNotValidatedApplicationForm(Policy policy) throws Exception {
+        return generateValidatedApplicationForm(policy, false);
     }
 
-    public byte[] generateValidatedApplicationForm(Policy pol) throws Exception {
+    public byte[] generateValidatedApplicationForm(Policy policy) throws Exception {
+        return generateValidatedApplicationForm(policy, true);
+    }
+
+    private byte[] generateValidatedApplicationForm(Policy policy, boolean validatedPolicy) throws Exception {
         ByteArrayOutputStream content = new ByteArrayOutputStream();
         Document document = new Document(PageSize.A4);
         PdfWriter writer = PdfWriter.getInstance(document, content);
@@ -76,17 +59,17 @@ public class ApplicationFormService {
 
         // page1
         PdfContentByte canvas1 = writer.getDirectContentUnder();
-        canvas1.addImage(getPdfImage(getPage1(pol, true)));
+        canvas1.addImage(getPdfImage(getPage1(policy, validatedPolicy)));
 
         // page2
         document.newPage();
         PdfContentByte canvas2 = writer.getDirectContentUnder();
-        canvas2.addImage(getPdfImage(getPage2(pol)));
+        canvas2.addImage(getPdfImage(getPage2(policy)));
 
         // page3
         document.newPage();
         PdfContentByte canvas3 = writer.getDirectContentUnder();
-        canvas3.addImage(getPdfImage(getPage3(pol)));
+        canvas3.addImage(getPdfImage(getPage3(policy)));
 
         document.close();
         content.close();
@@ -107,11 +90,9 @@ public class ApplicationFormService {
 
         g1 = setGraphicColorAndFont(g1);
 
-        if (validatedPolicy == true) {
-
+        if (validatedPolicy) {
             //Validate TMC agent code
             g1.drawString(pol.getValidationAgentCode(), 2010, 480);
-
         }
 
         //Title
