@@ -333,6 +333,7 @@ public class TestUtil {
         PaymentInformation paymentInformation = new PaymentInformation();
         paymentInformation.setMethod("12");
         policy.getPayments().get(0).addPaymentInformation(paymentInformation);
+        policy.setValidationAgentCode("123456-12-123456");
     }
 
     public static LinePayResponse linePayResponse(String returnCode, String returnMessage) {
