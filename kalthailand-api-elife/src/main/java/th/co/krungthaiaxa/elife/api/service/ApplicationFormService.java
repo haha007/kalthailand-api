@@ -10,6 +10,7 @@ import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.elife.api.model.*;
 import th.co.krungthaiaxa.elife.api.model.enums.GenderCode;
@@ -19,6 +20,7 @@ import th.co.krungthaiaxa.elife.api.model.enums.ProductIFinePackage;
 import th.co.krungthaiaxa.elife.api.products.ProductType;
 
 import javax.imageio.ImageIO;
+import javax.inject.Inject;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -38,6 +40,10 @@ import static th.co.krungthaiaxa.elife.api.model.enums.RegistrationTypeName.THAI
 @Service
 public class ApplicationFormService {
     private final static Logger logger = LoggerFactory.getLogger(ApplicationFormService.class);
+
+    @Inject
+    private MessageSource messageSource;
+    private Locale thLocale = new Locale("th", "");
 
     private final Color FONT_COLOR = Color.BLACK;
     private final String MARK = "X";
@@ -339,7 +345,7 @@ public class ApplicationFormService {
             //benefit age
             g2.drawString(String.valueOf(benefit.getAgeAtSubscription()), 730, listY.get(a));
             //benefit relation
-            g2.drawString(String.valueOf(benefit.getRelationship()), 905, listY.get(a));
+            g2.drawString(messageSource.getMessage("relationship." + String.valueOf(benefit.getRelationship()), null, thLocale), 905, listY.get(a));
             //benefit id card number
             g2.drawString(benefit.getPerson().getRegistrations().get(0).getId(), 1135, listY.get(a));
             //benefit address
@@ -450,10 +456,10 @@ public class ApplicationFormService {
         return m;
     }
 
-    private Graphics setGraphicColorAndFont(Graphics g)throws IOException {
+    private Graphics setGraphicColorAndFont(Graphics g) throws IOException {
         g.setColor(FONT_COLOR);
         try {
-            Font f = Font.createFont(Font.TRUETYPE_FONT,getClass().getClassLoader().getResourceAsStream("ereceipt/ANGSAB_1.TTF")).deriveFont(50f);
+            Font f = Font.createFont(Font.TRUETYPE_FONT, getClass().getClassLoader().getResourceAsStream("ereceipt/ANGSAB_1.TTF")).deriveFont(50f);
             g.setFont(f);
         } catch (FontFormatException e) {
             logger.error("Unable to load embed font file", e);
@@ -462,10 +468,10 @@ public class ApplicationFormService {
         return g;
     }
 
-    private Graphics setGraphicColorAndFontBigText(Graphics g)throws IOException {
+    private Graphics setGraphicColorAndFontBigText(Graphics g) throws IOException {
         g.setColor(FONT_COLOR);
         try {
-            Font f = Font.createFont(Font.TRUETYPE_FONT,getClass().getClassLoader().getResourceAsStream("ereceipt/ANGSAB_1.TTF")).deriveFont(100f);
+            Font f = Font.createFont(Font.TRUETYPE_FONT, getClass().getClassLoader().getResourceAsStream("ereceipt/ANGSAB_1.TTF")).deriveFont(100f);
             g.setFont(f);
         } catch (FontFormatException e) {
             logger.error("Unable to load embed font file", e);

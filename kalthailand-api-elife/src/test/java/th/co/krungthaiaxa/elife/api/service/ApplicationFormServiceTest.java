@@ -61,6 +61,18 @@ public class ApplicationFormServiceTest {
         p.setCode(PeriodicityCode.EVERY_QUARTER);
         policy.getPremiumsData().getFinancialScheduler().setPeriodicity(p);
 
+        CoverageBeneficiary cov = new CoverageBeneficiary();
+        cov.setRelationship(BeneficiaryRelationshipType.AUNT_UNCLE);
+        Person person = new Person();
+        person.setGivenName("santi");
+        person.setSurName("likit");
+        Registration reg = new Registration();
+        reg.setId("1111222233334");
+        person.addRegistration(reg);
+        person.setCurrentAddress(address);
+        cov.setPerson(person);
+        policy.getCoverages().get(0).addBeneficiary(cov);
+
         byte[] pdfContent = appService.generateNotValidatedApplicationForm(policy);
         File pdfFile = new File(tmpPathDeletedAfterTests + File.separator + "application-not-validated-10ec-form.pdf");
         writeByteArrayToFile(pdfFile, pdfContent);
