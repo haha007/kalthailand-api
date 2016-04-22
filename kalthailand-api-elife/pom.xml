@@ -5,7 +5,7 @@
 
     <groupId>th.co.krungthaiaxa.api</groupId>
     <artifactId>elife</artifactId>
-    <version>1.2.4-SNAPSHOT</version>
+    <version>1.2.2-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <name>kalthailand-api-elife</name>
@@ -22,6 +22,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
         <local.repo.path>${project.basedir}</local.repo.path>
+        <wsdl.tmc>${project.basedir}/src/main/resources/wsdl/tmc_soap_service.wsdl</wsdl.tmc>
     </properties>
 
     <dependencies>
@@ -60,6 +61,10 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.ws</groupId>
+            <artifactId>spring-ws-core</artifactId>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
@@ -176,6 +181,28 @@
         <!--<version>1.50.2</version>-->
         <!--<scope>test</scope>-->
         <!--</dependency>-->
+
+        <dependency>
+            <groupId>javax.jws</groupId>
+            <artifactId>jsr181-api</artifactId>
+            <version>1.0-MR1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-frontend-jaxws</artifactId>
+            <version>2.7.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-transports-http</artifactId>
+            <version>2.7.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-core</artifactId>
+            <version>2.7.0</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -183,6 +210,52 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <!--
+            <plugin>
+                <groupId>org.jvnet.jaxb2.maven2</groupId>
+                <artifactId>maven-jaxb2-plugin</artifactId>
+                <version>0.13.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <schemaLanguage>WSDL</schemaLanguage>
+                    <generatePackage>th.co.krungthaiaxa.elife.api.tmc.wsdl</generatePackage>
+                    <schemas>
+                        <schema>
+                            <url>${basedir}/src/main/resources/wsdl/tmc_soap_service.wsdl</url>
+                        </schema>
+                    </schemas>
+                </configuration>
+            </plugin>
+            -->
+            <plugin>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-codegen-plugin</artifactId>
+                <version>2.4.8</version>
+                <executions>
+                    <execution>
+                        <id>generate-sources</id>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <sourceRoot>${basedir}/src/main/java</sourceRoot>
+                            <wsdlOptions>
+                                <wsdlOption>
+                                    <wsdl>${wsdl.tmc}</wsdl>
+                                    <wsdlLocation>classpath:wsdl/tmc_soap_service.wsdl</wsdlLocation>
+                                </wsdlOption>
+                            </wsdlOptions>
+                        </configuration>
+                        <goals>
+                            <goal>wsdl2java</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -211,6 +284,11 @@
             <id>elife</id>
             <name>elife libraries</name>
             <url>file://${local.repo.path}/../libraries</url>
+        </repository>
+        <repository>
+            <id>java.net2</id>
+            <name>Repository hosting the jee6 artifacts</name>
+            <url>http://download.java.net/maven/2</url>
         </repository>
     </repositories>
 
