@@ -218,7 +218,7 @@ public class LineService {
 
         HttpEntity<String> entity = new HttpEntity<>(new String(JsonUtil.getJson(linePayConfirmingRequest)), headers);
 
-        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(linePayUrl + "/" + transactionId + "/capture");
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(linePayUrl + "/authorizations/" + transactionId + "/capture");
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> response;
         try {
