@@ -94,14 +94,24 @@ public class ApplicationFormService {
         //Policy number
         g1.drawString(pol.getPolicyId(), 1940, 410);
 
-        //generate barcode 3of9
+
         g1 = setBarcode3Of9Font(g1);
-        g1.drawString("*" + pol.getPolicyId() + "*", 1780, 140);
+
+        //generate application barcode 3of9
+        g1.drawString("*NTH1AFOL16*", 1800, 80);
 
         g1 = setGraphicColorAndFont(g1);
 
-        //add (E) below barcode
-        g1.drawString("(E)", 2340, 170);
+        //add *eBiz App* below barcode
+        g1.drawString("*eBiz App*", 2000, 110);
+
+        g1 = setBarcode3Of9Font(g1);
+
+        //generate barcode 3of9
+        g1.drawString("*" + pol.getPolicyId() + "*", 1780, 190);
+
+        g1 = setGraphicColorAndFont(g1);
+
 
         if (validatedPolicy) {
             //Validate TMC agent code
