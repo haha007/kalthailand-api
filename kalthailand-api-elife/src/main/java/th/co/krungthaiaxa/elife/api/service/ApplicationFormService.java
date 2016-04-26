@@ -99,6 +99,10 @@ public class ApplicationFormService {
         g1.drawString("*" + pol.getPolicyId() + "*", 1780, 140);
 
         g1 = setGraphicColorAndFont(g1);
+
+        //add (E) below barcode
+        g1.drawString("(E)", 2340, 170);
+
         if (validatedPolicy) {
             //Validate TMC agent code
             g1.drawString(pol.getValidationAgentCode(), 2010, 480);
