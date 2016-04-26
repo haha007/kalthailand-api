@@ -94,8 +94,11 @@ public class ApplicationFormService {
         //Policy number
         g1.drawString(pol.getPolicyId(), 1940, 410);
 
-        g1 = setGraphicColorAndFont(g1);
+        //generate barcode 3of9
+        g1 = setBarcode3Of9Font(g1);
+        g1.drawString("*" + pol.getPolicyId() + "*", 1780, 140);
 
+        g1 = setGraphicColorAndFont(g1);
         if (validatedPolicy) {
             //Validate TMC agent code
             g1.drawString(pol.getValidationAgentCode(), 2010, 480);
@@ -472,6 +475,18 @@ public class ApplicationFormService {
         g.setColor(FONT_COLOR);
         try {
             Font f = Font.createFont(Font.TRUETYPE_FONT, getClass().getClassLoader().getResourceAsStream("ereceipt/ANGSAB_1.TTF")).deriveFont(100f);
+            g.setFont(f);
+        } catch (FontFormatException e) {
+            logger.error("Unable to load embed font file", e);
+            throw new IOException(e);
+        }
+        return g;
+    }
+
+    private Graphics setBarcode3Of9Font(Graphics g) throws IOException {
+        g.setColor(FONT_COLOR);
+        try {
+            Font f = Font.createFont(Font.TRUETYPE_FONT, getClass().getClassLoader().getResourceAsStream("barcode3of9/3OF9_NEW.TTF")).deriveFont(80f);
             g.setFont(f);
         } catch (FontFormatException e) {
             logger.error("Unable to load embed font file", e);
