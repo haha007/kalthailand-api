@@ -1,3 +1,3 @@
-Phone number is wrong
-The content of this personal message has not been provided yet
-Policy number is %POLICY_ID%
+หมายเลขโทรศัพท์ไม่ถูกต้อง
+ข้อมูลไม่ได้เตรียมให้
+หมายเลขกรมธรรม์ %POLICY_ID%

@@ -1,2 +1,2 @@
-The content of this notification has not been provided yet
-Policy number is %POLICY_ID%
+ข้อมูลไม่ได้เตรียมให้
+หมายเลขกรมธรรม์ %POLICY_ID%

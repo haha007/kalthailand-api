@@ -1,5 +1,6 @@
 package th.co.krungthaiaxa.elife.api.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,11 +14,19 @@ import th.co.krungthaiaxa.elife.api.model.Policy;
 import th.co.krungthaiaxa.elife.api.model.line.LinePayResponse;
 import th.co.krungthaiaxa.elife.api.utils.JsonUtil;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.OK;
@@ -42,6 +51,61 @@ public class LineService {
     private String lineAppNotificationAccessToken;
 
     public void sendPushNotification(String messageContent, String... mids) throws IOException {
+        try {
+            logger.info("Sending POST to LINE Push Notification Message");
+            URL url = new URL(lineAppNotificationUrl);
+
+            //set object header
+
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+            conn.setRequestProperty("X-Line-ChannelToken", lineAppNotificationAccessToken);
+            conn.setDoOutput(true);
+            ObjectMapper mapper = new ObjectMapper();
+
+            //parameter
+
+            Map<String, Object> content = new HashMap<>();
+            content.put("contentType", 1);
+            content.put("toType", 1);
+            content.put("text", messageContent);
+
+            Map<String, Object> data = new HashMap<String, Object>();
+            data.put("to", mids);
+            data.put("toChannel", 1383378250);
+            data.put("eventType", "138311608800106203");
+            data.put("content", content);
+
+            //set object to get response
+
+            DataOutputStream wr = new DataOutputStream(conn.getOutputStream());
+            mapper.writeValue(wr, data);
+            wr.flush();
+            wr.close();
+
+            int responseCode = conn.getResponseCode();
+            logger.info("\nSending 'POST' request to URL : " + url);
+            logger.info("Response Code : " + responseCode);
+
+            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String inputLine;
+            StringBuffer response = new StringBuffer();
+
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
+            }
+            in.close();
+            logger.info(response.toString());
+            logger.info("Notification is sent with success");
+        } catch (MalformedURLException e) {
+            throw new IOException("Unable to send Line push notification.", e);
+        } catch (IOException e) {
+            throw new IOException("Unexpected to send Line push notification.", e);
+        }
+    }
+
+    public void sendPushNotificationOld(String messageContent, String... mids) throws IOException {
         LinePushNotificationContentRequest linePushNotificationContentRequest = new LinePushNotificationContentRequest();
         linePushNotificationContentRequest.setContentType(1);
         linePushNotificationContentRequest.setToType(1);
