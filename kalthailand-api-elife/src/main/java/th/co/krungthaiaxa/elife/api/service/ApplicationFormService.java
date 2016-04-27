@@ -94,21 +94,26 @@ public class ApplicationFormService {
         //Policy number
         g1.drawString(pol.getPolicyId(), 1940, 410);
 
-
+        /*
         g1 = setBarcode3Of9Font(g1);
-
         //generate application barcode 3of9
         g1.drawString("*NTH1AFOL16*", 1800, 80);
+        */
+
+        //add barcode image
+        InputStream isBarcode = getClass().getClassLoader().getResourceAsStream("application-form/application-barcode.png");
+        java.awt.Image img = ImageIO.read(isBarcode);
+        g1.drawImage(img, 1780, 50, 650, 100, null);
 
         g1 = setGraphicColorAndFont(g1);
 
         //add *eBiz App* below barcode
-        g1.drawString("*eBiz App*", 2000, 110);
+        g1.drawString("*eBiz App*", 2015, 190);
 
-        g1 = setBarcode3Of9Font(g1);
+        //g1 = setBarcode3Of9Font(g1);
 
         //generate barcode 3of9
-        g1.drawString("*" + pol.getPolicyId() + "*", 1780, 190);
+        //g1.drawString("*" + pol.getPolicyId() + "*", 1780, 190);
 
         g1 = setGraphicColorAndFont(g1);
 
