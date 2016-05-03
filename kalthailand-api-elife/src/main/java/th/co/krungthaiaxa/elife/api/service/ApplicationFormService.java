@@ -33,6 +33,7 @@ import java.util.List;
 
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static java.util.stream.Collectors.joining;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static th.co.krungthaiaxa.elife.api.model.enums.DividendOption.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.RegistrationTypeName.THAI_ID_NUMBER;
@@ -117,8 +118,7 @@ public class ApplicationFormService {
 
         g1 = setGraphicColorAndFont(g1);
 
-
-        if (validatedPolicy) {
+        if (validatedPolicy && isNotEmpty(pol.getValidationAgentCode())) {
             //Validate TMC agent code
             g1.drawString(pol.getValidationAgentCode(), 2010, 480);
         }
