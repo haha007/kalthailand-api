@@ -33,6 +33,7 @@ import java.net.URISyntaxException;
 import java.util.Base64;
 import java.util.List;
 
+import static java.nio.charset.Charset.forName;
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpMethod.POST;
@@ -226,7 +227,7 @@ public class DocumentResourceTest {
     private String getBase64(String file) {
         try {
             byte[] content = IOUtils.toByteArray(this.getClass().getResourceAsStream(file));
-            return new String(Base64.getEncoder().encode(content));
+            return new String(Base64.getEncoder().encode(content), forName("UTF-8"));
         } catch (IOException e) {
             return null;
         }

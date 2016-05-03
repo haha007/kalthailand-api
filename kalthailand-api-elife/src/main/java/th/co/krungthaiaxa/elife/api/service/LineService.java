@@ -28,8 +28,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.nio.charset.Charset.forName;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.OK;
+import static th.co.krungthaiaxa.elife.api.utils.JsonUtil.getJson;
 
 @Service
 public class LineService {
@@ -50,7 +52,7 @@ public class LineService {
     @Value("${line.app.notification.accesstoken}")
     private String lineAppNotificationAccessToken;
 
-    public void sendPushNotification(String messageContent, String... mids) throws IOException {
+    public void sendPushNotificationOld(String messageContent, String... mids) throws IOException {
         try {
             logger.info("Sending POST to LINE Push Notification Message");
             URL url = new URL(lineAppNotificationUrl);
@@ -105,7 +107,7 @@ public class LineService {
         }
     }
 
-    public void sendPushNotificationOld(String messageContent, String... mids) throws IOException {
+    public void sendPushNotification(String messageContent, String... mids) throws IOException {
         LinePushNotificationContentRequest linePushNotificationContentRequest = new LinePushNotificationContentRequest();
         linePushNotificationContentRequest.setContentType(1);
         linePushNotificationContentRequest.setToType(1);
@@ -123,7 +125,7 @@ public class LineService {
         headers.set("X-Line-ChannelToken", lineAppNotificationAccessToken);
         headers.set("Content-Type", "application/json; charset=UTF-8");
 
-        HttpEntity<String> entity = new HttpEntity<>(new String(JsonUtil.getJson(linePushNotificationRequest)), headers);
+        HttpEntity<String> entity = new HttpEntity<>(new String(getJson(linePushNotificationRequest), forName("UTF-8")), headers);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(lineAppNotificationUrl);
         RestTemplate restTemplate = new RestTemplate();
@@ -158,7 +160,7 @@ public class LineService {
         headers.set("X-LINE-ChannelSecret", linePaySecretKey);
         headers.set("Content-Type", "application/json; charset=UTF-8");
 
-        HttpEntity<String> entity = new HttpEntity<>(new String(JsonUtil.getJson(linePayBookingRequest)), headers);
+        HttpEntity<String> entity = new HttpEntity<>(new String(getJson(linePayBookingRequest), forName("UTF-8")), headers);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(linePayUrl + "/request");
         RestTemplate restTemplate = new RestTemplate();
@@ -187,7 +189,7 @@ public class LineService {
         headers.set("X-LINE-ChannelSecret", linePaySecretKey);
         headers.set("Content-Type", "application/json; charset=UTF-8");
 
-        HttpEntity<String> entity = new HttpEntity<>(new String(JsonUtil.getJson(linePayConfirmingRequest)), headers);
+        HttpEntity<String> entity = new HttpEntity<>(new String(getJson(linePayConfirmingRequest), forName("UTF-8")), headers);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(linePayUrl + "/" + transactionId + "/confirm");
         RestTemplate restTemplate = new RestTemplate();
@@ -216,7 +218,7 @@ public class LineService {
         headers.set("X-LINE-ChannelSecret", linePaySecretKey);
         headers.set("Content-Type", "application/json; charset=UTF-8");
 
-        HttpEntity<String> entity = new HttpEntity<>(new String(JsonUtil.getJson(linePayConfirmingRequest)), headers);
+        HttpEntity<String> entity = new HttpEntity<>(new String(getJson(linePayConfirmingRequest), forName("UTF-8")), headers);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(linePayUrl + "/authorizations/" + transactionId + "/capture");
         RestTemplate restTemplate = new RestTemplate();

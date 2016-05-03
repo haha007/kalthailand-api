@@ -39,6 +39,7 @@ import java.net.URISyntaxException;
 import java.util.Base64;
 
 import static com.icegreen.greenmail.util.GreenMailUtil.getBody;
+import static java.nio.charset.Charset.forName;
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpMethod.POST;
@@ -262,7 +263,7 @@ public class QuoteResourceTest {
         assertThat(quote.getId()).isNotNull();
 
         quote(quote, beneficiary(100.0));
-        String jsonQuote = new String(JsonUtil.getJson(quote));
+        String jsonQuote = new String(JsonUtil.getJson(quote), forName("UTF-8"));
 
         URI updateURI = new URI("http://localhost:" + port + "/quotes/" + quote.getQuoteId());
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(updateURI)
@@ -297,7 +298,7 @@ public class QuoteResourceTest {
         Quote quote = getQuoteFromJSon(creationResponse.getBody());
 
         quote(quote, beneficiary(100.0));
-        String jsonQuote = new String(JsonUtil.getJson(quote));
+        String jsonQuote = new String(JsonUtil.getJson(quote), forName("UTF-8"));
 
         URI updateURI = new URI("http://localhost:" + port + "/quotes/" + quote.getQuoteId());
         UriComponentsBuilder updateBuilder = UriComponentsBuilder.fromUri(updateURI)
