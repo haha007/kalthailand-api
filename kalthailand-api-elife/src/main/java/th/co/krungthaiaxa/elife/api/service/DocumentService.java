@@ -38,6 +38,7 @@ import static java.time.ZoneId.SHORT_IDS;
 import static java.time.ZoneId.of;
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static th.co.krungthaiaxa.elife.api.model.enums.DocumentType.*;
+import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_MONTH;
 
 @Service
 public class DocumentService {
@@ -109,16 +110,21 @@ public class DocumentService {
             }
         }
 
-        // Generate DA Form
-        Optional<Document> daForm = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(DA_FORM)).findFirst();
-        if (!daForm.isPresent()) {
-            try {
-                byte[] content = daFormService.generateDAForm(policy);
-                addDocument(policy, content, "application/pdf", DA_FORM);
-            } catch (Exception e) {
-                logger.error("DA form for Policy [" + policy.getPolicyId() + "] has not been generated.", e);
+        // Generate DA Form if necessary
+        if (policy.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().equals(EVERY_MONTH)) {
+            Optional<Document> daForm = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(DA_FORM)).findFirst();
+            if (!daForm.isPresent()) {
+                try {
+                    byte[] content = daFormService.generateDAForm(policy);
+                    addDocument(policy, content, "application/pdf", DA_FORM);
+                } catch (Exception e) {
+                    logger.error("DA form for Policy [" + policy.getPolicyId() + "] has not been generated.", e);
+                }
             }
+        } else {
+            logger.info("Policy is not in monthly payment and DA Form should not be generated.");
         }
+
         logger.info("Default documents for policy [" + policy.getPolicyId() + "] have been created.");
     }
 
@@ -238,9 +244,9 @@ public class DocumentService {
 
         //SumInsured
         Double premium = 0.0;
-        if(policy.getCommonData().getProductId().equals(ProductType.PRODUCT_10_EC.getName())){
+        if (policy.getCommonData().getProductId().equals(ProductType.PRODUCT_10_EC.getName())) {
             premium = policy.getPremiumsData().getProduct10ECPremium().getSumInsured().getValue();
-        }else if(policy.getCommonData().getProductId().equals(ProductType.PRODUCT_IFINE.getName())){
+        } else if (policy.getCommonData().getProductId().equals(ProductType.PRODUCT_IFINE.getName())) {
             premium = policy.getPremiumsData().getProductIFinePremium().getSumInsured().getValue();
         }
         graphics.drawString(formatter.format(premium), 553, 353);

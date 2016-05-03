@@ -15,6 +15,7 @@ import th.co.krungthaiaxa.elife.api.model.Document;
 import th.co.krungthaiaxa.elife.api.model.DocumentDownload;
 import th.co.krungthaiaxa.elife.api.model.Policy;
 import th.co.krungthaiaxa.elife.api.model.Quote;
+import th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode;
 import th.co.krungthaiaxa.elife.api.repository.DocumentDownloadRepository;
 
 import javax.inject.Inject;
@@ -28,6 +29,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static th.co.krungthaiaxa.elife.api.TestUtil.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
 import static th.co.krungthaiaxa.elife.api.model.enums.DocumentType.*;
+import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_MONTH;
+import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_YEAR;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiApplication.class)
@@ -47,7 +50,7 @@ public class DocumentServiceTest {
 
     @Test
     public void should_add_2_documents_in_policy() {
-        Policy policy = getPolicy();
+        Policy policy = getPolicy(EVERY_MONTH);
         policy(policy);
 
         assertThat(policy.getDocuments()).hasSize(0);
@@ -59,7 +62,7 @@ public class DocumentServiceTest {
 
     @Test
     public void should_get_1_document_in_policy() {
-        Policy policy = getPolicy();
+        Policy policy = getPolicy(EVERY_MONTH);
         policy(policy);
 
         assertThat(policy.getDocuments()).hasSize(0);
@@ -78,14 +81,14 @@ public class DocumentServiceTest {
 
     @Test
     public void should_have_2_documents_generated_when_policy_is_waiting_for_payment() throws Exception {
-        Policy policy = getPolicy();
+        Policy policy = getPolicy(EVERY_MONTH);
         documentService.generateNotValidatedPolicyDocuments(policy);
         assertThat(policy.getDocuments()).extracting("typeName").containsExactly(APPLICATION_FORM, DA_FORM);
     }
 
     @Test
     public void should_still_have_only_2_documents_even_after_generating_more_than_once() throws Exception {
-        Policy policy = getPolicy();
+        Policy policy = getPolicy(EVERY_MONTH);
         documentService.generateNotValidatedPolicyDocuments(policy);
         documentService.generateNotValidatedPolicyDocuments(policy);
         documentService.generateNotValidatedPolicyDocuments(policy);
@@ -93,15 +96,22 @@ public class DocumentServiceTest {
     }
 
     @Test
-    public void should_have_5_documents_generated_when_policy_is_validated() throws Exception {
-        Policy policy = getPolicy();
+    public void should_have_4_documents_generated_when_policy_is_validated_and_not_monthly() throws Exception {
+        Policy policy = getPolicy(EVERY_YEAR);
+        documentService.generateValidatedPolicyDocuments(policy);
+        assertThat(policy.getDocuments()).extracting("typeName").containsExactly(APPLICATION_FORM, APPLICATION_FORM_VALIDATED, ERECEIPT_IMAGE, ERECEIPT_PDF);
+    }
+
+    @Test
+    public void should_have_5_documents_generated_when_policy_is_validated_and_monthly() throws Exception {
+        Policy policy = getPolicy(EVERY_MONTH);
         documentService.generateValidatedPolicyDocuments(policy);
         assertThat(policy.getDocuments()).extracting("typeName").containsExactly(APPLICATION_FORM, DA_FORM, APPLICATION_FORM_VALIDATED, ERECEIPT_IMAGE, ERECEIPT_PDF);
     }
 
     @Test
     public void should_still_have_only_5_documents_even_after_generating_more_than_once() throws Exception {
-        Policy policy = getPolicy();
+        Policy policy = getPolicy(EVERY_MONTH);
         documentService.generateValidatedPolicyDocuments(policy);
         documentService.generateValidatedPolicyDocuments(policy);
         documentService.generateValidatedPolicyDocuments(policy);
@@ -110,7 +120,7 @@ public class DocumentServiceTest {
 
     @Test
     public void should_create_bytes_for_eReceipt() throws IOException, DocumentException {
-        Policy policy = getPolicy();
+        Policy policy = getPolicy(EVERY_MONTH);
         policy(policy);
 
         documentService.generateValidatedPolicyDocuments(policy);
@@ -127,8 +137,8 @@ public class DocumentServiceTest {
         assertThat(file.exists()).isTrue();
     }
 
-    private Policy getPolicy() {
-        Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation());
+    private Policy getPolicy(PeriodicityCode periodicityCode) {
+        Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation(25, periodicityCode));
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 
