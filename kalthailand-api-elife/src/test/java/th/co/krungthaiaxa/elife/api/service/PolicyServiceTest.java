@@ -26,6 +26,7 @@ import static th.co.krungthaiaxa.elife.api.exception.PolicyValidationException.e
 import static th.co.krungthaiaxa.elife.api.exception.PolicyValidationException.noneExistingQuote;
 import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
 import static th.co.krungthaiaxa.elife.api.model.enums.PaymentStatus.*;
+import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_MONTH;
 import static th.co.krungthaiaxa.elife.api.model.enums.PolicyStatus.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -281,7 +282,7 @@ public class PolicyServiceTest {
     }
 
     private Policy getPolicy() {
-        Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation());
+        Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation(25, EVERY_MONTH));
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 

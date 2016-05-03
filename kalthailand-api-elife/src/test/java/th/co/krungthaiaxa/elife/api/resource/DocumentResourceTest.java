@@ -23,6 +23,7 @@ import th.co.krungthaiaxa.elife.api.TestUtil;
 import th.co.krungthaiaxa.elife.api.model.Document;
 import th.co.krungthaiaxa.elife.api.model.Policy;
 import th.co.krungthaiaxa.elife.api.model.Quote;
+import th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode;
 import th.co.krungthaiaxa.elife.api.model.error.Error;
 import th.co.krungthaiaxa.elife.api.service.QuoteService;
 
@@ -189,7 +190,7 @@ public class DocumentResourceTest {
     }
 
     @Test
-    public void should_return_2_documents_when_policy_validated() throws IOException, URISyntaxException {
+    public void should_return_2_document_when_policy_monthly() throws IOException, URISyntaxException {
         Policy policy = getPolicy();
 
         URI paymentURI = new URI("http://localhost:" + port + "/policies/" + policy.getPolicyId() + "/update/status/pendingValidation");
@@ -212,7 +213,7 @@ public class DocumentResourceTest {
 
     private Policy getPolicy() throws URISyntaxException, IOException {
         String sessionId = randomNumeric(20);
-        Quote quote = quoteService.createQuote(sessionId, LINE, productQuotation());
+        Quote quote = quoteService.createQuote(sessionId, LINE, productQuotation(25, PeriodicityCode.EVERY_MONTH));
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 
