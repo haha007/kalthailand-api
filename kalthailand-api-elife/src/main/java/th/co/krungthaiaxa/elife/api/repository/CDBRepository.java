@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import javax.inject.Inject;
 import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.util.List;
@@ -62,8 +61,9 @@ public class CDBRepository {
                 map = list.get(0);
             }
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            logger.error("Unable to query for agent code", e);
         }
+
         if (map == null) {
             return Optional.empty();
         }
