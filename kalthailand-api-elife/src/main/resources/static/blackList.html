@@ -13,6 +13,7 @@
 
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="bower_components/bootstrap-css-only/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="bower_components/angular-bootstrap/ui-bootstrap-csp.css" />
 
     <!-- Custom styles for this template -->
     <link href="elife.css" rel="stylesheet">
@@ -39,9 +40,9 @@
         <div class="col-sm-3 col-md-2 sidebar">
             <ul class="nav nav-sidebar">
                 <li id="dashboardLink"><a href="index.html">Dashboard</a></li>
-                <li id="collectionFileLink" class="active"><a href="collectionFile.html">Collection file upload<span class="sr-only">(current)</span></a></li>
+                <li id="collectionFileLink"><a href="collectionFile.html">Collection file upload</a></li>
                 <li id="policyDetailLink"><a href="policyDetail.html">Policy Detail</a></li>
-                <li id="blackListLink"><a href="blackList.html">Black List</a></li>
+                <li id="blackListLink" class="active"><a href="blackList.html">Black List<span class="sr-only">(current)</span></a></li>
             </ul>
         </div>
 
@@ -54,13 +55,13 @@
             }
         </style>
 
-        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" ng-controller="AppController" id="collectionFileListContainer">
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" ng-controller="BlackListController" id="blackListContainer">
             <div class="page-header">
-                <h1>Collection files</h1>
+                <h1>Customer Black List</h1>
             </div>
             <form name="formUpload" ng-submit="upload($event)" class="form-inline form-upload">
                 <div class="form-group">
-                    <label for="fileToUpload">Choose a collection file to upload</label>
+                    <label for="fileToUpload">Choose a black list file to upload</label>
                     <input type="file" file-model="file" id="fileToUpload">
                 </div>
                 <button type="submit" class="btn btn-primary btn-danger">Submit</button>
@@ -69,30 +70,27 @@
                 <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
                 {{ errorMessage }}
             </div>
-            <div class="alert alert-info" role="alert" ng-hide="collectionFiles && collectionFiles.length > 0">
-                There are no collection file yet.
+            <div class="alert alert-info" role="alert" ng-hide="blackList && blackList.length > 0">
+                There are no black listed customer yet.
             </div>
+
+            <uib-pagination
+                    total-items="totalItems"
+                    ng-model="currentPage"
+                    max-size="maxSize"
+                    class="pagination-sm"
+                    boundary-link-numbers="true"
+                    ng-change="pageChanged()">
+            </uib-pagination>
 
             <table class="table table-bordered table-striped table-hover table-condensed">
                 <tr>
-                    <td>Collection File<br>Received Date</td>
-                    <td>Collection File<br>Nb Line</td>
-                    <td>Job Starting Date</td>
-                    <td>Job Ending Date</td>
-                    <td>Generated lines</td>
-                    <td>Deduction File</td>
+                    <td>Thai ID</td>
+                    <td>Date added in blacklist</td>
                 </tr>
-                <tr ng-repeat="collectionFile in collectionFiles"
-                    ng-class="{
-                        'success': collectionFile.deductionFile.lines.length && collectionFile.lines.length == collectionFile.deductionFile.lines.length,
-                        'danger': collectionFile.deductionFile.lines.length && collectionFile.lines.length != collectionFile.deductionFile.lines.length
-                    }">
-                    <td>{{ collectionFile.receivedDate | date:'yyyy-MM-dd HH:mm:ss Z'}}</td>
-                    <td>{{ collectionFile.lines.length }}</td>
-                    <td>{{ collectionFile.jobStartedDate | date:'yyyy-MM-dd HH:mm:ss Z'}}</td>
-                    <td>{{ collectionFile.jobEndedDate | date:'yyyy-MM-dd HH:mm:ss Z'}}</td>
-                    <td>{{ collectionFile.deductionFile.lines.length }}</td>
-                    <td><a href="RLS/deduction/download/{{collectionFile.id}}" ng-show="collectionFile.deductionFile.lines && collectionFile.deductionFile.lines.length != 0">Download</a></td>
+                <tr ng-repeat="item in blackList">
+                    <td>{{ item.idNumber }}</td>
+                    <td>{{ item.receivedDate | date:'yyyy-MM-dd HH:mm:ss Z'}}</td>
                 </tr>
             </table>
         </div>
@@ -103,6 +101,8 @@
 <script src="bower_components/angular/angular.min.js"></script>
 <script src="bower_components/angular-resource/angular-resource.min.js"></script>
 <script src="bower_components/angular-file-model/angular-file-model.js"></script>
+<script src="bower_components/angular-animate/angular-animate.min.js"></script>
+<script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
 <script src="bower_components/jquery/dist/jquery.min.js"></script>
 <script src="app/app.js"></script>
 <script src="app/controllers.js"></script>

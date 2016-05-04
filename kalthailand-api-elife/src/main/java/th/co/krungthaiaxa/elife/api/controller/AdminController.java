@@ -3,6 +3,8 @@ package th.co.krungthaiaxa.elife.api.controller;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,6 +15,7 @@ import springfox.documentation.annotations.ApiIgnore;
 import th.co.krungthaiaxa.elife.api.model.Document;
 import th.co.krungthaiaxa.elife.api.model.DocumentDownload;
 import th.co.krungthaiaxa.elife.api.model.Policy;
+import th.co.krungthaiaxa.elife.api.repository.ThaiIdBlackListRepository;
 import th.co.krungthaiaxa.elife.api.service.DocumentService;
 import th.co.krungthaiaxa.elife.api.service.PolicyService;
 
@@ -40,11 +43,13 @@ public class AdminController {
     private final static Logger logger = LoggerFactory.getLogger(AdminController.class);
     private final PolicyService policyService;
     private final DocumentService documentService;
+    private final ThaiIdBlackListRepository thaiIdBlackListRepository;
 
     @Inject
-    public AdminController(PolicyService policyService, DocumentService documentService) {
+    public AdminController(PolicyService policyService, DocumentService documentService, ThaiIdBlackListRepository thaiIdBlackListRepository) {
         this.policyService = policyService;
         this.documentService = documentService;
+        this.thaiIdBlackListRepository = thaiIdBlackListRepository;
     }
 
     @ApiIgnore
@@ -123,4 +128,12 @@ public class AdminController {
             logger.error("Unable to download the document", e);
         }
     }
+
+    @ApiIgnore
+    @RequestMapping(value = "admin/blackList", produces = APPLICATION_JSON_VALUE, method = GET)
+    @ResponseBody
+    public ResponseEntity<byte[]> blackList(@RequestParam Integer pageNumber, @RequestParam Integer pageSize) {
+        return new ResponseEntity<>(getJson(thaiIdBlackListRepository.findAll(new PageRequest(pageNumber, pageSize, Sort.Direction.ASC, "idNumber"))), OK);
+    }
+
 }

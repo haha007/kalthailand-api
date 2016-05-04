@@ -3,6 +3,7 @@
 
     angular.module('myApp', [
         'ngResource',
-        'file-model'
+        'file-model',
+        'ui.bootstrap'
     ]);
 }());

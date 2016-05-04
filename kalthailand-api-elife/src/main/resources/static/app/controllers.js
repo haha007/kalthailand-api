@@ -3,18 +3,18 @@
 
     var app = angular.module('myApp');
 
-    app.controller('AppController', function ($scope, Item) {
-        Item.query(function (response) {
+    app.controller('AppController', function ($scope, CollectionFile) {
+        CollectionFile.query(function (response) {
             $scope.collectionFiles = response;
         });
 
         $scope.file = null;
         $scope.upload = function (event) {
             event.preventDefault();
-            var newItem = new Item;
-            newItem.file = $scope.file;
+            var newCollectionFile = new CollectionFile;
+            newCollectionFile.file = $scope.file;
 
-            newItem.$save()
+            newCollectionFile.$save()
                 .then(function (successResponse) {
                     // For successfully state
                     $scope.errorMessage = null;
@@ -24,6 +24,47 @@
                     $scope.errorMessage = errorResponse.data.userMessage;
                 });
         }
+    });
+
+    app.controller('BlackListController', function ($scope, BlackListFile) {
+        $scope.maxSize = 20;
+        $scope.currentPage = 0;
+
+        $scope.setPage = function (pageNo) {
+            $scope.currentPage = pageNo;
+        };
+
+        $scope.pageChanged = function() {
+            BlackListFile.get(
+                {pageNumber: $scope.currentPage, pageSize: 20},
+                function (successResponse) {
+                    $scope.totalItems = successResponse.totalPages;
+                    $scope.currentPage = successResponse.number;
+
+                    $scope.blackList = successResponse.content;
+                    $scope.errorMessage = null;
+                },
+                function (errorResponse) {
+                    $scope.blackList = null;
+                    $scope.errorMessage = errorResponse.data.userMessage;
+                }
+            );
+        };
+
+        BlackListFile.get(
+            {pageNumber: $scope.currentPage, pageSize: 20},
+            function (successResponse) {
+                $scope.totalItems = successResponse.totalElements;
+                $scope.currentPage = successResponse.number;
+
+                $scope.blackList = successResponse.content;
+                $scope.errorMessage = null;
+            },
+            function (errorResponse) {
+                $scope.blackList = null;
+                $scope.errorMessage = errorResponse.data.userMessage;
+            }
+        );
     });
 
     app.controller('DetailController', function ($scope, $http, PolicyDetail, PolicyNotification) {
