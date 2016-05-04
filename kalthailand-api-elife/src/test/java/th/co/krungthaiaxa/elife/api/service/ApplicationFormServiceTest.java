@@ -46,12 +46,12 @@ public class ApplicationFormServiceTest {
         policy.getInsureds().get(0).getPerson().setGenderCode(GenderCode.MALE);
         policy.getInsureds().get(0).getPerson().setMaritalStatus(MaritalStatus.WIDOW);
         GeographicalAddress address = new GeographicalAddress();
-        address.setStreetAddress1("test");
-        address.setStreetAddress2("555");
-        address.setSubdistrict("subdistrict");
-        address.setDistrict("district");
-        address.setSubCountry("province");
-        address.setPostCode("11111");
+        address.setStreetAddress1("123/456 ม.วิเศษสุขนคร โครงการ18");
+        address.setStreetAddress2("ถนนประชาอุทิศ");
+        address.setSubdistrict("ทุ่งครุ");
+        address.setDistrict("ทุ่งครุ");
+        address.setSubCountry("กรุงเทพมหานคร");
+        address.setPostCode("10140");
         policy.getInsureds().get(0).getPerson().setRegistrationAddress(address);
         PhoneNumber phone = new PhoneNumber();
         phone.setNumber("022222222");
@@ -61,17 +61,85 @@ public class ApplicationFormServiceTest {
         p.setCode(PeriodicityCode.EVERY_QUARTER);
         policy.getPremiumsData().getFinancialScheduler().setPeriodicity(p);
 
+        //benefit 2
         CoverageBeneficiary cov = new CoverageBeneficiary();
         cov.setRelationship(BeneficiaryRelationshipType.AUNT_UNCLE);
         Person person = new Person();
-        person.setGivenName("santi");
-        person.setSurName("likit");
+        person.setGivenName("สันติ");
+        person.setSurName("ลิขิตมงคลสกุล");
         Registration reg = new Registration();
         reg.setId("1111222233334");
         person.addRegistration(reg);
         person.setCurrentAddress(address);
         cov.setPerson(person);
         policy.getCoverages().get(0).addBeneficiary(cov);
+
+        //benefit 3
+        cov = new CoverageBeneficiary();
+        cov.setRelationship(BeneficiaryRelationshipType.AUNT_UNCLE);
+        person = new Person();
+        person.setGivenName("ธนวัฒน์");
+        person.setSurName("เหมชัว");
+        reg = new Registration();
+        reg.setId("1111222233334");
+        person.addRegistration(reg);
+
+        address = new GeographicalAddress();
+        address.setStreetAddress1("30/31 หมู่บ้าน พรวิภาปาร์ค");
+        address.setStreetAddress2("ถนนพุฒมนทลสาย3");
+        address.setSubdistrict("ทวีวัฒนา");
+        address.setDistrict("ทวีวัฒนา");
+        address.setSubCountry("กรุงเทพมหานคร");
+        address.setPostCode("10170");
+
+        person.setCurrentAddress(address);
+        cov.setPerson(person);
+        policy.getCoverages().get(0).addBeneficiary(cov);
+
+        //benefit 4
+        cov = new CoverageBeneficiary();
+        cov.setRelationship(BeneficiaryRelationshipType.AUNT_UNCLE);
+        person = new Person();
+        person.setGivenName("ทศพล");
+        person.setSurName("จินตนพันธ์");
+        reg = new Registration();
+        reg.setId("1111222233334");
+        person.addRegistration(reg);
+
+        address = new GeographicalAddress();
+        address.setStreetAddress1("61/112 ซ.ประเสริฐมนูกิจ27");
+        address.setStreetAddress2("ถ.ประเสริฐมนูกิจ");
+        address.setSubdistrict("จรเข้บัว");
+        address.setDistrict("ลาดพร้าว");
+        address.setSubCountry("กรุงเทพมหานคร");
+        address.setPostCode("10230");
+
+        person.setCurrentAddress(address);
+        cov.setPerson(person);
+        policy.getCoverages().get(0).addBeneficiary(cov);
+
+        //benefit 5
+        cov = new CoverageBeneficiary();
+        cov.setRelationship(BeneficiaryRelationshipType.AUNT_UNCLE);
+        person = new Person();
+        person.setGivenName("วิบูลย์");
+        person.setSurName("โอฬารสิริกุล");
+        reg = new Registration();
+        reg.setId("1111222233334");
+        person.addRegistration(reg);
+
+        address = new GeographicalAddress();
+        address.setStreetAddress1("34/15 หมู่บ้านนนทรี4 หมู่5");
+        address.setStreetAddress2("ถนนสุขาภิบาล1");
+        address.setSubdistrict("บางศรีเมือง");
+        address.setDistrict("เมือง");
+        address.setSubCountry("นนทบุรี");
+        address.setPostCode("11000");
+
+        person.setCurrentAddress(address);
+        cov.setPerson(person);
+        policy.getCoverages().get(0).addBeneficiary(cov);
+
 
         byte[] pdfContent = appService.generateNotValidatedApplicationForm(policy);
         File pdfFile = new File(tmpPathDeletedAfterTests + File.separator + "application-not-validated-10ec-form.pdf");

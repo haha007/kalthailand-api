@@ -370,8 +370,16 @@ public class ApplicationFormService {
             g2.drawString(messageSource.getMessage("relationship." + String.valueOf(benefit.getRelationship()), null, thLocale), 905, listY.get(a));
             //benefit id card number
             g2.drawString(benefit.getPerson().getRegistrations().get(0).getId(), 1135, listY.get(a));
+
+            g2 = setGraphicColorAndFontSmall(g2);
+
             //benefit address
-            g2.drawString(generateAddress(benefit.getPerson().getCurrentAddress()), 1630, listY.get(a));
+            g2.drawString(generateAddress1(benefit.getPerson().getCurrentAddress()), 1630, listY.get(a) - 25);
+
+            g2.drawString(generateAddress2(benefit.getPerson().getCurrentAddress()), 1630, listY.get(a) + 5);
+
+            g2 = setGraphicColorAndFont(g2);
+
             //benefit benefit percent
             g2.drawString(String.valueOf(benefit.getCoverageBenefitPercentage()), 2185, listY.get(a));
         }
@@ -435,7 +443,7 @@ public class ApplicationFormService {
         return listY;
     }
 
-    private String generateAddress(GeographicalAddress g) {
+    private String generateAddress1(GeographicalAddress g) {
         if (g == null) {
             return "";
         }
@@ -443,11 +451,24 @@ public class ApplicationFormService {
         String out = "";
         out += g.getStreetAddress1();
         out += " " + g.getStreetAddress2();
-        out += " " + g.getSubdistrict();
-        out += " " + g.getDistrict();
+        return out;
+    }
+
+    private String generateAddress2(GeographicalAddress g) {
+        if (g == null) {
+            return "";
+        }
+
+        String out = "";
+        if (g.getSubCountry().equals("กรุงเทพมหานคร")) {
+            out += "แขวง" + g.getSubdistrict();
+            out += " เขต" + g.getDistrict();
+        } else {
+            out += "ตำบล" + g.getSubdistrict();
+            out += " อำเภอ" + g.getDistrict();
+        }
         out += " " + g.getSubCountry();
         out += " " + g.getPostCode();
-        out += " " + g.getCountry();
         return out;
     }
 
@@ -476,6 +497,18 @@ public class ApplicationFormService {
         m.put("month", thaiBirthDate.format(ofPattern("MMMM", new Locale("th", "TH"))));
         m.put("year", thaiBirthDate.format(ofPattern("yyyy")));
         return m;
+    }
+
+    private Graphics setGraphicColorAndFontSmall(Graphics g) throws IOException {
+        g.setColor(FONT_COLOR);
+        try {
+            Font f = Font.createFont(Font.TRUETYPE_FONT, getClass().getClassLoader().getResourceAsStream("ereceipt/ANGSAB_1.TTF")).deriveFont(35f);
+            g.setFont(f);
+        } catch (FontFormatException e) {
+            logger.error("Unable to load embed font file", e);
+            throw new IOException(e);
+        }
+        return g;
     }
 
     private Graphics setGraphicColorAndFont(Graphics g) throws IOException {
