@@ -34,9 +34,7 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static th.co.krungthaiaxa.elife.api.exception.ExceptionUtils.isTrue;
 import static th.co.krungthaiaxa.elife.api.exception.ExceptionUtils.notNull;
 import static th.co.krungthaiaxa.elife.api.exception.PolicyValidationException.*;
-import static th.co.krungthaiaxa.elife.api.model.enums.DocumentType.APPLICATION_FORM;
-import static th.co.krungthaiaxa.elife.api.model.enums.DocumentType.DA_FORM;
-import static th.co.krungthaiaxa.elife.api.model.enums.DocumentType.ERECEIPT_PDF;
+import static th.co.krungthaiaxa.elife.api.model.enums.DocumentType.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.PaymentStatus.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.PolicyStatus.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.RegistrationTypeName.THAI_ID_NUMBER;
@@ -177,7 +175,7 @@ public class PolicyService {
                 logger.error("Unable to send application Form to TMC on policy [" + policy.getPolicyId() + "].", e);
             }
         } else {
-            throw new ElifeException("Can't find eReceipt for the policy [" + policy.getPolicyId() + "]");
+            throw new ElifeException("Can't find Application form for the policy [" + policy.getPolicyId() + "]");
         }
 
         // Send DA Form to TMC (DA form may not exist)
@@ -291,6 +289,19 @@ public class PolicyService {
             tmcClient.sendPDFToTMC(policy, documentDownload.getContent(), ERECEIPT_PDF);
         } catch (ElifeException e) {
             logger.error("Unable to send eReceipt to TMC on policy [" + policy.getPolicyId() + "].", e);
+        }
+
+        // Send Validated Application Form to TMC
+        Optional<Document> applicationFormValidatedPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(APPLICATION_FORM_VALIDATED)).findFirst();
+        if (applicationFormValidatedPdf.isPresent()) {
+            DocumentDownload applicationFormValidatedDocument = documentService.downloadDocument(applicationFormValidatedPdf.get().getId());
+            try {
+                tmcClient.sendPDFToTMC(policy, applicationFormValidatedDocument.getContent(), APPLICATION_FORM_VALIDATED);
+            } catch (ElifeException e) {
+                logger.error("Unable to send validated application Form to TMC on policy [" + policy.getPolicyId() + "].", e);
+            }
+        } else {
+            throw new ElifeException("Can't find validated application form for the policy [" + policy.getPolicyId() + "]");
         }
 
         policy.setStatus(VALIDATED);
