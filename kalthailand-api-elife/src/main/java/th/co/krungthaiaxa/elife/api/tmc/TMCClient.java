@@ -3,9 +3,12 @@ package th.co.krungthaiaxa.elife.api.tmc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.stereotype.Component;
 import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
 import org.springframework.ws.soap.client.core.SoapActionCallback;
+import org.springframework.ws.transport.WebServiceMessageSender;
+import org.springframework.ws.transport.http.HttpComponentsMessageSender;
 import th.co.krungthaiaxa.elife.api.exception.ElifeException;
 import th.co.krungthaiaxa.elife.api.model.Policy;
 import th.co.krungthaiaxa.elife.api.model.enums.DocumentType;
@@ -32,6 +35,12 @@ public class TMCClient extends WebServiceGatewaySupport {
         notNull(policy.getInsureds().get(0), new ElifeException("Cannot send document with no insured"));
         notNull(policy.getInsureds().get(0).getPerson(), new ElifeException("Cannot send document when insured has no details"));
         notNull(policy.getInsureds().get(0).getPerson().getRegistrations(), new ElifeException("Cannot send document when insured has no ID"));
+
+        Jaxb2Marshaller jaxb2Marshaller = marshaller();
+        setMessageSender(webServiceMessageSender());
+        setDefaultUri(tmcWebServiceUrl);
+        setMarshaller(jaxb2Marshaller);
+        setUnmarshaller(jaxb2Marshaller);
 
         TMCSendingPDFRequest tmcSendingPDFRequest = new TMCSendingPDFRequest();
         tmcSendingPDFRequest.setContent(pdfBase64Encoded);
@@ -63,4 +72,18 @@ public class TMCClient extends WebServiceGatewaySupport {
             throw new ElifeException("TMC returned an error message when sending document. Message is [" + tmcSendingPDFResponse.getRemark().getMessage() + "].");
         }
     }
+
+    private Jaxb2Marshaller marshaller() {
+        Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+        marshaller.setContextPath("th.co.krungthaiaxa.elife.api.tmc.wsdl");
+        return marshaller;
+    }
+
+    private WebServiceMessageSender webServiceMessageSender() {
+        HttpComponentsMessageSender sender = new HttpComponentsMessageSender();
+        sender.setReadTimeout(120 * 1000);
+        sender.setConnectionTimeout(120 * 1000);
+        return sender;
+    }
+
 }

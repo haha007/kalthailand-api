@@ -265,7 +265,7 @@ public class PolicyResource {
         try {
             policyService.updatePolicyAfterPolicyHasBeenValidated(policy.get(), agentCode);
         } catch (ElifeException e) {
-            logger.error("There was an error whil trying to update policy status.", e);
+            logger.error("Payment is successful but there was an error whil trying to update policy status.", e);
             return new ResponseEntity<>(getJson(POLICY_VALIDATION_ERROR.apply(e.getMessage())), INTERNAL_SERVER_ERROR);
         }
 

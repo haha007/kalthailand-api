@@ -17,6 +17,7 @@ import th.co.krungthaiaxa.elife.api.model.line.LinePayResponse;
 import th.co.krungthaiaxa.elife.api.products.Product;
 import th.co.krungthaiaxa.elife.api.products.ProductFactory;
 import th.co.krungthaiaxa.elife.api.repository.*;
+import th.co.krungthaiaxa.elife.api.tmc.TMCClient;
 
 import javax.inject.Inject;
 import javax.mail.MessagingException;
@@ -33,6 +34,8 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static th.co.krungthaiaxa.elife.api.exception.ExceptionUtils.isTrue;
 import static th.co.krungthaiaxa.elife.api.exception.ExceptionUtils.notNull;
 import static th.co.krungthaiaxa.elife.api.exception.PolicyValidationException.*;
+import static th.co.krungthaiaxa.elife.api.model.enums.DocumentType.APPLICATION_FORM;
+import static th.co.krungthaiaxa.elife.api.model.enums.DocumentType.DA_FORM;
 import static th.co.krungthaiaxa.elife.api.model.enums.DocumentType.ERECEIPT_PDF;
 import static th.co.krungthaiaxa.elife.api.model.enums.PaymentStatus.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.PolicyStatus.*;
@@ -45,6 +48,7 @@ import static th.co.krungthaiaxa.elife.api.service.LineService.LINE_PAY_INTERNAL
 public class PolicyService {
     private final static Logger logger = LoggerFactory.getLogger(PolicyService.class);
 
+    private final TMCClient tmcClient;
     private final CDBRepository cdbRepository;
     private final PaymentRepository paymentRepository;
     private final PolicyRepository policyRepository;
@@ -57,7 +61,7 @@ public class PolicyService {
     private final ProductFactory productFactory;
 
     @Inject
-    public PolicyService(CDBRepository cdbRepository,
+    public PolicyService(TMCClient tmcClient, CDBRepository cdbRepository,
                          PaymentRepository paymentRepository,
                          PolicyRepository policyRepository,
                          PolicyNumberRepository policyNumberRepository,
@@ -66,6 +70,7 @@ public class PolicyService {
                          LineService lineService, DocumentService documentService,
                          SMSApiService smsApiService,
                          ProductFactory productFactory) {
+        this.tmcClient = tmcClient;
         this.cdbRepository = cdbRepository;
         this.paymentRepository = paymentRepository;
         this.policyRepository = policyRepository;
@@ -162,6 +167,30 @@ public class PolicyService {
         // Generate documents
         documentService.generateNotValidatedPolicyDocuments(policy);
 
+        // Send Application Form to TMC
+        Optional<Document> applicationFormPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(APPLICATION_FORM)).findFirst();
+        if (applicationFormPdf.isPresent()) {
+            DocumentDownload applicationFormDocument = documentService.downloadDocument(applicationFormPdf.get().getId());
+            try {
+                tmcClient.sendPDFToTMC(policy, applicationFormDocument.getContent(), APPLICATION_FORM);
+            } catch (ElifeException e) {
+                logger.error("Unable to send application Form to TMC on policy [" + policy.getPolicyId() + "].", e);
+            }
+        } else {
+            throw new ElifeException("Can't find eReceipt for the policy [" + policy.getPolicyId() + "]");
+        }
+
+        // Send DA Form to TMC (DA form may not exist)
+        Optional<Document> daFormPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(DA_FORM)).findFirst();
+        if (daFormPdf.isPresent()) {
+            DocumentDownload daFormDocument = documentService.downloadDocument(daFormPdf.get().getId());
+            try {
+                tmcClient.sendPDFToTMC(policy, daFormDocument.getContent(), DA_FORM);
+            } catch (ElifeException e) {
+                logger.error("Unable to send DA Form to TMC on policy [" + policy.getPolicyId() + "].", e);
+            }
+        }
+
         // Update the policy
         Optional<Registration> insuredId = policy.getInsureds().get(0).getPerson().getRegistrations()
                 .stream()
@@ -257,6 +286,13 @@ public class PolicyService {
             logger.error(String.format("Unable to send push notification for policy validation on policy [%1$s].", policy.getPolicyId()), e);
         }
 
+        // Send eReceipt to TMC
+        try {
+            tmcClient.sendPDFToTMC(policy, documentDownload.getContent(), ERECEIPT_PDF);
+        } catch (ElifeException e) {
+            logger.error("Unable to send eReceipt to TMC on policy [" + policy.getPolicyId() + "].", e);
+        }
+
         policy.setStatus(VALIDATED);
         policyRepository.save(policy);
     }
@@ -340,4 +376,5 @@ public class PolicyService {
             payment.setRegistrationKey(registrationKey);
         }
     }
+
 }
