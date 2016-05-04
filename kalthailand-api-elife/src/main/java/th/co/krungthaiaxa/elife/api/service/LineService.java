@@ -1,6 +1,7 @@
 package th.co.krungthaiaxa.elife.api.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -108,6 +109,11 @@ public class LineService {
     }
 
     public void sendPushNotification(String messageContent, String... mids) throws IOException {
+        if (StringUtils.isEmpty(lineAppNotificationUrl)) {
+            logger.info("Notification is not configured and won't be sent");
+            return;
+        }
+
         LinePushNotificationContentRequest linePushNotificationContentRequest = new LinePushNotificationContentRequest();
         linePushNotificationContentRequest.setContentType(1);
         linePushNotificationContentRequest.setToType(1);
