@@ -31,8 +31,10 @@ public class PolicyValidationException extends ElifeException {
 
     public static PolicyValidationException mainInsuredWithNoGenderCode = new PolicyValidationException("Gender code of main insured is empty.");
     public static PolicyValidationException mainInsuredWithNoMaritalStatus = new PolicyValidationException("Marital status of main insured is empty.");
-    public static PolicyValidationException mainInsuredWithNoWeight = new PolicyValidationException("Height of main insured is empty.");
-    public static PolicyValidationException mainInsuredWithNoHeight = new PolicyValidationException("Weight of main insured is empty.");
+    public static PolicyValidationException mainInsuredWithNoWeight = new PolicyValidationException("Weight of main insured is empty.");
+    public static PolicyValidationException mainInsuredWithNoHeight = new PolicyValidationException("Height of main insured is empty.");
+    public static PolicyValidationException mainInsuredWithNoWeightChange = new PolicyValidationException("Weight change flag of main insured is empty.");
+    public static PolicyValidationException mainInsuredWithNoWeightChangeReason = new PolicyValidationException("Weight change reason of main insured is empty.");
     public static PolicyValidationException mainInsuredWithNoDeclaredTax = new PolicyValidationException("Declared tax of main insured is empty.");
     public static PolicyValidationException mainInsuredWithNoDisableStatus = new PolicyValidationException("Disability or HIV status of main insured is empty.");
     public static PolicyValidationException mainInsuredWithNoHospitalizedStatus = new PolicyValidationException("Hospitalized status of main insured is empty.");

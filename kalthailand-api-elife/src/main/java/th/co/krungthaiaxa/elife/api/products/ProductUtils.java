@@ -116,6 +116,10 @@ public class ProductUtils {
         notNull(insured.getHealthStatus().getDeniedOrCounterOffer(), mainInsuredWithNoDeniedOrCounterOfferStatus);
         notNull(insured.getHealthStatus().getHeightInCm(), mainInsuredWithNoHeight);
         notNull(insured.getHealthStatus().getWeightInKg(), mainInsuredWithNoWeight);
+        notNull(insured.getHealthStatus().getWeightChangeInLast6Months(), mainInsuredWithNoWeightChange);
+        if (insured.getHealthStatus().getWeightChangeInLast6Months()) {
+            notNull(insured.getHealthStatus().getWeightChangeInLast6MonthsReason(), mainInsuredWithNoWeightChangeReason);
+        }
 
         if (insured.getPerson().getCurrentAddress() == null && insured.getPerson().getDeliveryAddress() == null) {
             throw PolicyValidationException.mainInsuredWithNoGeographicalAddress;

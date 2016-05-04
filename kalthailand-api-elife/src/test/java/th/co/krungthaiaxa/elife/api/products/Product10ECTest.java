@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
 import static java.time.LocalDate.now;
 import static java.time.ZoneId.SHORT_IDS;
 import static java.time.ZoneId.of;
@@ -893,6 +894,30 @@ public class Product10ECTest {
         assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(mainInsuredWithNoWeight.getMessage());
+    }
+
+    @Test
+    public void should_return_error_when_create_policy_with_main_insured_with_no_weight_change() throws Exception {
+        Quote quote = quote(product10EC());
+        product10EC.calculateQuote(quote, productQuotation(25, EVERY_YEAR, 1000000.0));
+        quote(quote, beneficiary(100.0));
+        quote.getInsureds().get(0).getHealthStatus().setWeightChangeInLast6Months(null);
+        Policy policy = new Policy();
+        assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
+                .isInstanceOf(PolicyValidationException.class)
+                .hasMessage(mainInsuredWithNoWeightChange.getMessage());
+    }
+
+    @Test
+    public void should_return_error_when_create_policy_with_main_insured_with_weight_change_and_no_reason() throws Exception {
+        Quote quote = quote(product10EC());
+        product10EC.calculateQuote(quote, productQuotation(25, EVERY_YEAR, 1000000.0));
+        quote(quote, beneficiary(100.0));
+        quote.getInsureds().get(0).getHealthStatus().setWeightChangeInLast6Months(TRUE);
+        Policy policy = new Policy();
+        assertThatThrownBy(() -> product10EC.getPolicyFromQuote(policy, quote))
+                .isInstanceOf(PolicyValidationException.class)
+                .hasMessage(mainInsuredWithNoWeightChangeReason.getMessage());
     }
 
     @Test

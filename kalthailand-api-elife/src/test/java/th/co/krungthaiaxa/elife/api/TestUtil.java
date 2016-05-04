@@ -152,6 +152,7 @@ public class TestUtil {
         quote.getInsureds().get(0).getHealthStatus().setHeightInCm(100);
         quote.getInsureds().get(0).getHealthStatus().setHospitalizedInLast6Months(FALSE);
         quote.getInsureds().get(0).getHealthStatus().setWeightInKg(100);
+        quote.getInsureds().get(0).getHealthStatus().setWeightChangeInLast6Months(FALSE);
         quote.getInsureds().get(0).setEndDate(now().plusYears(10));
         quote.getInsureds().get(0).setMainInsuredIndicator(TRUE);
         quote.getInsureds().get(0).setProfessionId(1);
