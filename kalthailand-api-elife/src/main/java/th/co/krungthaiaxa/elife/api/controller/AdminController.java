@@ -132,8 +132,8 @@ public class AdminController {
     @ApiIgnore
     @RequestMapping(value = "admin/blackList", produces = APPLICATION_JSON_VALUE, method = GET)
     @ResponseBody
-    public ResponseEntity<byte[]> blackList(@RequestParam Integer pageNumber, @RequestParam Integer pageSize) {
-        return new ResponseEntity<>(getJson(thaiIdBlackListRepository.findAll(new PageRequest(pageNumber, pageSize, Sort.Direction.ASC, "idNumber"))), OK);
+    public ResponseEntity<byte[]> blackList(@RequestParam Integer pageNumber, @RequestParam Integer pageSize, @RequestParam String searchContent) {
+        return new ResponseEntity<>(getJson(thaiIdBlackListRepository.findByIdNumberContaining(searchContent, new PageRequest(pageNumber, pageSize, Sort.Direction.ASC, "idNumber"))), OK);
     }
 
 }

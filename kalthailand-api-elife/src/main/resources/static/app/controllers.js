@@ -29,16 +29,35 @@
     app.controller('BlackListController', function ($scope, BlackListFile) {
         $scope.currentPage = 1;
         $scope.itemsPerPage = 20;
+        $scope.searchContent = '';
 
-        $scope.pageChanged = function() {
+        $scope.search = function() {
             BlackListFile.get(
-                {pageNumber: $scope.currentPage - 1, pageSize: $scope.itemsPerPage},
+                {pageNumber: $scope.currentPage - 1, pageSize: $scope.itemsPerPage, searchContent: $scope.searchContent},
                 function (successResponse) {
                     $scope.totalPages = successResponse.totalPages;
                     $scope.totalItems = successResponse.totalElements;
                     $scope.currentPage = successResponse.number + 1;
 
-                    $scope.blackList = successResponse.content;
+                    $scope.blackList = successResponse;
+                    $scope.errorMessage = null;
+                },
+                function (errorResponse) {
+                    $scope.blackList = null;
+                    $scope.errorMessage = errorResponse.data.userMessage;
+                }
+            );
+        };
+
+        $scope.pageChanged = function() {
+            BlackListFile.get(
+                {pageNumber: $scope.currentPage - 1, pageSize: $scope.itemsPerPage, searchContent: $scope.searchContent},
+                function (successResponse) {
+                    $scope.totalPages = successResponse.totalPages;
+                    $scope.totalItems = successResponse.totalElements;
+                    $scope.currentPage = successResponse.number + 1;
+
+                    $scope.blackList = successResponse;
                     $scope.errorMessage = null;
                 },
                 function (errorResponse) {
@@ -49,13 +68,13 @@
         };
 
         BlackListFile.get(
-            {pageNumber: $scope.currentPage - 1, pageSize: $scope.itemsPerPage},
+            {pageNumber: $scope.currentPage - 1, pageSize: $scope.itemsPerPage, searchContent: $scope.searchContent},
             function (successResponse) {
                 $scope.totalPages = successResponse.totalPages;
                 $scope.totalItems = successResponse.totalElements;
                 $scope.currentPage = successResponse.number + 1;
 
-                $scope.blackList = successResponse.content;
+                $scope.blackList = successResponse;
                 $scope.errorMessage = null;
             },
             function (errorResponse) {
