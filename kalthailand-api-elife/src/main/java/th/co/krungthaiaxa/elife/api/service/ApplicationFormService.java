@@ -179,6 +179,14 @@ public class ApplicationFormService {
         //weight
         g1.drawString(String.valueOf(pol.getInsureds().get(0).getHealthStatus().getWeightInKg()), 540, 1655);
 
+        //weight change in last 6 months
+        if (false == pol.getInsureds().get(0).getHealthStatus().getWeightChangeInLast6Months()) {
+            g1.drawString(MARK, 1630, 1650);
+        } else {
+            g1.drawString(MARK, 1760, 1650);
+            g1.drawString(pol.getInsureds().get(0).getHealthStatus().getWeightChangeInLast6MonthsReason(), 2230, 1650);
+        }
+
         //document display
         if (person.getRegistrations().get(0).getTypeName().equals(THAI_ID_NUMBER)) {
             //document display id card

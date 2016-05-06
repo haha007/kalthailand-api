@@ -141,7 +141,8 @@ public class ApplicationFormServiceTest {
         policy.getCoverages().get(0).addBeneficiary(cov);
 
         //weight change in last 6 months
-        policy.getInsureds().get(0).getHealthStatus().setWeightChangeInLast6Months(false);
+        policy.getInsureds().get(0).getHealthStatus().setWeightChangeInLast6Months(true);
+        policy.getInsureds().get(0).getHealthStatus().setWeightChangeInLast6MonthsReason("ทดสอบระบบ");
 
 
         byte[] pdfContent = appService.generateNotValidatedApplicationForm(policy);
