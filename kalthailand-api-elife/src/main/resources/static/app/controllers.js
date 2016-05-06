@@ -36,7 +36,6 @@
         $scope.search = searchForBlackList;
         $scope.pageChanged = searchForBlackList;
         searchForBlackList();
-        updateNbLinesAdded();
 
         var stompClient = null;
         var nbLinesAdded = 0;
@@ -44,8 +43,6 @@
         $scope.uploadBlackList = function (event) {
             event.preventDefault();
             $scope.isUploading = true;
-            $scope.uploadProgress = 'Uploading the file ... ';
-            updateNbLinesAdded();
             connect();
             $scope.blackList = null;
             var newBlackListFileUpload = new BlackListFileUpload;
@@ -90,10 +87,13 @@
         function connect() {
             var socket = new SockJS('/adminwebsocket/blackList/upload/progress');
             stompClient = Stomp.over(socket);
+            stompClient.debug = null
             stompClient.connect({}, function (frame) {
                 stompClient.subscribe('/topic/blackList/upload/progress/result', function (response) {
-                    $scope.uploadProgress = response.body + ' lines have been processed. ';
-                    updateNbLinesAdded();
+                    console.log('Received new message. Body is [' + response.body + ']')
+                    $scope.numberOfLines = angular.fromJson(response.body).numberOfLines;
+                    $scope.numberOfLinesAdded = angular.fromJson(response.body).numberOfLinesAdded;
+                    $('div#uploadProgressStatus').html(response.body);
                 });
             });
         }
@@ -102,10 +102,6 @@
             if (stompClient != null) {
                 stompClient.disconnect();
             }
-        }
-
-        function updateNbLinesAdded() {
-            $('span#uploadProgress').html($scope.uploadProgress);
         }
     });
 

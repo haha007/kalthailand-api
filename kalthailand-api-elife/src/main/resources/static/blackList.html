@@ -53,27 +53,6 @@
                 margin-bottom: 20px;
                 padding: 5px;
             }
-            .glyphicon-refresh-animate {
-                -animation: spin .7s infinite linear;
-                -ms-animation: spin .7s infinite linear;
-                -webkit-animation: spinw .7s infinite linear;
-                -moz-animation: spinm .7s infinite linear;
-            }
-
-            @keyframes spin {
-                from { transform: scale(1) rotate(0deg);}
-                to { transform: scale(1) rotate(360deg);}
-            }
-
-            @-webkit-keyframes spinw {
-                from { -webkit-transform: rotate(0deg);}
-                to { -webkit-transform: rotate(360deg);}
-            }
-
-            @-moz-keyframes spinm {
-                from { -moz-transform: rotate(0deg);}
-                to { -moz-transform: rotate(360deg);}
-            }
         </style>
 
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" ng-controller="BlackListController" id="blackListContainer">
@@ -93,9 +72,17 @@
             </div>
 
             <div ng-show="isUploading">
-                <span id="uploadProgress">{{ uploadProgress }}</span><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate">
+                <div id="uploadProgressStatus"></div>
+                <div>{{numberOfLinesAdded}} / {{numberOfLines}}</div>
+                <uib-progressbar animate="true" max="numberOfLines" value="numberOfLinesAdded" type="success"><b>{{numberOfLinesAdded}}</b></uib-progressbar>
             </div>
 
+            <div class="col-sm-3" style="margin-top: 26px" ng-show="blackList">
+                <form name="formSearch" ng-submit="search()" class="form-inline">
+                    <label for="search">Search</label>
+                    <input type="text" id="search" ng-model="searchContent">
+                </form>
+            </div>
             <div class="col-sm-9" ng-show="blackList">
                 <uib-pagination
                         total-items="totalItems"
@@ -107,12 +94,6 @@
                         ng-change="pageChanged()"
                         items-per-page="20">
                 </uib-pagination>
-            </div>
-            <div class="col-sm-3" style="margin-top: 26px" ng-show="blackList">
-                <form name="formSearch" ng-submit="search()" class="form-inline">
-                    <label for="search">Search</label>
-                    <input type="text" id="search" ng-model="searchContent">
-                </form>
             </div>
 
             <div ng-show="blackList">

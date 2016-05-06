@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import static org.springframework.util.Assert.notNull;
+import static th.co.krungthaiaxa.elife.api.utils.JsonUtil.getJson;
 
 @Service
 public class BlackListedService {
@@ -73,20 +74,35 @@ public class BlackListedService {
         private boolean nextIsString;
         private String currentLineNumber = "1";
         private String currentLineContent = "";
-        private Integer numberOfBlacListedAdded = 0;
+        private Integer numberOfLinesAdded = 0;
+        private Integer numberOfLines = 0;
 
         private SheetHandler(SharedStringsTable sst) {
             this.sst = sst;
         }
 
         @Override
+        public void startDocument() throws SAXException {
+            super.startDocument();
+        }
+
+        @Override
         public void endDocument() throws SAXException {
             saveBlackListed();
-            logger.info("A total number of [" + numberOfBlacListedAdded + "] lines have been added");
+            logger.info("A total number of [" + numberOfLinesAdded + "] lines have been added");
         }
 
         public void startElement(String uri, String localName, String name,
                                  Attributes attributes) throws SAXException {
+            // dimension => the dimension of the sheet
+            if (name.equals("dimension")) {
+                String dimension = attributes.getValue("ref");
+                if (!dimension.startsWith("A1:G")) {
+                    throw new ElifeException("The second sheet doesn't a valid range starting with 'A1:G'");
+                }
+                numberOfLines = Integer.valueOf(dimension.substring("A1:G".length()));
+            }
+
             // row => row
             if (name.equals("row")) {
                 String rowNumber = attributes.getValue("r");
@@ -104,8 +120,8 @@ public class BlackListedService {
                     }
                     currentLineContent = "";
                     currentLineNumber = rowNumber;
-                    if (numberOfBlacListedAdded % 1000 == 0) {
-                        template.convertAndSend("/topic/blackList/upload/progress/result", "" + numberOfBlacListedAdded);
+                    if (numberOfLinesAdded % 1000 == 0) {
+                        template.convertAndSend("/topic/blackList/upload/progress/result", new String(getJson(new UploadProgress(numberOfLinesAdded, numberOfLines))));
                     }
                 }
             }
@@ -161,8 +177,26 @@ public class BlackListedService {
                 blackListed.setReportDate(currentRow.length >= 6 ? currentRow[5] : null);
                 blackListed.setAddress(currentRow.length >= 7 ? currentRow[6] : null);
                 blackListedRepository.save(blackListed);
-                numberOfBlacListedAdded++;
+                numberOfLinesAdded++;
             }
+        }
+    }
+
+    private class UploadProgress {
+        private Integer numberOfLinesAdded;
+        private Integer numberOfLines;
+
+        public UploadProgress(Integer numberOfLinesAdded, Integer numberOfLines) {
+            this.numberOfLinesAdded = numberOfLinesAdded;
+            this.numberOfLines = numberOfLines;
+        }
+
+        public Integer getNumberOfLinesAdded() {
+            return numberOfLinesAdded;
+        }
+
+        public Integer getNumberOfLines() {
+            return numberOfLines;
         }
     }
 }
