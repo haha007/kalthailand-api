@@ -27,19 +27,16 @@
     });
 
     app.controller('BlackListController', function ($scope, BlackListFile) {
-        $scope.maxSize = 20;
-        $scope.currentPage = 0;
-
-        $scope.setPage = function (pageNo) {
-            $scope.currentPage = pageNo;
-        };
+        $scope.currentPage = 1;
+        $scope.itemsPerPage = 20;
 
         $scope.pageChanged = function() {
             BlackListFile.get(
-                {pageNumber: $scope.currentPage, pageSize: 20},
+                {pageNumber: $scope.currentPage - 1, pageSize: $scope.itemsPerPage},
                 function (successResponse) {
-                    $scope.totalItems = successResponse.totalPages;
-                    $scope.currentPage = successResponse.number;
+                    $scope.totalPages = successResponse.totalPages;
+                    $scope.totalItems = successResponse.totalElements;
+                    $scope.currentPage = successResponse.number + 1;
 
                     $scope.blackList = successResponse.content;
                     $scope.errorMessage = null;
@@ -52,10 +49,11 @@
         };
 
         BlackListFile.get(
-            {pageNumber: $scope.currentPage, pageSize: 20},
+            {pageNumber: $scope.currentPage - 1, pageSize: $scope.itemsPerPage},
             function (successResponse) {
+                $scope.totalPages = successResponse.totalPages;
                 $scope.totalItems = successResponse.totalElements;
-                $scope.currentPage = successResponse.number;
+                $scope.currentPage = successResponse.number + 1;
 
                 $scope.blackList = successResponse.content;
                 $scope.errorMessage = null;

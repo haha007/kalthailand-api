@@ -74,25 +74,36 @@
                 There are no black listed customer yet.
             </div>
 
-            <uib-pagination
-                    total-items="totalItems"
-                    ng-model="currentPage"
-                    max-size="maxSize"
-                    class="pagination-sm"
-                    boundary-link-numbers="true"
-                    ng-change="pageChanged()">
-            </uib-pagination>
+            <div ng-show="blackList && blackList.length > 0">
+                <div class="col-sm-10">
+                    <uib-pagination
+                            total-items="totalItems"
+                            ng-model="currentPage"
+                            max-size="8"
+                            class="pagination-md"
+                            force-ellipses="true"
+                            boundary-link-numbers="true"
+                            ng-change="pageChanged()"
+                            items-per-page="20">
+                    </uib-pagination>
+                </div>
+                <div class="col-sm-2" style="margin-top: 26px">
+                    Page {{ currentPage }} / {{ totalPages }}
+                </div>
 
-            <table class="table table-bordered table-striped table-hover table-condensed">
-                <tr>
-                    <td>Thai ID</td>
-                    <td>Date added in blacklist</td>
-                </tr>
-                <tr ng-repeat="item in blackList">
-                    <td>{{ item.idNumber }}</td>
-                    <td>{{ item.receivedDate | date:'yyyy-MM-dd HH:mm:ss Z'}}</td>
-                </tr>
-            </table>
+                <div class="col-sm-12">
+                    <table class="table table-bordered table-striped table-hover table-condensed">
+                        <tr>
+                            <th>Thai ID</th>
+                            <th>Date added in blacklist</th>
+                        </tr>
+                        <tr ng-repeat="item in blackList">
+                            <td>{{ item.idNumber }}</td>
+                            <td>{{ item.receivedDate | date:'yyyy-MM-dd HH:mm:ss Z'}}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
         </div>
         <!-- END Page specific stuff -->
 

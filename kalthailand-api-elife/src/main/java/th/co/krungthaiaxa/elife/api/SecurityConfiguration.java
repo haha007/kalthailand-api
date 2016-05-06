@@ -28,6 +28,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private String validationUserName;
     @Value("${security.ui.validation.user.password}")
     private String validationUserPassword;
+    @Value("${security.ui.slc.user.name}")
+    private String slcUserName;
+    @Value("${security.ui.slc.user.password}")
+    private String slcUserPassword;
 
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -38,6 +42,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         auth.inMemoryAuthentication()
                 .withUser(validationUserName).password(validationUserPassword).roles("VALIDATION", "UI");
         auth.inMemoryAuthentication()
+                .withUser(slcUserName).password(slcUserPassword).roles("SLC", "UI");
+        auth.inMemoryAuthentication()
                 .withUser(apiUserName).password(apiUserPassword).roles("UI");
     }
 
@@ -46,8 +52,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http
             .httpBasic()
             .and().authorizeRequests()
-                // ADMIN rights
-                .antMatchers(HttpMethod.GET, "/admin/**").hasAnyRole("ADMIN", "AUTOPAY", "VALIDATION")
+                // eLife dashboard console rights
+                .antMatchers(HttpMethod.GET, "/admin/**").hasAnyRole("ADMIN", "AUTOPAY", "VALIDATION", "SLC")
                 // USER rights
                 .antMatchers(HttpMethod.GET, "/**").authenticated()
                 .antMatchers(HttpMethod.POST, "/**").authenticated()
