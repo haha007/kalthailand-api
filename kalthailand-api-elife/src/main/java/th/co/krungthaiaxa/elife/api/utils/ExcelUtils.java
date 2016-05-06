@@ -10,6 +10,34 @@ import static com.google.common.collect.Lists.newArrayList;
 import static org.apache.poi.ss.usermodel.Cell.CELL_TYPE_FORMULA;
 
 public class ExcelUtils {
+    public static String getCellValueAsString(Cell cell) {
+        if (cell == null) {
+            return null;
+        }
+
+        switch (cell.getCellType()) {
+            case Cell.CELL_TYPE_STRING:
+                return cell.getStringCellValue();
+            case Cell.CELL_TYPE_NUMERIC:
+                return String.valueOf(cell.getNumericCellValue());
+            default:
+                return null;
+        }
+    }
+
+    public static Double getCellValueAsDouble(Cell cell) {
+        if (cell == null) {
+            return null;
+        }
+
+        switch (cell.getCellType()) {
+            case Cell.CELL_TYPE_NUMERIC:
+                return cell.getNumericCellValue();
+            default:
+                return null;
+        }
+    }
+
     public static void autoWidthAllColumns(Workbook workbook) {
         autoWidthAllColumns(workbook, false);
     }

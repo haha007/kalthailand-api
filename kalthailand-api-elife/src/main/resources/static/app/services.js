@@ -24,13 +24,8 @@
         });
     });
 
-
-    app.factory('BlackListFile', function ($resource) {
-        return $resource('admin/blackList', {pageNumber:'@pageNumber', pageSize:'@pageSize'}, {});
-    });
-
     app.factory('BlackListFileUpload', function ($resource) {
-        return $resource('admin/blackList', {}, {
+        return $resource('admin/blackList/upload', {}, {
             save: {
                 method: 'POST',
                 transformRequest: function (data) {
@@ -48,6 +43,10 @@
                 }
             }
         });
+    });
+
+    app.factory('BlackList', function ($resource) {
+        return $resource('admin/blackList', {pageNumber:'@pageNumber', pageSize:'@pageSize'}, {});
     });
 
     app.factory('PolicyDetail', function ($resource) {

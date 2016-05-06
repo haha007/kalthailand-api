@@ -26,13 +26,35 @@
         }
     });
 
-    app.controller('BlackListController', function ($scope, BlackListFile) {
+    app.controller('BlackListController', function ($scope, BlackList, BlackListFileUpload) {
         $scope.currentPage = 1;
         $scope.itemsPerPage = 20;
         $scope.searchContent = '';
 
-        $scope.search = function() {
-            BlackListFile.get(
+        $scope.search = searchForBlackList;
+        $scope.pageChanged = searchForBlackList;
+        searchForBlackList();
+
+        $scope.uploadBlackList = function (event) {
+            event.preventDefault();
+            $scope.isUploading = true;
+            var newBlackListFileUpload = new BlackListFileUpload;
+            newBlackListFileUpload.file = $scope.file;
+
+            newBlackListFileUpload.$save()
+                .then(function (successResponse) {
+                    $scope.errorMessage = null;
+                    $scope.isUploading = null;
+                    searchForBlackList();
+                })
+                .catch(function (errorResponse) {
+                    $scope.errorMessage = errorResponse.data.userMessage;
+                    $scope.isUploading = null;
+                });
+        }
+
+        function searchForBlackList() {
+            BlackList.get(
                 {pageNumber: $scope.currentPage - 1, pageSize: $scope.itemsPerPage, searchContent: $scope.searchContent},
                 function (successResponse) {
                     $scope.totalPages = successResponse.totalPages;
@@ -47,41 +69,7 @@
                     $scope.errorMessage = errorResponse.data.userMessage;
                 }
             );
-        };
-
-        $scope.pageChanged = function() {
-            BlackListFile.get(
-                {pageNumber: $scope.currentPage - 1, pageSize: $scope.itemsPerPage, searchContent: $scope.searchContent},
-                function (successResponse) {
-                    $scope.totalPages = successResponse.totalPages;
-                    $scope.totalItems = successResponse.totalElements;
-                    $scope.currentPage = successResponse.number + 1;
-
-                    $scope.blackList = successResponse;
-                    $scope.errorMessage = null;
-                },
-                function (errorResponse) {
-                    $scope.blackList = null;
-                    $scope.errorMessage = errorResponse.data.userMessage;
-                }
-            );
-        };
-
-        BlackListFile.get(
-            {pageNumber: $scope.currentPage - 1, pageSize: $scope.itemsPerPage, searchContent: $scope.searchContent},
-            function (successResponse) {
-                $scope.totalPages = successResponse.totalPages;
-                $scope.totalItems = successResponse.totalElements;
-                $scope.currentPage = successResponse.number + 1;
-
-                $scope.blackList = successResponse;
-                $scope.errorMessage = null;
-            },
-            function (errorResponse) {
-                $scope.blackList = null;
-                $scope.errorMessage = errorResponse.data.userMessage;
-            }
-        );
+        }
     });
 
     app.controller('DetailController', function ($scope, $http, PolicyDetail, PolicyNotification) {

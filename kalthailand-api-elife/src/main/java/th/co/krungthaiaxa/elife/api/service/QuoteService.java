@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.elife.api.data.OccupationType;
 import th.co.krungthaiaxa.elife.api.data.SessionQuote;
-import th.co.krungthaiaxa.elife.api.data.ThaiIdBlackList;
+import th.co.krungthaiaxa.elife.api.data.BlackListed;
 import th.co.krungthaiaxa.elife.api.exception.ElifeException;
 import th.co.krungthaiaxa.elife.api.model.*;
 import th.co.krungthaiaxa.elife.api.model.enums.ChannelType;
@@ -16,7 +16,7 @@ import th.co.krungthaiaxa.elife.api.products.ProductQuotation;
 import th.co.krungthaiaxa.elife.api.repository.OccupationTypeRepository;
 import th.co.krungthaiaxa.elife.api.repository.QuoteRepository;
 import th.co.krungthaiaxa.elife.api.repository.SessionQuoteRepository;
-import th.co.krungthaiaxa.elife.api.repository.ThaiIdBlackListRepository;
+import th.co.krungthaiaxa.elife.api.repository.BlackListedRepository;
 
 import javax.inject.Inject;
 import java.time.LocalDateTime;
@@ -36,15 +36,15 @@ public class QuoteService {
     private final QuoteRepository quoteRepository;
     private final ProductFactory productFactory;
     private final OccupationTypeRepository occupationTypeRepository;
-    private final ThaiIdBlackListRepository thaiIdBlackListRepository;
+    private final BlackListedRepository blackListedRepository;
 
     @Inject
-    public QuoteService(SessionQuoteRepository sessionQuoteRepository, QuoteRepository quoteRepository, ProductFactory productFactory, OccupationTypeRepository occupationTypeRepository, ThaiIdBlackListRepository thaiIdBlackListRepository) {
+    public QuoteService(SessionQuoteRepository sessionQuoteRepository, QuoteRepository quoteRepository, ProductFactory productFactory, OccupationTypeRepository occupationTypeRepository, BlackListedRepository blackListedRepository) {
         this.sessionQuoteRepository = sessionQuoteRepository;
         this.quoteRepository = quoteRepository;
         this.productFactory = productFactory;
         this.occupationTypeRepository = occupationTypeRepository;
-        this.thaiIdBlackListRepository = thaiIdBlackListRepository;
+        this.blackListedRepository = blackListedRepository;
     }
 
     public Optional<Quote> getLatestQuote(String sessionId, ChannelType channelType) {
@@ -118,8 +118,8 @@ public class QuoteService {
                     .map(Registration::getId)
                     .findFirst();
             if (insuredRegistrationId.isPresent()) {
-                ThaiIdBlackList thaiIdBlackList = thaiIdBlackListRepository.findByIdNumber(insuredRegistrationId.get());
-                if (thaiIdBlackList != null) {
+                BlackListed blackListed = blackListedRepository.findByIdNumber(insuredRegistrationId.get());
+                if (blackListed != null) {
                     throw new ElifeException("The Thai ID [" + insuredRegistrationId.get() + "] is not allowed to purchase Policy.");
                 }
             }

@@ -3,7 +3,6 @@ package th.co.krungthaiaxa.elife.api.service;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -326,26 +325,6 @@ public class RLSService {
                 text(deductionFileLine.getAmount().toString()),
                 text(ofPattern("yyyyMMdd_hhmmss").format(deductionFileLine.getProcessDate())),
                 text(deductionFileLine.getRejectionCode()));
-    }
-
-    private String getCellValueAsString(Cell cell) {
-        switch (cell.getCellType()) {
-            case Cell.CELL_TYPE_STRING:
-                return cell.getStringCellValue();
-            case Cell.CELL_TYPE_NUMERIC:
-                return String.valueOf(cell.getNumericCellValue());
-            default:
-                return null;
-        }
-    }
-
-    private Double getCellValueAsDouble(Cell cell) {
-        switch (cell.getCellType()) {
-            case Cell.CELL_TYPE_NUMERIC:
-                return cell.getNumericCellValue();
-            default:
-                return null;
-        }
     }
 
     public void setLineService(LineService lineService) {

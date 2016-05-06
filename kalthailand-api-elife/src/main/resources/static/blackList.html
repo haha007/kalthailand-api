@@ -59,12 +59,12 @@
             <div class="page-header">
                 <h1>Customer Black List</h1>
             </div>
-            <form name="formUpload" ng-submit="upload($event)" class="form-inline form-upload">
+            <form name="formUpload" ng-submit="uploadBlackList($event)" class="form-inline form-upload">
                 <div class="form-group">
                     <label for="fileToUpload">Choose a black list file to upload</label>
                     <input type="file" file-model="file" id="fileToUpload">
                 </div>
-                <button type="submit" class="btn btn-primary btn-danger">Submit</button>
+                <button type="submit" class="btn btn-primary btn-danger" ng-disabled="isUploading">Submit</button>
             </form>
             <div class="alert alert-danger" role="alert" ng-show="errorMessage">
                 <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
@@ -93,12 +93,22 @@
             <div ng-show="blackList">
                 <table class="table table-bordered table-striped table-hover table-condensed">
                     <tr>
+                        <th>Name</th>
                         <th>Thai ID</th>
-                        <th>Date added in blacklist</th>
+                        <th>Description</th>
+                        <th>Type</th>
+                        <th>As Of</th>
+                        <th>Report Date</th>
+                        <th>Address</th>
                     </tr>
                     <tr ng-repeat="item in blackList.content">
+                        <td>{{ item.name }}</td>
                         <td>{{ item.idNumber }}</td>
-                        <td>{{ item.receivedDate | date:'yyyy-MM-dd HH:mm:ss Z'}}</td>
+                        <td>{{ item.description }}</td>
+                        <td>{{ item.type }}</td>
+                        <td>{{ item.asOf }}</td>
+                        <td>{{ item.reportDate }}</td>
+                        <td>{{ item.address }}</td>
                     </tr>
                 </table>
                 Page {{ currentPage }} / {{ totalPages }}. Number of items: {{ totalItems }}

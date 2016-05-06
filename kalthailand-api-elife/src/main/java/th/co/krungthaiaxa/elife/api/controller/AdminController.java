@@ -1,27 +1,30 @@
 package th.co.krungthaiaxa.elife.api.controller;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.poi.openxml4j.exceptions.OpenXML4JException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.xml.sax.SAXException;
 import springfox.documentation.annotations.ApiIgnore;
 import th.co.krungthaiaxa.elife.api.model.Document;
 import th.co.krungthaiaxa.elife.api.model.DocumentDownload;
 import th.co.krungthaiaxa.elife.api.model.Policy;
-import th.co.krungthaiaxa.elife.api.repository.ThaiIdBlackListRepository;
+import th.co.krungthaiaxa.elife.api.model.error.ErrorCode;
+import th.co.krungthaiaxa.elife.api.service.BlackListedService;
 import th.co.krungthaiaxa.elife.api.service.DocumentService;
 import th.co.krungthaiaxa.elife.api.service.PolicyService;
 
 import javax.inject.Inject;
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Base64;
@@ -32,6 +35,7 @@ import static java.time.format.DateTimeFormatter.ofPattern;
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static th.co.krungthaiaxa.elife.api.model.enums.PolicyStatus.CANCELED;
 import static th.co.krungthaiaxa.elife.api.model.enums.PolicyStatus.PENDING_PAYMENT;
 import static th.co.krungthaiaxa.elife.api.model.error.ErrorCode.*;
@@ -43,13 +47,13 @@ public class AdminController {
     private final static Logger logger = LoggerFactory.getLogger(AdminController.class);
     private final PolicyService policyService;
     private final DocumentService documentService;
-    private final ThaiIdBlackListRepository thaiIdBlackListRepository;
+    private final BlackListedService blackListedService;
 
     @Inject
-    public AdminController(PolicyService policyService, DocumentService documentService, ThaiIdBlackListRepository thaiIdBlackListRepository) {
+    public AdminController(PolicyService policyService, DocumentService documentService, BlackListedService blackListedService) {
         this.policyService = policyService;
         this.documentService = documentService;
-        this.thaiIdBlackListRepository = thaiIdBlackListRepository;
+        this.blackListedService = blackListedService;
     }
 
     @ApiIgnore
@@ -133,7 +137,19 @@ public class AdminController {
     @RequestMapping(value = "admin/blackList", produces = APPLICATION_JSON_VALUE, method = GET)
     @ResponseBody
     public ResponseEntity<byte[]> blackList(@RequestParam Integer pageNumber, @RequestParam Integer pageSize, @RequestParam String searchContent) {
-        return new ResponseEntity<>(getJson(thaiIdBlackListRepository.findByIdNumberContaining(searchContent, new PageRequest(pageNumber, pageSize, Sort.Direction.ASC, "idNumber"))), OK);
+        return new ResponseEntity<>(getJson(blackListedService.findAll(pageNumber, pageSize, searchContent)), OK);
+    }
+
+    @ApiIgnore
+    @RequestMapping(value = "admin/blackList/upload", produces = APPLICATION_JSON_VALUE, method = POST)
+    @ResponseBody
+    public ResponseEntity<byte[]> uploadBlackListFile(@RequestParam("file") MultipartFile file) {
+        try {
+            blackListedService.readBlackListedExcelFile(file.getInputStream());
+        } catch (IOException | SAXException | OpenXML4JException | ParserConfigurationException | IllegalArgumentException e) {
+            return new ResponseEntity<>(getJson(ErrorCode.INVALID_BLACKLIST_FILE.apply(e.getMessage())), NOT_ACCEPTABLE);
+        }
+        return new ResponseEntity<>(getJson(""), CREATED);
     }
 
 }
