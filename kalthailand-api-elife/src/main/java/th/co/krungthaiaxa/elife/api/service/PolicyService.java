@@ -296,7 +296,7 @@ public class PolicyService {
         if (applicationFormValidatedPdf.isPresent()) {
             DocumentDownload applicationFormValidatedDocument = documentService.downloadDocument(applicationFormValidatedPdf.get().getId());
             try {
-                tmcClient.sendPDFToTMC(policy, applicationFormValidatedDocument.getContent(), APPLICATION_FORM_VALIDATED);
+                tmcClient.sendPDFToTMC(policy, applicationFormValidatedDocument.getContent(), APPLICATION_FORM);
             } catch (ElifeException e) {
                 logger.error("Unable to send validated application Form to TMC on policy [" + policy.getPolicyId() + "].", e);
             }
