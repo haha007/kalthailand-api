@@ -140,6 +140,9 @@ public class ApplicationFormServiceTest {
         cov.setPerson(person);
         policy.getCoverages().get(0).addBeneficiary(cov);
 
+        //weight change in last 6 months
+        policy.getInsureds().get(0).getHealthStatus().setWeightChangeInLast6Months(false);
+
 
         byte[] pdfContent = appService.generateNotValidatedApplicationForm(policy);
         File pdfFile = new File(tmpPathDeletedAfterTests + File.separator + "application-not-validated-10ec-form.pdf");
