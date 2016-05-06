@@ -71,6 +71,10 @@
                 {{ errorMessage }}
             </div>
 
+            <div ng-show="isUploading">
+                Number of lines added: <span id="updatedNbLinesAdded">{{ updatedNbLinesAdded }}</span>
+            </div>
+
             <div class="col-sm-9" ng-show="blackList">
                 <uib-pagination
                         total-items="totalItems"
@@ -123,6 +127,8 @@
 <script src="bower_components/angular-file-model/angular-file-model.js"></script>
 <script src="bower_components/angular-animate/angular-animate.min.js"></script>
 <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+<script src="bower_components/sockjs/sockjs.min.js"></script>
+<script src="bower_components/stomp-websocket/lib/stomp.min.js"></script>
 <script src="bower_components/jquery/dist/jquery.min.js"></script>
 <script src="app/app.js"></script>
 <script src="app/controllers.js"></script>

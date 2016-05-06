@@ -30,14 +30,24 @@
         $scope.currentPage = 1;
         $scope.itemsPerPage = 20;
         $scope.searchContent = '';
+        $scope.blackList = null;
+        $scope.updatedNbLinesAdded = 0;
 
         $scope.search = searchForBlackList;
         $scope.pageChanged = searchForBlackList;
         searchForBlackList();
+        updateNbLinesAdded();
+
+        var stompClient = null;
+        var nbLinesAdded = 0;
 
         $scope.uploadBlackList = function (event) {
             event.preventDefault();
             $scope.isUploading = true;
+            $scope.updatedNbLinesAdded = 0;
+            updateNbLinesAdded();
+            connect();
+            $scope.blackList = null;
             var newBlackListFileUpload = new BlackListFileUpload;
             newBlackListFileUpload.file = $scope.file;
 
@@ -45,17 +55,23 @@
                 .then(function (successResponse) {
                     $scope.errorMessage = null;
                     $scope.isUploading = null;
+                    disconnect();
                     searchForBlackList();
                 })
                 .catch(function (errorResponse) {
                     $scope.errorMessage = errorResponse.data.userMessage;
                     $scope.isUploading = null;
+                    disconnect();
                 });
-        }
+        };
 
         function searchForBlackList() {
             BlackList.get(
-                {pageNumber: $scope.currentPage - 1, pageSize: $scope.itemsPerPage, searchContent: $scope.searchContent},
+                {
+                    pageNumber: $scope.currentPage - 1,
+                    pageSize: $scope.itemsPerPage,
+                    searchContent: $scope.searchContent
+                },
                 function (successResponse) {
                     $scope.totalPages = successResponse.totalPages;
                     $scope.totalItems = successResponse.totalElements;
@@ -69,6 +85,27 @@
                     $scope.errorMessage = errorResponse.data.userMessage;
                 }
             );
+        }
+
+        function connect() {
+            var socket = new SockJS('/adminwebsocket/blackList/upload/progress');
+            stompClient = Stomp.over(socket);
+            stompClient.connect({}, function (frame) {
+                stompClient.subscribe('/topic/blackList/upload/progress/result', function (response) {
+                    $scope.updatedNbLinesAdded = response.body;
+                    updateNbLinesAdded();
+                });
+            });
+        }
+
+        function disconnect() {
+            if (stompClient != null) {
+                stompClient.disconnect();
+            }
+        }
+
+        function updateNbLinesAdded() {
+            $('span#updatedNbLinesAdded').html($scope.updatedNbLinesAdded);
         }
     });
 
@@ -95,28 +132,28 @@
             $http({
                 url: 'policies/' + policyNumber + '/update/status/validated',
                 method: 'PUT',
-                data: $.param({ agentCode: $scope.agentCode, linePayCaptureMode: $scope.linePayCaptureMode }),
+                data: $.param({agentCode: $scope.agentCode, linePayCaptureMode: $scope.linePayCaptureMode}),
                 headers: {'Content-Type': 'application/x-www-form-urlencoded'}
             })
-            .then(
-                function (successResponse) {
-                    $scope.successMessage = "Policy [" + successResponse.data.policyId + "] has been validated";
-                    $scope.errorMessage = null;
-                    $scope.policyDetail = null;
-                    $scope.annualPremium = null;
-                    $scope.sumInsured = null;
-                    $scope.isValidating = null;
-                    $(window).scrollTop(0);
-                },
-                function (errorResponse) {
-                    $scope.successMessage = null;
-                    $scope.errorMessage = errorResponse.data.userMessage;
-                    $scope.policyDetail = null;
-                    $scope.annualPremium = null;
-                    $scope.sumInsured = null;
-                    $scope.isValidating = null;
-                    $(window).scrollTop(0);
-                });
+                .then(
+                    function (successResponse) {
+                        $scope.successMessage = "Policy [" + successResponse.data.policyId + "] has been validated";
+                        $scope.errorMessage = null;
+                        $scope.policyDetail = null;
+                        $scope.annualPremium = null;
+                        $scope.sumInsured = null;
+                        $scope.isValidating = null;
+                        $(window).scrollTop(0);
+                    },
+                    function (errorResponse) {
+                        $scope.successMessage = null;
+                        $scope.errorMessage = errorResponse.data.userMessage;
+                        $scope.policyDetail = null;
+                        $scope.annualPremium = null;
+                        $scope.sumInsured = null;
+                        $scope.isValidating = null;
+                        $(window).scrollTop(0);
+                    });
         };
 
         $scope.search = function (event) {

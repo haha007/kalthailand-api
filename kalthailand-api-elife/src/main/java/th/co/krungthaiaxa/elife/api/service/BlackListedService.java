@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
@@ -36,10 +37,12 @@ public class BlackListedService {
     private final static String FIRST_LINE = "Name" + SEP + "Idno" + SEP + "Desc" + SEP + "Type" + SEP + "Asof" + SEP + "Report_Date" + SEP + "Address";
 
     private final BlackListedRepository blackListedRepository;
+    private final SimpMessagingTemplate template;
 
     @Inject
-    public BlackListedService(BlackListedRepository blackListedRepository) {
+    public BlackListedService(BlackListedRepository blackListedRepository, SimpMessagingTemplate template) {
         this.blackListedRepository = blackListedRepository;
+        this.template = template;
     }
 
     public Page<BlackListed> findAll(Integer pageNumber, Integer pageSize, String searchContent) {
@@ -102,7 +105,7 @@ public class BlackListedService {
                     currentLineContent = "";
                     currentLineNumber = rowNumber;
                     if (numberOfBlacListedAdded % 1000 == 0) {
-                        logger.info("[" + numberOfBlacListedAdded + "] lines have been added");
+                        template.convertAndSend("/topic/blackList/upload/progress/result", "" + numberOfBlacListedAdded);
                     }
                 }
             }

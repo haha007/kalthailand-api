@@ -80,7 +80,7 @@ public class AdminController {
     }
 
     @ApiIgnore
-    @RequestMapping(value = "admin/policies/{policyId}/reminder/{reminderId}", produces = APPLICATION_JSON_VALUE, method = GET)
+    @RequestMapping(value = "/admin/policies/{policyId}/reminder/{reminderId}", produces = APPLICATION_JSON_VALUE, method = GET)
     @ResponseBody
     public ResponseEntity<byte[]> sendReminder(@PathVariable String policyId, @PathVariable Integer reminderId) {
         Optional<Policy> policy = policyService.findPolicy(policyId);
@@ -104,7 +104,7 @@ public class AdminController {
     }
 
     @ApiIgnore
-    @RequestMapping(value = "admin/policies/{policyId}/document/{documentType}/download", produces = APPLICATION_JSON_VALUE, method = GET)
+    @RequestMapping(value = "/admin/policies/{policyId}/document/{documentType}/download", produces = APPLICATION_JSON_VALUE, method = GET)
     @ResponseBody
     public void downloadDocument(@PathVariable String policyId, @PathVariable String documentType, HttpServletResponse response) {
         Optional<Policy> policy = policyService.findPolicy(policyId);
@@ -134,14 +134,14 @@ public class AdminController {
     }
 
     @ApiIgnore
-    @RequestMapping(value = "admin/blackList", produces = APPLICATION_JSON_VALUE, method = GET)
+    @RequestMapping(value = "/admin/blackList", produces = APPLICATION_JSON_VALUE, method = GET)
     @ResponseBody
     public ResponseEntity<byte[]> blackList(@RequestParam Integer pageNumber, @RequestParam Integer pageSize, @RequestParam String searchContent) {
         return new ResponseEntity<>(getJson(blackListedService.findAll(pageNumber, pageSize, searchContent)), OK);
     }
 
     @ApiIgnore
-    @RequestMapping(value = "admin/blackList/upload", produces = APPLICATION_JSON_VALUE, method = POST)
+    @RequestMapping(value = "/admin/blackList/upload", produces = APPLICATION_JSON_VALUE, method = POST)
     @ResponseBody
     public ResponseEntity<byte[]> uploadBlackListFile(@RequestParam("file") MultipartFile file) {
         try {
@@ -149,7 +149,7 @@ public class AdminController {
         } catch (IOException | SAXException | OpenXML4JException | ParserConfigurationException | IllegalArgumentException e) {
             return new ResponseEntity<>(getJson(ErrorCode.INVALID_BLACKLIST_FILE.apply(e.getMessage())), NOT_ACCEPTABLE);
         }
+
         return new ResponseEntity<>(getJson(""), CREATED);
     }
-
 }
