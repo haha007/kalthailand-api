@@ -201,7 +201,7 @@
                 </executions>
                 <configuration>
                     <schemaLanguage>WSDL</schemaLanguage>
-                    <generateDirectory>${basedir}/src/main/java</generateDirectory>
+                    <generateDirectory>${basedir}/target/generated-sources</generateDirectory>
                     <generatePackage>th.co.krungthaiaxa.elife.api.tmc.wsdl</generatePackage>
                     <schemas>
                         <schema>
