@@ -31,7 +31,7 @@
         $scope.itemsPerPage = 20;
         $scope.searchContent = '';
         $scope.blackList = null;
-        $scope.updatedNbLinesAdded = 0;
+        $scope.uploadProgress = null;
 
         $scope.search = searchForBlackList;
         $scope.pageChanged = searchForBlackList;
@@ -44,7 +44,7 @@
         $scope.uploadBlackList = function (event) {
             event.preventDefault();
             $scope.isUploading = true;
-            $scope.updatedNbLinesAdded = 0;
+            $scope.uploadProgress = 'Uploading the file ... ';
             updateNbLinesAdded();
             connect();
             $scope.blackList = null;
@@ -92,7 +92,7 @@
             stompClient = Stomp.over(socket);
             stompClient.connect({}, function (frame) {
                 stompClient.subscribe('/topic/blackList/upload/progress/result', function (response) {
-                    $scope.updatedNbLinesAdded = response.body;
+                    $scope.uploadProgress = response.body + ' lines have been processed. ';
                     updateNbLinesAdded();
                 });
             });
@@ -105,7 +105,7 @@
         }
 
         function updateNbLinesAdded() {
-            $('span#updatedNbLinesAdded').html($scope.updatedNbLinesAdded);
+            $('span#uploadProgress').html($scope.uploadProgress);
         }
     });
 
