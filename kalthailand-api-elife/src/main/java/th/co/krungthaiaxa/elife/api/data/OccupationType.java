@@ -2,7 +2,9 @@ package th.co.krungthaiaxa.elife.api.data;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 
+@Document
 public class OccupationType {
     @Id
     private String id;

@@ -3,8 +3,10 @@ package th.co.krungthaiaxa.elife.api.data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 import th.co.krungthaiaxa.elife.api.model.Policy;
 
+@Document
 public class PolicyNumber {
     @Id
     private String id;
