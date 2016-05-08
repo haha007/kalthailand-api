@@ -71,18 +71,15 @@
                 {{ errorMessage }}
             </div>
 
-            <div ng-show="isUploading">
+            <div ng-show="hasUploaded">
                 <div id="uploadProgressStatus"></div>
-                <div>{{numberOfLinesAdded}} / {{numberOfLines}}</div>
-                <uib-progressbar animate="true" max="numberOfLines" value="numberOfLinesAdded" type="success"><b>{{numberOfLinesAdded}}</b></uib-progressbar>
+                <uib-progress animate="true" max="numberOfLines"><uib-bar ng-repeat="bar in stacked track by $index" value="bar.value" type="{{bar.type}}"><span>{{bar.value}}</span></uib-bar></uib-progress>
+                <div>{{numberOfLinesAdded}} lines added with valid data</div>
+                <div>{{numberOfDuplicateLines}} lines ignored (duplicate + sheet header)</div>
+                <div>{{numberOfEmptyLines}} empty lines (some other empty lines might have not been counted)</div>
+                <div>Total of {{numberOfLines}} lines processed</div>
             </div>
 
-            <div class="col-sm-3" style="margin-top: 26px" ng-show="blackList">
-                <form name="formSearch" ng-submit="search()" class="form-inline">
-                    <label for="search">Search</label>
-                    <input type="text" id="search" ng-model="searchContent">
-                </form>
-            </div>
             <div class="col-sm-9" ng-show="blackList">
                 <uib-pagination
                         total-items="totalItems"
@@ -94,6 +91,12 @@
                         ng-change="pageChanged()"
                         items-per-page="20">
                 </uib-pagination>
+            </div>
+            <div class="col-sm-3" style="margin-top: 26px" ng-show="blackList">
+                <form name="formSearch" ng-submit="search()" class="form-inline">
+                    <label for="search">Search</label>
+                    <input type="text" id="search" ng-model="searchContent">
+                </form>
             </div>
 
             <div ng-show="blackList">

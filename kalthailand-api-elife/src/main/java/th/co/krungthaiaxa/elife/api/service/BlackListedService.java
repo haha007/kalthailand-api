@@ -40,6 +40,11 @@ public class BlackListedService {
     private final BlackListedRepository blackListedRepository;
     private final SimpMessagingTemplate template;
 
+    private Integer numberOfLinesAdded = 0;
+    private Integer numberOfDuplicateLines = 0;
+    private Integer numberOfEmptyLines = 0;
+    private Integer numberOfLines = 0;
+
     @Inject
     public BlackListedService(BlackListedRepository blackListedRepository, SimpMessagingTemplate template) {
         this.blackListedRepository = blackListedRepository;
@@ -50,7 +55,7 @@ public class BlackListedService {
         return blackListedRepository.findByIdNumberContaining(searchContent, new PageRequest(pageNumber, pageSize, Sort.Direction.ASC, "idNumber"));
     }
 
-    public void readBlackListedExcelFile(InputStream inputStream) throws IOException, OpenXML4JException, ParserConfigurationException, SAXException {
+    public UploadProgress readBlackListedExcelFile(InputStream inputStream) throws IOException, OpenXML4JException, ParserConfigurationException, SAXException {
         // Reading file has to be using SAX instead of regular XSSFWorkbook since they can be quite big
         notNull(inputStream, "The excel file is not available");
         OPCPackage pkg = OPCPackage.open(inputStream);
@@ -60,12 +65,18 @@ public class BlackListedService {
         InputSource sheetSource = new InputSource(sheet2);
 
         blackListedRepository.deleteAll();
+        numberOfLinesAdded = 0;
+        numberOfDuplicateLines = 0;
+        numberOfEmptyLines = 0;
+        numberOfLines = 0;
 
         SAXParserFactory factory = SAXParserFactory.newInstance();
         SAXParser saxParser = factory.newSAXParser();
         saxParser.parse(sheetSource, new SheetHandler(sst));
         sheet2.close();
         logger.info("Black list file processed.");
+
+        return new UploadProgress(numberOfLinesAdded, numberOfDuplicateLines, numberOfEmptyLines, numberOfLines);
     }
 
     private class SheetHandler extends DefaultHandler {
@@ -74,8 +85,6 @@ public class BlackListedService {
         private boolean nextIsString;
         private String currentLineNumber = "1";
         private String currentLineContent = "";
-        private Integer numberOfLinesAdded = 0;
-        private Integer numberOfLines = 0;
 
         private SheetHandler(SharedStringsTable sst) {
             this.sst = sst;
@@ -89,6 +98,7 @@ public class BlackListedService {
         @Override
         public void endDocument() throws SAXException {
             saveBlackListed();
+            template.convertAndSend("/topic/blackList/upload/progress/result", new String(getJson(new UploadProgress(numberOfLinesAdded, numberOfDuplicateLines, numberOfEmptyLines, numberOfLines))));
             logger.info("A total number of [" + numberOfLinesAdded + "] lines have been added");
         }
 
@@ -111,9 +121,9 @@ public class BlackListedService {
                     if ("1".equalsIgnoreCase(currentLineNumber)) {
                         if (!currentLineContent.equalsIgnoreCase(FIRST_LINE)) {
                             throw new ElifeException("The first line of second sheet must contain following headers: [\"Name\", \"Idno\", \"Desc\", \"Type\", \"Asof\", \"Report_Date\", \"Address\"].");
-                        }
-                        else {
+                        } else {
                             logger.info("First line containing [" + currentLineContent + "] is ignored.");
+                            numberOfDuplicateLines++;
                         }
                     } else {
                         saveBlackListed();
@@ -121,7 +131,7 @@ public class BlackListedService {
                     currentLineContent = "";
                     currentLineNumber = rowNumber;
                     if (numberOfLinesAdded % 1000 == 0) {
-                        template.convertAndSend("/topic/blackList/upload/progress/result", new String(getJson(new UploadProgress(numberOfLinesAdded, numberOfLines))));
+                        template.convertAndSend("/topic/blackList/upload/progress/result", new String(getJson(new UploadProgress(numberOfLinesAdded, numberOfDuplicateLines, numberOfEmptyLines, numberOfLines))));
                     }
                 }
             }
@@ -168,27 +178,49 @@ public class BlackListedService {
         private void saveBlackListed() {
             if (StringUtils.isNotEmpty(currentLineContent)) {
                 String[] currentRow = currentLineContent.split(SEP);
-                BlackListed blackListed = new BlackListed();
-                blackListed.setName(currentRow.length >= 1 ? currentRow[0] : null);
-                blackListed.setIdNumber(currentRow.length >= 2 ? currentRow[1] : null);
-                blackListed.setDescription(currentRow.length >= 3 ? currentRow[2] : null);
-                blackListed.setType(currentRow.length >= 4 ? currentRow[3] : null);
-                blackListed.setAsOf(currentRow.length >= 5 ? currentRow[4] : null);
-                blackListed.setReportDate(currentRow.length >= 6 ? currentRow[5] : null);
-                blackListed.setAddress(currentRow.length >= 7 ? currentRow[6] : null);
-                blackListedRepository.save(blackListed);
-                numberOfLinesAdded++;
+                String name = currentRow[0];
+                String idNumber = currentRow[1];
+                BlackListed existingBlackListed = blackListedRepository.findByIdNumberAndName(idNumber, name);
+                if (existingBlackListed == null) {
+                    BlackListed blackListed = new BlackListed();
+                    blackListed.setName(currentRow.length >= 1 ? currentRow[0] : null);
+                    blackListed.setIdNumber(currentRow.length >= 2 ? currentRow[1] : null);
+                    blackListed.setDescription(currentRow.length >= 3 ? currentRow[2] : null);
+                    blackListed.setType(currentRow.length >= 4 ? currentRow[3] : null);
+                    blackListed.setAsOf(currentRow.length >= 5 ? currentRow[4] : null);
+                    blackListed.setReportDate(currentRow.length >= 6 ? currentRow[5] : null);
+                    blackListed.setAddress(currentRow.length >= 7 ? currentRow[6] : null);
+                    blackListedRepository.save(blackListed);
+                    numberOfLinesAdded++;
+                } else {
+                    numberOfDuplicateLines++;
+                }
+            }
+            else {
+                numberOfEmptyLines++;
             }
         }
     }
 
     private class UploadProgress {
         private Integer numberOfLinesAdded;
+        private Integer numberOfDuplicateLines;
+        private Integer numberOfEmptyLines;
         private Integer numberOfLines;
 
-        public UploadProgress(Integer numberOfLinesAdded, Integer numberOfLines) {
+        public UploadProgress(Integer numberOfLinesAdded, Integer numberOfDuplicateLines, Integer numberOfEmptyLines, Integer numberOfLines) {
             this.numberOfLinesAdded = numberOfLinesAdded;
+            this.numberOfDuplicateLines = numberOfDuplicateLines;
+            this.numberOfEmptyLines = numberOfEmptyLines;
             this.numberOfLines = numberOfLines;
+        }
+
+        public Integer getNumberOfDuplicateLines() {
+            return numberOfDuplicateLines;
+        }
+
+        public Integer getNumberOfEmptyLines() {
+            return numberOfEmptyLines;
         }
 
         public Integer getNumberOfLinesAdded() {

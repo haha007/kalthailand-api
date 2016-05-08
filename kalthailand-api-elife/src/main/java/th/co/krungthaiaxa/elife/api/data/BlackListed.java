@@ -1,21 +1,37 @@
 package th.co.krungthaiaxa.elife.api.data;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document
+@CompoundIndexes({
+        @CompoundIndex(name = "BlackListed_UniqueKey",
+                unique = true,
+                def = "{'idNumber' : 1, 'name' : 1}")
+})
 public class BlackListed {
     @Id
     private String id;
-    @Indexed(unique = true)
+    @Indexed
     private String idNumber;
+    @Indexed
     private String name;
     private String description;
     private String type;
     private String asOf;
     private String reportDate;
     private String address;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getIdNumber() {
         return idNumber;

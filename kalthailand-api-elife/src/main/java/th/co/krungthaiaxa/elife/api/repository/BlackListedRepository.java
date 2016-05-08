@@ -8,8 +8,9 @@ import org.springframework.stereotype.Repository;
 import th.co.krungthaiaxa.elife.api.data.BlackListed;
 
 @Repository
-public interface BlackListedRepository extends PagingAndSortingRepository<BlackListed, Integer> {
+public interface BlackListedRepository extends PagingAndSortingRepository<BlackListed, String> {
     BlackListed findByIdNumber(String idNumber);
-    @Query("{ 'idNumber' : {$regex : '.*?0.*'}}")
+    @Query("{ idNumber : ?0, name : ?1}")
+    BlackListed findByIdNumberAndName(String idNumber, String name);
     Page<BlackListed> findByIdNumberContaining(String idNumber, Pageable pageable);
 }

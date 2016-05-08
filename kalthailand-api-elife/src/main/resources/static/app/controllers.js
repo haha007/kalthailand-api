@@ -32,6 +32,15 @@
         $scope.searchContent = '';
         $scope.blackList = null;
         $scope.uploadProgress = null;
+        $scope.numberOfLines = 0;
+        $scope.numberOfLinesAdded = 0;
+        $scope.numberOfDuplicateLines = 0;
+        $scope.numberOfEmptyLines = 0;
+
+        $scope.stacked = [];
+        $scope.stacked.push({value: 0, type: 'success'});
+        $scope.stacked.push({value: 0, type: 'warning'});
+        $scope.stacked.push({value: 0, type: 'info'});
 
         $scope.search = searchForBlackList;
         $scope.pageChanged = searchForBlackList;
@@ -43,6 +52,7 @@
         $scope.uploadBlackList = function (event) {
             event.preventDefault();
             $scope.isUploading = true;
+            $scope.hasUploaded = true;
             connect();
             $scope.blackList = null;
             var newBlackListFileUpload = new BlackListFileUpload;
@@ -53,6 +63,7 @@
                     $scope.errorMessage = null;
                     $scope.isUploading = null;
                     disconnect();
+                    updateProgressBar(angular.fromJson(successResponse));
                     searchForBlackList();
                 })
                 .catch(function (errorResponse) {
@@ -90,10 +101,8 @@
             stompClient.debug = null
             stompClient.connect({}, function (frame) {
                 stompClient.subscribe('/topic/blackList/upload/progress/result', function (response) {
-                    console.log('Received new message. Body is [' + response.body + ']')
-                    $scope.numberOfLines = angular.fromJson(response.body).numberOfLines;
-                    $scope.numberOfLinesAdded = angular.fromJson(response.body).numberOfLinesAdded;
-                    $('div#uploadProgressStatus').html(response.body);
+                    console.log('Received new message. Body is [' + response.body + ']');
+                    updateProgressBar(angular.fromJson(response.body));
                 });
             });
         }
@@ -102,6 +111,17 @@
             if (stompClient != null) {
                 stompClient.disconnect();
             }
+        }
+
+        function updateProgressBar(uploadProgress) {
+            $scope.numberOfLines = uploadProgress.numberOfLines;
+            $scope.numberOfLinesAdded = uploadProgress.numberOfLinesAdded;
+            $scope.numberOfDuplicateLines = uploadProgress.numberOfDuplicateLines;
+            $scope.numberOfEmptyLines = uploadProgress.numberOfEmptyLines;
+            $scope.stacked[0] = {value: $scope.numberOfLinesAdded, type: 'success'};
+            $scope.stacked[1] = {value: $scope.numberOfDuplicateLines, type: 'warning'};
+            $scope.stacked[2] = {value: $scope.numberOfEmptyLines, type: 'info'};
+            $('div#uploadProgressStatus').html(JSON.stringify(uploadProgress));
         }
     });
 

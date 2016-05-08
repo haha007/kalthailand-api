@@ -145,11 +145,9 @@ public class AdminController {
     @ResponseBody
     public ResponseEntity<byte[]> uploadBlackListFile(@RequestParam("file") MultipartFile file) {
         try {
-            blackListedService.readBlackListedExcelFile(file.getInputStream());
+            return new ResponseEntity<>(getJson(blackListedService.readBlackListedExcelFile(file.getInputStream())), CREATED);
         } catch (IOException | SAXException | OpenXML4JException | ParserConfigurationException | IllegalArgumentException e) {
             return new ResponseEntity<>(getJson(ErrorCode.INVALID_BLACKLIST_FILE.apply(e.getMessage())), NOT_ACCEPTABLE);
         }
-
-        return new ResponseEntity<>(getJson(""), CREATED);
     }
 }
