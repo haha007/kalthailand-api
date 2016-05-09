@@ -71,12 +71,21 @@
             </div>
 
             <div ng-show="hasUploaded">
-                <div id="uploadProgressStatus"></div>
-                <uib-progress animate="true" max="numberOfLines"><uib-bar ng-repeat="bar in stacked track by $index" value="bar.value" type="{{bar.type}}"><span>{{bar.value}}</span></uib-bar></uib-progress>
-                <div>{{numberOfLinesAdded}} lines added with valid data</div>
-                <div>{{numberOfDuplicateLines}} lines ignored (duplicate + sheet header)</div>
-                <div>{{numberOfEmptyLines}} empty lines (some other empty lines might have not been counted)</div>
-                <div>Total of {{numberOfLines}} lines processed</div>
+                <div>&nbsp;</div>
+                <uib-progress animate="true" max="numberOfLines">
+                    <uib-bar ng-repeat="bar in stacked track by $index" value="bar.value" type="{{bar.type}}"><span>{{bar.value}}</span></uib-bar>
+                </uib-progress>
+                <div>
+                    <span class="label label-success">{{numberOfLinesAdded}}</span> lines added with valid data
+                </div>
+                <div>
+                    <span class="label label-warning">{{numberOfDuplicateLines}}</span> lines ignored (duplicate + sheet header)
+                </div>
+                <div>
+                    <span class="label label-info">{{numberOfEmptyLines}}</span> empty lines
+                </div>
+                <div>Total of <span class="label label-default">{{numberOfLinesAdded + numberOfDuplicateLines + numberOfEmptyLines}}</span> lines processed (some other empty lines might have not been counted)</div>
+                <div>Total of <span class="label label-default">{{numberOfLines}}</span> lines in the excel file</div>
             </div>
 
             <div>

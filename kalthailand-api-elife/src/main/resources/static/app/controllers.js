@@ -63,7 +63,7 @@
                     $scope.errorMessage = null;
                     $scope.isUploading = null;
                     disconnect();
-                    updateProgressBar(angular.fromJson(successResponse));
+                    updateProgressBar(angular.fromJson(successResponse), true);
                     searchForBlackList();
                 })
                 .catch(function (errorResponse) {
@@ -101,8 +101,7 @@
             stompClient.debug = null
             stompClient.connect({}, function (frame) {
                 stompClient.subscribe('/topic/blackList/upload/progress/result', function (response) {
-                    console.log('Received new message. Body is [' + response.body + ']');
-                    updateProgressBar(angular.fromJson(response.body));
+                    updateProgressBar(angular.fromJson(response.body), false);
                 });
             });
         }
@@ -113,15 +112,18 @@
             }
         }
 
-        function updateProgressBar(uploadProgress) {
+        function updateProgressBar(uploadProgress, lastCall) {
             $scope.numberOfLinesAdded = uploadProgress.numberOfLinesAdded;
             $scope.numberOfDuplicateLines = uploadProgress.numberOfDuplicateLines;
             $scope.numberOfEmptyLines = uploadProgress.numberOfEmptyLines;
-            $scope.numberOfLines = $scope.numberOfLinesAdded + $scope.numberOfDuplicateLines + $scope.numberOfEmptyLines;
+            $scope.numberOfLines = uploadProgress.numberOfLines;;
             $scope.stacked[0] = {value: $scope.numberOfLinesAdded, type: 'success'};
             $scope.stacked[1] = {value: $scope.numberOfDuplicateLines, type: 'warning'};
             $scope.stacked[2] = {value: $scope.numberOfEmptyLines, type: 'info'};
-            $('div#uploadProgressStatus').html(JSON.stringify(uploadProgress));
+
+            if (!lastCall) {
+                $scope.$apply();
+            }
         }
     });
 
