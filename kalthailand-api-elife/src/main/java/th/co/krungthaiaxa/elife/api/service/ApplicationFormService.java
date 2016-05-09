@@ -184,7 +184,26 @@ public class ApplicationFormService {
             g1.drawString(MARK, 1630, 1650);
         } else {
             g1.drawString(MARK, 1760, 1650);
-            g1.drawString(pol.getInsureds().get(0).getHealthStatus().getWeightChangeInLast6MonthsReason(), 2230, 1650);
+            String weightChangeReason = pol.getInsureds().get(0).getHealthStatus().getWeightChangeInLast6MonthsReason();
+            if (weightChangeReason.equals("น้ำหนักเพิ่ม")) {
+                g1.drawString(weightChangeReason, 2220, 1650);
+            } else {
+                String w1 = "", w2 = "";
+                if (weightChangeReason.equals("ออกกำลังกายหรือควบคุมอาหาร")) {
+                    w1 = weightChangeReason.substring(0, 11);
+                    w2 = weightChangeReason.substring(w1.length(), weightChangeReason.length());
+                } else if (weightChangeReason.equals("ตั้งใจเพิ่ม/ลดน้ำหนัก")) {
+                    w1 = weightChangeReason.substring(0, 11);
+                    w2 = weightChangeReason.substring(w1.length(), weightChangeReason.length());
+                } else if (weightChangeReason.equals("น้ำหนักเปลี่ยนแปลงมากโดยไม่ทราบสาเหตุ")) {
+                    w1 = weightChangeReason.substring(0, 18);
+                    w2 = weightChangeReason.substring(w1.length(), weightChangeReason.length());
+                }
+                g1 = setGraphicColorAndFontSmall(g1);
+                g1.drawString(w1, 2220, 1635);
+                g1.drawString(w2, 2220, 1660);
+                g1 = setGraphicColorAndFont(g1);
+            }
         }
 
         //document display
