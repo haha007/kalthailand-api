@@ -114,10 +114,10 @@
         }
 
         function updateProgressBar(uploadProgress) {
-            $scope.numberOfLines = uploadProgress.numberOfLines;
             $scope.numberOfLinesAdded = uploadProgress.numberOfLinesAdded;
             $scope.numberOfDuplicateLines = uploadProgress.numberOfDuplicateLines;
             $scope.numberOfEmptyLines = uploadProgress.numberOfEmptyLines;
+            $scope.numberOfLines = $scope.numberOfLinesAdded + $scope.numberOfDuplicateLines + $scope.numberOfEmptyLines;
             $scope.stacked[0] = {value: $scope.numberOfLinesAdded, type: 'success'};
             $scope.stacked[1] = {value: $scope.numberOfDuplicateLines, type: 'warning'};
             $scope.stacked[2] = {value: $scope.numberOfEmptyLines, type: 'info'};

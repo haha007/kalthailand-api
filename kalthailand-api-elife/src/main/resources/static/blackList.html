@@ -80,23 +80,25 @@
                 <div>Total of {{numberOfLines}} lines processed</div>
             </div>
 
-            <div class="col-sm-9" ng-show="blackList">
-                <uib-pagination
-                        total-items="totalItems"
-                        ng-model="currentPage"
-                        max-size="8"
-                        class="pagination-md"
-                        force-ellipses="true"
-                        boundary-link-numbers="true"
-                        ng-change="pageChanged()"
-                        items-per-page="20">
-                </uib-pagination>
-            </div>
-            <div class="col-sm-3" style="margin-top: 26px" ng-show="blackList">
-                <form name="formSearch" ng-submit="search()" class="form-inline">
-                    <label for="search">Search</label>
-                    <input type="text" id="search" ng-model="searchContent">
-                </form>
+            <div>
+                <div class="pull-left" ng-show="blackList">
+                    <uib-pagination
+                            total-items="totalItems"
+                            ng-model="currentPage"
+                            max-size="8"
+                            class="pagination-md"
+                            force-ellipses="true"
+                            boundary-link-numbers="true"
+                            ng-change="pageChanged()"
+                            items-per-page="20">
+                    </uib-pagination>
+                </div>
+                <div class="pull-right" style="margin-top: 26px" ng-show="blackList">
+                    <form name="formSearch" ng-submit="search()" class="form-inline">
+                        <label for="search">Search</label>
+                        <input type="text" id="search" ng-model="searchContent">
+                    </form>
+                </div>
             </div>
 
             <div ng-show="blackList">
