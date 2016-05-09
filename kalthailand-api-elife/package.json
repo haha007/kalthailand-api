@@ -4,5 +4,39 @@
     "babelify": "^7.2.0",
     "browser-sync": "^2.11.2",
     "gulp": "^3.9.1"
-  }
+  },
+  "name": "kalthailand-api-elife",
+  "version": "1.2.4",
+  "description": "Kalthailand API",
+  "main": "index.html",
+  "dependencies": {
+    "angular-animate": "^1.5.5",
+    "angular-resource": "^1.5.5",
+    "angular-route": "^1.5.5",
+    "bootstrap": "^3.3.6",
+    "bootstrap-css-only": "^3.3.6",
+    "bootstrap-select": "^1.10.0",
+    "css-loader": "^0.23.1",
+    "file-loader": "^0.8.5",
+    "font-loader": "^0.1.2",
+    "html-loader": "^0.4.3",
+    "jshint": "^2.9.2",
+    "jshint-loader": "^0.8.3",
+    "json-loader": "^0.5.4",
+    "less-loader": "^2.2.3",
+    "sockjs": "^0.3.17",
+    "style-loader": "^0.13.1",
+    "svg-loader": "0.0.2",
+    "transform-loader": "^0.2.3",
+    "url-loader": "^0.5.7",
+    "webpack": "^1.13.0"
+  },
+  "scripts": {
+    "watch": "webpack --watch -d",
+    "prebuild": "npm install",
+    "build": "webpack -d"
+  },
+  "author": "",
+  "license": "ISC",
+  "private": true
 }
