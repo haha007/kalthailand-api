@@ -209,7 +209,7 @@
                     <generatePackage>th.co.krungthaiaxa.elife.api.tmc.wsdl</generatePackage>
                     <schemas>
                         <schema>
-                            <url>file://${basedir}/src/main/resources/wsdl/tmc_soap_service.wsdl</url>
+                            <url>src/main/resources/wsdl/tmc_soap_service.wsdl</url>
                         </schema>
                     </schemas>
                 </configuration>
@@ -232,25 +232,6 @@
                     </arguments>
                     <workingDirectory>${basedir}</workingDirectory>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.gmaven</groupId>
-                <artifactId>groovy-maven-plugin</artifactId>
-                <version>2.0</version>
-                <executions>
-                    <execution>
-                        <id>setproperty</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>execute</goal>
-                        </goals>
-                        <configuration>
-                            <source>
-                                project.properties['basedir']=project.parent.basedir.absolutePath.replace('\\','/');
-                            </source>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>
