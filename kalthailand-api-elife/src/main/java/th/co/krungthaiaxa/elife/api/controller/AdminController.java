@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.xml.sax.SAXException;
 import springfox.documentation.annotations.ApiIgnore;
+import th.co.krungthaiaxa.elife.api.exception.ElifeException;
 import th.co.krungthaiaxa.elife.api.model.Document;
 import th.co.krungthaiaxa.elife.api.model.DocumentDownload;
 import th.co.krungthaiaxa.elife.api.model.Policy;
@@ -146,7 +147,7 @@ public class AdminController {
     public ResponseEntity<byte[]> uploadBlackListFile(@RequestParam("file") MultipartFile file) {
         try {
             return new ResponseEntity<>(getJson(blackListedService.readBlackListedExcelFile(file.getInputStream())), CREATED);
-        } catch (IOException | SAXException | OpenXML4JException | ParserConfigurationException | IllegalArgumentException e) {
+        } catch (IOException | SAXException | OpenXML4JException | ParserConfigurationException | IllegalArgumentException | ElifeException e) {
             return new ResponseEntity<>(getJson(ErrorCode.INVALID_BLACKLIST_FILE.apply(e.getMessage())), NOT_ACCEPTABLE);
         }
     }

@@ -69,6 +69,7 @@
                 .catch(function (errorResponse) {
                     $scope.errorMessage = errorResponse.data.userMessage;
                     $scope.isUploading = null;
+                    $scope.hasUploaded = false;
                     disconnect();
                 });
         };

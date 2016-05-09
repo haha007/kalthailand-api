@@ -36,6 +36,7 @@ public class BlackListedService {
     private final static Logger logger = LoggerFactory.getLogger(BlackListedService.class);
     private final static String SEP = ";COLUMN_SEPARATOR;";
     private final static String FIRST_LINE = "Name" + SEP + "Idno" + SEP + "Desc" + SEP + "Type" + SEP + "Asof" + SEP + "Report_Date" + SEP + "Address";
+    private static final String EXPECTED_HEADERS = "[\"Name\", \"Idno\", \"Desc\", \"Type\", \"Asof\", \"Report_Date\", \"Address\"]";
 
     private final BlackListedRepository blackListedRepository;
     private final SimpMessagingTemplate template;
@@ -99,7 +100,11 @@ public class BlackListedService {
         public void endDocument() throws SAXException {
             saveBlackListed();
             template.convertAndSend("/topic/blackList/upload/progress/result", new String(getJson(new UploadProgress(numberOfLinesAdded, numberOfDuplicateLines, numberOfEmptyLines, numberOfLines))));
-            logger.info("A total number of [" + numberOfLinesAdded + "] lines have been added");
+            if (numberOfLinesAdded == 0) {
+                throw new ElifeException("No line has been found to add in the black list. Make sure the Excel file contains 2 sheets and that second sheet has (exact) headers "+EXPECTED_HEADERS+".");
+            } else {
+                logger.info("A total number of [" + numberOfLinesAdded + "] lines have been added");
+            }
         }
 
         public void startElement(String uri, String localName, String name,
@@ -120,7 +125,7 @@ public class BlackListedService {
                     // we changed line. Whatever was in previous line should be saved
                     if ("1".equalsIgnoreCase(currentLineNumber)) {
                         if (!currentLineContent.equalsIgnoreCase(FIRST_LINE)) {
-                            throw new ElifeException("The first line of second sheet must contain following headers: [\"Name\", \"Idno\", \"Desc\", \"Type\", \"Asof\", \"Report_Date\", \"Address\"].");
+                            throw new ElifeException("The first line of second sheet must contain following headers: "+EXPECTED_HEADERS+".");
                         } else {
                             logger.info("First line containing [" + currentLineContent + "] is ignored.");
                             numberOfDuplicateLines++;
@@ -195,8 +200,7 @@ public class BlackListedService {
                 } else {
                     numberOfDuplicateLines++;
                 }
-            }
-            else {
+            } else {
                 numberOfEmptyLines++;
             }
         }
