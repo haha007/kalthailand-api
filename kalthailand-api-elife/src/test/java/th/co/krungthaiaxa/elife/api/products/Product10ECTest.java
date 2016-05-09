@@ -149,6 +149,22 @@ public class Product10ECTest {
     }
 
     @Test
+    public void should_set_sum_insured_to_true_when_sum_insured_provided() throws Exception {
+        Quote quote = quote(product10EC());
+
+        product10EC.calculateQuote(quote, productQuotation(25, EVERY_YEAR, 308000.0, true));
+        assertThat(quote.getPremiumsData().getProduct10ECPremium().getSumInsuredOption()).isTrue();
+    }
+
+    @Test
+    public void should_set_sum_insured_to_false_when_premium_provided() throws Exception {
+        Quote quote = quote(product10EC());
+
+        product10EC.calculateQuote(quote, productQuotation(25, EVERY_YEAR, 308000.0, false));
+        assertThat(quote.getPremiumsData().getProduct10ECPremium().getSumInsuredOption()).isFalse();
+    }
+
+    @Test
     public void should_calculate_sum_insured_from_premium_with_yearly_periodicity_and_age_25() throws Exception {
         Quote quote = quote(product10EC());
 

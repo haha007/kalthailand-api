@@ -11,6 +11,7 @@ import java.util.Objects;
 
 @ApiModel(description = "10 EC Life Insurance specific Premiums Data")
 public class Product10ECPremium implements Serializable {
+    private Boolean sumInsuredOption;
     private Amount sumInsured;
     private List<DatedAmount> yearlyCashBacks = new ArrayList<>();
     private List<DatedAmount> endOfContractBenefitsMinimum = new ArrayList<>();
@@ -22,6 +23,15 @@ public class Product10ECPremium implements Serializable {
     private List<DatedAmount> yearlyCashBacksMaximumBenefit = new ArrayList<>();
     private Amount yearlyTaxDeduction;
     private DividendOption dividendOption;
+
+    @ApiModelProperty(value = "True if the user has chosen to pay on a total Sum Insured base. False otherwise (premium choice). This is set by back end API if an amount is provided in financialScheduler.")
+    public Boolean getSumInsuredOption() {
+        return sumInsuredOption;
+    }
+
+    public void setSumInsuredOption(Boolean sumInsuredOption) {
+        this.sumInsuredOption = sumInsuredOption;
+    }
 
     @ApiModelProperty(value = "Total sum insured by the product. This is calculated by back end API if an amount is provided in financialScheduler. If this value is provided, then it's the financialScheduler amount that is calculated")
     public Amount getSumInsured() {

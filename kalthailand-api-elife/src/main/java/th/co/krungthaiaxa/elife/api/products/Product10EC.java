@@ -3,9 +3,7 @@ package th.co.krungthaiaxa.elife.api.products;
 import org.apache.commons.lang3.SerializationUtils;
 import th.co.krungthaiaxa.elife.api.model.*;
 import th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode;
-import th.co.krungthaiaxa.elife.api.repository.OccupationTypeRepository;
 
-import javax.inject.Inject;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -15,6 +13,8 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static th.co.krungthaiaxa.elife.api.exception.ExceptionUtils.*;
@@ -112,8 +112,10 @@ public class Product10EC implements Product {
         insured.setDeclaredTaxPercentAtSubscription(productQuotation.getDeclaredTaxPercentAtSubscription());
         if (productQuotation.getSumInsuredAmount() != null && productQuotation.getSumInsuredAmount().getValue() != null) {
             quote.getPremiumsData().getProduct10ECPremium().setSumInsured(amount(productQuotation.getSumInsuredAmount().getValue()));
+            quote.getPremiumsData().getProduct10ECPremium().setSumInsuredOption(TRUE);
         } else {
             quote.getPremiumsData().getFinancialScheduler().setModalAmount(amount(productQuotation.getPremiumAmount().getValue()));
+            quote.getPremiumsData().getProduct10ECPremium().setSumInsuredOption(FALSE);
         }
 
         // cannot be too young or too old
