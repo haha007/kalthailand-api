@@ -17,6 +17,18 @@
 
     <!-- Custom styles for this template -->
     <link href="elife.css" rel="stylesheet">
+
+    <script src="bower_components/angular/angular.min.js"></script>
+    <script src="bower_components/angular-resource/angular-resource.min.js"></script>
+    <script src="bower_components/angular-file-model/angular-file-model.js"></script>
+    <script src="bower_components/angular-animate/angular-animate.min.js"></script>
+    <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+    <script src="bower_components/sockjs/sockjs.min.js"></script>
+    <script src="bower_components/stomp-websocket/lib/stomp.min.js"></script>
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="app/app.js"></script>
+    <script src="app/controllers.js"></script>
+    <script src="app/services.js"></script>
 </head>
 
 <body ng-app="myApp">
@@ -47,7 +59,7 @@
         </div>
 
         <!-- BEGIN Page specific stuff -->
-        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" id="dashboardContainer">
+        <div ng-cloak class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main ng-cloak" id="dashboardContainer">
             <h1 class="page-header">Dashboard</h1>
 
             <div class="table-responsive">
@@ -77,15 +89,6 @@
 
     </div>
 </div>
-<script src="bower_components/angular/angular.min.js"></script>
-<script src="bower_components/angular-resource/angular-resource.min.js"></script>
-<script src="bower_components/angular-file-model/angular-file-model.js"></script>
-<script src="bower_components/angular-animate/angular-animate.min.js"></script>
-<script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
-<script src="bower_components/jquery/dist/jquery.min.js"></script>
-<script src="app/app.js"></script>
-<script src="app/controllers.js"></script>
-<script src="app/services.js"></script>
 
 </body>
 </html>
