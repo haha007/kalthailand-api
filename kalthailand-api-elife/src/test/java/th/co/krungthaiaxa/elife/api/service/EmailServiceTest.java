@@ -30,6 +30,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeUtility;
 import java.io.*;
+import java.nio.charset.Charset;
 import java.time.LocalDate;
 import java.util.Base64;
 import java.util.Optional;
@@ -58,12 +59,8 @@ public class EmailServiceTest {
     private String emailName;
     @Value("${email.subject.quote}")
     private String subjectQuote;
-    @Value("${email.subject.ereceipt.10ec}")
-    private String subjectEreceipt10EC;
     @Value("${line.app.id}")
     private String lineId;
-    @Value("${email.subject.ereceipt.ifine}")
-    private String subjectEreceiptiFine;
     @Value("${tmp.path.deleted.after.tests}")
     private String tmpPathDeletedAfterTests;
     @Value("${button.url.ereceipt.mail}")
@@ -270,7 +267,7 @@ public class EmailServiceTest {
 
         assertThat(greenMail.getReceivedMessages()).hasSize(1);
         MimeMessage email = greenMail.getReceivedMessages()[0];
-        assertThat(email.getSubject()).isEqualTo(subjectEreceipt10EC);
+        assertThat(email.getSubject()).isEqualTo(IOUtils.toString(this.getClass().getResourceAsStream("/email-content/email-ereceipt-subject-10ec.txt"), Charset.forName("UTF-8")));
         assertThat(email.getFrom()).containsOnly(new InternetAddress(emailName));
 
         String bodyAsString = decodeSimpleBody(getBody(email));
@@ -312,7 +309,7 @@ public class EmailServiceTest {
 
         assertThat(greenMail.getReceivedMessages()).hasSize(1);
         MimeMessage email = greenMail.getReceivedMessages()[0];
-        assertThat(email.getSubject()).isEqualTo(subjectEreceiptiFine);
+        assertThat(email.getSubject()).isEqualTo(IOUtils.toString(this.getClass().getResourceAsStream("/email-content/email-ereceipt-subject-ifine.txt"), Charset.forName("UTF-8")));
         assertThat(email.getFrom()).containsOnly(new InternetAddress(emailName));
 
         String bodyAsString = decodeSimpleBody(getBody(email));

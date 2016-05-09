@@ -43,10 +43,6 @@ public class EmailService {
     private String lineId;
     @Value("${button.url.ereceipt.mail}")
     private String uploadDocURL;
-    @Value("${email.subject.ereceipt.10ec}")
-    private String emailSubjectFor10EC;
-    @Value("${email.subject.ereceipt.ifine}")
-    private String emailSubjectForIFine;
 
     @Inject
     private MessageSource messageSource;
@@ -106,9 +102,9 @@ public class EmailService {
         fileList.add(attachFile);
         String sbj = "";
         if (policy.getCommonData().getProductId().equals(ProductType.PRODUCT_IFINE.getName())) {
-            sbj = emailSubjectForIFine;
+            sbj = IOUtils.toString(this.getClass().getResourceAsStream("/email-content/email-ereceipt-subject-ifine.txt"), Charset.forName("UTF-8"));
         } else if (policy.getCommonData().getProductId().equals(ProductType.PRODUCT_10_EC.getName())) {
-            sbj = emailSubjectFor10EC;
+            sbj = IOUtils.toString(this.getClass().getResourceAsStream("/email-content/email-ereceipt-subject-10ec.txt"), Charset.forName("UTF-8"));
         }
         emailSender.sendEmail(emailName, policy.getInsureds().get(0).getPerson().getEmail(), sbj, getEreceiptEmailContent(policy), base64ImgFileNames, fileList);
         logger.info("Ereceipt email sent");
