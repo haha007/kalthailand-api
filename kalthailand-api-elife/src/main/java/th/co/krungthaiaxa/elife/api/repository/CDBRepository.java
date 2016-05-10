@@ -42,7 +42,7 @@ public class CDBRepository {
                 "where left(coalesce(pagt1,'0'),1) not in ('2','4') " +
                 "and left(coalesce(pagt2,'0'),1) not in ('2','4') " +
                 "and pterm = 0 " +
-                "and pstu in ('1','2','B') " +
+                "and pstu in ('1') " +
                 "and ? = " +
                 "case when ltrim(rtrim(coalesce(pownid,''))) <> '' and lpaydb <> 0 " +
                 "then ltrim(rtrim(coalesce(pownid,''))) else ltrim(rtrim(coalesce(pid,''))) end " +
@@ -66,8 +66,7 @@ public class CDBRepository {
 
         if (map == null) {
             return Optional.empty();
-        }
-        else {
+        } else {
             BigDecimal agent1 = (BigDecimal) map.get("pagt1");
             BigDecimal agent2 = (BigDecimal) map.get("pagt2");
             return Optional.of(Triple.of((String) map.get("pno"), agent1.toString(), agent2.toString()));
