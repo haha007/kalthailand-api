@@ -1,3 +1,4 @@
-User is not responding
-The content of this sms has not been provided yet
-Policy number is %POLICY_ID%
+﻿เนื่องจากเจ้าหน้าที่ไม่สามารถติดต่อท่านได้ 
+เจ้าหน้าที่จะทำการติดต่อท่านอีกครั้งด้วยหมายเลข 02-770-3599 ภายในเวลาทำการ 8.30-19.00 น.
+
+หมายเลขอ้างอิงของท่านคือ %POLICY_ID%

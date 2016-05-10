@@ -42,6 +42,8 @@ public class SMSApiService {
             return res;
         }
 
+        message = message.substring(1, message.length());
+
         HttpClient httpclient = HttpClients.createDefault();
         HttpPost httppost = new HttpPost(smsUrl);
 

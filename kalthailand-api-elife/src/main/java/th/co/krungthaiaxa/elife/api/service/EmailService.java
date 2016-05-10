@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
+import th.co.krungthaiaxa.elife.api.model.Person;
 import th.co.krungthaiaxa.elife.api.model.Policy;
 import th.co.krungthaiaxa.elife.api.model.ProductIFinePremium;
 import th.co.krungthaiaxa.elife.api.model.Quote;
@@ -81,17 +82,17 @@ public class EmailService {
 
     public void sendPolicyBookedEmail(Policy policy) throws IOException, MessagingException {
         logger.info("Sending policy booked email");
-        emailSender.sendEmail(emailName, policy.getInsureds().get(0).getPerson().getEmail(), subject, "The content of this email has not been provided yet", new ArrayList<>(), new ArrayList<>());
+        emailSender.sendEmail(emailName, policy.getInsureds().get(0).getPerson().getEmail(), getBookedEmailContentSubject(), getBookedEmailContent(policy), new ArrayList<>(), new ArrayList<>());
     }
 
     public void sendUserNotRespondingEmail(Policy policy) throws IOException, MessagingException {
         logger.info("Sending user is not responding email");
-        emailSender.sendEmail(emailName, policy.getInsureds().get(0).getPerson().getEmail(), subject, "The content of this email has not been provided yet", new ArrayList<>(), new ArrayList<>());
+        emailSender.sendEmail(emailName, policy.getInsureds().get(0).getPerson().getEmail(), getUserNotResponseContentSubject(), getUserNotResponseContent(policy), new ArrayList<>(), new ArrayList<>());
     }
 
     public void sendPhoneNumberIsWrongEmail(Policy policy) throws IOException, MessagingException {
         logger.info("Sending phone number is wrong email");
-        emailSender.sendEmail(emailName, policy.getInsureds().get(0).getPerson().getEmail(), subject, "The content of this email has not been provided yet", new ArrayList<>(), new ArrayList<>());
+        emailSender.sendEmail(emailName, policy.getInsureds().get(0).getPerson().getEmail(), getPhoneNumberIsWrongContentSubject(), getPhoneNumberIsWrongContent(policy), new ArrayList<>(), new ArrayList<>());
     }
 
     public void sendEreceiptEmail(Policy policy, Pair<byte[], String> attachFile) throws IOException, MessagingException {
@@ -127,6 +128,39 @@ public class EmailService {
                 .replace("%12$s", "'" + getLineURL() + "quote-product/line-10-ec" + "'");
     }
 
+    private String getUserNotResponseContentSubject() throws IOException {
+        return IOUtils.toString(this.getClass().getResourceAsStream("/email-content/email-user-not-response-subject.txt"), Charset.forName("UTF-8"));
+    }
+
+    private String getUserNotResponseContent(Policy pol) throws IOException {
+        String emailContent = IOUtils.toString(this.getClass().getResourceAsStream("/email-content/email-user-not-response.txt"), Charset.forName("UTF-8"));
+        Person person = pol.getInsureds().get(0).getPerson();
+        return emailContent.replace("%FULL_NAME%", person.getGivenName() + " " + person.getSurName())
+                .replace("%POLICY_ID%", pol.getPolicyId());
+    }
+
+    private String getPhoneNumberIsWrongContentSubject() throws IOException {
+        return IOUtils.toString(this.getClass().getResourceAsStream("/email-content/email-phone-wrong-number-subject.txt"), Charset.forName("UTF-8"));
+    }
+
+    private String getPhoneNumberIsWrongContent(Policy pol) throws IOException {
+        String emailContent = IOUtils.toString(this.getClass().getResourceAsStream("/email-content/email-phone-wrong-number.txt"), Charset.forName("UTF-8"));
+        Person person = pol.getInsureds().get(0).getPerson();
+        return emailContent.replace("%FULL_NAME%", person.getGivenName() + " " + person.getSurName())
+                .replace("%POLICY_ID%", pol.getPolicyId());
+    }
+
+    private String getBookedEmailContentSubject() throws IOException {
+        return IOUtils.toString(this.getClass().getResourceAsStream("/email-content/email-booked-policy-subject.txt"), Charset.forName("UTF-8"));
+    }
+
+    private String getBookedEmailContent(Policy pol) throws IOException {
+        String emailContent = IOUtils.toString(this.getClass().getResourceAsStream("/email-content/email-booked-policy.txt"), Charset.forName("UTF-8"));
+        Person person = pol.getInsureds().get(0).getPerson();
+        return emailContent.replace("%FULL_NAME%", person.getGivenName() + " " + person.getSurName())
+                .replace("%POLICY_ID%", pol.getPolicyId());
+    }
+
     private String getQuoteiFineEmailContent(Quote quote) throws IOException {
         String decimalFormat = "#,##0.00";
         String emailContent = IOUtils.toString(this.getClass().getResourceAsStream("/email-content/email-quote-ifine-content.txt"), Charset.forName("UTF-8"));
@@ -136,7 +170,7 @@ public class EmailService {
                 .replace("%4$s", String.valueOf(quote.getCommonData().getNbOfYearsOfCoverage()))
                 .replace("%5$s", String.valueOf(quote.getCommonData().getNbOfYearsOfPremium()))
                 .replace("%6$s", String.valueOf(quote.getInsureds().get(0).getAgeAtSubscription()))
-                .replace("%7$s", messageSource.getMessage("payment.mode."+quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().toString(), null, thLocale))
+                .replace("%7$s", messageSource.getMessage("payment.mode." + quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().toString(), null, thLocale))
                 .replace("%8$s", (new DecimalFormat(decimalFormat)).format(p.getSumInsured().getValue()))
                 .replace("%9$s", (new DecimalFormat(decimalFormat)).format(p.getAccidentSumInsured().getValue()))
                 .replace("%10$s", (new DecimalFormat(decimalFormat)).format(p.getDeathByAccidentInPublicTransport().getValue()))

@@ -1,5 +1,6 @@
 package th.co.krungthaiaxa.elife.api.service;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.SpringApplicationConfiguration;
@@ -13,14 +14,13 @@ import th.co.krungthaiaxa.elife.api.model.Policy;
 import th.co.krungthaiaxa.elife.api.model.Quote;
 
 import javax.inject.Inject;
-
+import java.nio.charset.Charset;
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
-import static th.co.krungthaiaxa.elife.api.TestUtil.beneficiary;
-import static th.co.krungthaiaxa.elife.api.TestUtil.productQuotation;
-import static th.co.krungthaiaxa.elife.api.TestUtil.quote;
+import static th.co.krungthaiaxa.elife.api.TestUtil.*;
 import static th.co.krungthaiaxa.elife.api.model.enums.ChannelType.LINE;
 
 /**
@@ -41,12 +41,21 @@ public class SMSApiServiceTest {
     private QuoteService quoteService;
 
     @Test
-    public void should_return_0_when_sending_comfirmation_message_successfully()throws Exception{
-        Map<String,String> m;
+    public void should_return_0_when_sending_comfirmation_message_successfully() throws Exception {
+        Map<String, String> m = new HashMap<>();
         Policy pol = getPolicy();
         pol.getInsureds().get(0).getPerson().getMobilePhoneNumber().setNumber("0863878803");
         pol.setPolicyId("555-55555555");
-        m = smsApiService.sendConfirmationMessage(pol, "messageContent");
+
+        String smsContent = IOUtils.toString(this.getClass().getResourceAsStream("/sms-content/policy-booked-sms.txt"), Charset.forName("UTF-8"));
+        smsApiService.sendConfirmationMessage(pol, smsContent.replace("%FULL_NAME%", pol.getInsureds().get(0).getPerson().getGivenName() + " " + pol.getInsureds().get(0).getPerson().getSurName()).replace("%POLICY_ID%", pol.getPolicyId()));
+
+        smsContent = IOUtils.toString(this.getClass().getResourceAsStream("/sms-content/policy-purchased-sms.txt"), Charset.forName("UTF-8"));
+        smsApiService.sendConfirmationMessage(pol, smsContent.replace("%POLICY_ID%", pol.getPolicyId()));
+
+        smsContent = IOUtils.toString(this.getClass().getResourceAsStream("/sms-content/user-not-responging-sms.txt"), Charset.forName("UTF-8"));
+        m = smsApiService.sendConfirmationMessage(pol, smsContent.replace("%POLICY_ID%", pol.getPolicyId()));
+
         assertThat(m.get("STATUS")).contains("0");
     }
 

@@ -220,7 +220,8 @@ public class PolicyService {
         // Send SMS
         try {
             String smsContent = IOUtils.toString(this.getClass().getResourceAsStream("/sms-content/policy-booked-sms.txt"), Charset.forName("UTF-8"));
-            Map<String, String> m = smsApiService.sendConfirmationMessage(policy, smsContent.replace("%POLICY_ID%", policy.getPolicyId()));
+            String fullName = policy.getInsureds().get(0).getPerson().getGivenName() + " " + policy.getInsureds().get(0).getPerson().getSurName();
+            Map<String, String> m = smsApiService.sendConfirmationMessage(policy, smsContent.replace("%POLICY_ID%", policy.getPolicyId()).replace("%FULL_NAME%", fullName));
             if (!m.get("STATUS").equals("0")) {
                 logger.error(String.format("SMS for policy booking could not be sent on policy [%1$s].", policy.getPolicyId()));
             }

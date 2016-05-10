@@ -76,6 +76,7 @@ public class EmailServiceTest {
 
     private String base64Graph;
 
+
     @Before
     public void setup() throws IOException {
         InputStream inputStream = this.getClass().getResourceAsStream("/graph.jpg");
@@ -111,6 +112,28 @@ public class EmailServiceTest {
         assertThat(greenMail.getReceivedMessages()).hasSize(1);
         MimeMessage email = greenMail.getReceivedMessages()[0];
         assertThat(email.getFrom()).containsOnly(new InternetAddress(emailName));
+    }
+
+    @Test
+    public void should_send_email_all_scenario() throws Exception {
+        Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation());
+        quote(quote, beneficiary(100.0));
+        quote = quoteService.updateQuote(quote);
+        Policy policy = policyService.createPolicy(quote);
+
+        policy.getInsureds().get(0).getPerson().setEmail("tossaphol.chi@krungthai-axa.co.th");
+
+        emailService.sendPolicyBookedEmail(policy);
+        emailService.sendUserNotRespondingEmail(policy);
+        emailService.sendPhoneNumberIsWrongEmail(policy);
+
+        documentService.generateValidatedPolicyDocuments(policy);
+        Optional<Document> documentPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(ERECEIPT_PDF)).findFirst();
+        assertThat(documentPdf.isPresent()).isTrue();
+        DocumentDownload documentDownload = documentService.downloadDocument(documentPdf.get().getId());
+        byte[] bytes = Base64.getDecoder().decode(documentDownload.getContent());
+        assertThat(new PdfReader(bytes)).isNotNull();
+        emailService.sendEreceiptEmail(policy, Pair.of(bytes, "emailServiceTest-e-receipt-10ec.pdf"));
     }
 
     @Test
@@ -261,7 +284,7 @@ public class EmailServiceTest {
         byte[] bytes = Base64.getDecoder().decode(documentDownload.getContent());
         assertThat(new PdfReader(bytes)).isNotNull();
 
-        FileUtils.writeByteArrayToFile(new File(tmpPathDeletedAfterTests+"/e-receipt-10ec.pdf"), bytes);
+        FileUtils.writeByteArrayToFile(new File(tmpPathDeletedAfterTests + "/e-receipt-10ec.pdf"), bytes);
 
         emailService.sendEreceiptEmail(policy, Pair.of(bytes, "emailServiceTest-e-receipt-10ec.pdf"));
 
@@ -303,7 +326,7 @@ public class EmailServiceTest {
         byte[] bytes = Base64.getDecoder().decode(documentDownload.getContent());
         assertThat(new PdfReader(bytes)).isNotNull();
 
-        FileUtils.writeByteArrayToFile(new File(tmpPathDeletedAfterTests+"/e-receipt-ifine.pdf"), bytes);
+        FileUtils.writeByteArrayToFile(new File(tmpPathDeletedAfterTests + "/e-receipt-ifine.pdf"), bytes);
 
         emailService.sendEreceiptEmail(policy, Pair.of(bytes, "emailServiceTest-e-receipt-ifine.pdf"));
 
