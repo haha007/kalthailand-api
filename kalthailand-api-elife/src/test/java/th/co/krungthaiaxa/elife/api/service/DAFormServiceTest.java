@@ -3,7 +3,6 @@ package th.co.krungthaiaxa.elife.api.service;
 import com.itextpdf.text.pdf.PdfReader;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -32,15 +31,13 @@ public class DAFormServiceTest {
     private PolicyService policyService;
     @Inject
     private QuoteService quoteService;
-    @Value("${tmp.path.deleted.after.tests}")
-    private String tmpPathDeletedAfterTests;
 
     @Test
     public void should_generate_da_form_pdf_file() throws Exception {
         Policy policy = getPolicy();
 
         byte[] pdfContent = DAFormService.generateDAForm(policy);
-        File pdfFile = new File(tmpPathDeletedAfterTests + File.separator + "da-form.pdf");
+        File pdfFile = new File("target/da-form.pdf");
         writeByteArrayToFile(pdfFile, pdfContent);
 
         // check if file exist and can read as PDF

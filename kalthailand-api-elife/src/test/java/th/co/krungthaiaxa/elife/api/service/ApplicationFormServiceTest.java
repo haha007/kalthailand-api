@@ -3,7 +3,6 @@ package th.co.krungthaiaxa.elife.api.service;
 import com.itextpdf.text.pdf.PdfReader;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -35,8 +34,6 @@ public class ApplicationFormServiceTest {
     private PolicyService policyService;
     @Inject
     private QuoteService quoteService;
-    @Value("${tmp.path.deleted.after.tests}")
-    private String tmpPathDeletedAfterTests;
 
     @Test
     public void should_10ec_generate_not_validate_application_pdf_file() throws Exception {
@@ -146,7 +143,7 @@ public class ApplicationFormServiceTest {
 
 
         byte[] pdfContent = appService.generateNotValidatedApplicationForm(policy);
-        File pdfFile = new File(tmpPathDeletedAfterTests + File.separator + "application-not-validated-10ec-form.pdf");
+        File pdfFile = new File("target/application-not-validated-10ec-form.pdf");
         writeByteArrayToFile(pdfFile, pdfContent);
 
         // check if file exist and can read as PDF
@@ -180,7 +177,7 @@ public class ApplicationFormServiceTest {
         policy.getPremiumsData().getProductIFinePremium().setProductIFinePackage(ProductIFinePackage.IFINE5);
 
         byte[] pdfContent = appService.generateNotValidatedApplicationForm(policy);
-        File pdfFile = new File(tmpPathDeletedAfterTests + File.separator + "application-not-validated-ifine-form.pdf");
+        File pdfFile = new File("target/application-not-validated-ifine-form.pdf");
         writeByteArrayToFile(pdfFile, pdfContent);
 
         // check if file exist and can read as PDF
@@ -213,7 +210,7 @@ public class ApplicationFormServiceTest {
         policy.setValidationAgentCode("000000-00-000000");
 
         byte[] pdfContent = appService.generateValidatedApplicationForm(policy);
-        File pdfFile = new File(tmpPathDeletedAfterTests + File.separator + "application-validated-10ec-form.pdf");
+        File pdfFile = new File("target/application-validated-10ec-form.pdf");
         writeByteArrayToFile(pdfFile, pdfContent);
 
         // check if file exist and can read as PDF
@@ -248,7 +245,7 @@ public class ApplicationFormServiceTest {
         policy.setValidationAgentCode("000000-00-000000");
 
         byte[] pdfContent = appService.generateValidatedApplicationForm(policy);
-        File pdfFile = new File(tmpPathDeletedAfterTests + File.separator + "application-validated-ifine-form.pdf");
+        File pdfFile = new File("target/application-validated-ifine-form.pdf");
         writeByteArrayToFile(pdfFile, pdfContent);
 
         // check if file exist and can read as PDF

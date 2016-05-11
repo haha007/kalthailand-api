@@ -5,7 +5,6 @@ import com.itextpdf.text.pdf.PdfReader;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -37,8 +36,6 @@ import static th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode.EVERY_YEA
 @WebAppConfiguration
 @ActiveProfiles("test")
 public class DocumentServiceTest {
-    @Value("${tmp.path.deleted.after.tests}")
-    private String tmpPathDeletedAfterTests;
     @Inject
     private DocumentService documentService;
     @Inject
@@ -132,7 +129,7 @@ public class DocumentServiceTest {
         assertThat(new PdfReader(decodedContent)).isNotNull();
 
         // Creates pdf in target folder
-        File file = new File(tmpPathDeletedAfterTests + File.separator + "documentServiceTest1-ereceipt.pdf");
+        File file = new File("target/documentServiceTest1-ereceipt.pdf");
         FileUtils.writeByteArrayToFile(file, decodedContent);
         assertThat(file.exists()).isTrue();
     }

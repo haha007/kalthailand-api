@@ -61,8 +61,6 @@ public class EmailServiceTest {
     private String subjectQuote;
     @Value("${line.app.id}")
     private String lineId;
-    @Value("${tmp.path.deleted.after.tests}")
-    private String tmpPathDeletedAfterTests;
     @Value("${button.url.ereceipt.mail}")
     private String buttonUrlEreceiptMail;
     @Inject
@@ -284,7 +282,7 @@ public class EmailServiceTest {
         byte[] bytes = Base64.getDecoder().decode(documentDownload.getContent());
         assertThat(new PdfReader(bytes)).isNotNull();
 
-        FileUtils.writeByteArrayToFile(new File(tmpPathDeletedAfterTests + "/e-receipt-10ec.pdf"), bytes);
+        FileUtils.writeByteArrayToFile(new File("target/e-receipt-10ec.pdf"), bytes);
 
         emailService.sendEreceiptEmail(policy, Pair.of(bytes, "emailServiceTest-e-receipt-10ec.pdf"));
 
@@ -326,7 +324,7 @@ public class EmailServiceTest {
         byte[] bytes = Base64.getDecoder().decode(documentDownload.getContent());
         assertThat(new PdfReader(bytes)).isNotNull();
 
-        FileUtils.writeByteArrayToFile(new File(tmpPathDeletedAfterTests + "/e-receipt-ifine.pdf"), bytes);
+        FileUtils.writeByteArrayToFile(new File("target/e-receipt-ifine.pdf"), bytes);
 
         emailService.sendEreceiptEmail(policy, Pair.of(bytes, "emailServiceTest-e-receipt-ifine.pdf"));
 
