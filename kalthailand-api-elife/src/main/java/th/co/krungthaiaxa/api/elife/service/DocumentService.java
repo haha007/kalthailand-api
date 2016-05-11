@@ -37,6 +37,7 @@ import static java.time.LocalDateTime.now;
 import static java.time.ZoneId.SHORT_IDS;
 import static java.time.ZoneId.of;
 import static java.time.format.DateTimeFormatter.ofPattern;
+import static th.co.krungthaiaxa.api.elife.model.enums.DocumentType.*;
 import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.EVERY_MONTH;
 
 @Service
