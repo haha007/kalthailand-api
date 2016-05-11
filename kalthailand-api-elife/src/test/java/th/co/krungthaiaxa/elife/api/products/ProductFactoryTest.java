@@ -44,4 +44,10 @@ public class ProductFactoryTest {
         Product product = productFactory.getProduct(ProductType.PRODUCT_IFINE.getName());
         assertThat(product).isInstanceOf(ProductIFine.class);
     }
+
+    @Test
+    public void should_return_iSafe_product() {
+        Product product = productFactory.getProduct(ProductType.PRODUCT_ISAFE.getName());
+        assertThat(product).isInstanceOf(ProductISafe.class);
+    }
 }

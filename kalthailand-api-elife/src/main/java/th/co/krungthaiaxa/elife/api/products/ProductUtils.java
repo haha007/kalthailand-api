@@ -6,13 +6,11 @@ import th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static th.co.krungthaiaxa.elife.api.exception.ExceptionUtils.*;
 import static th.co.krungthaiaxa.elife.api.exception.PolicyValidationException.*;
@@ -197,6 +195,55 @@ public class ProductUtils {
 
     public static Integer getAge(LocalDate birthDate) {
         return ((Long) ChronoUnit.YEARS.between(birthDate, LocalDate.now())).intValue();
+    }
+
+    public static Amount calculateTaxReturnFor10ECOrISafe(Quote quote, String currencyCode) {
+        // (min(100000, (premium * tax rate / 100 * numberOfPayments)
+        Double premium = quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue();
+        Integer taxRate = quote.getInsureds().get(0).getDeclaredTaxPercentAtSubscription();
+        PeriodicityCode periodicityCode = quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode();
+        int nbOfPaymentsPerYear = 12 / periodicityCode.getNbOfMonths();
+
+        return amount(Math.min(100000.0, Math.round(premium * taxRate / 100 * nbOfPaymentsPerYear)), currencyCode);
+    }
+
+    public static boolean hasEnoughTocalculateFor10ECOrISafe(ProductQuotation productQuotation) {
+        // Do we have a birth date to calculate the age of insured
+        boolean hasAnyDateOfBirth = productQuotation.getDateOfBirth() != null;
+        if (!hasAnyDateOfBirth) {
+            return false;
+        }
+
+        // we need an amount
+        boolean hasAmount = productQuotation.getSumInsuredAmount() != null
+                || productQuotation.getPremiumAmount() != null;
+        if (!hasAmount) {
+            return false;
+        }
+
+        // We need a periodicity
+        return productQuotation.getPeriodicityCode() != null;
+    }
+
+    public static Amount amount(Double value, String currencyCode) {
+        Amount amount = new Amount();
+        amount.setCurrencyCode(currencyCode);
+        amount.setValue(value);
+        return amount;
+    }
+
+    public static void checkDatedAmounts(List<DatedAmount> datedAmounts, LocalDate startDate, Integer durationCoverageInYears) {
+        List<LocalDate> allowedDates = new ArrayList<>();
+        IntStream.range(0, 10).forEach(value -> allowedDates.add(startDate.plusYears(value + 1)));
+        List<LocalDate> filteredDates = datedAmounts.stream().map(DatedAmount::getDate).filter(date -> !allowedDates.contains(date)).collect(toList());
+
+        notNull(datedAmounts, premiumnsCalculatedAmountEmpty);
+        isEqual(datedAmounts.size(), durationCoverageInYears, premiumnsCalculatedAmountNotFor10Years);
+        notNull(datedAmounts.stream().anyMatch(datedAmount -> datedAmount.getCurrencyCode() == null), premiumnsCalculatedAmountNoCurrency);
+        notNull(datedAmounts.stream().anyMatch(datedAmount -> datedAmount.getDate() == null), premiumnsCalculatedAmountNoDate);
+        notNull(datedAmounts.stream().anyMatch(datedAmount -> datedAmount.getDate().isBefore(LocalDate.now())), premiumnsCalculatedAmountDateInThePast);
+        notNull(datedAmounts.stream().anyMatch(datedAmount -> datedAmount.getValue() == null), premiumnsCalculatedAmountNoAmount);
+        isEqual(filteredDates.size(), 0, premiumnsCalculatedAmountInvalidDate.apply(filteredDates.stream().map(LocalDate::toString).collect(joining(", "))));
     }
 
     private static boolean isValidEmailAddress(String email) {

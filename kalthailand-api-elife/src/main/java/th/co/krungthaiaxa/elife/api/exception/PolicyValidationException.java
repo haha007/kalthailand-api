@@ -6,6 +6,7 @@ public class PolicyValidationException extends ElifeException {
 
     public static PolicyValidationException product10ECExpected = new PolicyValidationException("Product 10 EC is expected to do validation.");
     public static PolicyValidationException productIFineExpected = new PolicyValidationException("Product iFine is expected to do validation.");
+    public static PolicyValidationException productISafeExpected = new PolicyValidationException("Product iSafe is expected to do validation.");
 
     public static PolicyValidationException emptyQuote = new PolicyValidationException("Policy needs a quote to be created.");
     public static PolicyValidationException noneExistingQuote = new PolicyValidationException("The quote to create the policy from does not exist.");

@@ -223,6 +223,10 @@ public class TestUtil {
         return new ProductIFine();
     }
 
+    public static ProductISafe productISafe() {
+        return new ProductISafe();
+    }
+
     public static CoverageBeneficiary beneficiary(Double benefitPercent) {
         return beneficiary(benefitPercent, "3101202780273");
 //        return beneficiary(benefitPercent, "3120300153833");

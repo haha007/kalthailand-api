@@ -2,7 +2,6 @@ package th.co.krungthaiaxa.elife.api.products;
 
 import org.apache.commons.lang3.SerializationUtils;
 import th.co.krungthaiaxa.elife.api.model.*;
-import th.co.krungthaiaxa.elife.api.model.enums.PeriodicityCode;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -11,12 +10,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.stream.IntStream;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
-import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toList;
 import static th.co.krungthaiaxa.elife.api.exception.ExceptionUtils.*;
 import static th.co.krungthaiaxa.elife.api.exception.PolicyValidationException.*;
 import static th.co.krungthaiaxa.elife.api.exception.QuoteCalculationException.*;
@@ -96,7 +92,7 @@ public class Product10EC implements Product {
                 .findFirst();
 
         // Do we have enough to calculate anything
-        if (!hasEnoughTocalculate(productQuotation)) {
+        if (!hasEnoughTocalculateFor10ECOrISafe(productQuotation)) {
             // we need to delete what might have been calculated before
             resetCalculatedStuff(quote, has10ECCoverage);
             return;
@@ -111,10 +107,10 @@ public class Product10EC implements Product {
         insured.getPerson().setGenderCode(productQuotation.getGenderCode());
         insured.setDeclaredTaxPercentAtSubscription(productQuotation.getDeclaredTaxPercentAtSubscription());
         if (productQuotation.getSumInsuredAmount() != null && productQuotation.getSumInsuredAmount().getValue() != null) {
-            quote.getPremiumsData().getProduct10ECPremium().setSumInsured(amount(productQuotation.getSumInsuredAmount().getValue()));
+            quote.getPremiumsData().getProduct10ECPremium().setSumInsured(amount(productQuotation.getSumInsuredAmount().getValue(), PRODUCT_10_EC_CURRENCY));
             quote.getPremiumsData().getProduct10ECPremium().setSumInsuredOption(TRUE);
         } else {
-            quote.getPremiumsData().getFinancialScheduler().setModalAmount(amount(productQuotation.getPremiumAmount().getValue()));
+            quote.getPremiumsData().getFinancialScheduler().setModalAmount(amount(productQuotation.getPremiumAmount().getValue(), PRODUCT_10_EC_CURRENCY));
             quote.getPremiumsData().getProduct10ECPremium().setSumInsuredOption(FALSE);
         }
 
@@ -162,7 +158,7 @@ public class Product10EC implements Product {
         premiumsData.getProduct10ECPremium().setYearlyCashBacksMaximumBenefit(calculateDatedAmount(quote, 45, maximumExtraDvdRate));
 
         // calculate tax deduction
-        premiumsData.getProduct10ECPremium().setYearlyTaxDeduction(calculateTaxReturn(quote));
+        premiumsData.getProduct10ECPremium().setYearlyTaxDeduction(calculateTaxReturnFor10ECOrISafe(quote, PRODUCT_10_EC_CURRENCY));
 
         if (!has10ECCoverage.isPresent()) {
             Coverage coverage = new Coverage();
@@ -212,11 +208,11 @@ public class Product10EC implements Product {
     public CommonData getCommonData() {
         CommonData commonData = new CommonData();
         commonData.setMaxAge(MAX_AGE);
-        commonData.setMaxPremium(amount(PREMIUM_MAX));
-        commonData.setMaxSumInsured(amount(SUM_INSURED_MAX));
+        commonData.setMaxPremium(amount(PREMIUM_MAX, PRODUCT_10_EC_CURRENCY));
+        commonData.setMaxSumInsured(amount(SUM_INSURED_MAX, PRODUCT_10_EC_CURRENCY));
         commonData.setMinAge(MIN_AGE);
-        commonData.setMinPremium(amount(PREMIUM_MIN));
-        commonData.setMinSumInsured(amount(SUM_INSURED_MIN));
+        commonData.setMinPremium(amount(PREMIUM_MIN, PRODUCT_10_EC_CURRENCY));
+        commonData.setMinSumInsured(amount(SUM_INSURED_MIN, PRODUCT_10_EC_CURRENCY));
         commonData.setNbOfYearsOfCoverage(DURATION_COVERAGE_IN_YEAR);
         commonData.setNbOfYearsOfPremium(DURATION_PAYMENT_IN_YEAR);
         commonData.setProductId(PRODUCT_10_EC.getName());
@@ -235,10 +231,10 @@ public class Product10EC implements Product {
 
         Double interestRate = rate.apply(getAge(productQuotation.getDateOfBirth()));
         Double factor = modalFactor.apply(productQuotation.getPeriodicityCode());
-        productAmounts.setMaxPremium(amount(SUM_INSURED_MAX * factor * interestRate / 1000));
-        productAmounts.setMaxSumInsured(amount(SUM_INSURED_MAX));
-        productAmounts.setMinPremium(amount(SUM_INSURED_MIN * factor * interestRate / 1000));
-        productAmounts.setMinSumInsured(amount(SUM_INSURED_MIN));
+        productAmounts.setMaxPremium(amount(SUM_INSURED_MAX * factor * interestRate / 1000, PRODUCT_10_EC_CURRENCY));
+        productAmounts.setMaxSumInsured(amount(SUM_INSURED_MAX, PRODUCT_10_EC_CURRENCY));
+        productAmounts.setMinPremium(amount(SUM_INSURED_MIN * factor * interestRate / 1000, PRODUCT_10_EC_CURRENCY));
+        productAmounts.setMinSumInsured(amount(SUM_INSURED_MIN, PRODUCT_10_EC_CURRENCY));
         return productAmounts;
     }
 
@@ -300,14 +296,15 @@ public class Product10EC implements Product {
         notNull(premiumsData.getProduct10ECPremium().getSumInsured().getValue(), premiumnsSumInsuredNoAmount);
 
         checkSumInsured(premiumsData, PRODUCT_10_EC_CURRENCY, SUM_INSURED_MIN, SUM_INSURED_MAX);
-        checkDatedAmounts(premiumsData.getProduct10ECPremium().getEndOfContractBenefitsAverage(), startDate);
-        checkDatedAmounts(premiumsData.getProduct10ECPremium().getEndOfContractBenefitsMaximum(), startDate);
-        checkDatedAmounts(premiumsData.getProduct10ECPremium().getEndOfContractBenefitsMinimum(), startDate);
-        checkDatedAmounts(premiumsData.getProduct10ECPremium().getYearlyCashBacks(), startDate);
-        checkDatedAmounts(premiumsData.getProduct10ECPremium().getYearlyCashBacksAverageBenefit(), startDate);
-        checkDatedAmounts(premiumsData.getProduct10ECPremium().getYearlyCashBacksAverageDividende(), startDate);
-        checkDatedAmounts(premiumsData.getProduct10ECPremium().getYearlyCashBacksMaximumBenefit(), startDate);
-        checkDatedAmounts(premiumsData.getProduct10ECPremium().getYearlyCashBacksMaximumDividende(), startDate);
+        Product10ECPremium product10ECPremium = premiumsData.getProduct10ECPremium();
+        checkDatedAmounts(product10ECPremium.getEndOfContractBenefitsAverage(), startDate, DURATION_COVERAGE_IN_YEAR);
+        checkDatedAmounts(product10ECPremium.getEndOfContractBenefitsMaximum(), startDate, DURATION_COVERAGE_IN_YEAR);
+        checkDatedAmounts(product10ECPremium.getEndOfContractBenefitsMinimum(), startDate, DURATION_COVERAGE_IN_YEAR);
+        checkDatedAmounts(product10ECPremium.getYearlyCashBacks(), startDate, DURATION_COVERAGE_IN_YEAR);
+        checkDatedAmounts(product10ECPremium.getYearlyCashBacksAverageBenefit(), startDate, DURATION_COVERAGE_IN_YEAR);
+        checkDatedAmounts(product10ECPremium.getYearlyCashBacksAverageDividende(), startDate, DURATION_COVERAGE_IN_YEAR);
+        checkDatedAmounts(product10ECPremium.getYearlyCashBacksMaximumBenefit(), startDate, DURATION_COVERAGE_IN_YEAR);
+        checkDatedAmounts(product10ECPremium.getYearlyCashBacksMaximumDividende(), startDate, DURATION_COVERAGE_IN_YEAR);
     }
 
     private static void checkPremium(PremiumsData premiumsData) {
@@ -319,20 +316,6 @@ public class Product10EC implements Product {
         isEqual(PRODUCT_10_EC_CURRENCY, premiumsData.getFinancialScheduler().getModalAmount().getCurrencyCode(), premiumCurrencyException.apply(PRODUCT_10_EC_CURRENCY));
         isFalse(premiumsData.getFinancialScheduler().getModalAmount().getValue() > PREMIUM_MAX, premiumTooHighException.apply(PREMIUM_MAX));
         isFalse(premiumsData.getFinancialScheduler().getModalAmount().getValue() < PREMIUM_MIN, premiumTooLowException.apply(PREMIUM_MIN));
-    }
-
-    private static void checkDatedAmounts(List<DatedAmount> datedAmounts, LocalDate startDate) {
-        List<LocalDate> allowedDates = new ArrayList<>();
-        IntStream.range(0, 10).forEach(value -> allowedDates.add(startDate.plusYears(value + 1)));
-        List<LocalDate> filteredDates = datedAmounts.stream().map(DatedAmount::getDate).filter(date -> !allowedDates.contains(date)).collect(toList());
-
-        notNull(datedAmounts, premiumnsCalculatedAmountEmpty);
-        isEqual(datedAmounts.size(), DURATION_COVERAGE_IN_YEAR, premiumnsCalculatedAmountNotFor10Years);
-        notNull(datedAmounts.stream().anyMatch(datedAmount -> datedAmount.getCurrencyCode() == null), premiumnsCalculatedAmountNoCurrency);
-        notNull(datedAmounts.stream().anyMatch(datedAmount -> datedAmount.getDate() == null), premiumnsCalculatedAmountNoDate);
-        notNull(datedAmounts.stream().anyMatch(datedAmount -> datedAmount.getDate().isBefore(LocalDate.now())), premiumnsCalculatedAmountDateInThePast);
-        notNull(datedAmounts.stream().anyMatch(datedAmount -> datedAmount.getValue() == null), premiumnsCalculatedAmountNoAmount);
-        isEqual(filteredDates.size(), 0, premiumnsCalculatedAmountInvalidDate.apply(filteredDates.stream().map(LocalDate::toString).collect(joining(", "))));
     }
 
     private static List<DatedAmount> calculateDatedAmount(Quote quote, Integer percentRate, Function<Integer, Integer> dvdFunction) {
@@ -355,40 +338,5 @@ public class Product10EC implements Product {
         }
         Collections.sort(result);
         return result;
-    }
-
-    private Amount calculateTaxReturn(Quote quote) {
-        // (min(100000, (premium * tax rate / 100 * numberOfPayments)
-        Double premium = quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue();
-        Integer taxRate = quote.getInsureds().get(0).getDeclaredTaxPercentAtSubscription();
-        PeriodicityCode periodicityCode = quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode();
-        int nbOfPaymentsPerYear = 12 / periodicityCode.getNbOfMonths();
-
-        return amount(Math.min(100000.0, Math.round(premium * taxRate / 100 * nbOfPaymentsPerYear)));
-    }
-
-    private static boolean hasEnoughTocalculate(ProductQuotation productQuotation) {
-        // Do we have a birth date to calculate the age of insured
-        boolean hasAnyDateOfBirth = productQuotation.getDateOfBirth() != null;
-        if (!hasAnyDateOfBirth) {
-            return false;
-        }
-
-        // we need an amount
-        boolean hasAmount = productQuotation.getSumInsuredAmount() != null
-                || productQuotation.getPremiumAmount() != null;
-        if (!hasAmount) {
-            return false;
-        }
-
-        // We need a periodicity
-        return productQuotation.getPeriodicityCode() != null;
-    }
-
-    private static Amount amount(Double value) {
-        Amount amount = new Amount();
-        amount.setCurrencyCode(PRODUCT_10_EC_CURRENCY);
-        amount.setValue(value);
-        return amount;
     }
 }
