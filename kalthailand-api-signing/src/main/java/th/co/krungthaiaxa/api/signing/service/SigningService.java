@@ -10,9 +10,9 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.PrivateKey;
@@ -28,7 +28,7 @@ public class SigningService {
     @Value("${signing.keystore.alias}")
     private String alias;
 
-    public void sign(String src, String dest, String reason, String location)
+    public void sign(InputStream src, OutputStream dest, String reason, String location)
             throws GeneralSecurityException, IOException, DocumentException {
         InputStream inputStream = getClass().getResourceAsStream(keystore);
         if (inputStream == null) {
@@ -51,8 +51,7 @@ public class SigningService {
 
         // Creating the reader and the stamper
         PdfReader reader = new PdfReader(src);
-        FileOutputStream os = new FileOutputStream(dest);
-        PdfStamper stamper = PdfStamper.createSignature(reader, os, '\0');
+        PdfStamper stamper = PdfStamper.createSignature(reader, dest, '\0');
 
         // Creating the appearance
         PdfSignatureAppearance appearance = stamper.getSignatureAppearance();
