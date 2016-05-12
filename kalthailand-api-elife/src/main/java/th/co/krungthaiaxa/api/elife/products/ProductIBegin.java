@@ -11,6 +11,9 @@ import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 
+import static th.co.krungthaiaxa.api.elife.products.ProductUtils.amount;
+import static th.co.krungthaiaxa.api.elife.products.ProductUtils.amountTHB;
+
 @Component
 public class ProductIBegin implements Product {
     public final static Integer DURATION_COVERAGE_IN_YEAR = null;
@@ -55,10 +58,11 @@ public class ProductIBegin implements Product {
         insured.getPerson().setGenderCode(productQuotation.getGenderCode());
         insured.setDeclaredTaxPercentAtSubscription(productQuotation.getDeclaredTaxPercentAtSubscription());
         if (productQuotation.getSumInsuredAmount() != null && productQuotation.getSumInsuredAmount().getValue() != null) {
-            Amount amount = new Amount();
-            amount.setCurrencyCode(productQuotation.getSumInsuredAmount().getCurrencyCode());
-            amount.setValue(productQuotation.getSumInsuredAmount().getValue());
-            quote.getPremiumsData().getProductIBeginPremium().setSumInsured(amount);
+            quote.getPremiumsData().getProductIBeginPremium().setSumInsured(
+                    amount(
+                            productQuotation.getSumInsuredAmount().getValue(),
+                            productQuotation.getSumInsuredAmount().getCurrencyCode()
+                    ));
         }
 
         // cannot be too young or too old
@@ -98,11 +102,11 @@ public class ProductIBegin implements Product {
     public CommonData getCommonData() {
         CommonData commonData = new CommonData();
         commonData.setMaxAge(MAX_AGE);
-        commonData.setMaxPremium(amount(PREMIUM_MAX));
-        commonData.setMaxSumInsured(amount(SUM_INSURED_MAX));
+        commonData.setMaxPremium(amountTHB(PREMIUM_MAX));
+        commonData.setMaxSumInsured(amountTHB(SUM_INSURED_MAX));
         commonData.setMinAge(MIN_AGE);
-        commonData.setMinPremium(amount(PREMIUM_MIN));
-        commonData.setMinSumInsured(amount(SUM_INSURED_MIN));
+        commonData.setMinPremium(amountTHB(PREMIUM_MIN));
+        commonData.setMinSumInsured(amountTHB(SUM_INSURED_MIN));
         commonData.setNbOfYearsOfCoverage(DURATION_COVERAGE_IN_YEAR);
         commonData.setNbOfYearsOfPremium(DURATION_PAYMENT_IN_YEAR);
         commonData.setProductId(ProductType.PRODUCT_IBEGIN.name());
@@ -151,12 +155,5 @@ public class ProductIBegin implements Product {
 
         // We need a periodicity
         return productQuotation.getPeriodicityCode() != null;
-    }
-
-    private static Amount amount(Double value) {
-        Amount amount = new Amount();
-        amount.setCurrencyCode(PRODUCT_IBEGIN_CURRENCY);
-        amount.setValue(value);
-        return amount;
     }
 }

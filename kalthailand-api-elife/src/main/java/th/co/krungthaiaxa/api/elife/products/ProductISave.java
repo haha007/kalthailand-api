@@ -18,6 +18,7 @@ import java.util.Optional;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.*;
+import static th.co.krungthaiaxa.api.elife.products.ProductUtils.amountTHB;
 
 @Component
 public class ProductISave implements Product {
@@ -63,10 +64,10 @@ public class ProductISave implements Product {
         insured.getPerson().setGenderCode(productQuotation.getGenderCode());
         insured.setDeclaredTaxPercentAtSubscription(productQuotation.getDeclaredTaxPercentAtSubscription());
         if (productQuotation.getSumInsuredAmount() != null && productQuotation.getSumInsuredAmount().getValue() != null) {
-            quote.getPremiumsData().getProductISavePremium().setSumInsured(amount(productQuotation.getSumInsuredAmount().getValue()));
+            quote.getPremiumsData().getProductISavePremium().setSumInsured(amountTHB(productQuotation.getSumInsuredAmount().getValue()));
             quote.getPremiumsData().getProductISavePremium().setSumInsuredOption(TRUE);
         } else {
-            quote.getPremiumsData().getFinancialScheduler().setModalAmount(amount(productQuotation.getPremiumAmount().getValue()));
+            quote.getPremiumsData().getFinancialScheduler().setModalAmount(amountTHB(productQuotation.getPremiumAmount().getValue()));
             quote.getPremiumsData().getProductISavePremium().setSumInsuredOption(FALSE);
         }
 
@@ -168,11 +169,11 @@ public class ProductISave implements Product {
     public CommonData getCommonData() {
         CommonData commonData = new CommonData();
         commonData.setMaxAge(MAX_AGE);
-        commonData.setMaxPremium(amount(PREMIUM_MAX));
-        commonData.setMaxSumInsured(amount(SUM_INSURED_MAX));
+        commonData.setMaxPremium(amountTHB(PREMIUM_MAX));
+        commonData.setMaxSumInsured(amountTHB(SUM_INSURED_MAX));
         commonData.setMinAge(MIN_AGE);
-        commonData.setMinPremium(amount(PREMIUM_MIN));
-        commonData.setMinSumInsured(amount(SUM_INSURED_MIN));
+        commonData.setMinPremium(amountTHB(PREMIUM_MIN));
+        commonData.setMinSumInsured(amountTHB(SUM_INSURED_MIN));
         commonData.setNbOfYearsOfCoverage(DURATION_COVERAGE_IN_YEAR);
         commonData.setNbOfYearsOfPremium(DURATION_PAYMENT_IN_YEAR);
         commonData.setProductId(ProductType.PRODUCT_ISAVE.getName());
@@ -193,10 +194,10 @@ public class ProductISave implements Product {
         ProductISaveRate productISaveRate = productISaveRateRepository.findByGender(productQuotation.getGenderCode().name());
         Double interestRate = productISaveRate.getRate().get(ProductUtils.getAge(productQuotation.getDateOfBirth()) - MIN_AGE);
         Double factor = ProductUtils.modalFactor.apply(productQuotation.getPeriodicityCode());
-        productAmounts.setMaxPremium(amount(SUM_INSURED_MAX * factor * interestRate / 1000));
-        productAmounts.setMaxSumInsured(amount(SUM_INSURED_MAX));
-        productAmounts.setMinPremium(amount(SUM_INSURED_MIN * factor * interestRate / 1000));
-        productAmounts.setMinSumInsured(amount(SUM_INSURED_MIN));
+        productAmounts.setMaxPremium(amountTHB(SUM_INSURED_MAX * factor * interestRate / 1000));
+        productAmounts.setMaxSumInsured(amountTHB(SUM_INSURED_MAX));
+        productAmounts.setMinPremium(amountTHB(SUM_INSURED_MIN * factor * interestRate / 1000));
+        productAmounts.setMinSumInsured(amountTHB(SUM_INSURED_MIN));
         return productAmounts;
     }
 
@@ -300,12 +301,5 @@ public class ProductISave implements Product {
         }
         Collections.sort(result);
         return result;
-    }
-
-    private static Amount amount(Double value) {
-        Amount amount = new Amount();
-        amount.setCurrencyCode(PRODUCT_ISAVE_CURRENCY);
-        amount.setValue(value);
-        return amount;
     }
 }

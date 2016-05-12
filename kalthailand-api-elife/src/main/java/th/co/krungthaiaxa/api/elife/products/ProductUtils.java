@@ -225,6 +225,10 @@ public class ProductUtils {
         return productQuotation.getPeriodicityCode() != null;
     }
 
+    public static Amount amountTHB(Double value) {
+        return amount(value, "THB");
+    }
+
     public static Amount amount(Double value, String currencyCode) {
         Amount amount = new Amount();
         amount.setCurrencyCode(currencyCode);

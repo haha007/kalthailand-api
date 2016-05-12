@@ -12,7 +12,9 @@ import th.co.krungthaiaxa.api.elife.data.PolicyNumber;
 import th.co.krungthaiaxa.api.elife.exception.ElifeException;
 import th.co.krungthaiaxa.api.elife.exception.PolicyValidationException;
 import th.co.krungthaiaxa.api.elife.model.*;
-import th.co.krungthaiaxa.api.elife.model.enums.*;
+import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
+import th.co.krungthaiaxa.api.elife.model.enums.RegistrationTypeName;
+import th.co.krungthaiaxa.api.elife.model.enums.SuccessErrorStatus;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayResponse;
 import th.co.krungthaiaxa.api.elife.products.Product;
 import th.co.krungthaiaxa.api.elife.products.ProductFactory;
@@ -36,6 +38,7 @@ import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.notNull;
 import static th.co.krungthaiaxa.api.elife.model.enums.DocumentType.*;
 import static th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus.*;
 import static th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus.*;
+import static th.co.krungthaiaxa.api.elife.products.ProductUtils.amount;
 
 @Service
 public class PolicyService {
@@ -341,15 +344,11 @@ public class PolicyService {
             status = SuccessErrorStatus.SUCCESS;
         }
 
-        Amount amount = new Amount();
-        amount.setCurrencyCode(currencyCode);
-        amount.setValue(value);
-
         // registration key might have to be updated
         updatePaymentRegistrationKey(payment, registrationKey);
 
         PaymentInformation paymentInformation = new PaymentInformation();
-        paymentInformation.setAmount(amount);
+        paymentInformation.setAmount(amount(value, currencyCode));
         paymentInformation.setChannel(channelType);
         paymentInformation.setCreditCardName(creditCardName);
         paymentInformation.setDate(LocalDate.now(ZoneId.of(ZoneId.SHORT_IDS.get("VST"))));

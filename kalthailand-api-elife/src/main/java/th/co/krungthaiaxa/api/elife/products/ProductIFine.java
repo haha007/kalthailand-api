@@ -2,10 +2,10 @@ package th.co.krungthaiaxa.api.elife.products;
 
 import org.apache.commons.lang3.SerializationUtils;
 import org.springframework.stereotype.Component;
+import th.co.krungthaiaxa.api.elife.data.OccupationType;
 import th.co.krungthaiaxa.api.elife.exception.PolicyValidationException;
 import th.co.krungthaiaxa.api.elife.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.api.elife.model.*;
-import th.co.krungthaiaxa.api.elife.data.OccupationType;
 import th.co.krungthaiaxa.api.elife.model.enums.ProductIFinePackage;
 import th.co.krungthaiaxa.api.elife.repository.OccupationTypeRepository;
 import th.co.krungthaiaxa.api.elife.repository.ProductIFineRateRepository;
@@ -18,13 +18,14 @@ import static java.time.ZoneId.SHORT_IDS;
 import static java.time.ZoneId.of;
 import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.isEqual;
 import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.notNull;
+import static th.co.krungthaiaxa.api.elife.products.ProductUtils.amountTHB;
 
 @Component
 public class ProductIFine implements Product {
     public final static Integer DURATION_COVERAGE_IN_YEAR = 10;
     public final static Integer DURATION_PAYMENT_IN_YEAR = 10;
     public final static String PRODUCT_IFINE_NAME = "Product iFine";
-    public final static String PRODUCT_IFINE_CURRENCY = "THB";
+    public final static String CURRENCY = "THB";
     public static final Double SUM_INSURED_MIN = 100000.0;
     public static final Double SUM_INSURED_MAX = 300000.0;
     public static final Double PREMIUM_MIN = null;
@@ -84,27 +85,27 @@ public class ProductIFine implements Product {
         // set amounts
         ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
         productIFinePremium.setProductIFinePackage(productIFinePackage);
-        productIFinePremium.setSumInsured(amount(productIFinePackage.getSumInsured()));
-        productIFinePremium.setAccidentSumInsured(amount(productIFinePackage.getAccidentSumInsured()));
-        productIFinePremium.setHealthSumInsured(amount(productIFinePackage.getHealthSumInsured()));
-        productIFinePremium.setHospitalizationSumInsured(amount(productIFinePackage.getHospitalizationSumInsured()));
-        productIFinePremium.setDeathByAccident(amount(deathByAccident));
-        productIFinePremium.setDeathByAccidentInPublicTransport(amount(deathByAccident * 2));
-        productIFinePremium.setDisabilityFromAccidentMin(amount(deathByAccident * 2 / 100));
-        productIFinePremium.setDisabilityFromAccidentMax(amount(deathByAccident));
-        productIFinePremium.setLossOfHandOrLeg(amount(deathByAccident));
-        productIFinePremium.setLossOfSight(amount(deathByAccident));
-        productIFinePremium.setLossOfHearingMin(amount(deathByAccident * 15 / 100));
-        productIFinePremium.setLossOfHearingMax(amount(deathByAccident * 75 / 100));
-        productIFinePremium.setLossOfSpeech(amount(deathByAccident * 50 / 100));
-        productIFinePremium.setLossOfCorneaForBothEyes(amount(deathByAccident * 50 / 100));
-        productIFinePremium.setLossOfFingersMin(amount(deathByAccident * 2 / 100));
-        productIFinePremium.setLossOfFingersMax(amount(deathByAccident * 70 / 100));
-        productIFinePremium.setNoneCurableBoneFracture(amount(deathByAccident * 10 / 100));
-        productIFinePremium.setLegsShortenBy5cm(amount(deathByAccident * 7.5 / 100));
-        productIFinePremium.setBurnInjuryMin(amount(deathByAccident * 25 / 100));
-        productIFinePremium.setBurnInjuryMax(amount(deathByAccident));
-        productIFinePremium.setMedicalCareCost(amount(deathByAccident * 10 / 100));
+        productIFinePremium.setSumInsured(amountTHB(productIFinePackage.getSumInsured()));
+        productIFinePremium.setAccidentSumInsured(amountTHB(productIFinePackage.getAccidentSumInsured()));
+        productIFinePremium.setHealthSumInsured(amountTHB(productIFinePackage.getHealthSumInsured()));
+        productIFinePremium.setHospitalizationSumInsured(amountTHB(productIFinePackage.getHospitalizationSumInsured()));
+        productIFinePremium.setDeathByAccident(amountTHB(deathByAccident));
+        productIFinePremium.setDeathByAccidentInPublicTransport(amountTHB(deathByAccident * 2));
+        productIFinePremium.setDisabilityFromAccidentMin(amountTHB(deathByAccident * 2 / 100));
+        productIFinePremium.setDisabilityFromAccidentMax(amountTHB(deathByAccident));
+        productIFinePremium.setLossOfHandOrLeg(amountTHB(deathByAccident));
+        productIFinePremium.setLossOfSight(amountTHB(deathByAccident));
+        productIFinePremium.setLossOfHearingMin(amountTHB(deathByAccident * 15 / 100));
+        productIFinePremium.setLossOfHearingMax(amountTHB(deathByAccident * 75 / 100));
+        productIFinePremium.setLossOfSpeech(amountTHB(deathByAccident * 50 / 100));
+        productIFinePremium.setLossOfCorneaForBothEyes(amountTHB(deathByAccident * 50 / 100));
+        productIFinePremium.setLossOfFingersMin(amountTHB(deathByAccident * 2 / 100));
+        productIFinePremium.setLossOfFingersMax(amountTHB(deathByAccident * 70 / 100));
+        productIFinePremium.setNoneCurableBoneFracture(amountTHB(deathByAccident * 10 / 100));
+        productIFinePremium.setLegsShortenBy5cm(amountTHB(deathByAccident * 7.5 / 100));
+        productIFinePremium.setBurnInjuryMin(amountTHB(deathByAccident * 25 / 100));
+        productIFinePremium.setBurnInjuryMax(amountTHB(deathByAccident));
+        productIFinePremium.setMedicalCareCost(amountTHB(deathByAccident * 10 / 100));
 
         // calculates rates
         ProductIFineRate productIFineRate = productIFineRateRepository.findByPlanNameAndGender(productQuotation.getPackageName(), insured.getPerson().getGenderCode().name());
@@ -122,9 +123,11 @@ public class ProductIFine implements Product {
         Double factor = ProductUtils.modalFactor.apply(quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode());
         Double taxDeductible = get2DigitsDouble(productIFinePackage.getSumInsured() * taxDeductibleRate / 1000 * factor);
         Double nonTaxDeductible = get2DigitsDouble(productIFinePackage.getSumInsured() * (nonTaxDeductibleRate + riskOccupationCharge) / 1000 * factor);
-        productIFinePremium.setTaxDeductible(amount(taxDeductible));
-        productIFinePremium.setNonTaxDeductible(amount(nonTaxDeductible));
-        quote.getPremiumsData().getFinancialScheduler().setModalAmount(amount(taxDeductible + nonTaxDeductible));
+        Double modalAmount = get2DigitsDouble(productIFinePackage.getSumInsured() * (taxDeductibleRate + nonTaxDeductibleRate + riskOccupationCharge) / 1000 * factor);
+
+        productIFinePremium.setTaxDeductible(amountTHB(taxDeductible));
+        productIFinePremium.setNonTaxDeductible(amountTHB(nonTaxDeductible));
+        quote.getPremiumsData().getFinancialScheduler().setModalAmount(amountTHB(modalAmount));
 
         if (!hasIFineCoverage.isPresent()) {
             Coverage coverage = new Coverage();
@@ -173,14 +176,14 @@ public class ProductIFine implements Product {
     public CommonData getCommonData() {
         CommonData commonData = new CommonData();
         commonData.setProductId(ProductType.PRODUCT_IFINE.getName());
-        commonData.setProductCurrency(PRODUCT_IFINE_CURRENCY);
+        commonData.setProductCurrency(CURRENCY);
         commonData.setProductName(PRODUCT_IFINE_NAME);
         commonData.setMaxAge(MAX_AGE);
         commonData.setMinAge(MIN_AGE);
-        commonData.setMaxPremium(amount(PREMIUM_MAX));
-        commonData.setMinPremium(amount(PREMIUM_MIN));
-        commonData.setMaxSumInsured(amount(SUM_INSURED_MAX));
-        commonData.setMinSumInsured(amount(SUM_INSURED_MIN));
+        commonData.setMaxPremium(amountTHB(PREMIUM_MAX));
+        commonData.setMinPremium(amountTHB(PREMIUM_MIN));
+        commonData.setMaxSumInsured(amountTHB(SUM_INSURED_MAX));
+        commonData.setMinSumInsured(amountTHB(SUM_INSURED_MIN));
         commonData.setNbOfYearsOfCoverage(DURATION_COVERAGE_IN_YEAR);
         commonData.setNbOfYearsOfPremium(DURATION_PAYMENT_IN_YEAR);
         return commonData;
@@ -190,10 +193,10 @@ public class ProductIFine implements Product {
     public ProductAmounts getProductAmounts(ProductQuotation productQuotation) {
         ProductAmounts productAmounts = new ProductAmounts();
         productAmounts.setCommonData(getCommonData());
-        productAmounts.setMaxPremium(amount(PREMIUM_MAX));
-        productAmounts.setMaxSumInsured(amount(SUM_INSURED_MAX));
-        productAmounts.setMinPremium(amount(PREMIUM_MIN));
-        productAmounts.setMinSumInsured(amount(SUM_INSURED_MIN));
+        productAmounts.setMaxPremium(amountTHB(PREMIUM_MAX));
+        productAmounts.setMaxSumInsured(amountTHB(SUM_INSURED_MAX));
+        productAmounts.setMinPremium(amountTHB(PREMIUM_MIN));
+        productAmounts.setMinSumInsured(amountTHB(SUM_INSURED_MIN));
         return productAmounts;
     }
 
@@ -277,12 +280,5 @@ public class ProductIFine implements Product {
 
     private Double get2DigitsDouble(Double value) {
         return (double) Math.round(value * 100) / 100;
-    }
-
-    private Amount amount(Double value) {
-        Amount amount = new Amount();
-        amount.setCurrencyCode(PRODUCT_IFINE_CURRENCY);
-        amount.setValue(value);
-        return amount;
     }
 }

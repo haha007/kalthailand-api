@@ -440,4 +440,17 @@ public class ProductIFineTest {
         assertThat(productIFinePremium.getNonTaxDeductible().getValue()).isEqualTo(3014.01);
     }
 
+    @Test
+    public void should_calculate_from_yearly_periodicity_male_age_48_not_risky_ifine1() throws Exception {
+        Quote quote = quote(TestUtil.productIFine());
+        productIFine.calculateQuote(quote, productQuotation(IFINE1, 48, EVERY_MONTH, GenderCode.MALE, FALSE));
+        ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
+        assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(368.55);
+        assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(14.96);
+        assertThat(productIFinePremium.getRiderPremiumRate()).isEqualTo(25.99);
+        assertThat(productIFinePremium.getRiskOccupationCharge()).isEqualTo(0.0);
+        assertThat(productIFinePremium.getTaxDeductible().getValue()).isEqualTo(134.64);
+        assertThat(productIFinePremium.getNonTaxDeductible().getValue()).isEqualTo(233.91);
+    }
+
 }

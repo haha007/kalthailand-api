@@ -16,6 +16,7 @@ import java.util.function.Function;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.*;
+import static th.co.krungthaiaxa.api.elife.products.ProductUtils.*;
 
 public class Product10EC implements Product {
     public final static int DURATION_COVERAGE_IN_YEAR = 10;
@@ -105,10 +106,10 @@ public class Product10EC implements Product {
         insured.getPerson().setGenderCode(productQuotation.getGenderCode());
         insured.setDeclaredTaxPercentAtSubscription(productQuotation.getDeclaredTaxPercentAtSubscription());
         if (productQuotation.getSumInsuredAmount() != null && productQuotation.getSumInsuredAmount().getValue() != null) {
-            quote.getPremiumsData().getProduct10ECPremium().setSumInsured(ProductUtils.amount(productQuotation.getSumInsuredAmount().getValue(), PRODUCT_10_EC_CURRENCY));
+            quote.getPremiumsData().getProduct10ECPremium().setSumInsured(amount(productQuotation.getSumInsuredAmount().getValue(), PRODUCT_10_EC_CURRENCY));
             quote.getPremiumsData().getProduct10ECPremium().setSumInsuredOption(TRUE);
         } else {
-            quote.getPremiumsData().getFinancialScheduler().setModalAmount(ProductUtils.amount(productQuotation.getPremiumAmount().getValue(), PRODUCT_10_EC_CURRENCY));
+            quote.getPremiumsData().getFinancialScheduler().setModalAmount(amount(productQuotation.getPremiumAmount().getValue(), PRODUCT_10_EC_CURRENCY));
             quote.getPremiumsData().getProduct10ECPremium().setSumInsuredOption(FALSE);
         }
 
@@ -124,12 +125,12 @@ public class Product10EC implements Product {
         PremiumsData premiumsData = quote.getPremiumsData();
         // calculates premium / sum insured
         if (premiumsData.getProduct10ECPremium().getSumInsured() != null) {
-            premiumsData.getFinancialScheduler().setModalAmount(ProductUtils.getPremiumFromSumInsured(
+            premiumsData.getFinancialScheduler().setModalAmount(getPremiumFromSumInsured(
                     quote.getPremiumsData().getProduct10ECPremium().getSumInsured(),
                     rate.apply(insured.getAgeAtSubscription()),
                     quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode()));
         } else {
-            premiumsData.getProduct10ECPremium().setSumInsured(ProductUtils.getSumInsuredFromPremium(
+            premiumsData.getProduct10ECPremium().setSumInsured(getSumInsuredFromPremium(
                     quote.getPremiumsData().getFinancialScheduler().getModalAmount(),
                     rate.apply(insured.getAgeAtSubscription()),
                     quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode()));
@@ -199,18 +200,18 @@ public class Product10EC implements Product {
         policy.addInsured(SerializationUtils.clone(insured));
 
         // Add payment schedule
-        ProductUtils.addPayments(policy, DURATION_PAYMENT_IN_YEAR);
+        addPayments(policy, DURATION_PAYMENT_IN_YEAR);
     }
 
     @Override
     public CommonData getCommonData() {
         CommonData commonData = new CommonData();
         commonData.setMaxAge(MAX_AGE);
-        commonData.setMaxPremium(ProductUtils.amount(PREMIUM_MAX, PRODUCT_10_EC_CURRENCY));
-        commonData.setMaxSumInsured(ProductUtils.amount(SUM_INSURED_MAX, PRODUCT_10_EC_CURRENCY));
+        commonData.setMaxPremium(amount(PREMIUM_MAX, PRODUCT_10_EC_CURRENCY));
+        commonData.setMaxSumInsured(amount(SUM_INSURED_MAX, PRODUCT_10_EC_CURRENCY));
         commonData.setMinAge(MIN_AGE);
-        commonData.setMinPremium(ProductUtils.amount(PREMIUM_MIN, PRODUCT_10_EC_CURRENCY));
-        commonData.setMinSumInsured(ProductUtils.amount(SUM_INSURED_MIN, PRODUCT_10_EC_CURRENCY));
+        commonData.setMinPremium(amount(PREMIUM_MIN, PRODUCT_10_EC_CURRENCY));
+        commonData.setMinSumInsured(amount(SUM_INSURED_MIN, PRODUCT_10_EC_CURRENCY));
         commonData.setNbOfYearsOfCoverage(DURATION_COVERAGE_IN_YEAR);
         commonData.setNbOfYearsOfPremium(DURATION_PAYMENT_IN_YEAR);
         commonData.setProductId(ProductType.PRODUCT_10_EC.getName());
@@ -229,10 +230,10 @@ public class Product10EC implements Product {
 
         Double interestRate = rate.apply(ProductUtils.getAge(productQuotation.getDateOfBirth()));
         Double factor = ProductUtils.modalFactor.apply(productQuotation.getPeriodicityCode());
-        productAmounts.setMaxPremium(ProductUtils.amount(SUM_INSURED_MAX * factor * interestRate / 1000, PRODUCT_10_EC_CURRENCY));
-        productAmounts.setMaxSumInsured(ProductUtils.amount(SUM_INSURED_MAX, PRODUCT_10_EC_CURRENCY));
-        productAmounts.setMinPremium(ProductUtils.amount(SUM_INSURED_MIN * factor * interestRate / 1000, PRODUCT_10_EC_CURRENCY));
-        productAmounts.setMinSumInsured(ProductUtils.amount(SUM_INSURED_MIN, PRODUCT_10_EC_CURRENCY));
+        productAmounts.setMaxPremium(amount(SUM_INSURED_MAX * factor * interestRate / 1000, PRODUCT_10_EC_CURRENCY));
+        productAmounts.setMaxSumInsured(amount(SUM_INSURED_MAX, PRODUCT_10_EC_CURRENCY));
+        productAmounts.setMinPremium(amount(SUM_INSURED_MIN * factor * interestRate / 1000, PRODUCT_10_EC_CURRENCY));
+        productAmounts.setMinSumInsured(amount(SUM_INSURED_MIN, PRODUCT_10_EC_CURRENCY));
         return productAmounts;
     }
 

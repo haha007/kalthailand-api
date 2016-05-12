@@ -20,6 +20,7 @@ import static th.co.krungthaiaxa.api.elife.model.enums.DividendOption.YEARLY_FOR
 import static th.co.krungthaiaxa.api.elife.model.enums.MaritalStatus.MARRIED;
 import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.EVERY_HALF_YEAR;
 import static th.co.krungthaiaxa.api.elife.model.enums.USPermanentResident.NOT_PR;
+import static th.co.krungthaiaxa.api.elife.products.ProductUtils.amountTHB;
 
 public class TestUtil {
 
@@ -75,9 +76,7 @@ public class TestUtil {
     }
 
     public static ProductQuotation productQuotation(ProductType productType, Integer age, PeriodicityCode periodicityCode, Double amountValue, Boolean isSumInsured, Integer taxRate, GenderCode genderCode) {
-        Amount amount = new Amount();
-        amount.setCurrencyCode("THB");
-        amount.setValue(amountValue);
+        Amount amount = amountTHB(amountValue);
 
         ProductQuotation productQuotation = new ProductQuotation();
         productQuotation.setProductType(productType);
@@ -182,10 +181,6 @@ public class TestUtil {
     }
 
     public static Quote quote(Product product) {
-        Amount amount = new Amount();
-        amount.setCurrencyCode("THB");
-        amount.setValue(1000000.0);
-
         Periodicity periodicity = new Periodicity();
         periodicity.setCode(null);
 
