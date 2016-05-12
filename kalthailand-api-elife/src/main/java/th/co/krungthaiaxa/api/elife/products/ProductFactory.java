@@ -8,11 +8,13 @@ import javax.inject.Inject;
 public class ProductFactory {
     private final ProductIBegin productIBegin;
     private final ProductIFine productIFine;
+    private final ProductISave productISave;
 
     @Inject
-    public ProductFactory(ProductIBegin productIBegin, ProductIFine productIFine) {
+    public ProductFactory(ProductIBegin productIBegin, ProductIFine productIFine, ProductISave productISave) {
         this.productIBegin = productIBegin;
         this.productIFine = productIFine;
+        this.productISave = productISave;
     }
 
     public Product getProduct(String productId) {
@@ -21,6 +23,8 @@ public class ProductFactory {
         } else if (productId.equals(ProductType.PRODUCT_IBEGIN.getName())) {
             return productIBegin;
         } else if (productId.equals(ProductType.PRODUCT_IFINE.getName())) {
+            return productIFine;
+        } else if (productId.equals(ProductType.PRODUCT_ISAVE.getName())) {
             return productIFine;
         } else {
             throw new IllegalArgumentException("The Product [" + productId + "] is unknown.");

@@ -341,7 +341,7 @@ public class ProductIFineTest {
         Quote quote = quote(TestUtil.productIFine());
         productIFine.calculateQuote(quote, productQuotation(IFINE2, 45, EVERY_MONTH, GenderCode.FEMALE, FALSE));
         ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
-        assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(420.8);
+        assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(420.79);
         assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(6.57);
         assertThat(productIFinePremium.getRiderPremiumRate()).isEqualTo(24.6);
         assertThat(productIFinePremium.getRiskOccupationCharge()).isEqualTo(0.0);
@@ -354,7 +354,7 @@ public class ProductIFineTest {
         Quote quote = quote(TestUtil.productIFine());
         productIFine.calculateQuote(quote, productQuotation(IFINE2, 45, EVERY_MONTH, GenderCode.FEMALE, TRUE));
         ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
-        assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(918.95);
+        assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(918.94);
         assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(6.57);
         assertThat(productIFinePremium.getRiderPremiumRate()).isEqualTo(24.6);
         assertThat(productIFinePremium.getRiskOccupationCharge()).isEqualTo(36.9);
@@ -406,7 +406,7 @@ public class ProductIFineTest {
         Quote quote = quote(TestUtil.productIFine());
         productIFine.calculateQuote(quote, productQuotation(IFINE4, 45, EVERY_MONTH, GenderCode.FEMALE, TRUE));
         ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
-        assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(2192.62);
+        assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(2192.63);
         assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(6.57);
         assertThat(productIFinePremium.getRiderPremiumRate()).isEqualTo(36.35);
         assertThat(productIFinePremium.getRiskOccupationCharge()).isEqualTo(54.53);

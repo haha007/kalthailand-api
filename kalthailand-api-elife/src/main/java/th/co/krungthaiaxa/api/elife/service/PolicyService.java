@@ -37,6 +37,7 @@ import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.isTrue;
 import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.notNull;
 import static th.co.krungthaiaxa.api.elife.model.enums.DocumentType.*;
 import static th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus.*;
+import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.EVERY_MONTH;
 import static th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus.*;
 import static th.co.krungthaiaxa.api.elife.products.ProductUtils.amount;
 
@@ -163,29 +164,20 @@ public class PolicyService {
         // Generate documents
         documentService.generateNotValidatedPolicyDocuments(policy);
 
-        // Send Application Form to TMC
+        // Should block if Application form is not generated
         Optional<Document> applicationFormPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(APPLICATION_FORM)).findFirst();
-        if (applicationFormPdf.isPresent()) {
-            DocumentDownload applicationFormDocument = documentService.downloadDocument(applicationFormPdf.get().getId());
-            try {
-                tmcClient.sendPDFToTMC(policy, applicationFormDocument.getContent(), APPLICATION_FORM);
-            } catch (ElifeException e) {
-                logger.error("Unable to send application Form to TMC on policy [" + policy.getPolicyId() + "].", e);
-            }
-        } else {
+        if (!applicationFormPdf.isPresent()) {
             throw new ElifeException("Can't find Application form for the policy [" + policy.getPolicyId() + "]");
         }
 
-        // Send DA Form to TMC (DA form may not exist)
+        // Should block if DA form is not generated when Policy is monthly payment
         Optional<Document> daFormPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(DA_FORM)).findFirst();
-        if (daFormPdf.isPresent()) {
-            DocumentDownload daFormDocument = documentService.downloadDocument(daFormPdf.get().getId());
-            try {
-                tmcClient.sendPDFToTMC(policy, daFormDocument.getContent(), DA_FORM);
-            } catch (ElifeException e) {
-                logger.error("Unable to send DA Form to TMC on policy [" + policy.getPolicyId() + "].", e);
-            }
+        if (!daFormPdf.isPresent() && policy.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().equals(EVERY_MONTH)) {
+            throw new ElifeException("Can't find DA form for the policy [" + policy.getPolicyId() + "] while it is mandatory for Monthly Policy");
         }
+
+        policy.setStatus(PENDING_VALIDATION);
+        policyRepository.save(policy);
 
         // Update the policy
         Optional<Registration> insuredId = policy.getInsureds().get(0).getPerson().getRegistrations()
@@ -235,8 +227,21 @@ public class PolicyService {
             logger.error(String.format("Unable to send push notification for policy booking on policy [%1$s].", policy.getPolicyId()), e);
         }
 
-        policy.setStatus(PENDING_VALIDATION);
-        policyRepository.save(policy);
+        // Send Application Form to TMC
+        DocumentDownload applicationFormDocument = documentService.downloadDocument(applicationFormPdf.get().getId());
+        try {
+            tmcClient.sendPDFToTMC(policy, applicationFormDocument.getContent(), APPLICATION_FORM);
+        } catch (ElifeException e) {
+            logger.error("Unable to send application Form to TMC on policy [" + policy.getPolicyId() + "].", e);
+        }
+
+        // Send DA Form to TMC (DA form may not exist)
+        DocumentDownload daFormDocument = documentService.downloadDocument(daFormPdf.get().getId());
+        try {
+            tmcClient.sendPDFToTMC(policy, daFormDocument.getContent(), DA_FORM);
+        } catch (ElifeException e) {
+            logger.error("Unable to send DA Form to TMC on policy [" + policy.getPolicyId() + "].", e);
+        }
     }
 
     public void updatePolicyAfterPolicyHasBeenValidated(Policy policy, String agentCode) {
@@ -250,11 +255,20 @@ public class PolicyService {
         // Generate documents
         documentService.generateValidatedPolicyDocuments(policy);
 
-        // Get eReceipt
+        // Should block if eReceipt is not generated
         Optional<Document> documentPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(ERECEIPT_PDF)).findFirst();
         if (!documentPdf.isPresent()) {
             throw new ElifeException("Can't find eReceipt for the policy [" + policy.getPolicyId() + "]");
         }
+
+        // Should block if validated Application FormProductIFineTest is not generated
+        Optional<Document> applicationFormValidatedPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(APPLICATION_FORM_VALIDATED)).findFirst();
+        if (!applicationFormValidatedPdf.isPresent()) {
+            throw new ElifeException("Can't find validated application form for the policy [" + policy.getPolicyId() + "]");
+        }
+
+        policy.setStatus(VALIDATED);
+        policyRepository.save(policy);
 
         // Send Email
         DocumentDownload documentDownload = documentService.downloadDocument(documentPdf.get().getId());
@@ -291,20 +305,12 @@ public class PolicyService {
         }
 
         // Send Validated Application Form to TMC
-        Optional<Document> applicationFormValidatedPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(APPLICATION_FORM_VALIDATED)).findFirst();
-        if (applicationFormValidatedPdf.isPresent()) {
-            DocumentDownload applicationFormValidatedDocument = documentService.downloadDocument(applicationFormValidatedPdf.get().getId());
-            try {
-                tmcClient.sendPDFToTMC(policy, applicationFormValidatedDocument.getContent(), APPLICATION_FORM);
-            } catch (ElifeException e) {
-                logger.error("Unable to send validated application Form to TMC on policy [" + policy.getPolicyId() + "].", e);
-            }
-        } else {
-            throw new ElifeException("Can't find validated application form for the policy [" + policy.getPolicyId() + "]");
+        DocumentDownload applicationFormValidatedDocument = documentService.downloadDocument(applicationFormValidatedPdf.get().getId());
+        try {
+            tmcClient.sendPDFToTMC(policy, applicationFormValidatedDocument.getContent(), APPLICATION_FORM);
+        } catch (ElifeException e) {
+            logger.error("Unable to send validated application Form to TMC on policy [" + policy.getPolicyId() + "].", e);
         }
-
-        policy.setStatus(VALIDATED);
-        policyRepository.save(policy);
     }
 
     public void sendNotificationsWhenUserNotRespondingToCalls(Policy policy) throws IOException, MessagingException {
