@@ -1,7 +1,7 @@
 package th.co.krungthaiaxa.api.elife.products;
 
-import th.co.krungthaiaxa.api.elife.model.*;
 import th.co.krungthaiaxa.api.elife.exception.PolicyValidationException;
+import th.co.krungthaiaxa.api.elife.model.*;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 
 import java.time.LocalDate;
@@ -12,6 +12,9 @@ import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
+import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.*;
+import static th.co.krungthaiaxa.api.elife.exception.PolicyValidationException.*;
+import static th.co.krungthaiaxa.api.elife.exception.QuoteCalculationException.*;
 
 public class ProductUtils {
     public static Function<PeriodicityCode, Double> modalFactor = periodicityCode -> {

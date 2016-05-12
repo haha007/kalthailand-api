@@ -13,12 +13,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.elife.model.*;
-import th.co.krungthaiaxa.api.elife.model.enums.GenderCode;
-import th.co.krungthaiaxa.api.elife.model.enums.RegistrationTypeName;
+import th.co.krungthaiaxa.api.elife.model.enums.*;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
-import th.co.krungthaiaxa.api.elife.model.enums.MaritalStatus;
-import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
-import th.co.krungthaiaxa.api.elife.model.enums.ProductIFinePackage;
 
 import javax.imageio.ImageIO;
 import javax.inject.Inject;
@@ -35,6 +31,8 @@ import java.util.List;
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static java.util.stream.Collectors.joining;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+import static th.co.krungthaiaxa.api.elife.model.enums.DividendOption.*;
+import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.*;
 
 @Service
 public class ApplicationFormService {

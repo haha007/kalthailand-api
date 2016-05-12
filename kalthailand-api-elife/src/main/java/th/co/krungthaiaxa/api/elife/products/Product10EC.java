@@ -15,6 +15,7 @@ import java.util.function.Function;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
+import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.*;
 
 public class Product10EC implements Product {
     public final static int DURATION_COVERAGE_IN_YEAR = 10;

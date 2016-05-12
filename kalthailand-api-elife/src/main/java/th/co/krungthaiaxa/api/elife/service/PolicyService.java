@@ -8,17 +8,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import th.co.krungthaiaxa.api.elife.data.PolicyNumber;
 import th.co.krungthaiaxa.api.elife.exception.ElifeException;
 import th.co.krungthaiaxa.api.elife.exception.PolicyValidationException;
 import th.co.krungthaiaxa.api.elife.model.*;
-import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
-import th.co.krungthaiaxa.api.elife.model.enums.RegistrationTypeName;
-import th.co.krungthaiaxa.api.elife.model.enums.SuccessErrorStatus;
-import th.co.krungthaiaxa.api.elife.products.Product;
-import th.co.krungthaiaxa.api.elife.repository.*;
-import th.co.krungthaiaxa.api.elife.data.PolicyNumber;
+import th.co.krungthaiaxa.api.elife.model.enums.*;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayResponse;
+import th.co.krungthaiaxa.api.elife.products.Product;
 import th.co.krungthaiaxa.api.elife.products.ProductFactory;
+import th.co.krungthaiaxa.api.elife.repository.*;
 import th.co.krungthaiaxa.api.elife.tmc.TMCClient;
 
 import javax.inject.Inject;
@@ -35,6 +33,9 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.isTrue;
 import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.notNull;
+import static th.co.krungthaiaxa.api.elife.model.enums.DocumentType.*;
+import static th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus.*;
+import static th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus.*;
 
 @Service
 public class PolicyService {

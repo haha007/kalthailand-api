@@ -19,6 +19,7 @@ import java.util.Optional;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static th.co.krungthaiaxa.api.elife.model.error.ErrorCode.*;
 import static th.co.krungthaiaxa.api.elife.utils.JsonUtil.getJson;
 
 @RestController

@@ -17,6 +17,7 @@ import java.util.Optional;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
+import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.*;
 
 @Component
 public class ProductISafe implements Product {
