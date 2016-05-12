@@ -90,7 +90,7 @@ public class Product10EC implements Product {
                 .findFirst();
 
         // Do we have enough to calculate anything
-        if (!ProductUtils.hasEnoughTocalculateFor10ECOrISafe(productQuotation)) {
+        if (!ProductUtils.hasEnoughTocalculateFor10ECOrISave(productQuotation)) {
             // we need to delete what might have been calculated before
             resetCalculatedStuff(quote, has10ECCoverage);
             return;
@@ -156,7 +156,7 @@ public class Product10EC implements Product {
         premiumsData.getProduct10ECPremium().setYearlyCashBacksMaximumBenefit(calculateDatedAmount(quote, 45, maximumExtraDvdRate));
 
         // calculate tax deduction
-        premiumsData.getProduct10ECPremium().setYearlyTaxDeduction(ProductUtils.calculateTaxReturnFor10ECOrISafe(quote, PRODUCT_10_EC_CURRENCY));
+        premiumsData.getProduct10ECPremium().setYearlyTaxDeduction(ProductUtils.calculateTaxReturnFor10ECOrISave(quote, PRODUCT_10_EC_CURRENCY));
 
         if (!has10ECCoverage.isPresent()) {
             Coverage coverage = new Coverage();

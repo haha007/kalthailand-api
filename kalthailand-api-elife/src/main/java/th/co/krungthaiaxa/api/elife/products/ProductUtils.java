@@ -197,7 +197,7 @@ public class ProductUtils {
         return ((Long) ChronoUnit.YEARS.between(birthDate, LocalDate.now())).intValue();
     }
 
-    public static Amount calculateTaxReturnFor10ECOrISafe(Quote quote, String currencyCode) {
+    public static Amount calculateTaxReturnFor10ECOrISave(Quote quote, String currencyCode) {
         // (min(100000, (premium * tax rate / 100 * numberOfPayments)
         Double premium = quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue();
         Integer taxRate = quote.getInsureds().get(0).getDeclaredTaxPercentAtSubscription();
@@ -207,7 +207,7 @@ public class ProductUtils {
         return amount(Math.min(100000.0, Math.round(premium * taxRate / 100 * nbOfPaymentsPerYear)), currencyCode);
     }
 
-    public static boolean hasEnoughTocalculateFor10ECOrISafe(ProductQuotation productQuotation) {
+    public static boolean hasEnoughTocalculateFor10ECOrISave(ProductQuotation productQuotation) {
         // Do we have a birth date to calculate the age of insured
         boolean hasAnyDateOfBirth = productQuotation.getDateOfBirth() != null;
         if (!hasAnyDateOfBirth) {

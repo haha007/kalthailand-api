@@ -219,8 +219,8 @@ public class TestUtil {
         return new ProductIFine();
     }
 
-    public static ProductISafe productISafe() {
-        return new ProductISafe();
+    public static ProductISave productISave() {
+        return new ProductISave();
     }
 
     public static CoverageBeneficiary beneficiary(Double benefitPercent) {

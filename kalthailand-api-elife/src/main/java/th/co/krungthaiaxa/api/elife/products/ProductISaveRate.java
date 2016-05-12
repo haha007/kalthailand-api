@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.List;
 
 @Document
-public class ProductISafeRate {
+public class ProductISaveRate {
     @Id
     private String id;
     @Indexed
