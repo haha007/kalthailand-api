@@ -206,7 +206,7 @@
                 <configuration>
                     <schemaLanguage>WSDL</schemaLanguage>
                     <generateDirectory>${basedir}/target/generated-sources</generateDirectory>
-                    <generatePackage>th.co.krungthaiaxa.elife.api.tmc.wsdl</generatePackage>
+                    <generatePackage>th.co.krungthaiaxa.api.elife.tmc.wsdl</generatePackage>
                     <schemas>
                         <schema>
                             <url>src/main/resources/wsdl/tmc_soap_service.wsdl</url>
