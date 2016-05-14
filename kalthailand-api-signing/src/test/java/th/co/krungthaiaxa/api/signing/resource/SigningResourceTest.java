@@ -15,7 +15,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.client.RestTemplate;
-import th.co.krungthaiaxa.api.KalthailandApiSigningApplication;
+import th.co.krungthaiaxa.api.signing.KALApiSigning;
 import th.co.krungthaiaxa.api.signing.TestUtil;
 import th.co.krungthaiaxa.api.signing.model.Error;
 import th.co.krungthaiaxa.api.signing.model.ErrorCode;
@@ -31,7 +31,7 @@ import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = KalthailandApiSigningApplication.class)
+@SpringApplicationConfiguration(classes = KALApiSigning.class)
 @WebAppConfiguration
 @ActiveProfiles("test")
 @IntegrationTest({"server.port=0"})

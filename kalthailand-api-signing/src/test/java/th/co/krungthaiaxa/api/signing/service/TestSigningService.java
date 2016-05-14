@@ -8,7 +8,7 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import th.co.krungthaiaxa.api.KalthailandApiSigningApplication;
+import th.co.krungthaiaxa.api.signing.KALApiSigning;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -20,7 +20,7 @@ import java.security.GeneralSecurityException;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = KalthailandApiSigningApplication.class)
+@SpringApplicationConfiguration(classes = KALApiSigning.class)
 @WebAppConfiguration
 @ActiveProfiles("test")
 public class TestSigningService {
