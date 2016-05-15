@@ -15,18 +15,15 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.Optional;
 
 public class JwtAuthenticationTokenFilter extends UsernamePasswordAuthenticationFilter {
-
     @Autowired
     private UserDetailsService userDetailsService;
-
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
-
     @Value("${jwt.header}")
     private String tokenHeader;
-
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -35,10 +32,10 @@ public class JwtAuthenticationTokenFilter extends UsernamePasswordAuthentication
         String authToken = httpRequest.getHeader(this.tokenHeader);
         // authToken.startsWith("Bearer ")
         // String authToken = header.substring(7);
-        String username = jwtTokenUtil.getUsernameFromToken(authToken);
+        Optional<String> username = jwtTokenUtil.getUsernameFromToken(authToken);
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+        if (username.isPresent() && SecurityContextHolder.getContext().getAuthentication() == null) {
+            UserDetails userDetails = this.userDetailsService.loadUserByUsername(username.get());
             if (jwtTokenUtil.validateToken(authToken, userDetails)) {
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpRequest));
