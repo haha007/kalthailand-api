@@ -1,19 +1,44 @@
 package th.co.krungthaiaxa.api.signing.model;
 
 public class Error {
+    private String timestamp;
+    private String status;
+    private String path;
     private String code;
     private String userMessage;
     private String developerMessage;
 
-    // Used by Jackson
     public Error() {
     }
 
-    // Visibility has to be package so only ErrorCode can create Error instances
     Error(String code, String userMessage, String developerMessage) {
         this.code = code;
         this.userMessage = userMessage;
         this.developerMessage = developerMessage;
+    }
+
+    public String getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(String timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 
     public String getCode() {

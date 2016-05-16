@@ -1,37 +1,41 @@
 package th.co.krungthaiaxa.api.signing;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import th.co.krungthaiaxa.api.signing.filter.KalApiTokenFilter;
+import th.co.krungthaiaxa.api.signing.filter.UnauthorizedHandler;
+
+import javax.inject.Inject;
 
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
-
-    @Value("${security.api.user.name}")
-    private String apiUserName;
-    @Value("${security.api.user.password}")
-    private String apiUserPassword;
-
-    @Override
-    public void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication()
-                .withUser(apiUserName).password(apiUserPassword).roles("UI");
-    }
+    @Inject
+    private UnauthorizedHandler unauthorizedHandler;
+    @Inject
+    private KalApiTokenFilter kalApiTokenFilter;
 
     @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http
-            .httpBasic()
-            .and().authorizeRequests()
-                // USER rights
-                .antMatchers(HttpMethod.GET, "/**").authenticated()
-                .antMatchers(HttpMethod.POST, "/**").authenticated()
-                .antMatchers(HttpMethod.PUT, "/**").authenticated()
-            .and().csrf().disable();
+    protected void configure(HttpSecurity httpSecurity) throws Exception {
+        httpSecurity
+                // we don't need CSRF because our token is invulnerable
+                .csrf().disable()
+                .exceptionHandling().authenticationEntryPoint(unauthorizedHandler)
+                .and()
+                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                // All requests should be authorized since validation will be done in filter using token
+                .and()
+                    .authorizeRequests()
+                    .anyRequest().permitAll();
+
+        // Custom filter to check for KAL API token
+        httpSecurity.addFilterBefore(kalApiTokenFilter, UsernamePasswordAuthenticationFilter.class);
+
+        // disable page caching
+        httpSecurity.headers().cacheControl();
     }
 }

@@ -4,7 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.http.HttpEntity;
@@ -31,7 +30,6 @@ import static org.springframework.http.HttpStatus.OK;
 @SpringApplicationConfiguration(classes = KALApiAuth.class)
 @WebAppConfiguration
 @ActiveProfiles("test")
-@IntegrationTest({"server.port=0"})
 public class AuthResourceTest {
     @Value("${kal.api.user.1.name}")
     private String userName1;
@@ -41,8 +39,6 @@ public class AuthResourceTest {
     private String userName2;
     @Value("${kal.api.user.2.password}")
     private String userPassword2;
-    @Value("${local.server.port}")
-    private int port;
     @Value("${jwt.header}")
     private String tokenHeader;
 
@@ -58,7 +54,7 @@ public class AuthResourceTest {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
 
-        URI authURI = new URI("http://localhost:" + port + "/auth");
+        URI authURI = new URI("http://localhost:8090/auth");
         UriComponentsBuilder authURIBuilder = UriComponentsBuilder.fromUri(authURI)
                 .queryParam("userName", userName1)
                 .queryParam("password", userPassword1);
@@ -73,7 +69,7 @@ public class AuthResourceTest {
         HttpHeaders authURIHeaders = new HttpHeaders();
         authURIHeaders.add("Content-Type", "application/json");
 
-        URI authURI = new URI("http://localhost:" + port + "/auth");
+        URI authURI = new URI("http://localhost:8090/auth");
         UriComponentsBuilder authURIBuilder = UriComponentsBuilder.fromUri(authURI)
                 .queryParam("userName", userName1)
                 .queryParam("password", userPassword1);
@@ -83,7 +79,7 @@ public class AuthResourceTest {
         validateRoleHeaders.add("Content-Type", "application/json");
         validateRoleHeaders.add(tokenHeader, authResponse.getBody());
 
-        URI validateRoleURI = new URI("http://localhost:" + port + "/auth/validate/ROLE1");
+        URI validateRoleURI = new URI("http://localhost:8090/auth/validate/ROLE1");
         UriComponentsBuilder validateRoleURIBuilder = UriComponentsBuilder.fromUri(validateRoleURI);
         ResponseEntity<String> validateRoleURIResponse = template.exchange(validateRoleURIBuilder.toUriString(), GET, new HttpEntity<>(validateRoleHeaders), String.class);
 
@@ -95,7 +91,7 @@ public class AuthResourceTest {
         HttpHeaders authURIHeaders = new HttpHeaders();
         authURIHeaders.add("Content-Type", "application/json");
 
-        URI authURI = new URI("http://localhost:" + port + "/auth");
+        URI authURI = new URI("http://localhost:8090/auth");
         UriComponentsBuilder authURIBuilder = UriComponentsBuilder.fromUri(authURI)
                 .queryParam("userName", userName2)
                 .queryParam("password", userPassword2);
@@ -105,10 +101,10 @@ public class AuthResourceTest {
         validateRoleHeaders.add("Content-Type", "application/json");
         validateRoleHeaders.add(tokenHeader, authResponse.getBody());
 
-        URI validateRole2URI = new URI("http://localhost:" + port + "/auth/validate/ROLE2");
+        URI validateRole2URI = new URI("http://localhost:8090/auth/validate/ROLE2");
         UriComponentsBuilder validateRole2URIBuilder = UriComponentsBuilder.fromUri(validateRole2URI);
         ResponseEntity<String> validateRole2URIResponse = template.exchange(validateRole2URIBuilder.toUriString(), GET, new HttpEntity<>(validateRoleHeaders), String.class);
-        URI validateRole3URI = new URI("http://localhost:" + port + "/auth/validate/ROLE3");
+        URI validateRole3URI = new URI("http://localhost:8090/auth/validate/ROLE3");
         UriComponentsBuilder validateRole3URIBuilder = UriComponentsBuilder.fromUri(validateRole3URI);
         ResponseEntity<String> validateRole3URIResponse = template.exchange(validateRole3URIBuilder.toUriString(), GET, new HttpEntity<>(validateRoleHeaders), String.class);
 
@@ -121,7 +117,7 @@ public class AuthResourceTest {
         HttpHeaders authURIHeaders = new HttpHeaders();
         authURIHeaders.add("Content-Type", "application/json");
 
-        URI authURI = new URI("http://localhost:" + port + "/auth");
+        URI authURI = new URI("http://localhost:8090/auth");
         UriComponentsBuilder authURIBuilder = UriComponentsBuilder.fromUri(authURI)
                 .queryParam("userName", userName1)
                 .queryParam("password", userPassword1);
@@ -131,7 +127,7 @@ public class AuthResourceTest {
         validateRole1Headers.add("Content-Type", "application/json");
         validateRole1Headers.add(tokenHeader, authResponse.getBody());
 
-        URI validateRole1URI = new URI("http://localhost:" + port + "/auth/validate/ROLE2");
+        URI validateRole1URI = new URI("http://localhost:8090/auth/validate/ROLE2");
         UriComponentsBuilder validateRole1URIBuilder = UriComponentsBuilder.fromUri(validateRole1URI);
         ResponseEntity<String> validateRole1URIResponse = template.exchange(validateRole1URIBuilder.toUriString(), GET, new HttpEntity<>(validateRole1Headers), String.class);
 

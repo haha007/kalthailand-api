@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -22,8 +21,12 @@ import java.util.Optional;
 
 import static org.springframework.http.HttpStatus.NOT_ACCEPTABLE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.ResponseEntity.badRequest;
+import static org.springframework.http.ResponseEntity.ok;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
+import static th.co.krungthaiaxa.api.auth.model.ErrorCode.*;
+import static th.co.krungthaiaxa.api.auth.utils.JsonUtil.getJson;
 
 @RestController
 public class AuthResource {
@@ -41,7 +44,7 @@ public class AuthResource {
     private UserDetailsService userDetailsService;
 
     @RequestMapping(value = "/auth", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE, method = POST)
-    public ResponseEntity<?> createAuthenticationToken(@RequestParam String userName, @RequestParam String password) throws AuthenticationException {
+    public ResponseEntity<?> createAuthenticationToken(@RequestParam String userName, @RequestParam String password) {
         // Perform the security
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
                 userName,
@@ -54,41 +57,25 @@ public class AuthResource {
         final String token = jwtTokenUtil.generateToken(userDetails);
 
         // Return the token
-        return ResponseEntity.ok(token);
-    }
-
-    @RequestMapping(value = "/auth/refresh", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE, method = GET)
-    public ResponseEntity<?> refreshAndGetAuthenticationToken(HttpServletRequest request) {
-        String token = request.getHeader(tokenHeader);
-        Optional<String> username = jwtTokenUtil.getUsernameFromToken(token);
-        if (!username.isPresent()) {
-            return ResponseEntity.badRequest().body("Invalid token, unable to get user name");
-        }
-
-        if (!jwtTokenUtil.canTokenBeRefreshed(token)) {
-            return ResponseEntity.badRequest().body(null);
-        }
-
-        Optional<String> refreshedToken = jwtTokenUtil.refreshToken(token);
-        if (!refreshedToken.isPresent()) {
-            return ResponseEntity.badRequest().body("Invalid refreshed token");
-        }
-
-        return ResponseEntity.ok(refreshedToken);
+        return ok(token);
     }
 
     @RequestMapping(value = "/auth/validate/{roleName}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE, method = GET)
     public ResponseEntity<?> validateToken(@PathVariable String roleName, HttpServletRequest request) {
         String token = request.getHeader(tokenHeader);
+        if (jwtTokenUtil.isTokenExpired(token)) {
+            return badRequest().body(getJson(TOKEN_EXPIRED));
+        }
+
         Optional<List> roles = jwtTokenUtil.getRolesFromToken(token);
         if (!roles.isPresent()) {
-            return ResponseEntity.badRequest().body("Invalid token, unable to get roles");
+            return badRequest().body(getJson(NO_ROLE));
         }
 
         if (!roles.get().contains(roleName)) {
-            return new ResponseEntity<>(null, NOT_ACCEPTABLE);
+            return new ResponseEntity<>(ROLE_NOT_ALLOWED.apply(roleName), NOT_ACCEPTABLE);
         } else {
-            return ResponseEntity.ok(null);
+            return ok(null);
         }
     }
 

@@ -3,8 +3,9 @@ package th.co.krungthaiaxa.api.auth.model;
 import java.util.function.Function;
 
 public class ErrorCode {
-    public static final Function<String, Error> PDF_INVALID = msg -> new Error("0001", "Received PDF is not valid", "Received PDF is not valid. Error is:[" + msg + "].");
-    public static final Error NOT_BASE_64_ENCODED = new Error("0002", "The document is not Base 64 encoded.", "The document is not Base 64 encoded.");
-    public static final Function<String, Error> UNABLE_TO_SIGN = msg -> new Error("0003", "Unable to sign the document", "Unable to sign the document. Error is:[" + msg + "].");
+    public static final Error GENERIC_NOT_AUTHORIZED = new Error("0001", "You are not authorized to use this API.", "You are not authorized to use this API.");
+    public static final Error TOKEN_EXPIRED = new Error("0002", "Expired token.", "Expired token.");
+    public static final Error NO_ROLE = new Error("0003", "No roles in received token.", "No roles in received token.");
+    public static final Function<String, Error> ROLE_NOT_ALLOWED = msg -> new Error("0003", "Role is not allowed.", "Role [" + msg + "] is not allowed.");
 
 }

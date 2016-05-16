@@ -50,9 +50,8 @@ public class SigningResource {
     @ApiResponses({
             @ApiResponse(code = 406, message = "If given document is not Base 64 encoded or not a valid PDF", response = Error.class)
     })
-
     @ResponseBody
-    public void downloadDocument(@RequestBody String encodedBase64Pdf, HttpServletResponse response) {
+    public void signDocument(@RequestBody String encodedBase64Pdf, HttpServletResponse response) {
         byte[] decodedBase64Pdf;
         try {
             decodedBase64Pdf = Base64.getDecoder().decode(encodedBase64Pdf);

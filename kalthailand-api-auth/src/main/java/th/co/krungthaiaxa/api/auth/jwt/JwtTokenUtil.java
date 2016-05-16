@@ -38,6 +38,36 @@ public class JwtTokenUtil implements Serializable {
     @Value("${jwt.expiration}")
     private Long expiration;
 
+    public Optional<List> getRolesFromToken(String token) {
+        Optional<Claims> claims = getClaimsFromToken(token);
+        if (!claims.isPresent()) {
+            return Optional.empty();
+        }
+        return Optional.of((List) claims.get().get(CLAIM_KEY_ROLE));
+    }
+
+    public String generateToken(UserDetails userDetails) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put(CLAIM_KEY_USERNAME, userDetails.getUsername());
+        claims.put(CLAIM_KEY_CREATED, LocalDateTime.now().format(ISO_DATE_TIME));
+        claims.put(CLAIM_KEY_ROLE, userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(toList()));
+        return generateToken(claims);
+    }
+
+    public Boolean isTokenExpired(String token) {
+        Optional<Claims> claims = getClaimsFromToken(token);
+        if (!claims.isPresent()) {
+            return TRUE;
+        }
+
+        Optional<LocalDateTime> expirationDate = getExpirationDateFromToken(token);
+        if (!expirationDate.isPresent()) {
+            return TRUE;
+        }
+
+        return expirationDate.get().isBefore(LocalDateTime.now());
+    }
+
     public Optional<String> getUsernameFromToken(String token) {
         Optional<Claims> claims = getClaimsFromToken(token);
         if (!claims.isPresent()) {
@@ -46,7 +76,21 @@ public class JwtTokenUtil implements Serializable {
         return Optional.of(claims.get().getSubject());
     }
 
-    public Optional<LocalDateTime> getCreatedDateFromToken(String token) {
+    public Boolean validateToken(String token, UserDetails userDetails) {
+        Optional<LocalDateTime> creationDate = getCreatedDateFromToken(token);
+        if (!creationDate.isPresent()) {
+            return FALSE;
+        }
+        Optional<String> userName = getUsernameFromToken(token);
+        if (!userName.isPresent()) {
+            return FALSE;
+        }
+
+        JwtUser user = (JwtUser) userDetails;
+        return userName.get().equals(user.getUsername()) && !isTokenExpired(token);
+    }
+
+    private Optional<LocalDateTime> getCreatedDateFromToken(String token) {
         Optional<Claims> claims = getClaimsFromToken(token);
         if (!claims.isPresent()) {
             return Optional.empty();
@@ -54,21 +98,13 @@ public class JwtTokenUtil implements Serializable {
         return Optional.of(LocalDateTime.from(ISO_DATE_TIME.parse((String) claims.get().get(CLAIM_KEY_CREATED))));
     }
 
-    public Optional<LocalDateTime> getExpirationDateFromToken(String token) {
+    private Optional<LocalDateTime> getExpirationDateFromToken(String token) {
         Optional<Claims> claims = getClaimsFromToken(token);
         if (!claims.isPresent()) {
             return Optional.empty();
         }
         LocalDateTime expiration = Instant.ofEpochMilli(claims.get().getExpiration().getTime()).atZone(ZoneId.systemDefault()).toLocalDateTime();
         return Optional.of(expiration);
-    }
-
-    public Optional<List> getRolesFromToken(String token) {
-        Optional<Claims> claims = getClaimsFromToken(token);
-        if (!claims.isPresent()) {
-            return Optional.empty();
-        }
-        return Optional.of((List) claims.get().get(CLAIM_KEY_ROLE));
     }
 
     private Optional<Claims> getClaimsFromToken(String token) {
@@ -88,22 +124,6 @@ public class JwtTokenUtil implements Serializable {
         return LocalDateTime.now().plus(expiration * 1000, ChronoUnit.MILLIS);
     }
 
-    private Boolean isTokenExpired(String token) {
-        Optional<Claims> claims = getClaimsFromToken(token);
-        if (!claims.isPresent()) {
-            return TRUE;
-        }
-        return getExpirationDateFromToken(token).get().isBefore(LocalDateTime.now());
-    }
-
-    public String generateToken(UserDetails userDetails) {
-        Map<String, Object> claims = new HashMap<>();
-        claims.put(CLAIM_KEY_USERNAME, userDetails.getUsername());
-        claims.put(CLAIM_KEY_CREATED, LocalDateTime.now().format(ISO_DATE_TIME));
-        claims.put(CLAIM_KEY_ROLE, userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(toList()));
-        return generateToken(claims);
-    }
-
     private String generateToken(Map<String, Object> claims) {
         return Jwts.builder()
                 .setClaims(claims)
@@ -112,31 +132,4 @@ public class JwtTokenUtil implements Serializable {
                 .compact();
     }
 
-    public Boolean canTokenBeRefreshed(String token) {
-        return !isTokenExpired(token);
-    }
-
-    public Optional<String> refreshToken(String token) {
-        Optional<Claims> claims = getClaimsFromToken(token);
-        if (!claims.isPresent()) {
-            return Optional.empty();
-        }
-
-        claims.get().put(CLAIM_KEY_CREATED, LocalDateTime.now().format(ISO_DATE_TIME));
-        return Optional.of(generateToken(claims.get()));
-    }
-
-    public Boolean validateToken(String token, UserDetails userDetails) {
-        Optional<LocalDateTime> creationDate = getCreatedDateFromToken(token);
-        if (!creationDate.isPresent()) {
-            return FALSE;
-        }
-        Optional<String> userName = getUsernameFromToken(token);
-        if (!userName.isPresent()) {
-            return FALSE;
-        }
-
-        JwtUser user = (JwtUser) userDetails;
-        return userName.get().equals(user.getUsername()) && !isTokenExpired(token);
-    }
 }

@@ -27,7 +27,6 @@ public class JwtAuthenticationTokenFilter extends UsernamePasswordAuthentication
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         String authToken = httpRequest.getHeader(this.tokenHeader);
         // authToken.startsWith("Bearer ")
