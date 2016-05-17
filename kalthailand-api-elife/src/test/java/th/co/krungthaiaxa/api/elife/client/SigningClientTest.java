@@ -50,7 +50,7 @@ public class SigningClientTest {
         documentService.generateNotValidatedPolicyDocuments(policy);
         Optional<Document> applicationFormPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(APPLICATION_FORM)).findFirst();
         DocumentDownload documentDownload = documentService.downloadDocument(applicationFormPdf.get().getId());
-        String encodedSignedDocument = signingClient.getEncodedSignedPdfDocument(documentDownload.getContent());
+        byte[] encodedSignedDocument = signingClient.getEncodedSignedPdfDocument(documentDownload.getContent().getBytes());
         assertThat(new PdfReader(Base64.getDecoder().decode(encodedSignedDocument))).isNotNull();
 
         FileUtils.writeByteArrayToFile(new File("target/signedApplicationFormThroughAPI.pdf"), Base64.getDecoder().decode(encodedSignedDocument));

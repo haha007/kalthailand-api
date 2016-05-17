@@ -7,6 +7,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import th.co.krungthaiaxa.api.elife.client.SigningClient;
 import th.co.krungthaiaxa.api.elife.model.DocumentDownload;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
 import th.co.krungthaiaxa.api.elife.repository.DocumentDownloadRepository;
@@ -51,18 +52,20 @@ public class DocumentService {
     private final PolicyRepository policyRepository;
     private final ApplicationFormService applicationFormService;
     private final DAFormService daFormService;
+    private final SigningClient signingClient;
 
     @Inject
     public DocumentService(DocumentRepository documentRepository,
                            DocumentDownloadRepository documentDownloadRepository,
                            PolicyRepository policyRepository,
                            ApplicationFormService applicationFormService,
-                           DAFormService daFormService) {
+                           DAFormService daFormService, SigningClient signingClient) {
         this.documentRepository = documentRepository;
         this.documentDownloadRepository = documentDownloadRepository;
         this.policyRepository = policyRepository;
         this.applicationFormService = applicationFormService;
         this.daFormService = daFormService;
+        this.signingClient = signingClient;
     }
 
     public DocumentDownload downloadDocument(String documentId) {
@@ -161,7 +164,11 @@ public class DocumentService {
         Optional<Document> documentPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(ERECEIPT_PDF)).findFirst();
         if (ereceiptImage != null && !documentPdf.isPresent()) {
             try {
-                addDocument(policy, createEreceiptPDF(ereceiptImage), "application/pdf", ERECEIPT_PDF);
+                byte[] decodedNonSignedPdf =  createEreceiptPDF(ereceiptImage);
+                byte[] encodedNonSignedPdf =  Base64.getEncoder().encode(decodedNonSignedPdf);
+                byte[] encodedSignedPdf = signingClient.getEncodedSignedPdfDocument(encodedNonSignedPdf);
+                byte[] decodedSignedPdf = Base64.getDecoder().decode(encodedSignedPdf);
+                addDocument(policy, decodedSignedPdf, "application/pdf", ERECEIPT_PDF);
             } catch (DocumentException | IOException e) {
                 logger.error("PDF Ereceipt for Policy [" + policy.getPolicyId() + "] has not been generated.", e);
             }

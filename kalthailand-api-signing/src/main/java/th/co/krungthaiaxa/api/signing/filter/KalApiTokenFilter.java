@@ -56,11 +56,11 @@ public class KalApiTokenFilter implements Filter {
         validateRoleHeaders.add("Content-Type", "application/json");
         validateRoleHeaders.add(tokenHeader, authToken);
         UriComponentsBuilder validateRoleURIBuilder = UriComponentsBuilder.fromUri(validateRoleURI);
-        ResponseEntity<String> validateRoleURIResponse = null;
+        ResponseEntity<String> validateRoleURIResponse;
         try {
             validateRoleURIResponse = template.exchange(validateRoleURIBuilder.toUriString(), GET, new HttpEntity<>(validateRoleHeaders), String.class);
         } catch (RestClientException e) {
-            throw new IOException("Provided token doesn't give access to API");
+            throw new IOException("Unable to check if current token gives access to API", e);
         }
 
         if (validateRoleURIResponse.getStatusCode().value() != OK.value()) {

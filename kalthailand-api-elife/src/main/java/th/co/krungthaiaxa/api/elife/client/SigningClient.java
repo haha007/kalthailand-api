@@ -11,8 +11,6 @@ import th.co.krungthaiaxa.api.elife.exception.ElifeException;
 
 import javax.inject.Inject;
 
-import java.nio.charset.Charset;
-
 import static org.springframework.http.HttpMethod.POST;
 
 @Service
@@ -26,7 +24,7 @@ public class SigningClient {
     @Inject
     private AuthClient authClient;
 
-    public String getEncodedSignedPdfDocument(String encodedNonSignedPdf) {
+    public byte[] getEncodedSignedPdfDocument(byte[] encodedNonSignedPdf) {
         HttpEntity entity = new HttpEntity<>(encodedNonSignedPdf, authClient.getHeadersWithToken(userName, userPassword));
 
         RestTemplate template = new RestTemplate();
@@ -41,6 +39,6 @@ public class SigningClient {
             throw new ElifeException("Unable to create token. Response is [" + authResponse.getBody() + "]");
         }
 
-        return new String(authResponse.getBody().getBytes(), Charset.forName("UTF-8"));
+        return authResponse.getBody().getBytes();
     }
 }
