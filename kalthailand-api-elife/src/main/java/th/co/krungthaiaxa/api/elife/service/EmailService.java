@@ -167,12 +167,12 @@ public class EmailService {
             sumInsure = money.format(pol.getPremiumsData().getProductIGenPremium().getSumInsured().getValue());
         }
         return emailContent.replace("%FULL_NAME%", person.getGivenName() + " " + person.getSurName())
-                .replace("%POLICY_ID%", pol.getPolicyId()
-                        .replace("%PLAN%", messageSource.getMessage("product.id." + pol.getCommonData().getProductId(), null, thLocale))
-                        .replace("%PAYMENT_YEAR%", String.valueOf(pol.getCommonData().getNbOfYearsOfPremium()))
-                        .replace("%PAYMENT_MODE%", messageSource.getMessage("payment.mode." + pol.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().toString(), null, thLocale))
-                        .replace("%SUM_INSURE%", sumInsure)
-                        .replace("%PREMIUM%", money.format(pol.getPremiumsData().getFinancialScheduler().getModalAmount().getValue())));
+                .replace("%POLICY_ID%", pol.getPolicyId())
+                .replace("%PLAN%", messageSource.getMessage("product.id." + pol.getCommonData().getProductId(), null, thLocale))
+                .replace("%PAYMENT_YEAR%", String.valueOf(pol.getCommonData().getNbOfYearsOfPremium()))
+                .replace("%PAYMENT_MODE%", messageSource.getMessage("payment.mode." + pol.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().toString(), null, thLocale))
+                .replace("%SUM_INSURE%", sumInsure)
+                .replace("%PREMIUM%", money.format(pol.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()));
     }
 
     private String getQuoteiFineEmailContent(Quote quote) throws IOException {
