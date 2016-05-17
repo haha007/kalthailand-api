@@ -18,12 +18,12 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import th.co.krungthaiaxa.api.elife.model.DocumentDownload;
+import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
 import th.co.krungthaiaxa.api.elife.KalApiApplication;
 import th.co.krungthaiaxa.api.elife.model.Document;
-import th.co.krungthaiaxa.api.elife.model.DocumentDownload;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.Quote;
-import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
 
 import javax.inject.Inject;
 import javax.mail.*;
@@ -119,10 +119,9 @@ public class EmailServiceTest {
         quote = quoteService.updateQuote(quote);
         Policy policy = policyService.createPolicy(quote);
 
-        policy.getInsureds().get(0).getPerson().setEmail("santi.lik@krungthai-axa.co.th");
+        policy.getInsureds().get(0).getPerson().setEmail("tossaphol.chi@krungthai-axa.co.th");
 
         emailService.sendPolicyBookedEmail(policy);
-        /*
         emailService.sendUserNotRespondingEmail(policy);
         emailService.sendPhoneNumberIsWrongEmail(policy);
 
@@ -133,13 +132,6 @@ public class EmailServiceTest {
         byte[] bytes = Base64.getDecoder().decode(documentDownload.getContent());
         assertThat(new PdfReader(bytes)).isNotNull();
         emailService.sendEreceiptEmail(policy, Pair.of(bytes, "emailServiceTest-e-receipt-10ec.pdf"));
-        */
-
-        MimeMessage email = greenMail.getReceivedMessages()[0];
-        String bodyAsString = decodeSimpleBody(getBody(email));
-        //System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-        //System.out.println(bodyAsString);
-
     }
 
     @Test

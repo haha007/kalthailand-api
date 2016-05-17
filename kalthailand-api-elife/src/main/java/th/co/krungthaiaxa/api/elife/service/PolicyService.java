@@ -225,11 +225,9 @@ public class PolicyService {
         // Send push notification
         try {
             String pushContent = IOUtils.toString(this.getClass().getResourceAsStream("/pushnotification-content/policy-booked-notification.txt"), Charset.forName("UTF-8"));
-            String sendMsg = pushContent.replace("%POLICY_ID%", policy.getPolicyId());
-            sendMsg = sendMsg.replace("%FULL_NAME%", policy.getInsureds().get(0).getPerson().getGivenName() + " " + policy.getInsureds().get(0).getPerson().getSurName());
-            logger.debug("Send Line Msg :=> " + sendMsg);
             lineService.sendPushNotification(
-                    sendMsg
+                    pushContent.replace("%POLICY_ID%", policy.getPolicyId())
+                            .replace("%FULL_NAME%", policy.getInsureds().get(0).getPerson().getGivenName() + " " + policy.getInsureds().get(0).getPerson().getSurName())
                     , policy.getInsureds().get(0).getPerson().getLineId());
         } catch (IOException e) {
             logger.error(String.format("Unable to send push notification for policy booking on policy [%1$s].", policy.getPolicyId()), e);
