@@ -284,7 +284,7 @@ public class PolicyService {
         // Send SMS
         try {
             String smsContent = IOUtils.toString(this.getClass().getResourceAsStream("/sms-content/policy-purchased-sms.txt"), Charset.forName("UTF-8"));
-            Map<String, String> m = smsApiService.sendConfirmationMessage(policy, smsContent.replace("%POLICY_ID%", policy.getPolicyId()));
+            Map<String, String> m = smsApiService.sendConfirmationMessage(policy, smsContent);
             if (!m.get("STATUS").equals("0")) {
                 logger.error(String.format("SMS for policy validation could not be sent on policy [%1$s].", policy.getPolicyId()));
             }
@@ -295,7 +295,7 @@ public class PolicyService {
         // Send push notification
         try {
             String pushContent = IOUtils.toString(this.getClass().getResourceAsStream("/pushnotification-content/policy-purchased-notification.txt"), Charset.forName("UTF-8"));
-            lineService.sendPushNotification(pushContent.replace("%POLICY_ID%", policy.getPolicyId()), policy.getInsureds().get(0).getPerson().getLineId());
+            lineService.sendPushNotification(pushContent, policy.getInsureds().get(0).getPerson().getLineId());
         } catch (IOException e) {
             logger.error(String.format("Unable to send push notification for policy validation on policy [%1$s].", policy.getPolicyId()), e);
         }

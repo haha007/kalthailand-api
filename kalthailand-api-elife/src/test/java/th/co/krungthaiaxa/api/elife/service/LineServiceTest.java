@@ -53,7 +53,7 @@ public class LineServiceTest {
             lineService.sendPushNotification(pushContent.replace("%POLICY_ID%", "1234321DED"), "u209b3465e2f937b8d18330db0d77e828");
 
             pushContent = IOUtils.toString(this.getClass().getResourceAsStream("/pushnotification-content/policy-purchased-notification.txt"), Charset.forName("UTF-8"));
-            lineService.sendPushNotification(pushContent.replace("%POLICY_ID%", "1234321DED"), "u209b3465e2f937b8d18330db0d77e828");
+            lineService.sendPushNotification(pushContent, "u209b3465e2f937b8d18330db0d77e828");
 
             pushContent = IOUtils.toString(this.getClass().getResourceAsStream("/pushnotification-content/user-not-responging-notification.txt"), Charset.forName("UTF-8"));
             lineService.sendPushNotification(pushContent.replace("%POLICY_ID%", "1234321DED"), "u209b3465e2f937b8d18330db0d77e828");
