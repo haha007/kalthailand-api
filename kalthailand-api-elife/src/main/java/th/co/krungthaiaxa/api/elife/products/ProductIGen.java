@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import th.co.krungthaiaxa.api.elife.exception.PolicyValidationException;
 import th.co.krungthaiaxa.api.elife.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.api.elife.model.*;
-import th.co.krungthaiaxa.api.elife.repository.ProductISaveRateRepository;
+import th.co.krungthaiaxa.api.elife.repository.ProductIGenRateRepository;
 
 import javax.inject.Inject;
 import java.time.LocalDate;
@@ -21,11 +21,11 @@ import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.*;
 import static th.co.krungthaiaxa.api.elife.products.ProductUtils.amountTHB;
 
 @Component
-public class ProductISave implements Product {
+public class ProductIGen implements Product {
     public final static int DURATION_COVERAGE_IN_YEAR = 10;
     public final static int DURATION_PAYMENT_IN_YEAR = 6;
-    public final static String PRODUCT_ISAVE_NAME = "Product iSave";
-    public final static String PRODUCT_ISAVE_CURRENCY = "THB";
+    public final static String PRODUCT_IGEN_NAME = "Product iGen";
+    public final static String PRODUCT_IGEN_CURRENCY = "THB";
     public static final Double SUM_INSURED_MIN = 100000.0;
     public static final Double SUM_INSURED_MAX = 1000000.0;
     public static final Double PREMIUM_MIN = 2682.0;
@@ -34,7 +34,7 @@ public class ProductISave implements Product {
     public static final int MIN_AGE = 20;
 
     @Inject
-    private ProductISaveRateRepository productISaveRateRepository;
+    private ProductIGenRateRepository productIGenRateRepository;
 
     @Override
     public void calculateQuote(Quote quote, ProductQuotation productQuotation)  {
@@ -45,11 +45,11 @@ public class ProductISave implements Product {
         Optional<Coverage> hasIFineCoverage = quote.getCoverages()
                 .stream()
                 .filter(coverage -> coverage.getName() != null)
-                .filter(coverage -> coverage.getName().equalsIgnoreCase(PRODUCT_ISAVE_NAME))
+                .filter(coverage -> coverage.getName().equalsIgnoreCase(PRODUCT_IGEN_NAME))
                 .findFirst();
 
         // Do we have enough to calculate anything
-        if (!ProductUtils.hasEnoughTocalculateFor10ECOrISave(productQuotation)) {
+        if (!ProductUtils.hasEnoughTocalculateFor10ECOrIGen(productQuotation)) {
             // we need to delete what might have been calculated before
             resetCalculatedStuff(quote, hasIFineCoverage);
             return;
@@ -64,11 +64,11 @@ public class ProductISave implements Product {
         insured.getPerson().setGenderCode(productQuotation.getGenderCode());
         insured.setDeclaredTaxPercentAtSubscription(productQuotation.getDeclaredTaxPercentAtSubscription());
         if (productQuotation.getSumInsuredAmount() != null && productQuotation.getSumInsuredAmount().getValue() != null) {
-            quote.getPremiumsData().getProductISavePremium().setSumInsured(amountTHB(productQuotation.getSumInsuredAmount().getValue()));
-            quote.getPremiumsData().getProductISavePremium().setSumInsuredOption(TRUE);
+            quote.getPremiumsData().getProductIGenPremium().setSumInsured(amountTHB(productQuotation.getSumInsuredAmount().getValue()));
+            quote.getPremiumsData().getProductIGenPremium().setSumInsuredOption(TRUE);
         } else {
             quote.getPremiumsData().getFinancialScheduler().setModalAmount(amountTHB(productQuotation.getPremiumAmount().getValue()));
-            quote.getPremiumsData().getProductISavePremium().setSumInsuredOption(FALSE);
+            quote.getPremiumsData().getProductIGenPremium().setSumInsuredOption(FALSE);
         }
 
         // cannot be too young or too old
@@ -81,49 +81,49 @@ public class ProductISave implements Product {
         quote.getPremiumsData().getFinancialScheduler().setEndDate(startDate.plusYears(DURATION_PAYMENT_IN_YEAR));
 
         // get rates from mongoDB
-        ProductISaveRate productISaveRate = productISaveRateRepository.findByGender(insured.getPerson().getGenderCode().name());
-        Double rate = productISaveRate.getRate().get(insured.getAgeAtSubscription() - MIN_AGE);
+        ProductIGenRate productIGenRate = productIGenRateRepository.findByGender(insured.getPerson().getGenderCode().name());
+        Double rate = productIGenRate.getRate().get(insured.getAgeAtSubscription() - MIN_AGE);
 
         PremiumsData premiumsData = quote.getPremiumsData();
         // calculates premium / sum insured
-        if (premiumsData.getProductISavePremium().getSumInsured() != null) {
+        if (premiumsData.getProductIGenPremium().getSumInsured() != null) {
             premiumsData.getFinancialScheduler().setModalAmount(ProductUtils.getPremiumFromSumInsured(
-                    quote.getPremiumsData().getProductISavePremium().getSumInsured(),
+                    quote.getPremiumsData().getProductIGenPremium().getSumInsured(),
                     rate,
                     quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode()));
         } else {
-            premiumsData.getProductISavePremium().setSumInsured(ProductUtils.getSumInsuredFromPremium(
+            premiumsData.getProductIGenPremium().setSumInsured(ProductUtils.getSumInsuredFromPremium(
                     quote.getPremiumsData().getFinancialScheduler().getModalAmount(),
                     rate,
                     quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode()));
         }
 
         // cannot insure too much or not enough
-        checkSumInsured(premiumsData, PRODUCT_ISAVE_CURRENCY, SUM_INSURED_MIN, SUM_INSURED_MAX);
+        checkSumInsured(premiumsData, PRODUCT_IGEN_CURRENCY, SUM_INSURED_MIN, SUM_INSURED_MAX);
         checkPremium(premiumsData);
 
         // calculates yearly cash backs
-        premiumsData.getProductISavePremium().setYearlyCashBacks(calculateDatedAmount(quote, null, productISaveRate.getDvdRate()));
+        premiumsData.getProductIGenPremium().setYearlyCashBacks(calculateDatedAmount(quote, null, productIGenRate.getDvdRate()));
 
         // calculates yearly returns
-        premiumsData.getProductISavePremium().setEndOfContractBenefitsMinimum(calculateDatedAmount(quote, 20, productISaveRate.getDvdRate()));
-        premiumsData.getProductISavePremium().setEndOfContractBenefitsAverage(calculateDatedAmount(quote, 40, productISaveRate.getDvdRate()));
-        premiumsData.getProductISavePremium().setEndOfContractBenefitsMaximum(calculateDatedAmount(quote, 45, productISaveRate.getDvdRate()));
+        premiumsData.getProductIGenPremium().setEndOfContractBenefitsMinimum(calculateDatedAmount(quote, 20, productIGenRate.getDvdRate()));
+        premiumsData.getProductIGenPremium().setEndOfContractBenefitsAverage(calculateDatedAmount(quote, 40, productIGenRate.getDvdRate()));
+        premiumsData.getProductIGenPremium().setEndOfContractBenefitsMaximum(calculateDatedAmount(quote, 45, productIGenRate.getDvdRate()));
 
         // calculates yearly returns
-        premiumsData.getProductISavePremium().setYearlyCashBacksAverageDividende(calculateDatedAmount(quote, null, productISaveRate.getAverageExtraDvdRate()));
-        premiumsData.getProductISavePremium().setYearlyCashBacksMaximumDividende(calculateDatedAmount(quote, null, productISaveRate.getMaximumExtraDvdRate()));
+        premiumsData.getProductIGenPremium().setYearlyCashBacksAverageDividende(calculateDatedAmount(quote, null, productIGenRate.getAverageExtraDvdRate()));
+        premiumsData.getProductIGenPremium().setYearlyCashBacksMaximumDividende(calculateDatedAmount(quote, null, productIGenRate.getMaximumExtraDvdRate()));
 
         // calculates yearly benefits
-        premiumsData.getProductISavePremium().setYearlyCashBacksAverageBenefit(calculateDatedAmount(quote, 40, productISaveRate.getAverageExtraDvdRate()));
-        premiumsData.getProductISavePremium().setYearlyCashBacksMaximumBenefit(calculateDatedAmount(quote, 45, productISaveRate.getMaximumExtraDvdRate()));
+        premiumsData.getProductIGenPremium().setYearlyCashBacksAverageBenefit(calculateDatedAmount(quote, 40, productIGenRate.getAverageExtraDvdRate()));
+        premiumsData.getProductIGenPremium().setYearlyCashBacksMaximumBenefit(calculateDatedAmount(quote, 45, productIGenRate.getMaximumExtraDvdRate()));
 
         // calculate tax deduction
-        premiumsData.getProductISavePremium().setYearlyTaxDeduction(ProductUtils.calculateTaxReturnFor10ECOrISave(quote, PRODUCT_ISAVE_CURRENCY));
+        premiumsData.getProductIGenPremium().setYearlyTaxDeduction(ProductUtils.calculateTaxReturnFor10ECOrIGen(quote, PRODUCT_IGEN_CURRENCY));
 
         if (!hasIFineCoverage.isPresent()) {
             Coverage coverage = new Coverage();
-            coverage.setName(PRODUCT_ISAVE_NAME);
+            coverage.setName(PRODUCT_IGEN_NAME);
             quote.addCoverage(coverage);
         }
     }
@@ -140,7 +140,7 @@ public class ProductISave implements Product {
         // check main insured stuff
         ProductUtils.checkInsuredAge(insured, MIN_AGE, MAX_AGE);
         ProductUtils.checkMainInsured(insured);
-        checkMainInsuredISaveSpecific(insured);
+        checkMainInsuredIGenSpecific(insured);
 
         // Recalculate the quote
         calculateQuote(quote, null);
@@ -152,7 +152,7 @@ public class ProductISave implements Product {
         Coverage coverage = quote.getCoverages().get(0);
 
         ProductUtils.checkBeneficiaries(insured, coverage.getBeneficiaries());
-        checkISavePremiumsData(quote.getPremiumsData(), insured.getStartDate());
+        checkIGenPremiumsData(quote.getPremiumsData(), insured.getStartDate());
 
         // Copy from quote to Policy
         policy.setQuoteId(quote.getQuoteId());
@@ -176,9 +176,9 @@ public class ProductISave implements Product {
         commonData.setMinSumInsured(amountTHB(SUM_INSURED_MIN));
         commonData.setNbOfYearsOfCoverage(DURATION_COVERAGE_IN_YEAR);
         commonData.setNbOfYearsOfPremium(DURATION_PAYMENT_IN_YEAR);
-        commonData.setProductId(ProductType.PRODUCT_ISAVE.getName());
-        commonData.setProductCurrency(PRODUCT_ISAVE_CURRENCY);
-        commonData.setProductName(PRODUCT_ISAVE_NAME);
+        commonData.setProductId(ProductType.PRODUCT_IGEN.getName());
+        commonData.setProductCurrency(PRODUCT_IGEN_CURRENCY);
+        commonData.setProductName(PRODUCT_IGEN_NAME);
         return commonData;
     }
 
@@ -191,8 +191,8 @@ public class ProductISave implements Product {
         }
 
         // get rates from mongoDB
-        ProductISaveRate productISaveRate = productISaveRateRepository.findByGender(productQuotation.getGenderCode().name());
-        Double interestRate = productISaveRate.getRate().get(ProductUtils.getAge(productQuotation.getDateOfBirth()) - MIN_AGE);
+        ProductIGenRate productIGenRate = productIGenRateRepository.findByGender(productQuotation.getGenderCode().name());
+        Double interestRate = productIGenRate.getRate().get(ProductUtils.getAge(productQuotation.getDateOfBirth()) - MIN_AGE);
         Double factor = ProductUtils.modalFactor.apply(productQuotation.getPeriodicityCode());
         productAmounts.setMaxPremium(amountTHB(SUM_INSURED_MAX * factor * interestRate / 1000));
         productAmounts.setMaxSumInsured(amountTHB(SUM_INSURED_MAX));
@@ -206,68 +206,68 @@ public class ProductISave implements Product {
         FinancialScheduler financialScheduler = new FinancialScheduler();
         financialScheduler.setPeriodicity(new Periodicity());
 
-        ProductISavePremium productISavePremium = new ProductISavePremium();
+        ProductIGenPremium productIGenPremium = new ProductIGenPremium();
 
         PremiumsData premiumsData = new PremiumsData();
         premiumsData.setFinancialScheduler(financialScheduler);
-        premiumsData.setProductISavePremium(productISavePremium);
+        premiumsData.setProductIGenPremium(productIGenPremium);
 
         return premiumsData;
     }
 
     private static void resetCalculatedStuff(Quote quote, Optional<Coverage> coverage) {
-        if (quote.getPremiumsData().getProductISavePremium() != null) {
-            quote.getPremiumsData().getProductISavePremium().setYearlyCashBacksAverageBenefit(new ArrayList<>());
-            quote.getPremiumsData().getProductISavePremium().setYearlyCashBacksAverageDividende(new ArrayList<>());
-            quote.getPremiumsData().getProductISavePremium().setEndOfContractBenefitsAverage(new ArrayList<>());
-            quote.getPremiumsData().getProductISavePremium().setYearlyCashBacksMaximumBenefit(new ArrayList<>());
-            quote.getPremiumsData().getProductISavePremium().setYearlyCashBacksMaximumDividende(new ArrayList<>());
-            quote.getPremiumsData().getProductISavePremium().setEndOfContractBenefitsMaximum(new ArrayList<>());
-            quote.getPremiumsData().getProductISavePremium().setEndOfContractBenefitsMinimum(new ArrayList<>());
-            quote.getPremiumsData().getProductISavePremium().setYearlyCashBacks(new ArrayList<>());
-            quote.getPremiumsData().getProductISavePremium().setYearlyTaxDeduction(null);
+        if (quote.getPremiumsData().getProductIGenPremium() != null) {
+            quote.getPremiumsData().getProductIGenPremium().setYearlyCashBacksAverageBenefit(new ArrayList<>());
+            quote.getPremiumsData().getProductIGenPremium().setYearlyCashBacksAverageDividende(new ArrayList<>());
+            quote.getPremiumsData().getProductIGenPremium().setEndOfContractBenefitsAverage(new ArrayList<>());
+            quote.getPremiumsData().getProductIGenPremium().setYearlyCashBacksMaximumBenefit(new ArrayList<>());
+            quote.getPremiumsData().getProductIGenPremium().setYearlyCashBacksMaximumDividende(new ArrayList<>());
+            quote.getPremiumsData().getProductIGenPremium().setEndOfContractBenefitsMaximum(new ArrayList<>());
+            quote.getPremiumsData().getProductIGenPremium().setEndOfContractBenefitsMinimum(new ArrayList<>());
+            quote.getPremiumsData().getProductIGenPremium().setYearlyCashBacks(new ArrayList<>());
+            quote.getPremiumsData().getProductIGenPremium().setYearlyTaxDeduction(null);
         }
         if (coverage.isPresent()) {
             quote.getCoverages().remove(coverage.get());
         }
     }
 
-    public static void checkMainInsuredISaveSpecific(Insured insured) {
+    public static void checkMainInsuredIGenSpecific(Insured insured) {
         notNull(insured.getDeclaredTaxPercentAtSubscription(), PolicyValidationException.mainInsuredWithNoDeclaredTax);
     }
 
     private static void checkSumInsured(PremiumsData premiumsData, String currency, Double sumInsuredMin, Double sumInsuredMax) {
-        if (premiumsData.getProductISavePremium().getSumInsured() == null || premiumsData.getProductISavePremium().getSumInsured().getValue() == null) {
+        if (premiumsData.getProductIGenPremium().getSumInsured() == null || premiumsData.getProductIGenPremium().getSumInsured().getValue() == null) {
             // no amount to check
             return;
         }
-        isEqual(currency, premiumsData.getProductISavePremium().getSumInsured().getCurrencyCode(), QuoteCalculationException.sumInsuredCurrencyException.apply(currency));
-        isFalse(premiumsData.getProductISavePremium().getSumInsured().getValue() > sumInsuredMax, QuoteCalculationException.sumInsuredTooHighException.apply(sumInsuredMax));
-        isFalse(premiumsData.getProductISavePremium().getSumInsured().getValue() < sumInsuredMin, QuoteCalculationException.sumInsuredTooLowException.apply(sumInsuredMin));
+        isEqual(currency, premiumsData.getProductIGenPremium().getSumInsured().getCurrencyCode(), QuoteCalculationException.sumInsuredCurrencyException.apply(currency));
+        isFalse(premiumsData.getProductIGenPremium().getSumInsured().getValue() > sumInsuredMax, QuoteCalculationException.sumInsuredTooHighException.apply(sumInsuredMax));
+        isFalse(premiumsData.getProductIGenPremium().getSumInsured().getValue() < sumInsuredMin, QuoteCalculationException.sumInsuredTooLowException.apply(sumInsuredMin));
     }
 
     private static void checkCommonData(CommonData commonData) {
-        isEqual(commonData.getProductId(), ProductType.PRODUCT_ISAVE.getName(), PolicyValidationException.productISaveExpected);
-        isEqual(commonData.getProductName(), PRODUCT_ISAVE_NAME, PolicyValidationException.productISaveExpected);
+        isEqual(commonData.getProductId(), ProductType.PRODUCT_IGEN.getName(), PolicyValidationException.productIGenExpected);
+        isEqual(commonData.getProductName(), PRODUCT_IGEN_NAME, PolicyValidationException.productIGenExpected);
     }
 
-    private static void checkISavePremiumsData(PremiumsData premiumsData, LocalDate startDate) {
+    private static void checkIGenPremiumsData(PremiumsData premiumsData, LocalDate startDate) {
         notNull(premiumsData, PolicyValidationException.premiumnsDataNone);
-        notNull(premiumsData.getProductISavePremium(), PolicyValidationException.premiumnsDataNone);
-        notNull(premiumsData.getProductISavePremium().getSumInsured(), PolicyValidationException.premiumnsDataNoSumInsured);
-        notNull(premiumsData.getProductISavePremium().getSumInsured().getCurrencyCode(), PolicyValidationException.premiumnsSumInsuredNoCurrency);
-        notNull(premiumsData.getProductISavePremium().getSumInsured().getValue(), PolicyValidationException.premiumnsSumInsuredNoAmount);
+        notNull(premiumsData.getProductIGenPremium(), PolicyValidationException.premiumnsDataNone);
+        notNull(premiumsData.getProductIGenPremium().getSumInsured(), PolicyValidationException.premiumnsDataNoSumInsured);
+        notNull(premiumsData.getProductIGenPremium().getSumInsured().getCurrencyCode(), PolicyValidationException.premiumnsSumInsuredNoCurrency);
+        notNull(premiumsData.getProductIGenPremium().getSumInsured().getValue(), PolicyValidationException.premiumnsSumInsuredNoAmount);
 
-        checkSumInsured(premiumsData, PRODUCT_ISAVE_CURRENCY, SUM_INSURED_MIN, SUM_INSURED_MAX);
-        ProductISavePremium productISavePremium = premiumsData.getProductISavePremium();
-        ProductUtils.checkDatedAmounts(productISavePremium.getEndOfContractBenefitsAverage(), startDate, DURATION_COVERAGE_IN_YEAR);
-        ProductUtils.checkDatedAmounts(productISavePremium.getEndOfContractBenefitsMaximum(), startDate, DURATION_COVERAGE_IN_YEAR);
-        ProductUtils.checkDatedAmounts(productISavePremium.getEndOfContractBenefitsMinimum(), startDate, DURATION_COVERAGE_IN_YEAR);
-        ProductUtils.checkDatedAmounts(productISavePremium.getYearlyCashBacks(), startDate, DURATION_COVERAGE_IN_YEAR);
-        ProductUtils.checkDatedAmounts(productISavePremium.getYearlyCashBacksAverageBenefit(), startDate, DURATION_COVERAGE_IN_YEAR);
-        ProductUtils.checkDatedAmounts(productISavePremium.getYearlyCashBacksAverageDividende(), startDate, DURATION_COVERAGE_IN_YEAR);
-        ProductUtils.checkDatedAmounts(productISavePremium.getYearlyCashBacksMaximumBenefit(), startDate, DURATION_COVERAGE_IN_YEAR);
-        ProductUtils.checkDatedAmounts(productISavePremium.getYearlyCashBacksMaximumDividende(), startDate, DURATION_COVERAGE_IN_YEAR);
+        checkSumInsured(premiumsData, PRODUCT_IGEN_CURRENCY, SUM_INSURED_MIN, SUM_INSURED_MAX);
+        ProductIGenPremium productIGenPremium = premiumsData.getProductIGenPremium();
+        ProductUtils.checkDatedAmounts(productIGenPremium.getEndOfContractBenefitsAverage(), startDate, DURATION_COVERAGE_IN_YEAR);
+        ProductUtils.checkDatedAmounts(productIGenPremium.getEndOfContractBenefitsMaximum(), startDate, DURATION_COVERAGE_IN_YEAR);
+        ProductUtils.checkDatedAmounts(productIGenPremium.getEndOfContractBenefitsMinimum(), startDate, DURATION_COVERAGE_IN_YEAR);
+        ProductUtils.checkDatedAmounts(productIGenPremium.getYearlyCashBacks(), startDate, DURATION_COVERAGE_IN_YEAR);
+        ProductUtils.checkDatedAmounts(productIGenPremium.getYearlyCashBacksAverageBenefit(), startDate, DURATION_COVERAGE_IN_YEAR);
+        ProductUtils.checkDatedAmounts(productIGenPremium.getYearlyCashBacksAverageDividende(), startDate, DURATION_COVERAGE_IN_YEAR);
+        ProductUtils.checkDatedAmounts(productIGenPremium.getYearlyCashBacksMaximumBenefit(), startDate, DURATION_COVERAGE_IN_YEAR);
+        ProductUtils.checkDatedAmounts(productIGenPremium.getYearlyCashBacksMaximumDividende(), startDate, DURATION_COVERAGE_IN_YEAR);
     }
 
     private static void checkPremium(PremiumsData premiumsData) {
@@ -276,14 +276,14 @@ public class ProductISave implements Product {
             return;
         }
 
-        isEqual(PRODUCT_ISAVE_CURRENCY, premiumsData.getFinancialScheduler().getModalAmount().getCurrencyCode(), QuoteCalculationException.premiumCurrencyException.apply(PRODUCT_ISAVE_CURRENCY));
+        isEqual(PRODUCT_IGEN_CURRENCY, premiumsData.getFinancialScheduler().getModalAmount().getCurrencyCode(), QuoteCalculationException.premiumCurrencyException.apply(PRODUCT_IGEN_CURRENCY));
         isFalse(premiumsData.getFinancialScheduler().getModalAmount().getValue() > PREMIUM_MAX, QuoteCalculationException.premiumTooHighException.apply(PREMIUM_MAX));
         isFalse(premiumsData.getFinancialScheduler().getModalAmount().getValue() < PREMIUM_MIN, QuoteCalculationException.premiumTooLowException.apply(PREMIUM_MIN));
     }
 
     private static List<DatedAmount> calculateDatedAmount(Quote quote, Integer percentRate, List<Double> dividends) {
         List<DatedAmount> result = new ArrayList<>();
-        Amount sumInsured = quote.getPremiumsData().getProductISavePremium().getSumInsured();
+        Amount sumInsured = quote.getPremiumsData().getProductIGenPremium().getSumInsured();
         LocalDate startDate = quote.getInsureds().get(0).getStartDate();
         Double latestAmout = 0.0;
         for (int i = 1; i <= DURATION_COVERAGE_IN_YEAR; i++) {

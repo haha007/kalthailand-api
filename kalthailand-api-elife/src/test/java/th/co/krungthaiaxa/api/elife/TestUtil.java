@@ -214,8 +214,8 @@ public class TestUtil {
         return new ProductIFine();
     }
 
-    public static ProductISave productISave() {
-        return new ProductISave();
+    public static ProductIGen productIGen() {
+        return new ProductIGen();
     }
 
     public static CoverageBeneficiary beneficiary(Double benefitPercent) {

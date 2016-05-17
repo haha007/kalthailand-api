@@ -46,8 +46,8 @@ public class ProductFactoryTest {
     }
 
     @Test
-    public void should_return_iSave_product() {
-        Product product = productFactory.getProduct(ProductType.PRODUCT_ISAVE.getName());
-        assertThat(product).isInstanceOf(ProductISave.class);
+    public void should_return_iGen_product() {
+        Product product = productFactory.getProduct(ProductType.PRODUCT_IGEN.getName());
+        assertThat(product).isInstanceOf(ProductIGen.class);
     }
 }

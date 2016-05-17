@@ -13,7 +13,7 @@ public class PremiumsData implements Serializable {
     private Product10ECPremium product10ECPremium;
     private ProductIBeginPremium productIBeginPremium;
     private ProductIFinePremium productIFinePremium;
-    private ProductISavePremium productISavePremium;
+    private ProductIGenPremium productIGenPremium;
 
     @ApiModelProperty(value = "The definition of how the premiums must be paid")
     public FinancialScheduler getFinancialScheduler() {
@@ -51,13 +51,13 @@ public class PremiumsData implements Serializable {
         this.productIFinePremium = productIFinePremium;
     }
 
-    @ApiModelProperty(value = "iSave specific Premiums Data")
-    public ProductISavePremium getProductISavePremium() {
-        return productISavePremium;
+    @ApiModelProperty(value = "iGen specific Premiums Data")
+    public ProductIGenPremium getProductIGenPremium() {
+        return productIGenPremium;
     }
 
-    public void setProductISavePremium(ProductISavePremium productISavePremium) {
-        this.productISavePremium = productISavePremium;
+    public void setProductIGenPremium(ProductIGenPremium productIGenPremium) {
+        this.productIGenPremium = productIGenPremium;
     }
 
     @Override
@@ -69,11 +69,11 @@ public class PremiumsData implements Serializable {
                 Objects.equals(product10ECPremium, that.product10ECPremium) &&
                 Objects.equals(productIBeginPremium, that.productIBeginPremium) &&
                 Objects.equals(productIFinePremium, that.productIFinePremium) &&
-                Objects.equals(productISavePremium, that.productISavePremium);
+                Objects.equals(productIGenPremium, that.productIGenPremium);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(financialScheduler, product10ECPremium, productIBeginPremium, productIFinePremium, productISavePremium);
+        return Objects.hash(financialScheduler, product10ECPremium, productIBeginPremium, productIFinePremium, productIGenPremium);
     }
 }
