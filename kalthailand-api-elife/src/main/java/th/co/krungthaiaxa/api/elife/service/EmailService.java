@@ -8,12 +8,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
+import th.co.krungthaiaxa.api.elife.model.Person;
 import th.co.krungthaiaxa.api.elife.model.Policy;
+import th.co.krungthaiaxa.api.elife.model.ProductIFinePremium;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
 import th.co.krungthaiaxa.api.elife.utils.EmailSender;
-import th.co.krungthaiaxa.api.elife.model.Person;
-import th.co.krungthaiaxa.api.elife.model.ProductIFinePremium;
 
 import javax.inject.Inject;
 import javax.mail.MessagingException;
@@ -157,8 +157,22 @@ public class EmailService {
     private String getBookedEmailContent(Policy pol) throws IOException {
         String emailContent = IOUtils.toString(this.getClass().getResourceAsStream("/email-content/email-booked-policy.txt"), Charset.forName("UTF-8"));
         Person person = pol.getInsureds().get(0).getPerson();
+        DecimalFormat money = new DecimalFormat("#,##0.00");
+        String sumInsure = "";
+        if (pol.getCommonData().getProductId().equals(ProductType.PRODUCT_10_EC.getName())) {
+            sumInsure = money.format(pol.getPremiumsData().getProduct10ECPremium().getSumInsured().getValue());
+        } else if (pol.getCommonData().getProductId().equals(ProductType.PRODUCT_IFINE.getName())) {
+            sumInsure = money.format(pol.getPremiumsData().getProductIFinePremium().getSumInsured().getValue());
+        } else if (pol.getCommonData().getProductId().equals(ProductType.PRODUCT_ISAVE.getName())) {
+            sumInsure = money.format(pol.getPremiumsData().getProductISavePremium().getSumInsured().getValue());
+        }
         return emailContent.replace("%FULL_NAME%", person.getGivenName() + " " + person.getSurName())
-                .replace("%POLICY_ID%", pol.getPolicyId());
+                .replace("%POLICY_ID%", pol.getPolicyId()
+                        .replace("%PLAN%", messageSource.getMessage("product.id." + pol.getCommonData().getProductId(), null, thLocale))
+                        .replace("%PAYMENT_YEAR%", String.valueOf(pol.getCommonData().getNbOfYearsOfPremium()))
+                        .replace("%PAYMENT_MODE%", messageSource.getMessage("payment.mode." + pol.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().toString(), null, thLocale))
+                        .replace("%SUM_INSURE%", sumInsure)
+                        .replace("%PREMIUM%", money.format(pol.getPremiumsData().getFinancialScheduler().getModalAmount().getValue())));
     }
 
     private String getQuoteiFineEmailContent(Quote quote) throws IOException {
