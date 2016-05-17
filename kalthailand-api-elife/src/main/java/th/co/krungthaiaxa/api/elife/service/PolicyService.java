@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import th.co.krungthaiaxa.api.elife.client.SigningClient;
 import th.co.krungthaiaxa.api.elife.data.PolicyNumber;
 import th.co.krungthaiaxa.api.elife.exception.ElifeException;
 import th.co.krungthaiaxa.api.elife.exception.PolicyValidationException;
@@ -56,6 +57,7 @@ public class PolicyService {
     private final DocumentService documentService;
     private final SMSApiService smsApiService;
     private final ProductFactory productFactory;
+    private final SigningClient signingClient;
 
     @Inject
     public PolicyService(TMCClient tmcClient, CDBRepository cdbRepository,
@@ -66,7 +68,7 @@ public class PolicyService {
                          EmailService emailService,
                          LineService lineService, DocumentService documentService,
                          SMSApiService smsApiService,
-                         ProductFactory productFactory) {
+                         ProductFactory productFactory, SigningClient signingClient) {
         this.tmcClient = tmcClient;
         this.cdbRepository = cdbRepository;
         this.paymentRepository = paymentRepository;
@@ -78,6 +80,7 @@ public class PolicyService {
         this.documentService = documentService;
         this.smsApiService = smsApiService;
         this.productFactory = productFactory;
+        this.signingClient = signingClient;
     }
 
     public List<Policy> findAll(Integer startIndex, Integer nbOfRecords) {
@@ -300,9 +303,9 @@ public class PolicyService {
             logger.error(String.format("Unable to send push notification for policy validation on policy [%1$s].", policy.getPolicyId()), e);
         }
 
-        // Send eReceipt to TMC
+        // Sign eReceipt and send it to TMC
         try {
-            tmcClient.sendPDFToTMC(policy, documentDownload.getContent(), ERECEIPT_PDF);
+            tmcClient.sendPDFToTMC(policy, signingClient.getEncodedSignedPdfDocument(documentDownload.getContent()), ERECEIPT_PDF);
         } catch (ElifeException e) {
             logger.error("Unable to send eReceipt to TMC on policy [" + policy.getPolicyId() + "].", e);
         }

@@ -17,20 +17,24 @@ import static org.springframework.http.HttpMethod.POST;
 
 @Service
 public class SigningClient {
+    @Value("${kal.api.auth.admin.username}")
+    private String userName;
+    @Value("${kal.api.auth.admin.password}")
+    private String userPassword;
     @Value("${kal.api.signing.url}")
     private String signingApiURL;
     @Inject
     private AuthClient authClient;
 
     public String getEncodedSignedPdfDocument(String encodedNonSignedPdf) {
-        HttpEntity entity = new HttpEntity<>(encodedNonSignedPdf, authClient.getHeadersWithToken());
+        HttpEntity entity = new HttpEntity<>(encodedNonSignedPdf, authClient.getHeadersWithToken(userName, userPassword));
 
         RestTemplate template = new RestTemplate();
-        ResponseEntity<String> authResponse = null;
+        ResponseEntity<String> authResponse;
         try {
             authResponse = template.exchange(signingApiURL, POST, entity, String.class);
         } catch (RestClientException e) {
-            throw new ElifeException("Unknown error, unable to sign PDF document. Response is [" + authResponse.getBody() + "]", e);
+            throw new ElifeException("Unknown error, unable to sign PDF document.", e);
         }
 
         if (authResponse.getStatusCode() != HttpStatus.OK) {

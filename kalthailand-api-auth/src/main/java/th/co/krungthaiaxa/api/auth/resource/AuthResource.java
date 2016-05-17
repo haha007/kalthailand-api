@@ -9,11 +9,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import th.co.krungthaiaxa.api.auth.jwt.JwtTokenUtil;
+import th.co.krungthaiaxa.api.auth.model.RequestForToken;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -44,16 +42,16 @@ public class AuthResource {
     private UserDetailsService userDetailsService;
 
     @RequestMapping(value = "/auth", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE, method = POST)
-    public ResponseEntity<?> createAuthenticationToken(@RequestParam String userName, @RequestParam String password) {
+    public ResponseEntity<?> createAuthenticationToken(@RequestBody RequestForToken requestForToken) {
         // Perform the security
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
-                userName,
-                password);
+                requestForToken.getUserName(),
+                requestForToken.getPassword());
         final Authentication authentication = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         // Reload password post-security so we can generate token
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(userName);
+        final UserDetails userDetails = userDetailsService.loadUserByUsername(requestForToken.getUserName());
         final String token = jwtTokenUtil.generateToken(userDetails);
 
         // Return the token

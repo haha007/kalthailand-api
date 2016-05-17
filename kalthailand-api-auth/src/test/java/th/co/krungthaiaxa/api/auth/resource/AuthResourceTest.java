@@ -15,6 +15,8 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import th.co.krungthaiaxa.api.auth.KALApiAuth;
+import th.co.krungthaiaxa.api.auth.model.RequestForToken;
+import th.co.krungthaiaxa.api.auth.utils.JsonUtil;
 
 import java.io.IOException;
 import java.net.URI;
@@ -43,10 +45,20 @@ public class AuthResourceTest {
     private String tokenHeader;
 
     private RestTemplate template;
+    private RequestForToken requestUser1Token;
+    private RequestForToken requestUser2Token;
 
     @Before
     public void setUp() throws Exception {
         template = new TestRestTemplate();
+
+        requestUser1Token = new RequestForToken();
+        requestUser1Token.setUserName(userName1);
+        requestUser1Token.setUserName(userPassword1);
+
+        requestUser2Token = new RequestForToken();
+        requestUser2Token.setUserName(userName2);
+        requestUser2Token.setUserName(userPassword2);
     }
 
     @Test
@@ -55,10 +67,8 @@ public class AuthResourceTest {
         headers.add("Content-Type", "application/json");
 
         URI authURI = new URI("http://localhost:8090/auth");
-        UriComponentsBuilder authURIBuilder = UriComponentsBuilder.fromUri(authURI)
-                .queryParam("userName", userName1)
-                .queryParam("password", userPassword1);
-        ResponseEntity<String> authResponse = template.exchange(authURIBuilder.toUriString(), POST, new HttpEntity<>(headers), String.class);
+        UriComponentsBuilder authURIBuilder = UriComponentsBuilder.fromUri(authURI);
+        ResponseEntity<String> authResponse = template.exchange(authURIBuilder.toUriString(), POST, new HttpEntity<>(JsonUtil.getJson(requestUser1Token), headers), String.class);
 
         assertThat(authResponse.getStatusCode().value()).isEqualTo(OK.value());
         assertThat(authResponse.getBody()).isNotNull();
@@ -70,10 +80,8 @@ public class AuthResourceTest {
         authURIHeaders.add("Content-Type", "application/json");
 
         URI authURI = new URI("http://localhost:8090/auth");
-        UriComponentsBuilder authURIBuilder = UriComponentsBuilder.fromUri(authURI)
-                .queryParam("userName", userName1)
-                .queryParam("password", userPassword1);
-        ResponseEntity<String> authResponse = template.exchange(authURIBuilder.toUriString(), POST, new HttpEntity<>(authURIHeaders), String.class);
+        UriComponentsBuilder authURIBuilder = UriComponentsBuilder.fromUri(authURI);
+        ResponseEntity<String> authResponse = template.exchange(authURIBuilder.toUriString(), POST, new HttpEntity<>(JsonUtil.getJson(requestUser1Token), authURIHeaders), String.class);
 
         HttpHeaders validateRoleHeaders = new HttpHeaders();
         validateRoleHeaders.add("Content-Type", "application/json");
@@ -92,10 +100,8 @@ public class AuthResourceTest {
         authURIHeaders.add("Content-Type", "application/json");
 
         URI authURI = new URI("http://localhost:8090/auth");
-        UriComponentsBuilder authURIBuilder = UriComponentsBuilder.fromUri(authURI)
-                .queryParam("userName", userName2)
-                .queryParam("password", userPassword2);
-        ResponseEntity<String> authResponse = template.exchange(authURIBuilder.toUriString(), POST, new HttpEntity<>(authURIHeaders), String.class);
+        UriComponentsBuilder authURIBuilder = UriComponentsBuilder.fromUri(authURI);
+        ResponseEntity<String> authResponse = template.exchange(authURIBuilder.toUriString(), POST, new HttpEntity<>(JsonUtil.getJson(requestUser2Token), authURIHeaders), String.class);
 
         HttpHeaders validateRoleHeaders = new HttpHeaders();
         validateRoleHeaders.add("Content-Type", "application/json");
@@ -118,10 +124,8 @@ public class AuthResourceTest {
         authURIHeaders.add("Content-Type", "application/json");
 
         URI authURI = new URI("http://localhost:8090/auth");
-        UriComponentsBuilder authURIBuilder = UriComponentsBuilder.fromUri(authURI)
-                .queryParam("userName", userName1)
-                .queryParam("password", userPassword1);
-        ResponseEntity<String> authResponse = template.exchange(authURIBuilder.toUriString(), POST, new HttpEntity<>(authURIHeaders), String.class);
+        UriComponentsBuilder authURIBuilder = UriComponentsBuilder.fromUri(authURI);
+        ResponseEntity<String> authResponse = template.exchange(authURIBuilder.toUriString(), POST, new HttpEntity<>(JsonUtil.getJson(requestUser1Token), authURIHeaders), String.class);
 
         HttpHeaders validateRole1Headers = new HttpHeaders();
         validateRole1Headers.add("Content-Type", "application/json");
