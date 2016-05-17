@@ -51,7 +51,7 @@ public class SMSApiServiceTest {
         smsApiService.sendConfirmationMessage(pol, smsContent.replace("%FULL_NAME%", pol.getInsureds().get(0).getPerson().getGivenName() + " " + pol.getInsureds().get(0).getPerson().getSurName()).replace("%POLICY_ID%", pol.getPolicyId()));
 
         smsContent = IOUtils.toString(this.getClass().getResourceAsStream("/sms-content/policy-purchased-sms.txt"), Charset.forName("UTF-8"));
-        smsApiService.sendConfirmationMessage(pol, smsContent));
+        smsApiService.sendConfirmationMessage(pol, smsContent);
 
         smsContent = IOUtils.toString(this.getClass().getResourceAsStream("/sms-content/user-not-responging-sms.txt"), Charset.forName("UTF-8"));
         m = smsApiService.sendConfirmationMessage(pol, smsContent.replace("%POLICY_ID%", pol.getPolicyId()));
