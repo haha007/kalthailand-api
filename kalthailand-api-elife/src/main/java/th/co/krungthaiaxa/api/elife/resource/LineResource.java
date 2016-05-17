@@ -63,7 +63,6 @@ public class LineResource {
     public ResponseEntity<byte[]> decryptLineId(
             @ApiParam(value = "The encrypted line token")
             @RequestParam String value) {
-        logger.info("Going to decrypt [" + value + "]");
         String decrypted;
         try {
             decrypted = Decrypt.decrypt(value, secretkey);

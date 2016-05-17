@@ -63,7 +63,7 @@ public class TMCClient extends WebServiceGatewaySupport {
             logger.info("Sending message to TMC: ");
             logger.info(result.toString());
         } catch (IOException e) {
-            logger.error("Unable to log message sent to TMC");
+            logger.error("Unable to log message sent to TMC", e);
         }
 
         logger.info("Sending document [" + documentType.name() + "] for policy [" + policy.getPolicyId() + "].");
