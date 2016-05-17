@@ -9,7 +9,6 @@ import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
 import org.springframework.ws.soap.client.core.SoapActionCallback;
 import org.springframework.ws.transport.WebServiceMessageSender;
 import org.springframework.ws.transport.http.HttpComponentsMessageSender;
-import org.springframework.xml.transform.StringResult;
 import th.co.krungthaiaxa.api.elife.exception.ElifeException;
 import th.co.krungthaiaxa.api.elife.exception.ExceptionUtils;
 import th.co.krungthaiaxa.api.elife.model.Policy;
@@ -57,15 +56,6 @@ public class TMCClient extends WebServiceGatewaySupport {
         ReceivePDFJSON request = new ReceivePDFJSON();
         request.setStringJSON(new String(JsonUtil.getJson(tmcSendingPDFRequest), Charset.forName("UTF-8")));
 
-        try {
-            StringResult result = new StringResult();
-            getWebServiceTemplate().getMarshaller().marshal(request, result);
-            logger.info("Sending message to TMC: ");
-            logger.info(result.toString());
-        } catch (IOException e) {
-            logger.error("Unable to log message sent to TMC", e);
-        }
-
         logger.info("Sending document [" + documentType.name() + "] for policy [" + policy.getPolicyId() + "].");
         ReceivePDFJSONResponse response = (ReceivePDFJSONResponse) getWebServiceTemplate().marshalSendAndReceive(tmcWebServiceUrl, request, new SoapActionCallback("http://tempuri.org/ReceivePDFJSON"));
         TMCSendingPDFResponse tmcSendingPDFResponse;
@@ -84,7 +74,7 @@ public class TMCClient extends WebServiceGatewaySupport {
 
     private Jaxb2Marshaller marshaller() {
         Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
-        marshaller.setContextPath("th.co.krungthaiaxa.elife.api.tmc.wsdl");
+        marshaller.setContextPath("th.co.krungthaiaxa.api.elife.tmc.wsdl");
         return marshaller;
     }
 
