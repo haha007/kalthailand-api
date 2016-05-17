@@ -29,8 +29,6 @@ public class JwtAuthenticationTokenFilter extends UsernamePasswordAuthentication
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         String authToken = httpRequest.getHeader(this.tokenHeader);
-        // authToken.startsWith("Bearer ")
-        // String authToken = header.substring(7);
         Optional<String> username = jwtTokenUtil.getUsernameFromToken(authToken);
 
         if (username.isPresent() && SecurityContextHolder.getContext().getAuthentication() == null) {

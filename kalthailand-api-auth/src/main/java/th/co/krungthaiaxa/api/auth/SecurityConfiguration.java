@@ -15,7 +15,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import th.co.krungthaiaxa.api.auth.data.User;
 import th.co.krungthaiaxa.api.auth.data.UserList;
-import th.co.krungthaiaxa.api.auth.jwt.JwtAuthenticationEntryPoint;
 import th.co.krungthaiaxa.api.auth.jwt.JwtAuthenticationTokenFilter;
 
 import static org.springframework.http.HttpMethod.POST;
@@ -25,8 +24,6 @@ import static org.springframework.http.HttpMethod.POST;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
-    @Autowired
-    private JwtAuthenticationEntryPoint unauthorizedHandler;
     @Autowired
     private UserDetailsService userDetailsService;
     @Autowired
@@ -63,7 +60,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         httpSecurity
                 // we don't need CSRF because our token is invulnerable
                 .csrf().disable()
-                .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests()
                 .antMatchers(POST, "/auth").permitAll()
