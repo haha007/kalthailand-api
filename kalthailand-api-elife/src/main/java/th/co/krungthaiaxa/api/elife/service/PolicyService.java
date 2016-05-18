@@ -228,7 +228,6 @@ public class PolicyService {
             String pushContent = IOUtils.toString(this.getClass().getResourceAsStream("/pushnotification-content/policy-booked-notification.txt"), Charset.forName("UTF-8"));
             String sendMsg = pushContent.replace("%POLICY_ID%", policy.getPolicyId());
             sendMsg = sendMsg.replace("%FULL_NAME%", policy.getInsureds().get(0).getPerson().getGivenName() + " " + policy.getInsureds().get(0).getPerson().getSurName());
-            logger.debug("Send Line Msg :=> " + sendMsg);
             lineService.sendPushNotification(
                     sendMsg
                     , policy.getInsureds().get(0).getPerson().getLineId());
