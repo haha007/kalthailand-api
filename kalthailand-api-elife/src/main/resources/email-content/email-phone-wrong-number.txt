@@ -1,5 +1,70 @@
-﻿ขอบคุณ คุณ%FULL_NAME% ที่ไว้วางใจในผลิตภัณฑ์ของ กรุงไทย-แอกซ่า
- 
-เนื่องจากเจ้าหน้าที่ไม่สามารถทำการติดต่อท่านผ่านหมายเลขโทรศัพท์ที่ท่านระบุไว้ กรุณายืนยันหมายเลขโทรศัพท์ของท่านอีกครั้ง โทร 02-770-3599 ระหว่างเวลา 8.30-19.00 น.
-
-หมายเลขอ้างอิงของท่านคือ %POLICY_ID%
+﻿<html>
+    <head>
+        <meta charset="UTF-8">
+        <title></title>
+        <style type="text/css">
+            body{
+                
+            }
+            .header{
+                color: #0D1366;
+                font-weight:bold;
+                font-size:1.5em;
+            }
+            .value{
+                color: #0081CB;
+            }
+            .btn{
+                diplay:block;
+                background-color: #0D1366;
+                color: white;
+                padding:15px;
+                text-decoration:none;
+                border-radius:5px;
+                margin:5px;
+            }
+			.header-text{
+				color:#0C9ED0;
+				font-weight:bold;
+			}
+			.under-line-text{
+				color:#0C9ED0;
+				text-decoration:underline;
+			}
+			.header-text-2{
+				color:#103285;
+				font-weight:bold;
+			}
+			.gray-text{
+				color:#838383;
+			}
+        </style>
+    </head>
+    <body>
+        <table align="center">
+            <picture>
+                <div style="margin-top:50px;text-align:center;">
+                    <img src="cid:imageElife">
+                </div>
+            </picture>
+            <br/><br/>
+            <tr><td align="center" class="header-text">ขอบคุณ คุณ%FULL_NAME% </td></tr>
+            <tr><td align="center" class="header-text">ที่วางใจในผลิตภัณฑ์ของกรุงไทย-แอกซ่า</td></tr>
+	    <tr><td>&nbsp;</td></tr>
+            <tr>
+                <td>เนื่องจากเจ้าหน้าที่ไม่สามารถทำการติดต่อท่านผ่านหมายเลขโทรศัพท์ที่ท่านระบุไว้ กรุณายืนยันหมายเลขโทรศัพท์ของท่านอีกครั้ง โทร <span class="under-line-text" >02-770-3599</span> ระหว่างเวลา 8.30-19.00 น.
+                </td>
+            </tr>
+            <tr><td>&nbsp;</td></tr>
+            <tr>
+                <td align="center">หมายเลขอ้างอิง</td>
+            </tr>
+			<tr>
+				<td align="center" class="header-text">%POLICY_ID%</td>
+			</tr>
+            <tr><td>&nbsp;</td></tr>
+            <tr><td>ขอแสดงความนับถือ</td></tr>
+            <tr><td>บริษัท กรุงไทย-แอกซ่า ประกันชีวิต จำกัด (มหาชน)</td></tr>
+        </table>
+    </body>
+</html>

@@ -82,17 +82,23 @@ public class EmailService {
 
     public void sendPolicyBookedEmail(Policy policy) throws IOException, MessagingException {
         logger.info("Sending policy booked email");
-        emailSender.sendEmail(emailName, policy.getInsureds().get(0).getPerson().getEmail(), getBookedEmailContentSubject(), getBookedEmailContent(policy), new ArrayList<>(), new ArrayList<>());
+        List<Pair<byte[], String>> base64ImgFileNames = new ArrayList<>();
+        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/logo.png")), "<imageElife>"));
+        emailSender.sendEmail(emailName, policy.getInsureds().get(0).getPerson().getEmail(), getBookedEmailContentSubject(), getBookedEmailContent(policy), base64ImgFileNames, new ArrayList<>());
     }
 
     public void sendUserNotRespondingEmail(Policy policy) throws IOException, MessagingException {
         logger.info("Sending user is not responding email");
-        emailSender.sendEmail(emailName, policy.getInsureds().get(0).getPerson().getEmail(), getUserNotResponseContentSubject(), getUserNotResponseContent(policy), new ArrayList<>(), new ArrayList<>());
+        List<Pair<byte[], String>> base64ImgFileNames = new ArrayList<>();
+        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/logo.png")), "<imageElife>"));
+        emailSender.sendEmail(emailName, policy.getInsureds().get(0).getPerson().getEmail(), getUserNotResponseContentSubject(), getUserNotResponseContent(policy), base64ImgFileNames, new ArrayList<>());
     }
 
     public void sendPhoneNumberIsWrongEmail(Policy policy) throws IOException, MessagingException {
         logger.info("Sending phone number is wrong email");
-        emailSender.sendEmail(emailName, policy.getInsureds().get(0).getPerson().getEmail(), getPhoneNumberIsWrongContentSubject(), getPhoneNumberIsWrongContent(policy), new ArrayList<>(), new ArrayList<>());
+        List<Pair<byte[], String>> base64ImgFileNames = new ArrayList<>();
+        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/logo.png")), "<imageElife>"));
+        emailSender.sendEmail(emailName, policy.getInsureds().get(0).getPerson().getEmail(), getPhoneNumberIsWrongContentSubject(), getPhoneNumberIsWrongContent(policy), base64ImgFileNames, new ArrayList<>());
     }
 
     public void sendEreceiptEmail(Policy policy, Pair<byte[], String> attachFile) throws IOException, MessagingException {
@@ -101,13 +107,7 @@ public class EmailService {
         base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/logo.png")), "<imageElife>"));
         List<Pair<byte[], String>> fileList = new ArrayList<>();
         fileList.add(attachFile);
-        String sbj = "";
-        if (policy.getCommonData().getProductId().equals(ProductType.PRODUCT_IFINE.getName())) {
-            sbj = IOUtils.toString(this.getClass().getResourceAsStream("/email-content/email-ereceipt-subject-ifine.txt"), Charset.forName("UTF-8"));
-        } else if (policy.getCommonData().getProductId().equals(ProductType.PRODUCT_10_EC.getName())) {
-            sbj = IOUtils.toString(this.getClass().getResourceAsStream("/email-content/email-ereceipt-subject-10ec.txt"), Charset.forName("UTF-8"));
-        }
-        emailSender.sendEmail(emailName, policy.getInsureds().get(0).getPerson().getEmail(), sbj, getEreceiptEmailContent(policy), base64ImgFileNames, fileList);
+        emailSender.sendEmail(emailName, policy.getInsureds().get(0).getPerson().getEmail(), getEreceiptEmailSubject(policy), getEreceiptEmailContent(policy), base64ImgFileNames, fileList);
         logger.info("Ereceipt email sent");
     }
 
@@ -157,7 +157,7 @@ public class EmailService {
     private String getBookedEmailContent(Policy pol) throws IOException {
         String emailContent = IOUtils.toString(this.getClass().getResourceAsStream("/email-content/email-booked-policy.txt"), Charset.forName("UTF-8"));
         Person person = pol.getInsureds().get(0).getPerson();
-        DecimalFormat money = new DecimalFormat("#,##0.00");
+        DecimalFormat money = new DecimalFormat("#,##0");
         String sumInsure = "";
         if (pol.getCommonData().getProductId().equals(ProductType.PRODUCT_10_EC.getName())) {
             sumInsure = money.format(pol.getPremiumsData().getProduct10ECPremium().getSumInsured().getValue());
@@ -168,7 +168,7 @@ public class EmailService {
         }
         return emailContent.replace("%FULL_NAME%", person.getGivenName() + " " + person.getSurName())
                 .replace("%POLICY_ID%", pol.getPolicyId())
-                .replace("%PLAN%", messageSource.getMessage("product.id." + pol.getCommonData().getProductId(), null, thLocale))
+                .replace("%PLAN%", messageSource.getMessage("product.id." + pol.getCommonData().getProductId(), null, thLocale) + " (" + pol.getCommonData().getProductId() + ")")
                 .replace("%PAYMENT_YEAR%", String.valueOf(pol.getCommonData().getNbOfYearsOfPremium()))
                 .replace("%PAYMENT_MODE%", messageSource.getMessage("payment.mode." + pol.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().toString(), null, thLocale))
                 .replace("%SUM_INSURE%", sumInsure)
@@ -204,11 +204,15 @@ public class EmailService {
                 .replace("%24$s", "'" + getLineURL() + "quote-product/line-iFine" + "'");
     }
 
+    private String getEreceiptEmailSubject(Policy policy) throws IOException {
+        String emailContent = IOUtils.toString(this.getClass().getResourceAsStream("/email-content/email-ereceipt-subject.txt"), Charset.forName("UTF-8"));
+        return emailContent.replace("%PRODUCT%", messageSource.getMessage("product.id." + policy.getCommonData().getProductId(), null, thLocale));
+    }
+
     private String getEreceiptEmailContent(Policy policy) throws IOException {
         String emailContent = IOUtils.toString(this.getClass().getResourceAsStream("/email-content/email-ereceipt-content.txt"), Charset.forName("UTF-8"));
-        return emailContent.replace("%1$s", policy.getInsureds().get(0).getPerson().getGivenName() + " " + policy.getInsureds().get(0).getPerson().getSurName())
-                .replace("%2$s", policy.getInsureds().get(0).getPerson().getGivenName() + " " + policy.getInsureds().get(0).getPerson().getSurName())
-                .replace("%3$s", policy.getCommonData().getProductId() + " " + messageSource.getMessage("product.id." + policy.getCommonData().getProductId(), null, thLocale));
+        return emailContent.replace("%PRODUCT_NAME%", messageSource.getMessage("product.id." + policy.getCommonData().getProductId(), null, thLocale) + " (" + policy.getCommonData().getProductId() + ")")
+                .replace("%FULL_NAME%", policy.getInsureds().get(0).getPerson().getGivenName() + " " + policy.getInsureds().get(0).getPerson().getSurName());
     }
 
     private String getLineURL() {

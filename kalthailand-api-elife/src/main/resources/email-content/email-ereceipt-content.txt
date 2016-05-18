@@ -4,7 +4,7 @@
         <title></title>
         <style type="text/css">
             body{
-                color: #858585;
+                
             }
             .header{
                 color: #0D1366;
@@ -23,6 +23,21 @@
                 border-radius:5px;
                 margin:5px;
             }
+			.header-text{
+				color:#0C9ED0;
+				font-weight:bold;
+			}
+			.under-line-text{
+				color:#0C9ED0;
+				text-decoration:underline;
+			}
+			.header-text-2{
+				color:#103285;
+				font-weight:bold;
+			}
+			.gray-text{
+				color:#838383;
+			}
         </style>
     </head>
     <body>
@@ -33,25 +48,23 @@
                 </div>
             </picture>
             <br/><br/>
-            <tr><td>เรียนคุณ %1$s </td></tr>
-            <tr><td>&nbsp;</td></tr>
+		<tr><td align="center" class="header-text">กรุงไทย-แอกซ่า ประกันชีวิต ขอขอบคุณ</td></tr>
+		<tr><td align="center" class="header-text">ที่วางใจ และทำการสมัครแบบประกัน %PRODUCT_NAME%</td></tr>
+		<tr><td>&nbsp;</td></tr>
+            <tr><td>เรียนคุณ %FULL_NAME% </td></tr>
+	    <tr><td>&nbsp;</td></tr>
             <tr>
-                <td>
-                    กรุงไทย-แอกซ่า ประกันชีวิต ขอขอบคุณ %2$s<br/>
-                    ที่วางใจกรุงไทย-แอกซ่า และทำการสั่งซื้อประกัน %3$s
+                <td>บริษัท กรุงไทย-แอกซ่า ประกันชีวิต จำกัด (มหาชน) ขอขอบคุณท่านที่วางใจโดยทำการสมัครแบบประกันชีวิต %PRODUCT_NAME% ผ่าน LINE Pay
                 </td>
             </tr>
             <tr><td>&nbsp;</td></tr>
-            <tr>
-                <td>
-                    ทางบริษัทฯ ได้ส่งสำเนาใบเสร็จอิเล็กทรอนิกส์ให้คุณในไฟล์แนบ และผู้เชี่ยวชาญของเรา <br/>
-                    จะติดต่อคุณกลับภายใน 30 นาทีหลังจากคุณส่งเอกสารยืนยันตัวบุคคล <br/>
-                    หากมีข้อสงสัยใดๆ สามารถติดต่อศูนย์บริการลูกค้าได้ที่ 1159 <br/>
+		<tr>
+                <td>ทั้งนี้ ทางบริษัทฯ ได้ส่งใบเสร็จรับเงินชั่วคราวให้ท่านในไฟล์แนบ
                 </td>
             </tr>
-            <tr><td>&nbsp;</td></tr>
+	    <tr><td>&nbsp;</td></tr>
             <tr><td>ขอแสดงความนับถือ</td></tr>
-            <tr><td>กรุงไทย-แอกซ่า ประกันชีวิต</td></tr>
+            <tr><td>บริษัท กรุงไทย-แอกซ่า ประกันชีวิต จำกัด (มหาชน)</td></tr>
         </table>
     </body>
 </html>

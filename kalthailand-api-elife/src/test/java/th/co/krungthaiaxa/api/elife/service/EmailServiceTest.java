@@ -15,6 +15,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.context.MessageSource;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -34,6 +35,7 @@ import java.io.*;
 import java.nio.charset.Charset;
 import java.time.LocalDate;
 import java.util.Base64;
+import java.util.Locale;
 import java.util.Optional;
 
 import static com.icegreen.greenmail.util.GreenMailUtil.getBody;
@@ -74,6 +76,10 @@ public class EmailServiceTest {
 
     private String base64Graph;
 
+    @Inject
+    private MessageSource messageSource;
+    private Locale thLocale = new Locale("th", "");
+
 
     @Before
     public void setup() throws IOException {
@@ -113,18 +119,12 @@ public class EmailServiceTest {
     }
 
     @Test
-    public void should_send_email_all_scenario() throws Exception {
+    public void should_send_ereceipt_email() throws Exception {
         Quote quote = quoteService.createQuote(randomNumeric(20), ChannelType.LINE, productQuotation());
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
         Policy policy = policyService.createPolicy(quote);
-
         policy.getInsureds().get(0).getPerson().setEmail("santi.lik@krungthai-axa.co.th");
-
-        emailService.sendPolicyBookedEmail(policy);
-        /*
-        emailService.sendUserNotRespondingEmail(policy);
-        emailService.sendPhoneNumberIsWrongEmail(policy);
 
         documentService.generateValidatedPolicyDocuments(policy);
         Optional<Document> documentPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(ERECEIPT_PDF)).findFirst();
@@ -133,13 +133,66 @@ public class EmailServiceTest {
         byte[] bytes = Base64.getDecoder().decode(documentDownload.getContent());
         assertThat(new PdfReader(bytes)).isNotNull();
         emailService.sendEreceiptEmail(policy, Pair.of(bytes, "emailServiceTest-e-receipt-10ec.pdf"));
-        */
+        assertThat(greenMail.getReceivedMessages()).hasSize(1);
+        MimeMessage email4 = greenMail.getReceivedMessages()[0];
+        String bodyAsString4 = decodeSimpleBody(getBody(email4));
+        assertThat(bodyAsString4).contains("<td>บริษัท กรุงไทย-แอกซ่า ประกันชีวิต จำกัด (มหาชน) ขอขอบคุณท่านที่วางใจโดยทำการสมัครแบบประกันชีวิต " + messageSource.getMessage("product.id." + policy.getCommonData().getProductId(), null, thLocale) + " (" + policy.getCommonData().getProductId() + ")" + " ผ่าน LINE Pay");
 
-        MimeMessage email = greenMail.getReceivedMessages()[0];
-        String bodyAsString = decodeSimpleBody(getBody(email));
-        //System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-        //System.out.println(bodyAsString);
+        Multipart multipart = (Multipart) email4.getContent();
+        for (int i = 0; i < multipart.getCount(); i++) {
+            BodyPart bodyPart = multipart.getBodyPart(i);
+            if (!Part.ATTACHMENT.equalsIgnoreCase(bodyPart.getDisposition()) &&
+                    !StringUtils.isNotBlank(bodyPart.getFileName())) {
+                //null file value
+            } else {
+                assertThat(null != bodyPart.getFileName() && !bodyPart.getFileName().equals(""));
+            }
+        }
+    }
 
+    @Test
+    public void should_send_wrong_number_email() throws Exception {
+        Quote quote = quoteService.createQuote(randomNumeric(20), ChannelType.LINE, productQuotation());
+        quote(quote, beneficiary(100.0));
+        quote = quoteService.updateQuote(quote);
+        Policy policy = policyService.createPolicy(quote);
+        policy.getInsureds().get(0).getPerson().setEmail("santi.lik@krungthai-axa.co.th");
+
+        emailService.sendPhoneNumberIsWrongEmail(policy);
+        assertThat(greenMail.getReceivedMessages()).hasSize(1);
+        MimeMessage email3 = greenMail.getReceivedMessages()[0];
+        String bodyAsString3 = decodeSimpleBody(getBody(email3));
+        assertThat(bodyAsString3).contains("<td>เนื่องจากเจ้าหน้าที่ไม่สามารถทำการติดต่อท่านผ่านหมายเลขโทรศัพท์ที่ท่านระบุไว้ กรุณายืนยันหมายเลขโทรศัพท์ของท่านอีกครั้ง โทร <span class=\"under-line-text\" >02-770-3599</span> ระหว่างเวลา 8.30-19.00 น.");
+    }
+
+    @Test
+    public void should_send_not_response_email() throws Exception {
+        Quote quote = quoteService.createQuote(randomNumeric(20), ChannelType.LINE, productQuotation());
+        quote(quote, beneficiary(100.0));
+        quote = quoteService.updateQuote(quote);
+        Policy policy = policyService.createPolicy(quote);
+        policy.getInsureds().get(0).getPerson().setEmail("santi.lik@krungthai-axa.co.th");
+
+        emailService.sendUserNotRespondingEmail(policy);
+        assertThat(greenMail.getReceivedMessages()).hasSize(1);
+        MimeMessage email2 = greenMail.getReceivedMessages()[0];
+        String bodyAsString2 = decodeSimpleBody(getBody(email2));
+        assertThat(bodyAsString2).contains("<td>เนื่องจากเจ้าหน้าที่ไม่สามารถติดต่อท่านได้ เจ้าหน้าที่จะทำการติดต่อท่านอีกครั้งด้วยหมายเลข <span class=\"under-line-text\" >02-770-3599</span> ภายในเวลาทำการ 8.30-19.00 น.");
+    }
+
+    @Test
+    public void should_send_booked_email() throws Exception {
+        Quote quote = quoteService.createQuote(randomNumeric(20), ChannelType.LINE, productQuotation());
+        quote(quote, beneficiary(100.0));
+        quote = quoteService.updateQuote(quote);
+        Policy policy = policyService.createPolicy(quote);
+        policy.getInsureds().get(0).getPerson().setEmail("santi.lik@krungthai-axa.co.th");
+
+        emailService.sendPolicyBookedEmail(policy);
+        assertThat(greenMail.getReceivedMessages()).hasSize(1);
+        MimeMessage email1 = greenMail.getReceivedMessages()[0];
+        String bodyAsString1 = decodeSimpleBody(getBody(email1));
+        assertThat(bodyAsString1).contains("<td>ระบบได้ทำการจองวงเงินผ่าน LINE Pay สำเร็จแล้ว เจ้าหน้าที่ของเราจะติดต่อกลับภายใน 1 ชั่วโมง* ด้วยหมายเลข <span class=\"under-line-text\" >02-770-3599</span>");
     }
 
     @Test
