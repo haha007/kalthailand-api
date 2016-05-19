@@ -31,7 +31,7 @@ public class PolicyCriteriaRepository {
             query.addCriteria(where("policyId").regex(".*" + policyId + ".*"));
         }
         if (productType != null) {
-            query.addCriteria(where("commonData.productId").is(productType));
+            query.addCriteria(where("commonData.productId").is(productType.getName()));
         }
         if (status != null) {
             query.addCriteria(where("status").is(status));
