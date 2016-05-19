@@ -96,25 +96,35 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-1">
-                        <label for="afterDateSearch">After</label>
+                    <div class="col-md-2">
+                        <label for="nonEmptyAgentCodeSearch">Agent code</label>
                     </div>
-                    <div class="col-md-4">
+                    <div class="form-group col-md-2">
+                        <select class="form-control" id="nonEmptyAgentCodeSearch" ng-model="nonEmptyAgentCodeSearch">
+                            <option value=""></option>
+                            <option value="true">Not empty</option>
+                            <option value="false">Empty</option>
+                        </select>
+                    </div>
+                    <div class="col-md-1">
+                        <label for="fromDateSearch">From</label>
+                    </div>
+                    <div class="col-md-3">
                         <p class="input-group">
-                            <input type="text" id="afterDateSearch" class="form-control" uib-datepicker-popup="dd-MM-yyyy" ng-model="afterDateSearch" is-open="afterDateSearch.opened" close-text="Close" datepicker-options="dateOptions"/>
+                            <input type="text" id="fromDateSearch" class="form-control" uib-datepicker-popup="dd-MM-yyyy" ng-model="fromDateSearch" is-open="fromDateSearch.opened" close-text="Close" datepicker-options="dateOptions"/>
                             <span class="input-group-btn">
-                                <button type="button" class="btn btn-default" ng-click="afterDateSearchOpen()"><i class="glyphicon glyphicon-calendar"></i></button>
+                                <button type="button" class="btn btn-default" ng-click="fromDateSearchOpen()"><i class="glyphicon glyphicon-calendar"></i></button>
                             </span>
                         </p>
                     </div>
                     <div class="col-md-1">
-                        <label for="beforeDateSearch">Before</label>
+                        <label for="toDateSearch">To</label>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <p class="input-group">
-                            <input type="text" id="beforeDateSearch" class="form-control" uib-datepicker-popup="dd-MM-yyyy" ng-model="beforeDateSearch" is-open="beforeDateSearch.opened" close-text="Close" datepicker-options="dateOptions"/>
+                            <input type="text" id="toDateSearch" class="form-control" uib-datepicker-popup="dd-MM-yyyy" ng-model="toDateSearch" is-open="toDateSearch.opened" close-text="Close" datepicker-options="dateOptions"/>
                             <span class="input-group-btn">
-                                <button type="button" class="btn btn-default" ng-click="beforeDateSearchOpen()"><i class="glyphicon glyphicon-calendar"></i></button>
+                                <button type="button" class="btn btn-default" ng-click="toDateSearchOpen()"><i class="glyphicon glyphicon-calendar"></i></button>
                             </span>
                         </p>
                     </div>
@@ -147,6 +157,7 @@
                         <th>Status</th>
                         <th>Start Date</th>
                         <th>Agent code</th>
+                        <th>Validation Agent code</th>
                     </tr>
                     <tr ng-repeat="item in policies.content">
                         <td><a href="policyDetail.html?policyID={{ item.policyId }}">{{ item.policyId }}</a></td>
@@ -154,12 +165,12 @@
                         <td>{{ item.premiumsData.financialScheduler.modalAmount.value }} {{ item.premiumsData.financialScheduler.modalAmount.currencyCode }}</td>
                         <td>{{ item.status }}</td>
                         <td>{{ item.insureds[0].startDate | date:'yyyy-MM-dd' }}</td>
-                        <td>{{ item.insureds[0].insuredPreviousAgents }}</td>
+                        <td><span ng-repeat="agentCode in item.insureds[0].insuredPreviousAgents track by $index">{{ agentCode }} </span></td>
+                        <td>{{ item.validationAgentCode }}</td>
                     </tr>
                 </table>
-                Page {{ currentPage }} / {{ totalPages }}. Number of items: {{ totalItems }}
+                Page {{ currentPage }} / {{ totalPages }}. Number of items: {{ totalItems }} <a href="{{downloadUrl}}">Download as Excel File</a>.
             </div>
-
         </div>
         <!-- END Page specific stuff -->
 

@@ -67,7 +67,7 @@ public class RLSResource {
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         response.setContentLength(excelFileContent.length);
 
-        String fileName = "deductionFile_" + ofPattern("yyyyMMdd_hhmmss").format(now()) + ".xlsx";
+        String fileName = "deductionFile_" + ofPattern("yyyyMMdd_HHmmss").format(now()) + ".xlsx";
         // set headers for the response
         String headerKey = "Content-Disposition";
         String headerValue = String.format("attachment; filename=\"%s\"", fileName);

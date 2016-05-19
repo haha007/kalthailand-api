@@ -157,7 +157,7 @@ public class LineService {
         linePayBookingRequest.setMid(mid);
         linePayBookingRequest.setPayType("PREAPPROVED");
         linePayBookingRequest.setCheckConfirmUrlBrowser("true");
-        linePayBookingRequest.setOrderId(DateTimeFormatter.ofPattern("yyyyMMdd_hhmmss").format(LocalDateTime.now()) + "-" + policy.getPolicyId());
+        linePayBookingRequest.setOrderId(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss").format(LocalDateTime.now()) + "-" + policy.getPolicyId());
         linePayBookingRequest.setConfirmUrl("https://line.me/R/ch/" + lineAppId + "/elife/th/confirm/" + policy.getQuoteId() + "/" + policy.getPolicyId());
         linePayBookingRequest.setCancelUrl("https://line.me/R/ch/" + lineAppId + "/elife/th/paymentFailed/" + policy.getQuoteId());
 

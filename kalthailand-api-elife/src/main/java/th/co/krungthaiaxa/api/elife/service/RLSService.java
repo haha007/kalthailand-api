@@ -323,7 +323,7 @@ public class RLSService {
                 ExcelUtils.text(deductionFileLine.getBankCode()),
                 ExcelUtils.text(deductionFileLine.getPaymentMode()),
                 ExcelUtils.text(deductionFileLine.getAmount().toString()),
-                ExcelUtils.text(ofPattern("yyyyMMdd_hhmmss").format(deductionFileLine.getProcessDate())),
+                ExcelUtils.text(ofPattern("yyyyMMdd_HHmmss").format(deductionFileLine.getProcessDate())),
                 ExcelUtils.text(deductionFileLine.getRejectionCode()));
     }
 

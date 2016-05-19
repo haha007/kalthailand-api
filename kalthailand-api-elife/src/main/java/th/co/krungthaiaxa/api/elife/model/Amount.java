@@ -42,4 +42,9 @@ public class Amount implements Serializable {
     public int hashCode() {
         return Objects.hash(value, currencyCode);
     }
+
+    @Override
+    public String toString() {
+        return value + " " + currencyCode;
+    }
 }

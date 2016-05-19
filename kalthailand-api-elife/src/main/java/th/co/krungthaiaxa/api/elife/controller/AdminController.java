@@ -1,8 +1,12 @@
 package th.co.krungthaiaxa.api.elife.controller;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.openxml4j.exceptions.OpenXML4JException;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +28,7 @@ import th.co.krungthaiaxa.api.elife.products.ProductType;
 import th.co.krungthaiaxa.api.elife.service.BlackListedService;
 import th.co.krungthaiaxa.api.elife.service.DocumentService;
 import th.co.krungthaiaxa.api.elife.service.PolicyService;
+import th.co.krungthaiaxa.api.elife.utils.ExcelUtils;
 
 import javax.inject.Inject;
 import javax.mail.MessagingException;
@@ -34,7 +39,9 @@ import java.io.OutputStream;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static java.time.LocalDateTime.now;
 import static java.time.format.DateTimeFormatter.ofPattern;
@@ -44,6 +51,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus.CANCELED;
 import static th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus.PENDING_PAYMENT;
+import static th.co.krungthaiaxa.api.elife.utils.ExcelUtils.text;
 import static th.co.krungthaiaxa.api.elife.utils.JsonUtil.getJson;
 
 @ApiIgnore
@@ -69,20 +77,79 @@ public class AdminController {
                                                  @RequestParam(required = false) String policyId,
                                                  @RequestParam(required = false) ProductType productType,
                                                  @RequestParam(required = false) PolicyStatus status,
-                                                 @RequestParam(required = false) String afterDate,
-                                                 @RequestParam(required = false) String beforeDate) {
-
+                                                 @RequestParam(required = false) Boolean nonEmptyAgentCode,
+                                                 @RequestParam(required = false) String fromDate,
+                                                 @RequestParam(required = false) String toDate) {
         LocalDate startDate = null;
-        if (StringUtils.isNoneEmpty(afterDate)) {
-            startDate = LocalDate.from(DateTimeFormatter.ISO_DATE_TIME.parse(afterDate));
+        if (StringUtils.isNoneEmpty(fromDate)) {
+            startDate = LocalDate.from(DateTimeFormatter.ISO_DATE_TIME.parse(fromDate));
         }
 
         LocalDate endDate = null;
-        if (StringUtils.isNoneEmpty(beforeDate)) {
-            endDate = LocalDate.from(DateTimeFormatter.ISO_DATE_TIME.parse(beforeDate));
+        if (StringUtils.isNoneEmpty(toDate)) {
+            endDate = LocalDate.from(DateTimeFormatter.ISO_DATE_TIME.parse(toDate));
+        }
+        return new ResponseEntity<>(getJson(policyService.findAll(policyId, productType, status, nonEmptyAgentCode, startDate, endDate, pageNumber, pageSize)), OK);
+    }
+
+    @ApiIgnore
+    @RequestMapping(value = "/admin/policies/extract/download", method = GET)
+    @ResponseBody
+    public void getPoliciesExcelFile(@RequestParam(required = false) String policyId,
+                                                       @RequestParam(required = false) ProductType productType,
+                                                       @RequestParam(required = false) PolicyStatus status,
+                                                       @RequestParam(required = false) Boolean nonEmptyAgentCode,
+                                                       @RequestParam(required = false) String fromDate,
+                                                       @RequestParam(required = false) String toDate,
+                                                       HttpServletResponse response) {
+        LocalDate startDate = null;
+        if (StringUtils.isNoneEmpty(fromDate)) {
+            startDate = LocalDate.from(DateTimeFormatter.ISO_DATE_TIME.parse(fromDate));
         }
 
-        return new ResponseEntity<>(getJson(policyService.findAll(policyId, productType, status, startDate, endDate, pageNumber, pageSize)), OK);
+        LocalDate endDate = null;
+        if (StringUtils.isNoneEmpty(toDate)) {
+            endDate = LocalDate.from(DateTimeFormatter.ISO_DATE_TIME.parse(toDate));
+        }
+
+        List<Policy> policies = policyService.findAll(policyId, productType, status, nonEmptyAgentCode, startDate, endDate);
+
+        String now = ofPattern("yyyyMMdd_HHmmss").format(now());
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("PolicyExtract_" + now);
+        ExcelUtils.appendRow(sheet,
+                text("Policy ID"),
+                text("Product Type"),
+                text("Premium"),
+                text("Status"),
+                text("Start date"),
+                text("Agent Code"),
+                text("Validation Agent Code"));
+        policies.stream().forEach(tmp -> createPolicyExtractExcelFileLine(sheet, tmp));
+        ExcelUtils.autoWidthAllColumns(workbook);
+
+        byte[] content;
+        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+            workbook.write(byteArrayOutputStream);
+            content = byteArrayOutputStream.toByteArray();
+        } catch (IOException e) {
+            throw new IllegalStateException("Unable to write content of excel deduction file", e);
+        }
+
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setContentLength(content.length);
+
+        String fileName = "eLife_PolicyExtract_" + now + ".xlsx";
+        // set headers for the response
+        String headerKey = "Content-Disposition";
+        String headerValue = String.format("attachment; filename=\"%s\"", fileName);
+        response.setHeader(headerKey, headerValue);
+
+        try (OutputStream outStream = response.getOutputStream()) {
+            IOUtils.write(content, outStream);
+        } catch (IOException e) {
+            logger.error("Unable to download the deduction file", e);
+        }
     }
 
     @ApiIgnore
@@ -145,7 +212,7 @@ public class AdminController {
         response.setContentType("application/pdf");
         response.setContentLength(documentContent.length);
 
-        String fileName = policyId + "-" + documentType + "_" + ofPattern("yyyyMMdd_hhmmss").format(now()) + ".pdf";
+        String fileName = policyId + "-" + documentType + "_" + ofPattern("yyyyMMdd_HHmmss").format(now()) + ".pdf";
         response.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\"", fileName));
 
         try (OutputStream outStream = response.getOutputStream()) {
@@ -172,4 +239,16 @@ public class AdminController {
             return new ResponseEntity<>(getJson(ErrorCode.INVALID_BLACKLIST_FILE.apply(e.getMessage())), NOT_ACCEPTABLE);
         }
     }
+
+    private void createPolicyExtractExcelFileLine(Sheet sheet, Policy policy) {
+            ExcelUtils.appendRow(sheet,
+                text(policy.getPolicyId()),
+                text(policy.getCommonData().getProductId()),
+                text(policy.getPremiumsData().getFinancialScheduler().getModalAmount().toString()),
+                text(policy.getStatus().name()),
+                text(ofPattern("yyyy-MM-dd").format(policy.getInsureds().get(0).getStartDate())),
+                text(policy.getInsureds().get(0).getInsuredPreviousAgents().stream().collect(Collectors.joining(","))),
+                text(policy.getValidationAgentCode()));
+    }
+
 }

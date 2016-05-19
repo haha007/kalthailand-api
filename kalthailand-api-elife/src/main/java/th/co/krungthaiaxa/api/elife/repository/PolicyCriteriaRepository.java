@@ -25,7 +25,29 @@ public class PolicyCriteriaRepository {
     private MongoOperations mongoOperations;
 
     public Page<Policy> findPolicies(String policyId, ProductType productType, PolicyStatus status,
-                                     LocalDate afterDate, LocalDate beforeDate, Pageable pageable) {
+                                     Boolean nonEmptyAgentCode, LocalDate fromDate, LocalDate toDate, Pageable pageable) {
+        Query query = getQuery(policyId, productType, status, nonEmptyAgentCode, fromDate, toDate);
+
+        List<Policy> policies = mongoOperations.find(query.with(pageable), Policy.class, "policy");
+        Long nbRecords = mongoOperations.count(query, Policy.class, "policy");
+        return new PageImpl<>(policies, pageable, nbRecords);
+    }
+
+    public List<Policy> findPolicies(String policyId, ProductType productType, PolicyStatus status,
+                                Boolean nonEmptyAgentCode, LocalDate fromDate, LocalDate toDate) {
+        Query query = getQuery(policyId, productType, status, nonEmptyAgentCode, fromDate, toDate);
+        query.fields()
+                .include("policyId")
+                .include("commonData.productId")
+                .include("premiumsData.financialScheduler.modalAmount")
+                .include("status")
+                .include("insureds.startDate")
+                .include("insureds.insuredPreviousAgents")
+                .include("validationAgentCode");
+        return mongoOperations.find(query, Policy.class, "policy");
+    }
+
+    private Query getQuery(String policyId, ProductType productType, PolicyStatus status, Boolean nonEmptyAgentCode, LocalDate fromDate, LocalDate toDate) {
         Query query = new Query();
         if (StringUtils.isNotEmpty(policyId)) {
             query.addCriteria(where("policyId").regex(".*" + policyId + ".*"));
@@ -36,17 +58,21 @@ public class PolicyCriteriaRepository {
         if (status != null) {
             query.addCriteria(where("status").is(status));
         }
-        if (afterDate != null && beforeDate == null) {
-            query.addCriteria(where("insureds.startDate").gte(getDateFromLocalDate(afterDate)));
-        } else if (afterDate == null && beforeDate != null) {
-            query.addCriteria(where("insureds.startDate").lte(getDateFromLocalDate(beforeDate)));
-        } else if (afterDate != null && beforeDate != null) {
-            query.addCriteria(where("insureds.startDate").gte(getDateFromLocalDate(afterDate)).lte(getDateFromLocalDate(beforeDate)));
+        if (nonEmptyAgentCode != null) {
+            if (nonEmptyAgentCode) {
+                query.addCriteria(where("insureds.insuredPreviousAgents").not().size(0));
+            } else {
+                query.addCriteria(where("insureds.insuredPreviousAgents").size(0));
+            }
         }
-
-        List<Policy> policies = mongoOperations.find(query.with(pageable), Policy.class, "policy");
-        Long nbRecords = mongoOperations.count(query, Policy.class, "policy");
-        return new PageImpl<>(policies, pageable, nbRecords);
+        if (fromDate != null && toDate == null) {
+            query.addCriteria(where("insureds.startDate").gte(getDateFromLocalDate(fromDate)));
+        } else if (fromDate == null && toDate != null) {
+            query.addCriteria(where("insureds.startDate").lte(getDateFromLocalDate(toDate)));
+        } else if (fromDate != null && toDate != null) {
+            query.addCriteria(where("insureds.startDate").gte(getDateFromLocalDate(fromDate)).lte(getDateFromLocalDate(toDate)));
+        }
+        return query;
     }
 
     public long count() {

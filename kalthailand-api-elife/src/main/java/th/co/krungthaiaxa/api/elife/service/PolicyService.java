@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.elife.data.PolicyNumber;
 import th.co.krungthaiaxa.api.elife.exception.ElifeException;
@@ -29,10 +30,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.Base64;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static java.time.format.DateTimeFormatter.ofPattern;
@@ -88,9 +86,14 @@ public class PolicyService {
         this.productFactory = productFactory;
     }
 
-    public Page<Policy> findAll(String policyId, ProductType productType, PolicyStatus status, LocalDate afterDate,
-                                LocalDate beforeDate, Integer startIndex, Integer nbOfRecords) {
-        return policyCriteriaRepository.findPolicies(policyId, productType, status, afterDate, beforeDate, new PageRequest(startIndex, nbOfRecords));
+    public Page<Policy> findAll(String policyId, ProductType productType, PolicyStatus status, Boolean nonEmptyAgentCode, LocalDate startDate,
+                                LocalDate endDate, Integer startIndex, Integer nbOfRecords) {
+        return policyCriteriaRepository.findPolicies(policyId, productType, status, nonEmptyAgentCode, startDate, endDate, new PageRequest(startIndex, nbOfRecords, new Sort(Sort.Direction.DESC, "policyId")));
+    }
+
+    public List<Policy> findAll(String policyId, ProductType productType, PolicyStatus status, Boolean nonEmptyAgentCode, LocalDate startDate,
+                                      LocalDate endDate) {
+        return policyCriteriaRepository.findPolicies(policyId, productType, status, nonEmptyAgentCode, startDate, endDate);
     }
 
     public Optional<Policy> findPolicy(String policyId) {

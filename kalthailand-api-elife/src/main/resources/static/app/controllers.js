@@ -31,11 +31,15 @@
         $scope.itemsPerPage = 20;
         $scope.searchContent = '';
         $scope.policies = null;
+        $scope.policyIdSearch = null;
+        $scope.productTypeSearch = null;
+        $scope.statusSearch = null;
+        $scope.nonEmptyAgentCodeSearch = null;
 
         var aMonthAgo = new Date();
         aMonthAgo.setMonth(new Date().getMonth() - 1);
-        $scope.beforeDateSearch = new Date();
-        $scope.afterDateSearch = aMonthAgo;
+        $scope.toDateSearch = new Date();
+        $scope.fromDateSearch = aMonthAgo;
 
         $scope.search = searchForPolicies;
         $scope.pageChanged = searchForPolicies;
@@ -48,12 +52,12 @@
             startingDay: 1
         };
 
-        $scope.afterDateSearchOpen = function() {
-            $scope.afterDateSearch.opened = true;
+        $scope.fromDateSearchOpen = function() {
+            $scope.fromDateSearch.opened = true;
         };
 
-        $scope.beforeDateSearchOpen = function() {
-            $scope.beforeDateSearch.opened = true;
+        $scope.toDateSearchOpen = function() {
+            $scope.toDateSearch.opened = true;
         };
 
         $scope.search = function (event) {
@@ -69,8 +73,9 @@
                     policyId : $scope.policyIdSearch,
                     productType : $scope.productTypeSearch,
                     status : $scope.statusSearch,
-                    afterDate : $scope.afterDateSearch,
-                    beforeDate: $scope.beforeDateSearch
+                    nonEmptyAgentCode : $scope.nonEmptyAgentCodeSearch,
+                    fromDate : $scope.fromDateSearch,
+                    toDate: $scope.toDateSearch
                 },
                 function (successResponse) {
                     $scope.totalPages = successResponse.totalPages;
@@ -79,10 +84,30 @@
 
                     $scope.policies = successResponse;
                     $scope.errorMessage = null;
+                    $scope.downloadUrl = 'admin/policies/extract/download?';
+                    if ($scope.policyIdSearch) {
+                        $scope.downloadUrl += 'policyId=' + $scope.policyIdSearch;
+                    }
+                    if ($scope.productTypeSearch) {
+                        $scope.downloadUrl += '&productType=' + $scope.productTypeSearch;
+                    }
+                    if ($scope.statusSearch) {
+                        $scope.downloadUrl += '&status=' + $scope.statusSearch;
+                    }
+                    if ($scope.nonEmptyAgentCodeSearch) {
+                        $scope.downloadUrl += '&nonEmptyAgentCode=' + $scope.nonEmptyAgentCodeSearch;
+                    }
+                    if ($scope.fromDateSearch) {
+                        $scope.downloadUrl += '&fromDate=' + $scope.fromDateSearch.toISOString();
+                    }
+                    if ($scope.toDateSearch) {
+                        $scope.downloadUrl += '&toDate=' + $scope.toDateSearch.toISOString();
+                    }
                 },
                 function (errorResponse) {
                     $scope.policies = null;
                     $scope.errorMessage = errorResponse.data.userMessage;
+                    $scope.downloadUrl = null;
                 }
             );
         }
