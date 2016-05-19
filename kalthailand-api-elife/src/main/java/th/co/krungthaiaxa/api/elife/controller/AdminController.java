@@ -41,7 +41,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static java.time.LocalDateTime.now;
 import static java.time.format.DateTimeFormatter.ofPattern;
@@ -96,12 +95,12 @@ public class AdminController {
     @RequestMapping(value = "/admin/policies/extract/download", method = GET)
     @ResponseBody
     public void getPoliciesExcelFile(@RequestParam(required = false) String policyId,
-                                                       @RequestParam(required = false) ProductType productType,
-                                                       @RequestParam(required = false) PolicyStatus status,
-                                                       @RequestParam(required = false) Boolean nonEmptyAgentCode,
-                                                       @RequestParam(required = false) String fromDate,
-                                                       @RequestParam(required = false) String toDate,
-                                                       HttpServletResponse response) {
+                                     @RequestParam(required = false) ProductType productType,
+                                     @RequestParam(required = false) PolicyStatus status,
+                                     @RequestParam(required = false) Boolean nonEmptyAgentCode,
+                                     @RequestParam(required = false) String fromDate,
+                                     @RequestParam(required = false) String toDate,
+                                     HttpServletResponse response) {
         LocalDate startDate = null;
         if (StringUtils.isNoneEmpty(fromDate)) {
             startDate = LocalDate.from(DateTimeFormatter.ISO_DATE_TIME.parse(fromDate));
@@ -123,7 +122,8 @@ public class AdminController {
                 text("Premium"),
                 text("Status"),
                 text("Start date"),
-                text("Agent Code"),
+                text("Agent Code 1"),
+                text("Agent Code 2"),
                 text("Validation Agent Code"));
         policies.stream().forEach(tmp -> createPolicyExtractExcelFileLine(sheet, tmp));
         ExcelUtils.autoWidthAllColumns(workbook);
@@ -241,13 +241,24 @@ public class AdminController {
     }
 
     private void createPolicyExtractExcelFileLine(Sheet sheet, Policy policy) {
-            ExcelUtils.appendRow(sheet,
+        String agentCode1 = null;
+        String agentCode2 = null;
+
+        if (policy.getInsureds().get(0).getInsuredPreviousAgents().size() >= 1) {
+            agentCode1 = policy.getInsureds().get(0).getInsuredPreviousAgents().get(0);
+        }
+        if (policy.getInsureds().get(0).getInsuredPreviousAgents().size() >= 2) {
+            agentCode2 = policy.getInsureds().get(0).getInsuredPreviousAgents().get(1);
+        }
+
+        ExcelUtils.appendRow(sheet,
                 text(policy.getPolicyId()),
                 text(policy.getCommonData().getProductId()),
                 text(policy.getPremiumsData().getFinancialScheduler().getModalAmount().toString()),
                 text(policy.getStatus().name()),
                 text(ofPattern("yyyy-MM-dd").format(policy.getInsureds().get(0).getStartDate())),
-                text(policy.getInsureds().get(0).getInsuredPreviousAgents().stream().collect(Collectors.joining(","))),
+                text(agentCode1),
+                text(agentCode2),
                 text(policy.getValidationAgentCode()));
     }
 

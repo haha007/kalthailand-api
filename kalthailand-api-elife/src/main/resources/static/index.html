@@ -156,7 +156,8 @@
                         <th>Premium</th>
                         <th>Status</th>
                         <th>Start Date</th>
-                        <th>Agent code</th>
+                        <th>Agent code 1</th>
+                        <th>Agent code 2</th>
                         <th>Validation Agent code</th>
                     </tr>
                     <tr ng-repeat="item in policies.content">
@@ -165,7 +166,8 @@
                         <td>{{ item.premiumsData.financialScheduler.modalAmount.value }} {{ item.premiumsData.financialScheduler.modalAmount.currencyCode }}</td>
                         <td>{{ item.status }}</td>
                         <td>{{ item.insureds[0].startDate | date:'yyyy-MM-dd' }}</td>
-                        <td><span ng-repeat="agentCode in item.insureds[0].insuredPreviousAgents track by $index">{{ agentCode }} </span></td>
+                        <td>{{ item.insureds[0].insuredPreviousAgents[0] }}</td>
+                        <td>{{ item.insureds[0].insuredPreviousAgents[1] }}</td>
                         <td>{{ item.validationAgentCode }}</td>
                     </tr>
                 </table>
