@@ -45,6 +45,10 @@
         });
     });
 
+    app.factory('Dashboard', function ($resource) {
+        return $resource('admin/policies', {pageNumber:'@pageNumber', pageSize:'@pageSize'}, {});
+    });
+
     app.factory('BlackList', function ($resource) {
         return $resource('admin/blackList', {pageNumber:'@pageNumber', pageSize:'@pageSize'}, {});
     });

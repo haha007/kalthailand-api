@@ -26,6 +26,68 @@
         }
     });
 
+    app.controller('DashboardController', function ($scope, Dashboard) {
+        $scope.currentPage = 1;
+        $scope.itemsPerPage = 20;
+        $scope.searchContent = '';
+        $scope.policies = null;
+
+        var aMonthAgo = new Date();
+        aMonthAgo.setMonth(new Date().getMonth() - 1);
+        $scope.beforeDateSearch = new Date();
+        $scope.afterDateSearch = aMonthAgo;
+
+        $scope.search = searchForPolicies;
+        $scope.pageChanged = searchForPolicies;
+        searchForPolicies();
+
+        $scope.dateOptions = {
+            dateDisabled: false,
+            formatYear: 'yyyy',
+            maxDate: new Date(),
+            startingDay: 1
+        };
+
+        $scope.afterDateSearchOpen = function() {
+            $scope.afterDateSearch.opened = true;
+        };
+
+        $scope.beforeDateSearchOpen = function() {
+            $scope.beforeDateSearch.opened = true;
+        };
+
+        $scope.search = function (event) {
+            event.preventDefault();
+            searchForPolicies();
+        };
+
+        function searchForPolicies() {
+            Dashboard.get(
+                {
+                    pageNumber: $scope.currentPage - 1,
+                    pageSize: $scope.itemsPerPage,
+                    policyId : $scope.policyIdSearch,
+                    productType : $scope.productTypeSearch,
+                    status : $scope.statusSearch,
+                    afterDate : $scope.afterDateSearch,
+                    beforeDate: $scope.beforeDateSearch
+                },
+                function (successResponse) {
+                    $scope.totalPages = successResponse.totalPages;
+                    $scope.totalItems = successResponse.totalElements;
+                    $scope.currentPage = successResponse.number + 1;
+
+                    $scope.policies = successResponse;
+                    $scope.errorMessage = null;
+                },
+                function (errorResponse) {
+                    $scope.policies = null;
+                    $scope.errorMessage = errorResponse.data.userMessage;
+                }
+            );
+        }
+    });
+
     app.controller('BlackListController', function ($scope, BlackList, BlackListFileUpload) {
         $scope.currentPage = 1;
         $scope.itemsPerPage = 20;
@@ -128,7 +190,12 @@
         }
     });
 
-    app.controller('DetailController', function ($scope, $http, PolicyDetail, PolicyNotification) {
+    app.controller('DetailController', function ($scope, $http,  PolicyDetail, PolicyNotification) {
+        $scope.policyID = window.location.search.split('=')[1];
+        if (window.location.search.split('=')[1]) {
+            searchForPolicyDetail();
+        }
+
         $scope.onClickNotification = function () {
             $scope.isValidating = true;
             PolicyNotification.get({id: $scope.policyID, reminderId: $scope.scenarioID},
@@ -177,6 +244,10 @@
 
         $scope.search = function (event) {
             event.preventDefault();
+            searchForPolicyDetail();
+        };
+
+        function searchForPolicyDetail() {
             PolicyDetail.get({id: $scope.policyID},
                 function (successResponse) {
                     $scope.scenarioID = 1;
@@ -211,6 +282,6 @@
                     $scope.annualPremium = null;
                     $scope.sumInsured = null;
                 });
-        };
+        }
     });
 })();

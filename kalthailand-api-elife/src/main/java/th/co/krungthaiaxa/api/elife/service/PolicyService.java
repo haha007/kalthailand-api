@@ -13,11 +13,13 @@ import th.co.krungthaiaxa.api.elife.exception.ElifeException;
 import th.co.krungthaiaxa.api.elife.exception.PolicyValidationException;
 import th.co.krungthaiaxa.api.elife.model.*;
 import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
+import th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus;
 import th.co.krungthaiaxa.api.elife.model.enums.RegistrationTypeName;
 import th.co.krungthaiaxa.api.elife.model.enums.SuccessErrorStatus;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayResponse;
 import th.co.krungthaiaxa.api.elife.products.Product;
 import th.co.krungthaiaxa.api.elife.products.ProductFactory;
+import th.co.krungthaiaxa.api.elife.products.ProductType;
 import th.co.krungthaiaxa.api.elife.repository.*;
 import th.co.krungthaiaxa.api.elife.tmc.TMCClient;
 
@@ -27,7 +29,10 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.*;
+import java.util.Base64;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static java.time.format.DateTimeFormatter.ofPattern;
@@ -48,6 +53,7 @@ public class PolicyService {
     private final TMCClient tmcClient;
     private final CDBRepository cdbRepository;
     private final PaymentRepository paymentRepository;
+    private final PolicyCriteriaRepository policyCriteriaRepository;
     private final PolicyRepository policyRepository;
     private final PolicyNumberRepository policyNumberRepository;
     private final QuoteRepository quoteRepository;
@@ -60,6 +66,7 @@ public class PolicyService {
     @Inject
     public PolicyService(TMCClient tmcClient, CDBRepository cdbRepository,
                          PaymentRepository paymentRepository,
+                         PolicyCriteriaRepository policyCriteriaRepository,
                          PolicyRepository policyRepository,
                          PolicyNumberRepository policyNumberRepository,
                          QuoteRepository quoteRepository,
@@ -70,6 +77,7 @@ public class PolicyService {
         this.tmcClient = tmcClient;
         this.cdbRepository = cdbRepository;
         this.paymentRepository = paymentRepository;
+        this.policyCriteriaRepository = policyCriteriaRepository;
         this.policyRepository = policyRepository;
         this.policyNumberRepository = policyNumberRepository;
         this.quoteRepository = quoteRepository;
@@ -80,9 +88,9 @@ public class PolicyService {
         this.productFactory = productFactory;
     }
 
-    public List<Policy> findAll(Integer startIndex, Integer nbOfRecords) {
-        Page<Policy> policies = policyRepository.findAll(new PageRequest(startIndex, nbOfRecords));
-        return policies != null ? policies.getContent() : new ArrayList<>();
+    public Page<Policy> findAll(String policyId, ProductType productType, PolicyStatus status, LocalDate afterDate,
+                                LocalDate beforeDate, Integer startIndex, Integer nbOfRecords) {
+        return policyCriteriaRepository.findPolicies(policyId, productType, status, afterDate, beforeDate, new PageRequest(startIndex, nbOfRecords));
     }
 
     public Optional<Policy> findPolicy(String policyId) {

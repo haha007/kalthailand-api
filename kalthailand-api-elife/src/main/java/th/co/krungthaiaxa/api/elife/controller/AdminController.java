@@ -1,6 +1,7 @@
 package th.co.krungthaiaxa.api.elife.controller;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.openxml4j.exceptions.OpenXML4JException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,10 +18,12 @@ import th.co.krungthaiaxa.api.elife.exception.ElifeException;
 import th.co.krungthaiaxa.api.elife.model.Document;
 import th.co.krungthaiaxa.api.elife.model.DocumentDownload;
 import th.co.krungthaiaxa.api.elife.model.Policy;
+import th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus;
 import th.co.krungthaiaxa.api.elife.model.error.ErrorCode;
+import th.co.krungthaiaxa.api.elife.products.ProductType;
+import th.co.krungthaiaxa.api.elife.service.BlackListedService;
 import th.co.krungthaiaxa.api.elife.service.DocumentService;
 import th.co.krungthaiaxa.api.elife.service.PolicyService;
-import th.co.krungthaiaxa.api.elife.service.BlackListedService;
 
 import javax.inject.Inject;
 import javax.mail.MessagingException;
@@ -28,6 +31,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import java.util.Optional;
 
@@ -57,6 +62,30 @@ public class AdminController {
     }
 
     @ApiIgnore
+    @RequestMapping(value = "/admin/policies", produces = APPLICATION_JSON_VALUE, method = GET)
+    @ResponseBody
+    public ResponseEntity<byte[]> getAllPolicies(@RequestParam Integer pageNumber,
+                                                 @RequestParam Integer pageSize,
+                                                 @RequestParam(required = false) String policyId,
+                                                 @RequestParam(required = false) ProductType productType,
+                                                 @RequestParam(required = false) PolicyStatus status,
+                                                 @RequestParam(required = false) String afterDate,
+                                                 @RequestParam(required = false) String beforeDate) {
+
+        LocalDate startDate = null;
+        if (StringUtils.isNoneEmpty(afterDate)) {
+            startDate = LocalDate.from(DateTimeFormatter.ISO_DATE_TIME.parse(afterDate));
+        }
+
+        LocalDate endDate = null;
+        if (StringUtils.isNoneEmpty(beforeDate)) {
+            endDate = LocalDate.from(DateTimeFormatter.ISO_DATE_TIME.parse(beforeDate));
+        }
+
+        return new ResponseEntity<>(getJson(policyService.findAll(policyId, productType, status, startDate, endDate, pageNumber, pageSize)), OK);
+    }
+
+    @ApiIgnore
     @RequestMapping(value = "/admin/policies/{policyId}", produces = APPLICATION_JSON_VALUE, method = GET)
     @ResponseBody
     public ResponseEntity<byte[]> getPolicy(@PathVariable String policyId) {
@@ -70,13 +99,6 @@ public class AdminController {
         } else {
             return new ResponseEntity<>(getJson(policy.get()), OK);
         }
-    }
-
-    @ApiIgnore
-    @RequestMapping(value = "/admin/all", produces = APPLICATION_JSON_VALUE, method = GET)
-    @ResponseBody
-    public ResponseEntity<byte[]> getAllPolicies(@RequestParam Integer startIndex, @RequestParam Integer nbOfRecords) {
-        return new ResponseEntity<>(getJson(policyService.findAll(startIndex, nbOfRecords)), OK);
     }
 
     @ApiIgnore

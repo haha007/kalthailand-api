@@ -59,31 +59,105 @@
         </div>
 
         <!-- BEGIN Page specific stuff -->
-        <div ng-cloak class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main ng-cloak" id="dashboardContainer">
+        <div ng-cloak class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main ng-cloak" ng-controller="DashboardController" id="dashboardContainer">
             <h1 class="page-header">Dashboard</h1>
 
-            <div class="table-responsive">
-                <table class="table table-striped">
-                    <thead>
+            <form class="form-horizontal" ng-submit="search($event)">
+                <div class="row">
+                    <div class="col-md-2">
+                        <label for="policyID">Policy number</label>
+                    </div>
+                    <div class="col-md-2">
+                        <input type="text" class="form-control" id="policyID" ng-model="policyIdSearch" autofocus>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="productTypeSearch">Product Type</label>
+                    </div>
+                    <div class="form-group col-md-2">
+                        <select class="form-control" id="productTypeSearch" ng-model="productTypeSearch">
+                            <option value="10EC">10 EC</option>
+                            <option value="iFine">iFine</option>
+                            <option value="iGen">iGen</option>
+                            <option value="iBegin">iBegin</option>
+                        </select>
+                    </div>
+                    <div class="col-md-1">
+                        <label for="statusSearch">Status</label>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-control" id="statusSearch" ng-model="statusSearch">
+                            <option value="PENDING_PAYMENT">Pending payment</option>
+                            <option value="PENDING_VALIDATION">Pending validation</option>
+                            <option value="VALIDATED">Validated</option>
+                            <option value="CANCELED">Canceled</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-1">
+                        <label for="afterDateSearch">After</label>
+                    </div>
+                    <div class="col-md-4">
+                        <p class="input-group">
+                            <input type="text" id="afterDateSearch" class="form-control" uib-datepicker-popup="dd-MM-yyyy" ng-model="afterDateSearch" is-open="afterDateSearch.opened" close-text="Close" datepicker-options="dateOptions"/>
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-default" ng-click="afterDateSearchOpen()"><i class="glyphicon glyphicon-calendar"></i></button>
+                            </span>
+                        </p>
+                    </div>
+                    <div class="col-md-1">
+                        <label for="beforeDateSearch">Before</label>
+                    </div>
+                    <div class="col-md-4">
+                        <p class="input-group">
+                            <input type="text" id="beforeDateSearch" class="form-control" uib-datepicker-popup="dd-MM-yyyy" ng-model="beforeDateSearch" is-open="beforeDateSearch.opened" close-text="Close" datepicker-options="dateOptions"/>
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-default" ng-click="beforeDateSearchOpen()"><i class="glyphicon glyphicon-calendar"></i></button>
+                            </span>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-offset-4 col-sm-8">
+                        <button type="submit" class="btn btn-default">Search</button>
+                    </div>
+                </div>
+            </form>
+
+            <div>
+                <uib-pagination
+                        total-items="totalItems"
+                        ng-model="currentPage"
+                        max-size="15"
+                        class="pagination-md"
+                        force-ellipses="true"
+                        boundary-link-numbers="true"
+                        ng-change="pageChanged()"
+                        items-per-page="20">
+                </uib-pagination>
+
+                <table class="table table-bordered table-striped table-hover table-condensed">
                     <tr>
-                        <th>#</th>
-                        <th>Header</th>
-                        <th>Header</th>
-                        <th>Header</th>
-                        <th>Header</th>
+                        <th>Policy ID</th>
+                        <th>Product type</th>
+                        <th>Premium</th>
+                        <th>Status</th>
+                        <th>Start Date</th>
+                        <th>Agent code</th>
                     </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td>1,001</td>
-                        <td>Lorem</td>
-                        <td>ipsum</td>
-                        <td>dolor</td>
-                        <td>sit</td>
+                    <tr ng-repeat="item in policies.content">
+                        <td><a href="policyDetail.html?policyID={{ item.policyId }}">{{ item.policyId }}</a></td>
+                        <td>{{ item.commonData.productName }}</td>
+                        <td>{{ item.premiumsData.financialScheduler.modalAmount.value }} {{ item.premiumsData.financialScheduler.modalAmount.currencyCode }}</td>
+                        <td>{{ item.status }}</td>
+                        <td>{{ item.insureds[0].startDate | date:'yyyy-MM-dd' }}</td>
+                        <td>{{ item.insureds[0].insuredPreviousAgents }}</td>
                     </tr>
-                    </tbody>
                 </table>
+                Page {{ currentPage }} / {{ totalPages }}. Number of items: {{ totalItems }}
             </div>
+
         </div>
         <!-- END Page specific stuff -->
 
