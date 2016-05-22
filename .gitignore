@@ -1,5 +1,3 @@
-kalthailand-api-ebiz/target/
-kalthailand-api-ebiz/.idea/
 *.iml
 kalthailand-api-elife/.idea/
 kalthailand-api-elife/target/
@@ -9,3 +7,6 @@ kalthailand-api-auth/.idea/
 
 kalthailand-api-signing/target/
 kalthailand-api-signing/.idea/
+
+kalthailand-api-blacklist/target/
+kalthailand-api-blacklist/.idea/

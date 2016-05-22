@@ -1,106 +1,158 @@
 ﻿<html>
-    <head>
-        <meta charset="UTF-8">
-        <title></title>
-        <style type="text/css">
-            body{
-                
-            }
-            .header{
-                color: #0D1366;
-                font-weight:bold;
-                font-size:1.5em;
-            }
-            .value{
-                color: #0081CB;
-            }
-            .btn{
-                diplay:block;
-                background-color: #0D1366;
-                color: white;
-                padding:15px;
-                text-decoration:none;
-                border-radius:5px;
-                margin:5px;
-            }
-			.header-text{
-				color:#0C9ED0;
-				font-weight:bold;
-			}
-			.under-line-text{
-				color:#0C9ED0;
-				text-decoration:underline;
-			}
-			.header-text-2{
-				color:#103285;
-				font-weight:bold;
-			}
-			.gray-text{
-				color:#838383;
-			}
-        </style>
-    </head>
-    <body>
-        <table align="center">
-            <picture>
-                <div style="margin-top:50px;text-align:center;">
-                    <img src="cid:imageElife">
-                </div>
-            </picture>
-            <br/><br/>
-            <tr><td align="center" class="header-text">ขอบคุณ คุณ%FULL_NAME% </td></tr>
-            <tr><td align="center" class="header-text">ที่วางใจในผลิตภัณฑ์ของกรุงไทย-แอกซ่า</td></tr>
-	    <tr><td>&nbsp;</td></tr>
-            <tr>
-                <td>ระบบได้ทำการจองวงเงินผ่าน LINE Pay สำเร็จแล้ว เจ้าหน้าที่ของเราจะติดต่อกลับภายใน 1 ชั่วโมง* ด้วยหมายเลข <span class="under-line-text" >02-770-3599</span>
-                </td>
-            </tr>
-            <tr><td>&nbsp;</td></tr>
-            <tr>
-                <td align="center">หมายเลขอ้างอิง</td>
-            </tr>
-			<tr>
-				<td align="center" class="header-text">%POLICY_ID%</td>
-			</tr>
-            <tr><td>&nbsp;</td></tr>
-			<tr>
-				<td align="center">
-					<table width="100%">
-						<tr>
-							<td colspan="2" class="header-text-2" >สรุปแบบประกัน</td>
-						</tr>
-						<tr>
-							<td>แผนประกัน</td>
-							<td align="right">%PLAN%</td>
-						</tr>
-						<tr>
-							<td>ระยะเวลาชำระเบี้ยประกัน</td>
-							<td align="right">%PAYMENT_YEAR% ปี</td>
-						</tr>
-						<tr>
-							<td>งวดชำระเบี้ย</td>
-							<td align="right">%PAYMENT_MODE%</td>
-						</tr>
-						<tr>
-							<td>จำนวนเงินเอาประกัน</td>
-							<td align="right">%SUM_INSURE% บาท</td>
-						</tr>	
-						<tr>
-							<td>เบี้ยประกัน</td>
-							<td align="right">%PREMIUM% บาท</td>
-						</tr>
-					</table>
-				</td>
-			</tr>
-			<tr><td>&nbsp;</td></tr>
-			<tr>
-				<td class="gray-text">
+   <head>
+      <meta charset="UTF-8">
+      <meta name="format-detection" content="telephone=no">
+      <meta name="format-detection" content="date=no">
+      <meta name="format-detection" content="address=no">
+      <meta name="format-detection" content="email=no">
+      <title></title>
+      <style type="text/css">         
+         body{
+         }
+         .header{
+            color: #0D1366;
+            font-weight:bold;
+            font-size:1.5em;
+         }
+         .value{
+            color: #0081CB;
+         }
+         .btn{
+            diplay:block;
+            background-color: #0D1366;
+            color: white;
+            padding:15px;
+            text-decoration:none;
+            border-radius:5px;
+            margin:5px;
+         }
+         .header-text{
+            color:#0C9ED0;
+            font-weight:bold;
+         }
+         .header-normal{
+            color:#0C9ED0;
+         }
+         .under-line-text{
+            color:#0C9ED0;
+            text-decoration:underline;
+         }
+         .header-text-2{
+            color:#103285;
+            font-weight:bold;
+         }
+         .gray-text{
+            color:#838383;
+         }
+	 /****************************/
+	 a{
+            text-decoration:none;
+            color:#838383;
+         }
+         table tr td span a{
+            color:white;
+         }
+         .gray-box{
+            padding:20px;
+            background-color:#F8F8F8;
+         }
+         .blue-box{
+            background-color:#113184;
+            padding:20px 0px;
+         }
+         .white-bold{
+            color:white;
+            font-weight:bold;
+         }
+         .white-normal{
+            color:white;
+         }
+      </style>
+   </head>
+   <body>
+      <table align="center">
+         <picture>
+            <div style="margin-top:50px;text-align:center;">
+               <img src="cid:imageElife">
+            </div>
+         </picture>
+         <br/><br/>
+         <tr><td align="center" class="header-text">ขอบคุณ คุณ%FULL_NAME% </td></tr>
+         <tr><td align="center" class="header-text">ที่วางใจในผลิตภัณฑ์ของกรุงไทย-แอกซ่า</td></tr>
+         <tr><td>&nbsp;</td></tr>
+         <tr>
+            <td>ระบบได้ทำการจองวงเงินผ่าน LINE Pay สำเร็จแล้ว เจ้าหน้าที่ของเราจะติดต่อกลับภายใน 1 ชั่วโมง* ด้วยหมายเลข <span class="under-line-text" >02-770-3599</span></td>
+         </tr>
+         <tr><td>&nbsp;</td></tr>
+         <tr>
+            <td>
+               <div class="gray-box">
+                  <div style="text-align:center;margin-bottom:20px;" >หมายเลขอ้างอิง</div>
+                  <div style="text-align:center;" class="header-text">%POLICY_ID%</div>
+               </div>
+            </td>
+         </tr>
+         <tr><td>&nbsp;</td></tr>
+         <tr>
+            <td>
+               <div class="gray-box">
+                  <table width="100%">
+                     <tr>
+                        <td colspan="2" class="header-text-2" >สรุปแบบประกัน</td>
+                     </tr>
+                     <tr>
+                        <td>แผนประกัน</td>
+                        <td align="right" class="header-normal" >%PLAN%</td>
+                     </tr>
+                     <tr>
+                        <td>ระยะเวลาชำระเบี้ยประกัน</td>
+                        <td align="right" class="header-normal" >%PAYMENT_YEAR% ปี</td>
+                     </tr>
+                     <tr>
+                        <td>งวดชำระเบี้ย</td>
+                        <td align="right" class="header-normal" >%PAYMENT_MODE%</td>
+                     </tr>
+                     <tr>
+                        <td>จำนวนเงินเอาประกัน</td>
+                        <td align="right" class="header-normal" >%SUM_INSURE% บาท</td>
+                     </tr>	
+                     <tr>
+                        <td>เบี้ยประกัน</td>
+                        <td align="right" class="header-normal" >%PREMIUM% บาท</td>
+                     </tr>
+                  </table>
+               </div>
+            </td>
+         </tr>
+         <tr><td>&nbsp;</td></tr>
+         <tr>
+            <td class="gray-text">
 					* หมายเหตุ: ในกรณีที่ท่านทำรายการนอกเวลาทำการ 8.30-19.00 น. เจ้าหน้าที่จะติดต่อกลับในเวลาทำการของวันถัดไป
-				</td>
-			</tr>
-			<tr><td>&nbsp;</td></tr>
-            <tr><td>ขอแสดงความนับถือ</td></tr>
-            <tr><td>บริษัท กรุงไทย-แอกซ่า ประกันชีวิต จำกัด (มหาชน)</td></tr>
-        </table>
-    </body>
+            </td>
+         </tr>
+         <tr><td>&nbsp;</td></tr>
+         <tr><td>ขอแสดงความนับถือ</td></tr>
+         <tr><td>บริษัท กรุงไทย-แอกซ่า ประกันชีวิต จำกัด (มหาชน)</td></tr><tr><td>&nbsp;</td></tr>
+         <tr><td>&nbsp;</td></tr>
+         <tr>
+            <td>
+               <div class="blue-box">
+                  <table align="center">
+                     <tr>
+                        <td align="center"></td>
+                        <td align="center"><a href="http://www.facebook.com/krungthaiaxalife"><img src="cid:imgF"></a><a href="http://www.twitter.com/ktaxalife"><img src="cid:imgT"></a><a href="http://www.youtube.com/krungthaiaxalife"><img src="cid:imgY"></a></td>
+                        <td align="center"></td>
+                     </tr>
+                     <tr><td colspan="3"><div style="height:10px;"></div></td></tr>
+                     <tr><td colspan="3" class="white-bold" align="center" style="font-size:4pt;" ><a style="color:white;text-decoration:underline;" href="https://www.krungthai-axa.co.th/th/disclaimer">Privacy Policy</a></td></tr>
+                     <tr><td colspan="3" class="white-bold" align="center" style="font-size:4pt;" >Copyright &copy; 2015 Krungthai-AXA Insurance PCL</td></tr>
+                     <tr><td colspan="3"><div style="height:10px;"></div></td></tr>
+                     <tr><td colspan="3" class="white-normal" align="center" style="font-size:4pt;" >บมจ.กรุงไทย-แอกซ่า สำนักงานใหญ่ 2034/116-123, 136-143 อิตัลไทย ทาวเวอร์</td></tr>
+                     <tr><td colspan="3" class="white-normal" align="center" style="font-size:4pt;" ><span>ชั้น 27-28, 32-33 ถ.เพชรบุรีตัดใหม่ แขวงบางกะปิ เขตห้วยขวาง กรุงเทพมหานคร 10310</span></td></tr>
+                  </table>
+               </div>
+            </td>
+         </tr>
+      </table>
+   </body>
 </html>

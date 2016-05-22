@@ -25,6 +25,7 @@ import th.co.krungthaiaxa.api.elife.model.DocumentDownload;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
+import th.co.krungthaiaxa.api.elife.products.ProductType;
 
 import javax.inject.Inject;
 import javax.mail.*;
@@ -33,6 +34,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeUtility;
 import java.io.*;
 import java.nio.charset.Charset;
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.util.Base64;
 import java.util.Locale;
@@ -93,6 +95,7 @@ public class EmailServiceTest {
         greenMail.stop();
     }
 
+
     @Test
     public void should_send_quote_ifine_email_with_proper_from_address() throws Exception {
         Quote quote = quoteService.createQuote("xxx", ChannelType.LINE, productQuotation(PRODUCT_IFINE, 55, EVERY_YEAR, 100000.0));
@@ -118,8 +121,82 @@ public class EmailServiceTest {
         assertThat(email.getFrom()).containsOnly(new InternetAddress(emailName));
     }
 
+    //===========================================================================================
+
+    @Test
+    public void should_send_booked_email() throws Exception {
+
+        Quote quote = quoteService.createQuote(randomNumeric(20), ChannelType.LINE, productQuotation());
+        quote(quote, beneficiary(100.0));
+        quote = quoteService.updateQuote(quote);
+        Policy policy = policyService.createPolicy(quote);
+        policy.getInsureds().get(0).getPerson().setEmail("pithan.roj@krungthai-axa.co.th");
+        emailService.sendPolicyBookedEmail(policy);
+
+        assertThat(greenMail.getReceivedMessages()).hasSize(1);
+        MimeMessage email1 = greenMail.getReceivedMessages()[0];
+        String bodyAsString1 = decodeSimpleBody(getBody(email1));
+        assertThat(bodyAsString1).contains("<td>ระบบได้ทำการจองวงเงินผ่าน LINE Pay สำเร็จแล้ว เจ้าหน้าที่ของเราจะติดต่อกลับภายใน 1 ชั่วโมง* ด้วยหมายเลข <span class=\"under-line-text\" >02-770-3599</span></td>");
+        assertThat(bodyAsString1).contains("<tr><td align=\"center\" class=\"header-text\">ขอบคุณ คุณ" + policy.getInsureds().get(0).getPerson().getGivenName() + " " + policy.getInsureds().get(0).getPerson().getSurName() + " </td></tr>");
+        assertThat("<div style=\"text-align:center;\" class=\"header-text\">" + policy.getPolicyId() + "</div>");
+        assertThat("<td align=\"right\" class=\"header-normal\" >" + messageSource.getMessage("product.id." + policy.getCommonData().getProductId(), null, thLocale) + " (" + policy.getCommonData().getProductId() + ")" + "</td>");
+        assertThat("<td align=\"right\" class=\"header-normal\" >" + String.valueOf(policy.getCommonData().getNbOfYearsOfPremium()) + " ปี</td>");
+        assertThat("<td align=\"right\" class=\"header-normal\" >" + messageSource.getMessage("payment.mode." + policy.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().toString(), null, thLocale) + "</td>");
+        DecimalFormat money = new DecimalFormat("#,##0");
+        String sumInsure = "";
+        if (policy.getCommonData().getProductId().equals(ProductType.PRODUCT_10_EC.getName())) {
+            sumInsure = money.format(policy.getPremiumsData().getProduct10ECPremium().getSumInsured().getValue());
+        } else if (policy.getCommonData().getProductId().equals(ProductType.PRODUCT_IFINE.getName())) {
+            sumInsure = money.format(policy.getPremiumsData().getProductIFinePremium().getSumInsured().getValue());
+        } else if (policy.getCommonData().getProductId().equals(ProductType.PRODUCT_IGEN.getName())) {
+            sumInsure = money.format(policy.getPremiumsData().getProductIGenPremium().getSumInsured().getValue());
+        }
+        assertThat("<td align=\"right\" class=\"header-normal\" >" + sumInsure + " บาท</td>");
+        assertThat("<td align=\"right\" class=\"header-normal\" >" + money.format(policy.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()) + " บาท</td>");
+
+    }
+
+    @Test
+    public void should_send_wrong_number_email() throws Exception {
+
+        Quote quote = quoteService.createQuote(randomNumeric(20), ChannelType.LINE, productQuotation());
+        quote(quote, beneficiary(100.0));
+        quote = quoteService.updateQuote(quote);
+        Policy policy = policyService.createPolicy(quote);
+        policy.getInsureds().get(0).getPerson().setEmail("santi.lik@krungthai-axa.co.th");
+        emailService.sendPhoneNumberIsWrongEmail(policy);
+
+        assertThat(greenMail.getReceivedMessages()).hasSize(1);
+        MimeMessage email3 = greenMail.getReceivedMessages()[0];
+        String bodyAsString3 = decodeSimpleBody(getBody(email3));
+        assertThat(bodyAsString3).contains("เนื่องจากเจ้าหน้าที่ไม่สามารถทำการติดต่อท่านผ่านหมายเลขโทรศัพท์ที่ท่านระบุไว้ กรุณายืนยันหมายเลขโทรศัพท์ของท่านอีกครั้ง โทร <span class=\"under-line-text\" >02-770-3599</span> ระหว่างเวลา 8.30-19.00 น.");
+        assertThat("<tr><td align=\"center\" class=\"header-text\">ขอบคุณ คุณ" + policy.getInsureds().get(0).getPerson().getGivenName() + " " + policy.getInsureds().get(0).getPerson().getSurName() + " </td></tr>");
+        assertThat("<div style=\"text-align:center;\" class=\"header-text\">" + policy.getPolicyId() + "</div>");
+
+    }
+
+    @Test
+    public void should_send_not_response_email() throws Exception {
+
+        Quote quote = quoteService.createQuote(randomNumeric(20), ChannelType.LINE, productQuotation());
+        quote(quote, beneficiary(100.0));
+        quote = quoteService.updateQuote(quote);
+        Policy policy = policyService.createPolicy(quote);
+        policy.getInsureds().get(0).getPerson().setEmail("santi.lik@krungthai-axa.co.th");
+        emailService.sendUserNotRespondingEmail(policy);
+
+        assertThat(greenMail.getReceivedMessages()).hasSize(1);
+        MimeMessage email2 = greenMail.getReceivedMessages()[0];
+        String bodyAsString2 = decodeSimpleBody(getBody(email2));
+        assertThat(bodyAsString2).contains("เนื่องจากเจ้าหน้าที่ไม่สามารถติดต่อท่านได้ เจ้าหน้าที่จะทำการติดต่อท่านอีกครั้งด้วยหมายเลข <span class=\"under-line-text\" >02-770-3599</span> ภายในเวลาทำการ 8.30-19.00 น.");
+        assertThat("<tr><td align=\"center\" class=\"header-text\">ขอบคุณ คุณ\" + policy.getInsureds().get(0).getPerson().getGivenName() + \" \" + policy.getInsureds().get(0).getPerson().getSurName() + \" </td></tr>");
+        assertThat("<div style=\"text-align:center;\" class=\"header-text\">" + policy.getPolicyId() + "</div>");
+
+    }
+
     @Test
     public void should_send_ereceipt_email() throws Exception {
+
         Quote quote = quoteService.createQuote(randomNumeric(20), ChannelType.LINE, productQuotation());
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
@@ -133,10 +210,13 @@ public class EmailServiceTest {
         byte[] bytes = Base64.getDecoder().decode(documentDownload.getContent());
         assertThat(new PdfReader(bytes)).isNotNull();
         emailService.sendEreceiptEmail(policy, Pair.of(bytes, "emailServiceTest-e-receipt-10ec.pdf"));
+
         assertThat(greenMail.getReceivedMessages()).hasSize(1);
         MimeMessage email4 = greenMail.getReceivedMessages()[0];
         String bodyAsString4 = decodeSimpleBody(getBody(email4));
-        assertThat(bodyAsString4).contains("<td>บริษัท กรุงไทย-แอกซ่า ประกันชีวิต จำกัด (มหาชน) ขอขอบคุณท่านที่วางใจโดยทำการสมัครแบบประกันชีวิต " + messageSource.getMessage("product.id." + policy.getCommonData().getProductId(), null, thLocale) + " (" + policy.getCommonData().getProductId() + ")" + " ผ่าน LINE Pay");
+        assertThat(bodyAsString4).contains("บริษัท กรุงไทย-แอกซ่า ประกันชีวิต จำกัด (มหาชน) ขอขอบคุณท่านที่วางใจโดยทำการสมัครแบบประกันชีวิต " + messageSource.getMessage("product.id." + policy.getCommonData().getProductId(), null, thLocale) + " (" + policy.getCommonData().getProductId() + ")" + " ผ่าน LINE Pay");
+        assertThat("<tr><td align=\"center\" class=\"header-text\">ที่วางใจ และทำการสมัครแบบประกัน messageSource.getMessage(\"product.id.\" + policy.getCommonData().getProductId(), null, thLocale) + \" (\" + policy.getCommonData().getProductId() + \")\"</td></tr>");
+        assertThat("<tr><td>เรียนคุณ " + policy.getInsureds().get(0).getPerson().getGivenName() + " " + policy.getInsureds().get(0).getPerson().getSurName() + " </td></tr>");
 
         Multipart multipart = (Multipart) email4.getContent();
         for (int i = 0; i < multipart.getCount(); i++) {
@@ -148,51 +228,7 @@ public class EmailServiceTest {
                 assertThat(null != bodyPart.getFileName() && !bodyPart.getFileName().equals(""));
             }
         }
-    }
 
-    @Test
-    public void should_send_wrong_number_email() throws Exception {
-        Quote quote = quoteService.createQuote(randomNumeric(20), ChannelType.LINE, productQuotation());
-        quote(quote, beneficiary(100.0));
-        quote = quoteService.updateQuote(quote);
-        Policy policy = policyService.createPolicy(quote);
-        policy.getInsureds().get(0).getPerson().setEmail("santi.lik@krungthai-axa.co.th");
-
-        emailService.sendPhoneNumberIsWrongEmail(policy);
-        assertThat(greenMail.getReceivedMessages()).hasSize(1);
-        MimeMessage email3 = greenMail.getReceivedMessages()[0];
-        String bodyAsString3 = decodeSimpleBody(getBody(email3));
-        assertThat(bodyAsString3).contains("<td>เนื่องจากเจ้าหน้าที่ไม่สามารถทำการติดต่อท่านผ่านหมายเลขโทรศัพท์ที่ท่านระบุไว้ กรุณายืนยันหมายเลขโทรศัพท์ของท่านอีกครั้ง โทร <span class=\"under-line-text\" >02-770-3599</span> ระหว่างเวลา 8.30-19.00 น.");
-    }
-
-    @Test
-    public void should_send_not_response_email() throws Exception {
-        Quote quote = quoteService.createQuote(randomNumeric(20), ChannelType.LINE, productQuotation());
-        quote(quote, beneficiary(100.0));
-        quote = quoteService.updateQuote(quote);
-        Policy policy = policyService.createPolicy(quote);
-        policy.getInsureds().get(0).getPerson().setEmail("santi.lik@krungthai-axa.co.th");
-
-        emailService.sendUserNotRespondingEmail(policy);
-        assertThat(greenMail.getReceivedMessages()).hasSize(1);
-        MimeMessage email2 = greenMail.getReceivedMessages()[0];
-        String bodyAsString2 = decodeSimpleBody(getBody(email2));
-        assertThat(bodyAsString2).contains("<td>เนื่องจากเจ้าหน้าที่ไม่สามารถติดต่อท่านได้ เจ้าหน้าที่จะทำการติดต่อท่านอีกครั้งด้วยหมายเลข <span class=\"under-line-text\" >02-770-3599</span> ภายในเวลาทำการ 8.30-19.00 น.");
-    }
-
-    @Test
-    public void should_send_booked_email() throws Exception {
-        Quote quote = quoteService.createQuote(randomNumeric(20), ChannelType.LINE, productQuotation());
-        quote(quote, beneficiary(100.0));
-        quote = quoteService.updateQuote(quote);
-        Policy policy = policyService.createPolicy(quote);
-        policy.getInsureds().get(0).getPerson().setEmail("santi.lik@krungthai-axa.co.th");
-
-        emailService.sendPolicyBookedEmail(policy);
-        assertThat(greenMail.getReceivedMessages()).hasSize(1);
-        MimeMessage email1 = greenMail.getReceivedMessages()[0];
-        String bodyAsString1 = decodeSimpleBody(getBody(email1));
-        assertThat(bodyAsString1).contains("<td>ระบบได้ทำการจองวงเงินผ่าน LINE Pay สำเร็จแล้ว เจ้าหน้าที่ของเราจะติดต่อกลับภายใน 1 ชั่วโมง* ด้วยหมายเลข <span class=\"under-line-text\" >02-770-3599</span>");
     }
 
     @Test

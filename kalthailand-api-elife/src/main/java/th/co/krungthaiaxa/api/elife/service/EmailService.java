@@ -84,6 +84,9 @@ public class EmailService {
         logger.info("Sending policy booked email");
         List<Pair<byte[], String>> base64ImgFileNames = new ArrayList<>();
         base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/logo.png")), "<imageElife>"));
+        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/facebook-logo.png")), "<imgF>"));
+        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/twitter-logo.png")), "<imgT>"));
+        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/youtube-logo.png")), "<imgY>"));
         emailSender.sendEmail(emailName, policy.getInsureds().get(0).getPerson().getEmail(), getBookedEmailContentSubject(), getBookedEmailContent(policy), base64ImgFileNames, new ArrayList<>());
     }
 
