@@ -10,7 +10,6 @@ import org.springframework.ws.soap.client.core.SoapActionCallback;
 import org.springframework.ws.transport.WebServiceMessageSender;
 import org.springframework.ws.transport.http.HttpComponentsMessageSender;
 import th.co.krungthaiaxa.api.elife.exception.ElifeException;
-import th.co.krungthaiaxa.api.elife.exception.ExceptionUtils;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.enums.DocumentType;
 import th.co.krungthaiaxa.api.elife.tmc.wsdl.ReceivePDFJSON;
@@ -20,6 +19,9 @@ import th.co.krungthaiaxa.api.elife.utils.JsonUtil;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
+import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.notNull;
+import static th.co.krungthaiaxa.api.elife.utils.JsonUtil.getJson;
+
 @Component
 public class TMCClient extends WebServiceGatewaySupport {
     private final static Logger logger = LoggerFactory.getLogger(TMCClient.class);
@@ -28,12 +30,12 @@ public class TMCClient extends WebServiceGatewaySupport {
     private String tmcWebServiceUrl;
 
     public void sendPDFToTMC(Policy policy, String pdfBase64Encoded, DocumentType documentType) {
-        ExceptionUtils.notNull(pdfBase64Encoded, new ElifeException("Cannot send null document"));
-        ExceptionUtils.notNull(documentType, new ElifeException("Cannot send document with no document type"));
-        ExceptionUtils.notNull(policy, new ElifeException("Cannot send document on a null policy"));
-        ExceptionUtils.notNull(policy.getInsureds().get(0), new ElifeException("Cannot send document with no insured"));
-        ExceptionUtils.notNull(policy.getInsureds().get(0).getPerson(), new ElifeException("Cannot send document when insured has no details"));
-        ExceptionUtils.notNull(policy.getInsureds().get(0).getPerson().getRegistrations(), new ElifeException("Cannot send document when insured has no ID"));
+        notNull(pdfBase64Encoded, new ElifeException("Cannot send null document"));
+        notNull(documentType, new ElifeException("Cannot send document with no document type"));
+        notNull(policy, new ElifeException("Cannot send document on a null policy"));
+        notNull(policy.getInsureds().get(0), new ElifeException("Cannot send document with no insured"));
+        notNull(policy.getInsureds().get(0).getPerson(), new ElifeException("Cannot send document when insured has no details"));
+        notNull(policy.getInsureds().get(0).getPerson().getRegistrations(), new ElifeException("Cannot send document when insured has no ID"));
 
         Jaxb2Marshaller jaxb2Marshaller = marshaller();
         setMessageSender(webServiceMessageSender());
@@ -55,7 +57,7 @@ public class TMCClient extends WebServiceGatewaySupport {
         tmcSendingPDFRequest.setPolicyNumber(policy.getPolicyId());
 
         ReceivePDFJSON request = new ReceivePDFJSON();
-        request.setStringJSON(new String(JsonUtil.getJson(tmcSendingPDFRequest), Charset.forName("UTF-8")));
+        request.setStringJSON(new String(getJson(tmcSendingPDFRequest), Charset.forName("UTF-8")));
 
         logger.info("Sending document [" + documentType.name() + "] for policy [" + policy.getPolicyId() + "].");
         ReceivePDFJSONResponse response = (ReceivePDFJSONResponse) getWebServiceTemplate().marshalSendAndReceive(tmcWebServiceUrl, request, new SoapActionCallback("http://tempuri.org/ReceivePDFJSON"));
