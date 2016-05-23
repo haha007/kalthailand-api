@@ -45,6 +45,12 @@ public class ClientSideRoleFilter implements Filter {
             return;
         }
 
+        if (httpServletRequest.getRequestURI().endsWith("/swagger-ui.html")) {
+            // nothing to do for swagger ui
+            filterChain.doFilter(servletRequest, servletResponse);
+            return;
+        }
+
         InputStream inputStream = this.getClass().getResourceAsStream("/static/uiRoleFilter.properties");
         if (inputStream == null) {
             logger.info("There is no file [/static/uiRoleFilter.properties]. Filter chain will resume without any alterations in request result.");

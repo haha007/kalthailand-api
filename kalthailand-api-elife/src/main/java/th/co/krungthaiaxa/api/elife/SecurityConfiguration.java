@@ -1,63 +1,41 @@
 package th.co.krungthaiaxa.api.elife;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import th.co.krungthaiaxa.api.elife.filter.KalApiTokenFilter;
+import th.co.krungthaiaxa.api.elife.filter.UnauthorizedHandler;
+
+import javax.inject.Inject;
 
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
-
-    @Value("${security.api.user.name}")
-    private String apiUserName;
-    @Value("${security.api.user.password}")
-    private String apiUserPassword;
-    @Value("${security.ui.admin.user.name}")
-    private String adminUserName;
-    @Value("${security.ui.admin.user.password}")
-    private String adminUserPassword;
-    @Value("${security.ui.autopay.user.name}")
-    private String autopayUserName;
-    @Value("${security.ui.autopay.user.password}")
-    private String autopayUserPassword;
-    @Value("${security.ui.validation.user.name}")
-    private String validationUserName;
-    @Value("${security.ui.validation.user.password}")
-    private String validationUserPassword;
-    @Value("${security.ui.slc.user.name}")
-    private String slcUserName;
-    @Value("${security.ui.slc.user.password}")
-    private String slcUserPassword;
+    @Inject
+    private UnauthorizedHandler unauthorizedHandler;
+    @Inject
+    private KalApiTokenFilter kalApiTokenFilter;
 
     @Override
-    public void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication()
-                .withUser(adminUserName).password(adminUserPassword).roles("ADMIN", "UI");
-        auth.inMemoryAuthentication()
-                .withUser(autopayUserName).password(autopayUserPassword).roles("AUTOPAY", "UI");
-        auth.inMemoryAuthentication()
-                .withUser(validationUserName).password(validationUserPassword).roles("VALIDATION", "UI");
-        auth.inMemoryAuthentication()
-                .withUser(slcUserName).password(slcUserPassword).roles("SLC", "UI");
-        auth.inMemoryAuthentication()
-                .withUser(apiUserName).password(apiUserPassword).roles("UI");
-    }
+    protected void configure(HttpSecurity httpSecurity) throws Exception {
+        httpSecurity
+                // we don't need CSRF because our token is invulnerable
+                .csrf().disable()
+                .exceptionHandling().authenticationEntryPoint(unauthorizedHandler)
+                .and()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                // All requests should be authorized since validation will be done in filter using token
+                .and()
+                .authorizeRequests()
+                .anyRequest().permitAll();
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http
-            .httpBasic()
-            .and().authorizeRequests()
-                // eLife dashboard console rights
-                .antMatchers(HttpMethod.GET, "/admin/**").hasAnyRole("ADMIN", "AUTOPAY", "VALIDATION", "SLC")
-                // USER rights
-                .antMatchers(HttpMethod.GET, "/**").authenticated()
-                .antMatchers(HttpMethod.POST, "/**").authenticated()
-                .antMatchers(HttpMethod.PUT, "/**").authenticated()
-            .and().csrf().disable();
+        // Custom filter to check for KAL API token
+        httpSecurity.addFilterBefore(kalApiTokenFilter, UsernamePasswordAuthenticationFilter.class);
+
+        // disable page caching
+        httpSecurity.headers().cacheControl();
     }
 }
