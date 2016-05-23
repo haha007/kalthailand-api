@@ -49,7 +49,6 @@ public class PolicyService {
     private final static Logger logger = LoggerFactory.getLogger(PolicyService.class);
 
     private final TMCClient tmcClient;
-    private final CDBRepository cdbRepository;
     private final PaymentRepository paymentRepository;
     private final PolicyCriteriaRepository policyCriteriaRepository;
     private final PolicyRepository policyRepository;
@@ -60,6 +59,9 @@ public class PolicyService {
     private final DocumentService documentService;
     private final SMSApiService smsApiService;
     private final ProductFactory productFactory;
+
+    // Can be set in test using Mockito
+    private CDBRepository cdbRepository;
 
     @Inject
     public PolicyService(TMCClient tmcClient, CDBRepository cdbRepository,
@@ -412,4 +414,7 @@ public class PolicyService {
         }
     }
 
+    public void setCdbRepository(CDBRepository cdbRepository) {
+        this.cdbRepository = cdbRepository;
+    }
 }
