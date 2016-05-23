@@ -94,6 +94,9 @@ public class EmailService {
         logger.info("Sending user is not responding email");
         List<Pair<byte[], String>> base64ImgFileNames = new ArrayList<>();
         base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/logo.png")), "<imageElife>"));
+        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/facebook-logo.png")), "<imgF>"));
+        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/twitter-logo.png")), "<imgT>"));
+        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/youtube-logo.png")), "<imgY>"));
         emailSender.sendEmail(emailName, policy.getInsureds().get(0).getPerson().getEmail(), getUserNotResponseContentSubject(), getUserNotResponseContent(policy), base64ImgFileNames, new ArrayList<>());
     }
 
@@ -101,6 +104,9 @@ public class EmailService {
         logger.info("Sending phone number is wrong email");
         List<Pair<byte[], String>> base64ImgFileNames = new ArrayList<>();
         base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/logo.png")), "<imageElife>"));
+        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/facebook-logo.png")), "<imgF>"));
+        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/twitter-logo.png")), "<imgT>"));
+        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/youtube-logo.png")), "<imgY>"));
         emailSender.sendEmail(emailName, policy.getInsureds().get(0).getPerson().getEmail(), getPhoneNumberIsWrongContentSubject(), getPhoneNumberIsWrongContent(policy), base64ImgFileNames, new ArrayList<>());
     }
 
@@ -108,6 +114,9 @@ public class EmailService {
         logger.info("Sending ereceipt email");
         List<Pair<byte[], String>> base64ImgFileNames = new ArrayList<>();
         base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/logo.png")), "<imageElife>"));
+        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/facebook-logo.png")), "<imgF>"));
+        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/twitter-logo.png")), "<imgT>"));
+        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/youtube-logo.png")), "<imgY>"));
         List<Pair<byte[], String>> fileList = new ArrayList<>();
         fileList.add(attachFile);
         emailSender.sendEmail(emailName, policy.getInsureds().get(0).getPerson().getEmail(), getEreceiptEmailSubject(policy), getEreceiptEmailContent(policy), base64ImgFileNames, fileList);

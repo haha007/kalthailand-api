@@ -130,7 +130,7 @@ public class EmailServiceTest {
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
         Policy policy = policyService.createPolicy(quote);
-        policy.getInsureds().get(0).getPerson().setEmail("pithan.roj@krungthai-axa.co.th");
+        policy.getInsureds().get(0).getPerson().setEmail("tanawat_hemchua@hotmail.com");
         emailService.sendPolicyBookedEmail(policy);
 
         assertThat(greenMail.getReceivedMessages()).hasSize(1);
@@ -163,13 +163,13 @@ public class EmailServiceTest {
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
         Policy policy = policyService.createPolicy(quote);
-        policy.getInsureds().get(0).getPerson().setEmail("santi.lik@krungthai-axa.co.th");
+        policy.getInsureds().get(0).getPerson().setEmail("tanawat_hemchua@hotmail.com");
         emailService.sendPhoneNumberIsWrongEmail(policy);
 
         assertThat(greenMail.getReceivedMessages()).hasSize(1);
         MimeMessage email3 = greenMail.getReceivedMessages()[0];
         String bodyAsString3 = decodeSimpleBody(getBody(email3));
-        assertThat(bodyAsString3).contains("เนื่องจากเจ้าหน้าที่ไม่สามารถทำการติดต่อท่านผ่านหมายเลขโทรศัพท์ที่ท่านระบุไว้ กรุณายืนยันหมายเลขโทรศัพท์ของท่านอีกครั้ง โทร <span class=\"under-line-text\" >02-770-3599</span> ระหว่างเวลา 8.30-19.00 น.");
+        assertThat(bodyAsString3).contains("เนื่องจากเจ้าหน้าที่ไม่สามารถทำการติดต่อท่าน ผ่านหมายเลขโทรศัพท์ที่ท่านระบุไว้ กรุณายืนยันหมายเลขโทรศัพท์ของท่านอีกครั้ง โทร <span class=\"under-line-text\" >02-770-3599</span> ระหว่างเวลา 8.30-19.00 น.");
         assertThat("<tr><td align=\"center\" class=\"header-text\">ขอบคุณ คุณ" + policy.getInsureds().get(0).getPerson().getGivenName() + " " + policy.getInsureds().get(0).getPerson().getSurName() + " </td></tr>");
         assertThat("<div style=\"text-align:center;\" class=\"header-text\">" + policy.getPolicyId() + "</div>");
 
@@ -182,7 +182,7 @@ public class EmailServiceTest {
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
         Policy policy = policyService.createPolicy(quote);
-        policy.getInsureds().get(0).getPerson().setEmail("santi.lik@krungthai-axa.co.th");
+        policy.getInsureds().get(0).getPerson().setEmail("tanawat_hemchua@hotmail.com");
         emailService.sendUserNotRespondingEmail(policy);
 
         assertThat(greenMail.getReceivedMessages()).hasSize(1);
@@ -201,7 +201,7 @@ public class EmailServiceTest {
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
         Policy policy = policyService.createPolicy(quote);
-        policy.getInsureds().get(0).getPerson().setEmail("santi.lik@krungthai-axa.co.th");
+        policy.getInsureds().get(0).getPerson().setEmail("tanawat_hemchua@hotmail.com");
 
         documentService.generateValidatedPolicyDocuments(policy);
         Optional<Document> documentPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(ERECEIPT_PDF)).findFirst();
