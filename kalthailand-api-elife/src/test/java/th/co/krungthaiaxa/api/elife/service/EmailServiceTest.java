@@ -25,7 +25,6 @@ import th.co.krungthaiaxa.api.elife.model.Document;
 import th.co.krungthaiaxa.api.elife.model.DocumentDownload;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.Quote;
-import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
 
 import javax.inject.Inject;
@@ -45,6 +44,7 @@ import static com.icegreen.greenmail.util.GreenMailUtil.getBody;
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static th.co.krungthaiaxa.api.elife.TestUtil.*;
+import static th.co.krungthaiaxa.api.elife.model.enums.ChannelType.LINE;
 import static th.co.krungthaiaxa.api.elife.model.enums.DocumentType.ERECEIPT_PDF;
 import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.EVERY_MONTH;
 import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.EVERY_YEAR;
@@ -55,7 +55,6 @@ import static th.co.krungthaiaxa.api.elife.products.ProductType.PRODUCT_IFINE;
 @WebAppConfiguration
 @ActiveProfiles("test")
 public class EmailServiceTest extends ELifeTest {
-    private final static String ERECEIPT_MERGED_FILE_NAME = "e-receipts.pdf";
     @Rule
     public final GreenMailRule greenMail = new GreenMailRule(ServerSetupTest.SMTP_IMAP);
     @Value("${email.smtp.server}")
@@ -83,6 +82,7 @@ public class EmailServiceTest extends ELifeTest {
 
     @Before
     public void setup() {
+        super.setup();
         InputStream inputStream = this.getClass().getResourceAsStream("/graph.jpg");
         try {
             base64Graph = Base64.getEncoder().encodeToString(IOUtils.toByteArray(inputStream));
@@ -97,10 +97,9 @@ public class EmailServiceTest extends ELifeTest {
         greenMail.stop();
     }
 
-
     @Test
     public void should_send_quote_ifine_email_with_proper_from_address() throws Exception {
-        Quote quote = quoteService.createQuote("xxx", ChannelType.LINE, productQuotation(PRODUCT_IFINE, 55, EVERY_YEAR, 100000.0));
+        Quote quote = quoteService.createQuote("xxx", LINE, productQuotation(PRODUCT_IFINE, 55, EVERY_YEAR, 100000.0));
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
         quote.getInsureds().get(0).getPerson().setEmail("santi.lik@krungthai-axa.co.th");
@@ -112,7 +111,7 @@ public class EmailServiceTest extends ELifeTest {
 
     @Test
     public void should_send_quote_10ec_email_with_proper_from_address() throws Exception {
-        Quote quote = quoteService.createQuote(randomNumeric(20), ChannelType.LINE, productQuotation());
+        Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation());
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 
@@ -128,7 +127,7 @@ public class EmailServiceTest extends ELifeTest {
     @Test
     public void should_send_booked_email() throws Exception {
 
-        Quote quote = quoteService.createQuote(randomNumeric(20), ChannelType.LINE, productQuotation());
+        Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation());
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
         Policy policy = policyService.createPolicy(quote);
@@ -161,7 +160,7 @@ public class EmailServiceTest extends ELifeTest {
     @Test
     public void should_send_wrong_number_email() throws Exception {
 
-        Quote quote = quoteService.createQuote(randomNumeric(20), ChannelType.LINE, productQuotation());
+        Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation());
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
         Policy policy = policyService.createPolicy(quote);
@@ -180,7 +179,7 @@ public class EmailServiceTest extends ELifeTest {
     @Test
     public void should_send_not_response_email() throws Exception {
 
-        Quote quote = quoteService.createQuote(randomNumeric(20), ChannelType.LINE, productQuotation());
+        Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation());
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
         Policy policy = policyService.createPolicy(quote);
@@ -199,7 +198,7 @@ public class EmailServiceTest extends ELifeTest {
     @Test
     public void should_send_ereceipt_email() throws Exception {
 
-        Quote quote = quoteService.createQuote(randomNumeric(20), ChannelType.LINE, productQuotation());
+        Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation());
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
         Policy policy = policyService.createPolicy(quote);
@@ -235,7 +234,7 @@ public class EmailServiceTest extends ELifeTest {
 
     @Test
     public void should_send_quote_10ec_email_to_insured_email_address() throws Exception {
-        Quote quote = quoteService.createQuote(randomNumeric(20), ChannelType.LINE, productQuotation());
+        Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation());
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 
@@ -248,7 +247,7 @@ public class EmailServiceTest extends ELifeTest {
 
     @Test
     public void should_send_quote_10ec_email_containing_amounts_for_1_million_baht_with_insured_of_35_years_old() throws Exception {
-        Quote quote = quoteService.createQuote(randomNumeric(20), ChannelType.LINE, productQuotation());
+        Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation());
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 
@@ -265,7 +264,7 @@ public class EmailServiceTest extends ELifeTest {
 
     @Test
     public void should_send_quote_10ec_email_containing_amounts_for_500_thousand_baht_with_insured_of_55_years_old() throws Exception {
-        Quote quote = quoteService.createQuote(randomNumeric(20), ChannelType.LINE, productQuotation(55, EVERY_YEAR, 500000.0));
+        Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation(55, EVERY_YEAR, 500000.0));
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 
@@ -282,7 +281,7 @@ public class EmailServiceTest extends ELifeTest {
 
     @Test
     public void should_send_quote_email_containing_links_to_line_app() throws Exception {
-        Quote quote = quoteService.createQuote(randomNumeric(20), ChannelType.LINE, productQuotation(55, EVERY_YEAR, 500000.0));
+        Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation(55, EVERY_YEAR, 500000.0));
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 
@@ -299,7 +298,7 @@ public class EmailServiceTest extends ELifeTest {
 
     @Test
     public void should_send_quote_10ec_email_with_product_information() throws Exception {
-        Quote quote = quoteService.createQuote(randomNumeric(20), ChannelType.LINE, productQuotation(55, EVERY_YEAR, 500000.0));
+        Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation(55, EVERY_YEAR, 500000.0));
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 
@@ -326,7 +325,7 @@ public class EmailServiceTest extends ELifeTest {
 
     @Test
     public void generate_sale_illustration_10ec_pdf_file() throws Exception {
-        Quote quote = quoteService.createQuote(randomNumeric(20), ChannelType.LINE, productQuotation());
+        Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation());
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 
@@ -353,7 +352,7 @@ public class EmailServiceTest extends ELifeTest {
 
     @Test
     public void should_send_policy_booked_email_with_proper_from_address() throws Exception {
-        Quote quote = quoteService.createQuote(RandomStringUtils.randomNumeric(20), ChannelType.LINE, productQuotation());
+        Quote quote = quoteService.createQuote(RandomStringUtils.randomNumeric(20), LINE, productQuotation());
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
         Policy policy = policyService.createPolicy(quote);
@@ -366,7 +365,7 @@ public class EmailServiceTest extends ELifeTest {
 
     @Test
     public void should_send_10ec_ereceipt_pdf_file_attachment_in_email() throws Exception {
-        Quote quote = quoteService.createQuote(RandomStringUtils.randomNumeric(20), ChannelType.LINE, productQuotation());
+        Quote quote = quoteService.createQuote(RandomStringUtils.randomNumeric(20), LINE, productQuotation());
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
         Policy policy = policyService.createPolicy(quote);
@@ -387,7 +386,7 @@ public class EmailServiceTest extends ELifeTest {
 
         assertThat(greenMail.getReceivedMessages()).hasSize(1);
         MimeMessage email = greenMail.getReceivedMessages()[0];
-        assertThat(email.getSubject()).isEqualTo(IOUtils.toString(this.getClass().getResourceAsStream("/email-content/email-ereceipt-subject-10ec.txt"), Charset.forName("UTF-8")));
+        assertThat(email.getSubject()).isEqualTo(IOUtils.toString(this.getClass().getResourceAsStream("/email-content/email-ereceipt-subject.txt"), Charset.forName("UTF-8")));
         assertThat(email.getFrom()).containsOnly(new InternetAddress(emailName));
 
         String bodyAsString = decodeSimpleBody(getBody(email));
@@ -408,7 +407,7 @@ public class EmailServiceTest extends ELifeTest {
 
     @Test
     public void should_send_ifine_ereceipt_pdf_file_attachment_in_email() throws Exception {
-        Quote quote = quoteService.createQuote("xxx", ChannelType.LINE, productQuotation(PRODUCT_IFINE, 50, EVERY_MONTH, 10000.0));
+        Quote quote = quoteService.createQuote("xxx", LINE, productQuotation(PRODUCT_IFINE, 50, EVERY_MONTH, 10000.0));
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
         Policy policy = policyService.createPolicy(quote);
@@ -429,7 +428,7 @@ public class EmailServiceTest extends ELifeTest {
 
         assertThat(greenMail.getReceivedMessages()).hasSize(1);
         MimeMessage email = greenMail.getReceivedMessages()[0];
-        assertThat(email.getSubject()).isEqualTo(IOUtils.toString(this.getClass().getResourceAsStream("/email-content/email-ereceipt-subject-ifine.txt"), Charset.forName("UTF-8")));
+        assertThat(email.getSubject()).isEqualTo(IOUtils.toString(this.getClass().getResourceAsStream("/email-content/email-ereceipt-subject.txt"), Charset.forName("UTF-8")));
         assertThat(email.getFrom()).containsOnly(new InternetAddress(emailName));
 
         String bodyAsString = decodeSimpleBody(getBody(email));

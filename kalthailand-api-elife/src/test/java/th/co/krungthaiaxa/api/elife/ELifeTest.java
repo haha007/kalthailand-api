@@ -28,7 +28,7 @@ public class ELifeTest {
     @Inject
     protected PolicyService policyService;
     @Inject
-    protected AuthClient authClient;
+    private AuthClient authClient;
     @Inject
     private SigningClient signingClient;
 
