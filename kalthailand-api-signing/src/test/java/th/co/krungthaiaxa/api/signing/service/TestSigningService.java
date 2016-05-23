@@ -24,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @WebAppConfiguration
 @ActiveProfiles("test")
 public class TestSigningService {
-    public static final String SRC = "application-form.pdf";
+    public static final String SRC = "/application-form.pdf";
 
     @Inject
     private SigningService signingService;
