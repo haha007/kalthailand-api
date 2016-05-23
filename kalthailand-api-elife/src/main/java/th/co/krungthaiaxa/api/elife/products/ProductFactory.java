@@ -25,7 +25,7 @@ public class ProductFactory {
         } else if (productId.equals(ProductType.PRODUCT_IFINE.getName())) {
             return productIFine;
         } else if (productId.equals(ProductType.PRODUCT_IGEN.getName())) {
-            return productIFine;
+            return productIGen;
         } else {
             throw new IllegalArgumentException("The Product [" + productId + "] is unknown.");
         }
