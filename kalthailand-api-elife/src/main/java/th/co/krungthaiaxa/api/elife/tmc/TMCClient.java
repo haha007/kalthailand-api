@@ -43,6 +43,7 @@ public class TMCClient extends WebServiceGatewaySupport {
 
         TMCSendingPDFRequest tmcSendingPDFRequest = new TMCSendingPDFRequest();
         tmcSendingPDFRequest.setContent(pdfBase64Encoded);
+        tmcSendingPDFRequest.setProductType(policy.getCommonData().getProductName());
         tmcSendingPDFRequest.setCustomerName(
                 policy.getInsureds().get(0).getPerson().getTitle() + " " +
                 policy.getInsureds().get(0).getPerson().getGivenName() + " " +

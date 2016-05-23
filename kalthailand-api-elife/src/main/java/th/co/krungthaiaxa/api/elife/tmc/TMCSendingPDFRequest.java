@@ -2,6 +2,7 @@ package th.co.krungthaiaxa.api.elife.tmc;
 
 public class TMCSendingPDFRequest {
     private String content;
+    private String productType;
     private String mimeType;
     private String policyNumber;
     private String documentType;
@@ -15,6 +16,14 @@ public class TMCSendingPDFRequest {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public String getProductType() {
+        return productType;
+    }
+
+    public void setProductType(String productType) {
+        this.productType = productType;
     }
 
     public String getMimeType() {
