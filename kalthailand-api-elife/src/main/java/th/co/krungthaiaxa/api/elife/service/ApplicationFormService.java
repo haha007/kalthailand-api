@@ -80,7 +80,7 @@ public class ApplicationFormService {
     }
 
     private byte[] getPage1(Policy pol, boolean validatedPolicy) throws Exception {
-        InputStream is1 = getClass().getClassLoader().getResourceAsStream("application-form/application-form-1.png");
+        InputStream is1 = getClass().getClassLoader().getResourceAsStream("application-form/application-form-1.gif");
         BufferedImage bf1 = ImageIO.read(is1);
         Graphics g1 = bf1.getGraphics();
         g1 = setGraphicColorAndFontBigText(g1);
@@ -299,7 +299,7 @@ public class ApplicationFormService {
     }
 
     private byte[] getPage2(Policy pol) throws Exception {
-        InputStream is2 = getClass().getClassLoader().getResourceAsStream("application-form/application-form-2.png");
+        InputStream is2 = getClass().getClassLoader().getResourceAsStream("application-form/application-form-2.gif");
         BufferedImage bf2 = ImageIO.read(is2);
         Graphics g2 = bf2.getGraphics();
         g2 = setGraphicColorAndFont(g2);
@@ -417,7 +417,7 @@ public class ApplicationFormService {
     }
 
     private byte[] getPage3(Policy pol) throws Exception {
-        InputStream is3 = getClass().getClassLoader().getResourceAsStream("application-form/application-form-3.png");
+        InputStream is3 = getClass().getClassLoader().getResourceAsStream("application-form/application-form-3.gif");
         BufferedImage bf3 = ImageIO.read(is3);
         Graphics g3 = bf3.getGraphics();
         g3 = setGraphicColorAndFont(g3);
