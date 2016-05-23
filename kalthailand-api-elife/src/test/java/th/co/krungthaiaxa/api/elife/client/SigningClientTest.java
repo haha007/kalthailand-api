@@ -1,17 +1,11 @@
 package th.co.krungthaiaxa.api.elife.client;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.web.client.RestTemplate;
 import th.co.krungthaiaxa.api.elife.ELifeTest;
 import th.co.krungthaiaxa.api.elife.KalApiApplication;
 import th.co.krungthaiaxa.api.elife.TestUtil;
@@ -30,9 +24,6 @@ import java.util.Optional;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static th.co.krungthaiaxa.api.elife.model.enums.DocumentType.APPLICATION_FORM;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -46,22 +37,9 @@ public class SigningClientTest extends ELifeTest {
     private QuoteService quoteService;
     @Inject
     private SigningClient signingClient;
-    @Inject
-    private AuthClient authClient;
-    private RestTemplate restTemplate;
-
-    @Before
-    public void setup() {
-        restTemplate = mock(RestTemplate.class);
-        authClient.setTemplate(restTemplate);
-        signingClient.setTemplate(restTemplate);
-    }
 
     @Test
     public void should_get_signed_application_form() throws IOException {
-        when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(String.class))).thenReturn(getFakeToken());
-        when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(String.class))).thenReturn(getFakeToken());
-
         Policy policy = getPolicy();
         documentService.generateNotValidatedPolicyDocuments(policy);
         Optional<Document> applicationFormPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(APPLICATION_FORM)).findFirst();
@@ -76,9 +54,5 @@ public class SigningClientTest extends ELifeTest {
         quote = quoteService.updateQuote(quote);
 
         return policyService.createPolicy(quote);
-    }
-
-    private ResponseEntity<String> getFakeToken() {
-        return new ResponseEntity<String>("123456", HttpStatus.OK);
     }
 }
