@@ -15,6 +15,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import th.co.krungthaiaxa.api.elife.ELifeTest;
 import th.co.krungthaiaxa.api.elife.TestUtil;
 import th.co.krungthaiaxa.api.elife.data.CollectionFile;
 import th.co.krungthaiaxa.api.elife.data.CollectionFileLine;
@@ -56,13 +57,11 @@ import static th.co.krungthaiaxa.api.elife.service.RLSService.ERROR_NO_REGISTRAT
 @SpringApplicationConfiguration(classes = KalApiApplication.class)
 @WebAppConfiguration
 @ActiveProfiles("test")
-public class RLSServiceTest {
+public class RLSServiceTest extends ELifeTest {
     @Inject
     private PaymentRepository paymentRepository;
     @Inject
     private PolicyRepository policyRepository;
-    @Inject
-    private PolicyService policyService;
     @Inject
     private QuoteService quoteService;
     @Inject

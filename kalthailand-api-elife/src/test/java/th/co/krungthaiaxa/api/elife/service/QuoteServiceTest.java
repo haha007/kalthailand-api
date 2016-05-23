@@ -6,6 +6,7 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import th.co.krungthaiaxa.api.elife.ELifeTest;
 import th.co.krungthaiaxa.api.elife.TestUtil;
 import th.co.krungthaiaxa.api.elife.exception.ElifeException;
 import th.co.krungthaiaxa.api.elife.model.Quote;
@@ -29,9 +30,7 @@ import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.EVERY_MON
 @SpringApplicationConfiguration(classes = KalApiApplication.class)
 @WebAppConfiguration
 @ActiveProfiles("test")
-public class QuoteServiceTest {
-    @Inject
-    private PolicyService policyService;
+public class QuoteServiceTest extends ELifeTest {
     @Inject
     private QuoteService quoteService;
     @Inject

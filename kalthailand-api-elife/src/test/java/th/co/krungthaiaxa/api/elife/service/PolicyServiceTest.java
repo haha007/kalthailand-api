@@ -3,7 +3,6 @@ package th.co.krungthaiaxa.api.elife.service;
 import com.icegreen.greenmail.junit.GreenMailRule;
 import com.icegreen.greenmail.util.ServerSetupTest;
 import org.assertj.core.api.Assertions;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,6 +10,7 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import th.co.krungthaiaxa.api.elife.ELifeTest;
 import th.co.krungthaiaxa.api.elife.KalApiApplication;
 import th.co.krungthaiaxa.api.elife.TestUtil;
 import th.co.krungthaiaxa.api.elife.exception.ElifeException;
@@ -22,38 +22,23 @@ import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
 import th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 import th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus;
-import th.co.krungthaiaxa.api.elife.repository.CDBRepository;
 
 import javax.inject.Inject;
 
-import static java.util.Optional.empty;
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiApplication.class)
 @WebAppConfiguration
 @ActiveProfiles("test")
-public class PolicyServiceTest {
-    @Inject
-    private PolicyService policyService;
+public class PolicyServiceTest extends ELifeTest {
     @Inject
     private QuoteService quoteService;
-    private CDBRepository cdbRepository;
 
     @Rule
     public final GreenMailRule greenMail = new GreenMailRule(ServerSetupTest.SMTP_IMAP);
-
-    @Before
-    public void setup() {
-        cdbRepository = mock(CDBRepository.class);
-        policyService.setCdbRepository(cdbRepository);
-        when(cdbRepository.getExistingAgentCode(anyString(), anyString())).thenReturn(empty());
-    }
 
     @Test
     public void should_return_error_when_create_policy_if_quote_not_provided() {

@@ -19,6 +19,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import th.co.krungthaiaxa.api.elife.ELifeTest;
 import th.co.krungthaiaxa.api.elife.KalApiApplication;
 import th.co.krungthaiaxa.api.elife.model.Document;
 import th.co.krungthaiaxa.api.elife.model.DocumentDownload;
@@ -53,7 +54,7 @@ import static th.co.krungthaiaxa.api.elife.products.ProductType.PRODUCT_IFINE;
 @SpringApplicationConfiguration(classes = KalApiApplication.class)
 @WebAppConfiguration
 @ActiveProfiles("test")
-public class EmailServiceTest {
+public class EmailServiceTest extends ELifeTest {
     private final static String ERECEIPT_MERGED_FILE_NAME = "e-receipts.pdf";
     @Rule
     public final GreenMailRule greenMail = new GreenMailRule(ServerSetupTest.SMTP_IMAP);
@@ -73,8 +74,6 @@ public class EmailServiceTest {
     private EmailService emailService;
     @Inject
     private QuoteService quoteService;
-    @Inject
-    private PolicyService policyService;
 
     private String base64Graph;
 
@@ -82,11 +81,14 @@ public class EmailServiceTest {
     private MessageSource messageSource;
     private Locale thLocale = new Locale("th", "");
 
-
     @Before
-    public void setup() throws IOException {
+    public void setup() {
         InputStream inputStream = this.getClass().getResourceAsStream("/graph.jpg");
-        base64Graph = Base64.getEncoder().encodeToString(IOUtils.toByteArray(inputStream));
+        try {
+            base64Graph = Base64.getEncoder().encodeToString(IOUtils.toByteArray(inputStream));
+        } catch (IOException e) {
+            // Ignore
+        }
         greenMail.start();
     }
 

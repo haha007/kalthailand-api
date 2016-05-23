@@ -7,6 +7,7 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import th.co.krungthaiaxa.api.elife.ELifeTest;
 import th.co.krungthaiaxa.api.elife.model.*;
 import th.co.krungthaiaxa.api.elife.model.enums.*;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
@@ -26,11 +27,9 @@ import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.EVERY_YEA
 @SpringApplicationConfiguration(classes = KalApiApplication.class)
 @WebAppConfiguration
 @ActiveProfiles("test")
-public class ApplicationFormServiceTest {
+public class ApplicationFormServiceTest extends ELifeTest{
     @Inject
     private ApplicationFormService appService;
-    @Inject
-    private PolicyService policyService;
     @Inject
     private QuoteService quoteService;
 

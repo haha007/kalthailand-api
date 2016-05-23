@@ -8,6 +8,7 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import th.co.krungthaiaxa.api.elife.ELifeTest;
 import th.co.krungthaiaxa.api.elife.KalApiApplication;
 import th.co.krungthaiaxa.api.elife.model.Amount;
 import th.co.krungthaiaxa.api.elife.model.Policy;
@@ -29,9 +30,7 @@ import static th.co.krungthaiaxa.api.elife.model.enums.ChannelType.LINE;
 @SpringApplicationConfiguration(classes = KalApiApplication.class)
 @WebAppConfiguration
 @ActiveProfiles("test")
-public class LineServiceTest {
-    @Inject
-    private PolicyService policyService;
+public class LineServiceTest extends ELifeTest {
     @Inject
     private QuoteService quoteService;
     @Inject
