@@ -21,6 +21,7 @@ public class AuthClient {
     private String createTokenUrl;
     @Value("${kal.api.auth.header}")
     private String tokenHeader;
+    private RestTemplate template = new RestTemplate();
 
     public HttpHeaders getHeadersWithToken(String userName, String password) {
         HttpHeaders authURIHeaders = new HttpHeaders();
@@ -38,7 +39,6 @@ public class AuthClient {
         requestForToken.setUserName(userName);
         requestForToken.setPassword(password);
 
-        RestTemplate template = new RestTemplate();
         ResponseEntity<String> authResponse = template.exchange(authURIBuilder.toUriString(), POST, new HttpEntity<>(requestForToken, authURIHeaders), String.class);
         if (authResponse.getStatusCode() != HttpStatus.OK) {
             throw new ElifeException("Unable to create token; Response is [" + authResponse.getBody() + "]");
@@ -51,25 +51,7 @@ public class AuthClient {
         return result;
     }
 
-    public class RequestForToken {
-        private String userName;
-        private String password;
-
-        public String getUserName() {
-            return userName;
-        }
-
-        public void setUserName(String userName) {
-            this.userName = userName;
-        }
-
-        public String getPassword() {
-            return password;
-        }
-
-        public void setPassword(String password) {
-            this.password = password;
-        }
+    public void setTemplate(RestTemplate template) {
+        this.template = template;
     }
-
 }

@@ -23,11 +23,11 @@ public class SigningClient {
     private String signingApiURL;
     @Inject
     private AuthClient authClient;
+    private RestTemplate template = new RestTemplate();
 
     public byte[] getEncodedSignedPdfDocument(byte[] encodedNonSignedPdf) {
         HttpEntity entity = new HttpEntity<>(encodedNonSignedPdf, authClient.getHeadersWithToken(userName, userPassword));
 
-        RestTemplate template = new RestTemplate();
         ResponseEntity<String> authResponse;
         try {
             authResponse = template.exchange(signingApiURL, POST, entity, String.class);
@@ -40,5 +40,9 @@ public class SigningClient {
         }
 
         return authResponse.getBody().getBytes();
+    }
+
+    public void setTemplate(RestTemplate template) {
+        this.template = template;
     }
 }

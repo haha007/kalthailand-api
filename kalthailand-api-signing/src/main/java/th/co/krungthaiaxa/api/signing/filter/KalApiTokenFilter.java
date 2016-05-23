@@ -74,4 +74,8 @@ public class KalApiTokenFilter implements Filter {
     public void destroy() {
 
     }
+
+    public void setTemplate(RestTemplate template) {
+        this.template = template;
+    }
 }
