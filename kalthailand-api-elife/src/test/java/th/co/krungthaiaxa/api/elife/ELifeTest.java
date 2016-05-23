@@ -10,11 +10,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import th.co.krungthaiaxa.api.elife.client.AuthClient;
 import th.co.krungthaiaxa.api.elife.client.SigningClient;
+import th.co.krungthaiaxa.api.elife.filter.KalApiTokenFilter;
 import th.co.krungthaiaxa.api.elife.repository.CDBRepository;
 import th.co.krungthaiaxa.api.elife.service.PolicyService;
 
 import javax.inject.Inject;
-
 import java.nio.charset.Charset;
 
 import static java.util.Optional.empty;
@@ -31,13 +31,15 @@ public class ELifeTest {
     private AuthClient authClient;
     @Inject
     private SigningClient signingClient;
+    @Inject
+    private KalApiTokenFilter kalApiTokenFilter;
 
     private CDBRepository cdbRepository;
-    private RestTemplate fakeAuthRestTemplate;
     private RestTemplate fakeSigningRestTemplate;
+    private RestTemplate fakeAuthRestTemplate;
 
     @Before
-    public void setup() {
+    public void setupFakeTemplateAndRepository() {
         // Faking signing by returning pdf document as received and 200 response
         fakeSigningRestTemplate = mock(RestTemplate.class);
         signingClient.setTemplate(fakeSigningRestTemplate);
@@ -54,6 +56,7 @@ public class ELifeTest {
         // Faking authorization by always returning success
         fakeAuthRestTemplate = mock(RestTemplate.class);
         authClient.setTemplate(fakeAuthRestTemplate);
+        kalApiTokenFilter.setTemplate(fakeAuthRestTemplate);
         when(fakeAuthRestTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(String.class))).thenReturn(getFakeToken());
 
         // Faking CDB by always returning empty Optional

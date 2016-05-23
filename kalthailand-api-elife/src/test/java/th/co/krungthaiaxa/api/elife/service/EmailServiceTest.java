@@ -82,7 +82,6 @@ public class EmailServiceTest extends ELifeTest {
 
     @Before
     public void setup() {
-        super.setup();
         InputStream inputStream = this.getClass().getResourceAsStream("/graph.jpg");
         try {
             base64Graph = Base64.getEncoder().encodeToString(IOUtils.toByteArray(inputStream));

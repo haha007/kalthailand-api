@@ -20,8 +20,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+import th.co.krungthaiaxa.api.elife.ELifeTest;
 import th.co.krungthaiaxa.api.elife.KalApiApplication;
 import th.co.krungthaiaxa.api.elife.TestUtil;
+import th.co.krungthaiaxa.api.elife.data.SessionQuote;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
 import th.co.krungthaiaxa.api.elife.model.enums.GenderCode;
@@ -32,7 +34,6 @@ import th.co.krungthaiaxa.api.elife.products.ProductType;
 import th.co.krungthaiaxa.api.elife.repository.QuoteRepository;
 import th.co.krungthaiaxa.api.elife.repository.SessionQuoteRepository;
 import th.co.krungthaiaxa.api.elife.utils.JsonUtil;
-import th.co.krungthaiaxa.api.elife.data.SessionQuote;
 
 import javax.inject.Inject;
 import javax.mail.MessagingException;
@@ -59,7 +60,7 @@ import static org.springframework.http.HttpStatus.OK;
 @WebAppConfiguration
 @ActiveProfiles("test")
 @IntegrationTest({"server.port=0"})
-public class QuoteResourceTest {
+public class QuoteResourceTest extends ELifeTest {
     @Rule
     public final GreenMailRule greenMail = new GreenMailRule(ServerSetupTest.SMTP_IMAP);
     @Value("${security.api.user.name}")
@@ -76,7 +77,7 @@ public class QuoteResourceTest {
     private QuoteRepository quoteRepository;
 
     @Before
-    public void setUp() throws Exception {
+    public void setup() {
         template = new TestRestTemplate(apiUserName, apiUserPassword);
         greenMail.start();
     }
