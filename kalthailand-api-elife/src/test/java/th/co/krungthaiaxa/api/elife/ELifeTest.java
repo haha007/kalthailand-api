@@ -1,8 +1,6 @@
 package th.co.krungthaiaxa.api.elife;
 
 import org.junit.Before;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -11,8 +9,10 @@ import org.springframework.web.client.RestTemplate;
 import th.co.krungthaiaxa.api.elife.client.AuthClient;
 import th.co.krungthaiaxa.api.elife.client.SigningClient;
 import th.co.krungthaiaxa.api.elife.filter.KalApiTokenFilter;
+import th.co.krungthaiaxa.api.elife.filter.Token;
 import th.co.krungthaiaxa.api.elife.repository.CDBRepository;
 import th.co.krungthaiaxa.api.elife.service.PolicyService;
+import th.co.krungthaiaxa.api.elife.utils.JsonUtil;
 
 import javax.inject.Inject;
 import java.nio.charset.Charset;
@@ -43,14 +43,11 @@ public class ELifeTest {
         // Faking signing by returning pdf document as received and 200 response
         fakeSigningRestTemplate = mock(RestTemplate.class);
         signingClient.setTemplate(fakeSigningRestTemplate);
-        when(fakeSigningRestTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(String.class))).thenAnswer(new Answer<ResponseEntity<String>>() {
-            @Override
-            public ResponseEntity<String> answer(InvocationOnMock invocation) throws Throwable {
-                Object[] args = invocation.getArguments();
-                HttpEntity entity = (HttpEntity) args[2];
+        when(fakeSigningRestTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(String.class))).thenAnswer(invocation -> {
+            Object[] args = invocation.getArguments();
+            HttpEntity entity = (HttpEntity) args[2];
 
-                return new ResponseEntity<>(new String((byte[]) entity.getBody(), Charset.forName("UTF-8")), OK);
-            }
+            return new ResponseEntity<>(new String((byte[]) entity.getBody(), Charset.forName("UTF-8")), OK);
         });
 
         // Faking authorization by always returning success
@@ -66,6 +63,6 @@ public class ELifeTest {
     }
 
     private ResponseEntity<String> getFakeToken() {
-        return new ResponseEntity<>("123456", OK);
+        return new ResponseEntity<>(new String(JsonUtil.getJson(Token.of("123456"))), OK);
     }
 }

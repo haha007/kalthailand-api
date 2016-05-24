@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 import th.co.krungthaiaxa.api.auth.jwt.JwtTokenUtil;
 import th.co.krungthaiaxa.api.auth.model.RequestForToken;
+import th.co.krungthaiaxa.api.auth.model.Token;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -55,7 +56,7 @@ public class AuthResource {
         final String token = jwtTokenUtil.generateToken(userDetails);
 
         // Return the token
-        return ok(token);
+        return ok(Token.of(token));
     }
 
     @RequestMapping(value = "/auth/validate/{roleName}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE, method = GET)

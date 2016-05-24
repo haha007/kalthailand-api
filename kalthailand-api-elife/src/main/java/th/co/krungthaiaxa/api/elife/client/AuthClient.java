@@ -9,7 +9,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import th.co.krungthaiaxa.api.elife.exception.ElifeException;
+import th.co.krungthaiaxa.api.elife.filter.Token;
+import th.co.krungthaiaxa.api.elife.utils.JsonUtil;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -41,12 +44,19 @@ public class AuthClient {
 
         ResponseEntity<String> authResponse = template.exchange(authURIBuilder.toUriString(), POST, new HttpEntity<>(requestForToken, authURIHeaders), String.class);
         if (authResponse.getStatusCode() != HttpStatus.OK) {
-            throw new ElifeException("Unable to create token; Response is [" + authResponse.getBody() + "]");
+            throw new ElifeException("Unable to create token. Response is [" + authResponse.getBody() + "]");
+        }
+
+        Token token;
+        try {
+            token = JsonUtil.mapper.readValue(authResponse.getBody(), Token.class);
+        } catch (IOException e) {
+            throw new ElifeException("Unable to get content of the content", e);
         }
 
         HttpHeaders result = new HttpHeaders();
         result.add("Content-Type", "application/json");
-        result.add(tokenHeader, authResponse.getBody());
+        result.add(tokenHeader, token.getToken());
 
         return result;
     }
