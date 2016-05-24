@@ -28,13 +28,14 @@
 
     app.controller('LoginController', function ($scope, $http) {
         $scope.onClickLogin = function () {
-            console.log('hello');
-            console.log($scope.loginName);
-            console.log($scope.password);
+            var requestForToken = {};
+            requestForToken.username = $scope.username;
+            requestForToken.password = $scope.password;
+            console.log(JSON.stringify(requestForToken));
             $http({
-                url: 'admin/login',
+                url: window.location.origin + '/api-auth/auth',
                 method: 'POST',
-                data: $.param({ username: $scope.username, password: $scope.password }),
+                data: JSON.stringify(requestForToken),
                 headers: {'Content-Type': 'application/x-www-form-urlencoded'}
             })
                 .then(
