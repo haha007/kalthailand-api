@@ -18,15 +18,14 @@ import th.co.krungthaiaxa.api.elife.data.DeductionFile;
 import th.co.krungthaiaxa.api.elife.data.DeductionFileLine;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.Policy;
-import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
 import th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 import th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus;
+import th.co.krungthaiaxa.api.elife.model.line.LinePayResponse;
 import th.co.krungthaiaxa.api.elife.repository.CollectionFileRepository;
 import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
-import th.co.krungthaiaxa.api.elife.utils.ExcelUtils;
-import th.co.krungthaiaxa.api.elife.model.line.LinePayResponse;
 import th.co.krungthaiaxa.api.elife.repository.PolicyRepository;
+import th.co.krungthaiaxa.api.elife.utils.ExcelUtils;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -46,6 +45,10 @@ import static java.time.format.DateTimeFormatter.ofPattern;
 import static org.apache.commons.codec.digest.DigestUtils.sha256Hex;
 import static org.springframework.util.Assert.isTrue;
 import static org.springframework.util.Assert.notNull;
+import static th.co.krungthaiaxa.api.elife.model.enums.ChannelType.LINE;
+import static th.co.krungthaiaxa.api.elife.service.LineService.LINE_PAY_INTERNAL_ERROR;
+import static th.co.krungthaiaxa.api.elife.utils.ExcelUtils.appendRow;
+import static th.co.krungthaiaxa.api.elife.utils.ExcelUtils.text;
 
 @Service
 public class RLSService {
@@ -106,17 +109,20 @@ public class RLSService {
     @Scheduled(cron = "0 0 11 * * ?")
     public void processLatestCollectionFile() {
         List<CollectionFile> collectionFiles = collectionFileRepository.findByJobStartedDateNull();
+        logger.info("Found [" + collectionFiles.size() + "] collection(s) file to process.");
         for (CollectionFile collectionFile : collectionFiles) {
             collectionFile.setJobStartedDate(LocalDateTime.now(of(SHORT_IDS.get("VST"))));
             DeductionFile deductionFile = new DeductionFile();
             collectionFile.setDeductionFile(deductionFile);
+            logger.info("Found [" + collectionFile.getLines().size() + "] collection(s) line(s) to process.");
             for (CollectionFileLine collectionFileLine : collectionFile.getLines()) {
                 processCollectionFileLine(deductionFile, collectionFileLine);
             }
+            logger.info("Finished processing collection(s) line(s).");
             collectionFile.setJobEndedDate(LocalDateTime.now(of(SHORT_IDS.get("VST"))));
             collectionFileRepository.save(collectionFile);
         }
-        logger.info("Finished processing [" + collectionFiles.size() + "] collection(s) file.");
+        logger.info("Finished processing collection(s) file.");
     }
 
     public byte[] createDeductionExcelFile(DeductionFile deductionFile) {
@@ -126,13 +132,13 @@ public class RLSService {
 
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("LFPATPTDR6");
-        ExcelUtils.appendRow(sheet, //
-                ExcelUtils.text("M93RPNO6"), // Policy ID
-                ExcelUtils.text("M93RBKCD6"), // Bank Code
-                ExcelUtils.text("M93RPMOD6"), // Payment Mode
-                ExcelUtils.text("M93RPRM6"), // Deposit amount
-                ExcelUtils.text("M93RDOC6"), // Process date
-                ExcelUtils.text("M93RJCD6")); // Rejection Code
+        appendRow(sheet, //
+                text("M93RPNO6"), // Policy ID
+                text("M93RBKCD6"), // Bank Code
+                text("M93RPMOD6"), // Payment Mode
+                text("M93RPRM6"), // Deposit amount
+                text("M93RDOC6"), // Process date
+                text("M93RJCD6")); // Rejection Code
         deductionFile.getLines().stream().forEach(deductionFileLine -> createDeductionExcelFileLine(sheet, deductionFileLine));
         ExcelUtils.autoWidthAllColumns(workbook);
         try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
@@ -275,8 +281,9 @@ public class RLSService {
 
         if (payment.getRegistrationKey() == null) {
             // This should not happen since the registration key should always be found
-            deductionFile.addLine(getDeductionFileLine(collectionFileLine, LineService.LINE_PAY_INTERNAL_ERROR));
-            policyService.updatePaymentWithErrorStatus(payment, amount, payment.getAmount().getCurrencyCode(), ChannelType.LINE, LineService.LINE_PAY_INTERNAL_ERROR,
+            logger.error("No registration key was found in payment id [" + paymentId + "]");
+            deductionFile.addLine(getDeductionFileLine(collectionFileLine, LINE_PAY_INTERNAL_ERROR));
+            policyService.updatePaymentWithErrorStatus(payment, amount, payment.getAmount().getCurrencyCode(), LINE, LINE_PAY_INTERNAL_ERROR,
                     ERROR_NO_REGISTRATION_KEY_FOUND);
             return;
         }
@@ -285,21 +292,22 @@ public class RLSService {
         try {
             linePayResponse = lineService.capturePayment(payment.getRegistrationKey(), collectionFileLine.getPremiumAmount(), payment.getAmount().getCurrencyCode());
         } catch (IOException | RuntimeException e) {
-            logger.error("An error occured while trying to contact LinePay", e);
             // An error occured while trying to contact LinePay
-            deductionFile.addLine(getDeductionFileLine(collectionFileLine, LineService.LINE_PAY_INTERNAL_ERROR));
-            policyService.updatePaymentWithErrorStatus(payment, amount, payment.getAmount().getCurrencyCode(), ChannelType.LINE, LineService.LINE_PAY_INTERNAL_ERROR,
+            logger.error("An error occured while trying to contact LinePay on payment id [" + paymentId + "]", e);
+            deductionFile.addLine(getDeductionFileLine(collectionFileLine, LINE_PAY_INTERNAL_ERROR));
+            policyService.updatePaymentWithErrorStatus(payment, amount, payment.getAmount().getCurrencyCode(), LINE, LINE_PAY_INTERNAL_ERROR,
                     "Error while contacting Line Pay API. Payment may be successful. Error is [" + e.getMessage() + "].");
             return;
         }
 
         if (linePayResponse.getReturnCode().equals("0000")) {
             deductionFile.addLine(getDeductionFileLine(collectionFileLine, linePayResponse.getReturnCode()));
-            policyService.updatePayment(payment, amount, payment.getAmount().getCurrencyCode(), ChannelType.LINE, linePayResponse);
+            policyService.updatePayment(payment, amount, payment.getAmount().getCurrencyCode(), LINE, linePayResponse);
         } else {
             deductionFile.addLine(getDeductionFileLine(collectionFileLine, linePayResponse.getReturnCode()));
-            policyService.updatePayment(payment, amount, payment.getAmount().getCurrencyCode(), ChannelType.LINE, linePayResponse);
+            policyService.updatePayment(payment, amount, payment.getAmount().getCurrencyCode(), LINE, linePayResponse);
         }
+        logger.info("Finished processing collection file line with payment id [" + paymentId + "]");
     }
 
     private DeductionFileLine getDeductionFileLine(CollectionFileLine collectionFileLine, String errorCode) {
@@ -318,13 +326,13 @@ public class RLSService {
     }
 
     private void createDeductionExcelFileLine(Sheet sheet, DeductionFileLine deductionFileLine) {
-        ExcelUtils.appendRow(sheet,
-                ExcelUtils.text(deductionFileLine.getPolicyNumber()),
-                ExcelUtils.text(deductionFileLine.getBankCode()),
-                ExcelUtils.text(deductionFileLine.getPaymentMode()),
-                ExcelUtils.text(deductionFileLine.getAmount().toString()),
-                ExcelUtils.text(ofPattern("yyyyMMdd_HHmmss").format(deductionFileLine.getProcessDate())),
-                ExcelUtils.text(deductionFileLine.getRejectionCode()));
+        appendRow(sheet,
+                text(deductionFileLine.getPolicyNumber()),
+                text(deductionFileLine.getBankCode()),
+                text(deductionFileLine.getPaymentMode()),
+                text(deductionFileLine.getAmount().toString()),
+                text(ofPattern("yyyyMMdd_HHmmss").format(deductionFileLine.getProcessDate())),
+                text(deductionFileLine.getRejectionCode()));
     }
 
     public void setLineService(LineService lineService) {
