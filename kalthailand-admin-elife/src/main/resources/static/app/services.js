@@ -65,7 +65,6 @@
         return {
             request: function (config) {
                 config.headers['Authorization'] = 'something';
-                config.headers['Content-Type'] = 'application/x-www-form-urlencoded';
                 return config;
             }
         };

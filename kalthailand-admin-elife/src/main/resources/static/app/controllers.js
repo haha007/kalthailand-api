@@ -31,13 +31,8 @@
             var requestForToken = {};
             requestForToken.username = $scope.username;
             requestForToken.password = $scope.password;
-            console.log(JSON.stringify(requestForToken));
-            $http({
-                url: window.location.origin + '/api-auth/auth',
-                method: 'POST',
-                data: JSON.stringify(requestForToken),
-                headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-            })
+
+            $http.post(window.location.origin + '/api-auth/auth',requestForToken)
                 .then(
                     function (successResponse) {
                         console.log(successResponse);
