@@ -4,7 +4,6 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>admin-elife</artifactId>
-    <version>1.2.5-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <name>kalthailand-api-elife</name>

@@ -3,9 +3,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>th.co.krungthaiaxa</groupId>
     <artifactId>api-elife</artifactId>
-    <version>1.2.5-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <name>kalthailand-api-elife</name>
@@ -14,7 +12,7 @@
     <parent>
         <groupId>th.co.krungthaiaxa</groupId>
         <artifactId>api-parent</artifactId>
-        <version>1.3.1-SNAPSHOT</version>
+        <version>1.2.5-SNAPSHOT</version>
     </parent>
 
     <properties>
