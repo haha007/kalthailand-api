@@ -385,11 +385,13 @@ public class EmailServiceTest extends ELifeTest {
 
         assertThat(greenMail.getReceivedMessages()).hasSize(1);
         MimeMessage email = greenMail.getReceivedMessages()[0];
-        assertThat(email.getSubject()).isEqualTo(IOUtils.toString(this.getClass().getResourceAsStream("/email-content/email-ereceipt-subject.txt"), Charset.forName("UTF-8")));
+        String testSubject = IOUtils.toString(this.getClass().getResourceAsStream("/email-content/email-ereceipt-subject.txt"), Charset.forName("UTF-8"));
+        testSubject = testSubject.replace("%PRODUCT%", messageSource.getMessage("product.id." + policy.getCommonData().getProductId(), null, thLocale));
+        assertThat(email.getSubject()).isEqualTo(testSubject);
         assertThat(email.getFrom()).containsOnly(new InternetAddress(emailName));
 
         String bodyAsString = decodeSimpleBody(getBody(email));
-        assertThat(bodyAsString).contains("กรุงไทย-แอกซ่า ประกันชีวิต ขอขอบคุณ " + policy.getInsureds().get(0).getPerson().getGivenName() + " " + policy.getInsureds().get(0).getPerson().getSurName() + "<br/>");
+        assertThat(bodyAsString).contains("<tr><td align=\"center\" class=\"header-text\">กรุงไทย-แอกซ่า ประกันชีวิต ขอขอบคุณ</td></tr>");
         assertThat(bodyAsString).contains("กรุงไทย-แอกซ่า ประกันชีวิต");
 
         Multipart multipart = (Multipart) email.getContent();
@@ -427,11 +429,13 @@ public class EmailServiceTest extends ELifeTest {
 
         assertThat(greenMail.getReceivedMessages()).hasSize(1);
         MimeMessage email = greenMail.getReceivedMessages()[0];
-        assertThat(email.getSubject()).isEqualTo(IOUtils.toString(this.getClass().getResourceAsStream("/email-content/email-ereceipt-subject.txt"), Charset.forName("UTF-8")));
+        String testSubject = IOUtils.toString(this.getClass().getResourceAsStream("/email-content/email-ereceipt-subject.txt"), Charset.forName("UTF-8"));
+        testSubject = testSubject.replace("%PRODUCT%", messageSource.getMessage("product.id." + policy.getCommonData().getProductId(), null, thLocale));
+        assertThat(email.getSubject()).isEqualTo(testSubject);
         assertThat(email.getFrom()).containsOnly(new InternetAddress(emailName));
 
         String bodyAsString = decodeSimpleBody(getBody(email));
-        assertThat(bodyAsString).contains("กรุงไทย-แอกซ่า ประกันชีวิต ขอขอบคุณ " + policy.getInsureds().get(0).getPerson().getGivenName() + " " + policy.getInsureds().get(0).getPerson().getSurName() + "<br/>");
+        assertThat(bodyAsString).contains("<tr><td align=\"center\" class=\"header-text\">กรุงไทย-แอกซ่า ประกันชีวิต ขอขอบคุณ</td></tr>");
         assertThat(bodyAsString).contains("กรุงไทย-แอกซ่า ประกันชีวิต");
 
         Multipart multipart = (Multipart) email.getContent();
