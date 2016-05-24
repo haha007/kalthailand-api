@@ -29,10 +29,10 @@
     app.controller('LoginController', function ($scope, $http) {
         $scope.onClickLogin = function () {
             var requestForToken = {};
-            requestForToken.username = $scope.username;
+            requestForToken.userName = $scope.username;
             requestForToken.password = $scope.password;
 
-            $http.post(window.location.origin + '/api-auth/auth',requestForToken)
+            $http.post(window.location.origin + '/api-auth/auth', requestForToken)
                 .then(
                     function (successResponse) {
                         console.log(successResponse);
