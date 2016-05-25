@@ -3,5 +3,5 @@
 **/*.settings
 **/*.idea
 **/*.classpath
-**/bower_components
 **/target
+**/build
