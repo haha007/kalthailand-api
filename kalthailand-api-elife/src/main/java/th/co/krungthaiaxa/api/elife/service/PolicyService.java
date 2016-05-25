@@ -257,11 +257,13 @@ public class PolicyService {
         }
 
         // Send DA Form to TMC (DA form may not exist)
-        DocumentDownload daFormDocument = documentService.downloadDocument(daFormPdf.get().getId());
-        try {
-            tmcClient.sendPDFToTMC(policy, daFormDocument.getContent(), DA_FORM);
-        } catch (ElifeException e) {
-            logger.error("Unable to send DA Form to TMC on policy [" + policy.getPolicyId() + "].", e);
+        if (daFormPdf.isPresent()) {
+            DocumentDownload daFormDocument = documentService.downloadDocument(daFormPdf.get().getId());
+            try {
+                tmcClient.sendPDFToTMC(policy, daFormDocument.getContent(), DA_FORM);
+            } catch (ElifeException e) {
+                logger.error("Unable to send DA Form to TMC on policy [" + policy.getPolicyId() + "].", e);
+            }
         }
     }
 
