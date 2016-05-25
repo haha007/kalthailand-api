@@ -11,6 +11,7 @@ import th.co.krungthaiaxa.api.elife.model.LineBC;
 
 import javax.inject.Inject;
 import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -27,8 +28,8 @@ public class LineBCServiceTest {
     private LineBCService lineBCService;
 
     @Test
-    public void should_get_line_bc_information_along_with_mid(){
-        Optional<LineBC> data =lineBCService.getLineBCInfo("u53cb613d9269dd6875f60249402b4542");
+    public void should_get_line_bc_information_along_with_mid() {
+        Optional<LineBC> data = lineBCService.getLineBCInfo("u53cb613d9269dd6875f60249402b4542");
         assertThat(data.get().getDob()).isEqualTo("30/11/1976");
         assertThat(data.get().getEmail()).isEqualTo("Pimpaporn_a@hotmail.com");
         assertThat(data.get().getFirstName()).isEqualTo("พิมพมภรณ์");
@@ -38,8 +39,8 @@ public class LineBCServiceTest {
     }
 
     @Test
-    public void should_return_optional_empty(){
-        Optional<LineBC> data =lineBCService.getLineBCInfo(" u53cb613d9269dd6875f60249402b4542");
+    public void should_return_optional_empty() {
+        Optional<LineBC> data = lineBCService.getLineBCInfo(" u53cb613d9269dd6875f60249402b4542");
         assertThat(data).isEmpty();
     }
 
