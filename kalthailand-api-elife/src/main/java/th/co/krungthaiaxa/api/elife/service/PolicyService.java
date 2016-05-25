@@ -193,9 +193,6 @@ public class PolicyService {
             throw new ElifeException("Can't find DA form for the policy [" + policy.getPolicyId() + "] while it is mandatory for Monthly Policy");
         }
 
-        policy.setStatus(PENDING_VALIDATION);
-        policyRepository.save(policy);
-
         // Update the policy
         Optional<Registration> insuredId = policy.getInsureds().get(0).getPerson().getRegistrations()
                 .stream()
@@ -216,6 +213,9 @@ public class PolicyService {
                 }
             }
         }
+
+        policy.setStatus(PENDING_VALIDATION);
+        policyRepository.save(policy);
 
         // Send Email
         try {
