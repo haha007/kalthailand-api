@@ -571,12 +571,9 @@ public class ApplicationFormService {
     }
 
     private byte[] getImageBytes(BufferedImage bf1) throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream(1024 * 1024 * 1024);
         ImageIO.write(bf1, "png", baos);
-        baos.flush();
-        byte[] content = baos.toByteArray();
-        baos.close();
-        return content;
+        return baos.toByteArray();
     }
 
     private Image getPdfImage(byte[] imageConent) throws IOException, BadElementException {
