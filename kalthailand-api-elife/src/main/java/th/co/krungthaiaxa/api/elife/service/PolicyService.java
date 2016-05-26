@@ -155,13 +155,19 @@ public class PolicyService {
 
     public void updatePayment(Payment payment, Double amount, String currencyCode, ChannelType channelType,
                               LinePayResponse linePayResponse) {
+        String creditCardName = null;
+        String method = null;
+        if (linePayResponse.getInfo().getPayInfo().size() > 0) {
+            creditCardName = linePayResponse.getInfo().getPayInfo().get(0).getCreditCardName();
+            method = linePayResponse.getInfo().getPayInfo().get(0).getMethod();
+        }
         // Update the confirmed payment
         updatePayment(payment, amount, currencyCode, channelType,
                 linePayResponse.getReturnCode(),
                 linePayResponse.getReturnMessage(),
                 linePayResponse.getInfo().getRegKey(),
-                linePayResponse.getInfo().getPayInfo().get(0).getCreditCardName(),
-                linePayResponse.getInfo().getPayInfo().get(0).getMethod());
+                creditCardName,
+                method);
     }
 
     public void updateRegistrationForAllNotProcessedPayment(Policy policy, String registrationKey) {
