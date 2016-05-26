@@ -64,10 +64,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests()
                 .antMatchers(POST, "/auth").permitAll()
+                .antMatchers(GET, "/swagger-ui.html").permitAll()
                 .antMatchers(GET, "/v2/api-docs").permitAll()
                 .antMatchers(GET, "/configuration/security").permitAll()
                 .antMatchers(GET, "/configuration/ui").permitAll()
                 .antMatchers(GET, "/swagger-resources").permitAll()
+                .antMatchers(GET, "/webjars/springfox-swagger-ui/**").permitAll()
                 .anyRequest().authenticated();
 
         // Custom JWT based security filter

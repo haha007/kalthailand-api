@@ -38,6 +38,25 @@ public class KalApiTokenFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
+        // Swagger requests shoud always go through
+        if (httpRequest.getRequestURI().endsWith("/v2/api-docs") ||
+                httpRequest.getRequestURI().endsWith("/configuration/ui") ||
+                httpRequest.getRequestURI().endsWith("/swagger-resources") ||
+                httpRequest.getRequestURI().endsWith("/configuration/security") ||
+                httpRequest.getRequestURI().endsWith("/swagger-ui.html") ||
+                httpRequest.getRequestURI().endsWith("/images/favicon-16x16.png") ||
+                httpRequest.getRequestURI().endsWith("/images/favicon-32x32.png") ||
+                httpRequest.getRequestURI().contains("/webjars/springfox-swagger-ui/")) {
+            chain.doFilter(request, response);
+            return;
+        }
+
+        // Requests to error API should always go through
+        if (httpRequest.getRequestURI().endsWith("/error")) {
+            chain.doFilter(request, response);
+            return;
+        }
+
         String authToken = httpRequest.getHeader(this.tokenHeader);
 
         if (StringUtils.isEmpty(authToken)) {

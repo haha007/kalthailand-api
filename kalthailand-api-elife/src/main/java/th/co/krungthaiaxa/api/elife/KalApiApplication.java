@@ -1,5 +1,6 @@
 package th.co.krungthaiaxa.api.elife;
 
+import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
@@ -57,14 +58,14 @@ public class KalApiApplication {
 
     private ApiInfo metadata() {
         return new ApiInfoBuilder()
-                .title("AXA TH DATA API")
-                .description("This set of API is done by Krungthai Axa Life")
+                .title("eLife API")
+                .description("eLife API for Krunghtai Axa")
                 .version("1.0.0")
                 .license("License")
                 .build();
     }
 
-    private com.google.common.base.Predicate<String> paths() {
+    private Predicate<String> paths() {
         return Predicates.or(
                 PathSelectors.regex("/quotes.*"),
                 PathSelectors.regex("/policies.*"),
