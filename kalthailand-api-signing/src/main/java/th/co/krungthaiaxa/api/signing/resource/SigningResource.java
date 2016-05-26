@@ -56,6 +56,7 @@ public class SigningResource {
         try {
             decodedBase64Pdf = Base64.getDecoder().decode(encodedBase64Pdf);
         } catch (IllegalArgumentException e) {
+            logger.error("Provided document is not Base 64 encoded", e);
             sendError(ErrorCode.NOT_BASE_64_ENCODED, NOT_ACCEPTABLE.value(), response);
             return;
         }
@@ -63,6 +64,7 @@ public class SigningResource {
         try {
             new PdfReader(decodedBase64Pdf);
         } catch (IOException e) {
+            logger.error("Provided document is not a valid PDF", e);
             sendError(ErrorCode.PDF_INVALID.apply(e.getMessage()), NOT_ACCEPTABLE.value(), response);
             return;
         }
@@ -72,6 +74,7 @@ public class SigningResource {
             signingService.sign(new ByteArrayInputStream(decodedBase64Pdf), signedPdfOutputStream, "Payment received", "Invisible");
             signedPdfContent = signedPdfOutputStream.toByteArray();
         } catch (IOException | GeneralSecurityException | DocumentException e) {
+            logger.error("Unable to sign the PDF", e);
             sendError(ErrorCode.UNABLE_TO_SIGN.apply(e.getMessage()), INTERNAL_SERVER_ERROR.value(), response);
             return;
         }
@@ -79,6 +82,7 @@ public class SigningResource {
         try {
             new PdfReader(signedPdfContent);
         } catch (IOException e) {
+            logger.error("Signed PDF is invalid", e);
             sendError(ErrorCode.PDF_INVALID.apply(e.getMessage()), INTERNAL_SERVER_ERROR.value(), response);
             return;
         }
@@ -91,8 +95,11 @@ public class SigningResource {
         try (OutputStream outStream = response.getOutputStream()) {
             IOUtils.write(Base64.getEncoder().encode(signedPdfContent), outStream);
         } catch (IOException e) {
+            logger.error("Unable to send the signed PDF", e);
             sendError(ErrorCode.UNABLE_TO_SIGN.apply(e.getMessage()), INTERNAL_SERVER_ERROR.value(), response);
         }
+
+        logger.info("Signed PDF has been sent");
     }
 
     private void sendError(Error error, Integer status, HttpServletResponse response) {

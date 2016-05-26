@@ -279,13 +279,13 @@ public class PolicyService {
         try {
             documentService.generateValidatedPolicyDocuments(policy);
         } catch (Exception e) {
-            throw new ElifeException("Can't generate documents for the policy [" + policy.getPolicyId() + "]");
+            throw new ElifeException("Can't generate documents for the policy [" + policy.getPolicyId() + "]", e);
         }
 
         // Should block if eReceipt is not generated
         Optional<Document> documentPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(ERECEIPT_PDF)).findFirst();
         if (!documentPdf.isPresent()) {
-            throw new ElifeException("Can't find eReceipt for the policy [" + policy.getPolicyId() + "]");
+            throw new ElifeException("Can't find signed eReceipt for the policy [" + policy.getPolicyId() + "]");
         }
 
         // Should block if validated Application FormProductIFineTest is not generated
