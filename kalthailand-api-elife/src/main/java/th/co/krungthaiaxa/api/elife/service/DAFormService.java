@@ -131,10 +131,7 @@ public class DAFormService {
     private byte[] getImageBytes(BufferedImage bf1) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ImageIO.write(bf1, "jpg", baos);
-        baos.flush();
-        byte[] content = baos.toByteArray();
-        baos.close();
-        return content;
+        return baos.toByteArray();
     }
 
     private Graphics setGraphicColorAndFont(Graphics g) throws IOException {

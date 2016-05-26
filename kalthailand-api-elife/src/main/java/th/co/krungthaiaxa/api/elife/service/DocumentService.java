@@ -141,9 +141,12 @@ public class DocumentService {
             try {
                 byte[] content = applicationFormService.generateValidatedApplicationForm(policy);
                 addDocument(policy, content, "application/pdf", APPLICATION_FORM_VALIDATED);
+                logger.info("Validated Application form has been added to Policy.");
             } catch (Exception e) {
                 logger.error("Validated Application form for Policy [" + policy.getPolicyId() + "] has not been generated.", e);
             }
+        } else {
+            logger.info("Validated Application form already exists.");
         }
 
         // Generate Ereceipt as Image
@@ -153,10 +156,12 @@ public class DocumentService {
             try {
                 ereceiptImage = createEreceipt(policy);
                 addDocument(policy, ereceiptImage, "image/png", ERECEIPT_IMAGE);
-            } catch (IOException e) {
+                logger.info("Ereceipt image has been added to Policy.");
+            } catch (Exception e) {
                 logger.error("Image Ereceipt for Policy [" + policy.getPolicyId() + "] has not been generated.", e);
             }
         } else {
+            logger.info("ereceipt image already exists.");
             ereceiptImage = Base64.getDecoder().decode(downloadDocument(documentImage.get().getId()).getContent().getBytes());
         }
 
@@ -169,9 +174,12 @@ public class DocumentService {
                 byte[] encodedSignedPdf = signingClient.getEncodedSignedPdfDocument(encodedNonSignedPdf);
                 byte[] decodedSignedPdf = Base64.getDecoder().decode(encodedSignedPdf);
                 addDocument(policy, decodedSignedPdf, "application/pdf", ERECEIPT_PDF);
-            } catch (DocumentException | IOException e) {
+                logger.info("Ereceipt pdf has been added to Policy.");
+            } catch (Exception e) {
                 logger.error("PDF Ereceipt for Policy [" + policy.getPolicyId() + "] has not been generated.", e);
             }
+        } else {
+            logger.info("Signed ereceipt pdf already exists.");
         }
         logger.info("Extra documents for policy [" + policy.getPolicyId() + "] have been created.");
     }

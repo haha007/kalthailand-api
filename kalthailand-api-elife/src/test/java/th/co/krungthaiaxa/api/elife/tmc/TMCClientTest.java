@@ -18,6 +18,7 @@ import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
 import th.co.krungthaiaxa.api.elife.model.enums.DocumentType;
+import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 import th.co.krungthaiaxa.api.elife.service.DocumentService;
 import th.co.krungthaiaxa.api.elife.service.QuoteService;
 
@@ -53,7 +54,7 @@ public class TMCClientTest extends ELifeTest {
     }
 
     private Policy getPolicy() {
-        Quote quote = quoteService.createQuote(randomNumeric(20), ChannelType.LINE, TestUtil.productQuotation());
+        Quote quote = quoteService.createQuote(randomNumeric(20), ChannelType.LINE, TestUtil.productQuotation(PeriodicityCode.EVERY_MONTH, 100000.0, 5));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote = quoteService.updateQuote(quote);
 

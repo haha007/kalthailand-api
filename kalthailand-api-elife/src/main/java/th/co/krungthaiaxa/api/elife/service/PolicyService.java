@@ -193,9 +193,6 @@ public class PolicyService {
             throw new ElifeException("Can't find DA form for the policy [" + policy.getPolicyId() + "] while it is mandatory for Monthly Policy");
         }
 
-        policy.setStatus(PENDING_VALIDATION);
-        policyRepository.save(policy);
-
         // Update the policy
         Optional<Registration> insuredId = policy.getInsureds().get(0).getPerson().getRegistrations()
                 .stream()
@@ -216,6 +213,9 @@ public class PolicyService {
                 }
             }
         }
+
+        policy.setStatus(PENDING_VALIDATION);
+        policyRepository.save(policy);
 
         // Send Email
         try {
@@ -257,11 +257,13 @@ public class PolicyService {
         }
 
         // Send DA Form to TMC (DA form may not exist)
-        DocumentDownload daFormDocument = documentService.downloadDocument(daFormPdf.get().getId());
-        try {
-            tmcClient.sendPDFToTMC(policy, daFormDocument.getContent(), DA_FORM);
-        } catch (ElifeException e) {
-            logger.error("Unable to send DA Form to TMC on policy [" + policy.getPolicyId() + "].", e);
+        if (daFormPdf.isPresent()) {
+            DocumentDownload daFormDocument = documentService.downloadDocument(daFormPdf.get().getId());
+            try {
+                tmcClient.sendPDFToTMC(policy, daFormDocument.getContent(), DA_FORM);
+            } catch (ElifeException e) {
+                logger.error("Unable to send DA Form to TMC on policy [" + policy.getPolicyId() + "].", e);
+            }
         }
     }
 
@@ -277,13 +279,13 @@ public class PolicyService {
         try {
             documentService.generateValidatedPolicyDocuments(policy);
         } catch (Exception e) {
-            throw new ElifeException("Can't generate documents for the policy [" + policy.getPolicyId() + "]");
+            throw new ElifeException("Can't generate documents for the policy [" + policy.getPolicyId() + "]", e);
         }
 
         // Should block if eReceipt is not generated
         Optional<Document> documentPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(ERECEIPT_PDF)).findFirst();
         if (!documentPdf.isPresent()) {
-            throw new ElifeException("Can't find eReceipt for the policy [" + policy.getPolicyId() + "]");
+            throw new ElifeException("Can't find signed eReceipt for the policy [" + policy.getPolicyId() + "]");
         }
 
         // Should block if validated Application FormProductIFineTest is not generated

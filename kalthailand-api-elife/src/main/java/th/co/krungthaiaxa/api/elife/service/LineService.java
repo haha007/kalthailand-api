@@ -239,7 +239,10 @@ public class LineService {
         }
 
         logger.info("Payment is captured with success");
-        return getBookingResponseFromJSon(response.getBody());
+        LinePayResponse linePayResponse = getBookingResponseFromJSon(response.getBody());
+        logger.info("Line Pay response has been read");
+
+        return linePayResponse;
     }
 
     private LinePayResponse getBookingResponseFromJSon(String json) throws IOException {

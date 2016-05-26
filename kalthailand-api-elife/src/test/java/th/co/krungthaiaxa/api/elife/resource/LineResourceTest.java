@@ -14,11 +14,10 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import th.co.krungthaiaxa.api.elife.ELifeTest;
-import th.co.krungthaiaxa.api.elife.model.error.ErrorCode;
 import th.co.krungthaiaxa.api.elife.KalApiApplication;
-import th.co.krungthaiaxa.api.elife.TestUtil;
 import th.co.krungthaiaxa.api.elife.model.LineBC;
 import th.co.krungthaiaxa.api.elife.model.error.Error;
+import th.co.krungthaiaxa.api.elife.model.error.ErrorCode;
 import th.co.krungthaiaxa.api.elife.utils.JsonUtil;
 
 import java.io.IOException;
@@ -27,9 +26,8 @@ import java.net.URISyntaxException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpMethod.GET;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
-import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.*;
+import static th.co.krungthaiaxa.api.elife.TestUtil.getErrorFromJSon;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiApplication.class)
@@ -68,7 +66,7 @@ public class LineResourceTest extends ELifeTest {
                 .queryParam("value", "somethingWrong");
 
         ResponseEntity<String> response = template.getForEntity(builder.toUriString(), String.class);
-        Error error = TestUtil.getErrorFromJSon(response.getBody());
+        Error error = getErrorFromJSon(response.getBody());
         assertThat(response.getStatusCode().value()).isEqualTo(BAD_REQUEST.value());
         assertThat(error.getCode()).isEqualTo(ErrorCode.UNABLE_TO_DECRYPT.getCode());
     }
@@ -80,26 +78,25 @@ public class LineResourceTest extends ELifeTest {
         URI createURI = new URI("http://localhost:" + port + "/line/bc");
         UriComponentsBuilder createBuilder = UriComponentsBuilder.fromUri(createURI)
                 .queryParam("mid", sessionId);
-        ResponseEntity<String> createResponse = template.exchange(createBuilder.toUriString(), GET, null, String.class);
-        LineBC lineBC = JsonUtil.mapper.readValue(createResponse.getBody(), LineBC.class);
+        ResponseEntity<String> response = template.exchange(createBuilder.toUriString(), GET, null, String.class);
+        LineBC lineBC = JsonUtil.mapper.readValue(response.getBody(), LineBC.class);
         assertThat(lineBC.getPid()).isEqualTo("3100902286661");
         assertThat(lineBC.getMobile()).isEqualTo("0815701554");
         assertThat(lineBC.getFirstName()).isEqualTo("พิมพมภรณ์");
         assertThat(lineBC.getLastName()).isEqualTo("อาภาศิริผล");
         assertThat(lineBC.getEmail()).isEqualTo("Pimpaporn_a@hotmail.com");
         assertThat(lineBC.getDob()).isEqualTo("30/11/1976");
-
     }
 
     @Test
-    public void should_return_error() throws IOException, URISyntaxException {
+    public void should_return_error_when_mid_is_unknown() throws IOException, URISyntaxException {
         String sessionId = " u53cb613d9269dd6875f60249402b4542";
 
         URI createURI = new URI("http://localhost:" + port + "/line/bc");
         UriComponentsBuilder createBuilder = UriComponentsBuilder.fromUri(createURI)
                 .queryParam("mid", sessionId);
         ResponseEntity<String> response = template.exchange(createBuilder.toUriString(), GET, null, String.class);
-        Error error = TestUtil.getErrorFromJSon(response.getBody());
+        Error error = getErrorFromJSon(response.getBody());
         assertThat(response.getStatusCode().value()).isEqualTo(NOT_FOUND.value());
         assertThat(error.getCode()).isEqualTo(ErrorCode.UNABLE_TO_GET_LINE_BC.getCode());
     }

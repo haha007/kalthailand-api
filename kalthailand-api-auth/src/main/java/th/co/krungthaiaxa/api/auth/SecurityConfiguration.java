@@ -17,6 +17,7 @@ import th.co.krungthaiaxa.api.auth.data.User;
 import th.co.krungthaiaxa.api.auth.data.UserList;
 import th.co.krungthaiaxa.api.auth.jwt.JwtAuthenticationTokenFilter;
 
+import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 
 @SuppressWarnings("SpringJavaAutowiringInspection")
@@ -63,6 +64,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests()
                 .antMatchers(POST, "/auth").permitAll()
+                .antMatchers(GET, "/v2/api-docs").permitAll()
+                .antMatchers(GET, "/configuration/security").permitAll()
+                .antMatchers(GET, "/configuration/ui").permitAll()
+                .antMatchers(GET, "/swagger-resources").permitAll()
                 .anyRequest().authenticated();
 
         // Custom JWT based security filter

@@ -55,6 +55,7 @@ public class CDBRepository {
         parameters[1] = dateOfBirth;
         Map<String, Object> map = null;
         JdbcTemplate jdbcTemplate = new JdbcTemplate(cdbDataSource);
+        jdbcTemplate.setQueryTimeout(600);
         try {
             List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, parameters);
             if (list.size() != 0) {

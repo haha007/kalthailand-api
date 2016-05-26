@@ -1,4 +1,4 @@
-package th.co.krungthaiaxa.api.elife.filter;
+package th.co.krungthaiaxa.api.elife.client;
 
 public class Token {
     private String token;

@@ -187,6 +187,7 @@ public class AdminController {
                     break;
             }
         } catch (MessagingException | IOException e) {
+            logger.error("Notification has not been sent", e);
             return new ResponseEntity<>(getJson(ErrorCode.NOTIFICATION_NOT_SENT.apply(e.getMessage())), INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity<>(getJson("Notifications have been sent"), OK);
