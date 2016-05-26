@@ -32,13 +32,13 @@ import static th.co.krungthaiaxa.api.signing.utils.JsonUtil.getJson;
 
 @RestController
 @Api(value = "Document Signing")
-public class SigningResource {
-    private final static Logger logger = LoggerFactory.getLogger(SigningResource.class);
+public class DocumentResource {
+    private final static Logger logger = LoggerFactory.getLogger(DocumentResource.class);
 
     private final SigningService signingService;
 
     @Inject
-    public SigningResource(SigningService signingService) {
+    public DocumentResource(SigningService signingService) {
         this.signingService = signingService;
     }
 

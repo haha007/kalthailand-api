@@ -55,7 +55,7 @@ public class AuthResource {
     @ApiOperation(value = "Creates a token", notes = "Creates a JWT token containing user Roles", response = Token.class)
     @RequestMapping(value = "/auth", produces = APPLICATION_JSON_VALUE, method = POST)
     public ResponseEntity<?> createAuthenticationToken(
-            @ApiParam(value = "The credentials to get token for")
+            @ApiParam(value = "The credentials to get token for", required = true)
             @RequestBody RequestForToken requestForToken) {
         // Perform the security
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
@@ -80,7 +80,7 @@ public class AuthResource {
     })
     @RequestMapping(value = "/auth/validate/{roleName}", produces = APPLICATION_JSON_VALUE, method = GET)
     public ResponseEntity<?> validateToken(
-            @ApiParam(value = "The role to check the token against on")
+            @ApiParam(value = "The role to check the token against on", required = true)
             @PathVariable String roleName,
             HttpServletRequest request) {
         String token = request.getHeader(tokenHeader);
