@@ -242,14 +242,19 @@ public class AdminController {
     }
 
     private void createPolicyExtractExcelFileLine(Sheet sheet, Policy policy) {
-        String agentCode1 = null;
-        String agentCode2 = null;
+        // Extracted Excel file should contain 'NULL' by default
+        String agentCode1 = "NULL";
+        String agentCode2 = "NULL";
+        String validationAgentCode = "NULL";
 
         if (policy.getInsureds().get(0).getInsuredPreviousAgents().size() >= 1) {
             agentCode1 = policy.getInsureds().get(0).getInsuredPreviousAgents().get(0);
         }
         if (policy.getInsureds().get(0).getInsuredPreviousAgents().size() >= 2) {
             agentCode2 = policy.getInsureds().get(0).getInsuredPreviousAgents().get(1);
+        }
+        if (policy.getValidationAgentCode() != null) {
+            validationAgentCode = policy.getValidationAgentCode();
         }
 
         ExcelUtils.appendRow(sheet,
@@ -260,7 +265,7 @@ public class AdminController {
                 text(ofPattern("yyyy-MM-dd").format(policy.getInsureds().get(0).getStartDate())),
                 text(agentCode1),
                 text(agentCode2),
-                text(policy.getValidationAgentCode()));
+                text(validationAgentCode));
     }
 
 }
