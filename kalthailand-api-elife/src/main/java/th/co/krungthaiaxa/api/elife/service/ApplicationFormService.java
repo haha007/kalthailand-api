@@ -123,10 +123,10 @@ public class ApplicationFormService {
         if (person.getTitle().equals("MR")) {
             g1.drawString(MARK, 625, 1340);
         }
-        if (person.getTitle().equals("MS")) {
+        if (person.getTitle().equals("MRS")) {
             g1.drawString(MARK, 775, 1340);
         }
-        if (person.getTitle().equals("MRS")) {
+        if (person.getTitle().equals("MS")) {
             g1.drawString(MARK, 915, 1340);
         }
 
