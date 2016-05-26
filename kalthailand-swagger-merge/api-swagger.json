@@ -1,0 +1,2056 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "description" : "API for Krungthai Axa",
+    "version" : "1.0.0",
+    "title" : "Krungthai Axa API",
+    "license" : {
+      "name" : "license"
+    }
+  },
+  "host" : "localhost:8080",
+  "basePath" : "/api-auth, /api-elife, /api-signing",
+  "tags" : [ {
+    "name" : "auth-resource",
+    "description" : "Auth Resource"
+  }, {
+    "name" : "document-resource",
+    "description" : "Document Resource"
+  }, {
+    "name" : "product-resource",
+    "description" : "Product Resource"
+  }, {
+    "name" : "policy-resource",
+    "description" : "Policy Resource"
+  }, {
+    "name" : "line-resource",
+    "description" : "Line Resource"
+  }, {
+    "name" : "quote-resource",
+    "description" : "Quote Resource"
+  } ],
+  "paths" : {
+    "/auth" : {
+      "post" : {
+        "tags" : [ "auth-resource" ],
+        "summary" : "Creates a token",
+        "description" : "Creates a JWT token containing user Roles",
+        "operationId" : "createAuthenticationTokenUsingPOST",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "requestForToken",
+          "description" : "The credentials to get token for",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/RequestForToken"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/Token"
+            }
+          }
+        }
+      }
+    },
+    "/auth/validate/{roleName}" : {
+      "get" : {
+        "tags" : [ "auth-resource" ],
+        "summary" : "Validates a token",
+        "description" : "Validates a JWT token for given Role",
+        "operationId" : "validateTokenUsingGET",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "roleName",
+          "in" : "path",
+          "description" : "The role to check the token against on",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "type" : "string"
+            }
+          },
+          "400" : {
+            "description" : "If token is empty or expired or with no role",
+            "schema" : {
+              "$ref" : "#/definitions/Error"
+            }
+          },
+          "406" : {
+            "description" : "If token does not give access to the role",
+            "schema" : {
+              "$ref" : "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/decrypt" : {
+      "get" : {
+        "tags" : [ "line-resource" ],
+        "summary" : "Decrypt line token",
+        "description" : "Decrypts line token to get the mid",
+        "operationId" : "decryptLineIdUsingGET",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "value",
+          "in" : "query",
+          "description" : "The encrypted line token",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/Mid"
+            }
+          },
+          "400" : {
+            "description" : "If unable to decrypt or if decrypted value does not contain mid",
+            "schema" : {
+              "$ref" : "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/documents/policies/{policyId}" : {
+      "get" : {
+        "tags" : [ "document-resource" ],
+        "summary" : "Documents of a policy",
+        "description" : "Document collection for a policy",
+        "operationId" : "documentsOfPolicyUsingGET",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "policyId",
+          "in" : "path",
+          "description" : "The policy ID",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/Document"
+              }
+            }
+          },
+          "404" : {
+            "description" : "If policy is not found",
+            "schema" : {
+              "$ref" : "#/definitions/Error"
+            }
+          },
+          "406" : {
+            "description" : "If document is not in policy",
+            "schema" : {
+              "$ref" : "#/definitions/Error"
+            }
+          },
+          "500" : {
+            "description" : "If document could not be downloaded",
+            "schema" : {
+              "$ref" : "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/documents/policies/{policyId}/thai/id" : {
+      "post" : {
+        "tags" : [ "document-resource" ],
+        "summary" : "Upload Thai ID",
+        "description" : "Uploads a Thai ID, applies a watermark image and links it to the given policy. Result is the watermarked image encoded in base64",
+        "operationId" : "uploadThaiIdUsingPOST",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "policyId",
+          "in" : "path",
+          "description" : "The policy ID",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "base64Image",
+          "description" : "The content of the image to watermark, but base 64 encoded.",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "type" : "string"
+            }
+          },
+          "400" : {
+            "description" : "If input image is not readable or if output image could not be written",
+            "schema" : {
+              "$ref" : "#/definitions/Error"
+            }
+          },
+          "404" : {
+            "description" : "If policy is not found",
+            "schema" : {
+              "$ref" : "#/definitions/Error"
+            }
+          },
+          "406" : {
+            "description" : "If input image is too small",
+            "schema" : {
+              "$ref" : "#/definitions/Error"
+            }
+          },
+          "415" : {
+            "description" : "If input image is not supported",
+            "schema" : {
+              "$ref" : "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/documents/policies/{policyId}/{documentId}" : {
+      "get" : {
+        "tags" : [ "document-resource" ],
+        "summary" : "Download a document",
+        "description" : "Downloads a document of a policy",
+        "operationId" : "documentDownloadOfPolicyUsingGET",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "policyId",
+          "in" : "path",
+          "description" : "The policy ID",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "documentId",
+          "in" : "path",
+          "description" : "The document ID",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/DocumentDownload"
+            }
+          },
+          "404" : {
+            "description" : "If policy is not found",
+            "schema" : {
+              "$ref" : "#/definitions/Error"
+            }
+          },
+          "406" : {
+            "description" : "If document is not in policy",
+            "schema" : {
+              "$ref" : "#/definitions/Error"
+            }
+          },
+          "500" : {
+            "description" : "If document could not be downloaded",
+            "schema" : {
+              "$ref" : "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/documents/signpdf" : {
+      "post" : {
+        "tags" : [ "document-resource" ],
+        "summary" : "Signs a document",
+        "description" : "Signs a document with server configured certificate. Response is Base 64 encoded signed document",
+        "operationId" : "signDocumentUsingPOST",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "encodedBase64Pdf",
+          "description" : "The Base 64 encoded pdf to sign",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "type" : "string"
+            }
+          },
+          "406" : {
+            "description" : "If given document is not Base 64 encoded or not a valid PDF",
+            "schema" : {
+              "$ref" : "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/line/bc" : {
+      "get" : {
+        "tags" : [ "line-resource" ],
+        "summary" : "Get Line BC Information along with MID",
+        "operationId" : "getLineBCUsingGET",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "mid",
+          "in" : "query",
+          "description" : "The MID value",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/LineBC"
+            }
+          },
+          "404" : {
+            "description" : "If unable to get line bc information",
+            "schema" : {
+              "$ref" : "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/policies" : {
+      "post" : {
+        "tags" : [ "policy-resource" ],
+        "summary" : "Creates a policy",
+        "description" : "Creates a policy out of a quote. Policy will be created only if it went through all product validation. Policy will also contain calculated payment schedule",
+        "operationId" : "createPolicyUsingPOST",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "sessionId",
+          "in" : "query",
+          "description" : "The session id the quote is in",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "channelType",
+          "in" : "query",
+          "description" : "The channel being used to create the quote.",
+          "required" : false,
+          "type" : "string",
+          "enum" : [ "LINE" ]
+        }, {
+          "in" : "body",
+          "name" : "jsonQuote",
+          "description" : "The json of the quote to create the policy from. This quote will go through maximum validations",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/Policy"
+            }
+          },
+          "406" : {
+            "description" : "If JSon of quote is invalid or if Policy could not be created",
+            "schema" : {
+              "$ref" : "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/policies/{policyId}/payments" : {
+      "get" : {
+        "tags" : [ "policy-resource" ],
+        "summary" : "Policy payments",
+        "description" : "Get the payments of a policy",
+        "operationId" : "getPolicyPaymentsUsingGET",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "policyId",
+          "in" : "path",
+          "description" : "The policy ID",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/Payment"
+              }
+            }
+          },
+          "404" : {
+            "description" : "If the policy doesn't exist",
+            "schema" : {
+              "$ref" : "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/policies/{policyId}/update/status/pendingValidation" : {
+      "put" : {
+        "tags" : [ "policy-resource" ],
+        "summary" : "Update Policy status",
+        "description" : "Updates the Policy status to PENDING_VALIDATION. If susccessful, it also generates the DA form and Application form documents. Payment will be updated to store the registration key which will be used later on for recurrent payments. Payment will also store orderId and transactionId for trackign purprose.",
+        "operationId" : "updatePolicyToPendingValidationUsingPUT",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "policyId",
+          "in" : "path",
+          "description" : "The policy ID",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "paymentId",
+          "in" : "query",
+          "description" : "The payment ID",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "orderId",
+          "in" : "query",
+          "description" : "The order id used to book the payment",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "transactionId",
+          "in" : "query",
+          "description" : "The transaction id to use to confirm the payment. Must be sent of status id SUCCESS",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/Policy"
+            }
+          },
+          "404" : {
+            "description" : "If the policy doesn't exist",
+            "schema" : {
+              "$ref" : "#/definitions/Error"
+            }
+          },
+          "406" : {
+            "description" : "If the payment id is not found in the policy payment list",
+            "schema" : {
+              "$ref" : "#/definitions/Error"
+            }
+          },
+          "500" : {
+            "description" : "If there was some internal error",
+            "schema" : {
+              "$ref" : "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/policies/{policyId}/update/status/validated" : {
+      "put" : {
+        "tags" : [ "policy-resource" ],
+        "summary" : "Update Policy status",
+        "description" : "Updates the Policy status to VALIDATED. If susuccessful, it also generates the eReceipt form document (image and PDF) and eReceipt pdf is sent to Tele sale API. LINE Pay API is called to confirm the payment booking made earlier using the registration key. Payment will be updated with amount and effective date. Finally, it sends notifications through email, SMS and LINE push notifications",
+        "operationId" : "updatePolicyToValidatedUsingPUT",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "policyId",
+          "in" : "path",
+          "description" : "The policy ID",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "agentCode",
+          "in" : "query",
+          "description" : "The code of validating agent",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "linePayCaptureMode",
+          "in" : "query",
+          "description" : "The type of call to Line Pay Capture API",
+          "required" : true,
+          "type" : "string",
+          "enum" : [ "FAKE_WITH_SUCCESS", "FAKE_WITH_ERROR", "REAL" ]
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/Policy"
+            }
+          },
+          "404" : {
+            "description" : "If the policy doesn't exist",
+            "schema" : {
+              "$ref" : "#/definitions/Error"
+            }
+          },
+          "406" : {
+            "description" : "If the agent code is not in format '123456-12-123456'",
+            "schema" : {
+              "$ref" : "#/definitions/Error"
+            }
+          },
+          "500" : {
+            "description" : "If there was some internal error",
+            "schema" : {
+              "$ref" : "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/products/amounts" : {
+      "put" : {
+        "tags" : [ "product-resource" ],
+        "summary" : "Product premiums",
+        "description" : "Gets product min and max amounts for sum insured and premium, based on product specific algorithm",
+        "operationId" : "getProductAmountsUsingPUT",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "productQuotationJson",
+          "description" : "The product details for which to get the min and max amounts",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/ProductQuotation"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/ProductAmounts"
+            }
+          }
+        }
+      }
+    },
+    "/quotes" : {
+      "post" : {
+        "tags" : [ "quote-resource" ],
+        "summary" : "Create a quote",
+        "description" : "Creates a quote, attached to the session ID, with product details and calculated fields.",
+        "operationId" : "createQuoteUsingPOST",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "sessionId",
+          "in" : "query",
+          "description" : "The session id. Must be unique through the Channel.",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "channelType",
+          "in" : "query",
+          "description" : "The channel being used to create the quote.",
+          "required" : false,
+          "type" : "string",
+          "enum" : [ "LINE" ]
+        }, {
+          "in" : "body",
+          "name" : "productQuotation",
+          "description" : "The product details for which to create a quote on",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/ProductQuotation"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/Quote"
+            }
+          },
+          "500" : {
+            "description" : "If quote has not been created",
+            "schema" : {
+              "$ref" : "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/quotes/latest" : {
+      "get" : {
+        "tags" : [ "quote-resource" ],
+        "summary" : "Get latest Quote",
+        "description" : "Returns the latest quote attached to the given sessionId. Returns empty result if nothing found.",
+        "operationId" : "getLatestQuoteUsingGET",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "sessionId",
+          "in" : "query",
+          "description" : "The session id the quote is in",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "channelType",
+          "in" : "query",
+          "description" : "The channel being used to create the quote.",
+          "required" : false,
+          "type" : "string",
+          "enum" : [ "LINE" ]
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/Quote"
+            }
+          }
+        }
+      }
+    },
+    "/quotes/{quoteId}" : {
+      "get" : {
+        "tags" : [ "quote-resource" ],
+        "summary" : "Detail of a quote",
+        "description" : "Gets the details of a quote given its ID",
+        "operationId" : "getQuoteUsingGET",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "quoteId",
+          "in" : "path",
+          "description" : "The quote Id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "sessionId",
+          "in" : "query",
+          "description" : "The session id the quote is in",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "channelType",
+          "in" : "query",
+          "description" : "The channel being used to create the quote.",
+          "required" : true,
+          "type" : "string",
+          "enum" : [ "LINE" ]
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/Quote"
+            }
+          },
+          "404" : {
+            "description" : "If quote Id is unknown or if sessionId user does not have access to the quote",
+            "schema" : {
+              "$ref" : "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "quote-resource" ],
+        "summary" : "Updates a quote",
+        "description" : "Updates a quote with is provided JSon. Calculation may occur if enough elements are provided.",
+        "operationId" : "updateQuoteUsingPUT",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "quoteId",
+          "in" : "path",
+          "description" : "The quote Id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "sessionId",
+          "in" : "query",
+          "description" : "The session id the quote is in",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "channelType",
+          "in" : "query",
+          "description" : "The channel being used to create the quote.",
+          "required" : true,
+          "type" : "string",
+          "enum" : [ "LINE" ]
+        }, {
+          "in" : "body",
+          "name" : "jsonQuote",
+          "description" : "The json of the quote. This quote will be updated with given values and will go through minimal validations",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/Quote"
+            }
+          },
+          "404" : {
+            "description" : "If quote Id is unknown or if sessionId user does not have access to the quote",
+            "schema" : {
+              "$ref" : "#/definitions/Error"
+            }
+          },
+          "406" : {
+            "description" : "If either JSon is invalid or there is no quote in the given session",
+            "schema" : {
+              "$ref" : "#/definitions/Error"
+            }
+          },
+          "500" : {
+            "description" : "If quote has not been updated",
+            "schema" : {
+              "$ref" : "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/quotes/{quoteId}/email" : {
+      "post" : {
+        "tags" : [ "quote-resource" ],
+        "summary" : "Sending email for quote",
+        "description" : "Sending email for quote",
+        "operationId" : "sendEmailUsingPOST",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "quoteId",
+          "in" : "path",
+          "description" : "The quote Id",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "base64Image",
+          "description" : "The content of the graph image in base 64 encoded.",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "sessionId",
+          "in" : "query",
+          "description" : "The session id the quote is in",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "channelType",
+          "in" : "query",
+          "description" : "The channel being used to create the quote.",
+          "required" : true,
+          "type" : "string",
+          "enum" : [ "LINE" ]
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/Quote"
+            }
+          },
+          "404" : {
+            "description" : "If quote Id is unknown",
+            "schema" : {
+              "$ref" : "#/definitions/Error"
+            }
+          },
+          "500" : {
+            "description" : "If email could not be sent",
+            "schema" : {
+              "$ref" : "#/definitions/Error"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions" : {
+    "LocalDateTime" : {
+      "type" : "object",
+      "properties" : {
+        "chronology" : {
+          "$ref" : "#/definitions/Chronology"
+        },
+        "dayOfMonth" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "dayOfWeek" : {
+          "type" : "string",
+          "enum" : [ "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY" ]
+        },
+        "dayOfYear" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "hour" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "minute" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "month" : {
+          "type" : "string",
+          "enum" : [ "JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER" ]
+        },
+        "monthValue" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "nano" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "second" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "year" : {
+          "type" : "integer",
+          "format" : "int32"
+        }
+      }
+    },
+    "Policy" : {
+      "type" : "object",
+      "required" : [ "commonData", "policyId", "quoteId", "status" ],
+      "properties" : {
+        "commonData" : {
+          "description" : "Data common to all policies commercial types",
+          "$ref" : "#/definitions/CommonData"
+        },
+        "coverages" : {
+          "type" : "array",
+          "description" : "List of all coverages of the policy",
+          "items" : {
+            "$ref" : "#/definitions/Coverage"
+          }
+        },
+        "documents" : {
+          "type" : "array",
+          "description" : "List of all policy documents",
+          "items" : {
+            "$ref" : "#/definitions/Document"
+          }
+        },
+        "id" : {
+          "type" : "string"
+        },
+        "insureds" : {
+          "type" : "array",
+          "description" : "List of all insured parties stated on the policy",
+          "items" : {
+            "$ref" : "#/definitions/Insured"
+          }
+        },
+        "payments" : {
+          "type" : "array",
+          "description" : "List of all policy payments",
+          "items" : {
+            "$ref" : "#/definitions/Payment"
+          }
+        },
+        "policyId" : {
+          "type" : "string",
+          "description" : "ID of the policy. This may be displayed to user"
+        },
+        "premiumsData" : {
+          "description" : "Data concerning premiums (price for the coverage and benefit agreed for the policy)",
+          "$ref" : "#/definitions/PremiumsData"
+        },
+        "quoteId" : {
+          "type" : "string",
+          "description" : "ID of the quote the policy is coming from"
+        },
+        "status" : {
+          "type" : "string",
+          "description" : "The status of the policy",
+          "enum" : [ "PENDING_PAYMENT", "PENDING_VALIDATION", "VALIDATED", "CANCELED" ]
+        },
+        "validationAgentCode" : {
+          "type" : "string",
+          "description" : "The agent code of the agent who validate the policy"
+        }
+      },
+      "description" : "Data concerning the policy"
+    },
+    "CoverageBeneficiary" : {
+      "type" : "object",
+      "required" : [ "ageAtSubscription", "coverageBenefitPercentage", "person", "relationship" ],
+      "properties" : {
+        "ageAtSubscription" : {
+          "type" : "integer",
+          "format" : "int32",
+          "description" : "Age of the beneficiary at the time of the subscription"
+        },
+        "coverageBenefitPercentage" : {
+          "type" : "number",
+          "format" : "double",
+          "description" : "Relative share of the benefit received by the beneficiary for the coverage"
+        },
+        "person" : {
+          "description" : "The beneficiary details",
+          "$ref" : "#/definitions/Person"
+        },
+        "relationship" : {
+          "type" : "string",
+          "description" : "The relationship between beneficiary and insured",
+          "enum" : [ "AUNT", "BROTHER", "FIANCE", "FIANCEE", "GRAND_DAUGHTER", "GRAND_SON", "SISTER", "UNCLE", "NEPHEW", "NIECE", "HERITAGE", "PARENT", "SPOUSE", "CHILD", "SISTER_BROTHER", "AUNT_UNCLE", "GRAND_PARENT", "NEPHEW_NIECE", "FIANCE_FIANCEE", "ESTATE", "COUSIN", "GUARDIAN", "GRANDCHILD", "PARENT_IN_LAW" ]
+        }
+      },
+      "description" : "The beneficiary with his/her respective share of the benefits"
+    },
+    "GeographicalAddress" : {
+      "type" : "object",
+      "properties" : {
+        "country" : {
+          "type" : "string",
+          "description" : "The country"
+        },
+        "district" : {
+          "type" : "string",
+          "description" : "The disctrict"
+        },
+        "postCode" : {
+          "type" : "string",
+          "description" : "The postal code"
+        },
+        "streetAddress1" : {
+          "type" : "string",
+          "description" : "Street number"
+        },
+        "streetAddress2" : {
+          "type" : "string",
+          "description" : "Street / Road name"
+        },
+        "subCountry" : {
+          "type" : "string",
+          "description" : "The province / state of the country"
+        },
+        "subdistrict" : {
+          "type" : "string",
+          "description" : "The sub disctrict"
+        }
+      },
+      "description" : "The definition of a geographical / physical address"
+    },
+    "Token" : {
+      "type" : "object",
+      "properties" : {
+        "token" : {
+          "type" : "string"
+        }
+      }
+    },
+    "Product10ECPremium" : {
+      "type" : "object",
+      "properties" : {
+        "dividendOption" : {
+          "type" : "string",
+          "description" : "Dividend option. Dividend is either given yearly in cash, or used for next premium or all of it at the end of the product duration.",
+          "enum" : [ "YEARLY_CASH", "YEARLY_FOR_NEXT_PREMIUM", "IN_FINE" ]
+        },
+        "endOfContractBenefitsAverage" : {
+          "type" : "array",
+          "description" : "Yearly average returns. This is calculated by back end API and cannot be set by client.",
+          "items" : {
+            "$ref" : "#/definitions/DatedAmount"
+          }
+        },
+        "endOfContractBenefitsMaximum" : {
+          "type" : "array",
+          "description" : "Yearly maximum returns. This is calculated by back end API and cannot be set by client.",
+          "items" : {
+            "$ref" : "#/definitions/DatedAmount"
+          }
+        },
+        "endOfContractBenefitsMinimum" : {
+          "type" : "array",
+          "description" : "Yearly minimum returns. This is calculated by back end API and cannot be set by client.",
+          "items" : {
+            "$ref" : "#/definitions/DatedAmount"
+          }
+        },
+        "sumInsured" : {
+          "description" : "Total sum insured by the product. This is calculated by back end API if an amount is provided in financialScheduler. If this value is provided, then it's the financialScheduler amount that is calculated",
+          "$ref" : "#/definitions/Amount"
+        },
+        "sumInsuredOption" : {
+          "type" : "boolean",
+          "description" : "True if the user has chosen to pay on a total Sum Insured base. False otherwise (premium choice). This is set by back end API if an amount is provided in financialScheduler."
+        },
+        "yearlyCashBacks" : {
+          "type" : "array",
+          "description" : "Yearly cash backs if cash option is chosen. This is calculated by back end API and cannot be set by client.",
+          "items" : {
+            "$ref" : "#/definitions/DatedAmount"
+          }
+        },
+        "yearlyCashBacksAverageBenefit" : {
+          "type" : "array",
+          "description" : "Yearly average benefit. This is calculated by back end API and cannot be set by client.",
+          "items" : {
+            "$ref" : "#/definitions/DatedAmount"
+          }
+        },
+        "yearlyCashBacksAverageDividende" : {
+          "type" : "array",
+          "description" : "Yearly average extra dividend. This is calculated by back end API and cannot be set by client.",
+          "items" : {
+            "$ref" : "#/definitions/DatedAmount"
+          }
+        },
+        "yearlyCashBacksMaximumBenefit" : {
+          "type" : "array",
+          "description" : "Yearly maximum benefit. This is calculated by back end API and cannot be set by client.",
+          "items" : {
+            "$ref" : "#/definitions/DatedAmount"
+          }
+        },
+        "yearlyCashBacksMaximumDividende" : {
+          "type" : "array",
+          "description" : "Yearly maximum extra dividend. This is calculated by back end API and cannot be set by client.",
+          "items" : {
+            "$ref" : "#/definitions/DatedAmount"
+          }
+        },
+        "yearlyTaxDeduction" : {
+          "description" : "Tax deduction per year.",
+          "$ref" : "#/definitions/Amount"
+        }
+      },
+      "description" : "10 EC Life Insurance specific Premiums Data"
+    },
+    "Document" : {
+      "type" : "object",
+      "properties" : {
+        "creationDate" : {
+          "description" : "Creation date of the document on server side",
+          "$ref" : "#/definitions/LocalDateTime"
+        },
+        "id" : {
+          "type" : "string",
+          "description" : "Identifier of the document"
+        },
+        "policyId" : {
+          "type" : "string",
+          "description" : "The identifier of the policy associated to the document"
+        },
+        "typeName" : {
+          "type" : "string",
+          "description" : "Localized type of the document",
+          "enum" : [ "THAI_ID", "ERECEIPT_IMAGE", "ERECEIPT_PDF", "APPLICATION_FORM", "APPLICATION_FORM_VALIDATED", "DA_FORM" ]
+        }
+      },
+      "description" : "Data concerning policy documents saved on server side"
+    },
+    "ProductIFinePremium" : {
+      "type" : "object",
+      "properties" : {
+        "accidentSumInsured" : {
+          "description" : "Sum insured in case of accident. This is calculated by back end API based on chosen package.",
+          "$ref" : "#/definitions/Amount"
+        },
+        "basicPremiumRate" : {
+          "type" : "number",
+          "format" : "double",
+          "description" : "Premium rate for basic"
+        },
+        "burnInjuryMax" : {
+          "description" : "Maximum amount for Burn Injury (more than 2% of whole body)",
+          "$ref" : "#/definitions/Amount"
+        },
+        "burnInjuryMin" : {
+          "description" : "Minimum amount for Burn Injury (more than 2% of whole body)",
+          "$ref" : "#/definitions/Amount"
+        },
+        "deathByAccident" : {
+          "description" : "Death by accident",
+          "$ref" : "#/definitions/Amount"
+        },
+        "deathByAccidentInPublicTransport" : {
+          "description" : "Death by Accidents in Public Places or Public Transportation (e.g. Cinema, Bus, Train, etc.)",
+          "$ref" : "#/definitions/Amount"
+        },
+        "disabilityFromAccidentMax" : {
+          "description" : "Maximum amount for physical disabilities benefit from accidents",
+          "$ref" : "#/definitions/Amount"
+        },
+        "disabilityFromAccidentMin" : {
+          "description" : "Minimum amount for physical disabilities benefit from accidents",
+          "$ref" : "#/definitions/Amount"
+        },
+        "healthSumInsured" : {
+          "description" : "Sum insured in case of health disability. This is calculated by back end API based on chosen package.",
+          "$ref" : "#/definitions/Amount"
+        },
+        "hospitalizationSumInsured" : {
+          "description" : "Sum insured in case of hospitalization. This is calculated by back end API based on chosen package.",
+          "$ref" : "#/definitions/Amount"
+        },
+        "legsShortenBy5cm" : {
+          "description" : "Leg(s) is shorten at least 5 cm",
+          "$ref" : "#/definitions/Amount"
+        },
+        "lossOfCorneaForBothEyes" : {
+          "description" : "Loss of cornea for both eyes",
+          "$ref" : "#/definitions/Amount"
+        },
+        "lossOfFingersMax" : {
+          "description" : "Maximum amount for Loss of hand fingers or foot fingers (depend on number of joints)",
+          "$ref" : "#/definitions/Amount"
+        },
+        "lossOfFingersMin" : {
+          "description" : "Minimum amount for Loss of hand fingers or foot fingers (depend on number of joints)",
+          "$ref" : "#/definitions/Amount"
+        },
+        "lossOfHandOrLeg" : {
+          "description" : "Loss of use of hands or legs (1 side or both sides)",
+          "$ref" : "#/definitions/Amount"
+        },
+        "lossOfHearingMax" : {
+          "description" : "Maximum amount for Loss of ability to hear",
+          "$ref" : "#/definitions/Amount"
+        },
+        "lossOfHearingMin" : {
+          "description" : "Minimum amount for Loss of ability to hear",
+          "$ref" : "#/definitions/Amount"
+        },
+        "lossOfSight" : {
+          "description" : "Loss of ability to see (1 eye or both eyes)",
+          "$ref" : "#/definitions/Amount"
+        },
+        "lossOfSpeech" : {
+          "description" : "Loss of ability to speak",
+          "$ref" : "#/definitions/Amount"
+        },
+        "medicalCareCost" : {
+          "description" : "Cost of medical care from accidents (per each time)",
+          "$ref" : "#/definitions/Amount"
+        },
+        "nonTaxDeductible" : {
+          "description" : "Non deductible tax amount",
+          "$ref" : "#/definitions/Amount"
+        },
+        "noneCurableBoneFracture" : {
+          "description" : "Leg bones or kneecap fracture and unable to be cured",
+          "$ref" : "#/definitions/Amount"
+        },
+        "productIFinePackage" : {
+          "type" : "string",
+          "description" : "iFine package name",
+          "enum" : [ "IFINE1", "IFINE2", "IFINE3", "IFINE4", "IFINE5" ]
+        },
+        "riderPremiumRate" : {
+          "type" : "number",
+          "format" : "double",
+          "description" : "Premium rate for rider"
+        },
+        "riskOccupationCharge" : {
+          "type" : "number",
+          "format" : "double",
+          "description" : "Risk occupation charge"
+        },
+        "sumInsured" : {
+          "description" : "Total sum insured by the product. This is calculated by back end API based on chosen package",
+          "$ref" : "#/definitions/Amount"
+        },
+        "taxDeductible" : {
+          "description" : "Deductible tax amount",
+          "$ref" : "#/definitions/Amount"
+        }
+      },
+      "description" : "iFine Life Insurance specific Premiums Data"
+    },
+    "ProductQuotation" : {
+      "type" : "object",
+      "properties" : {
+        "dateOfBirth" : {
+          "type" : "string",
+          "format" : "date-time",
+          "description" : "The date of birth of insured"
+        },
+        "declaredTaxPercentAtSubscription" : {
+          "type" : "integer",
+          "format" : "int32",
+          "description" : "The tax percent paid at subscruption"
+        },
+        "genderCode" : {
+          "type" : "string",
+          "description" : "The gender of insured",
+          "enum" : [ "MALE", "FEMALE" ]
+        },
+        "nbOfYearsOfPayment" : {
+          "type" : "integer",
+          "format" : "int32",
+          "description" : "The plan duration (in years)"
+        },
+        "occupationId" : {
+          "type" : "integer",
+          "format" : "int32",
+          "description" : "The insured occupation Id"
+        },
+        "packageName" : {
+          "type" : "string",
+          "description" : "The product name (such as IFINE1, IFINE2, ..."
+        },
+        "periodicityCode" : {
+          "type" : "string",
+          "description" : "The payment periodicity",
+          "enum" : [ "EVERY_MONTH", "EVERY_QUARTER", "EVERY_HALF_YEAR", "EVERY_YEAR" ]
+        },
+        "premiumAmount" : {
+          "description" : "The premium amount",
+          "$ref" : "#/definitions/Amount"
+        },
+        "productType" : {
+          "type" : "string",
+          "description" : "The product type",
+          "enum" : [ "PRODUCT_10_EC", "PRODUCT_IBEGIN", "PRODUCT_IFINE", "PRODUCT_IGEN" ]
+        },
+        "sumInsuredAmount" : {
+          "description" : "The sum insured amount",
+          "$ref" : "#/definitions/Amount"
+        }
+      },
+      "description" : "Data concerning quote for a product"
+    },
+    "DocumentDownload" : {
+      "type" : "object",
+      "properties" : {
+        "content" : {
+          "type" : "string",
+          "description" : "The document content encoded in Base64"
+        },
+        "documentId" : {
+          "type" : "string",
+          "description" : "The document Id"
+        },
+        "id" : {
+          "type" : "string",
+          "description" : "The document conent id"
+        },
+        "mimeType" : {
+          "type" : "string",
+          "description" : "The internet media type of the document"
+        },
+        "name" : {
+          "type" : "string",
+          "description" : "The document name, without extension"
+        }
+      },
+      "description" : "Data concerning policy documents content"
+    },
+    "ProductAmounts" : {
+      "type" : "object",
+      "required" : [ "commonData", "maxPremium", "maxSumInsured", "minPremium", "minSumInsured" ],
+      "properties" : {
+        "commonData" : {
+          "description" : "The static data of the product",
+          "$ref" : "#/definitions/CommonData"
+        },
+        "maxPremium" : {
+          "description" : "The maximum premium",
+          "$ref" : "#/definitions/Amount"
+        },
+        "maxSumInsured" : {
+          "description" : "The maximum sum insured",
+          "$ref" : "#/definitions/Amount"
+        },
+        "minPremium" : {
+          "description" : "The minimum premium",
+          "$ref" : "#/definitions/Amount"
+        },
+        "minSumInsured" : {
+          "description" : "The minimum sum insured",
+          "$ref" : "#/definitions/Amount"
+        }
+      },
+      "description" : "Data common to all quotes commercial types"
+    },
+    "Registration" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "description" : " The registration identifier assigned by the registration authority"
+        },
+        "typeName" : {
+          "type" : "string",
+          "description" : "The type of registration",
+          "enum" : [ "THAI_ID_NUMBER" ]
+        }
+      },
+      "description" : "Data concerning nationality-dependent registrations for the party. e.g. Social Security, passport, taxes identification number, insurance company registration, driver license"
+    },
+    "Chronology" : {
+      "type" : "object",
+      "properties" : {
+        "calendarType" : {
+          "type" : "string"
+        },
+        "id" : {
+          "type" : "string"
+        }
+      }
+    },
+    "Fatca" : {
+      "type" : "object",
+      "properties" : {
+        "bornInUSA" : {
+          "type" : "boolean",
+          "description" : "Born in the USA flag"
+        },
+        "payTaxInUSA" : {
+          "type" : "boolean",
+          "description" : "Has to pay tax in the USA flag"
+        },
+        "permanentResidentOfUSA" : {
+          "type" : "string",
+          "description" : "Is or was permanent of the USA",
+          "enum" : [ "IS_PR", "WAS_PR", "NOT_PR" ]
+        },
+        "permanentResidentOfUSAForTax" : {
+          "type" : "boolean",
+          "description" : "Is paying tax in the USA"
+        }
+      },
+      "description" : "USA 'Foreign Account Tax Compliance Act' specific informations"
+    },
+    "FinancialScheduler" : {
+      "type" : "object",
+      "properties" : {
+        "endDate" : {
+          "type" : "string",
+          "format" : "date-time",
+          "description" : "End date of the financial scheduler, e.g. date of end premium payment. This is calculated by back end API and cannot be set by client."
+        },
+        "modalAmount" : {
+          "description" : "A regularly scheduled payment amount contractually obligated by the policy. This is calculated by back end API if a sum insured amount is provided in premiumsDataLifeInsurance. If this value is provided, then it's the premiumsDataLifeInsurance sum insured that is calculated",
+          "$ref" : "#/definitions/Amount"
+        },
+        "periodicity" : {
+          "description" : "The periodicity of the scheduled payment",
+          "$ref" : "#/definitions/Periodicity"
+        }
+      },
+      "description" : "The definition of how the premiums must be paid"
+    },
+    "Amount" : {
+      "type" : "object",
+      "required" : [ "currencyCode", "value" ],
+      "properties" : {
+        "currencyCode" : {
+          "type" : "string",
+          "description" : "Currency code ISO 4217"
+        },
+        "value" : {
+          "type" : "number",
+          "format" : "double",
+          "description" : "The amount"
+        }
+      },
+      "description" : "An amount with its currency"
+    },
+    "PremiumsData" : {
+      "type" : "object",
+      "properties" : {
+        "financialScheduler" : {
+          "description" : "The definition of how the premiums must be paid",
+          "$ref" : "#/definitions/FinancialScheduler"
+        },
+        "product10ECPremium" : {
+          "description" : "10 EC specific Premiums Data",
+          "$ref" : "#/definitions/Product10ECPremium"
+        },
+        "productIBeginPremium" : {
+          "description" : "iBegin specific Premiums Data",
+          "$ref" : "#/definitions/ProductIBeginPremium"
+        },
+        "productIFinePremium" : {
+          "description" : "iFine specific Premiums Data",
+          "$ref" : "#/definitions/ProductIFinePremium"
+        },
+        "productIGenPremium" : {
+          "description" : "iGen specific Premiums Data",
+          "$ref" : "#/definitions/ProductIGenPremium"
+        }
+      },
+      "description" : "Data concerning premiums (price for the coverage and benefit agreed) to all commercial types"
+    },
+    "Periodicity" : {
+      "type" : "object",
+      "properties" : {
+        "code" : {
+          "type" : "string",
+          "enum" : [ "EVERY_MONTH", "EVERY_QUARTER", "EVERY_HALF_YEAR", "EVERY_YEAR" ]
+        }
+      }
+    },
+    "HealthStatus" : {
+      "type" : "object",
+      "properties" : {
+        "deniedOrCounterOffer" : {
+          "type" : "boolean",
+          "description" : "Has been denied a policy before or had counter offer with higher premium"
+        },
+        "disableOrImmunoDeficient" : {
+          "type" : "boolean",
+          "description" : "Flag for insured disability and HIV status"
+        },
+        "heightInCm" : {
+          "type" : "integer",
+          "format" : "int32",
+          "description" : "The person's height in centimeters"
+        },
+        "hospitalizedInLast6Months" : {
+          "type" : "boolean",
+          "description" : "Flag for insured being hospitalized in the last 6 months"
+        },
+        "weightChangeInLast6Months" : {
+          "type" : "boolean",
+          "description" : "Weight has changed in the last 6 months"
+        },
+        "weightChangeInLast6MonthsReason" : {
+          "type" : "string",
+          "description" : "Reason for weight change in the last 6 months"
+        },
+        "weightInKg" : {
+          "type" : "integer",
+          "format" : "int32",
+          "description" : "The person's height in kilograms"
+        }
+      }
+    },
+    "Error" : {
+      "type" : "object",
+      "properties" : {
+        "code" : {
+          "type" : "string"
+        },
+        "developerMessage" : {
+          "type" : "string"
+        },
+        "path" : {
+          "type" : "string"
+        },
+        "status" : {
+          "type" : "string"
+        },
+        "timestamp" : {
+          "type" : "string"
+        },
+        "userMessage" : {
+          "type" : "string"
+        }
+      }
+    },
+    "Mid" : {
+      "type" : "object",
+      "properties" : {
+        "mid" : {
+          "type" : "string"
+        }
+      }
+    },
+    "Coverage" : {
+      "type" : "object",
+      "required" : [ "beneficiaries", "id", "name" ],
+      "properties" : {
+        "beneficiaries" : {
+          "type" : "array",
+          "description" : "The beneficiaries of the coverage with their respective share of the benefits",
+          "items" : {
+            "$ref" : "#/definitions/CoverageBeneficiary"
+          }
+        },
+        "id" : {
+          "type" : "string",
+          "description" : "The coverage Id"
+        },
+        "name" : {
+          "type" : "string",
+          "description" : "The coverage name"
+        }
+      },
+      "description" : "The coverage of the contract"
+    },
+    "ProductIGenPremium" : {
+      "type" : "object",
+      "properties" : {
+        "dividendOption" : {
+          "type" : "string",
+          "description" : "Dividend option. Dividend is either given yearly in cash, or used for next premium or all of it at the end of the product duration.",
+          "enum" : [ "YEARLY_CASH", "YEARLY_FOR_NEXT_PREMIUM", "IN_FINE" ]
+        },
+        "endOfContractBenefitsAverage" : {
+          "type" : "array",
+          "description" : "Yearly average returns. This is calculated by back end API and cannot be set by client.",
+          "items" : {
+            "$ref" : "#/definitions/DatedAmount"
+          }
+        },
+        "endOfContractBenefitsMaximum" : {
+          "type" : "array",
+          "description" : "Yearly maximum returns. This is calculated by back end API and cannot be set by client.",
+          "items" : {
+            "$ref" : "#/definitions/DatedAmount"
+          }
+        },
+        "endOfContractBenefitsMinimum" : {
+          "type" : "array",
+          "description" : "Yearly minimum returns. This is calculated by back end API and cannot be set by client.",
+          "items" : {
+            "$ref" : "#/definitions/DatedAmount"
+          }
+        },
+        "sumInsured" : {
+          "description" : "Total sum insured by the product. This is calculated by back end API if an amount is provided in financialScheduler. If this value is provided, then it's the financialScheduler amount that is calculated",
+          "$ref" : "#/definitions/Amount"
+        },
+        "sumInsuredOption" : {
+          "type" : "boolean",
+          "description" : "True if the user has chosen to pay on a total Sum Insured base. False otherwise (premium choice). This is set by back end API if an amount is provided in financialScheduler."
+        },
+        "yearlyCashBacks" : {
+          "type" : "array",
+          "description" : "Yearly cash backs if cash option is chosen. This is calculated by back end API and cannot be set by client.",
+          "items" : {
+            "$ref" : "#/definitions/DatedAmount"
+          }
+        },
+        "yearlyCashBacksAverageBenefit" : {
+          "type" : "array",
+          "description" : "Yearly average benefit. This is calculated by back end API and cannot be set by client.",
+          "items" : {
+            "$ref" : "#/definitions/DatedAmount"
+          }
+        },
+        "yearlyCashBacksAverageDividende" : {
+          "type" : "array",
+          "description" : "Yearly average extra dividend. This is calculated by back end API and cannot be set by client.",
+          "items" : {
+            "$ref" : "#/definitions/DatedAmount"
+          }
+        },
+        "yearlyCashBacksMaximumBenefit" : {
+          "type" : "array",
+          "description" : "Yearly maximum benefit. This is calculated by back end API and cannot be set by client.",
+          "items" : {
+            "$ref" : "#/definitions/DatedAmount"
+          }
+        },
+        "yearlyCashBacksMaximumDividende" : {
+          "type" : "array",
+          "description" : "Yearly maximum extra dividend. This is calculated by back end API and cannot be set by client.",
+          "items" : {
+            "$ref" : "#/definitions/DatedAmount"
+          }
+        },
+        "yearlyTaxDeduction" : {
+          "description" : "Tax deduction per year.",
+          "$ref" : "#/definitions/Amount"
+        }
+      },
+      "description" : "iGen Life Insurance specific Premiums Data"
+    },
+    "Insured" : {
+      "type" : "object",
+      "properties" : {
+        "additionalInformationFreeText" : {
+          "type" : "string",
+          "description" : "Free additional text the user may have included"
+        },
+        "ageAtSubscription" : {
+          "type" : "integer",
+          "format" : "int32",
+          "description" : "Insured person's at the time of the policy subscription"
+        },
+        "annualIncome" : {
+          "type" : "string",
+          "description" : "Annual Income"
+        },
+        "declaredTaxPercentAtSubscription" : {
+          "type" : "integer",
+          "format" : "int32",
+          "description" : "Declared tax percentage the insured pays at subscription"
+        },
+        "employerName" : {
+          "type" : "string",
+          "description" : "Employer's name"
+        },
+        "endDate" : {
+          "type" : "string",
+          "format" : "date-time",
+          "description" : "End date of coverage for the insured. This is calculated by back end API and cannot be set by client."
+        },
+        "fatca" : {
+          "description" : "USA Fatca details of the insured",
+          "$ref" : "#/definitions/Fatca"
+        },
+        "healthStatus" : {
+          "description" : "Health status of the insured",
+          "$ref" : "#/definitions/HealthStatus"
+        },
+        "incomeSources" : {
+          "type" : "array",
+          "description" : "Income Source",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "insuredPreviousAgents" : {
+          "type" : "array",
+          "description" : "List of previous agents of the insured. This is used to calculate commision amount.",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "mainInsuredIndicator" : {
+          "type" : "boolean",
+          "description" : "Indicates whether the Insured is the main insured on the policy (e.g. main Driver Insured or main Healthcare Insured"
+        },
+        "person" : {
+          "description" : "Data concerning the insured details",
+          "$ref" : "#/definitions/Person"
+        },
+        "professionDescription" : {
+          "type" : "string",
+          "description" : "Job description"
+        },
+        "professionId" : {
+          "type" : "integer",
+          "format" : "int32",
+          "description" : "Profession ID of the self-insured"
+        },
+        "professionName" : {
+          "type" : "string",
+          "description" : "Profession of the self-insured. This is calculated by back end API and cannot be set by client."
+        },
+        "startDate" : {
+          "type" : "string",
+          "format" : "date-time",
+          "description" : "Start date of coverage for the insured. This is calculated by back end API and cannot be set by client."
+        },
+        "type" : {
+          "type" : "string",
+          "description" : "Insured's type",
+          "enum" : [ "InsuredDriver", "Insured" ]
+        }
+      },
+      "description" : "Data concerning the insured user"
+    },
+    "Quote" : {
+      "type" : "object",
+      "required" : [ "commonData", "id", "policyId", "quoteId" ],
+      "properties" : {
+        "commonData" : {
+          "description" : "Data common to all quotes commercial types",
+          "$ref" : "#/definitions/CommonData"
+        },
+        "coverages" : {
+          "type" : "array",
+          "description" : "List of all coverages of the quote. This is calculated by back end API and cannot be set by client.",
+          "items" : {
+            "$ref" : "#/definitions/Coverage"
+          }
+        },
+        "creationDateTime" : {
+          "description" : "Creation date and time of the Quote.",
+          "$ref" : "#/definitions/LocalDateTime"
+        },
+        "id" : {
+          "type" : "string",
+          "description" : "Quote ID"
+        },
+        "insureds" : {
+          "type" : "array",
+          "description" : "List of all insured parties stated on the quote",
+          "items" : {
+            "$ref" : "#/definitions/Insured"
+          }
+        },
+        "lastUpdateDateTime" : {
+          "description" : "Last update date and time of the Quote.",
+          "$ref" : "#/definitions/LocalDateTime"
+        },
+        "policyId" : {
+          "type" : "string",
+          "description" : "ID of the Policy if the quote has been transformed to a Policy"
+        },
+        "premiumsData" : {
+          "description" : "Data concerning premiums (price for the coverage and benefit agreed for the quote)",
+          "$ref" : "#/definitions/PremiumsData"
+        },
+        "quoteId" : {
+          "type" : "string",
+          "description" : "ID of the quote. This may be displayed to user"
+        }
+      },
+      "description" : "This is the description of a quote and only a quote. It holds all properties gathered from user before the quote got transformed into a Policy"
+    },
+    "CommonData" : {
+      "type" : "object",
+      "required" : [ "maxAge", "maxPremium", "maxSumInsured", "minAge", "minPremium", "minSumInsured", "nbOfYearsOfCoverage", "nbOfYearsOfPremium", "productCurrency", "productId", "productName" ],
+      "properties" : {
+        "maxAge" : {
+          "type" : "integer",
+          "format" : "int32",
+          "description" : "The maximum age to get coverage"
+        },
+        "maxPremium" : {
+          "description" : "The maximum premium amount",
+          "$ref" : "#/definitions/Amount"
+        },
+        "maxSumInsured" : {
+          "description" : "The maximum sum insured",
+          "$ref" : "#/definitions/Amount"
+        },
+        "minAge" : {
+          "type" : "integer",
+          "format" : "int32",
+          "description" : "The minimum age to get coverage"
+        },
+        "minPremium" : {
+          "description" : "The minimum premium amount",
+          "$ref" : "#/definitions/Amount"
+        },
+        "minSumInsured" : {
+          "description" : "The minimum sum insured",
+          "$ref" : "#/definitions/Amount"
+        },
+        "nbOfYearsOfCoverage" : {
+          "type" : "integer",
+          "format" : "int32",
+          "description" : "The number of years of coverage for the product"
+        },
+        "nbOfYearsOfPremium" : {
+          "type" : "integer",
+          "format" : "int32",
+          "description" : "The number of years of premiums / payments expected for the product"
+        },
+        "productCurrency" : {
+          "type" : "string",
+          "description" : "The default currency for the product"
+        },
+        "productId" : {
+          "type" : "string",
+          "description" : "The unique identifier of the product specification the quote is based on"
+        },
+        "productName" : {
+          "type" : "string",
+          "description" : "The name assigned to the product for marketing purposes"
+        }
+      },
+      "description" : "Data common to all quotes commercial types"
+    },
+    "Payment" : {
+      "type" : "object",
+      "required" : [ "amount", "dueDate", "orderId", "paymentId", "status", "transactionId" ],
+      "properties" : {
+        "amount" : {
+          "description" : "The payment's amount.",
+          "$ref" : "#/definitions/Amount"
+        },
+        "dueDate" : {
+          "type" : "string",
+          "format" : "date-time",
+          "description" : "The payment due date. Can be in future."
+        },
+        "effectiveDate" : {
+          "type" : "string",
+          "format" : "date-time",
+          "description" : "The payment effective date. null if payment has not been done yet."
+        },
+        "orderId" : {
+          "type" : "string",
+          "description" : "The order Id used to book the payment (if any). This is used by pay gateway like LINE Pay."
+        },
+        "paymentId" : {
+          "type" : "string",
+          "description" : "The payment Id"
+        },
+        "paymentInformations" : {
+          "type" : "array",
+          "description" : "List of payment status done for the specific payment. If not empty, should contain 0 to N payments with status SUCCESS for whcih the sum of the amounts is equal to expected amount. May contain 0 to N unsuccessful payments.",
+          "items" : {
+            "$ref" : "#/definitions/PaymentInformation"
+          }
+        },
+        "registrationKey" : {
+          "type" : "string",
+          "description" : "The payment's registration key in case of recurring payment. This is used by pay gateway like LINE Pay."
+        },
+        "status" : {
+          "type" : "string",
+          "description" : "Status of the payment",
+          "enum" : [ "NOT_PROCESSED", "INCOMPLETE", "COMPLETED", "OVERPAID" ]
+        },
+        "transactionId" : {
+          "type" : "string",
+          "description" : "The transaction Id of the payment (if any). This is used by pay gateway like LINE Pay."
+        }
+      },
+      "description" : "Data concerning the payment"
+    },
+    "RequestForToken" : {
+      "type" : "object",
+      "properties" : {
+        "password" : {
+          "type" : "string"
+        },
+        "userName" : {
+          "type" : "string"
+        }
+      }
+    },
+    "DatedAmount" : {
+      "type" : "object",
+      "required" : [ "currencyCode", "date", "value" ],
+      "properties" : {
+        "currencyCode" : {
+          "type" : "string",
+          "description" : "Currency code ISO 4217"
+        },
+        "date" : {
+          "type" : "string",
+          "format" : "date-time",
+          "description" : "Date of the amount"
+        },
+        "value" : {
+          "type" : "number",
+          "format" : "double",
+          "description" : "The amount"
+        }
+      },
+      "description" : "An amount at a specific date with its currency"
+    },
+    "PaymentInformation" : {
+      "type" : "object",
+      "required" : [ "amount", "channel", "creditCardName", "date", "method", "rejectionErrorCode", "rejectionErrorMessage", "status" ],
+      "properties" : {
+        "amount" : {
+          "description" : "Amount of the payment",
+          "$ref" : "#/definitions/Amount"
+        },
+        "channel" : {
+          "type" : "string",
+          "description" : "Channel of the payment",
+          "enum" : [ "LINE" ]
+        },
+        "creditCardName" : {
+          "type" : "string",
+          "description" : "Credit card brand name used for the payment"
+        },
+        "date" : {
+          "type" : "string",
+          "format" : "date-time",
+          "description" : "Date of the payment"
+        },
+        "method" : {
+          "type" : "string",
+          "description" : "Method of the payment"
+        },
+        "rejectionErrorCode" : {
+          "type" : "string",
+          "description" : "Rejection error code if the payment was rejected"
+        },
+        "rejectionErrorMessage" : {
+          "type" : "string",
+          "description" : "Rejection error message if the payment was rejected"
+        },
+        "status" : {
+          "type" : "string",
+          "description" : "Status of the payment",
+          "enum" : [ "SUCCESS", "ERROR" ]
+        }
+      },
+      "description" : "Data concerning the payment"
+    },
+    "PhoneNumber" : {
+      "type" : "object",
+      "properties" : {
+        "areaCode" : {
+          "type" : "integer",
+          "format" : "int32",
+          "description" : "The phone number's are code"
+        },
+        "countryCode" : {
+          "type" : "integer",
+          "format" : "int32",
+          "description" : "The phone number's country code"
+        },
+        "number" : {
+          "type" : "string",
+          "description" : "The phone number's remaining numbers"
+        },
+        "type" : {
+          "type" : "string",
+          "description" : "The phone number's type",
+          "enum" : [ "HOME", "MOBILE", "WORK" ]
+        }
+      },
+      "description" : "Data concerning Phone numbers"
+    },
+    "ProductIBeginPremium" : {
+      "type" : "object",
+      "properties" : {
+        "sumInsured" : {
+          "description" : "Total sum insured by the product. This is calculated by back end API if an amount is provided in financialScheduler. If this value is provided, then it's the financialScheduler amount that is calculated",
+          "$ref" : "#/definitions/Amount"
+        }
+      },
+      "description" : "iBegin Life Insurance specific Premiums Data"
+    },
+    "Person" : {
+      "type" : "object",
+      "properties" : {
+        "birthDate" : {
+          "type" : "string",
+          "format" : "date-time",
+          "description" : "The person's birth date"
+        },
+        "currentAddress" : {
+          "description" : "The person's current address",
+          "$ref" : "#/definitions/GeographicalAddress"
+        },
+        "deliveryAddress" : {
+          "description" : "The person's address for deliveries",
+          "$ref" : "#/definitions/GeographicalAddress"
+        },
+        "email" : {
+          "type" : "string",
+          "description" : "The person's email address"
+        },
+        "genderCode" : {
+          "type" : "string",
+          "description" : "The person's gender",
+          "enum" : [ "MALE", "FEMALE" ]
+        },
+        "givenName" : {
+          "type" : "string",
+          "description" : "The person's first name"
+        },
+        "homePhoneNumber" : {
+          "description" : "The person's home phone number",
+          "$ref" : "#/definitions/PhoneNumber"
+        },
+        "lineId" : {
+          "type" : "string",
+          "description" : "The person's line mid (if any)"
+        },
+        "maritalStatus" : {
+          "type" : "string",
+          "description" : "The person's marital status",
+          "enum" : [ "SINGLE", "MARRIED", "DIVORCED", "WIDOW" ]
+        },
+        "middleName" : {
+          "type" : "string",
+          "description" : "The person's middle name"
+        },
+        "mobilePhoneNumber" : {
+          "description" : "The person's mobile phone number",
+          "$ref" : "#/definitions/PhoneNumber"
+        },
+        "registrationAddress" : {
+          "description" : "The person's address as it is registered",
+          "$ref" : "#/definitions/GeographicalAddress"
+        },
+        "registrations" : {
+          "type" : "array",
+          "description" : "A set of nationality-dependent registrations for the party. e.g. Social Security, passport, taxes identification number, insurance company registration, driver license",
+          "items" : {
+            "$ref" : "#/definitions/Registration"
+          }
+        },
+        "surName" : {
+          "type" : "string",
+          "description" : "The person's last name"
+        },
+        "title" : {
+          "type" : "string",
+          "description" : "The person's salutation (Mr, Ms, ...)"
+        },
+        "type" : {
+          "type" : "string",
+          "description" : "The party's type",
+          "enum" : [ "PERSON", "ORGANIZATION" ]
+        },
+        "workPhoneNumber" : {
+          "description" : "The person's work phone number",
+          "$ref" : "#/definitions/PhoneNumber"
+        }
+      },
+      "description" : "Data concerning specific properties to a Person"
+    },
+    "LineBC" : {
+      "type" : "object",
+      "properties" : {
+        "dob" : {
+          "type" : "string"
+        },
+        "email" : {
+          "type" : "string"
+        },
+        "firstName" : {
+          "type" : "string"
+        },
+        "lastName" : {
+          "type" : "string"
+        },
+        "mobile" : {
+          "type" : "string"
+        },
+        "pid" : {
+          "type" : "string"
+        }
+      },
+      "description" : "Line BC Information"
+    }
+  }
+}
