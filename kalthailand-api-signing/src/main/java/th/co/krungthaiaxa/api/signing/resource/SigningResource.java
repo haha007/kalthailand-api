@@ -2,9 +2,7 @@ package th.co.krungthaiaxa.api.signing.resource;
 
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfReader;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import springfox.documentation.annotations.ApiIgnore;
 import th.co.krungthaiaxa.api.signing.model.Error;
 import th.co.krungthaiaxa.api.signing.model.ErrorCode;
 import th.co.krungthaiaxa.api.signing.service.SigningService;
@@ -45,13 +42,16 @@ public class SigningResource {
         this.signingService = signingService;
     }
 
-    @ApiIgnore
-    @RequestMapping(value = "/documents/signpdf", produces = APPLICATION_JSON_VALUE, method = POST)
+    @ApiOperation(value = "Signs a document", notes = "Signs a document with server configured certificate. Response is Base 64 encoded signed document", response = String.class)
     @ApiResponses({
             @ApiResponse(code = 406, message = "If given document is not Base 64 encoded or not a valid PDF", response = Error.class)
     })
+    @RequestMapping(value = "/documents/signpdf", produces = APPLICATION_JSON_VALUE, method = POST)
     @ResponseBody
-    public void signDocument(@RequestBody String encodedBase64Pdf, HttpServletResponse response) {
+    public void signDocument(
+            @ApiParam(value = "The Base 64 encoded pdf to sign")
+            @RequestBody String encodedBase64Pdf,
+            HttpServletResponse response) {
         byte[] decodedBase64Pdf;
         try {
             decodedBase64Pdf = Base64.getDecoder().decode(encodedBase64Pdf);

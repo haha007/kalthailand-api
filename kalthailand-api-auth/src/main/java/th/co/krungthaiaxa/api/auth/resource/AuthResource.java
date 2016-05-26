@@ -1,9 +1,6 @@
 package th.co.krungthaiaxa.api.auth.resource;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import th.co.krungthaiaxa.api.auth.jwt.JwtTokenUtil;
 import th.co.krungthaiaxa.api.auth.model.RequestForToken;
 import th.co.krungthaiaxa.api.auth.model.Token;
+import th.co.krungthaiaxa.api.auth.model.Error;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -55,12 +53,10 @@ public class AuthResource {
     private UserDetailsService userDetailsService;
 
     @ApiOperation(value = "Creates a token", notes = "Creates a JWT token containing user Roles", response = Token.class)
-    @ApiResponses({
-            @ApiResponse(code = 406, message = "If JSon of quote is invalid or if Policy could not be created",
-                    response = Error.class)
-    })
     @RequestMapping(value = "/auth", produces = APPLICATION_JSON_VALUE, method = POST)
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody RequestForToken requestForToken) {
+    public ResponseEntity<?> createAuthenticationToken(
+            @ApiParam(value = "The credentials to get token for")
+            @RequestBody RequestForToken requestForToken) {
         // Perform the security
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
                 requestForToken.getUserName(),
@@ -83,7 +79,10 @@ public class AuthResource {
             @ApiResponse(code = 406, message = "If token does not give access to the role", response = Error.class)
     })
     @RequestMapping(value = "/auth/validate/{roleName}", produces = APPLICATION_JSON_VALUE, method = GET)
-    public ResponseEntity<?> validateToken(@PathVariable String roleName, HttpServletRequest request) {
+    public ResponseEntity<?> validateToken(
+            @ApiParam(value = "The role to check the token against on")
+            @PathVariable String roleName,
+            HttpServletRequest request) {
         String token = request.getHeader(tokenHeader);
         if (isEmpty(token)) {
             logger.error("Token is empty");
