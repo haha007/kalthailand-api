@@ -10,6 +10,7 @@ import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.soap.client.core.SoapActionCallback;
 import th.co.krungthaiaxa.api.elife.client.AuthClient;
 import th.co.krungthaiaxa.api.elife.client.SigningClient;
+import th.co.krungthaiaxa.api.elife.client.Token;
 import th.co.krungthaiaxa.api.elife.repository.CDBRepository;
 import th.co.krungthaiaxa.api.elife.service.PolicyService;
 import th.co.krungthaiaxa.api.elife.tmc.TMCClient;
@@ -78,6 +79,6 @@ public class ELifeTest {
     }
 
     private ResponseEntity<String> getFakeToken() {
-        return new ResponseEntity<>("123456", OK);
+        return new ResponseEntity<>(new String(JsonUtil.getJson(Token.of("123456"))), OK);
     }
 }
