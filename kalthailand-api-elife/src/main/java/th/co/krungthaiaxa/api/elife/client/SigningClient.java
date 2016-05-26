@@ -1,5 +1,7 @@
 package th.co.krungthaiaxa.api.elife.client;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
@@ -15,9 +17,10 @@ import static org.springframework.http.HttpMethod.POST;
 
 @Service
 public class SigningClient {
-    @Value("${kal.api.auth.admin.username}")
+    private final static Logger logger = LoggerFactory.getLogger(SigningClient.class);
+    @Value("${kal.api.auth.username}")
     private String userName;
-    @Value("${kal.api.auth.admin.password}")
+    @Value("${kal.api.auth.password}")
     private String userPassword;
     @Value("${kal.api.signing.url}")
     private String signingApiURL;
@@ -39,6 +42,7 @@ public class SigningClient {
             throw new ElifeException("Unable to create token. Response is [" + authResponse.getBody() + "]");
         }
 
+        logger.info("Got signed document from signing API");
         return authResponse.getBody().getBytes();
     }
 
