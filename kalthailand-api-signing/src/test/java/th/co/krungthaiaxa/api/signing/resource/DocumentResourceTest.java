@@ -39,7 +39,7 @@ import static org.springframework.http.HttpStatus.*;
 @WebAppConfiguration
 @ActiveProfiles("test")
 @IntegrationTest({"server.port=0"})
-public class SigningResourceTest {
+public class DocumentResourceTest {
     @Value("${kal.api.auth.header}")
     private String tokenHeader;
     @Value("${local.server.port}")
