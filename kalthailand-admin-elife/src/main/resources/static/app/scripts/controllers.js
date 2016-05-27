@@ -3,30 +3,11 @@
 
     var app = angular.module('myApp');
 
-    app.controller('AppController', function ($scope, CollectionFile) {
-        CollectionFile.query(function (response) {
-            $scope.collectionFiles = response;
-        });
-
-        $scope.file = null;
-        $scope.upload = function (event) {
-            event.preventDefault();
-            var newCollectionFile = new CollectionFile;
-            newCollectionFile.file = $scope.file;
-
-            newCollectionFile.$save()
-                .then(function (successResponse) {
-                    // For successfully state
-                    $scope.errorMessage = null;
-                })
-                .catch(function (errorResponse) {
-                    // For error state
-                    $scope.errorMessage = errorResponse.data.userMessage;
-                });
-        }
-    });
-
-    app.controller('LoginController', function ($scope, $http) {
+    app.controller('LoginController', function ($scope, $http, $localStorage, $location) {
+    	
+    	$localStorage.token = null;
+        $localStorage.role = null;
+        
         $scope.onClickLogin = function () {
             var requestForToken = {};
             requestForToken.userName = $scope.username;
@@ -34,16 +15,41 @@
 
             $http.post(window.location.origin + '/api-auth/auth', requestForToken)
                 .then(
-                    function (successResponse) {
-                        console.log(successResponse);
-                    },
-                    function (errorResponse) {
-                        console.log(errorResponse);
-                    });
+                function (successResponse) {
+                    console.log(successResponse);
+                    $localStorage.token = successResponse.data.token;
+                    $localStorage.role = 'ELIFE_ADMIN';
+                    $location.path('/home');
+                },
+                function (errorResponse) {
+                    console.log(errorResponse);
+                });
         };
     });
 
-    app.controller('DashboardController', function ($scope, Dashboard) {
+    app.controller('DashboardController', function ($scope, $rootScope, $route, Dashboard, ValidateToken, $localStorage, $location) {
+        $scope.$route = $route;
+
+        ValidateToken.check(
+            {},
+            function (successResponse) {
+
+            },
+            function (errorResponse) {
+                if (errorResponse.status == 403) {
+                    $rootScope.errorExists = true;
+                    $location.path('/');
+                    setTimeout(function() {
+                        $rootScope.$apply(function() {
+                            $rootScope.errorExists = false;
+                        });
+                    }, 4000);
+                } else {
+                    console.log(errorResponse);
+                }
+            }
+        );
+
         $scope.currentPage = 1;
         $scope.itemsPerPage = 20;
         $scope.searchContent = '';
@@ -69,11 +75,11 @@
             startingDay: 1
         };
 
-        $scope.fromDateSearchOpen = function() {
+        $scope.fromDateSearchOpen = function () {
             $scope.fromDateSearch.opened = true;
         };
 
-        $scope.toDateSearchOpen = function() {
+        $scope.toDateSearchOpen = function () {
             $scope.toDateSearch.opened = true;
         };
 
@@ -87,11 +93,11 @@
                 {
                     pageNumber: $scope.currentPage - 1,
                     pageSize: $scope.itemsPerPage,
-                    policyId : $scope.policyIdSearch,
-                    productType : $scope.productTypeSearch,
-                    status : $scope.statusSearch,
-                    nonEmptyAgentCode : $scope.nonEmptyAgentCodeSearch,
-                    fromDate : $scope.fromDateSearch,
+                    policyId: $scope.policyIdSearch,
+                    productType: $scope.productTypeSearch,
+                    status: $scope.statusSearch,
+                    nonEmptyAgentCode: $scope.nonEmptyAgentCodeSearch,
+                    fromDate: $scope.fromDateSearch,
                     toDate: $scope.toDateSearch
                 },
                 function (successResponse) {
@@ -101,7 +107,7 @@
 
                     $scope.policies = successResponse;
                     $scope.errorMessage = null;
-                    $scope.downloadUrl = 'admin/policies/extract/download?';
+                    $scope.downloadUrl = window.location.origin + '/api-elife/admin/policies/extract/download?';
                     if ($scope.policyIdSearch) {
                         $scope.downloadUrl += 'policyId=' + $scope.policyIdSearch;
                     }
@@ -129,8 +135,75 @@
             );
         }
     });
+    
+    app.controller('CollectionFileController', function ($scope, $route, CollectionFile, $localStorage, ValidateToken) {
+        $scope.$route = $route;
+        
+        ValidateToken.check(
+            {},
+            function (successResponse) {
 
-    app.controller('BlackListController', function ($scope, BlackList, BlackListFileUpload) {
+            },
+            function (errorResponse) {
+                if (errorResponse.status == 403) {
+                    $rootScope.errorExists = true;
+                    $location.path('/');
+                    setTimeout(function() {
+                        $rootScope.$apply(function() {
+                            $rootScope.errorExists = false;
+                        });
+                    }, 4000);
+                } else {
+                    console.log(errorResponse);
+                }
+            }
+        );
+        
+        CollectionFile.query(function (response) {
+            $scope.collectionFiles = response;
+        });
+
+        $scope.file = null;
+        $scope.upload = function (event) {
+            event.preventDefault();
+            var newCollectionFile = new CollectionFile;
+            newCollectionFile.file = $scope.file;
+
+            newCollectionFile.$save()
+                .then(function (successResponse) {
+                    // For successfully state
+                    $scope.errorMessage = null;
+                })
+                .catch(function (errorResponse) {
+                    // For error state
+                    $scope.errorMessage = errorResponse.data.userMessage;
+                });
+        }
+    });
+
+    app.controller('BlackListController', function ($scope, $route, BlackList, BlackListFileUpload, ValidateToken) {
+        $scope.$route = $route;
+        
+        ValidateToken.check(
+            {},
+            function (successResponse) {
+
+            },
+            function (errorResponse) {
+                if (errorResponse.status == 403) {
+                    $rootScope.errorExists = true;
+                    $location.path('/');
+                    setTimeout(function() {
+                        $rootScope.$apply(function() {
+                            $rootScope.errorExists = false;
+                        });
+                    }, 4000);
+                } else {
+                    console.log(errorResponse);
+                }
+            }
+        );
+        
         $scope.currentPage = 1;
         $scope.itemsPerPage = 20;
         $scope.searchContent = '';
@@ -142,9 +215,9 @@
         $scope.numberOfEmptyLines = 0;
 
         $scope.stacked = [];
-        $scope.stacked.push({value: 0, type: 'success'});
-        $scope.stacked.push({value: 0, type: 'warning'});
-        $scope.stacked.push({value: 0, type: 'info'});
+        $scope.stacked.push({ value: 0, type: 'success' });
+        $scope.stacked.push({ value: 0, type: 'warning' });
+        $scope.stacked.push({ value: 0, type: 'info' });
 
         $scope.search = searchForBlackList;
         $scope.pageChanged = searchForBlackList;
@@ -222,9 +295,9 @@
             $scope.numberOfDuplicateLines = uploadProgress.numberOfDuplicateLines;
             $scope.numberOfEmptyLines = uploadProgress.numberOfEmptyLines;
             $scope.numberOfLines = uploadProgress.numberOfLines;;
-            $scope.stacked[0] = {value: $scope.numberOfLinesAdded, type: 'success'};
-            $scope.stacked[1] = {value: $scope.numberOfDuplicateLines, type: 'warning'};
-            $scope.stacked[2] = {value: $scope.numberOfEmptyLines, type: 'info'};
+            $scope.stacked[0] = { value: $scope.numberOfLinesAdded, type: 'success' };
+            $scope.stacked[1] = { value: $scope.numberOfDuplicateLines, type: 'warning' };
+            $scope.stacked[2] = { value: $scope.numberOfEmptyLines, type: 'info' };
 
             if (!lastCall) {
                 $scope.$apply();
@@ -232,7 +305,29 @@
         }
     });
 
-    app.controller('DetailController', function ($scope, $http,  PolicyDetail, PolicyNotification) {
+    app.controller('PolicyDetailController', function ($scope, $route, $http, PolicyDetail, PolicyNotification, ValidateToken) {
+        $scope.$route = $route;
+        
+        ValidateToken.check(
+            {},
+            function (successResponse) {
+
+            },
+            function (errorResponse) {
+                if (errorResponse.status == 403) {
+                    $rootScope.errorExists = true;
+                    $location.path('/');
+                    setTimeout(function() {
+                        $rootScope.$apply(function() {
+                            $rootScope.errorExists = false;
+                        });
+                    }, 4000);
+                } else {
+                    console.log(errorResponse);
+                }
+            }
+        );
+        
         $scope.policyID = window.location.search.split('=')[1];
         if (window.location.search.split('=')[1]) {
             searchForPolicyDetail();
@@ -240,7 +335,7 @@
 
         $scope.onClickNotification = function () {
             $scope.isValidating = true;
-            PolicyNotification.get({id: $scope.policyID, reminderId: $scope.scenarioID},
+            PolicyNotification.get({ id: $scope.policyID, reminderId: $scope.scenarioID },
                 function (successResponse) {
                     $scope.successMessage = "Notifications have been sent successfully";
                     $scope.errorMessage = null;
@@ -260,28 +355,28 @@
             $http({
                 url: 'policies/' + policyNumber + '/update/status/validated',
                 method: 'PUT',
-                data: $.param({agentCode: $scope.agentCode, linePayCaptureMode: $scope.linePayCaptureMode}),
-                headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                data: $.param({ agentCode: $scope.agentCode, linePayCaptureMode: $scope.linePayCaptureMode }),
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
             })
                 .then(
-                    function (successResponse) {
-                        $scope.successMessage = "Policy [" + successResponse.data.policyId + "] has been validated";
-                        $scope.errorMessage = null;
-                        $scope.policyDetail = null;
-                        $scope.annualPremium = null;
-                        $scope.sumInsured = null;
-                        $scope.isValidating = null;
-                        $(window).scrollTop(0);
-                    },
-                    function (errorResponse) {
-                        $scope.successMessage = null;
-                        $scope.errorMessage = errorResponse.data.userMessage;
-                        $scope.policyDetail = null;
-                        $scope.annualPremium = null;
-                        $scope.sumInsured = null;
-                        $scope.isValidating = null;
-                        $(window).scrollTop(0);
-                    });
+                function (successResponse) {
+                    $scope.successMessage = "Policy [" + successResponse.data.policyId + "] has been validated";
+                    $scope.errorMessage = null;
+                    $scope.policyDetail = null;
+                    $scope.annualPremium = null;
+                    $scope.sumInsured = null;
+                    $scope.isValidating = null;
+                    $(window).scrollTop(0);
+                },
+                function (errorResponse) {
+                    $scope.successMessage = null;
+                    $scope.errorMessage = errorResponse.data.userMessage;
+                    $scope.policyDetail = null;
+                    $scope.annualPremium = null;
+                    $scope.sumInsured = null;
+                    $scope.isValidating = null;
+                    $(window).scrollTop(0);
+                });
         };
 
         $scope.search = function (event) {
@@ -290,7 +385,7 @@
         };
 
         function searchForPolicyDetail() {
-            PolicyDetail.get({id: $scope.policyID},
+            PolicyDetail.get({ id: $scope.policyID },
                 function (successResponse) {
                     $scope.scenarioID = 1;
                     $scope.linePayCaptureMode = 'FAKE_WITH_SUCCESS';
