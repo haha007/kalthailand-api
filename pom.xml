@@ -27,6 +27,7 @@
         <module>kalthailand-api-auth</module>
         <module>kalthailand-api-signing</module>
         <module>kalthailand-api-elife</module>
+		<module>kalthailand-api-blacklist</module>
     </modules>
 
     <dependencies>
