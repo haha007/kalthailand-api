@@ -1,4 +1,4 @@
-package th.co.krungthaiaxa.api.elife.utils;
+package th.co.krungthaiaxa.api.blacklist.utils;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;

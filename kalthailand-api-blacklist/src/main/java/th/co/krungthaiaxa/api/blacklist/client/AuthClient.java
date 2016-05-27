@@ -1,4 +1,4 @@
-package th.co.krungthaiaxa.api.elife.client;
+package th.co.krungthaiaxa.api.blacklist.client;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,8 +11,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
-import th.co.krungthaiaxa.api.elife.exception.ElifeException;
-import th.co.krungthaiaxa.api.elife.utils.JsonUtil;
+
+import th.co.krungthaiaxa.api.blacklist.exception.ElifeException;
+import th.co.krungthaiaxa.api.blacklist.utils.JsonUtil;
 
 import java.io.IOException;
 import java.net.URI;

@@ -1,4 +1,4 @@
-package th.co.krungthaiaxa.api.elife;
+package th.co.krungthaiaxa.api.blacklist;
 
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;

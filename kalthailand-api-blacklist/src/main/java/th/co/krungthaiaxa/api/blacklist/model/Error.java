@@ -1,4 +1,4 @@
-package th.co.krungthaiaxa.api.elife.model.error;
+package th.co.krungthaiaxa.api.blacklist.model;
 
 public class Error {
     private String code;

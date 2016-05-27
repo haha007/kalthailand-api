@@ -1,11 +1,12 @@
-package th.co.krungthaiaxa.api.elife.repository;
+package th.co.krungthaiaxa.api.blacklist.repository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
-import th.co.krungthaiaxa.api.elife.data.BlackListed;
+
+import th.co.krungthaiaxa.api.blacklist.data.BlackListed;
 
 @Repository
 public interface BlackListedRepository extends PagingAndSortingRepository<BlackListed, String> {

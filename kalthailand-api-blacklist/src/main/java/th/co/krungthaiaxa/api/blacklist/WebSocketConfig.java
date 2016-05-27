@@ -1,4 +1,4 @@
-package th.co.krungthaiaxa.api.elife;
+package th.co.krungthaiaxa.api.blacklist;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;

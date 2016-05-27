@@ -1,4 +1,4 @@
-package th.co.krungthaiaxa.api.elife.service;
+package th.co.krungthaiaxa.api.blacklist.service;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.openxml4j.exceptions.OpenXML4JException;
@@ -20,9 +20,9 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import com.google.common.base.Optional;
 
-import th.co.krungthaiaxa.api.elife.data.BlackListed;
-import th.co.krungthaiaxa.api.elife.exception.ElifeException;
-import th.co.krungthaiaxa.api.elife.repository.BlackListedRepository;
+import th.co.krungthaiaxa.api.blacklist.data.BlackListed;
+import th.co.krungthaiaxa.api.blacklist.exception.ElifeException;
+import th.co.krungthaiaxa.api.blacklist.repository.BlackListedRepository;
 
 import javax.inject.Inject;
 import javax.xml.parsers.ParserConfigurationException;
@@ -30,9 +30,10 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 
 import static org.springframework.util.Assert.notNull;
-import static th.co.krungthaiaxa.api.elife.utils.JsonUtil.getJson;
+import static th.co.krungthaiaxa.api.blacklist.utils.JsonUtil.getJson;
 
 @Service
 public class BlackListedService {
@@ -55,9 +56,23 @@ public class BlackListedService {
         this.template = template;
     }
     
-    public boolean isBlackListed(String thaiId){    	
-    	BlackListed blackListed = blackListedRepository.findByIdNumber(thaiId);
-    	return (blackListed==null?false:true);
+    public void checkThaiIdFormat(String thaiId)throws ElifeException{
+    	if(StringUtils.isBlank(thaiId)){
+    		throw new ElifeException("Thai ID cannot be null.");
+    	}
+    	if(StringUtils.isNumeric(thaiId)==false){
+    		throw new ElifeException(thaiId);
+    	}
+    }
+    
+    public void checkThaiIdLength(String thaiId)throws ElifeException{
+    	if(thaiId.length()!=13){
+    		throw new ElifeException(thaiId);
+    	}
+    }
+    
+    public boolean isBlackListed(String thaiId)throws ElifeException{  
+    	return (blackListedRepository.findByIdNumber(thaiId)==null?false:true);
     }
 
     public Page<BlackListed> findAll(Integer pageNumber, Integer pageSize, String searchContent) {

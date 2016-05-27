@@ -1,4 +1,4 @@
-package th.co.krungthaiaxa.api.elife.exception;
+package th.co.krungthaiaxa.api.blacklist.exception;
 
 public class ElifeException extends RuntimeException {
     public ElifeException() {

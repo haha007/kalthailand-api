@@ -1,4 +1,4 @@
-package th.co.krungthaiaxa.api.elife.client;
+package th.co.krungthaiaxa.api.blacklist.client;
 
 public class RequestForToken {
     private String userName;

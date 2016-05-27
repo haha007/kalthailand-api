@@ -1,4 +1,4 @@
-package th.co.krungthaiaxa.api.elife;
+package th.co.krungthaiaxa.api.blacklist;
 
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.web.SpringBootServletInitializer;

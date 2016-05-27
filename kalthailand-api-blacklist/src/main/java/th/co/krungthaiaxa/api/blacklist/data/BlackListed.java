@@ -1,4 +1,4 @@
-package th.co.krungthaiaxa.api.elife.data;
+package th.co.krungthaiaxa.api.blacklist.data;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;

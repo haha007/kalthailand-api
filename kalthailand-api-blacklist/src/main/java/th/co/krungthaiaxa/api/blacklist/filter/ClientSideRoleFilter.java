@@ -1,4 +1,4 @@
-package th.co.krungthaiaxa.api.elife.filter;
+package th.co.krungthaiaxa.api.blacklist.filter;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;

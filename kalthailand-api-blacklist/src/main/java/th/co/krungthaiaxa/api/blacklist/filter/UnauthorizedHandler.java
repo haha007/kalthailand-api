@@ -1,4 +1,4 @@
-package th.co.krungthaiaxa.api.elife.filter;
+package th.co.krungthaiaxa.api.blacklist.filter;
 
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
