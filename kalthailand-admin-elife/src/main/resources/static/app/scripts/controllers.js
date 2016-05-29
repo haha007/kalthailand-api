@@ -4,10 +4,8 @@
     var app = angular.module('myApp');
 
     app.controller('LoginController', function ($scope, $http, $localStorage, $location) {
-    	
     	$localStorage.token = null;
-        $localStorage.role = null;
-        
+
         $scope.onClickLogin = function () {
             var requestForToken = {};
             requestForToken.userName = $scope.username;
@@ -16,9 +14,7 @@
             $http.post(window.location.origin + '/api-auth/auth', requestForToken)
                 .then(
                 function (successResponse) {
-                    console.log(successResponse);
                     $localStorage.token = successResponse.data.token;
-                    $localStorage.role = 'ELIFE_ADMIN';
                     $location.path('/home');
                 },
                 function (errorResponse) {
@@ -27,28 +23,8 @@
         };
     });
 
-    app.controller('DashboardController', function ($scope, $rootScope, $route, Dashboard, ValidateToken, $localStorage, $location) {
+    app.controller('DashboardController', function ($scope, $rootScope, $route, Dashboard, $localStorage, $location) {
         $scope.$route = $route;
-
-        ValidateToken.check(
-            {},
-            function (successResponse) {
-
-            },
-            function (errorResponse) {
-                if (errorResponse.status == 403) {
-                    $rootScope.errorExists = true;
-                    $location.path('/');
-                    setTimeout(function() {
-                        $rootScope.$apply(function() {
-                            $rootScope.errorExists = false;
-                        });
-                    }, 4000);
-                } else {
-                    console.log(errorResponse);
-                }
-            }
-        );
 
         $scope.currentPage = 1;
         $scope.itemsPerPage = 20;
@@ -136,29 +112,9 @@
         }
     });
     
-    app.controller('CollectionFileController', function ($scope, $route, CollectionFile, $localStorage, ValidateToken) {
+    app.controller('CollectionFileController', function ($scope, $route, CollectionFile, $localStorage) {
         $scope.$route = $route;
-        
-        ValidateToken.check(
-            {},
-            function (successResponse) {
 
-            },
-            function (errorResponse) {
-                if (errorResponse.status == 403) {
-                    $rootScope.errorExists = true;
-                    $location.path('/');
-                    setTimeout(function() {
-                        $rootScope.$apply(function() {
-                            $rootScope.errorExists = false;
-                        });
-                    }, 4000);
-                } else {
-                    console.log(errorResponse);
-                }
-            }
-        );
-        
         CollectionFile.query(function (response) {
             $scope.collectionFiles = response;
         });
@@ -181,29 +137,9 @@
         }
     });
 
-    app.controller('BlackListController', function ($scope, $route, BlackList, BlackListFileUpload, ValidateToken) {
+    app.controller('BlackListController', function ($scope, $route, BlackList, BlackListFileUpload) {
         $scope.$route = $route;
-        
-        ValidateToken.check(
-            {},
-            function (successResponse) {
 
-            },
-            function (errorResponse) {
-                if (errorResponse.status == 403) {
-                    $rootScope.errorExists = true;
-                    $location.path('/');
-                    setTimeout(function() {
-                        $rootScope.$apply(function() {
-                            $rootScope.errorExists = false;
-                        });
-                    }, 4000);
-                } else {
-                    console.log(errorResponse);
-                }
-            }
-        );
-        
         $scope.currentPage = 1;
         $scope.itemsPerPage = 20;
         $scope.searchContent = '';
@@ -305,28 +241,8 @@
         }
     });
 
-    app.controller('PolicyDetailController', function ($scope, $route, $http, PolicyDetail, PolicyNotification, ValidateToken) {
+    app.controller('PolicyDetailController', function ($scope, $route, $http, PolicyDetail, PolicyNotification) {
         $scope.$route = $route;
-        
-        ValidateToken.check(
-            {},
-            function (successResponse) {
-
-            },
-            function (errorResponse) {
-                if (errorResponse.status == 403) {
-                    $rootScope.errorExists = true;
-                    $location.path('/');
-                    setTimeout(function() {
-                        $rootScope.$apply(function() {
-                            $rootScope.errorExists = false;
-                        });
-                    }, 4000);
-                } else {
-                    console.log(errorResponse);
-                }
-            }
-        );
         
         $scope.policyID = window.location.search.split('=')[1];
         if (window.location.search.split('=')[1]) {
