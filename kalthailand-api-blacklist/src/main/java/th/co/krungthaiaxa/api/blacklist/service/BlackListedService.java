@@ -17,9 +17,6 @@ import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
-
-import com.google.common.base.Optional;
-
 import th.co.krungthaiaxa.api.blacklist.data.BlackListed;
 import th.co.krungthaiaxa.api.blacklist.exception.ElifeException;
 import th.co.krungthaiaxa.api.blacklist.repository.BlackListedRepository;
@@ -30,7 +27,6 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Map;
 
 import static org.springframework.util.Assert.notNull;
 import static th.co.krungthaiaxa.api.blacklist.utils.JsonUtil.getJson;
@@ -55,24 +51,24 @@ public class BlackListedService {
         this.blackListedRepository = blackListedRepository;
         this.template = template;
     }
-    
-    public void checkThaiIdFormat(String thaiId)throws ElifeException{
-    	if(StringUtils.isBlank(thaiId)){
-    		throw new ElifeException("Thai ID cannot be null.");
-    	}
-    	if(StringUtils.isNumeric(thaiId)==false){
-    		throw new ElifeException(thaiId);
-    	}
+
+    public void checkThaiIdFormat(String thaiId) throws ElifeException {
+        if (StringUtils.isBlank(thaiId)) {
+            throw new ElifeException("Thai ID cannot be null.");
+        }
+        if (!StringUtils.isNumeric(thaiId)) {
+            throw new ElifeException(thaiId);
+        }
     }
-    
-    public void checkThaiIdLength(String thaiId)throws ElifeException{
-    	if(thaiId.length()!=13){
-    		throw new ElifeException(thaiId);
-    	}
+
+    public void checkThaiIdLength(String thaiId) throws ElifeException {
+        if (thaiId.length() != 13) {
+            throw new ElifeException(thaiId);
+        }
     }
-    
-    public boolean isBlackListed(String thaiId)throws ElifeException{  
-    	return (blackListedRepository.findByIdNumber(thaiId)==null?false:true);
+
+    public boolean isBlackListed(String thaiId) throws ElifeException {
+        return (blackListedRepository.findByIdNumber(thaiId) != null);
     }
 
     public Page<BlackListed> findAll(Integer pageNumber, Integer pageSize, String searchContent) {
@@ -124,7 +120,7 @@ public class BlackListedService {
             saveBlackListed();
             template.convertAndSend("/topic/blackList/upload/progress/result", new String(getJson(new UploadProgress(numberOfLinesAdded, numberOfDuplicateLines, numberOfEmptyLines, numberOfLines))));
             if (numberOfLinesAdded == 0) {
-                throw new ElifeException("No line has been found to add in the black list. Make sure the Excel file contains 2 sheets and that second sheet has (exact) headers "+EXPECTED_HEADERS+".");
+                throw new ElifeException("No line has been found to add in the black list. Make sure the Excel file contains 2 sheets and that second sheet has (exact) headers " + EXPECTED_HEADERS + ".");
             } else {
                 logger.info("A total number of [" + numberOfLinesAdded + "] lines have been added");
             }
@@ -148,7 +144,7 @@ public class BlackListedService {
                     // we changed line. Whatever was in previous line should be saved
                     if ("1".equalsIgnoreCase(currentLineNumber)) {
                         if (!currentLineContent.equalsIgnoreCase(FIRST_LINE)) {
-                            throw new ElifeException("The first line of second sheet must contain following headers: "+EXPECTED_HEADERS+".");
+                            throw new ElifeException("The first line of second sheet must contain following headers: " + EXPECTED_HEADERS + ".");
                         } else {
                             logger.info("First line containing [" + currentLineContent + "] is ignored.");
                             numberOfDuplicateLines++;
