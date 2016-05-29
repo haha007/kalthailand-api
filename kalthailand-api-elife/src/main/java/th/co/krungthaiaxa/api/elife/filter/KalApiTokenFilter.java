@@ -5,7 +5,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -53,10 +52,6 @@ public class KalApiTokenFilter implements Filter {
 
         // For everything else, we should check for token validity
         String authToken = httpServletRequest.getHeader(this.tokenHeader);
-
-        if (StringUtils.isEmpty(authToken)) {
-            throw new IOException("No token provided");
-        }
 
         // Token might be expired, always have to check for validity
         URI validateRoleURI;

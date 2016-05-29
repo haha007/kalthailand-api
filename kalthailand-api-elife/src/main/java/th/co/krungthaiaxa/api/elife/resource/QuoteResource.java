@@ -61,9 +61,9 @@ public class QuoteResource {
         }
 
         try {
-            if(quote.get().getCommonData().getProductId().equals(ProductType.PRODUCT_10_EC.getName())){
+            if (quote.get().getCommonData().getProductId().equals(ProductType.PRODUCT_10_EC.getName())) {
                 emailService.sendQuote10ECEmail(quote.get(), base64Image);
-            }else if(quote.get().getCommonData().getProductId().equals(ProductType.PRODUCT_IFINE.getName())){
+            } else if (quote.get().getCommonData().getProductId().equals(ProductType.PRODUCT_IFINE.getName())) {
                 emailService.sendQuoteiFineEmail(quote.get());
             }
         } catch (Exception e) {
@@ -85,8 +85,7 @@ public class QuoteResource {
         Optional<Quote> quote = null;
         try {
             quote = quoteService.getLatestQuote(sessionId, channelType);
-        }
-        catch (DataAccessException e) {
+        } catch (DataAccessException e) {
             logger.error("Unable to get latest quote", e);
         }
         if (quote == null || !quote.isPresent()) {

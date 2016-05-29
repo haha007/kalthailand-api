@@ -33,10 +33,6 @@ import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.EVERY_MON
 @ActiveProfiles("test")
 @IntegrationTest({"server.port=0"})
 public class ProductResourceTest extends ELifeTest {
-    @Value("${security.api.user.name}")
-    private String apiUserName;
-    @Value("${security.api.user.password}")
-    private String apiUserPassword;
     @Value("${local.server.port}")
     private int port;
     private URI base;
@@ -45,7 +41,7 @@ public class ProductResourceTest extends ELifeTest {
     @Before
     public void setUp() throws Exception {
         base = new URI("http://localhost:" + port + "/products/amounts");
-        template = new TestRestTemplate(apiUserName, apiUserPassword);
+        template = new TestRestTemplate();
     }
 
     @Test

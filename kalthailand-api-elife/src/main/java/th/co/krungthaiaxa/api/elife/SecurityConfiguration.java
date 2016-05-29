@@ -1,6 +1,7 @@
 package th.co.krungthaiaxa.api.elife;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -22,20 +23,23 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
-                // we don't need CSRF because our token is invulnerable
                 .csrf().disable()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler)
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                // All requests should be authorized since validation will be done in filter using token
                 .and()
-                .authorizeRequests()
-                .anyRequest().permitAll();
+                    .authorizeRequests()
+                    .antMatchers(HttpMethod.DELETE, "/**").denyAll()
+                    .antMatchers(HttpMethod.GET, "/**").permitAll()
+                    .antMatchers(HttpMethod.HEAD, "/**").denyAll()
+                    .antMatchers(HttpMethod.OPTIONS, "/**").denyAll()
+                    .antMatchers(HttpMethod.PATCH, "/**").denyAll()
+                    .antMatchers(HttpMethod.POST, "/**").permitAll()
+                    .antMatchers(HttpMethod.PUT, "/**").permitAll()
+                    .antMatchers(HttpMethod.TRACE, "/**").denyAll();
 
-        // Custom filter to check for KAL API token
         httpSecurity.addFilterBefore(kalApiTokenFilter, UsernamePasswordAuthenticationFilter.class);
 
-        // disable page caching
         httpSecurity.headers().cacheControl();
     }
 }

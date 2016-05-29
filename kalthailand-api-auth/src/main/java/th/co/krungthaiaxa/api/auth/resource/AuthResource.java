@@ -101,7 +101,7 @@ public class AuthResource {
         }
 
         if (!roles.get().contains(roleName)) {
-            logger.error("Role is not available in provided token");
+            logger.error("Role [" + roleName + "] is not available in provided token");
             return new ResponseEntity<>(ROLE_NOT_ALLOWED.apply(roleName), NOT_ACCEPTABLE);
         } else {
             logger.info("Role is available in provided token");

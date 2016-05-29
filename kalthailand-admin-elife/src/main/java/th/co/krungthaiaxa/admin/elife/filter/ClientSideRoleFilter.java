@@ -5,9 +5,14 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -17,14 +22,24 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Enumeration;
-import java.util.List;
 import java.util.Properties;
-import java.util.stream.Collectors;
+
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpStatus.OK;
 
 @Component
 public class ClientSideRoleFilter implements Filter {
     private final static Logger logger = LoggerFactory.getLogger(ClientSideRoleFilter.class);
+
+    @Value("${kal.api.auth.header}")
+    private String tokenHeader;
+    @Value("${kal.api.auth.token.validation.url}")
+    private String tokenValidationUrl;
+
+    private RestTemplate template = new RestTemplate();
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -54,13 +69,10 @@ public class ClientSideRoleFilter implements Filter {
         Properties properties = new Properties();
         properties.load(inputStream);
 
-        Authentication authentication = (Authentication) ((HttpServletRequest) servletRequest).getUserPrincipal();
-        List<String> roles = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
-
         CharResponseWrapper wrappedResponse = new CharResponseWrapper((HttpServletResponse) servletResponse);
         filterChain.doFilter(servletRequest, wrappedResponse);
 
-        String modifiedResponse = modify(new String(wrappedResponse.getByteArray()), properties, roles);
+        String modifiedResponse = modify(httpServletRequest, new String(wrappedResponse.getByteArray()), properties);
         servletResponse.setContentLength(modifiedResponse.length());
         servletResponse.getOutputStream().write(modifiedResponse.getBytes());
     }
@@ -69,12 +81,8 @@ public class ClientSideRoleFilter implements Filter {
     public void destroy() {
     }
 
-    public static String modify(String html, Properties properties, List<String> roles) {
+    private String modify(HttpServletRequest httpServletRequest, String html, Properties properties) {
         if (properties == null) {
-            return html;
-        }
-
-        if (roles == null || roles.size() == 0) {
             return html;
         }
 
@@ -85,11 +93,10 @@ public class ClientSideRoleFilter implements Filter {
             Element element = document.getElementById(propertyName);
             if (element != null) {
                 String requiredRoles = properties.getProperty(propertyName);
+                String[] requiredRoleList = requiredRoles.split(",");
                 boolean hasRequiredRole = false;
-                for (String role : roles) {
-                    if (requiredRoles.contains(role)) {
-                        hasRequiredRole = true;
-                    }
+                for (int i=0;i<requiredRoleList.length && !hasRequiredRole;i++) {
+                    hasRequiredRole = validateTokenAgainstRole(httpServletRequest.getHeader(tokenHeader), requiredRoleList[i]);
                 }
 
                 if (!hasRequiredRole) {
@@ -101,7 +108,35 @@ public class ClientSideRoleFilter implements Filter {
         return document.html();
     }
 
-    private static class ByteArrayServletStream extends ServletOutputStream {
+    private Boolean validateTokenAgainstRole(String token, String tokenRequiredRole) {
+        URI validateRoleURI;
+        try {
+            validateRoleURI = new URI(tokenValidationUrl + "/" + tokenRequiredRole);
+        } catch (URISyntaxException e) {
+            logger.info("Unable to check token validity");
+            return false;
+        }
+
+        HttpHeaders validateRoleHeaders = new HttpHeaders();
+        validateRoleHeaders.add("Content-Type", "application/json");
+        validateRoleHeaders.add(tokenHeader, token);
+        UriComponentsBuilder validateRoleURIBuilder = UriComponentsBuilder.fromUri(validateRoleURI);
+        ResponseEntity<String> validateRoleURIResponse;
+        try {
+            validateRoleURIResponse = template.exchange(validateRoleURIBuilder.toUriString(), GET, new HttpEntity<>(validateRoleHeaders), String.class);
+        } catch (RestClientException e) {
+            return false;
+        }
+
+        if (validateRoleURIResponse.getStatusCode().value() != OK.value()) {
+            logger.info("Provided token doesn't give access to role [" + tokenRequiredRole + "]");
+            return false;
+        }
+
+        return true;
+    }
+
+    private class ByteArrayServletStream extends ServletOutputStream {
         ByteArrayOutputStream baos;
         WriteListener writeListener;
 
@@ -124,7 +159,7 @@ public class ClientSideRoleFilter implements Filter {
         }
     }
 
-    private static class ByteArrayPrintWriter {
+    private class ByteArrayPrintWriter {
         private ByteArrayOutputStream baos = new ByteArrayOutputStream();
         private PrintWriter pw = new PrintWriter(baos);
         private ServletOutputStream sos = new ByteArrayServletStream(baos);

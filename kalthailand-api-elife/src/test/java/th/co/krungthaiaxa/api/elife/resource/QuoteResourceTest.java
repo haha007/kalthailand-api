@@ -63,10 +63,6 @@ import static org.springframework.http.HttpStatus.OK;
 public class QuoteResourceTest extends ELifeTest {
     @Rule
     public final GreenMailRule greenMail = new GreenMailRule(ServerSetupTest.SMTP_IMAP);
-    @Value("${security.api.user.name}")
-    private String apiUserName;
-    @Value("${security.api.user.password}")
-    private String apiUserPassword;
     @Value("${local.server.port}")
     private int port;
     private RestTemplate template;
@@ -78,7 +74,7 @@ public class QuoteResourceTest extends ELifeTest {
 
     @Before
     public void setup() {
-        template = new TestRestTemplate(apiUserName, apiUserPassword);
+        template = new TestRestTemplate();
         greenMail.start();
     }
 

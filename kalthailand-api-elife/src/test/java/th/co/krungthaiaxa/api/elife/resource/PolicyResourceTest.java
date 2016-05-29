@@ -53,10 +53,6 @@ import static org.springframework.http.HttpStatus.OK;
 public class PolicyResourceTest extends ELifeTest {
     @Rule
     public final GreenMailRule greenMail = new GreenMailRule(ServerSetupTest.SMTP_IMAP);
-    @Value("${security.api.user.name}")
-    private String apiUserName;
-    @Value("${security.api.user.password}")
-    private String apiUserPassword;
     @Value("${local.server.port}")
     private int port;
     private URI base;
@@ -70,7 +66,7 @@ public class PolicyResourceTest extends ELifeTest {
     @Before
     public void setUp() throws Exception {
         base = new URI("http://localhost:" + port + "/policies");
-        template = new TestRestTemplate(apiUserName, apiUserPassword);
+        template = new TestRestTemplate();
     }
 
     @Test
