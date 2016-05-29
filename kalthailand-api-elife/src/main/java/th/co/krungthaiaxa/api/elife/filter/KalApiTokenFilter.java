@@ -69,7 +69,7 @@ public class KalApiTokenFilter implements Filter {
         try {
             validateRoleURIResponse = template.exchange(validateRoleURIBuilder.toUriString(), GET, new HttpEntity<>(validateRoleHeaders), String.class);
         } catch (RestClientException e) {
-            throw new IOException("Unable to check if current token gives access to API", e);
+            throw new IOException("Unable to check if current token gives access to API");
         }
 
         if (validateRoleURIResponse.getStatusCode().value() != OK.value()) {

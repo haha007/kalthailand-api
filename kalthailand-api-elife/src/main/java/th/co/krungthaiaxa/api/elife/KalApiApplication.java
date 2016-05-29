@@ -5,7 +5,6 @@ import com.google.common.base.Predicates;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import springfox.documentation.builders.ApiInfoBuilder;
@@ -15,9 +14,7 @@ import springfox.documentation.service.ApiInfo;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
-import th.co.krungthaiaxa.api.elife.filter.ClientSideRoleFilter;
 
-import javax.inject.Inject;
 import java.time.LocalDate;
 import java.util.Date;
 
@@ -29,8 +26,6 @@ public class KalApiApplication {
         SpringApplication.run(KalApiApplication.class, args);
     }
 
-    @Inject
-    private ClientSideRoleFilter clientSideRoleFilter;
     @Value("${tmc.webservice.url}")
     private String tmcWebServiceUrl;
 
@@ -45,15 +40,6 @@ public class KalApiApplication {
                 .pathMapping("/")
                 .apiInfo(metadata())
                 .directModelSubstitute(LocalDate.class, Date.class);
-    }
-
-    @Bean
-    public FilterRegistrationBean someFilterRegistration() {
-        FilterRegistrationBean registration = new FilterRegistrationBean();
-        registration.setFilter(clientSideRoleFilter);
-        registration.addUrlPatterns("*");
-        registration.setName("Client side role filter");
-        return registration;
     }
 
     private ApiInfo metadata() {
