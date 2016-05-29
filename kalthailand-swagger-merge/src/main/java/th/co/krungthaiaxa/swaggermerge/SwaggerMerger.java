@@ -52,7 +52,7 @@ public class SwaggerMerger {
 
         mergedSwagger.setPaths(getAllPaths(authSwagger, elifeSwagger, signingSwagger));
 
-        File result = new File("api-swagger.json");
+        File result = new File("apis-TH-KAL.json");
         try {
             FileUtils.writeByteArrayToFile(result, getJson(mergedSwagger));
         } catch (IOException e) {

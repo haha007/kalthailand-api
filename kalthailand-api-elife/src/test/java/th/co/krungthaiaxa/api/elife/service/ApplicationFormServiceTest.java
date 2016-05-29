@@ -37,7 +37,7 @@ public class ApplicationFormServiceTest extends ELifeTest{
     public void should_10ec_generate_not_validate_application_pdf_file() throws Exception {
         Policy policy = getPolicy10EC();
 
-        policy.getInsureds().get(0).getPerson().setTitle("MRS");
+        policy.getInsureds().get(0).getPerson().setTitle("MR");
         policy.getInsureds().get(0).getPerson().setGenderCode(GenderCode.MALE);
         policy.getInsureds().get(0).getPerson().setMaritalStatus(MaritalStatus.WIDOW);
         GeographicalAddress address = new GeographicalAddress();

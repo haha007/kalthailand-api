@@ -329,7 +329,7 @@ public class RLSService {
                 text(deductionFileLine.getBankCode()),
                 text(deductionFileLine.getPaymentMode()),
                 text(deductionFileLine.getAmount().toString()),
-                text(ofPattern("yyyyMMdd_HHmmss").format(deductionFileLine.getProcessDate())),
+                text(ofPattern("yyyyMMdd").format(deductionFileLine.getProcessDate())),
                 text(deductionFileLine.getRejectionCode()));
     }
 
