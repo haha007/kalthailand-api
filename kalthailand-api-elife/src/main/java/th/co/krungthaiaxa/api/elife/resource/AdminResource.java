@@ -1,4 +1,4 @@
-package th.co.krungthaiaxa.api.elife.controller;
+package th.co.krungthaiaxa.api.elife.resource;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
@@ -55,14 +55,14 @@ import static th.co.krungthaiaxa.api.elife.utils.JsonUtil.getJson;
 
 @ApiIgnore
 @Controller
-public class AdminController {
-    private final static Logger logger = LoggerFactory.getLogger(AdminController.class);
+public class AdminResource {
+    private final static Logger logger = LoggerFactory.getLogger(AdminResource.class);
     private final PolicyService policyService;
     private final DocumentService documentService;
     private final BlackListedService blackListedService;
 
     @Inject
-    public AdminController(PolicyService policyService, DocumentService documentService, BlackListedService blackListedService) {
+    public AdminResource(PolicyService policyService, DocumentService documentService, BlackListedService blackListedService) {
         this.policyService = policyService;
         this.documentService = documentService;
         this.blackListedService = blackListedService;
