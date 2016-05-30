@@ -302,6 +302,7 @@ public class PolicyService {
 
         policy.setStatus(VALIDATED);
         policyRepository.save(policy);
+        logger.info(String.format("Policy [%1$s] has been updated as Validated.", policy.getPolicyId()));
 
         // Send Email
         DocumentDownload documentDownload = documentService.downloadDocument(documentPdf.get().getId());
