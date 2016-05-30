@@ -73,7 +73,7 @@ public class AuthResource {
         return ok(Token.of(token));
     }
 
-    @ApiOperation(value = "Validates a token", notes = "Validates a JWT token for given Role", response = String.class)
+    @ApiOperation(value = "Validates a token", notes = "Validates a JWT token for given Role. Token has to be sent in header named 'Authorization'.", response = String.class)
     @ApiResponses({
             @ApiResponse(code = 400, message = "If token is empty or expired or with no role", response = Error.class),
             @ApiResponse(code = 406, message = "If token does not give access to the role", response = Error.class)
