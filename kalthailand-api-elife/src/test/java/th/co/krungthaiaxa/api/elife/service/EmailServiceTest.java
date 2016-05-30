@@ -72,6 +72,8 @@ public class EmailServiceTest extends ELifeTest {
     @Inject
     private EmailService emailService;
     @Inject
+    private PolicyService policyService;
+    @Inject
     private QuoteService quoteService;
 
     private String base64Graph;

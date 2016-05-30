@@ -3,6 +3,7 @@ package th.co.krungthaiaxa.api.elife.model;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document
@@ -10,6 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class DocumentDownload {
     @Id
     private String id;
+    @Indexed
     private String documentId;
     private String name;
     private String mimeType;

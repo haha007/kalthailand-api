@@ -33,7 +33,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @WebAppConfiguration
 @ActiveProfiles("test")
 public class SMSApiServiceTest extends ELifeTest {
-
+    @Inject
+    private PolicyService policyService;
     @Inject
     private SMSApiService smsApiService;
     @Inject

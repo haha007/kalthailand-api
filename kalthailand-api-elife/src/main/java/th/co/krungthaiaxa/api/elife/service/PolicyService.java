@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import th.co.krungthaiaxa.api.elife.client.CDBClient;
 import th.co.krungthaiaxa.api.elife.data.PolicyNumber;
 import th.co.krungthaiaxa.api.elife.exception.ElifeException;
 import th.co.krungthaiaxa.api.elife.exception.PolicyValidationException;
@@ -59,12 +60,10 @@ public class PolicyService {
     private final DocumentService documentService;
     private final SMSApiService smsApiService;
     private final ProductFactory productFactory;
-
-    // Can be set in test using Mockito
-    private CDBRepository cdbRepository;
+    private final CDBClient cdbClient;
 
     @Inject
-    public PolicyService(TMCClient tmcClient, CDBRepository cdbRepository,
+    public PolicyService(TMCClient tmcClient,
                          PaymentRepository paymentRepository,
                          PolicyCriteriaRepository policyCriteriaRepository,
                          PolicyRepository policyRepository,
@@ -73,9 +72,9 @@ public class PolicyService {
                          EmailService emailService,
                          LineService lineService, DocumentService documentService,
                          SMSApiService smsApiService,
-                         ProductFactory productFactory) {
+                         ProductFactory productFactory, CDBClient cdbClient) {
         this.tmcClient = tmcClient;
-        this.cdbRepository = cdbRepository;
+        this.cdbClient = cdbClient;
         this.paymentRepository = paymentRepository;
         this.policyCriteriaRepository = policyCriteriaRepository;
         this.policyRepository = policyRepository;
@@ -206,7 +205,7 @@ public class PolicyService {
                 .findFirst();
         String insuredDOB = policy.getInsureds().get(0).getPerson().getBirthDate().format(ofPattern("yyyyMMdd"));
         if (insuredId.isPresent()) {
-            Optional<Triple<String, String, String>> agent = cdbRepository.getExistingAgentCode(insuredId.get().getId(), insuredDOB);
+            Optional<Triple<String, String, String>> agent = cdbClient.getExistingAgentCode(insuredId.get().getId(), insuredDOB);
             if (agent.isPresent()) {
                 String agent1 = agent.get().getMiddle();
                 if (agent1 != null) {
@@ -303,6 +302,7 @@ public class PolicyService {
 
         policy.setStatus(VALIDATED);
         policyRepository.save(policy);
+        logger.info(String.format("Policy [%1$s] has been updated as Validated.", policy.getPolicyId()));
 
         // Send Email
         DocumentDownload documentDownload = documentService.downloadDocument(documentPdf.get().getId());
@@ -421,9 +421,5 @@ public class PolicyService {
         if (!isBlank(registrationKey) && !registrationKey.equals(payment.getRegistrationKey())) {
             payment.setRegistrationKey(registrationKey);
         }
-    }
-
-    public void setCdbRepository(CDBRepository cdbRepository) {
-        this.cdbRepository = cdbRepository;
     }
 }

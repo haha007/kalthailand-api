@@ -32,6 +32,8 @@ import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.EVERY_MON
 @ActiveProfiles("test")
 public class QuoteServiceTest extends ELifeTest {
     @Inject
+    private PolicyService policyService;
+    @Inject
     private QuoteService quoteService;
     @Inject
     private SessionQuoteRepository sessionQuoteRepository;
@@ -157,9 +159,7 @@ public class QuoteServiceTest extends ELifeTest {
     @Test
     public void should_forbid_blacklisted_thai_id() {
         Quote quote = getQuote(randomNumeric(20), ProductType.PRODUCT_10_EC);
-
-//        registration.setTypeName(THAI_ID_NUMBER);
-        quote.getInsureds().get(0).getPerson().getRegistrations().get(0).setId("00000017");
+        quote.getInsureds().get(0).getPerson().getRegistrations().get(0).setId("aMockedBlackListedThaiID");
 
         assertThatThrownBy(() -> quoteService.updateQuote(quote))
                 .isInstanceOf(ElifeException.class);

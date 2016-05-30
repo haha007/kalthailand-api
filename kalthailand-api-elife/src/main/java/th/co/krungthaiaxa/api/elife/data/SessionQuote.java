@@ -1,6 +1,9 @@
 package th.co.krungthaiaxa.api.elife.data;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import th.co.krungthaiaxa.api.elife.model.Quote;
@@ -11,9 +14,15 @@ import java.util.Collections;
 import java.util.List;
 
 @Document
+@CompoundIndexes({
+        @CompoundIndex(name = "SessionQuote_UniqueKey",
+                unique = true,
+                def = "{'sessionId' : 1, 'channelType' : 1}")
+})
 public class SessionQuote {
     @Id
     private String id;
+    @Indexed
     private String sessionId;
     private ChannelType channelType;
     @DBRef

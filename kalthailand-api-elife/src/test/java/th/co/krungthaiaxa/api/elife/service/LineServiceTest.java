@@ -32,6 +32,8 @@ import static th.co.krungthaiaxa.api.elife.model.enums.ChannelType.LINE;
 @ActiveProfiles("test")
 public class LineServiceTest extends ELifeTest {
     @Inject
+    private PolicyService policyService;
+    @Inject
     private QuoteService quoteService;
     @Inject
     private LineService lineService;

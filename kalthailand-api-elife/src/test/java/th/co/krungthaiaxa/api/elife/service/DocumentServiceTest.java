@@ -40,6 +40,8 @@ public class DocumentServiceTest extends ELifeTest {
     @Inject
     private DocumentService documentService;
     @Inject
+    private PolicyService policyService;
+    @Inject
     private QuoteService quoteService;
     @Inject
     private DocumentDownloadRepository documentDownloadRepository;

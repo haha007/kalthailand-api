@@ -63,6 +63,8 @@ public class RLSServiceTest extends ELifeTest {
     @Inject
     private PolicyRepository policyRepository;
     @Inject
+    private PolicyService policyService;
+    @Inject
     private QuoteService quoteService;
     @Inject
     private RLSService rlsService;
