@@ -11,7 +11,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 public class JsonUtil {
-    private static ObjectMapper mapper = configureObjectMapper();
+    public static ObjectMapper mapper = configureObjectMapper();
 
     public static String getJson(Object source) {
         try {

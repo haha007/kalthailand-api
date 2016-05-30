@@ -17,6 +17,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import th.co.krungthaiaxa.api.auth.KALApiAuth;
 import th.co.krungthaiaxa.api.auth.model.RequestForToken;
+import th.co.krungthaiaxa.api.auth.model.Token;
 import th.co.krungthaiaxa.api.auth.utils.JsonUtil;
 
 import java.io.IOException;
@@ -86,10 +87,11 @@ public class AuthResourceTest {
         URI authURI = new URI("http://localhost:" + port + "/auth");
         UriComponentsBuilder authURIBuilder = UriComponentsBuilder.fromUri(authURI);
         ResponseEntity<String> authResponse = template.exchange(authURIBuilder.toUriString(), POST, new HttpEntity<>(JsonUtil.getJson(requestUser1Token), authURIHeaders), String.class);
+        Token token = JsonUtil.mapper.readValue(authResponse.getBody(), Token.class);
 
         HttpHeaders validateRoleHeaders = new HttpHeaders();
         validateRoleHeaders.add("Content-Type", "application/json");
-        validateRoleHeaders.add(tokenHeader, authResponse.getBody());
+        validateRoleHeaders.add(tokenHeader, token.getToken());
 
         URI validateRoleURI = new URI("http://localhost:" + port + "/auth/validate/ROLE1");
         UriComponentsBuilder validateRoleURIBuilder = UriComponentsBuilder.fromUri(validateRoleURI);
@@ -106,10 +108,11 @@ public class AuthResourceTest {
         URI authURI = new URI("http://localhost:" + port + "/auth");
         UriComponentsBuilder authURIBuilder = UriComponentsBuilder.fromUri(authURI);
         ResponseEntity<String> authResponse = template.exchange(authURIBuilder.toUriString(), POST, new HttpEntity<>(JsonUtil.getJson(requestUser2Token), authURIHeaders), String.class);
+        Token token = JsonUtil.mapper.readValue(authResponse.getBody(), Token.class);
 
         HttpHeaders validateRoleHeaders = new HttpHeaders();
         validateRoleHeaders.add("Content-Type", "application/json");
-        validateRoleHeaders.add(tokenHeader, authResponse.getBody());
+        validateRoleHeaders.add(tokenHeader, token.getToken());
 
         URI validateRole2URI = new URI("http://localhost:" + port + "/auth/validate/ROLE2");
         UriComponentsBuilder validateRole2URIBuilder = UriComponentsBuilder.fromUri(validateRole2URI);
@@ -130,10 +133,11 @@ public class AuthResourceTest {
         URI authURI = new URI("http://localhost:" + port + "/auth");
         UriComponentsBuilder authURIBuilder = UriComponentsBuilder.fromUri(authURI);
         ResponseEntity<String> authResponse = template.exchange(authURIBuilder.toUriString(), POST, new HttpEntity<>(JsonUtil.getJson(requestUser1Token), authURIHeaders), String.class);
+        Token token = JsonUtil.mapper.readValue(authResponse.getBody(), Token.class);
 
         HttpHeaders validateRole1Headers = new HttpHeaders();
         validateRole1Headers.add("Content-Type", "application/json");
-        validateRole1Headers.add(tokenHeader, authResponse.getBody());
+        validateRole1Headers.add(tokenHeader, token.getToken());
 
         URI validateRole1URI = new URI("http://localhost:" + port + "/auth/validate/ROLE2");
         UriComponentsBuilder validateRole1URIBuilder = UriComponentsBuilder.fromUri(validateRole1URI);
