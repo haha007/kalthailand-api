@@ -33,6 +33,7 @@ public class Policy implements Serializable {
     @DBRef
     private List<th.co.krungthaiaxa.api.elife.model.Document> documents = new ArrayList<>();
     private String validationAgentCode;
+    private String validationAgentName;
 
     public String getId() {
         return id;
@@ -130,6 +131,15 @@ public class Policy implements Serializable {
 
     public void setValidationAgentCode(String validationAgentCode) {
         this.validationAgentCode = validationAgentCode;
+    }
+
+    @ApiModelProperty(value = "The name of the agent who validate the policy")
+    public String getValidationAgentName() {
+        return validationAgentName;
+    }
+
+    public void setValidationAgentName(String validationAgentName) {
+        this.validationAgentName = validationAgentName;
     }
 
     @Override

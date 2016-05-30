@@ -255,7 +255,7 @@ public class PolicyServiceTest extends ELifeTest {
         Policy policy = getPolicy();
 
         policyService.updatePolicyAfterFirstPaymentValidated(policy);
-        policyService.updatePolicyAfterPolicyHasBeenValidated(policy, "agentCode");
+        policyService.updatePolicyAfterPolicyHasBeenValidated(policy, "agentCode", "agentName");
 
         Assertions.assertThat(policy.getStatus()).isEqualTo(PolicyStatus.VALIDATED);
         Assertions.assertThat(policy.getDocuments()).hasSize(5);
@@ -266,7 +266,7 @@ public class PolicyServiceTest extends ELifeTest {
         Policy policy = getPolicy();
 
         policyService.updatePolicyAfterFirstPaymentValidated(policy);
-        policyService.updatePolicyAfterPolicyHasBeenValidated(policy, "agentCode");
+        policyService.updatePolicyAfterPolicyHasBeenValidated(policy, "agentCode", "agentName");
 
         assertThat(greenMail.getReceivedMessages()).hasSize(2);
     }
@@ -275,7 +275,7 @@ public class PolicyServiceTest extends ELifeTest {
     public void should_not_update_policy_status_to_validated_when_previous_status_is_not_pending_validation() {
         Policy policy = getPolicy();
 
-        assertThatThrownBy(() -> policyService.updatePolicyAfterPolicyHasBeenValidated(policy, "agentCode"))
+        assertThatThrownBy(() -> policyService.updatePolicyAfterPolicyHasBeenValidated(policy, "agentCode", "agentName"))
                 .isInstanceOf(ElifeException.class);
         Assertions.assertThat(policy.getDocuments()).hasSize(0);
     }

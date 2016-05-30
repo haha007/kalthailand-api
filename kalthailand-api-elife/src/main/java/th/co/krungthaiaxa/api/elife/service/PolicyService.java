@@ -273,13 +273,14 @@ public class PolicyService {
         }
     }
 
-    public void updatePolicyAfterPolicyHasBeenValidated(Policy policy, String agentCode) {
+    public void updatePolicyAfterPolicyHasBeenValidated(Policy policy, String agentCode, String agentName) {
         if (!policy.getStatus().equals(PENDING_VALIDATION)) {
             throw new ElifeException("Can't validate policy [" + policy.getPolicyId() + "], it is not pending for validation.");
         }
 
         // This has to be set asap since it is used to generate document
         policy.setValidationAgentCode(agentCode);
+        policy.setValidationAgentName(agentName);
 
         // Generate documents
         try {

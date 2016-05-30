@@ -17,9 +17,6 @@ import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
-
-import com.google.common.base.Optional;
-
 import th.co.krungthaiaxa.api.blacklist.data.BlackListed;
 import th.co.krungthaiaxa.api.blacklist.exception.ElifeException;
 import th.co.krungthaiaxa.api.blacklist.repository.BlackListedRepository;
@@ -30,7 +27,6 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Map;
 
 import static org.springframework.util.Assert.notNull;
 import static th.co.krungthaiaxa.api.blacklist.utils.JsonUtil.getJson;

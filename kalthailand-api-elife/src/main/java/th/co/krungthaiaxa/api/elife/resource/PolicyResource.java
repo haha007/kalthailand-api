@@ -13,7 +13,6 @@ import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
 import th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus;
 import th.co.krungthaiaxa.api.elife.model.error.Error;
-import th.co.krungthaiaxa.api.elife.model.error.ErrorCode;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayCaptureMode;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayResponse;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayResponseInfo;
@@ -189,6 +188,8 @@ public class PolicyResource {
             @PathVariable String policyId,
             @ApiParam(value = "The code of validating agent", required = true)
             @RequestParam String agentCode,
+            @ApiParam(value = "The name of validating agent", required = true)
+            @RequestParam String agentName,
             @ApiParam(value = "The type of call to Line Pay Capture API", required = true)
             @RequestParam LinePayCaptureMode linePayCaptureMode) {
 
@@ -262,7 +263,7 @@ public class PolicyResource {
         policyService.updateRegistrationForAllNotProcessedPayment(policy.get(), linePayResponse.getInfo().getRegKey());
 
         try {
-            policyService.updatePolicyAfterPolicyHasBeenValidated(policy.get(), agentCode);
+            policyService.updatePolicyAfterPolicyHasBeenValidated(policy.get(), agentCode, agentName);
         } catch (ElifeException e) {
             logger.error("Payment is successful but there was an error whil trying to update policy status.", e);
             return new ResponseEntity<>(getJson(POLICY_VALIDATION_ERROR.apply(e.getMessage())), INTERNAL_SERVER_ERROR);
