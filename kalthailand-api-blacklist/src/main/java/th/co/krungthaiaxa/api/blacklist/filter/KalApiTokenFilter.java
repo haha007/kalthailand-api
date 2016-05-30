@@ -1,18 +1,27 @@
 package th.co.krungthaiaxa.api.blacklist.filter;
 
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+import th.co.krungthaiaxa.api.blacklist.model.ErrorCode;
+import th.co.krungthaiaxa.api.blacklist.model.Error;
+import th.co.krungthaiaxa.api.blacklist.utils.JsonUtil;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -21,6 +30,7 @@ import static org.springframework.http.HttpStatus.OK;
 
 @Component
 public class KalApiTokenFilter implements Filter {
+    private final static Logger logger = LoggerFactory.getLogger(KalApiTokenFilter.class);
     @Value("${kal.api.auth.header}")
     private String tokenHeader;
     @Value("${kal.api.auth.token.validation.url}")
@@ -60,7 +70,8 @@ public class KalApiTokenFilter implements Filter {
         String authToken = httpRequest.getHeader(this.tokenHeader);
 
         if (StringUtils.isEmpty(authToken)) {
-            throw new IOException("No token provided");
+            sendErrorToResponse(ErrorCode.UNAUTHORIZED.apply("Provided token doesn't give access to API"), (HttpServletResponse) response);
+            return;
         }
 
         // Token might be expired, always have to check for validity
@@ -68,7 +79,8 @@ public class KalApiTokenFilter implements Filter {
         try {
             validateRoleURI = new URI(tokenValidationUrl + "/" + tokenRequiredRole);
         } catch (URISyntaxException e) {
-            throw new IOException("Unable to check token validity");
+            sendErrorToResponse(ErrorCode.UNAUTHORIZED.apply("Unable to check token validity"), (HttpServletResponse) response);
+            return;
         }
 
         HttpHeaders validateRoleHeaders = new HttpHeaders();
@@ -79,11 +91,13 @@ public class KalApiTokenFilter implements Filter {
         try {
             validateRoleURIResponse = template.exchange(validateRoleURIBuilder.toUriString(), GET, new HttpEntity<>(validateRoleHeaders), String.class);
         } catch (RestClientException e) {
-            throw new IOException("Unable to check if current token gives access to API", e);
+            sendErrorToResponse(ErrorCode.UNAUTHORIZED.apply("Unable to check if current token gives access to API"), (HttpServletResponse) response);
+            return;
         }
 
         if (validateRoleURIResponse.getStatusCode().value() != OK.value()) {
-            throw new IOException("Provided token doesn't give access to API");
+            sendErrorToResponse(ErrorCode.UNAUTHORIZED.apply("Provided token doesn't give access to API"), (HttpServletResponse) response);
+            return;
         }
 
         chain.doFilter(request, response);
@@ -92,6 +106,20 @@ public class KalApiTokenFilter implements Filter {
     @Override
     public void destroy() {
 
+    }
+
+    private void sendErrorToResponse(Error error, HttpServletResponse response) {
+        byte[] content = JsonUtil.getJson(error);
+
+        response.setHeader("Content-type", "application/json");
+        response.setContentLength(content.length);
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+
+        try (OutputStream outStream = response.getOutputStream()) {
+            IOUtils.write(content, outStream);
+        } catch (IOException e) {
+            logger.error("Unable to send error in response", e);
+        }
     }
 
     public void setTemplate(RestTemplate template) {
