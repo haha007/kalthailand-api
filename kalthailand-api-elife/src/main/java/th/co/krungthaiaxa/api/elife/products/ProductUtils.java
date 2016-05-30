@@ -62,7 +62,11 @@ public class ProductUtils {
         String amountCurrency = policy.getPremiumsData().getFinancialScheduler().getModalAmount().getCurrencyCode();
         int nbOfPayments = (12 / periodicityCode.getNbOfMonths()) * durationPaymentInYears;
 
-        IntStream.range(0, nbOfPayments).forEach(i -> policy.addPayment(new Payment(amountValue, amountCurrency, startDate.plusMonths(i * periodicityCode.getNbOfMonths()))));
+        IntStream.range(0, nbOfPayments).forEach(i -> policy.addPayment(new Payment(policy.getPolicyId(),
+                amountValue,
+                amountCurrency,
+                startDate.plusMonths(i * periodicityCode.getNbOfMonths()))
+        ));
     }
 
     public static void checkInsuredAge(Insured insured, int minAge, int maxAge) {

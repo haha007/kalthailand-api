@@ -16,6 +16,7 @@ import java.util.Objects;
 public class Payment {
     @Id
     private String paymentId;
+    private String policyId;
     private String orderId;
     private String transactionId;
     private String registrationKey;
@@ -29,7 +30,8 @@ public class Payment {
     public Payment() {
     }
 
-    public Payment(Double value, String currencyCode, LocalDate dueDate) {
+    public Payment(String policyId, Double value, String currencyCode, LocalDate dueDate) {
+        this.policyId = policyId;
         this.status = PaymentStatus.NOT_PROCESSED;
         this.dueDate = dueDate;
         this.amount = new Amount();
@@ -44,6 +46,15 @@ public class Payment {
 
     public void setPaymentId(String paymentId) {
         this.paymentId = paymentId;
+    }
+
+    @ApiModelProperty(required = true, value = "The id of the policy the payment refers to")
+    public String getPolicyId() {
+        return policyId;
+    }
+
+    public void setPolicyId(String policyId) {
+        this.policyId = policyId;
     }
 
     @ApiModelProperty(required = true, value = "The order Id used to book the payment (if any). This is used by pay gateway like LINE Pay.")

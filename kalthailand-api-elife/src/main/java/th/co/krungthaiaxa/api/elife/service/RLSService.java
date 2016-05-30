@@ -252,7 +252,8 @@ public class RLSService {
                 .map(Payment::getRegistrationKey)
                 .findFirst();
 
-        Payment newPayment = new Payment(collectionFileLine.getPremiumAmount(),
+        Payment newPayment = new Payment(policy.get().getPolicyId(),
+                collectionFileLine.getPremiumAmount(),
                 policy.get().getCommonData().getProductCurrency(),
                 LocalDate.now(of(SHORT_IDS.get("VST"))));
         if (!lastRegistrationKey.isPresent()) {
