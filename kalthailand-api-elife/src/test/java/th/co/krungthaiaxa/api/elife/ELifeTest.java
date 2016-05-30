@@ -8,11 +8,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.soap.client.core.SoapActionCallback;
-import th.co.krungthaiaxa.api.elife.client.AuthClient;
-import th.co.krungthaiaxa.api.elife.client.CDBClient;
-import th.co.krungthaiaxa.api.elife.client.SigningClient;
-import th.co.krungthaiaxa.api.elife.client.Token;
+import th.co.krungthaiaxa.api.elife.client.*;
 import th.co.krungthaiaxa.api.elife.repository.CDBRepository;
+import th.co.krungthaiaxa.api.elife.repository.LineBCRepository;
 import th.co.krungthaiaxa.api.elife.tmc.TMCClient;
 import th.co.krungthaiaxa.api.elife.tmc.TMCSendingPDFResponse;
 import th.co.krungthaiaxa.api.elife.tmc.TMCSendingPDFResponseRemark;
@@ -22,6 +20,7 @@ import th.co.krungthaiaxa.api.elife.utils.JsonUtil;
 
 import javax.inject.Inject;
 import java.nio.charset.Charset;
+import java.util.*;
 
 import static java.util.Optional.empty;
 import static org.mockito.Matchers.*;
@@ -33,6 +32,8 @@ import static org.springframework.http.HttpStatus.OK;
 public class ELifeTest {
     @Inject
     private CDBClient cdbClient;
+    @Inject
+    private LineBCClient lineBCClient;
     @Inject
     private AuthClient authClient;
     @Inject
@@ -61,6 +62,31 @@ public class ELifeTest {
         CDBRepository cdbRepository = mock(CDBRepository.class);
         cdbClient.setCdbRepository(cdbRepository);
         when(cdbRepository.getExistingAgentCode(anyString(), anyString())).thenReturn(empty());
+
+        // Faking Line BC by always returning empty Optional
+        LineBCRepository lineBCRepository = mock(LineBCRepository.class);
+        lineBCClient.setLineBCRepository(lineBCRepository);
+        when(lineBCRepository.getLineBC(anyString())).thenAnswer(invocation -> {
+            Object[] args = invocation.getArguments();
+            String mid = (String) args[0];
+            if (mid.equals("u53cb613d9269dd6875f60249402b4542")) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("dob", "30/11/1976");
+                map.put("pid", "3100902286661");
+                map.put("mobile", "0815701554");
+                map.put("email", "Pimpaporn_a@hotmail.com");
+                map.put("first_name", "พิมพมภรณ์");
+                map.put("last_name", "อาภาศิริผล");
+
+                List<Map<String,Object>> result = new ArrayList<>();
+                result.add(map);
+
+                return Optional.of(result);
+            }
+            else {
+                return Optional.empty();
+            }
+        });
 
         // Faking TMC by always returning success
         WebServiceTemplate webServiceTemplate = mock(WebServiceTemplate.class);

@@ -15,7 +15,6 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import th.co.krungthaiaxa.api.elife.ELifeTest;
 import th.co.krungthaiaxa.api.elife.KalApiApplication;
-import th.co.krungthaiaxa.api.elife.model.LineBC;
 import th.co.krungthaiaxa.api.elife.model.error.Error;
 import th.co.krungthaiaxa.api.elife.model.error.ErrorCode;
 import th.co.krungthaiaxa.api.elife.utils.JsonUtil;
@@ -72,20 +71,14 @@ public class LineResourceTest extends ELifeTest {
     }
 
     @Test
-    public void should_get_line_bc_information_data() throws IOException, URISyntaxException {
-        String sessionId = "u53cb613d9269dd6875f60249402b4542";
-
+    public void should_get_404_error_when_mid_empty() throws IOException, URISyntaxException {
         URI createURI = new URI("http://localhost:" + port + "/line/bc");
         UriComponentsBuilder createBuilder = UriComponentsBuilder.fromUri(createURI)
-                .queryParam("mid", sessionId);
+                .queryParam("mid", "");
         ResponseEntity<String> response = template.exchange(createBuilder.toUriString(), GET, null, String.class);
-        LineBC lineBC = JsonUtil.mapper.readValue(response.getBody(), LineBC.class);
-        assertThat(lineBC.getPid()).isEqualTo("3100902286661");
-        assertThat(lineBC.getMobile()).isEqualTo("0815701554");
-        assertThat(lineBC.getFirstName()).isEqualTo("พิมพมภรณ์");
-        assertThat(lineBC.getLastName()).isEqualTo("อาภาศิริผล");
-        assertThat(lineBC.getEmail()).isEqualTo("Pimpaporn_a@hotmail.com");
-        assertThat(lineBC.getDob()).isEqualTo("30/11/1976");
+        Error error = JsonUtil.mapper.readValue(response.getBody(), Error.class);
+        assertThat(response.getStatusCode().value()).isEqualTo(NOT_FOUND.value());
+        assertThat(error.getCode()).isEqualTo(ErrorCode.UNABLE_TO_GET_LINE_BC.getCode());
     }
 
     @Test

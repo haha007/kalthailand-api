@@ -8,6 +8,7 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import th.co.krungthaiaxa.api.elife.ELifeTest;
 import th.co.krungthaiaxa.api.elife.KalApiApplication;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 
@@ -26,7 +27,7 @@ import static th.co.krungthaiaxa.api.elife.products.ProductType.PRODUCT_IFINE;
 @SpringApplicationConfiguration(classes = KalApiApplication.class)
 @WebAppConfiguration
 @ActiveProfiles("test")
-public class SaleIllustrationServiceTest {
+public class SaleIllustrationServiceTest extends ELifeTest {
 
     @Inject
     private SaleIllustration10ECService saleIllustration10ECService;
