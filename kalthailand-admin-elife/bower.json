@@ -11,6 +11,7 @@
     "sockjs": "^0.3.4",
     "stomp-websocket": "^2.3.4",
     "angular-route": "^1.5.5",
-    "ngstorage": "^0.3.10"
+    "ngstorage": "^0.3.10",
+    "ngMask": "angular-mask#^3.0.16"
   }
 }

@@ -183,9 +183,15 @@
             <div class="row" ng-show="policyDetail && policyDetail.status != 'VALIDATED'" ng-submit="onClickValidate(policyDetail.policyId)">
                 <form class="form-horizontal">
                     <div class="form-group">
+                        <label for="agentName" class="col-md-3 control-label">Agent Name</label>
+                        <div class="col-md-6">
+                            <input type="text" class="form-control" id="agentName" ng-model="agentName" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <label for="agentCode" class="col-md-3 control-label">Agent code</label>
                         <div class="col-md-6">
-                            <input type="text" class="form-control" id="agentCode" ng-model="agentCode" required>
+                            <input type="text" class="form-control" id="agentCode" ng-model="agentCode" mask='999999-99-999999' required>
                         </div>
                     </div>
                     <div class="form-group">

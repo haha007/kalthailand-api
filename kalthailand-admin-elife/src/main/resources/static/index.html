@@ -27,6 +27,7 @@
     <script src="bower_components/angular-animate/angular-animate.min.js"></script>
     <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
     <script src="bower_components/ngstorage/ngStorage.min.js"></script>
+    <script src='bower_components/ngMask/dist/ngMask.min.js'></script>
     <script src="bower_components/sockjs/sockjs.min.js"></script>
     <script src="bower_components/stomp-websocket/lib/stomp.min.js"></script>
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
@@ -37,7 +38,7 @@
 
 <body ng-app="myApp">
 	<div class="alert alert-warning" ng-show="errorExists">
-	  <p align="center">Session expired, please login again.</p>
+	  <p align="center">{{errorMsg}}</p>
 	</div>
     <div class="container" ng-view>
     </div>

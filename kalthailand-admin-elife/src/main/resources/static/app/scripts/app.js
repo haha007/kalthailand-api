@@ -6,7 +6,8 @@
         'file-model',
         'ngStorage',
         'ngRoute',
-        'ui.bootstrap'
+        'ui.bootstrap',
+        'ngMask'
     ]);
 
     app.config(routeConfig);
@@ -47,10 +48,13 @@
         $locationProvider.html5Mode(true);
     }
 
-    function runFn($rootScope, $location) {
+    function runFn($rootScope, $location, $templateCache) {
         $rootScope.$on('$routeChangeStart', routeChangeStart);
-
-        function routeChangeStart(event, next) {
+        
+        function routeChangeStart(event, next, current) {
+        	console.log(current);
+        	$templateCache.remove('app/templates/partials/sidebar.html');
+        	$templateCache.remove('app/templates/home.html');
             if (next.data === null || typeof next.data === 'undefined') {
                 return;
             }

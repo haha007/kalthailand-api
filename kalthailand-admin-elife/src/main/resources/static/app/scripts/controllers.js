@@ -114,10 +114,9 @@
     
     app.controller('CollectionFileController', function ($scope, $route, CollectionFile, $localStorage) {
         $scope.$route = $route;
-
-        CollectionFile.query(function (response) {
-            $scope.collectionFiles = response;
-        });
+        
+        
+        fetchCollectionFileDetails();
 
         $scope.file = null;
         $scope.upload = function (event) {
@@ -129,11 +128,18 @@
                 .then(function (successResponse) {
                     // For successfully state
                     $scope.errorMessage = null;
+                    fetchCollectionFileDetails();
                 })
                 .catch(function (errorResponse) {
                     // For error state
                     $scope.errorMessage = errorResponse.data.userMessage;
                 });
+        }
+        
+        function fetchCollectionFileDetails() {
+        	CollectionFile.query(function (response) {
+                $scope.collectionFiles = response;
+            });
         }
     });
 
@@ -269,9 +275,9 @@
         $scope.onClickValidate = function (policyNumber) {
             $scope.isValidating = true;
             $http({
-                url: 'policies/' + policyNumber + '/update/status/validated',
+                url: '/api-elife/policies/' + policyNumber + '/update/status/validated',
                 method: 'PUT',
-                data: $.param({ agentCode: $scope.agentCode, linePayCaptureMode: $scope.linePayCaptureMode }),
+                data: $.param({ agentName: $scope.agentName, agentCode: $scope.agentCode, linePayCaptureMode: $scope.linePayCaptureMode }),
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
             })
                 .then(
