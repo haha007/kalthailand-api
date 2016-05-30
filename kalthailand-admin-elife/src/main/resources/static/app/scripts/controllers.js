@@ -247,11 +247,11 @@
         }
     });
 
-    app.controller('PolicyDetailController', function ($scope, $route, $http, PolicyDetail, PolicyNotification) {
+    app.controller('PolicyDetailController', function ($scope, $route, $http, $routeParams, PolicyDetail, PolicyNotification) {
         $scope.$route = $route;
         
-        $scope.policyID = window.location.search.split('=')[1];
-        if (window.location.search.split('=')[1]) {
+        $scope.policyID = $routeParams.policyID;
+        if ($scope.policyID) {
             searchForPolicyDetail();
         }
 

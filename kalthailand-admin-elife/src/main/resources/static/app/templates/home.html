@@ -107,7 +107,7 @@
                         <th>Validation Agent code</th>
                     </tr>
                     <tr ng-repeat="item in policies.content">
-                        <td><a href="policy-detail?policyID={{ item.policyId }}">{{ item.policyId }}</a></td>
+                        <td><a href="#policy-detail?policyID={{ item.policyId }}">{{ item.policyId }}</a></td>
                         <td>{{ item.commonData.productName }}</td>
                         <td>{{ item.premiumsData.financialScheduler.modalAmount.value }} {{ item.premiumsData.financialScheduler.modalAmount.currencyCode }}</td>
                         <td>{{ item.status }}</td>

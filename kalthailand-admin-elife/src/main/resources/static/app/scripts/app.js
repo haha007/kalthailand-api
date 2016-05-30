@@ -14,7 +14,7 @@
 
     app.run(runFn);
 
-    function routeConfig($routeProvider, $locationProvider) {
+    function routeConfig($routeProvider) {
         $routeProvider
             .when('/', {
                 templateUrl: 'app/templates/login.html',
@@ -44,15 +44,12 @@
                 redirectTo: '/home'
             });
 
-        // use the HTML5 History API
-        $locationProvider.html5Mode(true);
     }
 
     function runFn($rootScope, $location, $templateCache) {
         $rootScope.$on('$routeChangeStart', routeChangeStart);
         
         function routeChangeStart(event, next, current) {
-        	console.log(current);
         	$templateCache.remove('app/templates/partials/sidebar.html');
         	$templateCache.remove('app/templates/home.html');
             if (next.data === null || typeof next.data === 'undefined') {
