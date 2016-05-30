@@ -31,6 +31,8 @@ public class ApplicationFormServiceTest extends ELifeTest{
     @Inject
     private ApplicationFormService appService;
     @Inject
+    private PolicyService policyService;
+    @Inject
     private QuoteService quoteService;
 
     @Test

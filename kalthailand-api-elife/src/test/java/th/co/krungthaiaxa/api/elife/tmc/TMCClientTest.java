@@ -20,6 +20,7 @@ import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
 import th.co.krungthaiaxa.api.elife.model.enums.DocumentType;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 import th.co.krungthaiaxa.api.elife.service.DocumentService;
+import th.co.krungthaiaxa.api.elife.service.PolicyService;
 import th.co.krungthaiaxa.api.elife.service.QuoteService;
 
 import javax.inject.Inject;
@@ -33,6 +34,8 @@ import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 public class TMCClientTest extends ELifeTest {
     @Inject
     private DocumentService documentService;
+    @Inject
+    private PolicyService policyService;
     @Inject
     private QuoteService quoteService;
     @Inject

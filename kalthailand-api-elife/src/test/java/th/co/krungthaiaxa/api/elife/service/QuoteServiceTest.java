@@ -32,6 +32,8 @@ import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.EVERY_MON
 @ActiveProfiles("test")
 public class QuoteServiceTest extends ELifeTest {
     @Inject
+    private PolicyService policyService;
+    @Inject
     private QuoteService quoteService;
     @Inject
     private SessionQuoteRepository sessionQuoteRepository;

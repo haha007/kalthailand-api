@@ -9,10 +9,10 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.soap.client.core.SoapActionCallback;
 import th.co.krungthaiaxa.api.elife.client.AuthClient;
+import th.co.krungthaiaxa.api.elife.client.CDBClient;
 import th.co.krungthaiaxa.api.elife.client.SigningClient;
 import th.co.krungthaiaxa.api.elife.client.Token;
 import th.co.krungthaiaxa.api.elife.repository.CDBRepository;
-import th.co.krungthaiaxa.api.elife.service.PolicyService;
 import th.co.krungthaiaxa.api.elife.tmc.TMCClient;
 import th.co.krungthaiaxa.api.elife.tmc.TMCSendingPDFResponse;
 import th.co.krungthaiaxa.api.elife.tmc.TMCSendingPDFResponseRemark;
@@ -32,7 +32,7 @@ import static org.springframework.http.HttpStatus.OK;
 @Component
 public class ELifeTest {
     @Inject
-    protected PolicyService policyService;
+    private CDBClient cdbClient;
     @Inject
     private AuthClient authClient;
     @Inject
@@ -59,7 +59,7 @@ public class ELifeTest {
 
         // Faking CDB by always returning empty Optional
         CDBRepository cdbRepository = mock(CDBRepository.class);
-        policyService.setCdbRepository(cdbRepository);
+        cdbClient.setCdbRepository(cdbRepository);
         when(cdbRepository.getExistingAgentCode(anyString(), anyString())).thenReturn(empty());
 
         // Faking TMC by always returning success

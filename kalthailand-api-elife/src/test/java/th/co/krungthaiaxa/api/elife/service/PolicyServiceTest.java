@@ -35,6 +35,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @ActiveProfiles("test")
 public class PolicyServiceTest extends ELifeTest {
     @Inject
+    private PolicyService policyService;
+    @Inject
     private QuoteService quoteService;
 
     @Rule

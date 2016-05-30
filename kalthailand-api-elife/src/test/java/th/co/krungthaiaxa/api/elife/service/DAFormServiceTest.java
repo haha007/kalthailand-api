@@ -29,6 +29,8 @@ public class DAFormServiceTest extends ELifeTest {
     @Inject
     private DAFormService DAFormService;
     @Inject
+    private PolicyService policyService;
+    @Inject
     private QuoteService quoteService;
 
     @Test
