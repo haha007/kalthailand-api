@@ -3,7 +3,7 @@
 
     var app = angular.module('myApp');
 
-    app.controller('LoginController', function ($scope, $http, $localStorage, $location) {
+    app.controller('LoginController', function ($scope, $rootScope, $http, $localStorage, $location) {
     	$localStorage.token = null;
 
         $scope.onClickLogin = function () {
@@ -14,11 +14,13 @@
             $http.post(window.location.origin + '/api-auth/auth', requestForToken)
                 .then(
                 function (successResponse) {
+                	$rootScope.errorMsg = null;
                     $localStorage.token = successResponse.data.token;
                     $location.path('/home');
                 },
                 function (errorResponse) {
                     console.log(errorResponse);
+                    $rootScope.errorMsg = 'Invalid credentials. Please check username/password.'
                 });
         };
     });

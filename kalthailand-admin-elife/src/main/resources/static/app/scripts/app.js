@@ -50,8 +50,11 @@
         $rootScope.$on('$routeChangeStart', routeChangeStart);
         
         function routeChangeStart(event, next, current) {
+        	
+        	// Remove template caching to accept server side rules ->
         	$templateCache.remove('app/templates/partials/sidebar.html');
         	$templateCache.remove('app/templates/home.html');
+        	// Remove template caching to accept server side rules <-
             if (next.data === null || typeof next.data === 'undefined') {
                 return;
             }
