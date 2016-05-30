@@ -1,5 +1,6 @@
 package th.co.krungthaiaxa.api.elife;
 
+import org.apache.commons.lang3.tuple.Triple;
 import org.junit.Before;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -9,6 +10,8 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.soap.client.core.SoapActionCallback;
 import th.co.krungthaiaxa.api.elife.client.*;
+import th.co.krungthaiaxa.api.elife.data.BlackListed;
+import th.co.krungthaiaxa.api.elife.repository.BlackListedRepository;
 import th.co.krungthaiaxa.api.elife.repository.CDBRepository;
 import th.co.krungthaiaxa.api.elife.repository.LineBCRepository;
 import th.co.krungthaiaxa.api.elife.tmc.TMCClient;
@@ -22,7 +25,6 @@ import javax.inject.Inject;
 import java.nio.charset.Charset;
 import java.util.*;
 
-import static java.util.Optional.empty;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -36,6 +38,8 @@ public class ELifeTest {
     private LineBCClient lineBCClient;
     @Inject
     private AuthClient authClient;
+    @Inject
+    private BlackListClient blackListClient;
     @Inject
     private TMCClient tmcClient;
     @Inject
@@ -61,9 +65,34 @@ public class ELifeTest {
         // Faking CDB by always returning empty Optional
         CDBRepository cdbRepository = mock(CDBRepository.class);
         cdbClient.setCdbRepository(cdbRepository);
-        when(cdbRepository.getExistingAgentCode(anyString(), anyString())).thenReturn(empty());
+        when(cdbRepository.getExistingAgentCode(anyString(), anyString())).thenAnswer(invocation -> {
+            Object[] args = invocation.getArguments();
+            String id = (String) args[0];
+            String dob = (String) args[1];
+            if ("existingThaiId".equals(id) && "existingDOB".equals(dob)) {
+                Triple<String, String, String> result = Triple.of("previousPolicyNumber", "agentCode1", "agentCode2");
+                return Optional.of(result);
+            }
+            else {
+                return Optional.empty();
+            }
+        });
 
-        // Faking Line BC by always returning empty Optional
+        // Faking Black list
+        BlackListedRepository blackListedRepository = mock(BlackListedRepository.class);
+        blackListClient.setBlackListedRepository(blackListedRepository);
+        when(blackListedRepository.findByIdNumber(anyString())).thenAnswer(invocation -> {
+            Object[] args = invocation.getArguments();
+            String mid = (String) args[0];
+            if (mid.equals("aMockedBlackListedThaiID")) {
+                return new BlackListed();
+            }
+            else {
+                return null;
+            }
+        });
+
+        // Faking Line BC
         LineBCRepository lineBCRepository = mock(LineBCRepository.class);
         lineBCClient.setLineBCRepository(lineBCRepository);
         when(lineBCRepository.getLineBC(anyString())).thenAnswer(invocation -> {

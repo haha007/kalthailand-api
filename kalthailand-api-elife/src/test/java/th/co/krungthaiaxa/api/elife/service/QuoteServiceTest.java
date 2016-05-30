@@ -159,9 +159,7 @@ public class QuoteServiceTest extends ELifeTest {
     @Test
     public void should_forbid_blacklisted_thai_id() {
         Quote quote = getQuote(randomNumeric(20), ProductType.PRODUCT_10_EC);
-
-//        registration.setTypeName(THAI_ID_NUMBER);
-        quote.getInsureds().get(0).getPerson().getRegistrations().get(0).setId("00000017");
+        quote.getInsureds().get(0).getPerson().getRegistrations().get(0).setId("aMockedBlackListedThaiID");
 
         assertThatThrownBy(() -> quoteService.updateQuote(quote))
                 .isInstanceOf(ElifeException.class);
