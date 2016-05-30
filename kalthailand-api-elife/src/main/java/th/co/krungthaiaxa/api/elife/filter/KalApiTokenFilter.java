@@ -64,6 +64,7 @@ public class KalApiTokenFilter implements Filter {
         // TODO Should be removed
         if (httpServletRequest.getRequestURI().endsWith("/admin/policies/extract/download") ||
                 httpServletRequest.getRequestURI().contains("/RLS/deduction/download/") ||
+                httpServletRequest.getRequestURI().contains("/adminwebsocket/blackList/upload/") ||
                 (httpServletRequest.getRequestURI().contains("/admin/policies/") &&
                         httpServletRequest.getRequestURI().contains("/document/") &&
                         httpServletRequest.getRequestURI().contains("/download"))) {
