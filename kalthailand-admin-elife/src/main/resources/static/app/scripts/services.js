@@ -2,6 +2,18 @@
     'use strict';
 
     var app = angular.module('myApp');
+    
+    app.factory('AuthService', function ($http, $localStorage) {
+        var authService = {};
+
+        authService.isAuthenticated = isAuthenticated;
+
+        function isAuthenticated() {
+            return !!$localStorage.token;
+        }
+
+        return authService;
+    });
 
     app.factory('CollectionFile', function ($resource) {
         return $resource(window.location.origin + '/api-elife/RLS/collectionFile', {}, {

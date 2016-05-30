@@ -46,7 +46,7 @@
 
     }
 
-    function runFn($rootScope, $location, $templateCache) {
+    function runFn($rootScope, $location, $templateCache, AuthService) {
         $rootScope.$on('$routeChangeStart', routeChangeStart);
         
         function routeChangeStart(event, next, current) {
@@ -55,11 +55,18 @@
         	$templateCache.remove('app/templates/partials/sidebar.html');
         	$templateCache.remove('app/templates/home.html');
         	// Remove template caching to accept server side rules <-
-            if (next.data === null || typeof next.data === 'undefined') {
-                return;
+            
+        	if (!AuthService.isAuthenticated()) {
+                // User is not logged in
+                console.log('User not logged in');
+                $rootScope.errorMsg = 'Session expired. Please login again.';
+                $location.path('/');
+                setTimeout(function () {
+                    $rootScope.$apply(function () {
+                        $rootScope.errorMsg = null;
+                    });
+                }, 4000);
             }
-
-            $location.path('/');
         }
     }
 
