@@ -3,7 +3,6 @@ package th.co.krungthaiaxa.api.elife.resource;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.openxml4j.exceptions.OpenXML4JException;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -11,10 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.xml.sax.SAXException;
 import springfox.documentation.annotations.ApiIgnore;
-import th.co.krungthaiaxa.api.elife.exception.ElifeException;
 import th.co.krungthaiaxa.api.elife.model.Document;
 import th.co.krungthaiaxa.api.elife.model.DocumentDownload;
 import th.co.krungthaiaxa.api.elife.model.Policy;
@@ -29,7 +25,6 @@ import th.co.krungthaiaxa.api.elife.utils.ExcelUtils;
 import javax.inject.Inject;
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.time.LocalDate;
@@ -43,7 +38,6 @@ import static java.time.format.DateTimeFormatter.ofPattern;
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus.CANCELED;
 import static th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus.PENDING_PAYMENT;
 import static th.co.krungthaiaxa.api.elife.utils.ExcelUtils.text;
@@ -216,24 +210,6 @@ public class AdminResource {
             IOUtils.write(documentContent, outStream);
         } catch (IOException e) {
             logger.error("Unable to download the document", e);
-        }
-    }
-
-    @ApiIgnore
-    @RequestMapping(value = "/admin/blackList", produces = APPLICATION_JSON_VALUE, method = GET)
-    @ResponseBody
-    public ResponseEntity<byte[]> blackList(@RequestParam Integer pageNumber, @RequestParam Integer pageSize, @RequestParam String searchContent) {
-        return new ResponseEntity<>(getJson(blackListedService.findAll(pageNumber, pageSize, searchContent)), OK);
-    }
-
-    @ApiIgnore
-    @RequestMapping(value = "/admin/blackList/upload", produces = APPLICATION_JSON_VALUE, method = POST)
-    @ResponseBody
-    public ResponseEntity<byte[]> uploadBlackListFile(@RequestParam("file") MultipartFile file) {
-        try {
-            return new ResponseEntity<>(getJson(blackListedService.readBlackListedExcelFile(file.getInputStream())), CREATED);
-        } catch (IOException | SAXException | OpenXML4JException | ParserConfigurationException | IllegalArgumentException | ElifeException e) {
-            return new ResponseEntity<>(getJson(ErrorCode.INVALID_BLACKLIST_FILE.apply(e.getMessage())), NOT_ACCEPTABLE);
         }
     }
 

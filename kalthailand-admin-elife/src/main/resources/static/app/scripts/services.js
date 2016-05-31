@@ -37,7 +37,7 @@
     });
 
     app.factory('BlackListFileUpload', function ($resource) {
-        return $resource(window.location.origin + '/api-elife/admin/blackList/upload', {}, {
+        return $resource(window.location.origin + '/api-blacklist/admin/blackList/upload', {}, {
             save: {
                 method: 'POST',
                 transformRequest: function (data) {
@@ -62,7 +62,7 @@
     });
 
     app.factory('BlackList', function ($resource) {
-        return $resource(window.location.origin + '/api-elife/admin/blackList', { pageNumber: '@pageNumber', pageSize: '@pageSize' }, {});
+        return $resource(window.location.origin + '/api-blacklist/admin/blackList', { pageNumber: '@pageNumber', pageSize: '@pageSize' }, {});
     });
 
     app.factory('PolicyDetail', function ($resource) {

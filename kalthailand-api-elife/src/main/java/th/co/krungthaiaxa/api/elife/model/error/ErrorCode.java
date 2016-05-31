@@ -45,6 +45,5 @@ public class ErrorCode {
     // ADMIN UI
     public static final Function<String, Error> UI_UNAUTHORIZED = msg -> new Error("9001", "You are not authorized to see this page", msg);
     public static final Function<String, Error> NOTIFICATION_NOT_SENT = msg -> new Error("9002", "Notification was not sent. Error is: " + msg, "Notification was not sent. Error is: " + msg);
-    public static final Function<String, Error> INVALID_BLACKLIST_FILE = msg -> new Error("9003", "Invalid Excel file. Error is: " + msg, "Inavlid Excel file. Error is: " + msg);
 
 }
