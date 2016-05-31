@@ -15,7 +15,6 @@ import th.co.krungthaiaxa.api.elife.client.Token;
 import th.co.krungthaiaxa.api.elife.filter.KalApiTokenFilter;
 import th.co.krungthaiaxa.api.elife.client.*;
 import th.co.krungthaiaxa.api.elife.data.BlackListed;
-import th.co.krungthaiaxa.api.elife.repository.BlackListedRepository;
 import th.co.krungthaiaxa.api.elife.repository.CDBRepository;
 import th.co.krungthaiaxa.api.elife.repository.LineBCRepository;
 import th.co.krungthaiaxa.api.elife.tmc.TMCClient;
@@ -86,16 +85,16 @@ public class ELifeTest {
         });
 
         // Faking Black list
-        BlackListedRepository blackListedRepository = mock(BlackListedRepository.class);
-        blackListClient.setBlackListedRepository(blackListedRepository);
-        when(blackListedRepository.findByIdNumber(anyString())).thenAnswer(invocation -> {
+        RestTemplate fakeBlacklistedTemplate = mock(RestTemplate.class);
+        blackListClient.setTemplate(fakeBlacklistedTemplate);
+        when(fakeBlacklistedTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(String.class))).thenAnswer(invocation -> {
             Object[] args = invocation.getArguments();
             String mid = (String) args[0];
             if (mid.equals("aMockedBlackListedThaiID")) {
-                return new BlackListed();
+                return Boolean.TRUE;
             }
             else {
-                return null;
+                return Boolean.FALSE;
             }
         });
 

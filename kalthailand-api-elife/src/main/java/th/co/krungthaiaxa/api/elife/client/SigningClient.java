@@ -29,7 +29,7 @@ public class SigningClient {
     private RestTemplate template = new RestTemplate();
 
     public byte[] getEncodedSignedPdfDocument(byte[] encodedNonSignedPdf) {
-        HttpEntity entity = new HttpEntity<>(encodedNonSignedPdf, authClient.getHeadersWithToken(userName, userPassword));
+        HttpEntity<byte[]> entity = new HttpEntity<>(encodedNonSignedPdf, authClient.getHeadersWithToken(userName, userPassword));
 
         ResponseEntity<String> authResponse;
         try {

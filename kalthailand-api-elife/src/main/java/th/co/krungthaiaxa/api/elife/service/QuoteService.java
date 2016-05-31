@@ -121,8 +121,8 @@ public class QuoteService {
                     .map(Registration::getId)
                     .findFirst();
             if (insuredRegistrationId.isPresent()) {
-                BlackListed blackListed = blackListClient.findByIdNumber(insuredRegistrationId.get());
-                if (blackListed != null) {
+                Boolean blackListed = blackListClient.getCheckingBlackListed(insuredRegistrationId.get());
+                if (!blackListed) {
                     throw new ElifeException("The Thai ID [" + insuredRegistrationId.get() + "] is not allowed to purchase Policy.");
                 }
             }
