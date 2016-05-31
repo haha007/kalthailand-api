@@ -6,7 +6,7 @@
     <artifactId>admin-elife</artifactId>
     <packaging>war</packaging>
 
-    <name>kalthailand-api-elife</name>
+    <name>kalthailand-admin-elife</name>
     <description>Admin console for elife project</description>
 
     <parent>
