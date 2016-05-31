@@ -13,5 +13,8 @@
     "angular-route": "^1.5.5",
     "ngstorage": "^0.3.10",
     "ngMask": "angular-mask#^3.0.16"
+  },
+  "resolutions": {
+    "angular": "1.5.6"
   }
 }
