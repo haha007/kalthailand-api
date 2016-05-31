@@ -3,6 +3,7 @@ package th.co.krungthaiaxa.api.elife.resource;
 import io.swagger.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +19,7 @@ import th.co.krungthaiaxa.api.elife.service.QuoteService;
 import th.co.krungthaiaxa.api.elife.utils.JsonUtil;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.Optional;
 
@@ -32,6 +34,8 @@ public class QuoteResource {
     private final static Logger logger = LoggerFactory.getLogger(QuoteResource.class);
     private final QuoteService quoteService;
     private final EmailService emailService;
+    @Value("${kal.api.auth.header}")
+    private String tokenHeader;
 
     @Inject
     public QuoteResource(QuoteService quoteService, EmailService emailService) {
@@ -155,7 +159,8 @@ public class QuoteResource {
             @ApiParam(value = "The channel being used to create the quote.", required = true)
             @RequestParam ChannelType channelType,
             @ApiParam(value = "The json of the quote. This quote will be updated with given values and will go through minimal validations", required = true)
-            @RequestBody String jsonQuote) {
+            @RequestBody String jsonQuote,
+            HttpServletRequest httpServletRequest) {
         Optional<Quote> tmp = quoteService.findByQuoteId(quoteId, sessionId, channelType);
         if (!tmp.isPresent()) {
             return new ResponseEntity<>(getJson(ErrorCode.QUOTE_DOES_NOT_EXIST_OR_ACCESS_DENIED), NOT_FOUND);
@@ -173,7 +178,7 @@ public class QuoteResource {
 
         Quote updatedQuote;
         try {
-            updatedQuote = quoteService.updateQuote(quote);
+            updatedQuote = quoteService.updateQuote(quote, httpServletRequest.getHeader(tokenHeader));
         } catch (ElifeException e) {
             logger.error("Unable to update quote", e);
             return new ResponseEntity<>(getJson(ErrorCode.QUOTE_NOT_UPDATED), INTERNAL_SERVER_ERROR);

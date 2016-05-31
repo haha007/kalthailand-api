@@ -48,7 +48,7 @@ public class TMCClientTest extends ELifeTest {
         Policy policy = getPolicy();
 
         policyService.updatePolicyAfterFirstPaymentValidated(policy);
-        policyService.updatePolicyAfterPolicyHasBeenValidated(policy, "agentCode", "agentName");
+        policyService.updatePolicyAfterPolicyHasBeenValidated(policy, "agentCode", "agentName", "token");
         Document document = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(DocumentType.ERECEIPT_PDF)).findFirst().get();
         String documentContent = documentService.downloadDocument(document.getId()).getContent();
 
@@ -59,7 +59,7 @@ public class TMCClientTest extends ELifeTest {
     private Policy getPolicy() {
         Quote quote = quoteService.createQuote(randomNumeric(20), ChannelType.LINE, TestUtil.productQuotation(PeriodicityCode.EVERY_MONTH, 100000.0, 5));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
-        quote = quoteService.updateQuote(quote);
+        quote = quoteService.updateQuote(quote, "token");
 
         return policyService.createPolicy(quote);
     }

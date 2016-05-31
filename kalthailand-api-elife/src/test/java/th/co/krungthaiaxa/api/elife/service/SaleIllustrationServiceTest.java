@@ -42,7 +42,7 @@ public class SaleIllustrationServiceTest extends ELifeTest {
     public void should_generate_sale_illustration_10ec_pdf_file()throws  Exception {
         Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation());
         quote(quote, beneficiary(100.0));
-        quote = quoteService.updateQuote(quote);
+        quote = quoteService.updateQuote(quote, "token");
 
         Pair<byte[], String> pair = saleIllustration10ECService.generatePDF(quote, base64);
         assertThat(pair.getLeft()).isNotEmpty();
@@ -54,7 +54,7 @@ public class SaleIllustrationServiceTest extends ELifeTest {
     public void should_generate_sale_illustration_ifine_pdf_file()throws  Exception{
         Quote quote = quoteService.createQuote("xxx", LINE, productQuotation(PRODUCT_IFINE, 55, EVERY_YEAR, 100000.0));
         quote(quote, beneficiary(100.0));
-        quote = quoteService.updateQuote(quote);
+        quote = quoteService.updateQuote(quote, "token");
 
         Pair<byte[], String> pair = saleIllustrationiFineService.generatePDF(quote);
         assertThat(pair.getLeft()).isNotEmpty();
@@ -66,7 +66,7 @@ public class SaleIllustrationServiceTest extends ELifeTest {
     public void should_generate_sale_illustration_ifine_with_autopay_from_line_pay_wording_pdf_file()throws  Exception{
         Quote quote = quoteService.createQuote("xxx", LINE, productQuotation(PRODUCT_IFINE, 50, EVERY_MONTH, 10000.0));
         quote(quote, beneficiary(100.0));
-        quote = quoteService.updateQuote(quote);
+        quote = quoteService.updateQuote(quote, "token");
 
         Pair<byte[], String> pair = saleIllustrationiFineService.generatePDF(quote);
         assertThat(pair.getLeft()).isNotEmpty();

@@ -96,23 +96,23 @@ public class DocumentServiceTest extends ELifeTest {
     @Test
     public void should_have_4_documents_generated_when_policy_is_validated_and_not_monthly() throws Exception {
         Policy policy = getPolicy(EVERY_YEAR);
-        documentService.generateValidatedPolicyDocuments(policy);
+        documentService.generateValidatedPolicyDocuments(policy, "token");
         assertThat(policy.getDocuments()).extracting("typeName").containsExactly(APPLICATION_FORM, APPLICATION_FORM_VALIDATED, ERECEIPT_IMAGE, ERECEIPT_PDF);
     }
 
     @Test
     public void should_have_5_documents_generated_when_policy_is_validated_and_monthly() throws Exception {
         Policy policy = getPolicy(EVERY_MONTH);
-        documentService.generateValidatedPolicyDocuments(policy);
+        documentService.generateValidatedPolicyDocuments(policy, "token");
         assertThat(policy.getDocuments()).extracting("typeName").containsExactly(APPLICATION_FORM, DA_FORM, APPLICATION_FORM_VALIDATED, ERECEIPT_IMAGE, ERECEIPT_PDF);
     }
 
     @Test
     public void should_still_have_only_5_documents_even_after_generating_more_than_once() throws Exception {
         Policy policy = getPolicy(EVERY_MONTH);
-        documentService.generateValidatedPolicyDocuments(policy);
-        documentService.generateValidatedPolicyDocuments(policy);
-        documentService.generateValidatedPolicyDocuments(policy);
+        documentService.generateValidatedPolicyDocuments(policy, "token");
+        documentService.generateValidatedPolicyDocuments(policy, "token");
+        documentService.generateValidatedPolicyDocuments(policy, "token");
         assertThat(policy.getDocuments()).extracting("typeName").containsExactly(APPLICATION_FORM, DA_FORM, APPLICATION_FORM_VALIDATED, ERECEIPT_IMAGE, ERECEIPT_PDF);
     }
 
@@ -121,7 +121,7 @@ public class DocumentServiceTest extends ELifeTest {
         Policy policy = getPolicy(EVERY_MONTH);
         TestUtil.policy(policy);
 
-        documentService.generateValidatedPolicyDocuments(policy);
+        documentService.generateValidatedPolicyDocuments(policy, "token");
         Optional<Document> documentPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(ERECEIPT_PDF)).findFirst();
         assertThat(documentPdf.isPresent()).isTrue();
 
@@ -138,7 +138,7 @@ public class DocumentServiceTest extends ELifeTest {
     private Policy getPolicy(PeriodicityCode periodicityCode) {
         Quote quote = quoteService.createQuote(randomNumeric(20), ChannelType.LINE, TestUtil.productQuotation(25, periodicityCode));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
-        quote = quoteService.updateQuote(quote);
+        quote = quoteService.updateQuote(quote, "token");
 
         return policyService.createPolicy(quote);
     }

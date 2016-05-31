@@ -23,6 +23,7 @@ import th.co.krungthaiaxa.api.elife.service.QuoteService;
 import th.co.krungthaiaxa.api.elife.utils.JsonUtil;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -48,6 +49,8 @@ public class PolicyResource {
 
     @Value("${environment.name}")
     private String environmentName;
+    @Value("${kal.api.auth.header}")
+    private String tokenHeader;
 
     @Inject
     public PolicyResource(LineService lineService, PolicyService policyService, QuoteService quoteService) {
@@ -191,7 +194,8 @@ public class PolicyResource {
             @ApiParam(value = "The name of validating agent", required = true)
             @RequestParam String agentName,
             @ApiParam(value = "The type of call to Line Pay Capture API", required = true)
-            @RequestParam LinePayCaptureMode linePayCaptureMode) {
+            @RequestParam LinePayCaptureMode linePayCaptureMode,
+            HttpServletRequest httpServletRequest) {
 
         Pattern pattern = Pattern.compile("[0-9]{6}-[0-9]{2}-[0-9]{6}$");
         Matcher matcher = pattern.matcher(agentCode);
@@ -263,7 +267,7 @@ public class PolicyResource {
         policyService.updateRegistrationForAllNotProcessedPayment(policy.get(), linePayResponse.getInfo().getRegKey());
 
         try {
-            policyService.updatePolicyAfterPolicyHasBeenValidated(policy.get(), agentCode, agentName);
+            policyService.updatePolicyAfterPolicyHasBeenValidated(policy.get(), agentCode, agentName, httpServletRequest.getHeader(tokenHeader));
         } catch (ElifeException e) {
             logger.error("Payment is successful but there was an error whil trying to update policy status.", e);
             return new ResponseEntity<>(getJson(POLICY_VALIDATION_ERROR.apply(e.getMessage())), INTERNAL_SERVER_ERROR);

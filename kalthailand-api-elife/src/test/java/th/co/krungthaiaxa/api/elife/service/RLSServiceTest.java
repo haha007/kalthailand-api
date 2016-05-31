@@ -448,7 +448,7 @@ public class RLSServiceTest extends ELifeTest {
     private Policy getValidatedPolicy(PeriodicityCode periodicityCode) {
         Quote quote = quoteService.createQuote(randomNumeric(20), ChannelType.LINE, TestUtil.productQuotation(periodicityCode, 1000000.0, 5));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
-        quote = quoteService.updateQuote(quote);
+        quote = quoteService.updateQuote(quote, "token");
 
         Policy policy = policyService.createPolicy(quote);
         policy.setStatus(PolicyStatus.VALIDATED);

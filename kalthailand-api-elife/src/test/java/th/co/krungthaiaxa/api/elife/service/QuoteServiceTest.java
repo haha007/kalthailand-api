@@ -43,7 +43,7 @@ public class QuoteServiceTest extends ELifeTest {
         String sessionId = randomNumeric(20);
         Quote quote = getQuote(sessionId, ProductType.PRODUCT_10_EC);
 
-        quoteService.updateQuote(quote);
+        quoteService.updateQuote(quote, "token");
         assertThat(quote).isNotNull();
     }
 
@@ -52,7 +52,7 @@ public class QuoteServiceTest extends ELifeTest {
         String sessionId = randomNumeric(20);
         Quote quote = getQuote(sessionId, ProductType.PRODUCT_IBEGIN);
 
-        quoteService.updateQuote(quote);
+        quoteService.updateQuote(quote, "token");
         assertThat(quote).isNotNull();
     }
 
@@ -61,7 +61,7 @@ public class QuoteServiceTest extends ELifeTest {
         String sessionId = randomNumeric(20);
         Quote quote = getQuote(sessionId, ProductType.PRODUCT_IFINE);
 
-        quoteService.updateQuote(quote);
+        quoteService.updateQuote(quote, "token");
         assertThat(quote).isNotNull();
     }
 
@@ -143,7 +143,7 @@ public class QuoteServiceTest extends ELifeTest {
     public void should_calculate_age_of_insured() {
         Quote quote = getQuote(randomNumeric(20), ProductType.PRODUCT_10_EC);
 
-        quote = quoteService.updateQuote(quote);
+        quote = quoteService.updateQuote(quote, "token");
         assertThat(quote.getInsureds().get(0).getAgeAtSubscription()).isEqualTo(55);
     }
 
@@ -152,7 +152,7 @@ public class QuoteServiceTest extends ELifeTest {
         Quote quote = getQuote(randomNumeric(20), ProductType.PRODUCT_10_EC);
         quote.getInsureds().get(0).setProfessionId(1);
 
-        quote = quoteService.updateQuote(quote);
+        quote = quoteService.updateQuote(quote, "token");
         assertThat(quote.getInsureds().get(0).getProfessionName()).isNotNull();
     }
 
@@ -161,7 +161,7 @@ public class QuoteServiceTest extends ELifeTest {
         Quote quote = getQuote(randomNumeric(20), ProductType.PRODUCT_10_EC);
         quote.getInsureds().get(0).getPerson().getRegistrations().get(0).setId("aMockedBlackListedThaiID");
 
-        assertThatThrownBy(() -> quoteService.updateQuote(quote))
+        assertThatThrownBy(() -> quoteService.updateQuote(quote, "token"))
                 .isInstanceOf(ElifeException.class);
     }
 
@@ -193,6 +193,6 @@ public class QuoteServiceTest extends ELifeTest {
     private Quote getQuote(String sessionId, ProductType productType) {
         Quote quote = quoteService.createQuote(sessionId, ChannelType.LINE, productQuotation(productType, 55, EVERY_MONTH, 100000.0));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
-        return quoteService.updateQuote(quote);
+        return quoteService.updateQuote(quote, "token");
     }
 }

@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.elife.client.BlackListClient;
-import th.co.krungthaiaxa.api.elife.data.BlackListed;
 import th.co.krungthaiaxa.api.elife.data.OccupationType;
 import th.co.krungthaiaxa.api.elife.data.SessionQuote;
 import th.co.krungthaiaxa.api.elife.exception.ElifeException;
@@ -106,7 +105,7 @@ public class QuoteService {
         return quote;
     }
 
-    public Quote updateQuote(Quote quote) {
+    public Quote updateQuote(Quote quote, String token) {
         // For some products, professionId is given after quote calculation
         // In this case, profession name has to be calculated
         if (quote.getInsureds().get(0).getProfessionId() != null) {
@@ -121,8 +120,8 @@ public class QuoteService {
                     .map(Registration::getId)
                     .findFirst();
             if (insuredRegistrationId.isPresent()) {
-                Boolean blackListed = blackListClient.getCheckingBlackListed(insuredRegistrationId.get());
-                if (!blackListed) {
+                Boolean blackListed = blackListClient.getCheckingBlackListed(insuredRegistrationId.get(), token);
+                if (blackListed) {
                     throw new ElifeException("The Thai ID [" + insuredRegistrationId.get() + "] is not allowed to purchase Policy.");
                 }
             }

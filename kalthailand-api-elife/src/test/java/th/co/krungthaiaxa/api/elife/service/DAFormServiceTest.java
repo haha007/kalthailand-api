@@ -57,7 +57,7 @@ public class DAFormServiceTest extends ELifeTest {
     private Policy getPolicy() {
         Quote quote = quoteService.createQuote(randomNumeric(20), ChannelType.LINE, productQuotation());
         quote(quote, beneficiary(100.0));
-        quote = quoteService.updateQuote(quote);
+        quote = quoteService.updateQuote(quote, "token");
 
         return policyService.createPolicy(quote);
     }

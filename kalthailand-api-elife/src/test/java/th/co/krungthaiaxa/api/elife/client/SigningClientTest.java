@@ -47,14 +47,14 @@ public class SigningClientTest extends ELifeTest {
         documentService.generateNotValidatedPolicyDocuments(policy);
         Optional<Document> applicationFormPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(APPLICATION_FORM)).findFirst();
         DocumentDownload documentDownload = documentService.downloadDocument(applicationFormPdf.get().getId());
-        byte[] encodedSignedDocument = signingClient.getEncodedSignedPdfDocument(documentDownload.getContent().getBytes());
+        byte[] encodedSignedDocument = signingClient.getEncodedSignedPdfDocument(documentDownload.getContent().getBytes(), "token");
         assertThat(encodedSignedDocument).isNotNull();
     }
 
     private Policy getPolicy() {
         Quote quote = quoteService.createQuote(randomNumeric(20), ChannelType.LINE, TestUtil.productQuotation(25, PeriodicityCode.EVERY_MONTH));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
-        quote = quoteService.updateQuote(quote);
+        quote = quoteService.updateQuote(quote, "token");
 
         return policyService.createPolicy(quote);
     }

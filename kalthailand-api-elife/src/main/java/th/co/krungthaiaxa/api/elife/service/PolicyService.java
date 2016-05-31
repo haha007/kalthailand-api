@@ -272,7 +272,7 @@ public class PolicyService {
         }
     }
 
-    public void updatePolicyAfterPolicyHasBeenValidated(Policy policy, String agentCode, String agentName) {
+    public void updatePolicyAfterPolicyHasBeenValidated(Policy policy, String agentCode, String agentName, String token) {
         if (!policy.getStatus().equals(PENDING_VALIDATION)) {
             throw new ElifeException("Can't validate policy [" + policy.getPolicyId() + "], it is not pending for validation.");
         }
@@ -283,7 +283,7 @@ public class PolicyService {
 
         // Generate documents
         try {
-            documentService.generateValidatedPolicyDocuments(policy);
+            documentService.generateValidatedPolicyDocuments(policy, token);
         } catch (Exception e) {
             throw new ElifeException("Can't generate documents for the policy [" + policy.getPolicyId() + "]", e);
         }

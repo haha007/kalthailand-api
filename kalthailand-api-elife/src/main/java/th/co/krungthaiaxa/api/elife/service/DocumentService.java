@@ -131,7 +131,7 @@ public class DocumentService {
         logger.info("Default documents for policy [" + policy.getPolicyId() + "] have been created.");
     }
 
-    public void generateValidatedPolicyDocuments(Policy policy) {
+    public void generateValidatedPolicyDocuments(Policy policy, String token) {
         // In case previous documents were not generated
         generateNotValidatedPolicyDocuments(policy);
 
@@ -171,7 +171,7 @@ public class DocumentService {
             try {
                 byte[] decodedNonSignedPdf =  createEreceiptPDF(ereceiptImage);
                 byte[] encodedNonSignedPdf =  Base64.getEncoder().encode(decodedNonSignedPdf);
-                byte[] encodedSignedPdf = signingClient.getEncodedSignedPdfDocument(encodedNonSignedPdf);
+                byte[] encodedSignedPdf = signingClient.getEncodedSignedPdfDocument(encodedNonSignedPdf, token);
                 byte[] decodedSignedPdf = Base64.getDecoder().decode(encodedSignedPdf);
                 addDocument(policy, decodedSignedPdf, "application/pdf", ERECEIPT_PDF);
                 logger.info("Ereceipt pdf has been added to Policy.");

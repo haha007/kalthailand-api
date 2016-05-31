@@ -2,19 +2,20 @@ package th.co.krungthaiaxa.api.elife;
 
 import org.apache.commons.lang3.tuple.Triple;
 import org.junit.Before;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.soap.client.core.SoapActionCallback;
-import th.co.krungthaiaxa.api.elife.client.AuthClient;
 import th.co.krungthaiaxa.api.elife.client.SigningClient;
 import th.co.krungthaiaxa.api.elife.client.Token;
 import th.co.krungthaiaxa.api.elife.filter.KalApiTokenFilter;
 import th.co.krungthaiaxa.api.elife.client.*;
-import th.co.krungthaiaxa.api.elife.data.BlackListed;
 import th.co.krungthaiaxa.api.elife.repository.CDBRepository;
 import th.co.krungthaiaxa.api.elife.repository.LineBCRepository;
 import th.co.krungthaiaxa.api.elife.tmc.TMCClient;
@@ -40,8 +41,6 @@ public class ELifeTest {
     @Inject
     private LineBCClient lineBCClient;
     @Inject
-    private AuthClient authClient;
-    @Inject
     private SigningClient signingClient;
     @Inject
     private BlackListClient blackListClient;
@@ -64,9 +63,13 @@ public class ELifeTest {
 
         // Faking authorization by always returning success
         RestTemplate fakeAuthRestTemplate = mock(RestTemplate.class);
-        authClient.setTemplate(fakeAuthRestTemplate);
         kalApiTokenFilter.setTemplate(fakeAuthRestTemplate);
-        when(fakeAuthRestTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(String.class))).thenReturn(getFakeToken());
+        when(fakeAuthRestTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(String.class))).thenAnswer(new Answer<ResponseEntity<String>>() {
+            @Override
+            public ResponseEntity<String> answer(InvocationOnMock invocation) throws Throwable {
+                return new ResponseEntity<>(new String(JsonUtil.getJson(Token.of("123456"))), OK);
+            }
+        });
 
         // Faking CDB by always returning empty Optional
         CDBRepository cdbRepository = mock(CDBRepository.class);
@@ -89,12 +92,12 @@ public class ELifeTest {
         blackListClient.setTemplate(fakeBlacklistedTemplate);
         when(fakeBlacklistedTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(String.class))).thenAnswer(invocation -> {
             Object[] args = invocation.getArguments();
-            String mid = (String) args[0];
-            if (mid.equals("aMockedBlackListedThaiID")) {
-                return Boolean.TRUE;
+            HttpEntity thaiId = (HttpEntity) args[2];
+            if ("aMockedBlackListedThaiID".equals(thaiId.getBody())) {
+                return new ResponseEntity<>("true", HttpStatus.OK);
             }
             else {
-                return Boolean.FALSE;
+                return new ResponseEntity<>("false", HttpStatus.OK);
             }
         });
 
@@ -137,9 +140,5 @@ public class ELifeTest {
             response.setReceivePDFJSONResult(new String(JsonUtil.getJson(tmcSendingPDFResponse)));
             return response;
         });
-    }
-
-    private ResponseEntity<String> getFakeToken() {
-        return new ResponseEntity<>(new String(JsonUtil.getJson(Token.of("123456"))), OK);
     }
 }

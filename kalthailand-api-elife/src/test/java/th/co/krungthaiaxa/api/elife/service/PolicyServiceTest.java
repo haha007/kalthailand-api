@@ -64,11 +64,11 @@ public class PolicyServiceTest extends ELifeTest {
 
         Quote quote1 = quoteService.createQuote(sessionId, ChannelType.LINE, TestUtil.productQuotation());
         TestUtil.quote(quote1, TestUtil.beneficiary(100.0));
-        quote1 = quoteService.updateQuote(quote1);
+        quote1 = quoteService.updateQuote(quote1, "token");
 
         Quote quote2 = quoteService.createQuote(sessionId, ChannelType.LINE, TestUtil.productQuotation());
         TestUtil.quote(quote2, TestUtil.beneficiary(100.0));
-        quote2 = quoteService.updateQuote(quote2);
+        quote2 = quoteService.updateQuote(quote2, "token");
         Policy policy = policyService.createPolicy(quote2);
 
         assertThat(quoteService.findByQuoteId(quote1.getQuoteId(), sessionId, ChannelType.LINE).get().getPolicyId()).isNull();
@@ -257,7 +257,7 @@ public class PolicyServiceTest extends ELifeTest {
         Policy policy = getPolicy();
 
         policyService.updatePolicyAfterFirstPaymentValidated(policy);
-        policyService.updatePolicyAfterPolicyHasBeenValidated(policy, "agentCode", "agentName");
+        policyService.updatePolicyAfterPolicyHasBeenValidated(policy, "agentCode", "agentName", "token");
 
         Assertions.assertThat(policy.getStatus()).isEqualTo(PolicyStatus.VALIDATED);
         Assertions.assertThat(policy.getDocuments()).hasSize(5);
@@ -268,7 +268,7 @@ public class PolicyServiceTest extends ELifeTest {
         Policy policy = getPolicy();
 
         policyService.updatePolicyAfterFirstPaymentValidated(policy);
-        policyService.updatePolicyAfterPolicyHasBeenValidated(policy, "agentCode", "agentName");
+        policyService.updatePolicyAfterPolicyHasBeenValidated(policy, "agentCode", "agentName", "token");
 
         assertThat(greenMail.getReceivedMessages()).hasSize(2);
     }
@@ -277,7 +277,7 @@ public class PolicyServiceTest extends ELifeTest {
     public void should_not_update_policy_status_to_validated_when_previous_status_is_not_pending_validation() {
         Policy policy = getPolicy();
 
-        assertThatThrownBy(() -> policyService.updatePolicyAfterPolicyHasBeenValidated(policy, "agentCode", "agentName"))
+        assertThatThrownBy(() -> policyService.updatePolicyAfterPolicyHasBeenValidated(policy, "agentCode", "agentName", "token"))
                 .isInstanceOf(ElifeException.class);
         Assertions.assertThat(policy.getDocuments()).hasSize(0);
     }
@@ -285,7 +285,7 @@ public class PolicyServiceTest extends ELifeTest {
     private Policy getPolicy() {
         Quote quote = quoteService.createQuote(randomNumeric(20), ChannelType.LINE, TestUtil.productQuotation(25, PeriodicityCode.EVERY_MONTH));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
-        quote = quoteService.updateQuote(quote);
+        quote = quoteService.updateQuote(quote, "token");
 
         return policyService.createPolicy(quote);
     }

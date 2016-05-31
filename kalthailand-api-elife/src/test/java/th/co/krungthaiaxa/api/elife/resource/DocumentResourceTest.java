@@ -211,7 +211,7 @@ public class DocumentResourceTest extends ELifeTest {
         String sessionId = randomNumeric(20);
         Quote quote = quoteService.createQuote(sessionId, ChannelType.LINE, TestUtil.productQuotation(25, PeriodicityCode.EVERY_MONTH));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
-        quote = quoteService.updateQuote(quote);
+        quote = quoteService.updateQuote(quote, "token");
 
         URI quoteCreationURI = new URI("http://localhost:" + port + "/policies");
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(quoteCreationURI)
