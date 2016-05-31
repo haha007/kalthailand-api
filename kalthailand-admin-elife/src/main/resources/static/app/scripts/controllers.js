@@ -251,7 +251,8 @@
 
     app.controller('PolicyDetailController', function ($scope, $route, $http, $routeParams, PolicyDetail, PolicyNotification) {
         $scope.$route = $route;
-        
+        $scope.apiELifeUrl = window.location.origin + '/api-elife';
+
         $scope.policyID = $routeParams.policyID;
         if ($scope.policyID) {
             searchForPolicyDetail();

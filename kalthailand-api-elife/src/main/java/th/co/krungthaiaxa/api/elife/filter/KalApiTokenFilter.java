@@ -69,6 +69,7 @@ public class KalApiTokenFilter implements Filter {
                         httpServletRequest.getRequestURI().contains("/document/") &&
                         httpServletRequest.getRequestURI().contains("/download"))) {
             chain.doFilter(httpServletRequest, response);
+            return;
         }
 
         // For everything else, we should check for token validity
