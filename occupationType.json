@@ -1,209 +1,150 @@
-{"occId":1,"occRisk":false,"occTextTh":"นักวิชาการ","occTextEn":"Academician"}
-{"occId":2,"occRisk":false,"occTextTh":"นักแสดง","occTextEn":"Actor"}
-{"occId":3,"occRisk":false,"occTextTh":"ผู้จัดการนักแสดง","occTextEn":"Actor s Manager"}
-{"occId":4,"occRisk":false,"occTextTh":"เกษตรกร","occTextEn":"Agriculturist"}
-{"occId":5,"occRisk":false,"occTextTh":"นักโบราณคดี","occTextEn":"Archeologist"}
-{"occId":6,"occRisk":false,"occTextTh":"สถาปนิก","occTextEn":"Architecture"}
-{"occId":7,"occRisk":false,"occTextTh":"จิตรกร","occTextEn":"Artist - Painter"}
-{"occId":8,"occRisk":false,"occTextTh":"นักกีฬา","occTextEn":"Athlete"}
-{"occId":9,"occRisk":false,"occTextTh":"ช่างซ่อมรถยนต์","occTextEn":"Automotive Mechanic"}
-{"occId":10,"occRisk":false,"occTextTh":"นักบิน","occTextEn":"Aviator"}
-{"occId":11,"occRisk":false,"occTextTh":"ช่างกล้อง,ช่างภาพ","occTextEn":"Camera man-Photographer"}
-{"occId":12,"occRisk":false,"occTextTh":"ใต้ก๋ง-เรือประมงน้ำเค็ม","occTextEn":"Captain-Fishing vessels"}
-{"occId":13,"occRisk":false,"occTextTh":"ช่างไม้,ช่างปูน,ช่างสี","occTextEn":"Carpenter, Plasterer, Painter"}
-{"occId":14,"occRisk":false,"occTextTh":"นายกองค์การบริหารส่วนตำบล (อ.บ.ต.) ","occTextEn":"Chief Executive of the SAO or deputy"}
-{"occId":15,"occRisk":false,"occTextTh":"ผู้ฝึกสอนกีฬา","occTextEn":"Coach"}
-{"occId":16,"occRisk":false,"occTextTh":"ค้าขาย-ตระเวนขาย/ส่งสินค้า","occTextEn":"Commerce/Trade - booth/goods delivery"}
-{"occId":17,"occRisk":false,"occTextTh":"ค้าขาย-ร้านค้าในบ้าน,ตึกแถว,ที่ดินส่วนบุคคล","occTextEn":"Commerce/Trade - building, private land"}
-{"occId":18,"occRisk":false,"occTextTh":"ค้าขาย-ร้าน/แผงค้าที่ตลาดสด,ตลาดนัด","occTextEn":"Commerce/Trade - kios in the market"}
-{"occId":19,"occRisk":false,"occTextTh":"ค้าขาย-ร้านค้าในห้างสรรพสินค้า,อาคารสำนักงาน","occTextEn":"Commerce/Trade - shop in dept store, office building"}
-{"occId":20,"occRisk":false,"occTextTh":"ช่างติดตั้ง,แก้ไข,ซ่อมแซมคอมพิวเตอร์","occTextEn":"Computer technician, install, maintain and fix"}
-{"occId":21,"occRisk":true,"occTextTh":"คนงานก่อสร้าง","occTextEn":"Construction Worker"}
-{"occId":22,"occRisk":false,"occTextTh":"ผู้รับเหมาก่อสร้าง","occTextEn":"Contractor"}
-{"occId":23,"occRisk":false,"occTextTh":"นายกเทศมนตรี,นายก อ.บ.จ.","occTextEn":"County Council mayor or deputy"}
-{"occId":24,"occRisk":false,"occTextTh":"สมาชิกสภาจังหวัด,สภาเขต","occTextEn":"County Council member"}
-{"occId":25,"occRisk":false,"occTextTh":"มัณฑนากร","occTextEn":"Decorator"}
-{"occId":26,"occRisk":false,"occTextTh":"ทันตแพทย์","occTextEn":"Dentist"}
-{"occId":27,"occRisk":false,"occTextTh":"ผู้กำกับภาพยนตร์-รายการโทรทัศน์","occTextEn":"Director-Movie/TV shows "}
-{"occId":28,"occRisk":false,"occTextTh":"พนักงานป้องกันและบรรเทาสาธารณภัย","occTextEn":"Disaster prevention and mitigation officer"}
-{"occId":29,"occRisk":false,"occTextTh":"นักประดาน้ำ,ดำน้ำ","occTextEn":"Diver"}
-{"occId":30,"occRisk":false,"occTextTh":"แพทย์","occTextEn":"Doctor"}
-{"occId":31,"occRisk":false,"occTextTh":"ช่างประตู,หน้าต่าง,ฝ้า,เพดาน","occTextEn":"Doors, Windows, Ceiling Craftsman"}
-{"occId":32,"occRisk":false,"occTextTh":"ช่างเขียนแบบ","occTextEn":"Draftman"}
-{"occId":33,"occRisk":false,"occTextTh":"คนขับรถ","occTextEn":"Driver"}
-{"occId":34,"occRisk":false,"occTextTh":"คนขับรถขุด,รถบด,รถเกลี่ย,แทรกเตอร์","occTextEn":"Driver - Backhoe, steamroller, motor grader, tractor"}
-{"occId":35,"occRisk":false,"occTextTh":"คนขับปั้นจั่น","occTextEn":"Driver - Crane"}
-{"occId":36,"occRisk":false,"occTextTh":"คนขับรถบรรทุก,รถปูน","occTextEn":"Driver - Truck or cement truck"}
-{"occId":37,"occRisk":false,"occTextTh":"ช่างไฟฟ้า","occTextEn":"Electrician"}
-{"occId":38,"occRisk":false,"occTextTh":"ช่างซ่อมเครื่องใช้ไฟฟ้า","occTextEn":"Electrical Equipment Technician"}
-{"occId":39,"occRisk":false,"occTextTh":"พนักงาน-กิจการเกษตร,พืช,สวน","occTextEn":"Employee - Agribusiness, plant, garden"}
-{"occId":40,"occRisk":false,"occTextTh":"พนักงาน-ท่าอากาศยาน ","occTextEn":"Employee - airports"}
-{"occId":41,"occRisk":false,"occTextTh":"พนักงาน-ธุรกิจบริการรถเช่า,รถรับจ้าง","occTextEn":"Employee - Automobile Renting"}
-{"occId":42,"occRisk":false,"occTextTh":"พนักงาน-ธุรกิจบริการด้านความสวยงาม,เสริมสวย","occTextEn":"Employee - Beauty salon, shop"}
-{"occId":43,"occRisk":false,"occTextTh":"พนักงาน-ค่ายมวย","occTextEn":"Employee - Boxing camp"}
-{"occId":44,"occRisk":false,"occTextTh":"พนักงาน-ธุรกิจบริการทำความสะอาด","occTextEn":"Employee - Cleaning service"}
-{"occId":45,"occRisk":false,"occTextTh":"พนักงาน-ธุรกิจเครื่องนุ่งห่ม,ห้องเสื้อ,ร้านตัดเสื้อ","occTextEn":"Employee - Clothing business, Tailor s shop"}
-{"occId":46,"occRisk":false,"occTextTh":"พนักงาน-ธุรกิจบริการธุรกิจห้องเย็น","occTextEn":"Employee - Cold storage business"}
-{"occId":47,"occRisk":false,"occTextTh":"พนักงาน-การบินพาณิชย์","occTextEn":"Employee - Commercial Aviation"}
-{"occId":48,"occRisk":false,"occTextTh":"พนักงาน-กิจการสื่อสาร,โทรศัพท์","occTextEn":"Employee - Communications, Telephone"}
-{"occId":49,"occRisk":false,"occTextTh":"พนักงาน-อุตสาหกรรมการผลิตในครัวเรือน","occTextEn":"Employee - cottage industry"}
-{"occId":50,"occRisk":false,"occTextTh":"พนักงาน-ทางด่วน,ทางพิเศษ","occTextEn":"Employee - Expressway, Tollway"}
-{"occId":51,"occRisk":false,"occTextTh":"พนักงาน-อู่ซ่อม-บำรุงรักษายานพาหนะ","occTextEn":"Employee - garage-maintenance"}
-{"occId":52,"occRisk":false,"occTextTh":"พนักงาน-ปั๊มน้ำมัน,สถานีบริการ,คาร์แคร์","occTextEn":"Employee - gas station, service station, car care"}
-{"occId":53,"occRisk":false,"occTextTh":"พนักงาน-ธุรกิจบริการจัดเก็บสินค้า,เอกสาร","occTextEn":"Employee - Goods, document storage service"}
-{"occId":54,"occRisk":false,"occTextTh":"ลูกจ้าง - หน่วยงานของรัฐ,ราชการ","occTextEn":"Employee - Government Agency"}
-{"occId":55,"occRisk":false,"occTextTh":"พนักงาน-ที่พัก เกสเฮ้าส์,อพาร์ทเมนท์,หอพัก","occTextEn":"Employee - Guesthouse, apartment, dormitory"}
-{"occId":56,"occRisk":false,"occTextTh":"พนักงาน-ท่าเรือ","occTextEn":"Employee - harbour"}
-{"occId":57,"occRisk":false,"occTextTh":"พนักงาน-อุตสาหกรรมการผลิตขนาดใหญ๋,โรงงาน","occTextEn":"Employee - Heavy duty manufacturing, Factory"}
-{"occId":58,"occRisk":false,"occTextTh":"พนักงาน-ธุรกิจโรงแรม,ร้านอาหาร,ท่องเที่ยว","occTextEn":"Employee - Hotel business, restaurant, tourism"}
-{"occId":59,"occRisk":false,"occTextTh":"พนักงาน-ธุรกิจบริการนำเข้า-ส่งออก,ชิปปิ้ง","occTextEn":"Employee - Import-Export, Shipping business"}
-{"occId":60,"occRisk":false,"occTextTh":"พนักงาน-กิจการกำจัดแมลงและสิ่งมีพิษ","occTextEn":"Employee - insecticide and toxicant business"}
-{"occId":61,"occRisk":false,"occTextTh":"พนักงาน-ธุรกิจบริการจัดสวน","occTextEn":"Employee - Landscape gardening service"}
-{"occId":62,"occRisk":false,"occTextTh":"พนักงาน-ธุรกิจบริการซักรีด,ซักแห้ง,ย้อมสี","occTextEn":"Employee - Laundry service, dry cleaning, dye"}
-{"occId":63,"occRisk":false,"occTextTh":"พนักงาน-กิจการเลี้ยงสัตว์,สวนสัตว์,ฟาร์ม","occTextEn":"Employee - Livestocks, Zoo, Farm"}
-{"occId":64,"occRisk":false,"occTextTh":"พนักงาน-อุตสาหกรรมไม้แปรรูป","occTextEn":"Employee - Lumber Industry"}
-{"occId":65,"occRisk":false,"occTextTh":"พนักงาน-โรงกลึง","occTextEn":"Employee - Machine Shop"}
-{"occId":66,"occRisk":false,"occTextTh":"พนักงาน - ธุรกิจผลิต-จำหน่ายสินค้า","occTextEn":"Employee - Manufacture-Distribute business"}
-{"occId":67,"occRisk":false,"occTextTh":"พนักงาน-บริษัทเรือเดินสมุทร,ขนส่งทางทะเล","occTextEn":"Employee - Marine business, seaborne"}
-{"occId":68,"occRisk":false,"occTextTh":"พนักงาน-อุตสาหกรรมโลหะ","occTextEn":"Employee - Metal Trade"}
-{"occId":69,"occRisk":false,"occTextTh":"พนักงาน-เหมืองแร่/หิน","occTextEn":"Employee - Mining Industry"}
-{"occId":70,"occRisk":false,"occTextTh":"พนักงาน-ธุรกิจบริการขนย้าย","occTextEn":"Employee - Moving service"}
-{"occId":71,"occRisk":false,"occTextTh":"พนักงาน-ธุรกิจน้ำมันและก๊าซธรรมชาติ","occTextEn":"Employee - Oil & Natural Gas Industry"}
-{"occId":72,"occRisk":false,"occTextTh":"พนักงาน-กิจการออกแบบบรรจุภัณฑ์","occTextEn":"Employee - Packaging design business"}
-{"occId":73,"occRisk":false,"occTextTh":"พนักงาน-กิจการไปรษณีย์","occTextEn":"Employee - Post"}
-{"occId":74,"occRisk":false,"occTextTh":"พนักงาน-สำนักพิมพ์,โรงพิมพ์,หนังสือพิมพ์","occTextEn":"Employee - publishing house, newspaper"}
-{"occId":75,"occRisk":false,"occTextTh":"พนักงาน-สำนักพิมพ์,โรงพิมพ์,หนังสือพิมพ์","occTextEn":"Employee - publishing,printing house, newspaper"}
-{"occId":76,"occRisk":false,"occTextTh":"พนักงาน-กิจการวิทยุ,โทรทัศน์,เคเบิลทีวี,ดาวเทียม","occTextEn":"Employee - radio, television, cable TV, satellite"}
-{"occId":77,"occRisk":false,"occTextTh":"พนักงาน-การรถไฟ,รถไฟฟ้า","occTextEn":"Employee - Railway, BTS"}
-{"occId":78,"occRisk":false,"occTextTh":"พนักงาน-โรงสี","occTextEn":"Employee - Rice Mill"}
-{"occId":79,"occRisk":false,"occTextTh":"พนักงาน-อู่ต่อเรือ","occTextEn":"Employee - Shipyard"}
-{"occId":80,"occRisk":false,"occTextTh":"พนักงาน-สถานที่ออกกำลังกาย,ฟิตเนส","occTextEn":"Employee - Sports complex, Fitness"}
-{"occId":81,"occRisk":false,"occTextTh":"พนักงาน-โรงฟอกหนัง","occTextEn":"Employee - Tannery"}
-{"occId":82,"occRisk":false,"occTextTh":"พนักงาน-ธุรกิจบริการรถเช่า,รถรับจ้าง","occTextEn":"Employee - tourist service and recreation"}
-{"occId":83,"occRisk":false,"occTextTh":"พนักงาน-สถานที่จัดแข่งกีฬา/กิจกรรมทางน้ำ","occTextEn":"Employee - Water sports complex"}
-{"occId":84,"occRisk":false,"occTextTh":"พนักงาน-บริษัทเดินเรือ,ขนส่งทางน้ำ (แม่น้ำ)","occTextEn":"Employee - Water transportation (river)"}
-{"occId":85,"occRisk":false,"occTextTh":"พนักงาน-กิจการสวนสนุก.สวนน้ำ","occTextEn":"Employee-amusement park, water park"}
-{"occId":86,"occRisk":false,"occTextTh":"พนักงาน-โรงงานวัตถุระเบิด,อาวุธ,ประทัด,คลังแสง","occTextEn":"Employee-bomb substances,weapon,firecrackers, amory"}
-{"occId":87,"occRisk":false,"occTextTh":"พนักงาน-ธุรกิจโรงภาพยนตร์.รับฉายหนัง","occTextEn":"Employee-Cinema"}
-{"occId":88,"occRisk":false,"occTextTh":"พนักงาน - ปกครองท้องถิ่น,เทศบาล,อำเภอ,อบจ.,อบต.","occTextEn":"Employee-Municipality adminisrtation การบริหารพนักงานเทศบาล"}
-{"occId":89,"occRisk":false,"occTextTh":"พนักงาน-โรงไฟฟ้า (แรงดันไฟฟ้า <= 250 โวลท์) ","occTextEn":"Employee-Personal Electrical Station (<=250 VOLT)"}
-{"occId":90,"occRisk":false,"occTextTh":"พนักงาน-โรงไฟฟ้า (แรงดันไฟฟ้า > 250 โวลท์) ","occTextEn":"Employee-Power Station/Substation(>250 VOLT)"}
-{"occId":91,"occRisk":false,"occTextTh":"พนักงาน-โรงเรียนเอกชน","occTextEn":"Employee-Private school/Educational institution"}
-{"occId":92,"occRisk":false,"occTextTh":"พนักงานบริษัท","occTextEn":"Employee-Private Sector"}
-{"occId":93,"occRisk":false,"occTextTh":"พนักงาน-กิจการกำจัด/แปรสภาพขยะ","occTextEn":"Employee-refuse disposal, transformation"}
-{"occId":94,"occRisk":false,"occTextTh":"ลูกจ้าง-กิจการค้าปลีก-ส่ง,ร้านค้า,รับทำของ","occTextEn":"Employee-retail/wholesale, stores, made to order"}
-{"occId":95,"occRisk":false,"occTextTh":"พนักงาน - ธุรกิจการจัดคอนเสิร์ต,การแสดงบนเวที","occTextEn":"Employee-Show Business"}
-{"occId":96,"occRisk":false,"occTextTh":"พนักงาน-กิจการสเก็ตล้อและสเก็ตน้ำแข็ง","occTextEn":"Employee-skating,ice skating"}
-{"occId":97,"occRisk":false,"occTextTh":"วิศวกร","occTextEn":"Engineer"}
-{"occId":98,"occRisk":false,"occTextTh":"ผู้บริหาร-โรงพยาบาล","occTextEn":"Executive - Hospital"}
-{"occId":99,"occRisk":false,"occTextTh":"ผู้บริหาร-ธุรกิจโรงแรม,ร้านอาหาร,ท่องเที่ยว","occTextEn":"Executive - Hotel business, restaurant, tourism"}
-{"occId":100,"occRisk":false,"occTextTh":"ผู้บริหาร-รัฐวิสาหกิจ,หน่วยงานของรัฐ","occTextEn":"Executive - State Enterprise"}
-{"occId":101,"occRisk":false,"occTextTh":"ผู้บริหาร - ปกครองท้องถิ่น,เทศบาล,อำเภอ,อบจ.,อบต.","occTextEn":"Executive-Municipality adminisrtation"}
-{"occId":102,"occRisk":false,"occTextTh":"ผู้บริหาร - ธุรกิจเอกชน","occTextEn":"Executive-Private Sector"}
-{"occId":103,"occRisk":false,"occTextTh":"เจ้าหน้าที่ดับเพลิง-กู้ภัย","occTextEn":"Fireman-rescuer"}
-{"occId":104,"occRisk":false,"occTextTh":"ชาวประมง","occTextEn":"Fisherman"}
-{"occId":105,"occRisk":false,"occTextTh":"ชาวประมง,ลูกเรือ-เรือประมงน้ำเค็ม","occTextEn":"Fisherman,Crew-Fishing vessels"}
+{"occId":001,"occRisk":false,"occTextTh":"นักวิชาการ","occTextEn":"Academician"}
+{"occId":002,"occRisk":false,,"occTextTh":"นักแสดง","occTextEn":"Actor"}
+{"occId":003,"occRisk":false,"occTextTh":"ผู้จัดการนักแสดง","occTextEn":"Actor Manager"}
+{"occId":004,"occRisk":false,"occTextTh":"เกษตรกร","occTextEn":"Agriculturist"}
+{"occId":005,"occRisk":false,"occTextTh":"นักโบราณคดี","occTextEn":"Archeologist"}
+{"occId":006,"occRisk":false,"occTextTh":"สถาปนิก","occTextEn":"Architecture"}
+{"occId":007,"occRisk":false,"occTextTh":"จิตรกร","occTextEn":"Artist - Painter"}
+{"occId":008,"occRisk":false,"occTextTh":"นักกีฬา","occTextEn":"Athlete"}
+{"occId":009,"occRisk":false,"occTextTh":"ช่างซ่อมรถยนต์","occTextEn":"Automotive Mechanic"}
+{"occId":010,"occRisk":false,"occTextTh":"นักบิน","occTextEn":"Aviator"}
+{"occId":011,"occRisk":false,"occTextTh":"ช่างกล้อง / ช่างภาพ","occTextEn":"Camera man-Photographer"}
+{"occId":013,"occRisk":false,"occTextTh":"ช่างไม้ ช่างปูน ช่างสี","occTextEn":"Carpenter, Plasterer, Painter"}
+{"occId":015,"occRisk":false,"occTextTh":"ผู้ฝึกสอนกีฬา","occTextEn":"Coach"}
+{"occId":016,"occRisk":false,"occTextTh":"ค้าขาย ตระเวนขาย ส่งสินค้า","occTextEn":"Commerce / Trade"}
+{"occId":020,"occRisk":false,"occTextTh":"ช่างติดตั้ง แก้ไข ซ่อมแซมคอมพิวเตอร์","occTextEn":"Computer technician, install, maintain and fix"}
+{"occId":021,"occRisk":true,"occTextTh":"คนงานก่อสร้าง","occTextEn":"Construction Worker"}
+{"occId":022,"occRisk":false,"occTextTh":"ผู้รับเหมาก่อสร้าง","occTextEn":"Contractor"}
+{"occId":024,"occRisk":false,"occTextTh":"สมาชิกสภาจังหวัด สภาเขต","occTextEn":"County Council member"}
+{"occId":025,"occRisk":false,"occTextTh":"มัณฑนากร","occTextEn":"Decorator"}
+{"occId":026,"occRisk":false,"occTextTh":"ทันตแพทย์","occTextEn":"Dentist"}
+{"occId":027,"occRisk":false,"occTextTh":"ผู้กำกับภาพยนตร์ / รายการโทรทัศน์","occTextEn":"Director-Movie/TV shows "}
+{"occId":028,"occRisk":false,"occTextTh":"พนักงานป้องกันและบรรเทาสาธารณภัย","occTextEn":"Disaster prevention and mitigation officer"}
+{"occId":029,"occRisk":false,"occTextTh":"นักประดาน้ำ ดำน้ำ","occTextEn":"Diver"}
+{"occId":030,"occRisk":false,"occTextTh":"แพทย์","occTextEn":"Doctor"}
+{"occId":032,"occRisk":false,"occTextTh":"ช่างเขียนแบบ","occTextEn":"Draftman"}
+{"occId":033,"occRisk":false,"occTextTh":"คนขับรถ","occTextEn":"Driver"}
+{"occId":037,"occRisk":false,"occTextTh":"ช่างไฟฟ้า","occTextEn":"Electrician"}
+{"occId":038,"occRisk":false,"occTextTh":"ช่างซ่อมเครื่องใช้ไฟฟ้า","occTextEn":"Electrical Equipment Technician"}
+{"occId":039,"occRisk":false,"occTextTh":"พนักงานกิจการเกษตร พืช สวน","occTextEn":"Employee - Agribusiness, plant, garden"}
+{"occId":040,"occRisk":false,"occTextTh":"พนักงานท่าอากาศยาน ","occTextEn":"Employee - airports"}
+{"occId":041,"occRisk":false,"occTextTh":"พนักงานธุรกิจบริการรถเช่า รถรับจ้าง","occTextEn":"Employee - Automobile Renting"}
+{"occId":042,"occRisk":false,"occTextTh":"พนักงานธุรกิจบริการด้านความสวยงาม เสริมสวย","occTextEn":"Employee - Beauty salon, shop"}
+{"occId":044,"occRisk":false,"occTextTh":"พนักงานธุรกิจบริการทำความสะอาด","occTextEn":"Employee - Cleaning service"}
+{"occId":045,"occRisk":false,"occTextTh":"พนักงานธุรกิจเครื่องนุ่งห่ม ห้องเสื้อ ร้านตัดเสื้อ","occTextEn":"Employee - Clothing business, Tailor s shop"}
+{"occId":047,"occRisk":false,"occTextTh":"พนักงานการบินพาณิชย์","occTextEn":"Employee - Commercial Aviation"}
+{"occId":048,"occRisk":false,"occTextTh":"พนักงานกิจการสื่อสาร โทรศัพท์","occTextEn":"Employee - Communications, Telephone"}
+{"occId":050,"occRisk":false,"occTextTh":"พนักงานทางด่วน ทางพิเศษ","occTextEn":"Employee - Expressway, Tollway"}
+{"occId":051,"occRisk":false,"occTextTh":"พนักงานอู่ซ่อม บำรุงรักษายานพาหนะ","occTextEn":"Employee - garage-maintenance"}
+{"occId":052,"occRisk":false,"occTextTh":"พนักงานปั๊มน้ำมัน สถานีบริการ คาร์แคร์","occTextEn":"Employee - gas station, service station, car care"}
+{"occId":054,"occRisk":false,"occTextTh":"ลูกจ้างหน่วยงานของรัฐ ราชการ","occTextEn":"Employee - Government Agency"}
+{"occId":055,"occRisk":false,"occTextTh":"พนักงานที่พัก เกสเฮ้าส์ อพาร์ทเมนท์ หอพัก","occTextEn":"Employee - Guesthouse, apartment, dormitory"}
+{"occId":056,"occRisk":false,"occTextTh":"พนักงานท่าเรือ","occTextEn":"Employee - harbour"}
+{"occId":057,"occRisk":false,"occTextTh":"พนักงานอุตสาหกรรมการผลิตขนาดใหญ่ โรงงาน","occTextEn":"Employee - Heavy duty manufacturing, Factory"}
+{"occId":058,"occRisk":false,"occTextTh":"พนักงานธุรกิจโรงแรม ร้านอาหาร ท่องเที่ยว","occTextEn":"Employee - Hotel business, restaurant, tourism"}
+{"occId":059,"occRisk":false,"occTextTh":"พนักงานธุรกิจบริการนำเข้า ส่งออก ชิปปิ้ง","occTextEn":"Employee - Import-Export, Shipping business"}
+{"occId":062,"occRisk":false,"occTextTh":"พนักงานธุรกิจบริการซักรีด ซักแห้ง ย้อมสี","occTextEn":"Employee - Laundry service, dry cleaning, dye"}
+{"occId":063,"occRisk":false,"occTextTh":"พนักงานกิจการเลี้ยงสัตว์ สวนสัตว์ ฟาร์ม","occTextEn":"Employee - Livestocks, Zoo, Farm"}
+{"occId":066,"occRisk":false,"occTextTh":"พนักงานธุรกิจผลิต / จำหน่ายสินค้า","occTextEn":"Employee - Manufacture-Distribute business"}
+{"occId":070,"occRisk":false,"occTextTh":"พนักงานธุรกิจบริการขนย้าย","occTextEn":"Employee - Moving service"}
+{"occId":071,"occRisk":false,"occTextTh":"พนักงานธุรกิจน้ำมันและก๊าซธรรมชาติ","occTextEn":"Employee - Oil & Natural Gas Industry"}
+{"occId":075,"occRisk":false,"occTextTh":"พนักงานสำนักพิมพ์ โรงพิมพ์ หนังสือพิมพ์","occTextEn":"Employee - publishing,printing house, newspaper"}
+{"occId":076,"occRisk":false,"occTextTh":"พนักงานกิจการวิทยุ โทรทัศน์ เคเบิลทีวี ดาวเทียม","occTextEn":"Employee - radio, television, cable TV, satellite"}
+{"occId":077,"occRisk":false,"occTextTh":"พนักงานการรถไฟ รถไฟฟ้า","occTextEn":"Employee - Railway, BTS"}
+{"occId":080,"occRisk":false,"occTextTh":"พนักงานสถานที่ออกกำลังกาย ฟิตเนส","occTextEn":"Employee - Sports complex, Fitness"}
+{"occId":085,"occRisk":false,"occTextTh":"พนักงานกิจการสวนสนุก สวนน้ำ","occTextEn":"Employee-amusement park, water park"}
+{"occId":087,"occRisk":false,"occTextTh":"พนักงานธุรกิจโรงภาพยนตร์ รับฉายหนัง","occTextEn":"Employee-Cinema"}
+{"occId":091,"occRisk":false,"occTextTh":"พนักงานโรงเรียนเอกชน","occTextEn":"Employee-Private school/Educational institution"}
+{"occId":092,"occRisk":false,"occTextTh":"พนักงานบริษัท","occTextEn":"Employee-Private Sector"}
+{"occId":094,"occRisk":false,"occTextTh":"ลูกจ้างกิจการค้าปลีก ค้าส่ง ร้านค้า รับทำของ","occTextEn":"Employee-retail/wholesale, stores, made to order"}
+{"occId":095,"occRisk":false,"occTextTh":"พนักงานธุรกิจการจัดคอนเสิร์ต การแสดงบนเวที","occTextEn":"Employee-Show Business"}
+{"occId":097,"occRisk":false,"occTextTh":"วิศวกร","occTextEn":"Engineer"}
+{"occId":098,"occRisk":false,"occTextTh":"ผู้บริหารโรงพยาบาล","occTextEn":"Executive - Hospital"}
+{"occId":099,"occRisk":false,"occTextTh":"ผู้บริหารธุรกิจโรงแรม ร้านอาหาร ท่องเที่ยว","occTextEn":"Executive - Hotel business, restaurant, tourism"}
+{"occId":100,"occRisk":false,"occTextTh":"ผู้บริหารรัฐวิสาหกิจ / หน่วยงานของรัฐ","occTextEn":"Executive - State Enterprise"}
+{"occId":102,"occRisk":false,"occTextTh":"ผู้บริหารธุรกิจเอกชน","occTextEn":"Executive-Private Sector"}
+{"occId":103,"occRisk":false,"occTextTh":"เจ้าหน้าที่ดับเพลิง กู้ภัย","occTextEn":"Fireman-rescuer"}
+{"occId":105,"occRisk":false,"occTextTh":"ชาวประมง ลูกเรือ เรือประมงน้ำเค็ม","occTextEn":"Fisherman,Crew-Fishing vessels"}
 {"occId":106,"occRisk":false,"occTextTh":"หัวหน้าคนงาน","occTextEn":"Foreman"}
 {"occId":107,"occRisk":false,"occTextTh":"นักธรณีวิทยา","occTextEn":"Geologist"}
 {"occId":108,"occRisk":false,"occTextTh":"ข้าราชการ-พนักงานฝ่ายปกครอง","occTextEn":"Government Officer-Provincial Administration"}
-{"occId":109,"occRisk":false,"occTextTh":"พ่อบ้าน-แม่บ้าน (ไม่มีรายได้)","occTextEn":"Housewife "}
+{"occId":109,"occRisk":false,"occTextTh":"พ่อบ้าน / แม่บ้าน","occTextEn":"Housewife "}
 {"occId":110,"occRisk":false,"occTextTh":"นักลงทุน","occTextEn":"Investor"}
 {"occId":111,"occRisk":false,"occTextTh":"ผู้พิพากษา","occTextEn":"Judge"}
 {"occId":112,"occRisk":false,"occTextTh":"ทนายความ","occTextEn":"Lawyer"}
 {"occId":113,"occRisk":false,"occTextTh":"บรรณารักษ์","occTextEn":"Librarian"}
-{"occId":114,"occRisk":false,"occTextTh":"รับจ้าง-ทำงานบ้าน","occTextEn":"Maid"}
-{"occId":115,"occRisk":false,"occTextTh":"ช่างซ่อม-บำรุงรักษาทั่วไป","occTextEn":"Maintenance-Man"}
-{"occId":116,"occRisk":false,"occTextTh":"พิธีกร,ผู้ดำเนินรายการ","occTextEn":"Master of Ceremonies (MC)"}
-{"occId":117,"occRisk":false,"occTextTh":"ช่างซ่อมเครื่องจักร,เครื่องยนตร์","occTextEn":"Mechanist"}
+{"occId":114,"occRisk":false,"occTextTh":"รับจ้างทำงานบ้าน","occTextEn":"Maid"}
+{"occId":115,"occRisk":false,"occTextTh":"ช่างซ่อม บำรุงรักษาทั่วไป","occTextEn":"Maintenance - Man"}
+{"occId":116,"occRisk":false,"occTextTh":"พิธีกร ผู้ดำเนินรายการ","occTextEn":"Master of Ceremonies (MC)"}
 {"occId":118,"occRisk":false,"occTextTh":"เจ้าหน้าที่การแพทย์","occTextEn":"Medical Officer"}
 {"occId":119,"occRisk":false,"occTextTh":"สมาชิกสภาผู้แทนราษฏร","occTextEn":"Member of Parliament"}
-{"occId":120,"occRisk":false,"occTextTh":"สมาชิกองค์การบริหารส่วนตำบล (อ.บ.ต.)","occTextEn":"Member of Subdistrict Administrative Organization"}
+{"occId":120,"occRisk":false,"occTextTh":"สมาชิกองค์การบริหารส่วนตำบล","occTextEn":"Member of Subdistrict Administrative Organization"}
 {"occId":121,"occRisk":false,"occTextTh":"พยาบาล","occTextEn":"Nurse"}
-{"occId":122,"occRisk":false,"occTextTh":"รับจ้าง-ดูแลคนไข้/ผู้สูงอายุ","occTextEn":"Nursery Nurse"}
-{"occId":123,"occRisk":false,"occTextTh":"พนักงาน-รัฐวิสาหกิจ,หน่วยงานของรัฐ","occTextEn":"Officer - State Enterprise"}
+{"occId":122,"occRisk":false,"occTextTh":"รับจ้างดูแลคนไข้ / ผู้สูงอายุ","occTextEn":"Nursery Nurse"}
+{"occId":123,"occRisk":false,"occTextTh":"พนักงานรัฐวิสาหกิจ / หน่วยงานของรัฐ","occTextEn":"Officer - State Enterprise"}
 {"occId":124,"occRisk":false,"occTextTh":"เจ้าของ-อุตสาหกรรมการผลิตขนาดใหญ๋,โรงงาน","occTextEn":"Onwer - Heavy duty manufacturing, Factory"}
-{"occId":125,"occRisk":false,"occTextTh":"เจ้าของ-กิจการเกษตร,พืช,สวน","occTextEn":"Owner - Agribusiness, plant, garden"}
-{"occId":126,"occRisk":false,"occTextTh":"เจ้าของ-ธุรกิจบริการรถเช่า,รถรับจ้าง","occTextEn":"Owner - Automobile Renting"}
-{"occId":127,"occRisk":false,"occTextTh":"เจ้าของ-ธุรกิจบริการด้านความสวยงาม,เสริมสวย","occTextEn":"Owner - Beauty salon, shop"}
-{"occId":128,"occRisk":false,"occTextTh":"เจ้าของ-ค่ายมวย","occTextEn":"Owner - Boxing camp"}
-{"occId":129,"occRisk":false,"occTextTh":"เจ้าของ-ธุรกิจบริการทำความสะอาด","occTextEn":"Owner - Clening service"}
-{"occId":130,"occRisk":false,"occTextTh":"เจ้าของ-ธุรกิจเครื่องนุ่งห่ม,ห้องเสื้อ,ร้านตัดเสื้อ","occTextEn":"Owner - Clothing business, Tailor s shop"}
-{"occId":131,"occRisk":false,"occTextTh":"เจ้าของ-ธุรกิจบริการธุรกิจห้องเย็น","occTextEn":"Owner - Cold storage business"}
-{"occId":132,"occRisk":false,"occTextTh":"เจ้าของ-กิจการก่อสร้าง","occTextEn":"Owner - Construction business"}
-{"occId":133,"occRisk":false,"occTextTh":"เจ้าของ-อุตสาหกรรมการผลิตในครัวเรือน","occTextEn":"Owner - cottage industry"}
-{"occId":134,"occRisk":false,"occTextTh":"เจ้าของ-อู่ซ่อม-บำรุงรักษายานพาหนะ","occTextEn":"Owner - garage-maintenance"}
-{"occId":135,"occRisk":false,"occTextTh":"เจ้าของ-ปั๊มน้ำมัน,สถานีบริการ,คาร์แคร์","occTextEn":"Owner - gas station, service station, car care"}
-{"occId":136,"occRisk":false,"occTextTh":"เจ้าของ-ธุรกิจบริการจัดเก็บสินค้า,เอกสาร","occTextEn":"Owner - Goods, document storage service"}
-{"occId":137,"occRisk":false,"occTextTh":"เจ้าของ-ที่พัก เกสเฮ้าส์,อพาร์ทเมนท์,หอพัก","occTextEn":"Owner - Guesthouse, apartment, dormitory"}
-{"occId":138,"occRisk":false,"occTextTh":"เจ้าของ-ธุรกิจโรงแรม,ร้านอาหาร,ท่องเที่ยว","occTextEn":"Owner - Hotel business, restaurant, tourism"}
-{"occId":139,"occRisk":false,"occTextTh":"เจ้าของ-ธุรกิจบริการนำเข้า-ส่งออก,ชิปปิ้ง","occTextEn":"Owner - Import-Export, Shipping business"}
-{"occId":140,"occRisk":false,"occTextTh":"เจ้าของ-กิจการกำจัดแมลงและสิ่งมีพิษ","occTextEn":"Owner - insecticide and toxicant business"}
-{"occId":141,"occRisk":false,"occTextTh":"เจ้าของ-ธุรกิจบริการจัดสวน","occTextEn":"Owner - Landscape gardening service"}
-{"occId":142,"occRisk":false,"occTextTh":"เจ้าของ-ธุรกิจบริการซักรีด,ซักแห้ง,ย้อมสี","occTextEn":"Owner - Laundry service, dry cleaning, dye"}
-{"occId":143,"occRisk":false,"occTextTh":"เจ้าของ-กิจการเลี้ยงสัตว์,สวนสัตว์,ฟาร์ม","occTextEn":"Owner - Livestocks, Zoo, Farm"}
-{"occId":144,"occRisk":false,"occTextTh":"เจ้าของ-อุตสาหกรรมไม้แปรรูป","occTextEn":"Owner - Lumber Industry"}
-{"occId":145,"occRisk":false,"occTextTh":"เจ้าของ-โรงกลึง","occTextEn":"Owner - Machine Shop"}
-{"occId":146,"occRisk":false,"occTextTh":"เจ้าของ - ธุรกิจผลิต-จำหน่ายสินค้า","occTextEn":"Owner - Manufacture-Distribute business"}
-{"occId":147,"occRisk":false,"occTextTh":"เจ้าของ-ธุรกิจบริการขนย้าย","occTextEn":"Owner - Moving service"}
-{"occId":148,"occRisk":false,"occTextTh":"เจ้าของ-ธุรกิจน้ำมันและก๊าซธรรมชาติ","occTextEn":"Owner - Oil & Natural Gas Industry"}
-{"occId":149,"occRisk":false,"occTextTh":"เจ้าของ-กิจการออกแบบบรรจุภัณฑ์","occTextEn":"Owner - Packaging design business"}
-{"occId":150,"occRisk":false,"occTextTh":"เจ้าของ-สำนักพิมพ์,โรงพิมพ์,หนังสือพิมพ์","occTextEn":"Owner - publishing,printing house, newspaper"}
-{"occId":151,"occRisk":false,"occTextTh":"เจ้าของ-ค้าปลีก,ค้าส่ง,ห้างสรรพสินค้า","occTextEn":"Owner - retail, wholesale, department store"}
-{"occId":152,"occRisk":false,"occTextTh":"เจ้าของ-โรงสี","occTextEn":"Owner - Rice Mill"}
-{"occId":153,"occRisk":false,"occTextTh":"เจ้าของ-สถานที่ออกกำลังกาย,ฟิตเนส","occTextEn":"Owner - Sports complex, Fitness"}
-{"occId":154,"occRisk":false,"occTextTh":"เจ้าของ-โรงฟอกหนัง","occTextEn":"Owner - Tannery"}
-{"occId":155,"occRisk":false,"occTextTh":"เจ้าของ-บริการท่องเที่ยว,พักผ่อนทั่วไป","occTextEn":"Owner - tourist service and recreation"}
-{"occId":156,"occRisk":false,"occTextTh":"เจ้าของ-สถานที่จัดแข่งกีฬา/กิจกรรมทางน้ำ","occTextEn":"Owner - Water sports complex"}
-{"occId":157,"occRisk":false,"occTextTh":"เจ้าของ-กิจการสวนสนุก.สวนน้ำ","occTextEn":"Owner-amusement park, water park"}
-{"occId":158,"occRisk":false,"occTextTh":"เจ้าของ-ธุรกิจโรงภาพยนตร์.รับฉายหนัง","occTextEn":"Owner-Cinema"}
-{"occId":159,"occRisk":false,"occTextTh":"เจ้าของ-เรือประมงน้ำเค็ม","occTextEn":"Owner-Fishing vessels"}
-{"occId":160,"occRisk":false,"occTextTh":"เจ้าของ-โรงเรียนเอกชน","occTextEn":"Owner-Private school/Educational institution"}
-{"occId":161,"occRisk":false,"occTextTh":"เจ้าของ-กิจการกำจัด/แปรสภาพขยะ","occTextEn":"Owner-refuse disposal, transformation"}
-{"occId":162,"occRisk":false,"occTextTh":"เจ้าของ-กิจการสเก็ตล้อและสเก็ตน้ำแข็ง","occTextEn":"Owner-skating,ice skating"}
-{"occId":163,"occRisk":false,"occTextTh":"ช่างปูพื้นหิน,พื้นไม้","occTextEn":"Paving Marble, Parquet"}
-{"occId":164,"occRisk":false,"occTextTh":"ช่างปูกระเบื้อง (หลังคา)","occTextEn":"Paving Roofing tile"}
-{"occId":165,"occRisk":false,"occTextTh":"ช่างปูกระเบื้อง (พื้น,ผนัง)","occTextEn":"Paving tile (floor, wall)"}
-{"occId":166,"occRisk":false,"occTextTh":"เภสัชกร ","occTextEn":"Pharmacist"}
+{"occId":125,"occRisk":false,"occTextTh":"เจ้าของกิจการเกษตร พืช สวน","occTextEn":"Owner - Agribusiness, Plant, Garden"}
+{"occId":126,"occRisk":false,"occTextTh":"เจ้าของธุรกิจบริการรถเช่า รถรับจ้าง","occTextEn":"Owner - Automobile Renting"}
+{"occId":127,"occRisk":false,"occTextTh":"เจ้าของธุรกิจบริการด้านความสวยงาม เสริมสวย","occTextEn":"Owner - Beauty salon, shop"}
+{"occId":129,"occRisk":false,"occTextTh":"เจ้าของธุรกิจบริการทำความสะอาด","occTextEn":"Owner - Clening Service"}
+{"occId":130,"occRisk":false,"occTextTh":"เจ้าของธุรกิจเครื่องนุ่งห่ม ห้องเสื้อ ร้านตัดเสื้อ","occTextEn":"Owner - Clothing business, Tailor s shop"}
+{"occId":132,"occRisk":false,"occTextTh":"เจ้าของกิจการก่อสร้าง","occTextEn":"Owner - Construction Business"}
+{"occId":134,"occRisk":false,"occTextTh":"เจ้าของอู่ซ่อม บำรุงรักษายานพาหนะ","occTextEn":"Owner - garage-maintenance"}
+{"occId":135,"occRisk":false,"occTextTh":"เจ้าของปั๊มน้ำมัน สถานีบริการ คาร์แคร์","occTextEn":"Owner - gas station, service station, car care"}
+{"occId":136,"occRisk":false,"occTextTh":"เจ้าของธุรกิจบริการจัดเก็บสินค้า เอกสาร","occTextEn":"Owner - Goods, document storage service"}
+{"occId":137,"occRisk":false,"occTextTh":"เจ้าของอพาร์ทเมนท์ หอพัก","occTextEn":"Owner - Guesthouse, apartment, dormitory"}
+{"occId":138,"occRisk":false,"occTextTh":"เจ้าของธุรกิจโรงแรม ร้านอาหาร ท่องเที่ยว","occTextEn":"Owner - Hotel business, restaurant, tourism"}
+{"occId":139,"occRisk":false,"occTextTh":"เจ้าของธุรกิจบริการนำเข้า ส่งออก ชิปปิ้ง","occTextEn":"Owner - Import / Export, Shipping Business"}
+{"occId":142,"occRisk":false,"occTextTh":"เจ้าของธุรกิจบริการซักรีด ซักแห้ง ย้อมสี","occTextEn":"Owner - Laundry Service, Dry Cleaning, Dye"}
+{"occId":143,"occRisk":false,"occTextTh":"เจ้าของกิจการเลี้ยงสัตว์ สวนสัตว์ ฟาร์ม","occTextEn":"Owner - Livestocks, Zoo, Farm"}
+{"occId":146,"occRisk":false,"occTextTh":"เจ้าของธุรกิจผลิต / จำหน่ายสินค้า","occTextEn":"Owner - Manufacture-Distribute business"}
+{"occId":147,"occRisk":false,"occTextTh":"เจ้าของธุรกิจบริการขนย้าย","occTextEn":"Owner - Moving service"}
+{"occId":148,"occRisk":false,"occTextTh":"เจ้าของธุรกิจน้ำมันและก๊าซธรรมชาติ","occTextEn":"Owner - Oil & Natural Gas Industry"}
+{"occId":150,"occRisk":false,"occTextTh":"เจ้าของสำนักพิมพ์ โรงพิมพ์ หนังสือพิมพ์","occTextEn":"Owner - publishing,printing house, newspaper"}
+{"occId":151,"occRisk":false,"occTextTh":"เจ้าของค้าปลีก ค้าส่ง ห้างสรรพสินค้า","occTextEn":"Owner - retail, wholesale, department store"}
+{"occId":153,"occRisk":false,"occTextTh":"เจ้าของสถานที่ออกกำลังกาย ฟิตเนส","occTextEn":"Owner - Sports complex, Fitness"}
+{"occId":155,"occRisk":false,"occTextTh":"เจ้าของบริการท่องเที่ยว พักผ่อนทั่วไป","occTextEn":"Owner - Tourist Services and Recreation"}
+{"occId":157,"occRisk":false,"occTextTh":"เจ้าของกิจการสวนสนุก สวนน้ำ","occTextEn":"Owner-amusement park, water park"}
+{"occId":158,"occRisk":false,"occTextTh":"เจ้าของธุรกิจโรงภาพยนตร์ รับฉายหนัง","occTextEn":"Owner-Cinema"}
+{"occId":160,"occRisk":false,"occTextTh":"เจ้าของโรงเรียนเอกชน","occTextEn":"Owner-Private school/Educational institution"}
+{"occId":166,"occRisk":false,"occTextTh":"เภสัชกร","occTextEn":"Pharmacist"}
 {"occId":167,"occRisk":false,"occTextTh":"ช่างประปา","occTextEn":"Plumber"}
-{"occId":168,"occRisk":false,"occTextTh":"ตำรวจ-ปฏิบัติหน้าที่ด้านการบิน","occTextEn":"Policeman-Aviation"}
-{"occId":169,"occRisk":false,"occTextTh":"ตำรวจ-ชั้นสัญญาบัคร","occTextEn":"Policeman-Commissioned Officer"}
-{"occId":170,"occRisk":false,"occTextTh":"ตำรวจ-ชั้นประทวน","occTextEn":"Policeman-Noncommissioned Officer"}
+{"occId":168,"occRisk":false,"occTextTh":"ตำรวจ / ทหารปฏิบัติหน้าที่ด้านการบิน","occTextEn":"Aviation Policeman / Military"}
 {"occId":171,"occRisk":false,"occTextTh":"ผู้ช่วยพยาบาล","occTextEn":"Practical Nurse"}
 {"occId":172,"occRisk":false,"occTextTh":"ผู้ช่วยสัตวแพทย์","occTextEn":"Practical Veterinary "}
-{"occId":173,"occRisk":false,"occTextTh":"ผู้อำนวยการสร้าง,ผู้จัดจำหน่าย","occTextEn":"Producer,Distributor-Movie/TV shows "}
+{"occId":173,"occRisk":false,"occTextTh":"ผู้อำนวยการสร้าง ผู้จัดจำหน่าย","occTextEn":"Producer,Distributor-Movie/TV shows "}
 {"occId":174,"occRisk":false,"occTextTh":"โปรแกรมเมอร์","occTextEn":"Programmer"}
 {"occId":175,"occRisk":false,"occTextTh":"อัยการ","occTextEn":"Prosecuting attorney"}
 {"occId":176,"occRisk":false,"occTextTh":"กรรมการการแข่งกีฬา","occTextEn":"Referee"}
 {"occId":177,"occRisk":false,"occTextTh":"นักวิจัย","occTextEn":"Researcher"}
 {"occId":178,"occRisk":false,"occTextTh":"เกษียณอายุ","occTextEn":"Retired"}
-{"occId":179,"occRisk":false,"occTextTh":"พนักงานขาย-กิจการวัสดุก่อสร้าง,สุขภัณฑ์,เหล็ก","occTextEn":"Sales rep-Construction materials, Sanitary ware, Steel"}
-{"occId":180,"occRisk":false,"occTextTh":"พนักงานขาย-ธุรกิจขายตรง","occTextEn":"Sales rep-Direct sales"}
-{"occId":181,"occRisk":false,"occTextTh":"พนักงานขาย-ธุรกิจประกันภัย","occTextEn":"Sales rep-Insurance Business"}
-{"occId":182,"occRisk":false,"occTextTh":"พนักงานขาย-ธุรกิจประกันชีวิต","occTextEn":"Sales rep-Life Insurance Business"}
+{"occId":179,"occRisk":false,"occTextTh":"พนักงานขายกิจการวัสดุก่อสร้าง สุขภัณฑ์ เหล็ก","occTextEn":"Sales rep-Construction materials, Sanitary ware, Steel"}
+{"occId":180,"occRisk":false,"occTextTh":"พนักงานขายธุรกิจขายตรง","occTextEn":"Sales rep - Direct sales"}
+{"occId":181,"occRisk":false,"occTextTh":"พนักงานขายธุรกิจประกันภัย","occTextEn":"Sales rep - Insurance Business"}
+{"occId":182,"occRisk":false,"occTextTh":"พนักงานขายธุรกิจประกันชีวิต","occTextEn":"Sales rep - Life Insurance Business"}
 {"occId":183,"occRisk":false,"occTextTh":"เจ้าหน้าที่อนามัย","occTextEn":"Sanitarian"}
-{"occId":184,"occRisk":false,"occTextTh":"ผู้เขียนบทภาพยนตร์-รายการโทรทัศน์","occTextEn":"Screen Writer-Movie/TV shows "}
-{"occId":185,"occRisk":false,"occTextTh":"ประติมากร (ช่างแกะสลัก,ปั้น,รูปหล่อ)","occTextEn":"Sculptor"}
+{"occId":184,"occRisk":false,"occTextTh":"ผู้เขียนบทภาพยนตร์ / รายการโทรทัศน์","occTextEn":"Screen Writer-Movie/TV shows "}
+{"occId":185,"occRisk":false,"occTextTh":"ประติมากร ช่างแกะสลัก ปั้น รูปหล่อ","occTextEn":"Sculptor"}
 {"occId":186,"occRisk":false,"occTextTh":"รักษาความปลอดภัย","occTextEn":"Security"}
 {"occId":187,"occRisk":false,"occTextTh":"ประกอบอาชีพอิสระ","occTextEn":"Self employed"}
-{"occId":188,"occRisk":false,"occTextTh":"นักดนตรี/นักร้อง","occTextEn":"Singer-Musician"}
+{"occId":188,"occRisk":false,"occTextTh":"นักดนตรี นักร้อง","occTextEn":"Singer-Musician"}
 {"occId":189,"occRisk":false,"occTextTh":"ผู้จัดการนักดนตรี หรือวงดนตรี","occTextEn":"Singer-Musician s Manager"}
-{"occId":190,"occRisk":false,"occTextTh":"ทหาร-ปฏิบัติหน้าที่ด้านการบิน","occTextEn":"Soldier-Aviation"}
-{"occId":191,"occRisk":false,"occTextTh":"ทหาร-ชั้นสัญญาบัคร","occTextEn":"Soldier-Commissioned Officer"}
-{"occId":192,"occRisk":false,"occTextTh":"ทหาร-ชั้นประทวน","occTextEn":"Soldier-Noncommissioned Officer"}
 {"occId":193,"occRisk":false,"occTextTh":"นักแต่งเพลง","occTextEn":"Song Writer-Music"}
-{"occId":194,"occRisk":false,"occTextTh":"ซาวด์เอนจิเนีย, Producer","occTextEn":"Sound Engineer, Producer-Music"}
-{"occId":195,"occRisk":false,"occTextTh":"ผู้เชี่ยวชาญ-การเกษตร","occTextEn":"Specialist - Agriculture"}
-{"occId":196,"occRisk":false,"occTextTh":"ผู้เชี่ยวชาญ-เลี้ยง,ฝึกสอนสัตว์","occTextEn":"Specialist - Animal trainer"}
-{"occId":197,"occRisk":false,"occTextTh":"นักเรียน,นิสิต,นักศึกษา","occTextEn":"Student"}
+{"occId":194,"occRisk":false,"occTextTh":"ซาวด์เอนจิเนีย โปรดิวเซอร์","occTextEn":"Sound Engineer, Producer-Music"}
+{"occId":195,"occRisk":false,"occTextTh":"ผู้เชี่ยวชาญการเกษตร","occTextEn":"Specialist - Agriculture"}
+{"occId":196,"occRisk":false,"occTextTh":"ผู้เชี่ยวชาญเลี้ยง ฝึกสอนสัตว์","occTextEn":"Specialist - Animal trainer"}
+{"occId":197,"occRisk":false,"occTextTh":"นักเรียน นิสิต นักศึกษา","occTextEn":"Student"}
 {"occId":198,"occRisk":false,"occTextTh":"ช่างสำรวจ","occTextEn":"Surveyor"}
 {"occId":199,"occRisk":false,"occTextTh":"นักวิเคราะห์ระบบ","occTextEn":"System Analyst"}
-{"occId":200,"occRisk":false,"occTextTh":"ครู-อาจารย์","occTextEn":"Teacher"}
-{"occId":201,"occRisk":false,"occTextTh":"ช่างโทรศัพท์,เคเบิ้ล,ระบบสื่อสาร","occTextEn":"Technician Phone, Cable, Communication system"}
-{"occId":202,"occRisk":false,"occTextTh":"คนงานชั่วคราว","occTextEn":"Temporary Employee"}
-{"occId":203,"occRisk":false,"occTextTh":"มัคคุเทศก์ (ไกด์นำเที่ยว)","occTextEn":"Tourist guide"}
+{"occId":200,"occRisk":false,"occTextTh":"ครู / อาจารย์","occTextEn":"Teacher"}
+{"occId":201,"occRisk":false,"occTextTh":"ช่างโทรศัพท์ เคเบิ้ล ระบบสื่อสาร","occTextEn":"Technician Phone, Cable, Communication system"}
+{"occId":202,"occRisk":false,"occTextTh":"พนักงานชั่วคราว","occTextEn":"Temporary Employee"}
+{"occId":203,"occRisk":false,"occTextTh":"มัคคุเทศก์ ไกด์นำเที่ยว","occTextEn":"Tourist guide"}
 {"occId":204,"occRisk":false,"occTextTh":"ผู้ฝึกสอนการแสดง","occTextEn":"Trainer-Show Business"}
 {"occId":205,"occRisk":false,"occTextTh":"สัตวแพทย์","occTextEn":"Veterinary"}
-{"occId":206,"occRisk":false,"occTextTh":"ช่างเชื่อม(โครงเหล็ก หลังคา)","occTextEn":"Welder (Rack, Rooftop)"}
-{"occId":207,"occRisk":false,"occTextTh":"เจ้าหน้าที่กองถ่ายภาพยนตร์-รายการโทรทัศน์","occTextEn":"Worker-Show business-Movie,TV"}
-{"occId":208,"occRisk":true,"occTextTh":"คนขับรถแท๊กซี่ / คนขับรถมอเตอร์ไซค์รับจ้าง","occTextEn":"Taxi services"}
+{"occId":206,"occRisk":false,"occTextTh":"ช่างเชื่อม","occTextEn":"Welder"}
+{"occId":207,"occRisk":false,"occTextTh":"เจ้าหน้าที่กองถ่ายภาพยนตร์ รายการโทรทัศน์","occTextEn":"Worker-Show business-Movie,TV"}
+{"occId":208,"occRisk":true,"occTextTh":"คนขับรถแท๊กซี่ / คนขับรถมอเตอร์ไซค์รับจ้าง","occTextEn":"Taxi Service Driver"}
 {"occId":209,"occRisk":true,"occTextTh":"คนงานเหมือง / สำรวจหาน้ำมัน","occTextEn":"Mining Worker / Oil Surveyor"}
+{"occId":998,"occRisk":true,"occTextTh":"ตำรวจ / ทหาร / อาสาสมัคร","occTextEn":"Policeman / Military / Volunteer"}
+{"occId":999,"occRisk":false,"occTextTh":"อื่นๆ","occTextEn":"Other"}
