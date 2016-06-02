@@ -62,6 +62,9 @@ public class RLSResource {
     public void getDeductionFile(@PathVariable String collectionFileId, HttpServletResponse response) {
         logger.info("Downloading deduction File");
         CollectionFile collectionFile = rlsService.findOne(collectionFileId);
+        if (collectionFile == null) {
+            return;
+        }
         byte[] excelFileContent = rlsService.createDeductionExcelFile(collectionFile.getDeductionFile());
 
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
