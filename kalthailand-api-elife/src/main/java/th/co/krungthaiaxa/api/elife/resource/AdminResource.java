@@ -17,7 +17,6 @@ import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus;
 import th.co.krungthaiaxa.api.elife.model.error.ErrorCode;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
-import th.co.krungthaiaxa.api.elife.service.BlackListedService;
 import th.co.krungthaiaxa.api.elife.service.DocumentService;
 import th.co.krungthaiaxa.api.elife.service.PolicyService;
 import th.co.krungthaiaxa.api.elife.utils.ExcelUtils;
@@ -49,13 +48,11 @@ public class AdminResource {
     private final static Logger logger = LoggerFactory.getLogger(AdminResource.class);
     private final PolicyService policyService;
     private final DocumentService documentService;
-    private final BlackListedService blackListedService;
 
     @Inject
-    public AdminResource(PolicyService policyService, DocumentService documentService, BlackListedService blackListedService) {
+    public AdminResource(PolicyService policyService, DocumentService documentService) {
         this.policyService = policyService;
         this.documentService = documentService;
-        this.blackListedService = blackListedService;
     }
 
     @ApiIgnore
