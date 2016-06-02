@@ -7,7 +7,6 @@ import com.itextpdf.text.pdf.PdfSignatureAppearance;
 import com.itextpdf.text.pdf.PdfStamper;
 import com.itextpdf.text.pdf.security.*;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -21,12 +20,9 @@ import java.security.cert.Certificate;
 
 @Service
 public class SigningService {
-    @Value("${signing.keystore.path}")
-    private String keystore;
-    @Value("${signing.keystore.password}")
-    private char[] password;
-    @Value("${signing.keystore.alias}")
-    private String alias;
+    private final String keystore = "/elife_krungthai-axa_co_th.p12";
+    private final char[] password = "P@ssw0rd".toCharArray();
+    private final String alias = "elife_krungthai-axa_co_th";
 
     public void sign(InputStream src, OutputStream dest, String reason, String location)
             throws GeneralSecurityException, IOException, DocumentException {
