@@ -218,7 +218,7 @@
         }
 
         function connect() {
-            var socket = new SockJS(window.location.origin + '/api-elife/adminwebsocket/blackList/upload/progress');
+            var socket = new SockJS(window.location.origin + '/api-blacklist/adminwebsocket/blackList/upload/progress');
             stompClient = Stomp.over(socket);
             stompClient.debug = null
             stompClient.connect({}, function (frame) {

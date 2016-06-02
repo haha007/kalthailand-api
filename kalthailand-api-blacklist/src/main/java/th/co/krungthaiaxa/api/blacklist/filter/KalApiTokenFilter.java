@@ -66,6 +66,13 @@ public class KalApiTokenFilter implements Filter {
             return;
         }
 
+        // Very specific URLs that cannot send token when clicking on link to download file
+        // TODO Should be removed
+        if (httpRequest.getRequestURI().contains("/adminwebsocket/blackList/upload/")) {
+            chain.doFilter(httpRequest, response);
+            return;
+        }
+
         // Token might be expired, always have to check for validity
         String authToken = httpRequest.getHeader(this.tokenHeader);
         URI validateRoleURI;
