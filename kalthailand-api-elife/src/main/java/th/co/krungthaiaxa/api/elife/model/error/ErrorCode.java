@@ -16,7 +16,7 @@ public class ErrorCode {
     // Quote
     public static final Error INVALID_QUOTE_PROVIDED = new Error("0301", "Unable to update your quote", "The quote provided as JSon is not a valid quote, probably an incompatibility between mobile and server");
     public static final Error QUOTE_NOT_CREATED = new Error("0302", "The quote has not been updated", "An error occured while trying to create the quote");
-    public static final Error QUOTE_NOT_UPDATED = new Error("0303", "The quote has not been updated", "An error occured while trying to update the quote");
+    public static final Function<String, Error>  QUOTE_NOT_UPDATED = msg -> new Error("0303", "The quote has not been updated", "The quote has not been updated. Error is: " + msg);
     public static final Error QUOTE_DOES_NOT_EXIST_OR_ACCESS_DENIED = new Error("0304", "Unable to access given quote", "The quote could not be found or given mid does not have access to the quote");
     // Policy
     public static final Error POLICY_DOES_NOT_EXIST = new Error("0401", "The policy does not exist", "The policy does not exist");

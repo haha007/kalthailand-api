@@ -181,7 +181,7 @@ public class QuoteResource {
             updatedQuote = quoteService.updateQuote(quote, httpServletRequest.getHeader(tokenHeader));
         } catch (ElifeException e) {
             logger.error("Unable to update quote", e);
-            return new ResponseEntity<>(getJson(ErrorCode.QUOTE_NOT_UPDATED), INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(getJson(ErrorCode.QUOTE_NOT_UPDATED.apply(e.getMessage())), INTERNAL_SERVER_ERROR);
         }
 
         return new ResponseEntity<>(getJson(updatedQuote), OK);

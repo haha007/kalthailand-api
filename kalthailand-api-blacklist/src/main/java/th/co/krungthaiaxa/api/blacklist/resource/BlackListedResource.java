@@ -49,7 +49,7 @@ public class BlackListedResource {
     @ResponseBody
     public ResponseEntity<byte[]> checkBlacklist(
             @ApiParam(value = "The thai ID to check")
-            @RequestParam String thaiId) {
+            @RequestParam(required = false) String thaiId) {
         try {
             blackListedService.checkThaiIdFormat(thaiId);
         } catch (ElifeException e) {
