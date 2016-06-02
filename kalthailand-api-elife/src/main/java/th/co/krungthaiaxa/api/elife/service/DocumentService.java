@@ -332,26 +332,30 @@ public class DocumentService {
         graphics.drawString(new ThaiBahtUtil().getText(policy.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()), 296, 643);
         
         //TMC Agent Code
-        graphics.drawString(policy.getValidationAgentName(), 879, 714);
-        graphics.drawString(policy.getValidationAgentName(), 879, 800);
-        
+        if (policy.getValidationAgentName() != null) {
+            graphics.drawString(policy.getValidationAgentName(), 879, 714);
+            graphics.drawString(policy.getValidationAgentName(), 879, 800);
+        }
+
         //TMC Agent Code
-        char[] tmcAgentCode = policy.getValidationAgentCode().toCharArray();
-        graphics.drawString(String.valueOf(tmcAgentCode[0]), 851, 892);
-        graphics.drawString(String.valueOf(tmcAgentCode[1]), 879, 892);
-        graphics.drawString(String.valueOf(tmcAgentCode[2]), 905, 892);
-        graphics.drawString(String.valueOf(tmcAgentCode[3]), 933, 892);
-        graphics.drawString(String.valueOf(tmcAgentCode[4]), 962, 892);
-        graphics.drawString(String.valueOf(tmcAgentCode[5]), 989, 892);
-        graphics.drawString(String.valueOf(tmcAgentCode[7]), 1025, 892);
-        graphics.drawString(String.valueOf(tmcAgentCode[8]), 1052, 892);
-        graphics.drawString(String.valueOf(tmcAgentCode[10]), 1088, 892);
-        graphics.drawString(String.valueOf(tmcAgentCode[11]), 1116, 892);
-        graphics.drawString(String.valueOf(tmcAgentCode[12]), 1145, 892);
-        graphics.drawString(String.valueOf(tmcAgentCode[13]), 1172, 892);
-        graphics.drawString(String.valueOf(tmcAgentCode[14]), 1200, 892);
-        graphics.drawString(String.valueOf(tmcAgentCode[15]), 1229, 892);
-        
+        if (policy.getValidationAgentCode() != null) {
+            char[] tmcAgentCode = policy.getValidationAgentCode().toCharArray();
+            graphics.drawString(String.valueOf(tmcAgentCode[0]), 851, 892);
+            graphics.drawString(String.valueOf(tmcAgentCode[1]), 879, 892);
+            graphics.drawString(String.valueOf(tmcAgentCode[2]), 905, 892);
+            graphics.drawString(String.valueOf(tmcAgentCode[3]), 933, 892);
+            graphics.drawString(String.valueOf(tmcAgentCode[4]), 962, 892);
+            graphics.drawString(String.valueOf(tmcAgentCode[5]), 989, 892);
+            graphics.drawString(String.valueOf(tmcAgentCode[7]), 1025, 892);
+            graphics.drawString(String.valueOf(tmcAgentCode[8]), 1052, 892);
+            graphics.drawString(String.valueOf(tmcAgentCode[10]), 1088, 892);
+            graphics.drawString(String.valueOf(tmcAgentCode[11]), 1116, 892);
+            graphics.drawString(String.valueOf(tmcAgentCode[12]), 1145, 892);
+            graphics.drawString(String.valueOf(tmcAgentCode[13]), 1172, 892);
+            graphics.drawString(String.valueOf(tmcAgentCode[14]), 1200, 892);
+            graphics.drawString(String.valueOf(tmcAgentCode[15]), 1229, 892);
+        }
+
         graphics.drawString("ไลน์เพย์ (LINE Pay)", 246, 598);
 
         byte[] bytes;

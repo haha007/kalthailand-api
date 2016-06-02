@@ -79,6 +79,7 @@ public class KalApiTokenFilter implements Filter {
         try {
             validateRoleURI = new URI(tokenValidationUrl + "/" + tokenRequiredRole);
         } catch (URISyntaxException e) {
+            logger.error("Invalid URL [" + tokenValidationUrl + "/" + tokenRequiredRole + "]");
             sendErrorToResponse(ErrorCode.UNAUTHORIZED.apply("Unable to check token validity"), (HttpServletResponse) response);
             return;
         }

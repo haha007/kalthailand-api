@@ -9,12 +9,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
-import th.co.krungthaiaxa.api.blacklist.model.ErrorCode;
 import th.co.krungthaiaxa.api.blacklist.model.Error;
+import th.co.krungthaiaxa.api.blacklist.model.ErrorCode;
 import th.co.krungthaiaxa.api.blacklist.utils.JsonUtil;
 
 import javax.servlet.*;
@@ -67,18 +66,13 @@ public class KalApiTokenFilter implements Filter {
             return;
         }
 
-        String authToken = httpRequest.getHeader(this.tokenHeader);
-
-        if (StringUtils.isEmpty(authToken)) {
-            sendErrorToResponse(ErrorCode.UNAUTHORIZED.apply("Provided token doesn't give access to API"), (HttpServletResponse) response);
-            return;
-        }
-
         // Token might be expired, always have to check for validity
+        String authToken = httpRequest.getHeader(this.tokenHeader);
         URI validateRoleURI;
         try {
             validateRoleURI = new URI(tokenValidationUrl + "/" + tokenRequiredRole);
         } catch (URISyntaxException e) {
+            logger.error("Invalid URL [" + tokenValidationUrl + "/" + tokenRequiredRole + "]");
             sendErrorToResponse(ErrorCode.UNAUTHORIZED.apply("Unable to check token validity"), (HttpServletResponse) response);
             return;
         }

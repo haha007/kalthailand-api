@@ -54,7 +54,7 @@ public class ELifeTest {
         // Faking signing by returning pdf document as received and 200 response
         RestTemplate fakeSigningRestTemplate = mock(RestTemplate.class);
         signingClient.setTemplate(fakeSigningRestTemplate);
-        when(fakeSigningRestTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(String.class))).thenAnswer(invocation -> {
+        when(fakeSigningRestTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(String.class))).thenAnswer(invocation -> {
             Object[] args = invocation.getArguments();
             HttpEntity entity = (HttpEntity) args[2];
 
@@ -64,7 +64,7 @@ public class ELifeTest {
         // Faking authorization by always returning success
         RestTemplate fakeAuthRestTemplate = mock(RestTemplate.class);
         kalApiTokenFilter.setTemplate(fakeAuthRestTemplate);
-        when(fakeAuthRestTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(String.class))).thenAnswer(new Answer<ResponseEntity<String>>() {
+        when(fakeAuthRestTemplate.exchange(anyString(), eq(HttpMethod.GET), any(HttpEntity.class), eq(String.class))).thenAnswer(new Answer<ResponseEntity<String>>() {
             @Override
             public ResponseEntity<String> answer(InvocationOnMock invocation) throws Throwable {
                 return new ResponseEntity<>(new String(JsonUtil.getJson(Token.of("123456"))), OK);
@@ -90,7 +90,7 @@ public class ELifeTest {
         // Faking Black list
         RestTemplate fakeBlacklistedTemplate = mock(RestTemplate.class);
         blackListClient.setTemplate(fakeBlacklistedTemplate);
-        when(fakeBlacklistedTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(String.class))).thenAnswer(invocation -> {
+        when(fakeBlacklistedTemplate.exchange(anyString(), eq(HttpMethod.GET), any(HttpEntity.class), eq(String.class))).thenAnswer(invocation -> {
             Object[] args = invocation.getArguments();
             HttpEntity thaiId = (HttpEntity) args[2];
             if ("aMockedBlackListedThaiID".equals(thaiId.getBody())) {

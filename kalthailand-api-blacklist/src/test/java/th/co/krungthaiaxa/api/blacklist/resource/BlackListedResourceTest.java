@@ -52,7 +52,7 @@ public class BlackListedResourceTest {
 
     @Test
     public void should_return_error_when_no_document_received() throws IOException, URISyntaxException {
-        when(fakeAuthRestTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), eq(String.class))).thenReturn(getAuthResponseOk());
+        when(fakeAuthRestTemplate.exchange(anyString(), eq(HttpMethod.GET), any(HttpEntity.class), eq(String.class))).thenReturn(getAuthResponseOk());
 
         HttpEntity entity = new HttpEntity<>(null, getHeadersWithFakeToken());
 

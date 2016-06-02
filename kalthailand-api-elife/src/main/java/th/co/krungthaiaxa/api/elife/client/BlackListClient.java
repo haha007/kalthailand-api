@@ -15,7 +15,7 @@ import th.co.krungthaiaxa.api.elife.utils.JsonUtil;
 
 import java.io.IOException;
 
-import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpMethod.GET;
 
 @Service
 public class BlackListClient {
@@ -35,7 +35,7 @@ public class BlackListClient {
 
         ResponseEntity<String> authResponse;
         try {
-            authResponse = template.exchange(blacklistApiURL, POST, entity, String.class);
+            authResponse = template.exchange(blacklistApiURL, GET, entity, String.class);
         } catch (RestClientException e) {
             throw new ElifeException("Unknown error, unable to checking Blacklisted.", e);
         }

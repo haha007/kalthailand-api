@@ -57,18 +57,20 @@ public class BlackListedService {
             throw new ElifeException("Thai ID cannot be null.");
         }
         if (!StringUtils.isNumeric(thaiId)) {
-            throw new ElifeException(thaiId);
+            throw new ElifeException("Thai ID [" + thaiId + "] is not numeric");
         }
     }
 
     public void checkThaiIdLength(String thaiId) throws ElifeException {
         if (thaiId.length() != 13) {
-            throw new ElifeException(thaiId);
+            throw new ElifeException("Thai ID [" + thaiId + "] is not in the right format");
         }
     }
 
     public boolean isBlackListed(String thaiId) throws ElifeException {
-        return (blackListedRepository.findByIdNumber(thaiId) != null);
+        Boolean result = blackListedRepository.findByIdNumber(thaiId) != null;
+        logger.info("User is blacklisted " + result);
+        return result;
     }
 
     public Page<BlackListed> findAll(Integer pageNumber, Integer pageSize, String searchContent) {
