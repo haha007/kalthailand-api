@@ -1,6 +1,8 @@
 package th.co.krungthaiaxa.api.elife;
 
 import org.apache.commons.lang3.tuple.Triple;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.junit.Before;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -12,10 +14,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.soap.client.core.SoapActionCallback;
-import th.co.krungthaiaxa.api.elife.client.SigningClient;
-import th.co.krungthaiaxa.api.elife.client.Token;
-import th.co.krungthaiaxa.api.elife.filter.KalApiTokenFilter;
 import th.co.krungthaiaxa.api.elife.client.*;
+import th.co.krungthaiaxa.api.elife.filter.KalApiTokenFilter;
 import th.co.krungthaiaxa.api.elife.repository.CDBRepository;
 import th.co.krungthaiaxa.api.elife.repository.LineBCRepository;
 import th.co.krungthaiaxa.api.elife.tmc.TMCClient;
@@ -26,6 +26,7 @@ import th.co.krungthaiaxa.api.elife.tmc.wsdl.ReceivePDFJSONResponse;
 import th.co.krungthaiaxa.api.elife.utils.JsonUtil;
 
 import javax.inject.Inject;
+import java.net.URI;
 import java.nio.charset.Charset;
 import java.util.*;
 
@@ -92,8 +93,9 @@ public class ELifeTest {
         blackListClient.setTemplate(fakeBlacklistedTemplate);
         when(fakeBlacklistedTemplate.exchange(anyString(), eq(HttpMethod.GET), any(HttpEntity.class), eq(String.class))).thenAnswer(invocation -> {
             Object[] args = invocation.getArguments();
-            HttpEntity thaiId = (HttpEntity) args[2];
-            if ("aMockedBlackListedThaiID".equals(thaiId.getBody())) {
+            String url = (String) args[0];
+            List<NameValuePair> params = URLEncodedUtils.parse(new URI(url), "UTF-8");
+            if (params != null && params.size() > 0 && "aMockedBlackListedThaiID".equals(params.get(0).getValue())) {
                 return new ResponseEntity<>("true", HttpStatus.OK);
             }
             else {

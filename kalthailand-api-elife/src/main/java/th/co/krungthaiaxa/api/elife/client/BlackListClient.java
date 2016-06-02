@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 import th.co.krungthaiaxa.api.elife.exception.ElifeException;
 import th.co.krungthaiaxa.api.elife.utils.JsonUtil;
 
@@ -31,11 +32,13 @@ public class BlackListClient {
         httpHeaders.add("Content-Type", "application/json");
         httpHeaders.add(tokenHeader, token);
 
-        HttpEntity<String> entity = new HttpEntity<>(thaiId, httpHeaders);
+        HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(blacklistApiURL)
+                .queryParam("thaiId", thaiId);
 
         ResponseEntity<String> authResponse;
         try {
-            authResponse = template.exchange(blacklistApiURL, GET, entity, String.class);
+            authResponse = template.exchange(uriBuilder.toUriString(), GET, entity, String.class);
         } catch (RestClientException e) {
             throw new ElifeException("Unknown error, unable to checking Blacklisted.", e);
         }
