@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.xml.sax.SAXException;
-import springfox.documentation.annotations.ApiIgnore;
+import th.co.krungthaiaxa.api.blacklist.data.BlackListed;
 import th.co.krungthaiaxa.api.blacklist.exception.ElifeException;
 import th.co.krungthaiaxa.api.blacklist.model.Error;
 import th.co.krungthaiaxa.api.blacklist.model.ErrorCode;
@@ -67,22 +67,32 @@ public class BlackListedResource {
         return new ResponseEntity<>(getJson(blackListedService.isBlackListed(thaiId)), OK);
     }
 
-    @ApiIgnore
-    @RequestMapping(value = "/admin/blackList", produces = APPLICATION_JSON_VALUE, method = GET)
+    @ApiOperation(value = "List of blacklist", notes = "Gets a sub list of blacklisted Thai ID", response = BlackListed.class, responseContainer = "List")
+    @RequestMapping(value = "/blacklist", produces = APPLICATION_JSON_VALUE, method = GET)
     @ResponseBody
-    public ResponseEntity<byte[]> blackList(@RequestParam Integer pageNumber, @RequestParam Integer pageSize, @RequestParam String searchContent) {
+    public ResponseEntity<byte[]> blackList(
+            @ApiParam(required = true, value = "Page number (starts at 0)")
+            @RequestParam Integer pageNumber,
+            @ApiParam(required = true, value = "Number of elements per page")
+            @RequestParam Integer pageSize,
+            @ApiParam(required = true, value = "If not empty, filter results of people with thai ID containing this parameter")
+            @RequestParam String searchContent) {
         return new ResponseEntity<>(getJson(blackListedService.findAll(pageNumber, pageSize, searchContent)), OK);
     }
 
-    @ApiIgnore
-    @RequestMapping(value = "/admin/blackList/upload", produces = APPLICATION_JSON_VALUE, method = POST)
+    @ApiOperation(value = "Upload blacklist file", notes = "Uploads an Excel file (must be a xlsx file) containing the blacklisted people.", response = BlackListed.class, responseContainer = "List")
+    @ApiResponses({
+            @ApiResponse(code = 406, message = "If Excel file is not in invalid format", response = Error.class)
+    })
+    @RequestMapping(value = "/blacklist/upload", produces = APPLICATION_JSON_VALUE, method = POST)
     @ResponseBody
-    public ResponseEntity<byte[]> uploadBlackListFile(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<byte[]> uploadBlackListFile(
+            @ApiParam(required = true, value = "The Excel file to upload")
+            @RequestParam("file") MultipartFile file) {
         try {
             return new ResponseEntity<>(getJson(blackListedService.readBlackListedExcelFile(file.getInputStream())), CREATED);
         } catch (IOException | SAXException | OpenXML4JException | ParserConfigurationException | IllegalArgumentException | ElifeException e) {
             return new ResponseEntity<>(getJson(ErrorCode.INVALID_BLACKLIST_FILE.apply(e.getMessage())), NOT_ACCEPTABLE);
         }
     }
-
 }

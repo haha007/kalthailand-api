@@ -146,16 +146,16 @@
             </div>
             <div class="row" ng-show="policyDetail">
                 <div class="col-sm-4">
-                    <a ng-href="{{apiELifeUrl}}/admin/policies/{{policyDetail.policyId}}/document/APPLICATION_FORM/download">Application Form (not validated)</a>
+                    <a ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/APPLICATION_FORM/download">Application Form (not validated)</a>
                 </div>
                 <div class="col-sm-4" ng-show="policyDetail.status == 'VALIDATED'">
-                    <a ng-href="{{apiELifeUrl}}/admin/policies/{{policyDetail.policyId}}/document/APPLICATION_FORM_VALIDATED/download">Application Form (validated)</a>
+                    <a ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/APPLICATION_FORM_VALIDATED/download">Application Form (validated)</a>
                 </div>
                 <div class="col-sm-2" ng-show="policyDetail.premiumsData.financialScheduler.periodicity.code == 'EVERY_MONTH'">
-                    <a ng-href="{{apiELifeUrl}}/admin/policies/{{policyDetail.policyId}}/document/DA_FORM/download">DA Form</a>
+                    <a ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/DA_FORM/download">DA Form</a>
                 </div>
                 <div class="col-sm-2" ng-show="policyDetail.status == 'VALIDATED'">
-                    <a ng-href="{{apiELifeUrl}}/admin/policies/{{policyDetail.policyId}}/document/ERECEIPT_PDF/download">eReceipt</a>
+                    <a ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/ERECEIPT_PDF/download">eReceipt</a>
                 </div>
             </div>
             <div class="page-header" ng-show="policyDetail && policyDetail.status != 'VALIDATED'">

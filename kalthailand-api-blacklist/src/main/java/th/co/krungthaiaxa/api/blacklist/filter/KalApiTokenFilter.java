@@ -68,7 +68,7 @@ public class KalApiTokenFilter implements Filter {
 
         // Very specific URLs that cannot send token when clicking on link to download file
         // TODO Should be removed
-        if (httpRequest.getRequestURI().contains("/adminwebsocket/blackList/upload/")) {
+        if (httpRequest.getRequestURI().contains("/adminwebsocket/blacklist/upload/")) {
             chain.doFilter(httpRequest, response);
             return;
         }
