@@ -50,7 +50,10 @@ public class SwaggerMerger {
         Swagger signingSwagger = new SwaggerParser().read("api-signing-swagger.json");
         addSwagger(mergedSwagger, signingSwagger);
 
-        mergedSwagger.setPaths(getAllPaths(authSwagger, elifeSwagger, signingSwagger));
+        Swagger blacklistSwagger = new SwaggerParser().read("api-blacklist-swagger.json");
+        addSwagger(mergedSwagger, blacklistSwagger);
+
+        mergedSwagger.setPaths(getAllPaths(authSwagger, elifeSwagger, signingSwagger, blacklistSwagger));
 
         File result = new File("apis-TH-KAL.json");
         try {

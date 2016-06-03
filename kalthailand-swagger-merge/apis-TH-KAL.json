@@ -28,6 +28,9 @@
   }, {
     "name" : "quote-resource",
     "description" : "Quote Resource"
+  }, {
+    "name" : "black-listed-resource",
+    "description" : "Black Listed Resource"
   } ],
   "paths" : {
     "/auth" : {
@@ -87,6 +90,37 @@
           },
           "406" : {
             "description" : "If token does not give access to the role",
+            "schema" : {
+              "$ref" : "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/blacklist/isblacklist" : {
+      "get" : {
+        "tags" : [ "black-listed-resource" ],
+        "summary" : "Checking Thai ID is blacklisted",
+        "description" : "Checking is the given Thai ID is blacklisted. Response is Boolean true for is blacklisted and false otherwise",
+        "operationId" : "checkBlacklistUsingGET",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "thaiId",
+          "in" : "query",
+          "description" : "The thai ID to check",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "type" : "boolean"
+            }
+          },
+          "406" : {
+            "description" : "If given thai ID is not in proper format",
             "schema" : {
               "$ref" : "#/definitions/Error"
             }
@@ -341,6 +375,84 @@
       }
     },
     "/policies" : {
+      "get" : {
+        "tags" : [ "policy-resource" ],
+        "summary" : "List of policies",
+        "description" : "Gets a list of policies.",
+        "operationId" : "getAllPoliciesUsingGET",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "pageNumber",
+          "in" : "query",
+          "description" : "Page number (starts at 0)",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int32"
+        }, {
+          "name" : "pageSize",
+          "in" : "query",
+          "description" : "Number of elements per page",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int32"
+        }, {
+          "name" : "policyId",
+          "in" : "query",
+          "description" : "Part of policy Id to filter with",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "productType",
+          "in" : "query",
+          "description" : "The product type to filter with",
+          "required" : false,
+          "type" : "string",
+          "enum" : [ "PRODUCT_10_EC", "PRODUCT_IBEGIN", "PRODUCT_IFINE", "PRODUCT_IGEN" ]
+        }, {
+          "name" : "status",
+          "in" : "query",
+          "description" : "The policy status to filter with",
+          "required" : false,
+          "type" : "string",
+          "enum" : [ "PENDING_PAYMENT", "PENDING_VALIDATION", "VALIDATED", "CANCELED" ]
+        }, {
+          "name" : "nonEmptyAgentCode",
+          "in" : "query",
+          "description" : "True to return only Policies with previous agent code, false to return Policies with empty agent codes, empty to return all Policies",
+          "required" : false,
+          "type" : "boolean"
+        }, {
+          "name" : "fromDate",
+          "in" : "query",
+          "description" : "To filter Policies starting after the given date",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "toDate",
+          "in" : "query",
+          "description" : "To filter Policies ending before the given date",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/Policy"
+              }
+            }
+          },
+          "406" : {
+            "description" : "If Excel file is not in invalid format",
+            "schema" : {
+              "$ref" : "#/definitions/Error"
+            }
+          }
+        }
+      },
       "post" : {
         "tags" : [ "policy-resource" ],
         "summary" : "Creates a policy",
@@ -386,6 +498,128 @@
         }
       }
     },
+    "/policies/extract/download" : {
+      "get" : {
+        "tags" : [ "policy-resource" ],
+        "summary" : "Policies extract",
+        "description" : "Gets the policy extract for commission calculation. Result is an Excel file",
+        "operationId" : "getPoliciesExcelFileUsingGET",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "*/*" ],
+        "parameters" : [ {
+          "name" : "policyId",
+          "in" : "query",
+          "description" : "Part of policy Id to filter with",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "productType",
+          "in" : "query",
+          "description" : "The product type to filter with",
+          "required" : false,
+          "type" : "string",
+          "enum" : [ "PRODUCT_10_EC", "PRODUCT_IBEGIN", "PRODUCT_IFINE", "PRODUCT_IGEN" ]
+        }, {
+          "name" : "status",
+          "in" : "query",
+          "description" : "The policy status to filter with",
+          "required" : false,
+          "type" : "string",
+          "enum" : [ "PENDING_PAYMENT", "PENDING_VALIDATION", "VALIDATED", "CANCELED" ]
+        }, {
+          "name" : "nonEmptyAgentCode",
+          "in" : "query",
+          "description" : "True to return only Policies with previous agent code, false to return Policies with empty agent codes, empty to return all Policies",
+          "required" : false,
+          "type" : "boolean"
+        }, {
+          "name" : "fromDate",
+          "in" : "query",
+          "description" : "To filter Policies starting after the given date",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "toDate",
+          "in" : "query",
+          "description" : "To filter Policies ending before the given date",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/Policy"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/policies/{policyId}" : {
+      "get" : {
+        "tags" : [ "policy-resource" ],
+        "summary" : "Policy details",
+        "description" : "Gets the details of a policy.",
+        "operationId" : "getPolicyUsingGET",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "policyId",
+          "in" : "path",
+          "description" : "The policy ID",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/Policy"
+            }
+          },
+          "404" : {
+            "description" : "If the policy is not found",
+            "schema" : {
+              "$ref" : "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/policies/{policyId}/document/{documentType}/download" : {
+      "get" : {
+        "tags" : [ "policy-resource" ],
+        "summary" : "Download document",
+        "description" : "Download a document attached to a policy. Response's content-type is 'application/pdf'",
+        "operationId" : "downloadDocumentUsingGET",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "policyId",
+          "in" : "path",
+          "description" : "policyId",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "documentType",
+          "in" : "path",
+          "description" : "documentType",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "type" : "string"
+            }
+          }
+        }
+      }
+    },
     "/policies/{policyId}/payments" : {
       "get" : {
         "tags" : [ "policy-resource" ],
@@ -413,6 +647,50 @@
           },
           "404" : {
             "description" : "If the policy doesn't exist",
+            "schema" : {
+              "$ref" : "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/policies/{policyId}/reminder/{reminderId}" : {
+      "get" : {
+        "tags" : [ "policy-resource" ],
+        "summary" : "Send notifications",
+        "description" : "Sends pre-defined notifications to insured on different channels (SMS, eMail, Line Push notification). Content of notification and channels of notifications depends on reminder ID.",
+        "operationId" : "sendReminderUsingGET",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "policyId",
+          "in" : "path",
+          "description" : "The policy ID",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "reminderId",
+          "in" : "path",
+          "description" : "The reminder ID. 1: reminder when user is not responding. 2: when phone number is wrong",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int32"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "type" : "string"
+            }
+          },
+          "404" : {
+            "description" : "If the policy is not found",
+            "schema" : {
+              "$ref" : "#/definitions/Error"
+            }
+          },
+          "500" : {
+            "description" : "If one of the notifications was not sent",
             "schema" : {
               "$ref" : "#/definitions/Error"
             }
@@ -499,6 +777,12 @@
           "name" : "agentCode",
           "in" : "query",
           "description" : "The code of validating agent",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "agentName",
+          "in" : "query",
+          "description" : "The name of validating agent",
           "required" : true,
           "type" : "string"
         }, {
@@ -915,6 +1199,10 @@
         "validationAgentCode" : {
           "type" : "string",
           "description" : "The agent code of the agent who validate the policy"
+        },
+        "validationAgentName" : {
+          "type" : "string",
+          "description" : "The name of the agent who validate the policy"
         }
       },
       "description" : "Data concerning the policy"
@@ -1791,7 +2079,7 @@
     },
     "Payment" : {
       "type" : "object",
-      "required" : [ "amount", "dueDate", "orderId", "paymentId", "status", "transactionId" ],
+      "required" : [ "amount", "dueDate", "orderId", "paymentId", "policyId", "status", "transactionId" ],
       "properties" : {
         "amount" : {
           "description" : "The payment's amount.",
@@ -1821,6 +2109,10 @@
           "items" : {
             "$ref" : "#/definitions/PaymentInformation"
           }
+        },
+        "policyId" : {
+          "type" : "string",
+          "description" : "The id of the policy the payment refers to"
         },
         "registrationKey" : {
           "type" : "string",
