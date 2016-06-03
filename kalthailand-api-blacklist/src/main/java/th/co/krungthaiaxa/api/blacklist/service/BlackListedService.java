@@ -120,7 +120,7 @@ public class BlackListedService {
         @Override
         public void endDocument() throws SAXException {
             saveBlackListed();
-            template.convertAndSend("/topic/blackList/upload/progress/result", new String(getJson(new UploadProgress(numberOfLinesAdded, numberOfDuplicateLines, numberOfEmptyLines, numberOfLines))));
+            template.convertAndSend("/topic/blacklist/upload/progress/result", new String(getJson(new UploadProgress(numberOfLinesAdded, numberOfDuplicateLines, numberOfEmptyLines, numberOfLines))));
             if (numberOfLinesAdded == 0) {
                 throw new ElifeException("No line has been found to add in the black list. Make sure the Excel file contains 2 sheets and that second sheet has (exact) headers " + EXPECTED_HEADERS + ".");
             } else {
@@ -157,7 +157,7 @@ public class BlackListedService {
                     currentLineContent = "";
                     currentLineNumber = rowNumber;
                     if (numberOfLinesAdded % 1000 == 0) {
-                        template.convertAndSend("/topic/blackList/upload/progress/result", new String(getJson(new UploadProgress(numberOfLinesAdded, numberOfDuplicateLines, numberOfEmptyLines, numberOfLines))));
+                        template.convertAndSend("/topic/blacklist/upload/progress/result", new String(getJson(new UploadProgress(numberOfLinesAdded, numberOfDuplicateLines, numberOfEmptyLines, numberOfLines))));
                     }
                 }
             }

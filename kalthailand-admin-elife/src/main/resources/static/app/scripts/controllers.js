@@ -85,7 +85,7 @@
 
                     $scope.policies = successResponse;
                     $scope.errorMessage = null;
-                    $scope.downloadUrl = window.location.origin + '/api-elife/admin/policies/extract/download?';
+                    $scope.downloadUrl = window.location.origin + '/api-elife/policies/extract/download?';
                     if ($scope.policyIdSearch) {
                         $scope.downloadUrl += 'policyId=' + $scope.policyIdSearch;
                     }
@@ -218,11 +218,11 @@
         }
 
         function connect() {
-            var socket = new SockJS(window.location.origin + '/api-blacklist/adminwebsocket/blackList/upload/progress');
+            var socket = new SockJS(window.location.origin + '/api-blacklist/adminwebsocket/blacklist/upload/progress');
             stompClient = Stomp.over(socket);
             stompClient.debug = null
             stompClient.connect({}, function (frame) {
-                stompClient.subscribe('/topic/blackList/upload/progress/result', function (response) {
+                stompClient.subscribe('/topic/blacklist/upload/progress/result', function (response) {
                     updateProgressBar(angular.fromJson(response.body), false);
                 });
             });

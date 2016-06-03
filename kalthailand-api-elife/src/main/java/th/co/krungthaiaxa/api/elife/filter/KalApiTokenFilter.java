@@ -62,9 +62,9 @@ public class KalApiTokenFilter implements Filter {
 
         // Very specific URLs that cannot send token when clicking on link to download file
         // TODO Should be removed
-        if (httpServletRequest.getRequestURI().endsWith("/admin/policies/extract/download") ||
+        if (httpServletRequest.getRequestURI().endsWith("/policies/extract/download") ||
                 httpServletRequest.getRequestURI().contains("/RLS/deduction/download/") ||
-                (httpServletRequest.getRequestURI().contains("/admin/policies/") &&
+                (httpServletRequest.getRequestURI().contains("/policies/") &&
                         httpServletRequest.getRequestURI().contains("/document/") &&
                         httpServletRequest.getRequestURI().contains("/download"))) {
             chain.doFilter(httpServletRequest, response);

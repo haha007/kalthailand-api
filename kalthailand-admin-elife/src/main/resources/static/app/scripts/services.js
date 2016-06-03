@@ -37,7 +37,7 @@
     });
 
     app.factory('BlackListFileUpload', function ($resource) {
-        return $resource(window.location.origin + '/api-blacklist/admin/blackList/upload', {}, {
+        return $resource(window.location.origin + '/api-blacklist/blacklist/upload', {}, {
             save: {
                 method: 'POST',
                 transformRequest: function (data) {
@@ -58,19 +58,19 @@
     });
 
     app.factory('Dashboard', function ($resource) {
-        return $resource(window.location.origin + '/api-elife/admin/policies', { pageNumber: '@pageNumber', pageSize: '@pageSize' }, {});
+        return $resource(window.location.origin + '/api-elife/policies', { pageNumber: '@pageNumber', pageSize: '@pageSize' }, {});
     });
 
     app.factory('BlackList', function ($resource) {
-        return $resource(window.location.origin + '/api-blacklist/admin/blackList', { pageNumber: '@pageNumber', pageSize: '@pageSize' }, {});
+        return $resource(window.location.origin + '/api-blacklist/blacklist', { pageNumber: '@pageNumber', pageSize: '@pageSize' }, {});
     });
 
     app.factory('PolicyDetail', function ($resource) {
-        return $resource(window.location.origin + '/api-elife/admin/policies/:id', { id: '@id' }, {});
+        return $resource(window.location.origin + '/api-elife/policies/:id', { id: '@id' }, {});
     });
 
     app.factory('PolicyNotification', function ($resource) {
-        return $resource(window.location.origin + '/api-elife/admin/policies/:id/reminder/:reminderId', { id: '@id', reminderId: '@reminderId' }, {});
+        return $resource(window.location.origin + '/api-elife/policies/:id/reminder/:reminderId', { id: '@id', reminderId: '@reminderId' }, {});
     });
 
     app.factory('httpRequestInterceptor', function ($localStorage) {
