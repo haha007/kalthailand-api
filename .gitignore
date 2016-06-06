@@ -5,3 +5,4 @@
 **/*.classpath
 **/target
 **/build
+**/*.tern-project
