@@ -184,7 +184,7 @@ public class EmailService {
                 .replace("%PAYMENT_YEAR%", String.valueOf(pol.getCommonData().getNbOfYearsOfPremium()))
                 .replace("%PAYMENT_MODE%", messageSource.getMessage("payment.mode." + pol.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().toString(), null, thLocale))
                 .replace("%SUM_INSURE%", sumInsure)
-                .replace("%PREMIUM%", String.valueOf(pol.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()));
+                .replace("%PREMIUM%", (new DecimalFormat("#,##0.00")).format(pol.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()));
     }
 
     private String getQuoteiFineEmailContent(Quote quote) throws IOException {
