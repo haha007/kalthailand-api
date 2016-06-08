@@ -29,6 +29,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import static java.nio.charset.Charset.forName;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.OK;
@@ -50,8 +52,12 @@ public class LineService {
     private String lineAppId;
     @Value("${line.app.notification.url}")
     private String lineAppNotificationUrl;
-    @Value("${line.app.notification.accesstoken}")
-    private String lineAppNotificationAccessToken;
+    private final LineTokenService lineTokenService;
+    
+    @Inject
+    public LineService(LineTokenService lineTokenService){
+    	this.lineTokenService = lineTokenService;
+    }
 
     public void sendPushNotificationOld(String messageContent, String... mids) throws IOException {
         try {
@@ -63,7 +69,7 @@ public class LineService {
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-            conn.setRequestProperty("X-Line-ChannelToken", lineAppNotificationAccessToken);
+            conn.setRequestProperty("X-Line-ChannelToken", lineTokenService.getLineToken().getAccessToken());
             conn.setDoOutput(true);
             ObjectMapper mapper = new ObjectMapper();
 
@@ -128,7 +134,7 @@ public class LineService {
         linePushNotificationRequest.setContent(linePushNotificationContentRequest);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.set("X-Line-ChannelToken", lineAppNotificationAccessToken);
+        headers.set("X-Line-ChannelToken", lineTokenService.getLineToken().getAccessToken());
         headers.set("Content-Type", "application/json; charset=UTF-8");
 
         HttpEntity<String> entity = new HttpEntity<>(new String(getJson(linePushNotificationRequest), forName("UTF-8")), headers);
