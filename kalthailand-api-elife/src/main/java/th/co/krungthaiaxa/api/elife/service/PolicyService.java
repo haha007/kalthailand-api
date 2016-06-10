@@ -207,15 +207,12 @@ public class PolicyService {
         if (insuredId.isPresent()) {
             Optional<Triple<String, String, String>> agent = cdbClient.getExistingAgentCode(insuredId.get().getId(), insuredDOB);
             if (agent.isPresent()) {
-                String agent1 = agent.get().getMiddle();
-                if (agent1 != null) {
-                    policy.getInsureds().get(0).addInsuredPreviousAgent(agent1);
-                }
-
-                String agent2 = agent.get().getRight();
-                if (agent2 != null) {
-                    policy.getInsureds().get(0).addInsuredPreviousAgent(agent2);
-                }
+            	String previousPolicy = agent.get().getLeft();
+            	String agent1 = agent.get().getMiddle();
+            	String agent2 = agent.get().getRight();
+            	policy.getInsureds().get(0).addInsuredPreviousAgent((previousPolicy!=null)?previousPolicy:"");
+            	policy.getInsureds().get(0).addInsuredPreviousAgent((agent1!=null)?agent1:"");
+            	policy.getInsureds().get(0).addInsuredPreviousAgent((agent2!=null)?agent2:"");                
             }
         }
 
