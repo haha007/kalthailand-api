@@ -104,7 +104,10 @@ public class RLSService {
         return collectionFileRepository.findAll(new Sort(Sort.Direction.DESC, "receivedDate"));
     }
 
-    @Scheduled(cron = "0 0 11 * * ?")
+    
+    //second, minute, hour, day of month, month, day(s) of week
+    //@Scheduled(cron = "0 0 11 * * ?")
+    @Scheduled(cron = "0 0 * * * *")
     public void processLatestCollectionFile() {
         List<CollectionFile> collectionFiles = collectionFileRepository.findByJobStartedDateNull();
         logger.info("Found [" + collectionFiles.size() + "] collection(s) file to process.");
