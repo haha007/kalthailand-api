@@ -70,6 +70,12 @@ public class CDBRepository {
         } else {
             BigDecimal agent1 = (BigDecimal) map.get("pagt1");
             BigDecimal agent2 = (BigDecimal) map.get("pagt2");
+            if(agent1.equals("0")){
+            	agent1 = null;
+            }
+            if(agent2.equals("0")){
+            	agent2 = null;
+            }
             return Optional.of(Triple.of((String) map.get("pno"), agent1.toString(), agent2.toString()));
         }
     }
