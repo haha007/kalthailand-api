@@ -480,29 +480,10 @@ public class PolicyResource {
     }
 
     private void createPolicyExtractExcelFileLine(Sheet sheet, Policy policy) {
-        // Extracted Excel file should contain 'NULL' by default
-        String agentCode1 = "NULL";
-        String agentCode2 = "NULL";
-        String validationAgentCode = "NULL";
-
-        if (policy.getInsureds().get(0).getInsuredPreviousAgents().size() >= 1) {
-            agentCode1 = policy.getInsureds().get(0).getInsuredPreviousAgents().get(0);
-        }
-        if (policy.getInsureds().get(0).getInsuredPreviousAgents().size() >= 2) {
-            agentCode2 = policy.getInsureds().get(0).getInsuredPreviousAgents().get(1);
-        }
-        if (policy.getValidationAgentCode() != null) {
-            validationAgentCode = policy.getValidationAgentCode();
-        }
-
         ExcelUtils.appendRow(sheet,
                 text(policy.getPolicyId()),
-                text(policy.getCommonData().getProductId()),
-                text(policy.getPremiumsData().getFinancialScheduler().getModalAmount().toString()),
-                text(policy.getStatus().name()),
-                text(ofPattern("yyyy-MM-dd").format(policy.getInsureds().get(0).getStartDate())),
-                text(agentCode1),
-                text(agentCode2),
-                text(validationAgentCode));
+                text(policy.getInsureds().get(0).getInsuredPreviousInformations().get(0)),
+                text(policy.getInsureds().get(0).getInsuredPreviousInformations().get(1)),
+                text(policy.getInsureds().get(0).getInsuredPreviousInformations().get(2)));
     }
 }

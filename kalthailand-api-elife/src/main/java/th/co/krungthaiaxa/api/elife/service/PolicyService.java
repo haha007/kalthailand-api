@@ -210,9 +210,9 @@ public class PolicyService {
             	String previousPolicy = agent.get().getLeft();
             	String agent1 = agent.get().getMiddle();
             	String agent2 = agent.get().getRight();
-            	policy.getInsureds().get(0).addInsuredPreviousAgent((previousPolicy!=null)?previousPolicy:"");
-            	policy.getInsureds().get(0).addInsuredPreviousAgent((agent1!=null)?agent1:"");
-            	policy.getInsureds().get(0).addInsuredPreviousAgent((agent2!=null)?agent2:"");                
+            	policy.getInsureds().get(0).addInsuredPreviousInformation((previousPolicy!=null)?previousPolicy:"NULL");
+            	policy.getInsureds().get(0).addInsuredPreviousInformation((agent1!=null)?agent1:"NULL");
+            	policy.getInsureds().get(0).addInsuredPreviousInformation((agent2!=null)?agent2:"NULL");                
             }
         }
 
