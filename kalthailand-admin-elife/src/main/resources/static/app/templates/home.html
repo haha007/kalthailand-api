@@ -98,6 +98,7 @@
                 <table class="table table-bordered table-striped table-hover table-condensed">
                     <tr>
                         <th>Policy ID</th>
+                        <th>Previous Policy ID</th>
                         <th>Product type</th>
                         <th>Premium</th>
                         <th>Status</th>
@@ -108,16 +109,17 @@
                     </tr>
                     <tr ng-repeat="item in policies.content">
                         <td><a href="#policy-detail?policyID={{ item.policyId }}">{{ item.policyId }}</a></td>
+                        <td>{{ item. insureds[0].insuredPreviousInformations[0]}}</td>
                         <td>{{ item.commonData.productName }}</td>
                         <td>{{ item.premiumsData.financialScheduler.modalAmount.value }} {{ item.premiumsData.financialScheduler.modalAmount.currencyCode }}</td>
                         <td>{{ item.status }}</td>
                         <td>{{ item.insureds[0].startDate | date:'yyyy-MM-dd' }}</td>
-                        <td>{{ item.insureds[0].insuredPreviousAgents[0] }}</td>
-                        <td>{{ item.insureds[0].insuredPreviousAgents[1] }}</td>
+                        <td>{{ item.insureds[0].insuredPreviousInformations[1] }}</td>
+                        <td>{{ item.insureds[0].insuredPreviousInformations[2] }}</td>
                         <td>{{ item.validationAgentCode }}</td>
                     </tr>
-                </table>
-                Page {{ currentPage }} / {{ totalPages }}. Number of items: {{ totalItems }} <a href="{{downloadUrl}}">Download as Excel File</a>.
+                </table>  
+                Page {{ currentPage }} / {{ otalPages }}. Number of items: {{ totalItems }} <a href="{{downloadUrl}}">Download as Excel File</a>.
             </div>
         </div>
         <!-- END Page specific stuff -->

@@ -42,7 +42,7 @@ public class PolicyCriteriaRepository {
                 .include("premiumsData.financialScheduler.modalAmount")
                 .include("status")
                 .include("insureds.startDate")
-                .include("insureds.insuredPreviousAgents")
+                .include("insureds.insuredPreviousInformations")
                 .include("validationAgentCode");
         return mongoOperations.find(query, Policy.class, "policy");
     }
@@ -60,9 +60,9 @@ public class PolicyCriteriaRepository {
         }
         if (nonEmptyAgentCode != null) {
             if (nonEmptyAgentCode) {
-                query.addCriteria(where("insureds.insuredPreviousAgents").not().size(0));
+                query.addCriteria(where("insureds.insuredPreviousInformations").not().size(0));
             } else {
-                query.addCriteria(where("insureds.insuredPreviousAgents").size(0));
+                query.addCriteria(where("insureds.insuredPreviousInformations").size(0));
             }
         }
         if (fromDate != null && toDate == null) {
