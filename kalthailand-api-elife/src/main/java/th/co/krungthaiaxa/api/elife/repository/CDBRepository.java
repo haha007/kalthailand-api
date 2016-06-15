@@ -37,7 +37,9 @@ public class CDBRepository {
             logger.debug(String.format("idCard is %1$s", idCard));
             logger.debug(String.format("dateOfBirth is %1$s", dateOfBirth));
         }
-        String sql = "select top 1 pno, pagt1, pagt2 " +
+        String sql = "select top 1 pno, " +
+    			" case cast(coalesce(pagt1,0) as varchar) when '0' then 'NULL' else cast(coalesce(pagt1,0) as varchar) end as pagt1, " + 
+    			" case cast(coalesce(pagt2,0) as varchar) when '0' then 'NULL' else cast(coalesce(pagt2,0) as varchar) end as pagt2 " +
                 "from lfkludta_lfppml " +
                 "where left(coalesce(pagt1,'0'),1) not in ('2','4') " +
                 "and left(coalesce(pagt2,'0'),1) not in ('2','4') " +
@@ -66,17 +68,9 @@ public class CDBRepository {
         }
 
         if (map == null) {
-            return Optional.empty();
+        	return Optional.of(Triple.of("NULL", "NULL", "NULL"));
         } else {
-            BigDecimal agent1 = (BigDecimal) map.get("pagt1");
-            BigDecimal agent2 = (BigDecimal) map.get("pagt2");
-            if(agent1.equals("0")){
-            	agent1 = null;
-            }
-            if(agent2.equals("0")){
-            	agent2 = null;
-            }
-            return Optional.of(Triple.of((String) map.get("pno"), agent1.toString(), agent2.toString()));
+            return Optional.of(Triple.of((String) map.get("pno"), (String) map.get("pagt1"), (String) map.get("pagt2")));
         }
     }
 

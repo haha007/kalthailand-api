@@ -148,13 +148,9 @@ public class PolicyResource {
         Sheet sheet = workbook.createSheet("PolicyExtract_" + now);
         ExcelUtils.appendRow(sheet,
                 text("Policy ID"),
-                text("Product Type"),
-                text("Premium"),
-                text("Status"),
-                text("Start date"),
+                text("Previous Policy ID"),
                 text("Agent Code 1"),
-                text("Agent Code 2"),
-                text("Validation Agent Code"));
+                text("Agent Code 2"));
         policies.stream().forEach(tmp -> createPolicyExtractExcelFileLine(sheet, tmp));
         ExcelUtils.autoWidthAllColumns(workbook);
 
@@ -480,10 +476,11 @@ public class PolicyResource {
     }
 
     private void createPolicyExtractExcelFileLine(Sheet sheet, Policy policy) {
-        ExcelUtils.appendRow(sheet,
+    	ExcelUtils.appendRow(sheet,
                 text(policy.getPolicyId()),
                 text(policy.getInsureds().get(0).getInsuredPreviousInformations().get(0)),
                 text(policy.getInsureds().get(0).getInsuredPreviousInformations().get(1)),
                 text(policy.getInsureds().get(0).getInsuredPreviousInformations().get(2)));
     }
+    
 }
