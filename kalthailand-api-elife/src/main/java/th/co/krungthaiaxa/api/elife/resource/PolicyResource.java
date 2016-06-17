@@ -336,7 +336,9 @@ public class PolicyResource {
             @RequestParam String paymentId,
             @ApiParam(value = "The order id used to book the payment", required = true)
             @RequestParam String orderId,
-            @ApiParam(value = "The transaction id to use to confirm the payment. Must be sent of status id SUCCESS", required = false)
+            @ApiParam(value = "The registration key to use to confirm the payment. If not sent, policy status won't be updated.", required = false)
+            @RequestParam(required = false) Optional<String> registrationKey,
+            @ApiParam(value = "The transaction id to use to confirm the payment. If not sent, policy status won't be updated.", required = false)
             @RequestParam(required = false) Optional<String> transactionId) {
         if (isEmpty(orderId)) {
             logger.error("The order ID was not received");
@@ -366,7 +368,7 @@ public class PolicyResource {
         }
 
         // Update the payment
-        policyService.updatePayment(payment.get(), orderId, transactionId.get());
+        policyService.updatePayment(payment.get(), orderId, transactionId.get(), registrationKey.get());
         // Update the policy status
         policyService.updatePolicyAfterFirstPaymentValidated(policy.get());
 

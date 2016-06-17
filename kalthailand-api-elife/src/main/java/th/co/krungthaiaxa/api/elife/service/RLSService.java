@@ -247,7 +247,7 @@ public class RLSService {
         }
 
         // If payment isn't found, Collection file "always win", and the payment received in the collection has to go through
-        // But for the payment to go through, we need to find the registration key that used previously
+        // But for the payment to go through, we need to find the registration key that was used previously
         Optional<String> lastRegistrationKey = policy.get().getPayments()
                 .stream()
                 .filter(tmp -> tmp.getRegistrationKey() != null)

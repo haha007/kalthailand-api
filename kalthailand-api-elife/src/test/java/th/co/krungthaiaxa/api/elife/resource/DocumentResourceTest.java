@@ -193,6 +193,7 @@ public class DocumentResourceTest extends ELifeTest {
         UriComponentsBuilder updatePaymentBuilder = UriComponentsBuilder.fromUri(paymentURI)
                 .queryParam("paymentId", policy.getPayments().get(0).getPaymentId())
                 .queryParam("orderId", "myOrderId")
+                .queryParam("registrationKey", "myRegistrationKey")
                 .queryParam("transactionId", "myTransactionId");
         ResponseEntity<String> paymentResponse = template.exchange(updatePaymentBuilder.toUriString(), PUT, null, String.class);
         assertThat(paymentResponse.getStatusCode().value()).isEqualTo(OK.value());

@@ -135,7 +135,8 @@ public class PolicyService {
         return policy;
     }
 
-    public void updatePayment(Payment payment, String orderId, String transactionId) {
+    public void updatePayment(Payment payment, String orderId, String transactionId, String registrationKey) {
+        payment.setRegistrationKey(registrationKey);
         payment.setTransactionId(transactionId);
         payment.setOrderId(orderId);
         paymentRepository.save(payment);
@@ -170,12 +171,16 @@ public class PolicyService {
     }
 
     public void updateRegistrationForAllNotProcessedPayment(Policy policy, String registrationKey) {
-        // Save the registration key in all other payments
-        for (Payment tmp : policy.getPayments()) {
-            if (tmp.getStatus().equals(NOT_PROCESSED)) {
-                updatePaymentRegistrationKey(tmp, registrationKey);
-            }
+        if (isBlank(registrationKey)) {
+            return;
         }
+
+        // Save the registration key in all other payments
+        policy.getPayments().stream().filter(tmp -> tmp.getStatus().equals(NOT_PROCESSED)).forEach(tmp -> {
+            if (!registrationKey.equals(tmp.getRegistrationKey())) {
+                tmp.setRegistrationKey(registrationKey);
+            }
+        });
     }
 
     public void updatePolicyAfterFirstPaymentValidated(Policy policy) {
@@ -382,7 +387,9 @@ public class PolicyService {
         }
 
         // registration key might have to be updated
-        updatePaymentRegistrationKey(payment, registrationKey);
+        if (!isBlank(registrationKey) && !registrationKey.equals(payment.getRegistrationKey())) {
+            payment.setRegistrationKey(registrationKey);
+        }
 
         PaymentInformation paymentInformation = new PaymentInformation();
         paymentInformation.setAmount(amount(value, currencyCode));
@@ -412,11 +419,5 @@ public class PolicyService {
 
         paymentRepository.save(payment);
         logger.info("Payment [" + payment.getPaymentId() + "] has been updated");
-    }
-
-    private void updatePaymentRegistrationKey(Payment payment, String registrationKey) {
-        if (!isBlank(registrationKey) && !registrationKey.equals(payment.getRegistrationKey())) {
-            payment.setRegistrationKey(registrationKey);
-        }
     }
 }

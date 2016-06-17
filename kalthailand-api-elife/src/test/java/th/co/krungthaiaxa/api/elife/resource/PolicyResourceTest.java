@@ -104,13 +104,14 @@ public class PolicyResourceTest extends ELifeTest {
     }
 
     @Test
-    public void should_update_payment_transaction_id_and_not_the_status() throws IOException, URISyntaxException {
+    public void should_update_payment_transaction_id_and_registration_key_but_not_the_status() throws IOException, URISyntaxException {
         Policy policy = getPolicy();
 
         URI paymentURI = new URI("http://localhost:" + port + "/policies/" + policy.getPolicyId() + "/update/status/pendingValidation");
         UriComponentsBuilder updatePaymentBuilder = UriComponentsBuilder.fromUri(paymentURI)
                 .queryParam("paymentId", policy.getPayments().get(0).getPaymentId())
                 .queryParam("orderId", "myOrderId")
+                .queryParam("registrationKey", "myRegistrationKey")
                 .queryParam("transactionId", "myTransactionId");
         ResponseEntity<String> updatePaymentResponse = template.exchange(updatePaymentBuilder.toUriString(), PUT, null, String.class);
         assertThat(updatePaymentResponse.getStatusCode().value()).isEqualTo(OK.value());
@@ -119,6 +120,7 @@ public class PolicyResourceTest extends ELifeTest {
         assertThat(updatePaymentResponse.getStatusCode().value()).isEqualTo(OK.value());
         Assertions.assertThat(updatedPolicy.getPayments().get(0).getStatus()).isEqualTo(PaymentStatus.NOT_PROCESSED);
         assertThat(updatedPolicy.getPayments().get(0).getTransactionId()).isEqualTo("myTransactionId");
+        assertThat(updatedPolicy.getPayments().get(0).getRegistrationKey()).isEqualTo("myRegistrationKey");
     }
 
     @Test
@@ -129,6 +131,7 @@ public class PolicyResourceTest extends ELifeTest {
         UriComponentsBuilder updatePaymentBuilder = UriComponentsBuilder.fromUri(paymentURI)
                 .queryParam("paymentId", policy.getPayments().get(0).getPaymentId())
                 .queryParam("orderId", "myOrderId")
+                .queryParam("registrationKey", "myRegistrationKey")
                 .queryParam("transactionId", "myTransactionId");
         ResponseEntity<String> updatePaymentResponse = template.exchange(updatePaymentBuilder.toUriString(), PUT, null, String.class);
         assertThat(updatePaymentResponse.getStatusCode().value()).isEqualTo(OK.value());
