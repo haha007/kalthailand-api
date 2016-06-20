@@ -18,6 +18,7 @@ import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
 import th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus;
 import th.co.krungthaiaxa.api.elife.model.enums.RegistrationTypeName;
 import th.co.krungthaiaxa.api.elife.model.enums.SuccessErrorStatus;
+import th.co.krungthaiaxa.api.elife.model.line.LinePayRecurringResponse;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayResponse;
 import th.co.krungthaiaxa.api.elife.products.Product;
 import th.co.krungthaiaxa.api.elife.products.ProductFactory;
@@ -135,10 +136,10 @@ public class PolicyService {
         return policy;
     }
 
-    public void updatePayment(Payment payment, String orderId, String transactionId, String registrationKey) {
-        payment.setRegistrationKey(registrationKey);
+    public void updatePayment(Payment payment, String orderId, String transactionId, String regKey) {
         payment.setTransactionId(transactionId);
         payment.setOrderId(orderId);
+        payment.setRegistrationKey(regKey);
         paymentRepository.save(payment);
         logger.info("Payment [" + payment.getPaymentId() + "] has been booked with transactionId [" + payment.getTransactionId() + "]");
     }
@@ -151,6 +152,33 @@ public class PolicyService {
                 null,
                 null,
                 null);
+    }
+    
+    public void updateRecurringPayment(
+    		Payment payment, 
+    		Double amount, 
+    		String currencyCode, 
+    		ChannelType channelType,
+            LinePayRecurringResponse linePayResponse,
+            String paymentId, 
+            String regKey, 
+            Double amt, 
+            String productId, 
+            String orderId) {
+    	
+    			PaymentInformation paymentInformation = new PaymentInformation();
+    			paymentInformation.setRejectionErrorCode(linePayResponse.getReturnCode());
+    			paymentInformation.setRejectionErrorMessage(linePayResponse.getReturnMessage());
+    			if(linePayResponse.getReturnCode().equals("0000")){
+    				String msg = "transactionDate:"+linePayResponse.getInfo().getTransactionDate()+" ,transactionId:"+linePayResponse.getInfo().getTransactionId()+" ,paymentId="+paymentId+" ,regKey="+regKey+" ,amt="+amt+" ,productId="+productId+" ,orderId="+orderId;
+    				paymentInformation.setStatus(SuccessErrorStatus.SUCCESS);
+        			paymentInformation.setMethod(msg);        			
+        			payment.setStatus(COMPLETED);
+    			}else{
+    				payment.setStatus(INCOMPLETE);
+    			}
+    			payment.addPaymentInformation(paymentInformation);
+    			paymentRepository.save(payment);    			
     }
 
     public void updatePayment(Payment payment, Double amount, String currencyCode, ChannelType channelType,

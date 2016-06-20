@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import th.co.krungthaiaxa.api.elife.model.Policy;
+import th.co.krungthaiaxa.api.elife.model.line.LinePayRecurringResponse;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayResponse;
 import th.co.krungthaiaxa.api.elife.utils.JsonUtil;
 
@@ -217,6 +218,107 @@ public class LineService {
 
         logger.info("Payment is confirmed with success");
         return getBookingResponseFromJSon(response.getBody());
+    }
+    
+    public LinePayRecurringResponse preApproved(String regKey, Double amount, String currency, String productName, String orderId) throws IOException {
+    	LinePayRecurringResponse linePayResponse;
+    	
+    	try {
+    		System.out.println("Start sending POST to LINE Pay for Recurring Payment --------------------------------------->");
+            URL url = new URL(linePayUrl + "/preapprovedPay/" + regKey + "/payment");
+            //System.out.println("check url : " +url.toString());
+
+            //set object header
+
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("X-LINE-ChannelId", linePayId);
+            conn.setRequestProperty("X-LINE-ChannelSecret", linePaySecretKey);
+            conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+            conn.setDoOutput(true);
+            ObjectMapper mapper = new ObjectMapper();
+            //System.out.println("check header : " +conn.getRequestProperties().toString());
+
+            //parameter
+            Map<String, Object> data = new HashMap<>();
+            data.put("productName", productName);
+            data.put("amount", amount);
+            data.put("currency", currency);
+            data.put("orderId", orderId);
+            //System.out.println("check body : " + data.toString());
+
+            //set object to get response
+            DataOutputStream wr = new DataOutputStream(conn.getOutputStream());
+            mapper.writeValue(wr, data);
+            wr.flush();
+            wr.close();
+
+            int responseCode = conn.getResponseCode();
+            //logger.info("\nSending 'POST' request to URL : " + url);
+            //logger.info("Response Code : " + responseCode);
+
+            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String inputLine;
+            StringBuffer response = new StringBuffer();
+
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
+            }
+            in.close();
+            logger.info("check response : " + response.toString());
+            logger.info("Notification is sent with success");            
+            linePayResponse = JsonUtil.mapper.readValue(response.toString(), LinePayRecurringResponse.class);
+            
+        } catch (MalformedURLException e) {
+            throw new IOException("Unable to send Line push notification.", e);
+        } catch (IOException e) {
+            throw new IOException("Unexpected to send Line push notification.", e);
+        }
+    	System.out.println("Stop sending POST to LINE Pay for Recurring Payment --------------------------------------->");
+    	
+    	return linePayResponse;
+    }
+    
+    public LinePayResponse preApprovedOld(String regKey, Double amount, String currency, String productName, String orderId) throws IOException {
+    	logger.info("preApproved payment");
+    	LinePayPreApprovedRequest linePayPreApprovedRequest = new LinePayPreApprovedRequest();
+    	linePayPreApprovedRequest.setProductName(productName);
+    	linePayPreApprovedRequest.setAmount(amount);
+    	linePayPreApprovedRequest.setCurrency(currency);
+    	linePayPreApprovedRequest.setOrderId(orderId);
+    	logger.info("linePayPreApprovedRequest : " + linePayPreApprovedRequest.toString());
+    	
+    	
+        
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("X-LINE-ChannelId", linePayId);
+        headers.set("X-LINE-ChannelSecret", linePaySecretKey);
+        headers.set("Content-Type", "application/json; charset=UTF-8");
+        logger.info("headers : " + headers.toString());
+        
+        HttpEntity<String> entity = new HttpEntity<>(new String(getJson(linePayPreApprovedRequest), forName("UTF-8")), headers);
+        
+        logger.info("entity.header : " + entity.getHeaders());
+        logger.info("entity.body : " + entity.getBody());
+        
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(linePayUrl + "/preapprovedPay/" + regKey + "/payment");
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<String> response;
+        try {
+            response = restTemplate.exchange(builder.toUriString(), POST, entity, String.class);
+        } catch (RuntimeException e) {
+            throw new IOException("Unable to preApproved payment", e);
+        }
+        if (!response.getStatusCode().equals(OK)) {
+            throw new IOException("Line's response for preApproved payment is [" + response.getStatusCode() + "]. Response body is [" + response.getBody() + "]");
+        }
+        
+        logger.info("Payment is preApproved with success");
+        logger.info("response : "+response.getBody());
+        LinePayResponse linePayResponse = getBookingResponseFromJSon(response.getBody());
+        logger.info("Line Pay response has been read");
+
+        return linePayResponse;
     }
 
     public LinePayResponse capturePayment(String transactionId, Double amount, String currency) throws IOException {
@@ -433,6 +535,44 @@ public class LineService {
         public void setCancelUrl(String cancelUrl) {
             this.cancelUrl = cancelUrl;
         }
+    }
+    
+    private class LinePayPreApprovedRequest{
+    	private String productName;
+    	private Double amount;
+    	private String currency;
+    	private String orderId;
+		public String getProductName() {
+			return productName;
+		}
+		public void setProductName(String productName) {
+			this.productName = productName;
+		}
+		public Double getAmount() {
+			return amount;
+		}
+		public void setAmount(Double amount) {
+			this.amount = amount;
+		}
+		public String getCurrency() {
+			return currency;
+		}
+		public void setCurrency(String currency) {
+			this.currency = currency;
+		}
+		public String getOrderId() {
+			return orderId;
+		}
+		public void setOrderId(String orderId) {
+			this.orderId = orderId;
+		}
+		@Override
+		public String toString() {
+			return "LinePayPreApprovedRequest [productName=" + productName + ", amount=" + amount + ", currency="
+					+ currency + ", orderId=" + orderId + "]";
+		}
+		
+    	
     }
 
     private class LinePayConfirmingRequest {

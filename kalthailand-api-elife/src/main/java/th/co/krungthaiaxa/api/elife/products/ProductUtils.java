@@ -94,7 +94,7 @@ public class ProductUtils {
         notNull(insured.getPerson().getGivenName(), personWithNoGivenName);
         notNull(insured.getPerson().getSurName(), personWithNoSurname);
         notNull(insured.getPerson().getTitle(), personWithNoTitle);
-        isTrue(checkThaiIDNumbers(insured.getPerson()), personWithInvalidThaiIdNumber);
+        isTrue(checkThaiIDNumbers("insure", insured.getPerson()), personWithInvalidThaiIdNumber);
     }
 
     public static void checkMainInsured(Insured insured) {
@@ -155,7 +155,8 @@ public class ProductUtils {
         isFalse(beneficiaries.size() > 6, beneficiariesTooMany);
         isEqual(beneficiaries.stream().mapToDouble(CoverageBeneficiary::getCoverageBenefitPercentage).sum(), 100.0, beneficiariesPercentSumNot100);
         isFalse(beneficiaries.stream().filter(coverageBeneficiary -> coverageBeneficiary.getAgeAtSubscription() == null).findFirst().isPresent(), beneficiariesAgeAtSubscriptionEmpty);
-        isFalse(beneficiaries.stream().filter(coverageBeneficiary -> !checkThaiIDNumbers(coverageBeneficiary.getPerson())).findFirst().isPresent(), beneficiariesWithWrongIDNumber);
+        
+        isFalse(beneficiaries.stream().filter(coverageBeneficiary -> !checkThaiIDNumbers("benefit", coverageBeneficiary.getPerson())).findFirst().isPresent(), beneficiariesWithWrongIDNumber);
 
         List<String> insuredRegistrationIds = insured.getPerson().getRegistrations().stream()
                 .map(Registration::getId)
@@ -176,10 +177,16 @@ public class ProductUtils {
         isTrue(hasDifferentBeneficiaries, beneficiariesWithSameId);
     }
 
-    public static boolean checkThaiIDNumbers(Person person) {
+    public static boolean checkThaiIDNumbers(String type, Person person) {
         boolean isValid = true;
         for (Registration registration : person.getRegistrations()) {
-            isValid = isValid && checkThaiIDNumber(registration.getId());
+        	if(type.equals("benefit")){
+        		if(!registration.getId().equals("")){
+        			isValid = isValid && checkThaiIDNumber(registration.getId());	
+        		}
+        	}else{
+        		isValid = isValid && checkThaiIDNumber(registration.getId());	
+        	}
         }
         return isValid;
     }

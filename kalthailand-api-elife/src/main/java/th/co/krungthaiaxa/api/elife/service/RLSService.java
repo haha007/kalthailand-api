@@ -21,6 +21,7 @@ import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 import th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus;
+import th.co.krungthaiaxa.api.elife.model.line.LinePayRecurringResponse;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayResponse;
 import th.co.krungthaiaxa.api.elife.repository.CollectionFileRepository;
 import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
@@ -30,9 +31,11 @@ import th.co.krungthaiaxa.api.elife.utils.ExcelUtils;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -106,12 +109,13 @@ public class RLSService {
 
     
     //second, minute, hour, day of month, month, day(s) of week
-    //@Scheduled(cron = "0 0 11 * * ?")
-    @Scheduled(cron = "0 0 * * * *")
+    //@Scheduled(cron = "0 0 11 * * ?") ==> prd
+    @Scheduled(cron = "* * */1 * * *")
     public void processLatestCollectionFile() {
-        List<CollectionFile> collectionFiles = collectionFileRepository.findByJobStartedDateNull();
-        logger.info("Found [" + collectionFiles.size() + "] collection(s) file to process.");
-        for (CollectionFile collectionFile : collectionFiles) {
+        List<CollectionFile> collectionFiles = collectionFileRepository.findByJobStartedDateNull();       
+        logger.info("<<<<<<<<<<<<<<<<<<<<<<<<<<<<< START PROCESS RECURRING PAYMENT WITH TIME ("+LocalDateTime.now(of(SHORT_IDS.get("VST")))+") >>>>>>>>>>>>>>>>>>>>>>>>>>>");
+        for (CollectionFile collectionFile : collectionFiles) {        	
+            logger.info("Found [" + collectionFiles.size() + "] collection(s) file to process.");
             collectionFile.setJobStartedDate(LocalDateTime.now(of(SHORT_IDS.get("VST"))));
             DeductionFile deductionFile = new DeductionFile();
             collectionFile.setDeductionFile(deductionFile);
@@ -119,11 +123,10 @@ public class RLSService {
             for (CollectionFileLine collectionFileLine : collectionFile.getLines()) {
                 processCollectionFileLine(deductionFile, collectionFileLine);
             }
-            logger.info("Finished processing collection(s) line(s).");
             collectionFile.setJobEndedDate(LocalDateTime.now(of(SHORT_IDS.get("VST"))));
             collectionFileRepository.save(collectionFile);
         }
-        logger.info("Finished processing collection(s) file.");
+        logger.info("<<<<<<<<<<<<<<<<<<<<<<<<<<<<< STOP PROCESS RECURRING PAYMENT WITH TIME ("+LocalDateTime.now(of(SHORT_IDS.get("VST")))+") >>>>>>>>>>>>>>>>>>>>>>>>>>>");
     }
 
     public byte[] createDeductionExcelFile(DeductionFile deductionFile) {
@@ -290,9 +293,23 @@ public class RLSService {
             return;
         }
 
-        LinePayResponse linePayResponse;
-        try {
-            linePayResponse = lineService.capturePayment(payment.getRegistrationKey(), collectionFileLine.getPremiumAmount(), payment.getAmount().getCurrencyCode());
+        LinePayRecurringResponse linePayResponse;
+        Policy policy = policyRepository.findByPolicyId(payment.getPolicyId());        	
+    	String regKey = payment.getRegistrationKey();
+    	Double amt = collectionFileLine.getPremiumAmount();
+    	String currencyCode = payment.getAmount().getCurrencyCode();
+    	String productId = policy.getCommonData().getProductId();
+    	String orderId = "R-"+payment.getPolicyId()+"-"+(new SimpleDateFormat("yyyyMMddhhmmssSSS").format(new Date()));
+    	/*System.out.println("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+    	System.out.println("paymentId : "+paymentId);
+    	System.out.println("regKey : " +regKey);
+    	System.out.println("amt : " +amt);
+    	System.out.println("currencyCode : " +currencyCode);
+    	System.out.println("productId : " +productId);
+    	System.out.println("orderId : " + orderId);
+    	System.out.println("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");*/
+        try {        	
+            linePayResponse = lineService.preApproved(regKey, amt, currencyCode,productId, orderId);
         } catch (IOException | RuntimeException e) {
             // An error occured while trying to contact LinePay
             logger.error("An error occured while trying to contact LinePay on payment id [" + paymentId + "]", e);
@@ -302,13 +319,9 @@ public class RLSService {
             return;
         }
 
-        if (linePayResponse.getReturnCode().equals("0000")) {
-            deductionFile.addLine(getDeductionFileLine(collectionFileLine, linePayResponse.getReturnCode()));
-            policyService.updatePayment(payment, amount, payment.getAmount().getCurrencyCode(), LINE, linePayResponse);
-        } else {
-            deductionFile.addLine(getDeductionFileLine(collectionFileLine, linePayResponse.getReturnCode()));
-            policyService.updatePayment(payment, amount, payment.getAmount().getCurrencyCode(), LINE, linePayResponse);
-        }
+        deductionFile.addLine(getDeductionFileLine(collectionFileLine, linePayResponse.getReturnCode()));
+        policyService.updateRecurringPayment(payment, amount, payment.getAmount().getCurrencyCode(), LINE, linePayResponse, paymentId,regKey,amt,productId,orderId);
+        
         logger.info("Finished processing collection file line with payment id [" + paymentId + "]");
     }
 
@@ -334,7 +347,7 @@ public class RLSService {
                 text(deductionFileLine.getPaymentMode()),
                 text(deductionFileLine.getAmount().toString()),
                 text(ofPattern("yyyyMMdd").format(deductionFileLine.getProcessDate())),
-                text(deductionFileLine.getRejectionCode()));
+                text((deductionFileLine.getRejectionCode().equals("0000")?"":deductionFileLine.getRejectionCode())));
     }
 
     public void setLineService(LineService lineService) {
