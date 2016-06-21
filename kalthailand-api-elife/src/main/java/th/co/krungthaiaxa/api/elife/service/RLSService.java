@@ -109,8 +109,8 @@ public class RLSService {
 
     
     //second, minute, hour, day of month, month, day(s) of week
-    //@Scheduled(cron = "0 0 11 * * ?") ==> prd
-    @Scheduled(cron = "* * */1 * * *")
+    @Scheduled(cron = "0 0 11 * * ?") //==> prd
+    //@Scheduled(cron = "* * */1 * * *") //==> uat
     public void processLatestCollectionFile() {
         List<CollectionFile> collectionFiles = collectionFileRepository.findByJobStartedDateNull();       
         logger.info("<<<<<<<<<<<<<<<<<<<<<<<<<<<<< START PROCESS RECURRING PAYMENT WITH TIME ("+LocalDateTime.now(of(SHORT_IDS.get("VST")))+") >>>>>>>>>>>>>>>>>>>>>>>>>>>");
