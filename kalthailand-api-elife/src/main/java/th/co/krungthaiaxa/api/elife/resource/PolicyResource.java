@@ -368,7 +368,12 @@ public class PolicyResource {
         }
 
         // Update the payment
-        policyService.updatePayment(payment.get(), orderId, transactionId.get(), regKey.get());
+        if (regKey.isPresent()) {
+        	policyService.updatePayment(payment.get(), orderId, transactionId.get(), regKey.get());
+        } else {
+        	policyService.updatePayment(payment.get(), orderId, transactionId.get(), "");	
+        }
+        
         // Update the policy status
         policyService.updatePolicyAfterFirstPaymentValidated(policy.get());
 

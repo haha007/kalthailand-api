@@ -258,6 +258,55 @@
             searchForPolicyDetail();
         }
 
+        // AKT-820
+        $scope.onSubmitPaymentDetails = function() {
+        	$scope.isFetching = true;
+        	
+        	var data = {
+    			paymentId:     $scope.policyDetail.payments[0].paymentId,
+    			value:         $scope.policyDetail.payments[0].amount.value,
+    			currencyCode:  $scope.policyDetail.payments[0].amount.currencyCode,
+    			channelType:   'LINE',
+    			orderId:       $scope.payment.orderId,
+    			transactionId: $scope.payment.transactionId
+        	};
+        	
+        	if ($scope.policyDetail.premiumsData.financialScheduler.periodicity.code == 'EVERY_MONTH') {
+        		if ( ! $scope.payment.regKey) {
+        			alert('Error! required "regKey" on monthly mode payment');
+        			return;
+        		}
+        		
+        		data.regKey = $scope.payment.regKey;
+        	}
+        	
+        	$http({
+        		url: '/api-elife/policies/' + $scope.policyDetail.policyId + '/update/status/pendingValidation',
+        		method: 'PUT',
+        		params: data,
+        		data: data,
+        		headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+        	}).
+        	then(
+				function(response) {
+					if (response.data.error) {
+						$scope.isFetching = false;
+						$scope.successMessage = null;
+	                    $scope.errorMessage = response.data.message;
+					} else {
+						window.location.reload();
+					}
+	        	}, 
+	        	function(err) {
+	        		$scope.isFetching = false;
+					$scope.successMessage = null;
+                    $scope.errorMessage = err.toString();
+	        	}
+        	)
+        	
+        	return false;
+        };
+        
         $scope.onClickNotification = function () {
             $scope.isValidating = true;
             PolicyNotification.get({ id: $scope.policyID, reminderId: $scope.scenarioID },
