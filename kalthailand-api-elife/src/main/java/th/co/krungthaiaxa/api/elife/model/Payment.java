@@ -2,9 +2,12 @@ package th.co.krungthaiaxa.api.elife.model;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
+import org.jsoup.helper.StringUtil;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus;
+import th.co.krungthaiaxa.api.elife.utils.RsaUtil;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -77,11 +80,11 @@ public class Payment {
 
     @ApiModelProperty(value = "The payment's registration key in case of recurring payment. This is used by pay gateway like LINE Pay.")
     public String getRegistrationKey() {
-        return registrationKey;
+        return (StringUtil.isBlank(registrationKey)?registrationKey:RsaUtil.decrypt(registrationKey));
     }
 
     public void setRegistrationKey(String registrationKey) {
-        this.registrationKey = registrationKey;
+        this.registrationKey = (StringUtil.isBlank(registrationKey)?registrationKey:RsaUtil.encrypt(registrationKey));
     }
 
     @ApiModelProperty(required = true, value = "Status of the payment")

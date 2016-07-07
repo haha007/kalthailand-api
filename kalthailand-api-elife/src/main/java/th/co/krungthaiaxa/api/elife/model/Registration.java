@@ -3,9 +3,12 @@ package th.co.krungthaiaxa.api.elife.model;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import th.co.krungthaiaxa.api.elife.model.enums.RegistrationTypeName;
+import th.co.krungthaiaxa.api.elife.utils.RsaUtil;
 
 import java.io.Serializable;
 import java.util.Objects;
+
+import org.jsoup.helper.StringUtil;
 
 @ApiModel(description = "Data concerning nationality-dependent registrations for the party. e.g. Social Security, " +
         "passport, taxes identification number, insurance company registration, driver license")
@@ -15,11 +18,11 @@ public class Registration implements Serializable {
 
     @ApiModelProperty(value = " The registration identifier assigned by the registration authority")
     public String getId() {
-        return id;
+        return (StringUtil.isBlank(id)?id:RsaUtil.decrypt(id));
     }
 
     public void setId(String id) {
-        this.id = id;
+        this.id = (StringUtil.isBlank(id)?id:RsaUtil.encrypt(id));
     }
 
     @ApiModelProperty(value = "The type of registration")

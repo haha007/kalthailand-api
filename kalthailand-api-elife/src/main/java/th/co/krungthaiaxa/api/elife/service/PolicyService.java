@@ -25,6 +25,7 @@ import th.co.krungthaiaxa.api.elife.products.ProductFactory;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
 import th.co.krungthaiaxa.api.elife.repository.*;
 import th.co.krungthaiaxa.api.elife.tmc.TMCClient;
+import th.co.krungthaiaxa.api.elife.utils.RsaUtil;
 
 import javax.inject.Inject;
 import javax.mail.MessagingException;
@@ -170,7 +171,7 @@ public class PolicyService {
     			paymentInformation.setRejectionErrorCode(linePayResponse.getReturnCode());
     			paymentInformation.setRejectionErrorMessage(linePayResponse.getReturnMessage());
     			if(linePayResponse.getReturnCode().equals("0000")){
-    				String msg = "transactionDate:"+linePayResponse.getInfo().getTransactionDate()+" ,transactionId:"+linePayResponse.getInfo().getTransactionId()+" ,paymentId="+paymentId+" ,regKey="+regKey+" ,amt="+amt+" ,productId="+productId+" ,orderId="+orderId;
+    				String msg = "transactionDate:"+linePayResponse.getInfo().getTransactionDate()+" ,transactionId:"+linePayResponse.getInfo().getTransactionId()+" ,paymentId="+paymentId+" ,regKey="+RsaUtil.encrypt(regKey)+" ,amt="+amt+" ,productId="+productId+" ,orderId="+orderId;
     				paymentInformation.setStatus(SuccessErrorStatus.SUCCESS);
         			paymentInformation.setMethod(msg);        			
         			payment.setStatus(COMPLETED);
