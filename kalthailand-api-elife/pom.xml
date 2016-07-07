@@ -113,7 +113,7 @@
                     <generatePackage>th.co.krungthaiaxa.api.elife.tmc.wsdl</generatePackage>
                     <schemas>
                         <schema>
-                            <url>${basedir}/src/main/resources/wsdl/tmc_soap_service.wsdl</url>
+                            <url>D:/pc-website/kalthailand-api/kalthailand-api-elife/src/main/resources/wsdl/tmc_soap_service.wsdl</url>
                         </schema>
                     </schemas>
                 </configuration>
