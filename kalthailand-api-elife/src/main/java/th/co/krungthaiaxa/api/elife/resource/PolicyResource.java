@@ -101,8 +101,9 @@ public class PolicyResource {
             @ApiParam(value = "To filter Policies starting after the given date")
             @RequestParam(required = false) String fromDate,
             @ApiParam(value = "To filter Policies ending before the given date")
-            @RequestParam(required = false) String toDate) {
-        LocalDate startDate = null;
+			@RequestParam(required = false) String toDate) {
+			
+			LocalDate startDate = null;
         if (StringUtils.isNoneEmpty(fromDate)) {
             startDate = LocalDate.from(DateTimeFormatter.ISO_DATE_TIME.parse(fromDate));
         }
@@ -142,15 +143,16 @@ public class PolicyResource {
         }
 
         List<Policy> policies = policyService.findAll(policyId, productType, status, nonEmptyAgentCode, startDate, endDate);
-
-        String now = ofPattern("yyyyMMdd_HHmmss").format(now());
+		
+		String now = ofPattern("yyyyMMdd_HHmmss").format(now());
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("PolicyExtract_" + now);
-        ExcelUtils.appendRow(sheet,
+		
+		ExcelUtils.appendRow(sheet,
                 text("Policy ID"),
                 text("Previous Policy ID"),
                 text("Agent Code 1"),
-                text("Agent Code 2"));
+				text("Agent Code 2"));
         policies.stream().forEach(tmp -> createPolicyExtractExcelFileLine(sheet, tmp));
         ExcelUtils.autoWidthAllColumns(workbook);
 
@@ -274,8 +276,8 @@ public class PolicyResource {
             @RequestParam ChannelType channelType,
             @ApiParam(value = "The json of the quote to create the policy from. This quote will go through maximum " +
                     "validations")
-            @RequestBody String jsonQuote) {
-        Quote quote;
+			@RequestBody String jsonQuote) {
+		Quote quote;
         try {
             quote = JsonUtil.mapper.readValue(jsonQuote, Quote.class);
         } catch (IOException e) {
@@ -483,11 +485,13 @@ public class PolicyResource {
     }
 
     private void createPolicyExtractExcelFileLine(Sheet sheet, Policy policy) {
-    	ExcelUtils.appendRow(sheet,
-                text(policy.getPolicyId()),
-                text(policy.getInsureds().get(0).getInsuredPreviousInformations().get(0)),
-                text(policy.getInsureds().get(0).getInsuredPreviousInformations().get(1)),
-                text(policy.getInsureds().get(0).getInsuredPreviousInformations().get(2)));
+    	if(policy.getInsureds().get(0).getInsuredPreviousInformations().size()!=0){
+    		ExcelUtils.appendRow(sheet,
+                    text(policy.getPolicyId()),
+                    text(policy.getInsureds().get(0).getInsuredPreviousInformations().get(0)),
+                    text(policy.getInsureds().get(0).getInsuredPreviousInformations().get(1)),
+                    text(policy.getInsureds().get(0).getInsuredPreviousInformations().get(2)));
+    	}
     }
     
 }

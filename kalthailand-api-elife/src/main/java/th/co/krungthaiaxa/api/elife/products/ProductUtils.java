@@ -161,11 +161,25 @@ public class ProductUtils {
         List<String> insuredRegistrationIds = insured.getPerson().getRegistrations().stream()
                 .map(Registration::getId)
                 .collect(toList());
+				
+        //Edit by santi to ignore benefit id blank value ======================>
+        
+        /*
         List<String> beneficiaryRegistrationIds = beneficiaries.stream()
                 .map(coverageBeneficiary -> coverageBeneficiary.getPerson().getRegistrations())
                 .flatMap(Collection::stream)
                 .map(Registration::getId)
                 .collect(toList());
+                */
+        
+        List<String> beneficiaryRegistrationIds = beneficiaries.stream()
+        		.filter(p -> !p.getPerson().getRegistrations().get(0).getId().equals(""))
+        		.map(p -> p.getPerson().getRegistrations())
+                .flatMap(Collection::stream)
+                .map(Registration::getId)
+                .collect(toList());
+        
+      //Edit by santi to ignore benefit id blank value ======================>
 
         Optional<String> hasABeneficiaryWithSameIdAsInsured = beneficiaryRegistrationIds.stream()
                 .filter(insuredRegistrationIds::contains)

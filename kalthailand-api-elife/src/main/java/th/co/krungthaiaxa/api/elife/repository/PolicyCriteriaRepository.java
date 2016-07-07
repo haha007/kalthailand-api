@@ -27,8 +27,7 @@ public class PolicyCriteriaRepository {
     public Page<Policy> findPolicies(String policyId, ProductType productType, PolicyStatus status,
                                      Boolean nonEmptyAgentCode, LocalDate fromDate, LocalDate toDate, Pageable pageable) {
         Query query = getQuery(policyId, productType, status, nonEmptyAgentCode, fromDate, toDate);
-
-        List<Policy> policies = mongoOperations.find(query.with(pageable), Policy.class, "policy");
+		List<Policy> policies = mongoOperations.find(query.with(pageable), Policy.class, "policy");
         Long nbRecords = mongoOperations.count(query, Policy.class, "policy");
         return new PageImpl<>(policies, pageable, nbRecords);
     }

@@ -60,7 +60,7 @@ public class ApplicationFormServiceTest extends ELifeTest{
 
         //benefit 2
         CoverageBeneficiary cov = new CoverageBeneficiary();
-        cov.setRelationship(BeneficiaryRelationshipType.AUNT_UNCLE);
+        cov.setRelationship(BeneficiaryRelationshipType.UNCLE_AUNT_FATHER);
         Person person = new Person();
         person.setGivenName("สันติ");
         person.setSurName("ลิขิตมงคลสกุล");
@@ -73,7 +73,7 @@ public class ApplicationFormServiceTest extends ELifeTest{
 
         //benefit 3
         cov = new CoverageBeneficiary();
-        cov.setRelationship(BeneficiaryRelationshipType.AUNT_UNCLE);
+        cov.setRelationship(BeneficiaryRelationshipType.AUNT);
         person = new Person();
         person.setGivenName("ธนวัฒน์");
         person.setSurName("เหมชัว");
@@ -95,7 +95,7 @@ public class ApplicationFormServiceTest extends ELifeTest{
 
         //benefit 4
         cov = new CoverageBeneficiary();
-        cov.setRelationship(BeneficiaryRelationshipType.AUNT_UNCLE);
+        cov.setRelationship(BeneficiaryRelationshipType.AUNT);
         person = new Person();
         person.setGivenName("ทศพล");
         person.setSurName("จินตนพันธ์");
@@ -117,7 +117,7 @@ public class ApplicationFormServiceTest extends ELifeTest{
 
         //benefit 5
         cov = new CoverageBeneficiary();
-        cov.setRelationship(BeneficiaryRelationshipType.AUNT_UNCLE);
+        cov.setRelationship(BeneficiaryRelationshipType.AUNT);
         person = new Person();
         person.setGivenName("วิบูลย์");
         person.setSurName("โอฬารสิริกุล");
