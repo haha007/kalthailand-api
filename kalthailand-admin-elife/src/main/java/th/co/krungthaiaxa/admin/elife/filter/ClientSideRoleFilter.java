@@ -24,6 +24,9 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.Properties;
 
@@ -48,6 +51,13 @@ public class ClientSideRoleFilter implements Filter {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
+        
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss.SSS");
+        SimpleDateFormat secondFormat = new SimpleDateFormat("ss");
+        SimpleDateFormat millisecondFormat = new SimpleDateFormat("SSS");
+        DecimalFormat dcf = new DecimalFormat("#0.00");
+        Date timeApiRequest = new Date();    
+        
         if (!httpServletRequest.getRequestURI().endsWith(".htm") && !httpServletRequest.getRequestURI().endsWith(".html")) {
             // nothing to do on any request that is not to an html file
             filterChain.doFilter(servletRequest, servletResponse);
@@ -74,6 +84,21 @@ public class ClientSideRoleFilter implements Filter {
 
         String modifiedResponse = modify(httpServletRequest, new String(wrappedResponse.getByteArray()), properties);
         servletResponse.setContentLength(modifiedResponse.length());
+        
+        Date timeApiResponse = new Date();
+        long s1 = Integer.parseInt(secondFormat.format(timeApiRequest),10);
+        long s2 = Integer.parseInt(secondFormat.format(timeApiResponse),10);
+        long m1 = Integer.parseInt(millisecondFormat.format(timeApiRequest),10);
+        long m2 = Integer.parseInt(millisecondFormat.format(timeApiResponse),10);
+        long diffSecond = s2 - s1;
+        long diffMillisecond = m2 - m1;
+        double diffTotal = Double.parseDouble(diffSecond + "." + diffMillisecond);
+        logger.info("call to : " + httpServletRequest.getRequestURI() 
+        + " request time is : " + sdf.format(timeApiRequest) 
+        + " response time is : " + sdf.format(timeApiResponse)
+        + " difference is : " + dcf.format(diffTotal) + " seconds.");
+        logger.info("--------------------------------------------------------------------------------------------------------------");
+        
         servletResponse.getOutputStream().write(modifiedResponse.getBytes());
     }
 

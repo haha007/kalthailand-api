@@ -23,6 +23,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.OK;
@@ -47,6 +50,13 @@ public class KalApiTokenFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
+        
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss.SSS");
+        SimpleDateFormat secondFormat = new SimpleDateFormat("ss");
+        SimpleDateFormat millisecondFormat = new SimpleDateFormat("SSS");
+        DecimalFormat dcf = new DecimalFormat("#0.00");
+        Date timeApiRequest = new Date();        
+        
         // Swagger requests shoud always go through
         if (httpRequest.getRequestURI().endsWith("/v2/api-docs") ||
                 httpRequest.getRequestURI().endsWith("/configuration/ui") ||
@@ -100,6 +110,20 @@ public class KalApiTokenFilter implements Filter {
             sendErrorToResponse(ErrorCode.UNAUTHORIZED.apply("Provided token doesn't give access to API"), (HttpServletResponse) response);
             return;
         }
+        
+        Date timeApiResponse = new Date();
+        long s1 = Integer.parseInt(secondFormat.format(timeApiRequest),10);
+        long s2 = Integer.parseInt(secondFormat.format(timeApiResponse),10);
+        long m1 = Integer.parseInt(millisecondFormat.format(timeApiRequest),10);
+        long m2 = Integer.parseInt(millisecondFormat.format(timeApiResponse),10);
+        long diffSecond = s2 - s1;
+        long diffMillisecond = m2 - m1;
+        double diffTotal = Double.parseDouble(diffSecond + "." + diffMillisecond);
+        logger.info("call to : " + httpRequest.getRequestURI() 
+        + " request time is : " + sdf.format(timeApiRequest) 
+        + " response time is : " + sdf.format(timeApiResponse)
+        + " difference is : " + dcf.format(diffTotal) + " seconds.");
+        logger.info("--------------------------------------------------------------------------------------------------------------");
 
         chain.doFilter(request, response);
     }
