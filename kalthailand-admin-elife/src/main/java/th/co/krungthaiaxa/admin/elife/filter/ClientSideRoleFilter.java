@@ -96,8 +96,7 @@ public class ClientSideRoleFilter implements Filter {
         logger.info("call to : " + httpServletRequest.getRequestURI() 
         + " request time is : " + sdf.format(timeApiRequest) 
         + " response time is : " + sdf.format(timeApiResponse)
-        + " difference is : " + dcf.format(diffTotal) + " seconds.");
-        logger.info("--------------------------------------------------------------------------------------------------------------");
+        + " difference is : " + dcf.format(diffTotal) + " seconds. \n ---------------------------------------");
         
         servletResponse.getOutputStream().write(modifiedResponse.getBytes());
     }

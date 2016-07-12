@@ -122,8 +122,7 @@ public class KalApiTokenFilter implements Filter {
         logger.info("call to : " + httpRequest.getRequestURI() 
         + " request time is : " + sdf.format(timeApiRequest) 
         + " response time is : " + sdf.format(timeApiResponse)
-        + " difference is : " + dcf.format(diffTotal) + " seconds.");
-        logger.info("--------------------------------------------------------------------------------------------------------------");
+        + " difference is : " + dcf.format(diffTotal) + " seconds. \n ---------------------------------------");
 
         chain.doFilter(request, response);
     }

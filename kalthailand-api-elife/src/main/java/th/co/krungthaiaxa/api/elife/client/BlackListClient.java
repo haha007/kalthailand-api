@@ -31,6 +31,10 @@ public class BlackListClient {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add("Content-Type", "application/json");
         httpHeaders.add(tokenHeader, token);
+        
+        logger.info(":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+        logger.info("<----- Checking thaiId before call Blacklist : "+thaiId);
+        logger.info(":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
 
         HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(blacklistApiURL)
