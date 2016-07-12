@@ -371,7 +371,7 @@ public class PolicyResource {
 
         // Update the payment
         if (regKey.isPresent()) {
-        	policyService.updatePayment(payment.get(), orderId, transactionId.get(), regKey.get());
+        	policyService.updatePayment(payment.get(), orderId, transactionId.get(), (!regKey.isPresent()?"":regKey.get()));
         } else {
         	policyService.updatePayment(payment.get(), orderId, transactionId.get(), "");	
         }
