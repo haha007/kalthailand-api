@@ -4,10 +4,14 @@ import java.net.UnknownHostException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import org.bson.types.ObjectId;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.BasicDBObjectBuilder;
@@ -19,7 +23,7 @@ import com.mongodb.MongoClient;
 import com.mongodb.MongoException;
 
 public class MongoExportDataUtil {
-	
+/*
 	public static void main(String[] args) throws ParseException {
 		
 		String dbIp = "10.22.248.52";
@@ -27,60 +31,70 @@ public class MongoExportDataUtil {
 		String dbName = "elife";
 		String uName = "elifeuser";
 		String uPass = "28$Jp7$tsld7nZ";
-		
 
 		try {
-
-			/**** Connect to MongoDB ****/
-			// Since 2.10.0, uses MongoClient
+			
 			MongoClient mongo = new MongoClient(dbIp, dbPort);
-
-			/**** Get database ****/
-			// if database doesn't exists, MongoDB will create it for you
 			DB db = mongo.getDB(dbName);
-			
-			/**** Get authentication ****/
-			boolean auth = db.authenticate(uName, uPass.toCharArray());
-			
+			boolean auth = db.authenticate(uName, uPass.toCharArray());		
 			
 			if (auth) {		
 				
-				/**** Get collection / table from 'testdb' ****/
-				// if collection doesn't exists, MongoDB will create it for you
 				DBCollection quote = db.getCollection("quote");
-				
-				/**** Find and display ****/
-				BasicDBObject searchQuery = new BasicDBObject();
+				BasicDBObject quoteQuery = new BasicDBObject();
 				DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ENGLISH);
-				searchQuery.put("creationDateTime", BasicDBObjectBuilder.start("$gte", format.parse("2016-07-04T00:00:00.000Z")).add("$lte", format.parse("2016-07-10T23:59:59.999Z")).get());
-
-				DBCursor cursor = quote.find(searchQuery);
+				quoteQuery.put("creationDateTime", BasicDBObjectBuilder.start("$gte", format.parse("2016-07-04T00:00:00.000Z")).add("$lte", format.parse("2016-07-10T23:59:59.999Z")).get());
+				DBCursor quoteCursor = quote.find(quoteQuery);
 				
-				System.out.println("count : "+cursor.count());
+				System.out.println("quote count : "+quoteCursor.count());
+				
+				List<String> userList = new ArrayList<>();
 
-				while (cursor.hasNext()) {
+				while (quoteCursor.hasNext()) {
 					
-					DBObject resultElement = cursor.next();
-				    Map<String, Object> resultElementMap = resultElement.toMap();
-				    String quoteId = (String) resultElementMap.get("quoteId");
-				    
-				    //find sessionquote
+					DBObject quoteResultElement = quoteCursor.next();
+				    Map<String, Object> quoteResultElementMap = quoteResultElement.toMap();
+				    String quoteOId = quoteResultElementMap.get("_id").toString();	
 				    DBCollection sessionQuote = db.getCollection("sessionQuote");
-				    BasicDBObject query = new BasicDBObject();
-				    query.put("creationDateTime", BasicDBObjectBuilder.start("$gte", format.parse("2016-07-04T00:00:00.000Z")).add("$lte", format.parse("2016-07-10T23:59:59.999Z")).get());
+				    BasicDBObject sessionQuoteQuery = new BasicDBObject();
+				    DBCursor sessionQuoteCursor = sessionQuote.find(sessionQuoteQuery);
 				    
-					System.out.println("________________________________-");
+				    while (sessionQuoteCursor.hasNext()){
+				    	
+				    	DBObject sessionQuoteResultElement = sessionQuoteCursor.next();
+				    	Map<String, Object> sessionQuoteResultElementMap = sessionQuoteResultElement.toMap();
+				    	String sessionId = sessionQuoteResultElementMap.get("sessionId").toString();
+				    	String compareText = sessionQuoteResultElementMap.toString();
+				    	if(compareText.indexOf(quoteOId)!=-1){
+				    		if(userList.size()==0){
+				    			userList.add(sessionId);
+				    		}else{
+				    			boolean addValue = true;
+				    			for(int a=0;a<userList.size();a++){
+				    				if(userList.get(a).equals(sessionId)){
+				    					addValue = false;
+				    					a = userList.size();
+				    				}
+				    			}
+				    			if(addValue==true){
+				    				userList.add(sessionId);
+				    			}
+				    		}
+				    	}
+				    	
+				    }
+
 				}
-			
+				
+				System.out.println("user count : " + userList.size());			
 				System.out.println("<----- Login is successful! ----->");
 			} else {
 				System.out.println("!----- Login is failed! -----!");
 			}
-
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		} 
 
 	}
-
+*/
 }
