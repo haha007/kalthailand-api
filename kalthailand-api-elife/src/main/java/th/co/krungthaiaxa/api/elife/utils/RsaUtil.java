@@ -26,7 +26,7 @@ import org.springframework.stereotype.Service;
 
 import th.co.krungthaiaxa.api.elife.service.ApplicationFormService;
 
-public class RsaUtil {
+public class RsaUtil { 
 	
     private static final String KEY_FILE_PATH = "/opt/keys/";
 	private static final String PRIVATE_KEY_NAME = "private.key";
