@@ -23,6 +23,53 @@ import com.mongodb.MongoClient;
 import com.mongodb.MongoException;
 
 public class MongoExportDataUtil {
+	
+public static void main(String[] args) throws ParseException {
+		
+		String dbIp = "10.22.248.52";
+		int dbPort = 27117;
+		String dbName = "elife";
+		String uName = "elifeuser";
+		String uPass = "28$Jp7$tsld7nZ";
+
+		try {
+			
+			MongoClient mongo = new MongoClient(dbIp, dbPort);
+			DB db = mongo.getDB(dbName);
+			boolean auth = db.authenticate(uName, uPass.toCharArray());		
+			
+			if (auth) {		
+				
+				DBCollection policyNumber = db.getCollection("policyNumber");
+				BasicDBObject policyNumberQuery = new BasicDBObject();				
+				DBCursor policyNumberCursor = policyNumber.find(policyNumberQuery);
+				
+				System.out.println("policyNumber count : "+policyNumberCursor.count());
+
+				int availablePolicyNumber = 0;
+				while (policyNumberCursor.hasNext()) {
+					
+					DBObject policyNumberResultElement = policyNumberCursor.next();
+				    Map<String, Object> policyNumberResultElementMap = policyNumberResultElement.toMap();
+				    
+				    if(policyNumberResultElementMap.toString().indexOf("_class")==-1){
+				    	availablePolicyNumber++;
+				    }
+				    
+				    
+				}		
+				
+				System.out.println("availablePolicyNumber is : "+availablePolicyNumber);
+				
+				System.out.println("<----- Login is successful! ----->");
+			} else {
+				System.out.println("!----- Login is failed! -----!");
+			}
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		} 
+
+	}
 /*
 	public static void main(String[] args) throws ParseException {
 		
