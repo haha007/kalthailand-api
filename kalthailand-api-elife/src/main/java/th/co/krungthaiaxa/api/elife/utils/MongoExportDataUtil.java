@@ -23,7 +23,7 @@ import com.mongodb.MongoClient;
 import com.mongodb.MongoException;
 
 public class MongoExportDataUtil {
-	
+	/*
 public static void main(String[] args) throws ParseException {
 		
 		String dbIp = "10.22.248.52";
@@ -70,6 +70,7 @@ public static void main(String[] args) throws ParseException {
 		} 
 
 	}
+	*/
 /*
 	public static void main(String[] args) throws ParseException {
 		
