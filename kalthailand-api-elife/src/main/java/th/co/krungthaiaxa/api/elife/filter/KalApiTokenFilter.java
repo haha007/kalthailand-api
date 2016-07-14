@@ -123,7 +123,7 @@ public class KalApiTokenFilter implements Filter {
         long m2 = Integer.parseInt(millisecondFormat.format(timeApiResponse),10);
         long diffSecond = s2 - s1;
         long diffMillisecond = m2 - m1;
-        double diffTotal = Double.parseDouble(diffSecond + "." + diffMillisecond);
+        double diffTotal = Double.parseDouble(Math.abs(diffSecond) + "." + Math.abs(diffMillisecond));
         getAllOfRequestContent(httpServletRequest);
         logger.info("call to : " + httpServletRequest.getRequestURI() 
         + " request time is : " + sdf.format(timeApiRequest) 
