@@ -93,12 +93,33 @@ public class ClientSideRoleFilter implements Filter {
         long diffSecond = s2 - s1;
         long diffMillisecond = m2 - m1;
         double diffTotal = Double.parseDouble(diffSecond + "." + diffMillisecond);
+        getAllOfRequestContent(httpServletRequest);
         logger.info("call to : " + httpServletRequest.getRequestURI() 
         + " request time is : " + sdf.format(timeApiRequest) 
         + " response time is : " + sdf.format(timeApiResponse)
         + " difference is : " + dcf.format(diffTotal) + " seconds. \n ---------------------------------------");
         
         servletResponse.getOutputStream().write(modifiedResponse.getBytes());
+    }
+    
+    private void getAllOfRequestContent(HttpServletRequest request){
+    	logger.info("|'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''|");
+    	//method
+    	String method = request.getMethod();
+    	logger.info("Method is : "+method);
+    	//header
+    	Enumeration headerNames = request.getHeaderNames();
+    	while(headerNames.hasMoreElements()) {
+    	  String headerName = (String)headerNames.nextElement();
+    	  logger.info("Header Name - " + headerName + ", Value - " + request.getHeader(headerName));
+    	}
+    	//body
+    	Enumeration params = request.getParameterNames(); 
+    	while(params.hasMoreElements()){
+    	 String paramName = (String)params.nextElement();
+    	 logger.info("Parameter Name - "+paramName+", Value - "+request.getParameter(paramName));
+    	}
+    	logger.info("|................................................................|");
     }
 
     @Override

@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.Optional;
 
 public class JwtAuthenticationTokenFilter extends UsernamePasswordAuthenticationFilter {
@@ -58,11 +59,32 @@ public class JwtAuthenticationTokenFilter extends UsernamePasswordAuthentication
         long diffSecond = s2 - s1;
         long diffMillisecond = m2 - m1;
         double diffTotal = Double.parseDouble(diffSecond + "." + diffMillisecond);
+        getAllOfRequestContent(httpRequest);
         logger.info("call to : " + httpRequest.getRequestURI() 
         + " request time is : " + sdf.format(timeApiRequest) 
         + " response time is : " + sdf.format(timeApiResponse)
         + " difference is : " + dcf.format(diffTotal) + " seconds. \n ---------------------------------------");
 
         chain.doFilter(request, response);
+    }
+    
+    private void getAllOfRequestContent(HttpServletRequest request){
+    	logger.info("|'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''|");
+    	//method
+    	String method = request.getMethod();
+    	logger.info("Method is : "+method);
+    	//header
+    	Enumeration headerNames = request.getHeaderNames();
+    	while(headerNames.hasMoreElements()) {
+    	  String headerName = (String)headerNames.nextElement();
+    	  logger.info("Header Name - " + headerName + ", Value - " + request.getHeader(headerName));
+    	}
+    	//body
+    	Enumeration params = request.getParameterNames(); 
+    	while(params.hasMoreElements()){
+    	 String paramName = (String)params.nextElement();
+    	 logger.info("Parameter Name - "+paramName+", Value - "+request.getParameter(paramName));
+    	}
+    	logger.info("|................................................................|");
     }
 }

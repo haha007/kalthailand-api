@@ -19,13 +19,18 @@ import th.co.krungthaiaxa.api.elife.utils.JsonUtil;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Enumeration;
 
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.OK;
@@ -119,12 +124,33 @@ public class KalApiTokenFilter implements Filter {
         long diffSecond = s2 - s1;
         long diffMillisecond = m2 - m1;
         double diffTotal = Double.parseDouble(diffSecond + "." + diffMillisecond);
+        getAllOfRequestContent(httpServletRequest);
         logger.info("call to : " + httpServletRequest.getRequestURI() 
         + " request time is : " + sdf.format(timeApiRequest) 
         + " response time is : " + sdf.format(timeApiResponse)
         + " difference is : " + dcf.format(diffTotal) + " seconds. \n ---------------------------------------");
 
         chain.doFilter(request, response);
+    }
+    
+    private void getAllOfRequestContent(HttpServletRequest request){
+    	logger.info("|'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''|");
+    	//method
+    	String method = request.getMethod();
+    	logger.info("Method is : "+method);
+    	//header
+    	Enumeration headerNames = request.getHeaderNames();
+    	while(headerNames.hasMoreElements()) {
+    	  String headerName = (String)headerNames.nextElement();
+    	  logger.info("Header Name - " + headerName + ", Value - " + request.getHeader(headerName));
+    	}
+    	//body
+    	Enumeration params = request.getParameterNames(); 
+    	while(params.hasMoreElements()){
+    	 String paramName = (String)params.nextElement();
+    	 logger.info("Parameter Name - "+paramName+", Value - "+request.getParameter(paramName));
+    	}
+    	logger.info("|................................................................|");
     }
 
     @Override
