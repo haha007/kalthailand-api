@@ -97,6 +97,24 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
             <plugin>
+			    <groupId>org.codehaus.gmaven</groupId>
+			    <artifactId>gmaven-plugin</artifactId>
+			    <executions>
+			        <execution>
+			            <id>setproperty</id>
+			            <phase>validate</phase>
+			            <goals>
+			                <goal>execute</goal>
+			            </goals>
+			            <configuration>
+			                <source>
+			pom.properties['main.basedir']=project.basedir.absolutePath.replace(File.separator,'/');
+			                </source>
+			            </configuration>
+			        </execution>
+			    </executions>
+			</plugin>
+            <plugin>
                 <groupId>org.jvnet.jaxb2.maven2</groupId>
                 <artifactId>maven-jaxb2-plugin</artifactId>
                 <version>0.13.1</version>
@@ -113,7 +131,7 @@
                     <generatePackage>th.co.krungthaiaxa.api.elife.tmc.wsdl</generatePackage>
                     <schemas>
                         <schema>
-                            <url>D:/pc-website/kalthailand-api/kalthailand-api-elife/src/main/resources/wsdl/tmc_soap_service.wsdl</url>
+                            <url>${main.basedir}/src/main/resources/wsdl/tmc_soap_service.wsdl</url>
                         </schema>
                     </schemas>
                 </configuration>
