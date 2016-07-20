@@ -26,19 +26,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 @WebAppConfiguration
 @ActiveProfiles("test")
 public class RsaUtilTest {
-	
-	@Inject
-	private RsaUtil rsaUtil;
 
 	@Test
 	public void should_encryp_text() {
-		System.out.println(rsaUtil.encrypt("3101202780273"));
-		assertThat(rsaUtil.encrypt("3101202780273")).contains("==");
+		assertThat(RsaUtil.encrypt("3101202780273").length()).isGreaterThan(13);
 	}
 
 	@Test
 	public void should_decrypt_text() {
-		assertThat(rsaUtil.decrypt("enncJ1GwWP4RbewQy5MHYLFRGvNHBLW88+yezjOd8dPNZXh+hr+BvXVQEoVDtQki9/eyVMt0XNgK7w+5NnSO+Pr54oYLS12jvP5GZaRbYGhKfEQraVZecBr6VCvjS0j7x2Gk/64gNaiWqLN/OtBoHR7Wu/JAxgXzmr77SbkIhwD8Gh1MY9EZBUz1L9aC5/jDIxl+ubPoQc/dUZ685JkS5fxf1p8AwKKdUcvKcgh01PMgoJXnhh5Zn9BEYfcYPNel71gABXDMBFqNfyKV5pWn2JN+B/S5kunXcG6H9lcF0SS65GNDn7lmLLpm0tyMUfjVPl6+sh+gkAiNjOS8ZOPgjg==")).contains("3101202780273");
+		assertThat(RsaUtil.decrypt("enncJ1GwWP4RbewQy5MHYLFRGvNHBLW88+yezjOd8dPNZXh+hr+BvXVQEoVDtQki9/eyVMt0XNgK7w+5NnSO+Pr54oYLS12jvP5GZaRbYGhKfEQraVZecBr6VCvjS0j7x2Gk/64gNaiWqLN/OtBoHR7Wu/JAxgXzmr77SbkIhwD8Gh1MY9EZBUz1L9aC5/jDIxl+ubPoQc/dUZ685JkS5fxf1p8AwKKdUcvKcgh01PMgoJXnhh5Zn9BEYfcYPNel71gABXDMBFqNfyKV5pWn2JN+B/S5kunXcG6H9lcF0SS65GNDn7lmLLpm0tyMUfjVPl6+sh+gkAiNjOS8ZOPgjg==")).contains("3101202780273");
 	}
 
 	

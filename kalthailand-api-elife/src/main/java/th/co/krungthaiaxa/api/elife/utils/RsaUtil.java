@@ -45,7 +45,7 @@ public class RsaUtil {
 	        //generateKey();
 			logger.error("cannot find key .....");
 	      }
-		String privateKeyFileString = KEY_FILE_PATH + PRIVATE_KEY_NAME;
+		String privateKeyFileString = getPathFileName() + PRIVATE_KEY_NAME;
 		ObjectInputStream inputStream = null;
 		try {
 			inputStream = new ObjectInputStream(new FileInputStream(privateKeyFileString));
@@ -79,7 +79,7 @@ public class RsaUtil {
 	        //generateKey();
 			logger.error("cannot find key .....");
 	      }
-		  String publicKeyFileString = KEY_FILE_PATH + PUBLIC_KEY_NAME;
+		  String publicKeyFileString = getPathFileName() + PUBLIC_KEY_NAME;
 		  ObjectInputStream inputStream = null;
 		try {
 			inputStream = new ObjectInputStream(new FileInputStream(publicKeyFileString));
@@ -112,9 +112,19 @@ public class RsaUtil {
 		    return new String(Base64.encodeBase64(cipherText));
 	  }
 	
+	private static String getPathFileName(){
+		if((new File(KEY_FILE_PATH)).exists()==true){
+			// for linux
+			return KEY_FILE_PATH;
+		}else{
+			// for windows
+			return "C:\\keys\\";
+		}
+	}
+	
 	  private void generateKey() {
-		  String privateKeyFileString = KEY_FILE_PATH + PRIVATE_KEY_NAME;
-		  String publicKeyFileString = KEY_FILE_PATH + PUBLIC_KEY_NAME;
+		  String privateKeyFileString = getPathFileName() + PRIVATE_KEY_NAME;
+		  String publicKeyFileString = getPathFileName() + PUBLIC_KEY_NAME;
 	    try {
 	      final KeyPairGenerator keyGen = KeyPairGenerator.getInstance(ALGORITHM);
 	      keyGen.initialize(2048);
@@ -152,8 +162,8 @@ public class RsaUtil {
 	  }
 
 	  private static boolean areKeysPresent() {
-		String privateKeyFileString = KEY_FILE_PATH + PRIVATE_KEY_NAME;
-		String publicKeyFileString = KEY_FILE_PATH + PUBLIC_KEY_NAME;
+		String privateKeyFileString = getPathFileName() + PRIVATE_KEY_NAME;
+		String publicKeyFileString = getPathFileName() + PUBLIC_KEY_NAME;
 	    File privateKey = new File(privateKeyFileString);
 	    File publicKey = new File(publicKeyFileString);
 	    if (privateKey.exists() && publicKey.exists()) {

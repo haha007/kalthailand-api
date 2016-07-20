@@ -33,7 +33,7 @@ public class BlackListClient {
         httpHeaders.add(tokenHeader, token);
         
         logger.info(":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
-        logger.info("<----- Checking thaiId before call Blacklist : "+thaiId);
+        logger.info("<----- Checking thaiId before call Blacklist : "+thaiId.substring(0,4)+"XXXXXXXXX");
         logger.info(":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
 
         HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
