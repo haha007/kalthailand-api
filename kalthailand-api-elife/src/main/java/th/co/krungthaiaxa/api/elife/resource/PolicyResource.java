@@ -101,9 +101,9 @@ public class PolicyResource {
             @ApiParam(value = "To filter Policies starting after the given date")
             @RequestParam(required = false) String fromDate,
             @ApiParam(value = "To filter Policies ending before the given date")
-			@RequestParam(required = false) String toDate) {
+            @RequestParam(required = false) String toDate) {
 
-			LocalDate startDate = null;
+        LocalDate startDate = null;
         if (StringUtils.isNoneEmpty(fromDate)) {
             startDate = LocalDate.from(DateTimeFormatter.ISO_DATE_TIME.parse(fromDate));
         }
@@ -114,16 +114,16 @@ public class PolicyResource {
         }
         return new ResponseEntity<>(getJson(policyService.findAll(policyId, productType, status, nonEmptyAgentCode, startDate, endDate, pageNumber, pageSize)), OK);
     }
-    @ApiOperation(value = "List of policies", notes = "Gets a list of policies.", response = Policy.class, responseContainer = "List")
+
+    @ApiOperation(value = "List of policies", notes = "Gets a list of policies.", response = Long.class)
     @ApiResponses({
-            @ApiResponse(code = 406, message = "If Excel file is not in invalid format", response = Error.class)
+            @ApiResponse(code = 500, message = "Internal error", response = Error.class)
     })
-    @RequestMapping(value = "/policies", produces = APPLICATION_JSON_VALUE, method = GET)
+    @RequestMapping(value = "/policies/available/remain/count", produces = APPLICATION_JSON_VALUE, method = GET)
     @ResponseBody
-    public int countAllPolicies(){
-
+    public long countAllPolicies() {
+        return policyService.countRemainAvailablePoliciesNumbers();
     }
-
 
     @ApiOperation(value = "Policies extract", notes = "Gets the policy extract for commission calculation. Result is an Excel file", response = Policy.class, responseContainer = "List")
     @RequestMapping(value = "/policies/extract/download", method = GET)
@@ -154,15 +154,15 @@ public class PolicyResource {
 
         List<Policy> policies = policyService.findAll(policyId, productType, status, nonEmptyAgentCode, startDate, endDate);
 
-		String now = ofPattern("yyyyMMdd_HHmmss").format(now());
+        String now = ofPattern("yyyyMMdd_HHmmss").format(now());
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("PolicyExtract_" + now);
 
-		ExcelUtils.appendRow(sheet,
+        ExcelUtils.appendRow(sheet,
                 text("Policy ID"),
                 text("Previous Policy ID"),
                 text("Agent Code 1"),
-				text("Agent Code 2"));
+                text("Agent Code 2"));
         policies.stream().forEach(tmp -> createPolicyExtractExcelFileLine(sheet, tmp));
         ExcelUtils.autoWidthAllColumns(workbook);
 
@@ -226,12 +226,12 @@ public class PolicyResource {
 
         try {
             switch (reminderId) {
-                case 1:
-                    policyService.sendNotificationsWhenUserNotRespondingToCalls(policy.get());
-                    break;
-                case 2:
-                    policyService.sendNotificationsWhenPhoneNumberIsWrong(policy.get());
-                    break;
+            case 1:
+                policyService.sendNotificationsWhenUserNotRespondingToCalls(policy.get());
+                break;
+            case 2:
+                policyService.sendNotificationsWhenPhoneNumberIsWrong(policy.get());
+                break;
             }
         } catch (MessagingException | IOException e) {
             logger.error("Notification has not been sent", e);
@@ -286,8 +286,8 @@ public class PolicyResource {
             @RequestParam ChannelType channelType,
             @ApiParam(value = "The json of the quote to create the policy from. This quote will go through maximum " +
                     "validations")
-			@RequestBody String jsonQuote) {
-		Quote quote;
+            @RequestBody String jsonQuote) {
+        Quote quote;
         try {
             quote = JsonUtil.mapper.readValue(jsonQuote, Quote.class);
         } catch (IOException e) {
@@ -381,9 +381,9 @@ public class PolicyResource {
 
         // Update the payment
         if (regKey.isPresent()) {
-        	policyService.updatePayment(payment.get(), orderId, transactionId.get(), (!regKey.isPresent()?"":regKey.get()));
+            policyService.updatePayment(payment.get(), orderId, transactionId.get(), (!regKey.isPresent() ? "" : regKey.get()));
         } else {
-        	policyService.updatePayment(payment.get(), orderId, transactionId.get(), "");
+            policyService.updatePayment(payment.get(), orderId, transactionId.get(), "");
         }
 
         // Update the policy status
@@ -451,13 +451,11 @@ public class PolicyResource {
                 logger.error("Unable to confirm the payment in the policy with ID [" + policyId + "]", e);
                 return new ResponseEntity<>(getJson(UNABLE_TO_CAPTURE_PAYMENT.apply(e.getMessage())), NOT_ACCEPTABLE);
             }
-        }
-        else if (linePayCaptureMode.equals(FAKE_WITH_ERROR)) {
+        } else if (linePayCaptureMode.equals(FAKE_WITH_ERROR)) {
             linePayResponse = new LinePayResponse();
             linePayResponse.setReturnCode("9999");
             linePayResponse.setReturnMessage("This is a fake call to Line Pay API with an error as a result");
-        }
-        else if (linePayCaptureMode.equals(FAKE_WITH_SUCCESS)) {
+        } else if (linePayCaptureMode.equals(FAKE_WITH_SUCCESS)) {
             LinePayResponsePaymentInfo payResponsePaymentInfo = new LinePayResponsePaymentInfo();
             payResponsePaymentInfo.setMethod("someMethodAfterFakeCallToLinePayCaptureAPI");
             payResponsePaymentInfo.setCreditCardName("someCreditCardNameAfterFakeCallToLinePayCaptureAPI");
@@ -474,8 +472,7 @@ public class PolicyResource {
 
         if (linePayResponse == null) {
             return new ResponseEntity<>(getJson(UNABLE_TO_CAPTURE_PAYMENT.apply("No way to call Line Pay capture API has been provided")), NOT_ACCEPTABLE);
-        }
-        else if (!linePayResponse.getReturnCode().equals("0000")) {
+        } else if (!linePayResponse.getReturnCode().equals("0000")) {
             String msg = "Confirming payment didn't go through. Error code is [" + linePayResponse.getReturnCode() + "], error message is [" + linePayResponse.getReturnMessage() + "]";
             return new ResponseEntity<>(getJson(UNABLE_TO_CAPTURE_PAYMENT.apply(msg)), NOT_ACCEPTABLE);
         }
@@ -494,7 +491,6 @@ public class PolicyResource {
         return new ResponseEntity<>(getJson(policy.get()), OK);
     }
 
-
 //    @ApiOperation(value = "Get setting of policy", notes = "Get setting of policy.", response = Policy.class, responseContainer = "List")
 //    @ApiResponses({
 //            @ApiResponse(code = 500, message = "If there was some internal error", response = Error.class)
@@ -506,13 +502,13 @@ public class PolicyResource {
 //    }
 
     private void createPolicyExtractExcelFileLine(Sheet sheet, Policy policy) {
-    	if(policy.getInsureds().get(0).getInsuredPreviousInformations().size()!=0){
-    		ExcelUtils.appendRow(sheet,
+        if (policy.getInsureds().get(0).getInsuredPreviousInformations().size() != 0) {
+            ExcelUtils.appendRow(sheet,
                     text(policy.getPolicyId()),
                     text(policy.getInsureds().get(0).getInsuredPreviousInformations().get(0)),
                     text(policy.getInsureds().get(0).getInsuredPreviousInformations().get(1)),
                     text(policy.getInsureds().get(0).getInsuredPreviousInformations().get(2)));
-    	}
+        }
     }
 
 }

@@ -65,16 +65,19 @@ public class PolicyService {
     private final CDBClient cdbClient;
 
     @Inject
+    private SettingService settingService;
+
+    @Inject
     public PolicyService(TMCClient tmcClient,
-                         PaymentRepository paymentRepository,
-                         PolicyCriteriaRepository policyCriteriaRepository,
-                         PolicyRepository policyRepository,
-                         PolicyNumberRepository policyNumberRepository,
-                         QuoteRepository quoteRepository,
-                         EmailService emailService,
-                         LineService lineService, DocumentService documentService,
-                         SMSApiService smsApiService,
-                         ProductFactory productFactory, CDBClient cdbClient) {
+            PaymentRepository paymentRepository,
+            PolicyCriteriaRepository policyCriteriaRepository,
+            PolicyRepository policyRepository,
+            PolicyNumberRepository policyNumberRepository,
+            QuoteRepository quoteRepository,
+            EmailService emailService,
+            LineService lineService, DocumentService documentService,
+            SMSApiService smsApiService,
+            ProductFactory productFactory, CDBClient cdbClient) {
         this.tmcClient = tmcClient;
         this.cdbClient = cdbClient;
         this.paymentRepository = paymentRepository;
@@ -90,12 +93,12 @@ public class PolicyService {
     }
 
     public Page<Policy> findAll(String policyId, ProductType productType, PolicyStatus status, Boolean nonEmptyAgentCode, LocalDate startDate,
-                                LocalDate endDate, Integer startIndex, Integer nbOfRecords) {
+            LocalDate endDate, Integer startIndex, Integer nbOfRecords) {
         return policyCriteriaRepository.findPolicies(policyId, productType, status, nonEmptyAgentCode, startDate, endDate, new PageRequest(startIndex, nbOfRecords, new Sort(Sort.Direction.DESC, "policyId")));
     }
 
     public List<Policy> findAll(String policyId, ProductType productType, PolicyStatus status, Boolean nonEmptyAgentCode, LocalDate startDate,
-                                      LocalDate endDate) {
+            LocalDate endDate) {
         return policyCriteriaRepository.findPolicies(policyId, productType, status, nonEmptyAgentCode, startDate, endDate);
     }
 
@@ -146,7 +149,7 @@ public class PolicyService {
     }
 
     public void updatePaymentWithErrorStatus(Payment payment, Double amount, String currencyCode, ChannelType channelType,
-                                             String errorCode, String errorMessage) {
+            String errorCode, String errorMessage) {
         updatePayment(payment, amount, currencyCode, channelType,
                 errorCode,
                 errorMessage,
@@ -154,36 +157,37 @@ public class PolicyService {
                 null,
                 null);
     }
-    
+
     public void updateRecurringPayment(
-    		Payment payment, 
-    		Double amount, 
-    		String currencyCode, 
-    		ChannelType channelType,
+            Payment payment,
+            Double amount,
+            String currencyCode,
+            ChannelType channelType,
             LinePayRecurringResponse linePayResponse,
-            String paymentId, 
-            String regKey, 
-            Double amt, 
-            String productId, 
+            String paymentId,
+            String regKey,
+            Double amt,
+            String productId,
             String orderId) {
-    	
-    			PaymentInformation paymentInformation = new PaymentInformation();
-    			paymentInformation.setRejectionErrorCode(linePayResponse.getReturnCode());
-    			paymentInformation.setRejectionErrorMessage(linePayResponse.getReturnMessage());
-    			if(linePayResponse.getReturnCode().equals("0000")){
-    				String msg = "transactionDate:"+linePayResponse.getInfo().getTransactionDate()+" ,transactionId:"+linePayResponse.getInfo().getTransactionId()+" ,paymentId="+paymentId+" ,regKey="+RsaUtil.encrypt(regKey)+" ,amt="+amt+" ,productId="+productId+" ,orderId="+orderId;
-    				paymentInformation.setStatus(SuccessErrorStatus.SUCCESS);
-        			paymentInformation.setMethod(msg);        			
-        			payment.setStatus(COMPLETED);
-    			}else{
-    				payment.setStatus(INCOMPLETE);
-    			}
-    			payment.addPaymentInformation(paymentInformation);
-    			paymentRepository.save(payment);    			
+
+        PaymentInformation paymentInformation = new PaymentInformation();
+        paymentInformation.setRejectionErrorCode(linePayResponse.getReturnCode());
+        paymentInformation.setRejectionErrorMessage(linePayResponse.getReturnMessage());
+        if (linePayResponse.getReturnCode().equals("0000")) {
+            String msg = "transactionDate:" + linePayResponse.getInfo().getTransactionDate() + " ,transactionId:" + linePayResponse.getInfo().getTransactionId() + " ,paymentId=" + paymentId + " ,regKey=" + RsaUtil.encrypt(regKey) + " ,amt=" + amt + " ,productId=" + productId
+                    + " ,orderId=" + orderId;
+            paymentInformation.setStatus(SuccessErrorStatus.SUCCESS);
+            paymentInformation.setMethod(msg);
+            payment.setStatus(COMPLETED);
+        } else {
+            payment.setStatus(INCOMPLETE);
+        }
+        payment.addPaymentInformation(paymentInformation);
+        paymentRepository.save(payment);
     }
 
     public void updatePayment(Payment payment, Double amount, String currencyCode, ChannelType channelType,
-                              LinePayResponse linePayResponse) {
+            LinePayResponse linePayResponse) {
         String creditCardName = null;
         String method = null;
         if (linePayResponse.getInfo().getPayInfo().size() > 0) {
@@ -241,12 +245,12 @@ public class PolicyService {
         if (insuredId.isPresent()) {
             Optional<Triple<String, String, String>> agent = cdbClient.getExistingAgentCode(insuredId.get().getId(), insuredDOB);
             if (agent.isPresent()) {
-            	String previousPolicy = agent.get().getLeft();
-            	String agent1 = agent.get().getMiddle();
-            	String agent2 = agent.get().getRight();
-            	policy.getInsureds().get(0).addInsuredPreviousInformation((previousPolicy!=null)?previousPolicy:"NULL");
-            	policy.getInsureds().get(0).addInsuredPreviousInformation((agent1!=null)?agent1:"NULL");
-            	policy.getInsureds().get(0).addInsuredPreviousInformation((agent2!=null)?agent2:"NULL");                
+                String previousPolicy = agent.get().getLeft();
+                String agent1 = agent.get().getMiddle();
+                String agent2 = agent.get().getRight();
+                policy.getInsureds().get(0).addInsuredPreviousInformation((previousPolicy != null) ? previousPolicy : "NULL");
+                policy.getInsureds().get(0).addInsuredPreviousInformation((agent1 != null) ? agent1 : "NULL");
+                policy.getInsureds().get(0).addInsuredPreviousInformation((agent2 != null) ? agent2 : "NULL");
             }
         }
 
@@ -448,5 +452,16 @@ public class PolicyService {
 
         paymentRepository.save(payment);
         logger.info("Payment [" + payment.getPaymentId() + "] has been updated");
+    }
+
+    public long countAvailablePoliciesNumbers() {
+        return policyNumberRepository.countByPolicyNull();
+    }
+
+    public long countRemainAvailablePoliciesNumbers() {
+        PolicySetting setting = settingService.loadPolicySetting();
+        long quota = setting.getQuota();
+        long availablePolicies = countAvailablePoliciesNumbers();
+        return quota - availablePolicies;
     }
 }

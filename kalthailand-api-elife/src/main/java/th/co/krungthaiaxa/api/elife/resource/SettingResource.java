@@ -29,11 +29,11 @@ public class SettingResource {
     @Inject
     private SettingService settingService;
 
-    @ApiOperation(value = "Get setting of policy", notes = "Get setting of policy.", response = Policy.class, responseContainer = "List")
+    @ApiOperation(value = "Get setting of policy", notes = "Get setting of policy.", response = PolicySetting.class)
     @ApiResponses({
             @ApiResponse(code = 500, message = "If there was some internal error", response = Error.class)
     })
-    @RequestMapping(value = "/setting/policy", produces = APPLICATION_JSON_VALUE, method = GET)
+    @RequestMapping(value = "/settings/policy", produces = APPLICATION_JSON_VALUE, method = GET)
     @ResponseBody
     public PolicySetting getPoliciesQuota() {
         return settingService.loadPolicySetting();

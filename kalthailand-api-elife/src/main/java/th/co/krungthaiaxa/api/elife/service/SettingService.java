@@ -37,14 +37,22 @@ public class SettingService {
             setting = settings.get(0);
         }
         PolicySetting policySetting = setting.getPolicySetting();
+        if (policySetting == null) {
+            setting.setPolicySetting(initDefaultPolicySetting());
+            settingRepository.save(setting);
+        }
         return policySetting;
     }
 
     private Setting initDefaultSetting() {
         Setting setting = new Setting();
+        setting.setPolicySetting(initDefaultPolicySetting());
+        return setting;
+    }
+
+    private PolicySetting initDefaultPolicySetting() {
         PolicySetting policySetting = new PolicySetting();
         policySetting.setQuota(POLICY_QUOTA);
-        setting.setPolicySetting(policySetting);
-        return setting;
+        return policySetting;
     }
 }
