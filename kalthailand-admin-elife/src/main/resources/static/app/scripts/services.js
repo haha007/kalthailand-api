@@ -72,6 +72,10 @@
     app.factory('PolicyNotification', function ($resource) {
         return $resource(window.location.origin + '/api-elife/policies/:id/reminder/:reminderId', { id: '@id', reminderId: '@reminderId' }, {});
     });
+    
+    app.factory('PolicyQuotaConfig', function ($resource) {
+        return $resource(window.location.origin + '/api-elife/policy-quota/:id', { id: '@id' }, {});
+    });
 
     app.factory('httpRequestInterceptor', function ($localStorage) {
         return {
