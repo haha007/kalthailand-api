@@ -1,39 +1,44 @@
 package th.co.krungthaiaxa.api.elife.resource;
 
+import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NOT_ACCEPTABLE;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static th.co.krungthaiaxa.api.elife.model.error.ErrorCode.*;
 import static th.co.krungthaiaxa.api.elife.utils.JsonUtil.getJson;
 
 import java.io.IOException;
-import java.util.Optional;
 
 import javax.inject.Inject;
+import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.poi.openxml4j.exceptions.OpenXML4JException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import org.xml.sax.SAXException;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import th.co.krungthaiaxa.api.elife.data.PolicyNumber;
 import th.co.krungthaiaxa.api.elife.data.PolicyQuota;
-import th.co.krungthaiaxa.api.elife.model.Policy;
-import th.co.krungthaiaxa.api.elife.model.Quote;
+import th.co.krungthaiaxa.api.elife.exception.ElifeException;
 import th.co.krungthaiaxa.api.elife.model.error.Error;
 import th.co.krungthaiaxa.api.elife.model.error.ErrorCode;
 import th.co.krungthaiaxa.api.elife.service.PolicyQuotaService;
 import th.co.krungthaiaxa.api.elife.utils.JsonUtil;
-
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 @RestController
 @Api(value = "PoliciyQuota")
@@ -54,13 +59,16 @@ public class PolicyQuotaResource {
     @RequestMapping(value = "/policyquota", produces = APPLICATION_JSON_VALUE, method = GET)
     @ResponseBody
 	public ResponseEntity<byte[]> getPolicyQuota(){
+		
 		PolicyQuota policyQuota = policyQuotaService.getPolicyQuota();
+		
 		if(null==policyQuota){
 			return new ResponseEntity<>(getJson(ErrorCode.POLICY_QUOTA_DOES_NOT_EXIST), NOT_FOUND);
 		}else{
 			policyQuota.setRowId(0);
 			return new ResponseEntity<>(getJson(policyQuota), OK);
 		}
+		
 	}
 	
 	@ApiOperation(value = "Update a policy quota", notes = "Update a policy quota", response = Boolean.class)
@@ -95,5 +103,21 @@ public class PolicyQuotaResource {
 		return new ResponseEntity<>(getJson(true),OK);
 		
 	}
+	
+	@ApiOperation(value = "Upload policy number file", notes = "Uploads an Excel file (must be a xlsx file) containing the policy number.", response = PolicyNumber.class, responseContainer = "List")
+    @ApiResponses({
+            @ApiResponse(code = 406, message = "If Excel file is not in invalid format", response = Error.class)
+    })
+    @RequestMapping(value = "/policyquota/upload", produces = APPLICATION_JSON_VALUE, method = POST)
+    @ResponseBody
+    public ResponseEntity<byte[]> uploadPolicyQuotaFileFile(
+            @ApiParam(required = true, value = "The Excel file to upload")
+            @RequestParam("file") MultipartFile file) {
+        try {
+            return new ResponseEntity<>(getJson(policyQuotaService.readPolicyNumberExcelFile(file.getInputStream())), CREATED);
+        } catch (IOException | SAXException | OpenXML4JException | ParserConfigurationException | IllegalArgumentException | ElifeException e) {
+            return new ResponseEntity<>(getJson(INVALID_POLICY_NUMBER_EXCEL_FILE), NOT_ACCEPTABLE);
+        }
+    }
 	
 }

@@ -18,6 +18,7 @@ public class ErrorCode {
     public static final Error INVALID_POLICY_QUOTA_PROVIDED = new Error("0202", "Unable to update your policy quota", "The policy quota provided as JSon is not a valid policy quota, probably an incompatibility between mobile and server");
     public static final Error INVALID_POLICY_QUOTA_EMAIL_LIST = new Error("0203", "Unable to update your policy quota", "The policy quota email list is not valid");
     public static final Error INVALID_POLICY_QUOTA_PERCENT = new Error("0204", "Unable to update your policy quota", "The policy quota percent is not valid");
+    public static final Error INVALID_POLICY_NUMBER_EXCEL_FILE = new Error("0205", "Invalid policy number excel file format", "An upload policy number excel file is invalid");
     // Quote
     public static final Error INVALID_QUOTE_PROVIDED = new Error("0301", "Unable to update your quote", "The quote provided as JSon is not a valid quote, probably an incompatibility between mobile and server");
     public static final Error QUOTE_NOT_CREATED = new Error("0302", "The quote has not been updated", "An error occured while trying to create the quote");
