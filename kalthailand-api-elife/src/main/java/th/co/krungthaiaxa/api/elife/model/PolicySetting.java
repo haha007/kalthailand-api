@@ -4,13 +4,13 @@ import io.swagger.annotations.ApiModel;
 
 @ApiModel(description = "Setting for policy")
 public class PolicySetting {
-    private Integer quotaInMonth;
+    private Integer quota;
 
-    public Integer getQuotaInMonth() {
-        return quotaInMonth;
+    public Integer getQuota() {
+        return quota;
     }
 
-    public void setQuotaInMonth(Integer quotaInMonth) {
-        this.quotaInMonth = quotaInMonth;
+    public void setQuota(Integer quota) {
+        this.quota = quota;
     }
 }

@@ -102,7 +102,7 @@ public class PolicyResource {
             @RequestParam(required = false) String fromDate,
             @ApiParam(value = "To filter Policies ending before the given date")
 			@RequestParam(required = false) String toDate) {
-			
+
 			LocalDate startDate = null;
         if (StringUtils.isNoneEmpty(fromDate)) {
             startDate = LocalDate.from(DateTimeFormatter.ISO_DATE_TIME.parse(fromDate));
@@ -114,6 +114,16 @@ public class PolicyResource {
         }
         return new ResponseEntity<>(getJson(policyService.findAll(policyId, productType, status, nonEmptyAgentCode, startDate, endDate, pageNumber, pageSize)), OK);
     }
+    @ApiOperation(value = "List of policies", notes = "Gets a list of policies.", response = Policy.class, responseContainer = "List")
+    @ApiResponses({
+            @ApiResponse(code = 406, message = "If Excel file is not in invalid format", response = Error.class)
+    })
+    @RequestMapping(value = "/policies", produces = APPLICATION_JSON_VALUE, method = GET)
+    @ResponseBody
+    public int countAllPolicies(){
+
+    }
+
 
     @ApiOperation(value = "Policies extract", notes = "Gets the policy extract for commission calculation. Result is an Excel file", response = Policy.class, responseContainer = "List")
     @RequestMapping(value = "/policies/extract/download", method = GET)
@@ -143,11 +153,11 @@ public class PolicyResource {
         }
 
         List<Policy> policies = policyService.findAll(policyId, productType, status, nonEmptyAgentCode, startDate, endDate);
-		
+
 		String now = ofPattern("yyyyMMdd_HHmmss").format(now());
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("PolicyExtract_" + now);
-		
+
 		ExcelUtils.appendRow(sheet,
                 text("Policy ID"),
                 text("Previous Policy ID"),
@@ -373,9 +383,9 @@ public class PolicyResource {
         if (regKey.isPresent()) {
         	policyService.updatePayment(payment.get(), orderId, transactionId.get(), (!regKey.isPresent()?"":regKey.get()));
         } else {
-        	policyService.updatePayment(payment.get(), orderId, transactionId.get(), "");	
+        	policyService.updatePayment(payment.get(), orderId, transactionId.get(), "");
         }
-        
+
         // Update the policy status
         policyService.updatePolicyAfterFirstPaymentValidated(policy.get());
 
@@ -484,6 +494,17 @@ public class PolicyResource {
         return new ResponseEntity<>(getJson(policy.get()), OK);
     }
 
+
+//    @ApiOperation(value = "Get setting of policy", notes = "Get setting of policy.", response = Policy.class, responseContainer = "List")
+//    @ApiResponses({
+//            @ApiResponse(code = 500, message = "If there was some internal error", response = Error.class)
+//    })
+//    @RequestMapping(value = "/policies/policy", produces = APPLICATION_JSON_VALUE, method = GET)
+//    @ResponseBody
+//    public PolicySetting getPoliciesQuota() {
+//        return settingService.loadPolicySetting();
+//    }
+
     private void createPolicyExtractExcelFileLine(Sheet sheet, Policy policy) {
     	if(policy.getInsureds().get(0).getInsuredPreviousInformations().size()!=0){
     		ExcelUtils.appendRow(sheet,
@@ -493,5 +514,5 @@ public class PolicyResource {
                     text(policy.getInsureds().get(0).getInsuredPreviousInformations().get(2)));
     	}
     }
-    
+
 }
