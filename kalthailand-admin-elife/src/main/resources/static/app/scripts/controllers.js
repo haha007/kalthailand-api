@@ -144,6 +144,12 @@
             });
         }
     });
+    
+    app.controller('ConfigurationController', function ($scope, $route, CollectionFile, $localStorage) {
+        $scope.$route = $route;
+        
+        
+    });
 
     app.controller('BlackListController', function ($scope, $route, BlackList, BlackListFileUpload) {
         $scope.$route = $route;
