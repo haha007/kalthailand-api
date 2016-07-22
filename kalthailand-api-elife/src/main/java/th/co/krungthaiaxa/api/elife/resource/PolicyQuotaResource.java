@@ -12,6 +12,8 @@ import static th.co.krungthaiaxa.api.elife.model.error.ErrorCode.*;
 import static th.co.krungthaiaxa.api.elife.utils.JsonUtil.getJson;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.xml.parsers.ParserConfigurationException;
@@ -53,21 +55,23 @@ public class PolicyQuotaResource {
 		this.policyQuotaService = policyQuotaService;
 	}
 
-	@ApiOperation(value = "Get policy quota data", notes = "Get a policy quota data.", response = PolicyQuota.class)
+	@ApiOperation(value = "Get policy quota data", notes = "Get a policy quota data.", response = PolicyQuota.class, responseContainer = "List")
     @ApiResponses({
             @ApiResponse(code = 406, message = "If policy quota data not exists", response = Error.class)
     })
-    @RequestMapping(value = "/policyquota", produces = APPLICATION_JSON_VALUE, method = GET)
+    @RequestMapping(value = "/policy-quota", produces = APPLICATION_JSON_VALUE, method = GET)
     @ResponseBody
 	public ResponseEntity<byte[]> getPolicyQuota(){
 		
 		PolicyQuota policyQuota = policyQuotaService.getPolicyQuota();
+		List<PolicyQuota> listPolicyQuota = new ArrayList<>();
+		listPolicyQuota.add(policyQuota);
 		
 		if(null==policyQuota){
 			return new ResponseEntity<>(getJson(ErrorCode.POLICY_QUOTA_DOES_NOT_EXIST), NOT_FOUND);
 		}else{
 			policyQuota.setRowId(0);
-			return new ResponseEntity<>(getJson(policyQuota), OK);
+			return new ResponseEntity<>(getJson(listPolicyQuota), OK);
 		}
 		
 	}
@@ -77,7 +81,7 @@ public class PolicyQuotaResource {
             @ApiResponse(code = 406, message = "If JSon of policy quota is invalid or if policy quota could not be update",
                     response = Error.class)
     })
-    @RequestMapping(value = "/policyquota/update", produces = APPLICATION_JSON_VALUE, method = PUT)
+    @RequestMapping(value = "/policy-quota/update", produces = APPLICATION_JSON_VALUE, method = PUT)
     @ResponseBody
 	public ResponseEntity<byte[]> updatePolicyQuota(
 			@ApiParam(value = "The policy quota to update")
@@ -109,7 +113,7 @@ public class PolicyQuotaResource {
     @ApiResponses({
             @ApiResponse(code = 406, message = "If Excel file is not in invalid format", response = Error.class)
     })
-    @RequestMapping(value = "/policyquota/upload", produces = APPLICATION_JSON_VALUE, method = POST)
+    @RequestMapping(value = "/policy-quota/upload", produces = APPLICATION_JSON_VALUE, method = POST)
     @ResponseBody
     public ResponseEntity<byte[]> uploadPolicyQuotaFileFile(
             @ApiParam(required = true, value = "The Excel file to upload")
