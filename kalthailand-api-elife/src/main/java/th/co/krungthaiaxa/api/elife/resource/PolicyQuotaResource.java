@@ -7,6 +7,7 @@ import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
+import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 import static th.co.krungthaiaxa.api.elife.model.error.ErrorCode.*;
 import static th.co.krungthaiaxa.api.elife.utils.JsonUtil.getJson;
 
@@ -76,7 +77,7 @@ public class PolicyQuotaResource {
             @ApiResponse(code = 406, message = "If JSon of policy quota is invalid or if policy quota could not be update",
                     response = Error.class)
     })
-    @RequestMapping(value = "/policyquota/update", produces = APPLICATION_JSON_VALUE, method = POST)
+    @RequestMapping(value = "/policyquota/update", produces = APPLICATION_JSON_VALUE, method = PUT)
     @ResponseBody
 	public ResponseEntity<byte[]> updatePolicyQuota(
 			@ApiParam(value = "The policy quota to update")
