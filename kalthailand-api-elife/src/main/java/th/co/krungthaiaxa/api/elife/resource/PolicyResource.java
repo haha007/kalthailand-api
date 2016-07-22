@@ -114,16 +114,6 @@ public class PolicyResource {
         }
         return new ResponseEntity<>(getJson(policyService.findAll(policyId, productType, status, nonEmptyAgentCode, startDate, endDate, pageNumber, pageSize)), OK);
     }
-    @ApiOperation(value = "List of policies", notes = "Gets a list of policies.", response = Policy.class, responseContainer = "List")
-    @ApiResponses({
-            @ApiResponse(code = 406, message = "If Excel file is not in invalid format", response = Error.class)
-    })
-    @RequestMapping(value = "/policies", produces = APPLICATION_JSON_VALUE, method = GET)
-    @ResponseBody
-    public int countAllPolicies(){
-
-    }
-
 
     @ApiOperation(value = "List of policies", notes = "Gets a list of policies.", response = Long.class)
     @ApiResponses({
@@ -393,11 +383,8 @@ public class PolicyResource {
         if (regKey.isPresent()) {
             policyService.updatePayment(payment.get(), orderId, transactionId.get(), (!regKey.isPresent() ? "" : regKey.get()));
         } else {
-<<<<<<< HEAD
-            policyService.updatePayment(payment.get(), orderId, transactionId.get(), "");
-=======
+
         	policyService.updatePayment(payment.get(), orderId, transactionId.get(), "");
->>>>>>> origin/feature/policy-quota-config-page
         }
 
         // Update the policy status
