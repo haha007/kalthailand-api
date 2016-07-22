@@ -25,10 +25,11 @@
 
     <modules>
         <module>kalthailand-admin-elife</module>
+        <module>kalthailand-api-common</module>
         <module>kalthailand-api-auth</module>
         <module>kalthailand-api-signing</module>
         <module>kalthailand-api-elife</module>
-		<module>kalthailand-api-blacklist</module>
+        <module>kalthailand-api-blacklist</module>
     </modules>
 
     <dependencies>
@@ -134,7 +135,7 @@
                         <downloadJavadocs>true</downloadJavadocs>
                     </configuration>
                 </plugin>
-           </plugins>
+            </plugins>
         </pluginManagement>
     </build>
 
