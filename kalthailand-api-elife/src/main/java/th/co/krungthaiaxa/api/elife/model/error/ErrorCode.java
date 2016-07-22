@@ -15,6 +15,12 @@ public class ErrorCode {
     public static final Error WATERMARK_IMAGE_INPUT_TOO_SMALL = new Error("0105", "Unable to save your picture, it is too small", "The input image is too small to apply the watermark");
     public static final Error WATERMARK_IMAGE_INPUT_NOT_SUPPORTED = new Error("0106", "Unable to save your picture, it is not supported", "The input image is not supported by Java SDK with ImageIO.read");
     public static final Error WATERMARK_IMAGE_MIME_TYPE_UNKNOWN = new Error("0107", "Unable to get the type of image", "The input image has a mime type unknown from its Input Stream");
+    //Policyquota
+    public static final Error POLICY_QUOTA_DOES_NOT_EXIST = new Error("0201", "The policy quota does not exist", "The policy quota does not exist");
+    public static final Error INVALID_POLICY_QUOTA_PROVIDED = new Error("0202", "Unable to update your policy quota", "The policy quota provided as JSon is not a valid policy quota, probably an incompatibility between mobile and server");
+    public static final Error INVALID_POLICY_QUOTA_EMAIL_LIST = new Error("0203", "Unable to update your policy quota", "The policy quota email list is not valid");
+    public static final Error INVALID_POLICY_QUOTA_PERCENT = new Error("0204", "Unable to update your policy quota", "The policy quota percent is not valid");
+    public static final Error INVALID_POLICY_NUMBER_EXCEL_FILE = new Error("0205", "Invalid policy number excel file format", "An upload policy number excel file is invalid");
     // Quote
     public static final Error INVALID_QUOTE_PROVIDED = new Error("0301", "Unable to update your quote", "The quote provided as JSon is not a valid quote, probably an incompatibility between mobile and server");
     public static final Error QUOTE_NOT_CREATED = new Error("0302", "The quote has not been updated", "An error occured while trying to create the quote");
@@ -40,11 +46,14 @@ public class ErrorCode {
     public static final Error UNABLE_TO_DOWNLOAD_DOCUMENT = new Error("0602", "Unable to download the document", "Processing for create e-receipt fail");
     // Email
     public static final Function<String, Error> UNABLE_TO_SEND_EMAIL = msg -> new Error("0701", "Unable to send email", "Error message is:" + msg);
+    
     // Watermarking
     public static final Function<String, Error> INVALID_COLLECTION_FILE = msg -> new Error("0901", "Unable to upload the collection file. Error is: [" + msg + "]", "Unable to upload the collection file. Error is: [" + msg + "]");
-
 
     // ADMIN UI
     public static final Function<String, Error> UI_UNAUTHORIZED = msg -> new Error("9001", "You are not authorized to see this page", msg);
     public static final Function<String, Error> NOTIFICATION_NOT_SENT = msg -> new Error("9002", "Notification was not sent. Error is: " + msg, "Notification was not sent. Error is: " + msg);
+    
+    
+    
 }
