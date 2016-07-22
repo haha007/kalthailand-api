@@ -9,5 +9,8 @@ import java.util.stream.Stream;
 @Repository
 public interface PolicyNumberRepository extends PagingAndSortingRepository<PolicyNumber, String> {
     Stream<PolicyNumber> findByPolicyNull();
+
+    long countByPolicyNull();
+
     PolicyNumber findByPolicyId(String policyId);
 }
