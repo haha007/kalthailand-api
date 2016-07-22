@@ -56,7 +56,7 @@ public class PolicyQuotaResource {
 		this.policyQuotaService = policyQuotaService;
 	}
 
-	@ApiOperation(value = "Get policy quota data", notes = "Get a list of policy quota data.", response = PolicyQuota.class, responseContainer = "List")
+	@ApiOperation(value = "Get a list of policy quota data", notes = "Get a list of policy quota data.", response = PolicyQuota.class, responseContainer = "List")
     @ApiResponses({
             @ApiResponse(code = 406, message = "If policy quota data not exists", response = Error.class)
     })
