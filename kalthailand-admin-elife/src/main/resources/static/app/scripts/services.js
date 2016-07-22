@@ -87,7 +87,7 @@
     });
     
     app.factory('PolicyNumberTestService', function ($resource) {
-    	return $resource(window.location.origin + '/api-elife/policy-quota/list', { pageNumber: '@pageNumber', pageSize: '@pageSize' }, {});
+    	return $resource(window.location.origin + '/api-elife/policy-quota/available', { pageNumber: '@pageNumber', pageSize: '@pageSize' }, {});
     });
 
     app.factory('PolicyDetail', function ($resource) {

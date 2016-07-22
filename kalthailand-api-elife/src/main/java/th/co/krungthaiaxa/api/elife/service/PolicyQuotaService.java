@@ -16,6 +16,7 @@ import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.xssf.eventusermodel.XSSFReader;
 import org.apache.poi.xssf.model.SharedStringsTable;
 import org.apache.poi.xssf.usermodel.XSSFRichTextString;
+import org.jsoup.helper.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
@@ -58,17 +59,19 @@ public class PolicyQuotaService {
 		this.template = template;
 	}
 	
-	public PolicyQuota getPolicyQuota(){
+	public PolicyQuota getPolicyQuota(String rowId){
 		logger.info(String.format("On %1$s .....", "getPolicyQuota"));
-		PolicyQuota policyQuota = policyQuotaRepository.findByRowId(POLICY_QUOTA_ROW_ID);
+		PolicyQuota policyQuota = policyQuotaRepository.findByRowId((StringUtil.isBlank(rowId)?POLICY_QUOTA_ROW_ID:Integer.parseInt(rowId,10)));
 		return policyQuota;
 	}
 	
-	public void updatePolicyQuota(PolicyQuota updatePolicyQuota){
+	public void updatePolicyQuota(PolicyQuota updatePolicyQuota, String rowId){
 		logger.info(String.format("On %1$s .....", "updatePolicyQuota"));
+		PolicyQuota policyQuota = policyQuotaRepository.findByRowId(Integer.parseInt(rowId,10));
 		policyQuotaRepository.deleteAll();
-		updatePolicyQuota.setRowId(POLICY_QUOTA_ROW_ID);
-		policyQuotaRepository.save(updatePolicyQuota);
+		policyQuota.setPercent(updatePolicyQuota.getPercent());
+		policyQuota.setEmailList(updatePolicyQuota.getEmailList());
+		policyQuotaRepository.save(policyQuota);
 	}
 	
 	public UploadProgress readPolicyNumberExcelFile(InputStream inputStream) throws IOException, OpenXML4JException, ParserConfigurationException, SAXException {
