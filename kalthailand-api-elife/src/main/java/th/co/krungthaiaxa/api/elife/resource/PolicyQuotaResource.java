@@ -105,7 +105,7 @@ public class PolicyQuotaResource {
 		}
 		
 		policyQuotaService.updatePolicyQuota(policyQuota);
-		return new ResponseEntity<>(getJson(true),OK);
+		return new ResponseEntity<>(getJson(""),OK);
 		
 	}
 	
