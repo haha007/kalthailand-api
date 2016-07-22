@@ -31,7 +31,7 @@
 	                    <label for="policyID" class="col-sm-4 control-label">Trigger at</label>
 	                    <div class="col-sm-4">
 	                        <div class="input-group">
-							  <input type="text" class="form-control" aria-label="Amount (to the nearest dollar)">
+							  <input type="text" class="form-control" ng-model="triggerPercent" >
 							  <span class="input-group-addon">%</span>
 							</div>
 	                    </div>
@@ -39,7 +39,7 @@
 	                <div class="form-group">
 	                    <label for="policyID" class="col-sm-4 control-label">Receipients</label>
 	                    <div class="col-sm-4">
-	                        <textarea class="form-control" rows="5" id="policyID" ng-model="policyID" required placeholder="Email seperated by commas" autofocus>
+	                        <textarea class="form-control" rows="5" id="emailList" ng-model="emailList" required placeholder="Email seperated by commas" autofocus>
 	                    </div>
 	                </div>
 	                <div class="form-group">
