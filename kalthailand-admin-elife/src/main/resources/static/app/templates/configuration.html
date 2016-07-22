@@ -1,0 +1,67 @@
+<div ng-include="'app/templates/partials/header.html'"></div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div ng-include="'app/templates/partials/sidebar.html'"></div>
+
+        <!-- BEGIN Page specific stuff -->
+        <style>
+            .form-upload {
+                border: 1px solid #eee;
+                margin-bottom: 20px;
+                padding: 5px;
+            }
+        </style>
+
+        <div ng-cloak class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main ng-cloak" id="policyDetailContainer">
+            <div class="page-header">
+                <h1>Policy Alerts</h1>
+            </div>
+            <div class="col-sm-12">
+            	<h3 class="pull-left">Remaining Policies: 200</h5>
+            	<h3 class="pull-right">Quota: 200</h5>
+            </div>
+            
+            <div class="col-sm-12">
+            <div class="page-header">
+                <h3>Settings</h3>
+            </div>
+	            <form class="form-horizontal" ng-submit="search($event)">
+	                <div class="form-group">
+	                    <label for="policyID" class="col-sm-4 control-label">Trigger at</label>
+	                    <div class="col-sm-4">
+	                        <div class="input-group">
+							  <input type="text" class="form-control" aria-label="Amount (to the nearest dollar)">
+							  <span class="input-group-addon">%</span>
+							</div>
+	                    </div>
+	                </div>
+	                <div class="form-group">
+	                    <label for="policyID" class="col-sm-4 control-label">Receipients</label>
+	                    <div class="col-sm-4">
+	                        <textarea class="form-control" rows="5" id="policyID" ng-model="policyID" required placeholder="Email seperated by commas" autofocus>
+	                    </div>
+	                </div>
+	                <div class="form-group">
+	                    <div class="col-sm-offset-4 col-sm-8">
+	                        <button type="submit" class="btn btn-default">Save</button>
+	                    </div>
+	                </div>
+	            </form>
+            </div>
+            <div class="alert alert-danger" role="alert" ng-show="errorMessage">
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                An error occured. {{ errorMessage }}
+            </div>
+            <div class="alert alert-success" role="alert" ng-show="successMessage">
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                {{ successMessage }}
+            </div>
+        </div>
+        <!-- END Page specific stuff -->
+
+    </div>
+</div>
+
+</body>
+</html>
