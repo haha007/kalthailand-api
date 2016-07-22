@@ -494,17 +494,6 @@ public class PolicyResource {
         return new ResponseEntity<>(getJson(policy.get()), OK);
     }
 
-
-//    @ApiOperation(value = "Get setting of policy", notes = "Get setting of policy.", response = Policy.class, responseContainer = "List")
-//    @ApiResponses({
-//            @ApiResponse(code = 500, message = "If there was some internal error", response = Error.class)
-//    })
-//    @RequestMapping(value = "/policies/policy", produces = APPLICATION_JSON_VALUE, method = GET)
-//    @ResponseBody
-//    public PolicySetting getPoliciesQuota() {
-//        return settingService.loadPolicySetting();
-//    }
-
     private void createPolicyExtractExcelFileLine(Sheet sheet, Policy policy) {
     	if(policy.getInsureds().get(0).getInsuredPreviousInformations().size()!=0){
     		ExcelUtils.appendRow(sheet,
