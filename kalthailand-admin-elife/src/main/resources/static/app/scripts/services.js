@@ -74,7 +74,7 @@
     });
     
     app.factory('PolicyQuotaConfig', function ($resource) {
-    	return $resource(window.location.origin + '/api-elife/policy-quota/:id', { id: '@rowId' }, {
+    	return $resource(window.location.origin + '/api-elife/policyquota/:id', { id: '@rowId' }, {
     		update: {
     			method: 'PUT'
     		}

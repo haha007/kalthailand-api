@@ -145,8 +145,33 @@
         }
     });
     
-    app.controller('ConfigurationController', function ($scope, $route, CollectionFile, $localStorage) {
+    app.controller('ConfigurationController', function ($scope, $route, PolicyQuotaConfig, $localStorage) {
         $scope.$route = $route;
+        
+        PolicyQuotaConfig.get({},
+                function (successResponse) {
+                    $scope.errorMessage = null;
+                    
+                    $scope.triggerPercent = successResponse.percent;
+                    $scope.emailList = '';
+                    successResponse.emailList.forEach(function(email){
+                    	$scope.emailList += email;
+                    	$scope.emailList += ',\n';
+                    });
+                    
+                    if(successResponse.emailList.length > 1) {
+                    	$scope.emailList = $scope.emailList.slice(0, -2);
+                    }
+                    
+//                    var arr = $scope.emailList.replace(/(\r\n|\n|\r| )/gm,"").split(',');
+//                    console.log(arr);
+                    
+                },
+                function (errorResponse) {
+                    $scope.successMessage = null;
+                    $scope.errorMessage = errorResponse.data.userMessage;
+                    $scope.isValidating = null;
+                });
         
         
     });
