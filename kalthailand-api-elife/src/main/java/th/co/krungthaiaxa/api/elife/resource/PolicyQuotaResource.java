@@ -124,5 +124,16 @@ public class PolicyQuotaResource {
             return new ResponseEntity<>(getJson(INVALID_POLICY_NUMBER_EXCEL_FILE), NOT_ACCEPTABLE);
         }
     }
+    
+    @ApiOperation(value = "List of policy number", notes = "Gets a list on policy number", response = PolicyNumber.class, responseContainer = "List")
+    @RequestMapping(value = "/policy-quota/list", produces = APPLICATION_JSON_VALUE, method = GET)
+    @ResponseBody
+    public ResponseEntity<byte[]> blackList(
+            @ApiParam(required = true, value = "Page number (starts at 0)")
+            @RequestParam Integer pageNumber,
+            @ApiParam(required = true, value = "Number of elements per page")
+            @RequestParam Integer pageSize) {
+        return new ResponseEntity<>(getJson(policyQuotaService.findAll(pageNumber, pageSize)), OK);
+    }
 	
 }

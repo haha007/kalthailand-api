@@ -56,6 +56,27 @@
             }
         });
     });
+    
+    app.factory('PolicyNumberTestUpload', function ($resource) {
+        return $resource(window.location.origin + '/api-elife/policy-quota/upload', {}, {
+            save: {
+                method: 'POST',
+                transformRequest: function (data) {
+                    var formData = new FormData();
+
+                    angular.forEach(data, function (value, key) {
+                        formData.append(key, value);
+                    });
+
+                    return formData;
+                },
+                headers: {
+                    'Content-Type': undefined,
+                    enctype: 'multipart/form-data'
+                }
+            }
+        });
+    });
 
     app.factory('Dashboard', function ($resource) {
         return $resource(window.location.origin + '/api-elife/policies', { pageNumber: '@pageNumber', pageSize: '@pageSize' }, {});
@@ -63,6 +84,10 @@
 
     app.factory('BlackList', function ($resource) {
         return $resource(window.location.origin + '/api-blacklist/blacklist', { pageNumber: '@pageNumber', pageSize: '@pageSize' }, {});
+    });
+    
+    app.factory('PolicyNumberTestService', function ($resource) {
+    	return $resource(window.location.origin + '/api-elife/policy-quota/list', { pageNumber: '@pageNumber', pageSize: '@pageSize' }, {});
     });
 
     app.factory('PolicyDetail', function ($resource) {
