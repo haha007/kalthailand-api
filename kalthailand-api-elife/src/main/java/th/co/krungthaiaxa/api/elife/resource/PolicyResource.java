@@ -115,16 +115,6 @@ public class PolicyResource {
         return new ResponseEntity<>(getJson(policyService.findAll(policyId, productType, status, nonEmptyAgentCode, startDate, endDate, pageNumber, pageSize)), OK);
     }
 
-    @ApiOperation(value = "List of policies", notes = "Gets a list of policies.", response = Long.class)
-    @ApiResponses({
-            @ApiResponse(code = 500, message = "Internal error", response = Error.class)
-    })
-    @RequestMapping(value = "/policies/available/remain/count", produces = APPLICATION_JSON_VALUE, method = GET)
-    @ResponseBody
-    public long countAllPolicies() {
-        return policyService.countRemainAvailablePoliciesNumbers();
-    }
-
     @ApiOperation(value = "Policies extract", notes = "Gets the policy extract for commission calculation. Result is an Excel file", response = Policy.class, responseContainer = "List")
     @RequestMapping(value = "/policies/extract/download", method = GET)
     @ResponseBody
@@ -383,7 +373,7 @@ public class PolicyResource {
         if (regKey.isPresent()) {
             policyService.updatePayment(payment.get(), orderId, transactionId.get(), (!regKey.isPresent() ? "" : regKey.get()));
         } else {
-        	policyService.updatePayment(payment.get(), orderId, transactionId.get(), "");
+            policyService.updatePayment(payment.get(), orderId, transactionId.get(), "");
         }
 
         // Update the policy status

@@ -251,7 +251,7 @@ public class PolicyQuotaService {
         }
     }
 	
-	public Page<PolicyNumber> findAll(Integer pageNumber, Integer pageSize) {
+	public Page<PolicyNumber> findAvailablePolicyNumbers(Integer pageNumber, Integer pageSize) {
         return policyNumberRepository.findByPolicyNull(new PageRequest(pageNumber, pageSize, Sort.Direction.ASC, "policyId"));
     }
 

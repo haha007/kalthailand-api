@@ -453,15 +453,4 @@ public class PolicyService {
         paymentRepository.save(payment);
         logger.info("Payment [" + payment.getPaymentId() + "] has been updated");
     }
-
-    public long countAvailablePoliciesNumbers() {
-        return policyNumberRepository.countByPolicyNull();
-    }
-
-    public long countRemainAvailablePoliciesNumbers() {
-        PolicySetting setting = settingService.loadPolicySetting();
-        long quota = setting.getQuota();
-        long availablePolicies = countAvailablePoliciesNumbers();
-        return quota - availablePolicies;
-    }
 }

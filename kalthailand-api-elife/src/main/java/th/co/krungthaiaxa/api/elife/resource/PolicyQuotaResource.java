@@ -47,93 +47,93 @@ import th.co.krungthaiaxa.api.elife.utils.JsonUtil;
 @RestController
 @Api(value = "PoliciyQuota")
 public class PolicyQuotaResource {
-	
-	private final static Logger logger = LoggerFactory.getLogger(PolicyQuotaResource.class);
-	private final PolicyQuotaService policyQuotaService;
-	
-	@Inject
-	public PolicyQuotaResource(PolicyQuotaService policyQuotaService){
-		this.policyQuotaService = policyQuotaService;
-	}
 
-	@ApiOperation(value = "Get a list of policy quota data", notes = "Get a list of policy quota data.", response = PolicyQuota.class, responseContainer = "List")
+    private final static Logger logger = LoggerFactory.getLogger(PolicyQuotaResource.class);
+    private final PolicyQuotaService policyQuotaService;
+
+    @Inject
+    public PolicyQuotaResource(PolicyQuotaService policyQuotaService) {
+        this.policyQuotaService = policyQuotaService;
+    }
+
+    @ApiOperation(value = "Get a list of policy quota data", notes = "Get a list of policy quota data.", response = PolicyQuota.class, responseContainer = "List")
     @ApiResponses({
             @ApiResponse(code = 406, message = "If policy quota data not exists", response = Error.class)
     })
     @RequestMapping(value = "/policy-quota", produces = APPLICATION_JSON_VALUE, method = GET)
     @ResponseBody
-	public ResponseEntity<byte[]> getPolicyQuota(){
-		
-		PolicyQuota policyQuota = policyQuotaService.getPolicyQuota(null);
-		List<PolicyQuota> listPolicyQuota = new ArrayList<>();
-		listPolicyQuota.add(policyQuota);
-		
-		if(null==policyQuota){
-			return new ResponseEntity<>(getJson(ErrorCode.POLICY_QUOTA_DOES_NOT_EXIST), NOT_FOUND);
-		}else{
-			policyQuota.setRowId(0);
-			return new ResponseEntity<>(getJson(listPolicyQuota), OK);
-		}
-		
-	}
-	
-	@ApiOperation(value = "Get policy quota data", notes = "Get a policy quota data.", response = PolicyQuota.class, responseContainer = "List")
+    public ResponseEntity<byte[]> getPolicyQuota() {
+
+        PolicyQuota policyQuota = policyQuotaService.getPolicyQuota(null);
+        List<PolicyQuota> listPolicyQuota = new ArrayList<>();
+        listPolicyQuota.add(policyQuota);
+
+        if (null == policyQuota) {
+            return new ResponseEntity<>(getJson(ErrorCode.POLICY_QUOTA_DOES_NOT_EXIST), NOT_FOUND);
+        } else {
+            policyQuota.setRowId(0);
+            return new ResponseEntity<>(getJson(listPolicyQuota), OK);
+        }
+
+    }
+
+    @ApiOperation(value = "Get policy quota data", notes = "Get a policy quota data.", response = PolicyQuota.class, responseContainer = "List")
     @ApiResponses({
             @ApiResponse(code = 406, message = "If policy quota data not exists", response = Error.class)
     })
     @RequestMapping(value = "/policy-quota/{rowId}", produces = APPLICATION_JSON_VALUE, method = GET)
     @ResponseBody
-	public ResponseEntity<byte[]> getPolicyQuota(
-			@ApiParam(value = "The policy quota rowId", required = true)
-			@PathVariable String rowId){
-		
-		PolicyQuota policyQuota = policyQuotaService.getPolicyQuota(rowId);
-		
-		if(null==policyQuota){
-			return new ResponseEntity<>(getJson(ErrorCode.POLICY_QUOTA_DOES_NOT_EXIST), NOT_FOUND);
-		}else{
-			policyQuota.setRowId(0);
-			return new ResponseEntity<>(getJson(policyQuota), OK);
-		}
-		
-	}
-	
-	@ApiOperation(value = "Update a policy quota", notes = "Update a policy quota", response = Boolean.class)
+    public ResponseEntity<byte[]> getPolicyQuota(
+            @ApiParam(value = "The policy quota rowId", required = true)
+            @PathVariable String rowId) {
+
+        PolicyQuota policyQuota = policyQuotaService.getPolicyQuota(rowId);
+
+        if (null == policyQuota) {
+            return new ResponseEntity<>(getJson(ErrorCode.POLICY_QUOTA_DOES_NOT_EXIST), NOT_FOUND);
+        } else {
+            policyQuota.setRowId(0);
+            return new ResponseEntity<>(getJson(policyQuota), OK);
+        }
+
+    }
+
+    @ApiOperation(value = "Update a policy quota", notes = "Update a policy quota", response = Boolean.class)
     @ApiResponses({
             @ApiResponse(code = 406, message = "If JSon of policy quota is invalid or if policy quota could not be update",
                     response = Error.class)
     })
     @RequestMapping(value = "/policy-quota/{rowId}", produces = APPLICATION_JSON_VALUE, method = PUT)
     @ResponseBody
-	public ResponseEntity<byte[]> updatePolicyQuota(
-			@ApiParam(value = "The policy quota to update")
-			@RequestBody String jsonPolicyQuota,
-			@ApiParam(value = "The policy quota rowId", required = true)
-			@PathVariable String rowId){
-		
-		PolicyQuota policyQuota;
-		
-		try{
-			policyQuota = JsonUtil.mapper.readValue(jsonPolicyQuota, PolicyQuota.class);
-		}catch (IOException e) {
+    public ResponseEntity<byte[]> updatePolicyQuota(
+            @ApiParam(value = "The policy quota to update")
+            @RequestBody String jsonPolicyQuota,
+            @ApiParam(value = "The policy quota rowId", required = true)
+            @PathVariable String rowId) {
+
+        PolicyQuota policyQuota;
+
+        try {
+            policyQuota = JsonUtil.mapper.readValue(jsonPolicyQuota, PolicyQuota.class);
+        } catch (IOException e) {
             logger.error("Unable to get a policy quota out of [" + jsonPolicyQuota + "]", e);
             return new ResponseEntity<>(getJson(INVALID_POLICY_QUOTA_PROVIDED), NOT_ACCEPTABLE);
         }
-		
-		if(policyQuota.getEmailList().size()<1){
-			return new ResponseEntity<>(getJson(INVALID_POLICY_QUOTA_EMAIL_LIST), NOT_ACCEPTABLE);
-		}
-		
-		if(policyQuota.getPercent()<1){
-			return new ResponseEntity<>(getJson(INVALID_POLICY_QUOTA_PERCENT), NOT_ACCEPTABLE);
-		}
-		
-		policyQuotaService.updatePolicyQuota(policyQuota, rowId);
-		return new ResponseEntity<>(getJson(""),OK);
-		
-	}
-	
-	@ApiOperation(value = "Upload policy number file", notes = "Uploads an Excel file (must be a xlsx file) containing the policy number.", response = PolicyNumber.class, responseContainer = "List")
+
+        if (policyQuota.getEmailList().size() < 1) {
+            return new ResponseEntity<>(getJson(INVALID_POLICY_QUOTA_EMAIL_LIST), NOT_ACCEPTABLE);
+        }
+
+        if (policyQuota.getPercent() < 1) {
+            return new ResponseEntity<>(getJson(INVALID_POLICY_QUOTA_PERCENT), NOT_ACCEPTABLE);
+        }
+
+        policyQuotaService.updatePolicyQuota(policyQuota, rowId);
+        return new ResponseEntity<>(getJson(""), OK);
+
+    }
+
+    @ApiOperation(value = "Upload policy number file", notes = "Uploads an Excel file (must be a xlsx file) containing the policy number.", response = PolicyNumber.class, responseContainer = "List")
     @ApiResponses({
             @ApiResponse(code = 406, message = "If Excel file is not in invalid format", response = Error.class)
     })
@@ -148,16 +148,16 @@ public class PolicyQuotaResource {
             return new ResponseEntity<>(getJson(INVALID_POLICY_NUMBER_EXCEL_FILE), NOT_ACCEPTABLE);
         }
     }
-    
+
     @ApiOperation(value = "List of policy number", notes = "Gets a list on policy number", response = PolicyNumber.class, responseContainer = "List")
     @RequestMapping(value = "/policy-quota/available", produces = APPLICATION_JSON_VALUE, method = GET)
     @ResponseBody
-    public ResponseEntity<byte[]> blackList(
+    public ResponseEntity<byte[]> getAvailablePolicyNumber(
             @ApiParam(required = true, value = "Page number (starts at 0)")
             @RequestParam Integer pageNumber,
             @ApiParam(required = true, value = "Number of elements per page")
             @RequestParam Integer pageSize) {
-        return new ResponseEntity<>(getJson(policyQuotaService.findAll(pageNumber, pageSize)), OK);
+        return new ResponseEntity<>(getJson(policyQuotaService.findAvailablePolicyNumbers(pageNumber, pageSize)), OK);
     }
-	
+
 }

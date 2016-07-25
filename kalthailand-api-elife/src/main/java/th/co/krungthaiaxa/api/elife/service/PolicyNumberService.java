@@ -21,6 +21,7 @@ import org.xml.sax.helpers.DefaultHandler;
 import th.co.krungthaiaxa.api.elife.data.PolicyNumber;
 import th.co.krungthaiaxa.api.elife.data.PolicyQuota;
 import th.co.krungthaiaxa.api.elife.exception.ElifeException;
+import th.co.krungthaiaxa.api.elife.model.PolicySetting;
 import th.co.krungthaiaxa.api.elife.repository.PolicyNumberRepository;
 import th.co.krungthaiaxa.api.elife.repository.PolicyQuotaRepository;
 import th.co.krungthaiaxa.api.elife.utils.JsonUtil;
@@ -38,59 +39,15 @@ import static org.springframework.util.Assert.notNull;
 public class PolicyNumberService {
 
     private final static Logger logger = LoggerFactory.getLogger(PolicyNumberService.class);
-    private final PolicyQuotaRepository policyQuotaRepository;
-    private final PolicyNumberRepository policyNumberRepository;
-    private final SimpMessagingTemplate template;
-    private final int POLICY_QUOTA_ROW_ID = 1;
-    private Integer numberOfLinesAdded = 0;
-    private Integer numberOfDuplicateLines = 0;
-    private Integer numberOfEmptyLines = 0;
-    private Integer numberOfLines = 0;
-    private final static String SEP = ";COLUMN_SEPARATOR;";
-    private static final String EXPECTED_HEADERS = "[\"policyId\"]";
-    private final static String FIRST_LINE = "policyId";
 
     @Inject
-    public PolicyNumberService(PolicyQuotaRepository policyQuotaRepository, PolicyNumberRepository policyNumberRepository, SimpMessagingTemplate template) {
-        this.policyQuotaRepository = policyQuotaRepository;
-        this.policyNumberRepository = policyNumberRepository;
-        this.template = template;
+    private PolicyNumberRepository policyNumberRepository;
+
+    public long countAvailablePolicyNumbers() {
+        return policyNumberRepository.countByPolicyNull();
     }
 
-    public PolicyQuota getPolicyQuota(String rowId) {
-        logger.info(String.format("On %1$s .....", "getPolicyQuota"));
-        PolicyQuota policyQuota = policyQuotaRepository.findByRowId((StringUtil.isBlank(rowId) ? POLICY_QUOTA_ROW_ID : Integer.parseInt(rowId, 10)));
-        return policyQuota;
+    public long countAllPolicyNumbers() {
+        return policyNumberRepository.count();
     }
-
-    private class UploadProgress {
-        private Integer numberOfLinesAdded;
-        private Integer numberOfDuplicateLines;
-        private Integer numberOfEmptyLines;
-        private Integer numberOfLines;
-
-        public UploadProgress(Integer numberOfLinesAdded, Integer numberOfDuplicateLines, Integer numberOfEmptyLines, Integer numberOfLines) {
-            this.numberOfLinesAdded = numberOfLinesAdded;
-            this.numberOfDuplicateLines = numberOfDuplicateLines;
-            this.numberOfEmptyLines = numberOfEmptyLines;
-            this.numberOfLines = numberOfLines;
-        }
-
-        public Integer getNumberOfDuplicateLines() {
-            return numberOfDuplicateLines;
-        }
-
-        public Integer getNumberOfEmptyLines() {
-            return numberOfEmptyLines;
-        }
-
-        public Integer getNumberOfLinesAdded() {
-            return numberOfLinesAdded;
-        }
-
-        public Integer getNumberOfLines() {
-            return numberOfLines;
-        }
-    }
-
 }
