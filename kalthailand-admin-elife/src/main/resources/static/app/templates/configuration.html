@@ -14,24 +14,32 @@
         </style>
 
         <div ng-cloak class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main ng-cloak" id="policyDetailContainer">
+            <div class="alert alert-danger" role="alert" ng-show="errorMessage">
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                An error occured. {{ errorMessage }}
+            </div>
+            <div class="alert alert-success" role="alert" ng-show="successMessage">
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                {{ successMessage }}
+            </div>
             <div class="page-header">
                 <h1>Policy Alerts</h1>
             </div>
             <div class="col-sm-12">
-            	<h3 class="pull-left">Remaining Policies: 200</h5>
-            	<h3 class="pull-right">Quota: 200</h5>
+            	<h3 class="pull-left">Remaining Policies: {{availablePolicyCount}}</h5>
+            	<h3 class="pull-right">Quota: {{policyQuota}}</h5>
             </div>
             
             <div class="col-sm-12">
             <div class="page-header">
                 <h3>Settings</h3>
             </div>
-	            <form class="form-horizontal" ng-submit="search($event)">
+	            <form class="form-horizontal" ng-submit="updateQuotaAlert($event)">
 	                <div class="form-group">
 	                    <label for="policyID" class="col-sm-4 control-label">Trigger at</label>
 	                    <div class="col-sm-4">
 	                        <div class="input-group">
-							  <input type="text" class="form-control" ng-model="triggerPercent" >
+							  <input type="text" class="form-control" ng-model="settings.triggerPercent" />
 							  <span class="input-group-addon">%</span>
 							</div>
 	                    </div>
@@ -39,7 +47,8 @@
 	                <div class="form-group">
 	                    <label for="policyID" class="col-sm-4 control-label">Receipients</label>
 	                    <div class="col-sm-4">
-	                        <textarea class="form-control" rows="5" id="emailList" ng-model="emailList" required placeholder="Email seperated by commas" autofocus>
+	                        <textarea class="form-control" rows="5" id="emailList" ng-model="settings.emailList" required placeholder="Email seperated by commas" autofocus>
+	                        </textarea>
 	                    </div>
 	                </div>
 	                <div class="form-group">
@@ -48,14 +57,6 @@
 	                    </div>
 	                </div>
 	            </form>
-            </div>
-            <div class="alert alert-danger" role="alert" ng-show="errorMessage">
-                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-                An error occured. {{ errorMessage }}
-            </div>
-            <div class="alert alert-success" role="alert" ng-show="successMessage">
-                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-                {{ successMessage }}
             </div>
         </div>
         <!-- END Page specific stuff -->
