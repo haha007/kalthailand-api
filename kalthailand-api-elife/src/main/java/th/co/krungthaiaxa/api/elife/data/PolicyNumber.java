@@ -10,6 +10,9 @@ import th.co.krungthaiaxa.api.elife.model.Policy;
 public class PolicyNumber {
     @Id
     private String id;
+    /**
+     * This actually the policy number which input by business team.
+     */
     @Indexed(unique = true)
     private String policyId;
     @DBRef

@@ -40,17 +40,14 @@ public class PolicyNumberServiceTest extends ELifeTest {
     public static final Logger logger = LoggerFactory.getLogger(PolicyNumberServiceTest.class);
 
     @Inject
-    private PolicyService policyService;
-    @Inject
-    private SettingService settingService;
+    private PolicyNumberService policyNumberService;
 
     @Test
     public void can_count_available_policies() {
-        long quota = settingService.loadPolicySetting().getQuota();
-        long availablePolicies = policyService.countAvailablePoliciesNumbers();
-        long remainAvailablePolicies = policyService.countRemainAvailablePoliciesNumbers();
-        logger.info(" Quota: {}.\n Current available policies: {}.\n Remain policies: {}", quota, availablePolicies, remainAvailablePolicies);
-        Assert.assertTrue(remainAvailablePolicies == quota - availablePolicies);
+        long quota = policyNumberService.countAllPolicyNumbers();
+        long availablePolicies = policyNumberService.countAvailablePolicyNumbers();
+        logger.info(" Quota: {}.\n Remain policies: {}", quota, availablePolicies, availablePolicies);
+        Assert.assertTrue(availablePolicies <= quota);
     }
 
 }

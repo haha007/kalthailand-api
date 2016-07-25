@@ -54,7 +54,7 @@ public class PolicyNumberResource {
         }
     }
 
-    @ApiOperation(value = "List of policy number", notes = "Gets a list on policy number", response = PolicyNumber.class, responseContainer = "List")
+    @ApiOperation(value = "List of available policy number", notes = "Gets a list of available policy number", response = PolicyNumber.class, responseContainer = "List")
     @RequestMapping(value = "/policy-number/available", produces = APPLICATION_JSON_VALUE, method = GET)
     @ResponseBody
     public ResponseEntity<byte[]> getAvailablePolicyNumber(
