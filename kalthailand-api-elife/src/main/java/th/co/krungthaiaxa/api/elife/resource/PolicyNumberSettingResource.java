@@ -36,6 +36,17 @@ public class PolicyNumberSettingResource {
         return policyNumberSettingService.loadPolicyNumberSetting();
     }
 
+    //TODO should be removed
+    @ApiOperation(value = "Get setting of policy number", notes = "Get setting of policy number.", response = PolicyNumberSetting.class)
+    @ApiResponses({
+            @ApiResponse(code = 500, message = "If there was some internal error", response = Error.class)
+    })
+    @RequestMapping(value = "/policy-numbers/setting/{id}", produces = APPLICATION_JSON_VALUE, method = GET)
+    @ResponseBody
+    public PolicyNumberSetting getPolicyNumberSetting(@PathVariable String id) {
+        return policyNumberSettingService.loadPolicyNumberSetting();
+    }
+
     @ApiOperation(value = "Update setting of policy number", notes = "Update setting of policy number.", response = PolicyNumberSetting.class)
     @ApiResponses({
             @ApiResponse(code = 500, message = "If there was some internal error", response = Error.class)
@@ -43,6 +54,17 @@ public class PolicyNumberSettingResource {
     @RequestMapping(value = "/policy-numbers/setting", produces = APPLICATION_JSON_VALUE, method = RequestMethod.PUT)
     @ResponseBody
     public PolicyNumberSetting updatePolicyNumberSetting(@Valid @RequestBody PolicyNumberSetting policyNumberSetting) {
+        return policyNumberSettingService.updatePolicyNumberSetting(policyNumberSetting);
+    }
+
+    //TODO should be removed
+    @ApiOperation(value = "Update setting of policy number", notes = "Update setting of policy number.", response = PolicyNumberSetting.class)
+    @ApiResponses({
+            @ApiResponse(code = 500, message = "If there was some internal error", response = Error.class)
+    })
+    @RequestMapping(value = "/policy-numbers/setting/{id}", produces = APPLICATION_JSON_VALUE, method = RequestMethod.PUT)
+    @ResponseBody
+    public PolicyNumberSetting updatePolicyNumberSetting(@PathVariable String id, @Valid @RequestBody PolicyNumberSetting policyNumberSetting) {
         return policyNumberSettingService.updatePolicyNumberSetting(policyNumberSetting);
     }
 }

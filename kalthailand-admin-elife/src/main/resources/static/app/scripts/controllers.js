@@ -113,11 +113,11 @@
             );
         }
     });
-    
+
     app.controller('CollectionFileController', function ($scope, $route, CollectionFile, $localStorage) {
         $scope.$route = $route;
-        
-        
+
+
         fetchCollectionFileDetails();
 
         $scope.file = null;
@@ -137,95 +137,95 @@
                     $scope.errorMessage = errorResponse.data.userMessage;
                 });
         }
-        
+
         function fetchCollectionFileDetails() {
         	CollectionFile.query(function (response) {
                 $scope.collectionFiles = response;
             });
         }
     });
-    
+
     app.controller('ConfigurationController', function ($scope, $route, $http, PolicyQuotaConfig, $localStorage) {
         $scope.$route = $route;
         $scope.settings = {};
-        
+
         $scope.updateQuotaAlert = function($event) {
-        	
+
         	if($scope.settings.emailList) {
         		$scope.settings.emailList = $scope.settings.emailList.replace(/(\r\n|\n|\r| )/gm,"").split(',');
         	}
-        	
+
         	PolicyQuotaConfig.update($scope.settings,
                     function (successResponse) {
                         $scope.errorMessage = null;
-                        
+
                         $scope.settings.triggerPercent = successResponse.percent;
                         $scope.settings.emailList = '';
                         $scope.settings.rowId = successResponse.rowId;
-                        
+
                         successResponse.emailList.forEach(function(email){
                         	$scope.emailList += email;
                         	$scope.emailList += ',\n';
                         });
-                        
+
                         if(successResponse.emailList.length > 1) {
                         	$scope.settings.emailList = $scope.emailList.slice(0, -2);
                         }
-                        
+
                     },
                     function (errorResponse) {
-                    	$scope.errorMessage = errorResponse.data.userMessage;	
+                    	$scope.errorMessage = errorResponse.data.userMessage;
                     });
-            
-        	
+
+
         }
-        
+
         PolicyQuotaConfig.get({id: 0},
         		function (successResponse) {
 		            $scope.errorMessage = null;
-		            
+
 		            $scope.settings.triggerPercent = successResponse.percent;
 		            $scope.settings.emailList = '';
 		            $scope.settings.rowId = successResponse.rowId;
-		            
+
 		            successResponse.emailList.forEach(function(email){
 		            	$scope.settings.emailList += email;
 		            	$scope.settings.emailList += ',\n';
 		            });
-		            
+
 		            if(successResponse.emailList.length > 1) {
 		            	$scope.settings.emailList = $scope.settings.emailList.slice(0, -2);
 		            }
-		            
+
 		        },
                 function (errorResponse) {
                     console.log(errorResponse.data.userMessage);
                 });
-        
-        $http.get(window.location.origin + '/api-elife/settings/policy', {}).then(
+
+        $http.get(window.location.origin + '/api-elife/policy-numbers/count', {}).then(
                 function (successResponse) {
-                    $scope.policyQuota = successResponse.data.quota;
-                    
+                    $scope.policyQuota = successResponse.data;
+
                 },
                 function (errorResponse) {
                     console.log(errorResponse);
                 });
-        
-        $http.get(window.location.origin + '/api-elife/policies/available/remain/count', {}).then(
+
+        $http.get(window.location.origin + '/api-elife/policy-numbers/available/count', {}).then(
                 function (successResponse) {
-                    
+
                     $scope.availablePolicyCount = successResponse.data;
-                    
+
                 },
                 function (errorResponse) {
                     console.log(errorResponse);
                 });
-        
+
     });
-    
-    
-        
-        
+
+
+
+
     app.controller('PolicyNumberTest', function ($scope, $route, PolicyNumberTestService, PolicyNumberTestUpload) {
         $scope.$route = $route;
 
@@ -446,7 +446,7 @@
         // AKT-820
         $scope.onSubmitPaymentDetails = function() {
         	$scope.isFetching = true;
-        	
+
         	var data = {
     			paymentId:     $scope.policyDetail.payments[0].paymentId,
     			value:         $scope.policyDetail.payments[0].amount.value,
@@ -455,16 +455,16 @@
     			orderId:       $scope.payment.orderId,
     			transactionId: $scope.payment.transactionId
         	};
-        	
+
         	if ($scope.policyDetail.premiumsData.financialScheduler.periodicity.code == 'EVERY_MONTH') {
         		if ( ! $scope.payment.regKey) {
         			alert('Error! required "regKey" on monthly mode payment');
         			return;
         		}
-        		
+
         		data.regKey = $scope.payment.regKey;
         	}
-        	
+
         	$http({
         		url: '/api-elife/policies/' + $scope.policyDetail.policyId + '/update/status/pendingValidation',
         		method: 'PUT',
@@ -481,17 +481,17 @@
 					} else {
 						window.location.reload();
 					}
-	        	}, 
+	        	},
 	        	function(err) {
 	        		$scope.isFetching = false;
 					$scope.successMessage = null;
                     $scope.errorMessage = err.toString();
 	        	}
         	)
-        	
+
         	return false;
         };
-        
+
         $scope.onClickNotification = function () {
             $scope.isValidating = true;
             PolicyNotification.get({ id: $scope.policyID, reminderId: $scope.scenarioID },
