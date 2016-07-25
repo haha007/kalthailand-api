@@ -21,14 +21,14 @@ import th.co.krungthaiaxa.api.elife.data.PolicyQuota;
 @WebAppConfiguration
 @ActiveProfiles("test")
 public class PolicyQuotaServiceTest {
-	
-	@Inject
+
+    @Inject
     private PolicyQuotaService policyQuotaService;
-	
-	@Test
-	public void should_get_policy_quota_data(){
-		PolicyQuota policyQuota = policyQuotaService.getPolicyQuota();
-		assertThat(policyQuota).isNotNull();
-	}
+
+    @Test
+    public void should_get_policy_quota_data() {
+        PolicyQuota policyQuota = policyQuotaService.getPolicyQuota(null);
+        assertThat(policyQuota).isNotNull();
+    }
 
 }
