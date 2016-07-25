@@ -145,34 +145,85 @@
         }
     });
     
-    app.controller('ConfigurationController', function ($scope, $route, PolicyQuotaConfig, $localStorage) {
+    app.controller('ConfigurationController', function ($scope, $route, $http, PolicyQuotaConfig, $localStorage) {
         $scope.$route = $route;
+        $scope.settings = {};
         
-        PolicyQuotaConfig.get({},
-                function (successResponse) {
-                    $scope.errorMessage = null;
-                    
-                    $scope.triggerPercent = successResponse.percent;
-                    $scope.emailList = '';
-                    successResponse.emailList.forEach(function(email){
-                    	$scope.emailList += email;
-                    	$scope.emailList += ',\n';
+        $scope.updateQuotaAlert = function($event) {
+        	
+        	if($scope.settings.emailList) {
+        		$scope.settings.emailList = $scope.settings.emailList.replace(/(\r\n|\n|\r| )/gm,"").split(',');
+        	}
+        	
+        	PolicyQuotaConfig.update($scope.settings,
+                    function (successResponse) {
+                        $scope.errorMessage = null;
+                        
+                        $scope.settings.triggerPercent = successResponse.percent;
+                        $scope.settings.emailList = '';
+                        $scope.settings.rowId = successResponse.rowId;
+                        
+                        successResponse.emailList.forEach(function(email){
+                        	$scope.emailList += email;
+                        	$scope.emailList += ',\n';
+                        });
+                        
+                        if(successResponse.emailList.length > 1) {
+                        	$scope.settings.emailList = $scope.emailList.slice(0, -2);
+                        }
+                        
+                    },
+                    function (errorResponse) {
+                    	$scope.errorMessage = errorResponse.data.userMessage;	
                     });
-                    
-                    if(successResponse.emailList.length > 1) {
-                    	$scope.emailList = $scope.emailList.slice(0, -2);
-                    }
-                    
-//                    var arr = $scope.emailList.replace(/(\r\n|\n|\r| )/gm,"").split(',');
-//                    console.log(arr);
+            
+        	
+        }
+        
+        PolicyQuotaConfig.get({id: 0},
+        		function (successResponse) {
+		            $scope.errorMessage = null;
+		            
+		            $scope.settings.triggerPercent = successResponse.percent;
+		            $scope.settings.emailList = '';
+		            $scope.settings.rowId = successResponse.rowId;
+		            
+		            successResponse.emailList.forEach(function(email){
+		            	$scope.settings.emailList += email;
+		            	$scope.settings.emailList += ',\n';
+		            });
+		            
+		            if(successResponse.emailList.length > 1) {
+		            	$scope.settings.emailList = $scope.settings.emailList.slice(0, -2);
+		            }
+		            
+		        },
+                function (errorResponse) {
+                    console.log(errorResponse.data.userMessage);
+                });
+        
+        $http.get(window.location.origin + '/api-elife/settings/policy', {}).then(
+                function (successResponse) {
+                    $scope.policyQuota = successResponse.data.quota;
                     
                 },
                 function (errorResponse) {
-                    $scope.successMessage = null;
-                    $scope.errorMessage = errorResponse.data.userMessage;
-                    $scope.isValidating = null;
+                    console.log(errorResponse);
                 });
+        
+        $http.get(window.location.origin + '/api-elife/policies/available/remain/count', {}).then(
+                function (successResponse) {
+                    
+                    $scope.availablePolicyCount = successResponse.data;
+                    
+                },
+                function (errorResponse) {
+                    console.log(errorResponse);
+                });
+        
     });
+    
+    
         
         
     app.controller('PolicyNumberTest', function ($scope, $route, PolicyNumberTestService, PolicyNumberTestUpload) {
