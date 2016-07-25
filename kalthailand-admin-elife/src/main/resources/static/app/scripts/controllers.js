@@ -238,12 +238,12 @@
                     $scope.settings.rowId = successResponse.rowId;
 
                     successResponse.emailList.forEach(function (email) {
-                        $scope.emailList += email;
-                        $scope.emailList += ',\n';
+                        $scope.settings.emailList += email;
+                        $scope.settings.emailList += ',\n';
                     });
 
                     if (successResponse.emailList.length > 1) {
-                        $scope.settings.emailList = $scope.emailList.slice(0, -2);
+                        $scope.settings.emailList = $scope.settings.emailList.slice(0, -2);
                     }
 
                 },
