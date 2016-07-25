@@ -20,18 +20,18 @@ public class PolicyNumberSetting {
     @NotNull
     @Min(1)
     @Max(100)
-    private Integer percent;
+    private Integer triggerPercent;
 
     @NotNull
     @NotEmpty
     private List<String> emailList;
 
-    public Integer getPercent() {
-        return percent;
+    public Integer getTriggerPercent() {
+        return triggerPercent;
     }
 
-    public void setPercent(Integer percent) {
-        this.percent = percent;
+    public void setTriggerPercent(Integer triggerPercent) {
+        this.triggerPercent = triggerPercent;
     }
 
     public List<String> getEmailList() {
@@ -44,7 +44,7 @@ public class PolicyNumberSetting {
 
     @Override
     public String toString() {
-        return "PolicyNumberSetting [percent=" + percent + ", emailList=" + emailList + "]";
+        return "PolicyNumberSetting [triggerPercent=" + triggerPercent + ", emailList=" + emailList + "]";
     }
 
     public String getId() {

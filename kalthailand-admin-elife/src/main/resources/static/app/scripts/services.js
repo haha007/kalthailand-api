@@ -99,11 +99,16 @@
     });
     
     app.factory('PolicyQuotaConfig', function ($resource) {
-    	return $resource(window.location.origin + '/api-elife/policy-quota/:id', { id: '@rowId' }, {
-    		update: {
-    			method: 'PUT'
-    		}
-    	});
+    	return $resource(window.location.origin + '/api-elife/policy-numbers/setting/:id',
+            {
+                //id: '@rowId'
+            },
+            {
+    		    update: {
+    			    method: 'PUT'
+    		    }
+    	    }
+        );
     });
     
     app.factory('httpRequestInterceptor', function ($localStorage) {

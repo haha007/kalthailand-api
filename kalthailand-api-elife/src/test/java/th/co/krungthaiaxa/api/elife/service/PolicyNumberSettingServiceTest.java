@@ -34,8 +34,8 @@ public class PolicyNumberSettingServiceTest extends ELifeTest {
         PolicyNumberSetting policySetting = policyNumberSettingService.loadPolicyNumberSetting();
         logger.info("Quota Setting: {}", ObjectMapperUtil.toStringMultiLine(policySetting));
         Assert.assertNotNull(policySetting);
-        Assert.assertTrue(policySetting.getPercent() > 0);
-        Assert.assertTrue(policySetting.getPercent() < 100);
+        Assert.assertTrue(policySetting.getTriggerPercent() > 0);
+        Assert.assertTrue(policySetting.getTriggerPercent() < 100);
         Assert.assertTrue(!policySetting.getEmailList().isEmpty());
     }
 

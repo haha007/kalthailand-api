@@ -43,7 +43,7 @@ public class PolicyNumberSettingService {
 
     private PolicyNumberSetting initDefaultPolicyNumberNotificationSetting() {
         PolicyNumberSetting policyNumberSetting = new PolicyNumberSetting();
-        policyNumberSetting.setPercent(100);
+        policyNumberSetting.setTriggerPercent(100);
         policyNumberSetting.setEmailList(Collections.EMPTY_LIST);
         return policyNumberSetting;
     }

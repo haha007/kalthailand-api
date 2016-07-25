@@ -4,7 +4,7 @@
     var app = angular.module('myApp');
 
     app.controller('LoginController', function ($scope, $rootScope, $http, $localStorage, $location) {
-    	$localStorage.token = null;
+        $localStorage.token = null;
 
         $scope.onClickLogin = function () {
             var requestForToken = {};
@@ -13,15 +13,15 @@
 
             $http.post(window.location.origin + '/api-auth/auth', requestForToken)
                 .then(
-                function (successResponse) {
-                	$rootScope.errorMsg = null;
-                    $localStorage.token = successResponse.data.token;
-                    $location.path('/home');
-                },
-                function (errorResponse) {
-                    console.log(errorResponse);
-                    $rootScope.errorMsg = 'Invalid credentials. Please check username/password.'
-                });
+                    function (successResponse) {
+                        $rootScope.errorMsg = null;
+                        $localStorage.token = successResponse.data.token;
+                        $location.path('/home');
+                    },
+                    function (errorResponse) {
+                        console.log(errorResponse);
+                        $rootScope.errorMsg = 'Invalid credentials. Please check username/password.'
+                    });
         };
     });
 
@@ -113,11 +113,11 @@
             );
         }
     });
-    
+
     app.controller('CollectionFileController', function ($scope, $route, CollectionFile, $localStorage) {
         $scope.$route = $route;
-        
-        
+
+
         fetchCollectionFileDetails();
 
         $scope.file = null;
@@ -137,18 +137,18 @@
                     $scope.errorMessage = errorResponse.data.userMessage;
                 });
         }
-        
+
         function fetchCollectionFileDetails() {
-        	CollectionFile.query(function (response) {
+            CollectionFile.query(function (response) {
                 $scope.collectionFiles = response;
             });
         }
     });
-    
+
     app.controller('ConfigurationController', function ($scope, $route, $http, PolicyQuotaConfig, PolicyNumberUpload, $localStorage) {
         $scope.$route = $route;
         $scope.settings = {};
-        
+
         $scope.blackList = null;
         $scope.uploadProgress = null;
         $scope.numberOfLines = 0;
@@ -157,12 +157,14 @@
         $scope.numberOfEmptyLines = 0;
 
         $scope.stacked = [];
-        $scope.stacked.push({ value: 0, type: 'success' });
-        $scope.stacked.push({ value: 0, type: 'warning' });
-        $scope.stacked.push({ value: 0, type: 'info' });
+        $scope.stacked.push({value: 0, type: 'success'});
+        $scope.stacked.push({value: 0, type: 'warning'});
+        $scope.stacked.push({value: 0, type: 'info'});
 
         var stompClient = null;
         var nbLinesAdded = 0;
+
+        fetchPolicyQuotaInfo();
 
         $scope.uploadNewPolicyNumbers = function (event) {
             event.preventDefault();
@@ -179,13 +181,14 @@
                     $scope.isUploading = null;
                     disconnect();
                     updateProgressBar(angular.fromJson(successResponse), true);
-                    searchForBlackList();
+                    fetchPolicyQuotaInfo();
                 })
                 .catch(function (errorResponse) {
                     $scope.uploadErrorMessage = errorResponse.data.userMessage;
                     $scope.isUploading = null;
                     $scope.hasUploaded = false;
                     disconnect();
+                    fetchPolicyQuotaInfo();
                 });
         };
 
@@ -210,93 +213,95 @@
             $scope.numberOfLinesAdded = uploadProgress.numberOfLinesAdded;
             $scope.numberOfDuplicateLines = uploadProgress.numberOfDuplicateLines;
             $scope.numberOfEmptyLines = uploadProgress.numberOfEmptyLines;
-            $scope.numberOfLines = uploadProgress.numberOfLines;;
-            $scope.stacked[0] = { value: $scope.numberOfLinesAdded, type: 'success' };
-            $scope.stacked[1] = { value: $scope.numberOfDuplicateLines, type: 'warning' };
-            $scope.stacked[2] = { value: $scope.numberOfEmptyLines, type: 'info' };
+            $scope.numberOfLines = uploadProgress.numberOfLines;
+            $scope.stacked[0] = {value: $scope.numberOfLinesAdded, type: 'success'};
+            $scope.stacked[1] = {value: $scope.numberOfDuplicateLines, type: 'warning'};
+            $scope.stacked[2] = {value: $scope.numberOfEmptyLines, type: 'info'};
 
             if (!lastCall) {
                 $scope.$apply();
             }
         }
-        
-        $scope.updateQuotaAlert = function($event) {
-        	
-        	if($scope.settings.emailList) {
-        		$scope.settings.emailList = $scope.settings.emailList.replace(/(\r\n|\n|\r| )/gm,"").split(',');
-        	}
-        	
-        	PolicyQuotaConfig.update($scope.settings,
-                    function (successResponse) {
-                        $scope.errorMessage = null;
-                        
-                        $scope.settings.triggerPercent = successResponse.percent;
-                        $scope.settings.emailList = '';
-                        $scope.settings.rowId = successResponse.rowId;
-                        
-                        successResponse.emailList.forEach(function(email){
-                        	$scope.emailList += email;
-                        	$scope.emailList += ',\n';
-                        });
-                        
-                        if(successResponse.emailList.length > 1) {
-                        	$scope.settings.emailList = $scope.emailList.slice(0, -2);
-                        }
-                        
-                    },
-                    function (errorResponse) {
-                    	$scope.errorMessage = errorResponse.data.userMessage;	
+
+        $scope.updateQuotaAlert = function ($event) {
+
+            if ($scope.settings.emailList) {
+                $scope.settings.emailList = $scope.settings.emailList.replace(/(\r\n|\n|\r| )/gm, "").split(',');
+            }
+
+            PolicyQuotaConfig.update($scope.settings,
+                function (successResponse) {
+                    $scope.errorMessage = null;
+
+                    $scope.settings.triggerPercent = successResponse.triggerPercent;
+                    $scope.settings.emailList = '';
+                    $scope.settings.rowId = successResponse.rowId;
+
+                    successResponse.emailList.forEach(function (email) {
+                        $scope.emailList += email;
+                        $scope.emailList += ',\n';
                     });
-            
-        	
-        }
-        
-        PolicyQuotaConfig.get({id: 0},
-        		function (successResponse) {
-		            $scope.errorMessage = null;
-		            
-		            $scope.settings.triggerPercent = successResponse.percent;
-		            $scope.settings.emailList = '';
-		            $scope.settings.rowId = successResponse.rowId;
-		            
-		            successResponse.emailList.forEach(function(email){
-		            	$scope.settings.emailList += email;
-		            	$scope.settings.emailList += ',\n';
-		            });
-		            
-		            if(successResponse.emailList.length > 1) {
-		            	$scope.settings.emailList = $scope.settings.emailList.slice(0, -2);
-		            }
-		            
-		        },
+
+                    if (successResponse.emailList.length > 1) {
+                        $scope.settings.emailList = $scope.emailList.slice(0, -2);
+                    }
+
+                },
                 function (errorResponse) {
-                    console.log(errorResponse.data.userMessage);
+                    $scope.errorMessage = errorResponse.data.userMessage;
                 });
-        
-        $http.get(window.location.origin + '/api-elife/policy-numbers/count', {}).then(
+
+
+        }
+
+        PolicyQuotaConfig.get({id: 0},
+            function (successResponse) {
+                $scope.errorMessage = null;
+
+                $scope.settings.triggerPercent = successResponse.triggerPercent;
+                $scope.settings.emailList = '';
+                $scope.settings.rowId = successResponse.rowId;
+
+                successResponse.emailList.forEach(function (email) {
+                    $scope.settings.emailList += email;
+                    $scope.settings.emailList += ',\n';
+                });
+
+                if (successResponse.emailList.length > 1) {
+                    $scope.settings.emailList = $scope.settings.emailList.slice(0, -2);
+                }
+
+            },
+            function (errorResponse) {
+                console.log(errorResponse.data.userMessage);
+            });
+
+        function fetchPolicyQuotaInfo() {
+            $http.get(window.location.origin + '/api-elife/policy-numbers/count', {}).then(
                 function (successResponse) {
                     $scope.policyQuota = successResponse.data;
-                    
+
                 },
                 function (errorResponse) {
                     console.log(errorResponse);
                 });
-        
-        $http.get(window.location.origin + '/api-elife/policy-numbers/available/count', {}).then(
+
+            $http.get(window.location.origin + '/api-elife/policy-numbers/available/count', {}).then(
                 function (successResponse) {
-                    
+
                     $scope.availablePolicyCount = successResponse.data;
-                    
+
                 },
                 function (errorResponse) {
                     console.log(errorResponse);
                 });
-        
+
+        }
+
+
     });
-    
-    
-        
-        
+
+
     app.controller('PolicyNumberTest', function ($scope, $route, PolicyNumberTestService, PolicyNumberTestUpload) {
         $scope.$route = $route;
 
@@ -317,9 +322,9 @@
         $scope.numberOfEmptyLines = 0;
 
         $scope.stacked = [];
-        $scope.stacked.push({ value: 0, type: 'success' });
-        $scope.stacked.push({ value: 0, type: 'warning' });
-        $scope.stacked.push({ value: 0, type: 'info' });
+        $scope.stacked.push({value: 0, type: 'success'});
+        $scope.stacked.push({value: 0, type: 'warning'});
+        $scope.stacked.push({value: 0, type: 'info'});
 
         $scope.search = searchForBlackList;
         $scope.pageChanged = searchForBlackList;
@@ -396,10 +401,11 @@
             $scope.numberOfLinesAdded = uploadProgress.numberOfLinesAdded;
             $scope.numberOfDuplicateLines = uploadProgress.numberOfDuplicateLines;
             $scope.numberOfEmptyLines = uploadProgress.numberOfEmptyLines;
-            $scope.numberOfLines = uploadProgress.numberOfLines;;
-            $scope.stacked[0] = { value: $scope.numberOfLinesAdded, type: 'success' };
-            $scope.stacked[1] = { value: $scope.numberOfDuplicateLines, type: 'warning' };
-            $scope.stacked[2] = { value: $scope.numberOfEmptyLines, type: 'info' };
+            $scope.numberOfLines = uploadProgress.numberOfLines;
+            ;
+            $scope.stacked[0] = {value: $scope.numberOfLinesAdded, type: 'success'};
+            $scope.stacked[1] = {value: $scope.numberOfDuplicateLines, type: 'warning'};
+            $scope.stacked[2] = {value: $scope.numberOfEmptyLines, type: 'info'};
 
             if (!lastCall) {
                 $scope.$apply();
@@ -417,57 +423,57 @@
         }
 
         // AKT-820
-        $scope.onSubmitPaymentDetails = function() {
-        	$scope.isFetching = true;
-        	
-        	var data = {
-    			paymentId:     $scope.policyDetail.payments[0].paymentId,
-    			value:         $scope.policyDetail.payments[0].amount.value,
-    			currencyCode:  $scope.policyDetail.payments[0].amount.currencyCode,
-    			channelType:   'LINE',
-    			orderId:       $scope.payment.orderId,
-    			transactionId: $scope.payment.transactionId
-        	};
-        	
-        	if ($scope.policyDetail.premiumsData.financialScheduler.periodicity.code == 'EVERY_MONTH') {
-        		if ( ! $scope.payment.regKey) {
-        			alert('Error! required "regKey" on monthly mode payment');
-        			return;
-        		}
-        		
-        		data.regKey = $scope.payment.regKey;
-        	}
-        	
-        	$http({
-        		url: '/api-elife/policies/' + $scope.policyDetail.policyId + '/update/status/pendingValidation',
-        		method: 'PUT',
-        		params: data,
-        		data: data,
-        		headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-        	}).
-        	then(
-				function(response) {
-					if (response.data.error) {
-						$scope.isFetching = false;
-						$scope.successMessage = null;
-	                    $scope.errorMessage = response.data.message;
-					} else {
-						window.location.reload();
-					}
-	        	}, 
-	        	function(err) {
-	        		$scope.isFetching = false;
-					$scope.successMessage = null;
+        $scope.onSubmitPaymentDetails = function () {
+            $scope.isFetching = true;
+
+            var data = {
+                paymentId: $scope.policyDetail.payments[0].paymentId,
+                value: $scope.policyDetail.payments[0].amount.value,
+                currencyCode: $scope.policyDetail.payments[0].amount.currencyCode,
+                channelType: 'LINE',
+                orderId: $scope.payment.orderId,
+                transactionId: $scope.payment.transactionId
+            };
+
+            if ($scope.policyDetail.premiumsData.financialScheduler.periodicity.code == 'EVERY_MONTH') {
+                if (!$scope.payment.regKey) {
+                    alert('Error! required "regKey" on monthly mode payment');
+                    return;
+                }
+
+                data.regKey = $scope.payment.regKey;
+            }
+
+            $http({
+                url: '/api-elife/policies/' + $scope.policyDetail.policyId + '/update/status/pendingValidation',
+                method: 'PUT',
+                params: data,
+                data: data,
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+            }).
+            then(
+                function (response) {
+                    if (response.data.error) {
+                        $scope.isFetching = false;
+                        $scope.successMessage = null;
+                        $scope.errorMessage = response.data.message;
+                    } else {
+                        window.location.reload();
+                    }
+                },
+                function (err) {
+                    $scope.isFetching = false;
+                    $scope.successMessage = null;
                     $scope.errorMessage = err.toString();
-	        	}
-        	)
-        	
-        	return false;
+                }
+            )
+
+            return false;
         };
-        
+
         $scope.onClickNotification = function () {
             $scope.isValidating = true;
-            PolicyNotification.get({ id: $scope.policyID, reminderId: $scope.scenarioID },
+            PolicyNotification.get({id: $scope.policyID, reminderId: $scope.scenarioID},
                 function (successResponse) {
                     $scope.successMessage = "Notifications have been sent successfully";
                     $scope.errorMessage = null;
@@ -487,28 +493,28 @@
             $http({
                 url: '/api-elife/policies/' + policyNumber + '/update/status/validated',
                 method: 'PUT',
-                data: $.param({ agentName: $scope.agentName, agentCode: $scope.agentCode, linePayCaptureMode: $scope.linePayCaptureMode }),
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+                data: $.param({agentName: $scope.agentName, agentCode: $scope.agentCode, linePayCaptureMode: $scope.linePayCaptureMode}),
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'}
             })
                 .then(
-                function (successResponse) {
-                    $scope.successMessage = "Policy [" + successResponse.data.policyId + "] has been validated";
-                    $scope.errorMessage = null;
-                    $scope.policyDetail = null;
-                    $scope.annualPremium = null;
-                    $scope.sumInsured = null;
-                    $scope.isValidating = null;
-                    $(window).scrollTop(0);
-                },
-                function (errorResponse) {
-                    $scope.successMessage = null;
-                    $scope.errorMessage = errorResponse.data.userMessage;
-                    $scope.policyDetail = null;
-                    $scope.annualPremium = null;
-                    $scope.sumInsured = null;
-                    $scope.isValidating = null;
-                    $(window).scrollTop(0);
-                });
+                    function (successResponse) {
+                        $scope.successMessage = "Policy [" + successResponse.data.policyId + "] has been validated";
+                        $scope.errorMessage = null;
+                        $scope.policyDetail = null;
+                        $scope.annualPremium = null;
+                        $scope.sumInsured = null;
+                        $scope.isValidating = null;
+                        $(window).scrollTop(0);
+                    },
+                    function (errorResponse) {
+                        $scope.successMessage = null;
+                        $scope.errorMessage = errorResponse.data.userMessage;
+                        $scope.policyDetail = null;
+                        $scope.annualPremium = null;
+                        $scope.sumInsured = null;
+                        $scope.isValidating = null;
+                        $(window).scrollTop(0);
+                    });
         };
 
         $scope.search = function (event) {
@@ -517,7 +523,7 @@
         };
 
         function searchForPolicyDetail() {
-            PolicyDetail.get({ id: $scope.policyID },
+            PolicyDetail.get({id: $scope.policyID},
                 function (successResponse) {
                     $scope.scenarioID = 1;
                     $scope.linePayCaptureMode = 'FAKE_WITH_SUCCESS';
