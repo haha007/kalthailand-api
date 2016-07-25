@@ -2,7 +2,7 @@
     'use strict';
 
     var app = angular.module('myApp');
-    
+
     app.factory('AuthService', function ($http, $localStorage) {
         var authService = {};
 
@@ -56,9 +56,9 @@
             }
         });
     });
-    
+
     app.factory('PolicyNumberTestUpload', function ($resource) {
-        return $resource(window.location.origin + '/api-elife/policy-quota/upload', {}, {
+        return $resource(window.location.origin + '/api-elife/policy-numbers/upload', {}, {
             save: {
                 method: 'POST',
                 transformRequest: function (data) {
@@ -85,9 +85,9 @@
     app.factory('BlackList', function ($resource) {
         return $resource(window.location.origin + '/api-blacklist/blacklist', { pageNumber: '@pageNumber', pageSize: '@pageSize' }, {});
     });
-    
+
     app.factory('PolicyNumberTestService', function ($resource) {
-    	return $resource(window.location.origin + '/api-elife/policy-quota/available', { pageNumber: '@pageNumber', pageSize: '@pageSize' }, {});
+    	return $resource(window.location.origin + '/api-elife/policy-numbers/available', { pageNumber: '@pageNumber', pageSize: '@pageSize' }, {});
     });
 
     app.factory('PolicyDetail', function ($resource) {
@@ -97,7 +97,7 @@
     app.factory('PolicyNotification', function ($resource) {
         return $resource(window.location.origin + '/api-elife/policies/:id/reminder/:reminderId', { id: '@id', reminderId: '@reminderId' }, {});
     });
-    
+
     app.factory('PolicyQuotaConfig', function ($resource) {
     	return $resource(window.location.origin + '/api-elife/policyquota/:id', { id: '@rowId' }, {
     		update: {

@@ -248,11 +248,11 @@
         }
 
         function connect() {
-            var socket = new SockJS(window.location.origin + '/api-elife/adminwebsocket/policy-quota/upload/progress');
+            var socket = new SockJS(window.location.origin + '/api-elife/adminwebsocket/policy-numbers/upload/progress');
             stompClient = Stomp.over(socket);
             stompClient.debug = null
             stompClient.connect({}, function (frame) {
-                stompClient.subscribe('/topic/policy-quota/upload/progress/result', function (response) {
+                stompClient.subscribe('/topic/policy-numbers/upload/progress/result', function (response) {
                     updateProgressBar(angular.fromJson(response.body), false);
                 });
             });

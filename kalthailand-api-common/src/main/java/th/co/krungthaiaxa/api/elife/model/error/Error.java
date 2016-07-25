@@ -1,16 +1,19 @@
 package th.co.krungthaiaxa.api.elife.model.error;
 
+import java.util.List;
+
 public class Error {
     private String code;
     private String userMessage;
     private String developerMessage;
+    private List<FieldError> fieldErrors;
 
     // Used by Jackson
     public Error() {
     }
 
     // Visibility has to be package so only ErrorCode can create Error instances
-    Error(String code, String userMessage, String developerMessage) {
+    public Error(String code, String userMessage, String developerMessage) {
         this.code = code;
         this.userMessage = userMessage;
         this.developerMessage = developerMessage;
@@ -38,5 +41,13 @@ public class Error {
 
     public void setDeveloperMessage(String developerMessage) {
         this.developerMessage = developerMessage;
+    }
+
+    public List<FieldError> getFieldErrors() {
+        return fieldErrors;
+    }
+
+    public void setFieldErrors(List<FieldError> fieldErrors) {
+        this.fieldErrors = fieldErrors;
     }
 }

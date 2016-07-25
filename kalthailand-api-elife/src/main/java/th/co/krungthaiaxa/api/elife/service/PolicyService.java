@@ -65,7 +65,7 @@ public class PolicyService {
     private final CDBClient cdbClient;
 
     @Inject
-    private SettingService settingService;
+    private PolicyNumberSettingService policyNumberSettingService;
 
     @Inject
     public PolicyService(TMCClient tmcClient,

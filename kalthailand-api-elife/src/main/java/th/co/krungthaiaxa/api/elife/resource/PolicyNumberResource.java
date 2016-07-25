@@ -4,6 +4,7 @@ import io.swagger.annotations.*;
 import org.apache.poi.openxml4j.exceptions.OpenXML4JException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -42,7 +43,7 @@ public class PolicyNumberResource {
     @ApiResponses({
             @ApiResponse(code = 406, message = "If Excel file is not in invalid format", response = Error.class)
     })
-    @RequestMapping(value = "/policy-number/upload", produces = APPLICATION_JSON_VALUE, method = POST)
+    @RequestMapping(value = "/policy-numbers/upload", produces = APPLICATION_JSON_VALUE, method = POST)
     @ResponseBody
     public ResponseEntity<byte[]> uploadPolicyQuotaFileFile(
             @ApiParam(required = true, value = "The Excel file to upload")
@@ -55,25 +56,25 @@ public class PolicyNumberResource {
     }
 
     @ApiOperation(value = "List of available policy number", notes = "Gets a list of available policy number", response = PolicyNumber.class, responseContainer = "List")
-    @RequestMapping(value = "/policy-number/available", produces = APPLICATION_JSON_VALUE, method = GET)
+    @RequestMapping(value = "/policy-numbers/available", produces = APPLICATION_JSON_VALUE, method = GET)
     @ResponseBody
-    public ResponseEntity<byte[]> getAvailablePolicyNumber(
+    public Page<PolicyNumber> getAvailablePolicyNumber(
             @ApiParam(required = true, value = "Page number (starts at 0)")
             @RequestParam Integer pageNumber,
             @ApiParam(required = true, value = "Number of elements per page")
             @RequestParam Integer pageSize) {
-        return new ResponseEntity<>(getJson(policyQuotaService.findAvailablePolicyNumbers(pageNumber, pageSize)), OK);
+        return policyQuotaService.findAvailablePolicyNumbers(pageNumber, pageSize);
     }
 
-    @ApiOperation(value = "Count available policy numbers", notes = "Count available policy numbers", response = PolicyNumber.class, responseContainer = "List")
-    @RequestMapping(value = "/policy-number/available/count", produces = APPLICATION_JSON_VALUE, method = GET)
+    @ApiOperation(value = "Count available policy numbers", notes = "Count available policy numbers", response = Long.class)
+    @RequestMapping(value = "/policy-numbers/available/count", produces = APPLICATION_JSON_VALUE, method = GET)
     @ResponseBody
     public long countAvailablePolicyNumber() {
         return policyNumberService.countAvailablePolicyNumbers();
     }
 
-    @ApiOperation(value = "Count all policy numbers", notes = "Count all policy numbers", response = PolicyNumber.class, responseContainer = "List")
-    @RequestMapping(value = "/policy-number/count", produces = APPLICATION_JSON_VALUE, method = GET)
+    @ApiOperation(value = "Count all policy numbers", notes = "Count all policy numbers", response = Long.class)
+    @RequestMapping(value = "/policy-numbers/count", produces = APPLICATION_JSON_VALUE, method = GET)
     @ResponseBody
     public long countAllPolicyNumber() {
         return policyNumberService.countAllPolicyNumbers();

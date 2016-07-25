@@ -13,7 +13,7 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         // the endpoint for websocket connections
-        registry.addEndpoint("/adminwebsocket/policyquota/upload/progress").withSockJS();
+        registry.addEndpoint("/adminwebsocket/policy-numbers/upload/progress").withSockJS();
     }
 
     @Override

@@ -14,5 +14,11 @@
     <name>kalthailand-api-common</name>
     <description>Common Module for API</description>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+        </dependency>
+    </dependencies>
 
 </project>
