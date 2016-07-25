@@ -57,7 +57,7 @@
         });
     });
     
-    app.factory('PolicyNumberTestUpload', function ($resource) {
+    app.factory('PolicyNumberUpload', function ($resource) {
         return $resource(window.location.origin + '/api-elife/policy-quota/upload', {}, {
             save: {
                 method: 'POST',
