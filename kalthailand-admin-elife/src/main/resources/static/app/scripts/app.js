@@ -40,6 +40,16 @@
                 controller: 'PolicyDetailController',
                 activeTab: 'policy-detail'
             })
+            .when('/configuration', {
+                templateUrl: 'app/templates/configuration.html',
+                controller: 'ConfigurationController',
+                activeTab: 'configuration'
+            })
+            .when('/policy-number-test',{
+            	templateUrl: 'app/templates/policy-number-test.html',
+            	controller: 'PolicyNumberTest',
+            	activeTab: 'policy-number-test'
+            })
             .otherwise({
                 redirectTo: '/home'
             });

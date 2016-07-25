@@ -40,11 +40,15 @@ public class RsaUtil {
 	 * output = string decrypted in string
 	 * */
 	public static String decrypt(String text) {
+		System.out.println("text:"+text);
 		logger.info("decrypt ===============>");
 		if (!areKeysPresent()) {
 	        //generateKey();
 			logger.error("cannot find key .....");
 	      }
+		if(text.length()<14){
+			return text;
+		}
 		String privateKeyFileString = getPathFileName() + PRIVATE_KEY_NAME;
 		ObjectInputStream inputStream = null;
 		try {
@@ -79,6 +83,9 @@ public class RsaUtil {
 	        //generateKey();
 			logger.error("cannot find key .....");
 	      }
+		if(text.length()>13){
+			return text;
+		}
 		  String publicKeyFileString = getPathFileName() + PUBLIC_KEY_NAME;
 		  ObjectInputStream inputStream = null;
 		try {

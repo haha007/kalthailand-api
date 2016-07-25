@@ -144,6 +144,140 @@
             });
         }
     });
+    
+    app.controller('ConfigurationController', function ($scope, $route, PolicyQuotaConfig, $localStorage) {
+        $scope.$route = $route;
+        
+        PolicyQuotaConfig.get({},
+                function (successResponse) {
+                    $scope.errorMessage = null;
+                    
+                    $scope.triggerPercent = successResponse.percent;
+                    $scope.emailList = '';
+                    successResponse.emailList.forEach(function(email){
+                    	$scope.emailList += email;
+                    	$scope.emailList += ',\n';
+                    });
+                    
+                    if(successResponse.emailList.length > 1) {
+                    	$scope.emailList = $scope.emailList.slice(0, -2);
+                    }
+                    
+//                    var arr = $scope.emailList.replace(/(\r\n|\n|\r| )/gm,"").split(',');
+//                    console.log(arr);
+                    
+                },
+                function (errorResponse) {
+                    $scope.successMessage = null;
+                    $scope.errorMessage = errorResponse.data.userMessage;
+                    $scope.isValidating = null;
+                });
+    });
+        
+        
+    app.controller('PolicyNumberTest', function ($scope, $route, PolicyNumberTestService, PolicyNumberTestUpload) {
+        $scope.$route = $route;
+
+        $scope.currentPage = 1;
+        $scope.itemsPerPage = 20;
+        $scope.searchContent = '';
+        $scope.blackList = null;
+        $scope.uploadProgress = null;
+        $scope.numberOfLines = 0;
+        $scope.numberOfLinesAdded = 0;
+        $scope.numberOfDuplicateLines = 0;
+        $scope.numberOfEmptyLines = 0;
+
+        $scope.stacked = [];
+        $scope.stacked.push({ value: 0, type: 'success' });
+        $scope.stacked.push({ value: 0, type: 'warning' });
+        $scope.stacked.push({ value: 0, type: 'info' });
+
+        $scope.search = searchForBlackList;
+        $scope.pageChanged = searchForBlackList;
+        searchForBlackList();
+
+        var stompClient = null;
+        var nbLinesAdded = 0;
+
+        $scope.uploadBlackList = function (event) {
+            event.preventDefault();
+            $scope.isUploading = true;
+            $scope.hasUploaded = true;
+            connect();
+            $scope.blackList = null;
+            var newBlackListFileUpload = new PolicyNumberTestUpload;
+            newBlackListFileUpload.file = $scope.file;
+
+            newBlackListFileUpload.$save()
+                .then(function (successResponse) {
+                    $scope.errorMessage = null;
+                    $scope.isUploading = null;
+                    disconnect();
+                    updateProgressBar(angular.fromJson(successResponse), true);
+                    searchForBlackList();
+                })
+                .catch(function (errorResponse) {
+                    $scope.errorMessage = errorResponse.data.userMessage;
+                    $scope.isUploading = null;
+                    $scope.hasUploaded = false;
+                    disconnect();
+                });
+        };
+
+        function searchForBlackList() {
+        	PolicyNumberTestService.get(
+                {
+                    pageNumber: $scope.currentPage - 1,
+                    pageSize: $scope.itemsPerPage,
+                    searchContent: $scope.searchContent
+                },
+                function (successResponse) {
+                    $scope.totalPages = successResponse.totalPages;
+                    $scope.totalItems = successResponse.totalElements;
+                    $scope.currentPage = successResponse.number + 1;
+
+                    $scope.policyNumber = successResponse;
+                    $scope.errorMessage = null;
+                },
+                function (errorResponse) {
+                    $scope.policyNumber = null;
+                    $scope.errorMessage = errorResponse.data.userMessage;
+                }
+            );
+        }
+
+        function connect() {
+            var socket = new SockJS(window.location.origin + '/api-elife/adminwebsocket/policy-quota/upload/progress');
+            stompClient = Stomp.over(socket);
+            stompClient.debug = null
+            stompClient.connect({}, function (frame) {
+                stompClient.subscribe('/topic/policy-quota/upload/progress/result', function (response) {
+                    updateProgressBar(angular.fromJson(response.body), false);
+                });
+            });
+        }
+
+        function disconnect() {
+            if (stompClient != null) {
+                stompClient.disconnect();
+            }
+        }
+
+        function updateProgressBar(uploadProgress, lastCall) {
+            $scope.numberOfLinesAdded = uploadProgress.numberOfLinesAdded;
+            $scope.numberOfDuplicateLines = uploadProgress.numberOfDuplicateLines;
+            $scope.numberOfEmptyLines = uploadProgress.numberOfEmptyLines;
+            $scope.numberOfLines = uploadProgress.numberOfLines;;
+            $scope.stacked[0] = { value: $scope.numberOfLinesAdded, type: 'success' };
+            $scope.stacked[1] = { value: $scope.numberOfDuplicateLines, type: 'warning' };
+            $scope.stacked[2] = { value: $scope.numberOfEmptyLines, type: 'info' };
+
+            if (!lastCall) {
+                $scope.$apply();
+            }
+        }
+    });
 
     app.controller('BlackListController', function ($scope, $route, BlackList, BlackListFileUpload) {
         $scope.$route = $route;

@@ -22,6 +22,7 @@ import org.apache.poi.openxml4j.exceptions.OpenXML4JException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -55,7 +56,7 @@ public class PolicyQuotaResource {
 		this.policyQuotaService = policyQuotaService;
 	}
 
-	@ApiOperation(value = "Get policy quota data", notes = "Get a policy quota data.", response = PolicyQuota.class, responseContainer = "List")
+	@ApiOperation(value = "Get a list of policy quota data", notes = "Get a list of policy quota data.", response = PolicyQuota.class, responseContainer = "List")
     @ApiResponses({
             @ApiResponse(code = 406, message = "If policy quota data not exists", response = Error.class)
     })
@@ -63,7 +64,7 @@ public class PolicyQuotaResource {
     @ResponseBody
 	public ResponseEntity<byte[]> getPolicyQuota(){
 		
-		PolicyQuota policyQuota = policyQuotaService.getPolicyQuota();
+		PolicyQuota policyQuota = policyQuotaService.getPolicyQuota(null);
 		List<PolicyQuota> listPolicyQuota = new ArrayList<>();
 		listPolicyQuota.add(policyQuota);
 		
@@ -76,16 +77,39 @@ public class PolicyQuotaResource {
 		
 	}
 	
+	@ApiOperation(value = "Get policy quota data", notes = "Get a policy quota data.", response = PolicyQuota.class, responseContainer = "List")
+    @ApiResponses({
+            @ApiResponse(code = 406, message = "If policy quota data not exists", response = Error.class)
+    })
+    @RequestMapping(value = "/policy-quota/{rowId}", produces = APPLICATION_JSON_VALUE, method = GET)
+    @ResponseBody
+	public ResponseEntity<byte[]> getPolicyQuota(
+			@ApiParam(value = "The policy quota rowId", required = true)
+			@PathVariable String rowId){
+		
+		PolicyQuota policyQuota = policyQuotaService.getPolicyQuota(rowId);
+		
+		if(null==policyQuota){
+			return new ResponseEntity<>(getJson(ErrorCode.POLICY_QUOTA_DOES_NOT_EXIST), NOT_FOUND);
+		}else{
+			policyQuota.setRowId(0);
+			return new ResponseEntity<>(getJson(policyQuota), OK);
+		}
+		
+	}
+	
 	@ApiOperation(value = "Update a policy quota", notes = "Update a policy quota", response = Boolean.class)
     @ApiResponses({
             @ApiResponse(code = 406, message = "If JSon of policy quota is invalid or if policy quota could not be update",
                     response = Error.class)
     })
-    @RequestMapping(value = "/policy-quota/update", produces = APPLICATION_JSON_VALUE, method = PUT)
+    @RequestMapping(value = "/policy-quota/{rowId}", produces = APPLICATION_JSON_VALUE, method = PUT)
     @ResponseBody
 	public ResponseEntity<byte[]> updatePolicyQuota(
 			@ApiParam(value = "The policy quota to update")
-			@RequestBody String jsonPolicyQuota){
+			@RequestBody String jsonPolicyQuota,
+			@ApiParam(value = "The policy quota rowId", required = true)
+			@PathVariable String rowId){
 		
 		PolicyQuota policyQuota;
 		
@@ -104,7 +128,7 @@ public class PolicyQuotaResource {
 			return new ResponseEntity<>(getJson(INVALID_POLICY_QUOTA_PERCENT), NOT_ACCEPTABLE);
 		}
 		
-		policyQuotaService.updatePolicyQuota(policyQuota);
+		policyQuotaService.updatePolicyQuota(policyQuota, rowId);
 		return new ResponseEntity<>(getJson(""),OK);
 		
 	}
@@ -123,6 +147,17 @@ public class PolicyQuotaResource {
         } catch (IOException | SAXException | OpenXML4JException | ParserConfigurationException | IllegalArgumentException | ElifeException e) {
             return new ResponseEntity<>(getJson(INVALID_POLICY_NUMBER_EXCEL_FILE), NOT_ACCEPTABLE);
         }
+    }
+    
+    @ApiOperation(value = "List of policy number", notes = "Gets a list on policy number", response = PolicyNumber.class, responseContainer = "List")
+    @RequestMapping(value = "/policy-quota/available", produces = APPLICATION_JSON_VALUE, method = GET)
+    @ResponseBody
+    public ResponseEntity<byte[]> blackList(
+            @ApiParam(required = true, value = "Page number (starts at 0)")
+            @RequestParam Integer pageNumber,
+            @ApiParam(required = true, value = "Number of elements per page")
+            @RequestParam Integer pageSize) {
+        return new ResponseEntity<>(getJson(policyQuotaService.findAll(pageNumber, pageSize)), OK);
     }
 	
 }
