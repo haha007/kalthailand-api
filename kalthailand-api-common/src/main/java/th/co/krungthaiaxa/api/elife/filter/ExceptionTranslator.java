@@ -17,6 +17,7 @@ import th.co.krungthaiaxa.api.elife.model.error.FieldError;
 
 import javax.inject.Inject;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Controller advice to translate the server side exceptions to client-friendly json structures.
@@ -50,9 +51,10 @@ public class ExceptionTranslator {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
     public Error processValidationError(final MethodArgumentNotValidException exception) {
-        final Error result = new Error(ErrorCode.ERROR_CODE_BEAN_VALIDATION, exception.getMessage(), exception.getMessage());
         final BindingResult bindingResult = exception.getBindingResult();
         List<FieldError> fieldErrorDTOs = beanValidationExceptionTranslator.toFieldErrorDTOs(bindingResult.getAllErrors());
+        String fieldErrorsMessage = toPrettyMessageString(fieldErrorDTOs);
+        final Error result = new Error(ErrorCode.ERROR_CODE_BEAN_VALIDATION, fieldErrorsMessage, exception.getMessage());
         result.setFieldErrors(fieldErrorDTOs);
         this.loggingMessage(result, exception);
         return result;
@@ -79,5 +81,13 @@ public class ExceptionTranslator {
     private void loggingMessage(final Error error, final Exception ex) {
         final String errorMessage = String.format("Error code: %s\nUser message: %s.\nDeveloper message: %s", error.getCode(), error.getUserMessage(), error.getDeveloperMessage());
         LOGGER.error(errorMessage, ex);
+    }
+
+    private String toPrettyMessageString(List<FieldError> fieldErrors) {
+        StringBuilder sb = new StringBuilder("The object has some invalid fields: ");
+        String listFieldNames = fieldErrors.stream().map(
+                fieldError1 -> fieldError1.getField()
+        ).collect(Collectors.joining(", "));
+        return sb.append(listFieldNames).toString();
     }
 }

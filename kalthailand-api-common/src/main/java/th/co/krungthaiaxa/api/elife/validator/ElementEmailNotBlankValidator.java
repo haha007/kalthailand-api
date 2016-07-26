@@ -10,11 +10,11 @@ import java.util.List;
 /**
  * @author khoi.tran on 7/25/16.
  */
-public class ListEmailNotEmptyValidator implements ConstraintValidator<ListEmailNotEmpty, List> {
+public class ElementEmailNotBlankValidator implements ConstraintValidator<ElementEmailNotBlank, List> {
     EmailValidator emailValidator = new EmailValidator();
 
     @Override
-    public void initialize(ListEmailNotEmpty constraintAnnotation) {
+    public void initialize(ElementEmailNotBlank constraintAnnotation) {
     }
 
     @Override
