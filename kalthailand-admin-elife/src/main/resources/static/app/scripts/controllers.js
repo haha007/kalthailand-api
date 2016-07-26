@@ -301,13 +301,6 @@
 
     });
 
-
-    app.controller('PolicyNumberTest', function ($scope, $route, PolicyNumberTestService, PolicyNumberTestUpload) {
-        $scope.$route = $route;
-
-
-    });
-
     app.controller('BlackListController', function ($scope, $route, BlackList, BlackListFileUpload) {
         $scope.$route = $route;
 

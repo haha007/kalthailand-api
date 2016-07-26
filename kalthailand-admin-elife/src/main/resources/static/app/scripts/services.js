@@ -85,10 +85,6 @@
     app.factory('BlackList', function ($resource) {
         return $resource(window.location.origin + '/api-blacklist/blacklist', { pageNumber: '@pageNumber', pageSize: '@pageSize' }, {});
     });
-    
-    app.factory('PolicyNumberTestService', function ($resource) {
-    	return $resource(window.location.origin + '/api-elife/policy-numbers/available', { pageNumber: '@pageNumber', pageSize: '@pageSize' }, {});
-    });
 
     app.factory('PolicyDetail', function ($resource) {
         return $resource(window.location.origin + '/api-elife/policies/:id', { id: '@id' }, {});
