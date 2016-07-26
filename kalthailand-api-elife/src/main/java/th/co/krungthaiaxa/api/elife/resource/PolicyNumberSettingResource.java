@@ -53,8 +53,8 @@ public class PolicyNumberSettingResource {
     })
     @RequestMapping(value = "/policy-numbers/setting", produces = APPLICATION_JSON_VALUE, method = RequestMethod.PUT)
     @ResponseBody
-    public PolicyNumberSetting updatePolicyNumberSetting(@Valid @RequestBody PolicyNumberSetting policyNumberSetting) {
-        return policyNumberSettingService.updatePolicyNumberSetting(policyNumberSetting);
+    public void updatePolicyNumberSetting(@Valid @RequestBody PolicyNumberSetting policyNumberSetting) {
+        policyNumberSettingService.updatePolicyNumberSetting(policyNumberSetting);
     }
 
     //TODO should be removed
@@ -64,7 +64,7 @@ public class PolicyNumberSettingResource {
     })
     @RequestMapping(value = "/policy-numbers/setting/{id}", produces = APPLICATION_JSON_VALUE, method = RequestMethod.PUT)
     @ResponseBody
-    public PolicyNumberSetting updatePolicyNumberSetting(@PathVariable String id, @Valid @RequestBody PolicyNumberSetting policyNumberSetting) {
-        return policyNumberSettingService.updatePolicyNumberSetting(policyNumberSetting);
+    public void updatePolicyNumberSetting(@PathVariable String id, @Valid @RequestBody PolicyNumberSetting policyNumberSetting) {
+        policyNumberSettingService.updatePolicyNumberSetting(policyNumberSetting);
     }
 }
