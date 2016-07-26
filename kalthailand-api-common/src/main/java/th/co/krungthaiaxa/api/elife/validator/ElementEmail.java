@@ -8,11 +8,11 @@ import java.lang.annotation.*;
  * @author khoi.tran on 7/25/16.
  */
 @Documented
-@Constraint(validatedBy = ListEmailNotEmptyValidator.class)
+@Constraint(validatedBy = ElementEmailValidator.class)
 @Target({ ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ListEmailNotEmpty {
-    String message() default "The list is not validated";
+public @interface ElementEmail {
+    String message() default "Elements in the collections must be email";
 
     Class<?>[] groups() default {};
 

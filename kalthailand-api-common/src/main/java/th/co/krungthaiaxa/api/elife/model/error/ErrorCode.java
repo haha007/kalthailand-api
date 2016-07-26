@@ -1,12 +1,12 @@
 package th.co.krungthaiaxa.api.elife.model.error;
 
-import java.lang.*;
 import java.util.function.Function;
 
 public class ErrorCode {
 
     public static final Function<String, Error> UNKNOWN_ERROR = msg -> new Error("0000", "Unknown error: " + msg, "This is an unknown error. Please contact administrator to get more information.");
-    public static final String ERROR_CODE_BEAN_VALIDATION = "0001";
+    public static final Function<String, Error> BAD_REQUEST = msg -> new Error("0001", "Bad request error: " + msg, "Your request is not compatible with server. Please recheck the API");
+    public static final String ERROR_CODE_BEAN_VALIDATION = "0002";
 
     // Watermarking
     public static final Error WATERMARK_IMAGE_INPUT_NOT_READABLE = new Error("0101", "Unable to upload your picture", "The image cannot be read as stream");
