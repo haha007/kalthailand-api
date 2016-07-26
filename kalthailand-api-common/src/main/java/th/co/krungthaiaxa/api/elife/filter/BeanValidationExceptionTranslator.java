@@ -14,9 +14,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-/**
- * Created by khoi.tran on 4/13/16.
- */
 @Component
 public class BeanValidationExceptionTranslator {
 
