@@ -44,7 +44,7 @@ public class SimpleConfigTriggerFactoryBean extends org.springframework.scheduli
     @Override
     public void afterPropertiesSet() throws ParseException {
         super.afterPropertiesSet();
-        log.debug("Initiated CronTrigger '{}' with Cron Expression '{}'", super.getObject().getJobKey(), this.cronExpression);
+        log.info("Initiated CronTrigger '{}' with Cron Expression '{}'", super.getObject().getJobKey(), this.cronExpression);
     }
 
     public void setTargetObject(Object targetObject) {

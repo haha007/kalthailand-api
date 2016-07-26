@@ -1,15 +1,14 @@
 package th.co.krungthaiaxa.api.elife;
 
-import org.quartz.*;
+import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.quartz.*;
-import th.co.krungthaiaxa.api.elife.cron.CheckEnoughPolicyNumbers;
+import org.springframework.scheduling.quartz.SchedulerFactoryBean;
+import th.co.krungthaiaxa.api.elife.cron.PolicyNumbersQuotaCheckerJob;
 import th.co.krungthaiaxa.api.elife.exeption.UnexpectedException;
 import th.co.krungthaiaxa.api.elife.model.enums.DurationUnit;
-import th.co.krungthaiaxa.api.elife.utils.QuartzUtils;
 
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
@@ -76,7 +75,7 @@ public class QuartzConfiguration {
 //    }
 
     @Inject
-    private CheckEnoughPolicyNumbers checkEnoughPolicyNumbers;
+    private PolicyNumbersQuotaCheckerJob checkEnoughPolicyNumbers;
 
     @Bean
     public SimpleConfigTriggerFactoryBean simpleConfigTriggerFactoryBean() {

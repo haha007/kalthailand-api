@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
+import th.co.krungthaiaxa.api.elife.exeption.EmailException;
 import th.co.krungthaiaxa.api.elife.model.Person;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.ProductIFinePremium;
@@ -24,6 +25,7 @@ import java.time.LocalDate;
 import java.time.chrono.ThaiBuddhistDate;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -54,6 +56,14 @@ public class EmailService {
         this.emailSender = emailSender;
         this.saleIllustration10ECService = saleIllustration10ECService;
         this.saleIllustrationiFineService = saleIllustrationiFineService;
+    }
+
+    public void sendEmail(String toEmails, String emailSubject, String emailContent) {
+        try {
+            emailSender.sendEmail(emailName, toEmails, emailSubject, emailContent, Collections.EMPTY_LIST, Collections.EMPTY_LIST);
+        } catch (MessagingException | IOException e) {
+            throw new EmailException("Cannot send email: " + e.getMessage(), e);
+        }
     }
 
     public void sendQuote10ECEmail(Quote quote, String base64Image) throws IOException, MessagingException, DocumentException {

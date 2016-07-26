@@ -45,18 +45,19 @@ public class ErrorCode {
     public static final Error UNABLE_TO_GET_LINE_BC = new Error("0502", "Unable to get line bc", "The provided mid is not valid or have no line bc data along with input mid");
     public static final Function<String, Error> UNABLE_TO_CAPTURE_PAYMENT = msg -> new Error("0503", "Unable to confirm the payment. Error is [" + msg + "]", "Unable to confirm the payment. Error is [" + msg + "]");
     public static final String ERROR_CODE_LINE_TOKEN_NOT_EXIST = "0504";
+
     // Document
     public static final Error POLICY_DOES_NOT_CONTAIN_DOCUMENT = new Error("0601", "Unable to locate the document", "The given document id does not exist for the given policy");
     public static final Error UNABLE_TO_DOWNLOAD_DOCUMENT = new Error("0602", "Unable to download the document", "Processing for create e-receipt fail");
-    // Email
-    public static final Function<String, Error> UNABLE_TO_SEND_EMAIL = msg -> new Error("0701", "Unable to send email", "Error message is:" + msg);
 
+    // Email
+    public static final String ERROR_CODE_EMAIL_SENDER = "0701";
+    public static final Function<String, Error> UNABLE_TO_SEND_EMAIL = msg -> new Error(ERROR_CODE_EMAIL_SENDER, "Unable to send email", "Error message is:" + msg);
     // Watermarking
     public static final Function<String, Error> INVALID_COLLECTION_FILE = msg -> new Error("0901", "Unable to upload the collection file. Error is: [" + msg + "]", "Unable to upload the collection file. Error is: [" + msg + "]");
 
     // ADMIN UI
     public static final Function<String, Error> UI_UNAUTHORIZED = msg -> new Error("9001", "You are not authorized to see this page", msg);
     public static final Function<String, Error> NOTIFICATION_NOT_SENT = msg -> new Error("9002", "Notification was not sent. Error is: " + msg, "Notification was not sent. Error is: " + msg);
-
 
 }
