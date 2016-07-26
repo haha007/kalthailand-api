@@ -149,7 +149,6 @@
         $scope.$route = $route;
         $scope.settings = {};
 
-        $scope.blackList = null;
         $scope.uploadProgress = null;
         $scope.numberOfLines = 0;
         $scope.numberOfLinesAdded = 0;
@@ -171,7 +170,6 @@
             $scope.isUploading = true;
             $scope.hasUploaded = true;
             connect();
-            $scope.blackList = null;
             var newPolicyNumberFileUpload = new PolicyNumberUpload;
             newPolicyNumberFileUpload.file = $scope.file;
 
@@ -236,6 +234,7 @@
                     $scope.settings.triggerPercent = successResponse.triggerPercent;
                     $scope.settings.emailList = '';
                     $scope.settings.rowId = successResponse.rowId;
+                    $scope.settings.timeTrigger = successResponse.timeTrigger;
 
                     successResponse.emailList.forEach(function (email) {
                         $scope.settings.emailList += email;
@@ -261,6 +260,7 @@
                 $scope.settings.triggerPercent = successResponse.triggerPercent;
                 $scope.settings.emailList = '';
                 $scope.settings.rowId = successResponse.rowId;
+                $scope.settings.timeTrigger = successResponse.timeTrigger;
 
                 successResponse.emailList.forEach(function (email) {
                     $scope.settings.emailList += email;
