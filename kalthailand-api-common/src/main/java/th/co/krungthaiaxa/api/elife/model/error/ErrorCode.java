@@ -3,8 +3,8 @@ package th.co.krungthaiaxa.api.elife.model.error;
 import java.util.function.Function;
 
 public class ErrorCode {
-
-    public static final Function<String, Error> UNKNOWN_ERROR = msg -> new Error("0000", "Unknown error: " + msg, "This is an unknown error. Please contact administrator to get more information.");
+    public static final String ERROR_CODE_UNKNOWN_ERROR = "0000";
+    public static final Function<String, Error> UNKNOWN_ERROR = msg -> new Error(ERROR_CODE_UNKNOWN_ERROR, "Unknown error: " + msg, "This is an unknown error. Please contact administrator to get more information.");
     public static final Function<String, Error> BAD_REQUEST = msg -> new Error("0001", "Bad request error: " + msg, "Your request is not compatible with server. Please recheck the API");
     public static final String ERROR_CODE_BEAN_VALIDATION = "0002";
 
@@ -57,5 +57,6 @@ public class ErrorCode {
     // ADMIN UI
     public static final Function<String, Error> UI_UNAUTHORIZED = msg -> new Error("9001", "You are not authorized to see this page", msg);
     public static final Function<String, Error> NOTIFICATION_NOT_SENT = msg -> new Error("9002", "Notification was not sent. Error is: " + msg, "Notification was not sent. Error is: " + msg);
+
 
 }
