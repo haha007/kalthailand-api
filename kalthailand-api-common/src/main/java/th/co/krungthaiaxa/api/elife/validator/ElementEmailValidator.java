@@ -10,11 +10,11 @@ import java.util.List;
 /**
  * @author khoi.tran on 7/25/16.
  */
-public class ElementEmailNotBlankValidator implements ConstraintValidator<ElementEmailNotBlank, List> {
+public class ElementEmailValidator implements ConstraintValidator<ElementEmail, List> {
     EmailValidator emailValidator = new EmailValidator();
 
     @Override
-    public void initialize(ElementEmailNotBlank constraintAnnotation) {
+    public void initialize(ElementEmail constraintAnnotation) {
     }
 
     @Override
@@ -23,12 +23,12 @@ public class ElementEmailNotBlankValidator implements ConstraintValidator<Elemen
 
         for (Object value : values) {
             if (value == null) {
-                return false;
+                return true;
             }
             if (value instanceof String) {
                 String str = (String) value;
                 if (StringUtils.isBlank(str)) {
-                    return false;
+                    return true;
                 } else {
                     if (!emailValidator.isValid(str, context)) {
                         return false;

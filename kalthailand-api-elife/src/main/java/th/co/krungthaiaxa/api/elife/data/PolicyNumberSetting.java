@@ -5,7 +5,8 @@ import java.util.List;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import th.co.krungthaiaxa.api.elife.validator.ElementEmailNotBlank;
+import th.co.krungthaiaxa.api.elife.validator.ElementEmail;
+import th.co.krungthaiaxa.api.elife.validator.ElementNotBlank;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -23,9 +24,13 @@ public class PolicyNumberSetting {
     @Max(100)
     private Integer triggerPercent;
 
+    /**
+     * The notification emails.
+     */
     @NotNull
     @NotEmpty
-    @ElementEmailNotBlank
+    @ElementEmail
+    @ElementNotBlank
     private List<String> emailList;
 
     public Integer getTriggerPercent() {
