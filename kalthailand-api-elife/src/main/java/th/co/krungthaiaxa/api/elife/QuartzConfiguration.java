@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
-import th.co.krungthaiaxa.api.elife.cron.PolicyNumbersQuotaCheckerJob;
+import th.co.krungthaiaxa.api.elife.policyNumbersQuota.cron.PolicyNumbersQuotaCheckerJob;
 import th.co.krungthaiaxa.api.elife.exeption.UnexpectedException;
 import th.co.krungthaiaxa.api.elife.model.enums.DurationUnit;
 
@@ -16,6 +16,18 @@ import javax.inject.Inject;
 @Configuration
 public class QuartzConfiguration {
     public static final Logger LOGGER = LoggerFactory.getLogger(QuartzConfiguration.class);
+
+    @Inject
+    private PolicyNumbersQuotaCheckerJob checkEnoughPolicyNumbers;
+
+    @Bean
+    public SimpleConfigTriggerFactoryBean simpleConfigTriggerFactoryBean() {
+        SimpleConfigTriggerFactoryBean simpleConfigTriggerFactoryBean = new SimpleConfigTriggerFactoryBean();
+        simpleConfigTriggerFactoryBean.setIntervalUnit(DurationUnit.SECOND);
+        simpleConfigTriggerFactoryBean.setIntervalValue(1);
+        simpleConfigTriggerFactoryBean.setTargetObject(checkEnoughPolicyNumbers);
+        return simpleConfigTriggerFactoryBean;
+    }
 
     @Bean
     public SchedulerFactoryBean schedulerFactoryBean() {
@@ -31,6 +43,11 @@ public class QuartzConfiguration {
             closeSchedulerIfExist(scheduler);
             throw new UnexpectedException("Cannot initiate SchedulerFactoryBean: " + ex.getMessage(), ex);
         }
+    }
+
+    @PreDestroy
+    public void close() {
+        closeSchedulerIfExist(schedulerFactoryBean());
     }
 
     private void closeSchedulerIfExist(SchedulerFactoryBean schedulerFactoryBean) {
@@ -49,40 +66,4 @@ public class QuartzConfiguration {
         }
     }
 
-    @PreDestroy
-    public void close() {
-        closeSchedulerIfExist(schedulerFactoryBean());
-    }
-//
-//    @Bean(name = "checkEnoughPolicyNumbersExecuteMethod")
-//    public MethodInvokingJobDetailFactoryBean testAExecuteMethod() {
-//        return QuartzUtils.methodInvokingJobDetailFactoryBean("checkEnoughPolicyNumbers", "execute");
-//    }
-//
-//    @Bean(name = "checkEnoughPolicyNumbersTriggerFactory")
-//    public CronTriggerFactoryBean testATriggerFactory() {
-//        return QuartzUtils.initCronTriggerFactoryBean(testAExecuteMethod().getObject(), "0/5 * * * * ?");
-//    }
-//
-//    @Bean(name = "testBExecuteMethod")
-//    public MethodInvokingJobDetailFactoryBean testBExecuteMethod() {
-//        return QuartzUtils.methodInvokingJobDetailFactoryBean("testB", "execute");
-//    }
-//
-//    @Bean(name = "testBTriggerFactory")
-//    public SimpleTriggerFactoryBean testBTriggerFactory() {
-//        return QuartzUtils.initSimpleTriggerFactoryBean(testBExecuteMethod().getObject(), null, 3000L, null);
-//    }
-
-    @Inject
-    private PolicyNumbersQuotaCheckerJob checkEnoughPolicyNumbers;
-
-    @Bean
-    public SimpleConfigTriggerFactoryBean simpleConfigTriggerFactoryBean() {
-        SimpleConfigTriggerFactoryBean simpleConfigTriggerFactoryBean = new SimpleConfigTriggerFactoryBean();
-        simpleConfigTriggerFactoryBean.setIntervalUnit(DurationUnit.SECOND);
-        simpleConfigTriggerFactoryBean.setIntervalValue(1);
-        simpleConfigTriggerFactoryBean.setTargetObject(checkEnoughPolicyNumbers);
-        return simpleConfigTriggerFactoryBean;
-    }
 }

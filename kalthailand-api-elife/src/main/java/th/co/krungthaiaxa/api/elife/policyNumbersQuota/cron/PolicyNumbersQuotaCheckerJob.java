@@ -1,8 +1,9 @@
-package th.co.krungthaiaxa.api.elife.cron;
+package th.co.krungthaiaxa.api.elife.policyNumbersQuota.cron;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import th.co.krungthaiaxa.api.elife.policyNumbersQuota.service.PolicyNumbersQuotaCheckerService;
 
 import javax.inject.Inject;
 

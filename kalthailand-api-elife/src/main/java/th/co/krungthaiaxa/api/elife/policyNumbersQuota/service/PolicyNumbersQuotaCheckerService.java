@@ -1,4 +1,4 @@
-package th.co.krungthaiaxa.api.elife.cron;
+package th.co.krungthaiaxa.api.elife.policyNumbersQuota.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,13 +19,13 @@ public class PolicyNumbersQuotaCheckerService {
     public static final Logger LOGGER = LoggerFactory.getLogger(PolicyNumbersQuotaCheckerService.class);
     private final PolicyNumberService policyNumberService;
     private final PolicyNumberSettingService policyNumberSettingService;
-    private final PolicyNumbersQuotaEmailService policyNumbersQuotaEmailService;
+    private final PolicyNumbersQuotaNotificationService policyNumbersQuotaNotificationService;
 
     @Inject
-    public PolicyNumbersQuotaCheckerService(PolicyNumberService policyNumberService, PolicyNumberSettingService policyNumberSettingService, PolicyNumbersQuotaEmailService policyNumbersQuotaEmailService) {
+    public PolicyNumbersQuotaCheckerService(PolicyNumberService policyNumberService, PolicyNumberSettingService policyNumberSettingService, PolicyNumbersQuotaNotificationService policyNumbersQuotaNotificationService) {
         this.policyNumberService = policyNumberService;
         this.policyNumberSettingService = policyNumberSettingService;
-        this.policyNumbersQuotaEmailService = policyNumbersQuotaEmailService;
+        this.policyNumbersQuotaNotificationService = policyNumbersQuotaNotificationService;
     }
 
     public void checkEnoughRemainPolicyNumbers() {
@@ -38,7 +38,7 @@ public class PolicyNumbersQuotaCheckerService {
         PolicyNumberSetting policyNumberSetting = policyNumberSettingService.loadPolicyNumberSetting();
         PolicyNumbersQuotaCheckerResult checkerResult = isUsedPercentOverTriggerPercent(totalPolicyNumbers, availablePolicyNumbers, policyNumberSetting);
         if (checkerResult.isOverQuota()) {
-            policyNumbersQuotaEmailService.sendNotification(checkerResult);
+            policyNumbersQuotaNotificationService.sendNotification(checkerResult);
         }
     }
 
