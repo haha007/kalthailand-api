@@ -46,18 +46,10 @@ public class ExceptionTranslator {
         return result;
     }
 
-    @ExceptionHandler(Exception.class)
-    @ResponseBody
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public Error processUnknownInternalException(final Exception exception) {
-        final Error result = ErrorCode.UNKNOWN_ERROR.apply(exception.getMessage());
-        this.loggingMessage(result, exception);
-        return result;
-    }
-
     /**
      * In the beautiful life of client team, they don't want a lot of if-else statements.
      * So they don't want to use {@link HttpStatus#BAD_REQUEST} to handle this exception and {@link HttpStatus#}
+     * This method is similar to {@link #processValidationError(BeanValidationException)}.
      *
      * @param exception
      * @return
@@ -78,7 +70,7 @@ public class ExceptionTranslator {
     @ExceptionHandler(BeanValidationException.class)
     @ResponseBody
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public Error processInternalException(final BeanValidationException exception) {
+    public Error processValidationError(final BeanValidationException exception) {
         final Error result = this.beanValidationExceptionTranslator.toErrorDTO(exception);
         this.loggingMessage(result, exception);
         return result;
@@ -93,9 +85,13 @@ public class ExceptionTranslator {
         return result;
     }
 
-    private void loggingMessage(final Error error, final Exception ex) {
-        final String errorMessage = String.format("Error code: %s\nUser message: %s.\nDeveloper message: %s", error.getCode(), error.getUserMessage(), error.getDeveloperMessage());
-        LOGGER.error(errorMessage, ex);
+    @ExceptionHandler(Exception.class)
+    @ResponseBody
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Error processUnknownInternalException(final Exception exception) {
+        final Error result = ErrorCode.UNKNOWN_ERROR.apply(exception.getMessage());
+        this.loggingMessage(result, exception);
+        return result;
     }
 
     private String toPrettyMessageString(List<FieldError> fieldErrors) {
@@ -104,5 +100,16 @@ public class ExceptionTranslator {
                 fieldError1 -> fieldError1.getField()
         ).collect(Collectors.joining(", "));
         return sb.append(listFieldNames).toString();
+    }
+
+    private void loggingMessage(final Error error, final Exception ex) {
+        final String errorMessage = String.format("Error code: %s\nUser message: %s.\nDeveloper message: %s", error.getCode(), error.getUserMessage(), error.getDeveloperMessage());
+        if (error.getCode().equals(ErrorCode.ERROR_CODE_BEAN_VALIDATION)) {
+            //Don't need to show full detail stacktrace message in this case because it usually mistake from user's input.
+            //Should ignore the Sonar warning here.
+            LOGGER.error(errorMessage);
+        } else {
+            LOGGER.error(errorMessage, ex);
+        }
     }
 }

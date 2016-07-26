@@ -44,54 +44,64 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import th.co.krungthaiaxa.api.elife.data.LineToken;
+import th.co.krungthaiaxa.api.elife.exeption.BaseException;
+import th.co.krungthaiaxa.api.elife.model.error.ErrorCode;
 import th.co.krungthaiaxa.api.elife.repository.LineTokenRepository;
 import th.co.krungthaiaxa.api.elife.utils.JsonUtil;
 
 @Service
 public class LineTokenService {
-	
-	private final static Logger logger = LoggerFactory.getLogger(LineTokenService.class);
-	private final LineTokenRepository lineTokenRepository;
-	@Value("${line.app.secret.key}")
+
+    private final static Logger logger = LoggerFactory.getLogger(LineTokenService.class);
+    private final LineTokenRepository lineTokenRepository;
+    @Value("${line.app.secret.key}")
     private String secretKey;
     @Value("${line.app.reissue.url}")
     private String lineAppReIssueUrl;
     private final String DATE_FORMAT = "yyyy/MM/dd";
-	
-	@Inject
-	public LineTokenService(LineTokenRepository lineTokenRepository){
-		this.lineTokenRepository = lineTokenRepository;
-	}
-	
-	public LineToken getLineToken(){
-		return lineTokenRepository.findByRowId(1);
-	}
-	
-	public void updateLineToken(LineToken updateObject){
-		lineTokenRepository.deleteAll();
-		updateObject.setRowId(1);
-		lineTokenRepository.save(updateObject);		
-	}
-	
-	@Scheduled(fixedRate=432000000)
-	public void refreshNewToken(){
-		logger.info("Time Trigger to check and re-issue for line token ------->");
-		try {
-			reIssueLineToken();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}	
 
-	@SuppressWarnings("deprecation")
-	private void reIssueLineToken() throws IOException {		
-		logger.info("Sending POST to LINE to get new token");
-		
-		LineToken oldToken = getLineToken();
-		try {   
-			//create url
-            URL url = new URL(lineAppReIssueUrl + "?refreshToken="+oldToken.getRefreshToken()+"&channelSecret="+secretKey);
+    @Inject
+    public LineTokenService(LineTokenRepository lineTokenRepository) {
+        this.lineTokenRepository = lineTokenRepository;
+    }
+
+    public LineToken getLineToken() {
+        return lineTokenRepository.findByRowId(1);
+    }
+
+    public LineToken validateExistLineToken() {
+        LineToken lineToken = getLineToken();
+        if (lineToken == null) {
+            throw new BaseException(ErrorCode.ERROR_CODE_LINE_TOKEN_NOT_EXIST, "Not found any line token.");
+        }
+        return lineToken;
+    }
+
+    public void updateLineToken(LineToken updateObject) {
+        lineTokenRepository.deleteAll();
+        updateObject.setRowId(1);
+        lineTokenRepository.save(updateObject);
+    }
+
+    @Scheduled(fixedRate = 432000000)
+    public void refreshNewToken() {
+        logger.info("Time Trigger to check and re-issue for line token ------->");
+        try {
+            reIssueLineToken();
+        } catch (IOException e) {
+            logger.error("Cannot refresh new line token: {}", e.getMessage(), e);
+            //This is the cron job, we don't need to throw exception to UI.
+        }
+    }
+
+    @SuppressWarnings("deprecation")
+    private void reIssueLineToken() throws IOException {
+        logger.info("Sending POST to LINE to get new token");
+
+        LineToken oldToken = validateExistLineToken();
+        try {
+            //create url
+            URL url = new URL(lineAppReIssueUrl + "?refreshToken=" + oldToken.getRefreshToken() + "&channelSecret=" + secretKey);
 
             //set object header
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -123,26 +133,25 @@ public class LineTokenService {
                 response.append(inputLine);
             }
             in.close();
-            
+
             //get response as object
             ObjectMapper mm = new ObjectMapper();
-            Map<String,Object> obj = mm.readValue(response.toString(), Map.class );
+            Map<String, Object> obj = mm.readValue(response.toString(), Map.class);
             LineToken newToken = new LineToken();
-            newToken.setAccessToken((String)obj.get("accessToken"));
-            newToken.setRefreshToken((String)obj.get("refreshToken"));
-            newToken.setExpireDate((new SimpleDateFormat("yyyy/MM/dd")).format(new Date((Long)obj.get("expire"))));
-            
+            newToken.setAccessToken((String) obj.get("accessToken"));
+            newToken.setRefreshToken((String) obj.get("refreshToken"));
+            newToken.setExpireDate((new SimpleDateFormat("yyyy/MM/dd")).format(new Date((Long) obj.get("expire"))));
+
             //update in db
             updateLineToken(newToken);
-            
+
             logger.info("re-issue token is refresh with success ------->");
         } catch (MalformedURLException e) {
             throw new IOException("Unable to send Line push notification.", e);
         } catch (IOException e) {
             throw new IOException("Unexpected to send Line push notification.", e);
         }
-		
+
     }
 
-	
 }
