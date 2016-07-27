@@ -45,6 +45,7 @@ public class PolicyNumberSettingService {
         PolicyNumberSetting policyNumberSetting = new PolicyNumberSetting();
         policyNumberSetting.setTriggerPercent(100);
         policyNumberSetting.setEmailList(Collections.EMPTY_LIST);
+        policyNumberSetting.setTimeTrigger(3600);
         return policyNumberSetting;
     }
 

@@ -241,7 +241,7 @@
                         $scope.settings.emailList += ',\n';
                     });
 
-                    if (successResponse.emailList.length > 1) {
+                    if (successResponse.emailList.length > 0) {
                         $scope.settings.emailList = $scope.settings.emailList.slice(0, -2);
                     }
 
@@ -267,7 +267,7 @@
                     $scope.settings.emailList += ',\n';
                 });
 
-                if (successResponse.emailList.length > 1) {
+                if (successResponse.emailList.length > 0) {
                     $scope.settings.emailList = $scope.settings.emailList.slice(0, -2);
                 }
 
