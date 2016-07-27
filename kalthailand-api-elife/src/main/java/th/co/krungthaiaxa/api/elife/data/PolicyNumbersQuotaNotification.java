@@ -1,4 +1,4 @@
-package th.co.krungthaiaxa.api.elife.policyNumbersQuota.data;
+package th.co.krungthaiaxa.api.elife.data;
 
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.data.annotation.Id;

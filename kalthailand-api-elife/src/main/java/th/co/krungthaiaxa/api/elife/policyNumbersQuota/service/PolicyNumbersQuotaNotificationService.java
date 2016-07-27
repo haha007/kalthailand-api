@@ -3,7 +3,7 @@ package th.co.krungthaiaxa.api.elife.policyNumbersQuota.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import th.co.krungthaiaxa.api.elife.policyNumbersQuota.data.PolicyNumbersQuotaNotification;
+import th.co.krungthaiaxa.api.elife.data.PolicyNumbersQuotaNotification;
 import th.co.krungthaiaxa.api.elife.policyNumbersQuota.repository.PolicyNumbersQuotaNotificationRepository;
 import th.co.krungthaiaxa.api.elife.service.EmailService;
 import th.co.krungthaiaxa.api.elife.utils.IOUtil;
@@ -12,7 +12,6 @@ import javax.inject.Inject;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * @author khoi.tran on 7/26/16.
@@ -34,21 +33,39 @@ public class PolicyNumbersQuotaNotificationService {
 
     public void sendNotification(PolicyNumbersQuotaCheckerService.PolicyNumbersQuotaCheckerResult policyNumbersQuotaCheckerResult) {
         String emailContent = populateEmailContent(policyNumbersQuotaCheckerResult);
-        List<String> emails = policyNumbersQuotaCheckerResult.getPolicyNumberSetting().getEmailList();
+        List<String> notificationSettingEmails = policyNumbersQuotaCheckerResult.getPolicyNumberSetting().getEmailList();
+        long notificationTriggerSeconds = 1000;//TODO just for testing
+        for (String email : notificationSettingEmails) {
+            Optional<PolicyNumbersQuotaNotification> policyNumbersQuotaNotificationOptional = policyNumbersQuotaNotificationRepository.findOneByNotificationEmail();
+            PolicyNumbersQuotaNotification policyNumbersQuotaNotification = policyNumbersQuotaNotificationOptional.orElse(initCurrentPolicyNumbersQuotaNotification(email));
+            if (isOverNotificationDuration(policyNumbersQuotaNotification, notificationTriggerSeconds)) {
+                emailService.sendEmail(email, "Available Policy Numbers will be no more soon.", emailContent);
+                policyNumbersQuotaNotificationRepository.save(policyNumbersQuotaNotification);
+            }
+        }
+    }
 
-        String toEmails = policyNumbersQuotaCheckerResult.getPolicyNumberSetting().getEmailList().stream().collect(Collectors.joining(", "));
-        emailService.sendEmail(toEmails, "Available Policy Numbers will be no more soon.", emailContent);
-
+    private PolicyNumbersQuotaNotification initCurrentPolicyNumbersQuotaNotification(String email) {
+        PolicyNumbersQuotaNotification policyNumbersQuotaNotification = new PolicyNumbersQuotaNotification();
+        policyNumbersQuotaNotification.setNotificationEmail(email);
+        policyNumbersQuotaNotification.setNotificationTime(ZonedDateTime.now());
+        return policyNumbersQuotaNotification;
     }
 
     /**
-     * @param email
-     * @param beforeSeconds
+     * @param policyNumbersQuotaNotification
+     * @param notificationTriggerSeconds     the duration of notification.
      * @return check whether the email was sent before the input @beforeSeconds or not.
      */
-    private boolean wasSentNotificationBefore(String email, long beforeSeconds) {
-        Optional<PolicyNumbersQuotaNotification> policyNumbersQuotaNotificationOptional = policyNumbersQuotaNotificationRepository.findOneByNotificationEmail();
-        ZonedDateTime lastNotificatoinTime = policyNumbersQuotaNotificationOptional.ifPresent(policyNumbersQuotaNotification -> policyNumbersQuotaNotification.getNotificationTime());
+    private boolean isOverNotificationDuration(PolicyNumbersQuotaNotification policyNumbersQuotaNotification, long notificationTriggerSeconds) {
+        ZonedDateTime lastNotificationTime = policyNumbersQuotaNotification.getNotificationTime();
+        long secondsFromLastNotification;
+        if (lastNotificationTime == null) {
+            secondsFromLastNotification = lastNotificationTime.toEpochSecond() - ZonedDateTime.now().toEpochSecond();
+        } else {
+            secondsFromLastNotification = 0;
+        }
+        return secondsFromLastNotification >= notificationTriggerSeconds;
     }
 
     private String populateEmailContent(PolicyNumbersQuotaCheckerService.PolicyNumbersQuotaCheckerResult policyNumbersQuotaCheckerResult) {
