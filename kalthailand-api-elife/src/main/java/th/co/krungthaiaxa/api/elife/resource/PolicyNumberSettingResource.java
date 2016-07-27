@@ -65,6 +65,6 @@ public class PolicyNumberSettingResource {
     @RequestMapping(value = "/policy-numbers/setting/{id}", produces = APPLICATION_JSON_VALUE, method = RequestMethod.PUT)
     @ResponseBody
     public void updatePolicyNumberSetting(@PathVariable String id, @Valid @RequestBody PolicyNumberSetting policyNumberSetting) {
-        policyNumberSettingService.updatePolicyNumberSetting(policyNumberSetting);
+    	policyNumberSettingService.updatePolicyNumberSetting(policyNumberSetting);
     }
 }

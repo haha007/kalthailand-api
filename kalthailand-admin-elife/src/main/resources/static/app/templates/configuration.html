@@ -45,6 +45,15 @@
 	                    </div>
 	                </div>
 	                <div class="form-group">
+	                    <label for="timeTriggerID" class="col-sm-4 control-label">Trigger time</label>
+	                    <div class="col-sm-4">
+	                    	<select class="form-control" id="timeTrigger" ng-model="settings.timeTrigger" >
+							  <option value="3600" ng-selected="settings.timeTrigger==3600" >1 Time/Hour</option>
+							  <option value="86400" ng-selected="settings.timeTrigger==86400" >1 Time/Day</option>
+							</select>
+	                    </div>
+	                </div>
+	                <div class="form-group">
 	                    <label for="policyID" class="col-sm-4 control-label">Receipients</label>
 	                    <div class="col-sm-4">
 	                        <textarea class="form-control" rows="5" id="emailList" ng-model="settings.emailList" required placeholder="Email seperated by commas" autofocus>
