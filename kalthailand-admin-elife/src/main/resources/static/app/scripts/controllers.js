@@ -162,6 +162,10 @@
 
         var stompClient = null;
         var nbLinesAdded = 0;
+        
+        $scope.ddlTimeHour = {"value":3600,"name":"1 Time/Hour"};
+        $scope.ddlTimeDay = {"value":86400,"name":"1 Time/Day"};
+        $scope.timeTriggerList = [$scope.ddlTimeHour,$scope.ddlTimeDay];
 
         fetchPolicyQuotaInfo();
 
@@ -220,6 +224,11 @@
                 $scope.$apply();
             }
         }
+        
+        function customDeserializePolicyNumberSetting(scope){
+        	scope.timeTrigger = $scope.settings.timeTrigger.value;
+        	return scope;
+        }
 
         $scope.updateQuotaAlert = function ($event) {
 
@@ -227,14 +236,14 @@
                 $scope.settings.emailList = $scope.settings.emailList.replace(/(\r\n|\n|\r| )/gm, "").split(',');
             }
 
-            PolicyQuotaConfig.update($scope.settings,
+            PolicyQuotaConfig.update(customDeserializePolicyNumberSetting($scope.settings),
                 function (successResponse) {
                     $scope.errorMessage = null;
 
                     $scope.settings.triggerPercent = successResponse.triggerPercent;
                     $scope.settings.emailList = '';
                     $scope.settings.rowId = successResponse.rowId;
-                    $scope.settings.timeTrigger = successResponse.timeTrigger;
+                    $scope.settings.timeTrigger = (successResponse.timeTrigger==3600?$scope.ddlTimeHour:$scope.ddlTimeDay);                    
 
                     successResponse.emailList.forEach(function (email) {
                         $scope.settings.emailList += email;
@@ -260,7 +269,7 @@
                 $scope.settings.triggerPercent = successResponse.triggerPercent;
                 $scope.settings.emailList = '';
                 $scope.settings.rowId = successResponse.rowId;
-                $scope.settings.timeTrigger = successResponse.timeTrigger;
+                $scope.settings.timeTrigger = (successResponse.timeTrigger==3600?$scope.ddlTimeHour:$scope.ddlTimeDay);                
 
                 successResponse.emailList.forEach(function (email) {
                     $scope.settings.emailList += email;
