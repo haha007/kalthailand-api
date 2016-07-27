@@ -5,6 +5,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
@@ -35,6 +37,7 @@ import static org.apache.commons.io.IOUtils.toByteArray;
 @Service
 public class EmailService {
     private final static Logger logger = LoggerFactory.getLogger(EmailService.class);
+    private final static Marker MARKER_EMAIL = MarkerFactory.getMarker("EMAIL");
     private final EmailSender emailSender;
     private final SaleIllustration10ECService saleIllustration10ECService;
     private final SaleIllustrationiFineService saleIllustrationiFineService;
@@ -58,9 +61,10 @@ public class EmailService {
         this.saleIllustrationiFineService = saleIllustrationiFineService;
     }
 
-    public void sendEmail(String toEmails, String emailSubject, String emailContent) {
+    public void sendEmail(String toEmail, String emailSubject, String emailContent) {
         try {
-            emailSender.sendEmail(emailName, toEmails, emailSubject, emailContent, Collections.EMPTY_LIST, Collections.EMPTY_LIST);
+            emailSender.sendEmail(emailName, toEmail, emailSubject, emailContent, Collections.EMPTY_LIST, Collections.EMPTY_LIST);
+            logger.debug(MARKER_EMAIL, "The email was sent to {}", toEmail);
         } catch (MessagingException | IOException e) {
             throw new EmailException("Cannot send email: " + e.getMessage(), e);
         }

@@ -20,7 +20,7 @@ public class PolicyNumbersQuotaNotification {
     @Id
     private String id;
 
-    private ZonedDateTime notificationTime;
+    private Instant notificationTime;
 
     @Indexed(unique = true)
     private String notificationEmail;
@@ -33,11 +33,11 @@ public class PolicyNumbersQuotaNotification {
         this.id = id;
     }
 
-    public ZonedDateTime getNotificationTime() {
+    public Instant getNotificationTime() {
         return notificationTime;
     }
 
-    public void setNotificationTime(ZonedDateTime notificationTime) {
+    public void setNotificationTime(Instant notificationTime) {
         this.notificationTime = notificationTime;
     }
 

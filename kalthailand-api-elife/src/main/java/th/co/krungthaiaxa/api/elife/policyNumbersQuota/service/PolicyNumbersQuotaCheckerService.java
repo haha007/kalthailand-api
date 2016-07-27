@@ -28,25 +28,31 @@ public class PolicyNumbersQuotaCheckerService {
         this.policyNumbersQuotaNotificationService = policyNumbersQuotaNotificationService;
     }
 
-    public void checkEnoughRemainPolicyNumbers() {
+    /**
+     * @return whether the current policies will over quota in the near future or not (current used percentage of policies numbers is over notification percentage or not).
+     */
+    public boolean checkEnoughRemainPolicyNumbers() {
         long totalPolicyNumbers = policyNumberService.countAllPolicyNumbers();
         if (totalPolicyNumbers == 0) {
             LOGGER.warn("The current totalPolicyNumbers is 0. No need to check.");
-            return;
+            return false;
         }
         long availablePolicyNumbers = policyNumberService.countAvailablePolicyNumbers();
-        PolicyNumberSetting policyNumberSetting = policyNumberSettingService.loadPolicyNumberSetting();
+        PolicyNumberSetting policyNumberSetting = policyNumberSettingService.loadSetting();
         PolicyNumbersQuotaCheckerResult checkerResult = isUsedPercentOverTriggerPercent(totalPolicyNumbers, availablePolicyNumbers, policyNumberSetting);
-        if (checkerResult.isOverQuota()) {
+        if (checkerResult.isNearlyOverQuota()) {
             policyNumbersQuotaNotificationService.sendNotification(checkerResult);
+            return true;
+        } else {
+            return false;
         }
     }
 
     private PolicyNumbersQuotaCheckerResult isUsedPercentOverTriggerPercent(long totalPolicyNumbers, long availablePolicyNumbers, PolicyNumberSetting policyNumberSetting) {
-        double availablePercent = (availablePolicyNumbers / totalPolicyNumbers) * 100;
+        double availablePercent = ((double) availablePolicyNumbers / totalPolicyNumbers) * 100;
         double usedPercent = 100 - availablePercent;
         int usedTriggerPercent = policyNumberSetting.getTriggerPercent();
-        boolean isOverQuota = usedPercent >= usedTriggerPercent;
+        boolean isOverQuota = Math.round(usedPercent) >= usedTriggerPercent;
         return new PolicyNumbersQuotaCheckerResult(totalPolicyNumbers, availablePolicyNumbers, usedPercent, availablePercent, policyNumberSetting, isOverQuota);
     }
 
@@ -91,7 +97,7 @@ public class PolicyNumbersQuotaCheckerService {
             this.policyNumberSetting = policyNumberSetting;
         }
 
-        public boolean isOverQuota() {
+        public boolean isNearlyOverQuota() {
             return overQuota;
         }
 

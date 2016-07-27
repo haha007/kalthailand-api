@@ -22,7 +22,8 @@ public class PolicyNumbersQuotaCheckerJob {
     public PolicyNumbersQuotaCheckerJob(PolicyNumbersQuotaCheckerService policyNumbersQuotaCheckerService) {this.policyNumbersQuotaCheckerService = policyNumbersQuotaCheckerService;}
 
     public void execute() {
-        policyNumbersQuotaCheckerService.checkEnoughRemainPolicyNumbers();
+        boolean overQuota = policyNumbersQuotaCheckerService.checkEnoughRemainPolicyNumbers();
+        LOGGER.debug("The current policy numbers is check wether over trigger percentage: {}", overQuota);
     }
 
 }

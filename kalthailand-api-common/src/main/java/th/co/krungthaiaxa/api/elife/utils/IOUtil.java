@@ -1,9 +1,10 @@
 package th.co.krungthaiaxa.api.elife.utils;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import th.co.krungthaiaxa.api.elife.exeption.FileNotFoundException;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -21,13 +22,10 @@ public class IOUtil {
      * @return
      */
     public static String loadTextFile(String pathString) {
-        Path path = Paths.get(pathString);
         try {
-            byte[] encoded = Files.readAllBytes(path);
-            return new String(encoded, "UTF-8");
+            return IOUtils.toString(IOUtil.class.getResourceAsStream(pathString), Charset.forName("UTF-8"));
         } catch (IOException e) {
-            LOG.error("Cannot load String from " + path, e);
-            return null;
+            throw new FileNotFoundException("Cannot load String from " + pathString, e);
         }
     }
 }

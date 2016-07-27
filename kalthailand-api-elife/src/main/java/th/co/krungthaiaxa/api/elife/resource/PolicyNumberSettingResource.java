@@ -33,7 +33,7 @@ public class PolicyNumberSettingResource {
     @RequestMapping(value = "/policy-numbers/setting", produces = APPLICATION_JSON_VALUE, method = GET)
     @ResponseBody
     public PolicyNumberSetting getPolicyNumberSetting() {
-        return policyNumberSettingService.loadPolicyNumberSetting();
+        return policyNumberSettingService.loadSetting();
     }
 
     //TODO should be removed
@@ -44,7 +44,7 @@ public class PolicyNumberSettingResource {
     @RequestMapping(value = "/policy-numbers/setting/{id}", produces = APPLICATION_JSON_VALUE, method = GET)
     @ResponseBody
     public PolicyNumberSetting getPolicyNumberSetting(@PathVariable String id) {
-        return policyNumberSettingService.loadPolicyNumberSetting();
+        return policyNumberSettingService.loadSetting();
     }
 
     @ApiOperation(value = "Update setting of policy number", notes = "Update setting of policy number.", response = PolicyNumberSetting.class)
@@ -54,7 +54,7 @@ public class PolicyNumberSettingResource {
     @RequestMapping(value = "/policy-numbers/setting", produces = APPLICATION_JSON_VALUE, method = RequestMethod.PUT)
     @ResponseBody
     public void updatePolicyNumberSetting(@Valid @RequestBody PolicyNumberSetting policyNumberSetting) {
-        policyNumberSettingService.updatePolicyNumberSetting(policyNumberSetting);
+        policyNumberSettingService.updateSetting(policyNumberSetting);
     }
 
     //TODO should be removed
@@ -65,6 +65,6 @@ public class PolicyNumberSettingResource {
     @RequestMapping(value = "/policy-numbers/setting/{id}", produces = APPLICATION_JSON_VALUE, method = RequestMethod.PUT)
     @ResponseBody
     public void updatePolicyNumberSetting(@PathVariable String id, @Valid @RequestBody PolicyNumberSetting policyNumberSetting) {
-    	policyNumberSettingService.updatePolicyNumberSetting(policyNumberSetting);
+    	policyNumberSettingService.updateSetting(policyNumberSetting);
     }
 }

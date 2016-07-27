@@ -8,5 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface PolicyNumbersQuotaNotificationRepository extends MongoRepository<PolicyNumbersQuotaNotification, String> {
-    Optional<PolicyNumbersQuotaNotification> findOneByNotificationEmail();
+    Optional<PolicyNumbersQuotaNotification> findOneByNotificationEmail(String email);
 }

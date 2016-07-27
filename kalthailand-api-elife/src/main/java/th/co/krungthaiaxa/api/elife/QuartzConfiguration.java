@@ -3,6 +3,7 @@ package th.co.krungthaiaxa.api.elife;
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
@@ -17,14 +18,19 @@ import javax.inject.Inject;
 public class QuartzConfiguration {
     public static final Logger LOGGER = LoggerFactory.getLogger(QuartzConfiguration.class);
 
+    @Value("${policynumbersquota.cron.time.unit}")
+    private DurationUnit policyNumbersQuotaTimeUnit;
+    @Value("${policynumbersquota.cron.time.value}")
+    private Integer policyNumbersQuotaTimeValue;
+
     @Inject
     private PolicyNumbersQuotaCheckerJob checkEnoughPolicyNumbers;
 
     @Bean
     public SimpleConfigTriggerFactoryBean simpleConfigTriggerFactoryBean() {
         SimpleConfigTriggerFactoryBean simpleConfigTriggerFactoryBean = new SimpleConfigTriggerFactoryBean();
-        simpleConfigTriggerFactoryBean.setIntervalUnit(DurationUnit.SECOND);
-        simpleConfigTriggerFactoryBean.setIntervalValue(1);
+        simpleConfigTriggerFactoryBean.setIntervalUnit(policyNumbersQuotaTimeUnit);
+        simpleConfigTriggerFactoryBean.setIntervalValue(policyNumbersQuotaTimeValue);
         simpleConfigTriggerFactoryBean.setTargetObject(checkEnoughPolicyNumbers);
         return simpleConfigTriggerFactoryBean;
     }
