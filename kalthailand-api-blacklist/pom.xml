@@ -17,6 +17,12 @@
 
     <dependencies>
         <dependency>
+            <groupId>th.co.krungthaiaxa</groupId>
+            <artifactId>api-common</artifactId>
+            <version>${kalthailand.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-mongodb</artifactId>
         </dependency>

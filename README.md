@@ -31,3 +31,6 @@ Maven build:
 Reason:
 The artifact "javax.mail" in group "com.sun.mail" package is provided by JavaEE container. So with JBoss, it's already provided. But with Tomcat, we have to include it in libraries.
 (You can see more detail in api-parent/pom.xml)
+
+You can check the information of current API in this link:
+http://localhost:8080/api-elife/project-info

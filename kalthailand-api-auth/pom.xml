@@ -17,6 +17,12 @@
 
     <dependencies>
         <dependency>
+            <groupId>th.co.krungthaiaxa</groupId>
+            <artifactId>api-common</artifactId>
+            <version>${kalthailand.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt</artifactId>
             <version>0.6.0</version>

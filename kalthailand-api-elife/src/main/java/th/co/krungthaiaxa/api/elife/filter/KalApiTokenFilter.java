@@ -55,13 +55,13 @@ public class KalApiTokenFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
-        
+
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss.SSS");
         SimpleDateFormat secondFormat = new SimpleDateFormat("ss");
         SimpleDateFormat millisecondFormat = new SimpleDateFormat("SSS");
         DecimalFormat dcf = new DecimalFormat("#0.00");
-        Date timeApiRequest = new Date();        
-        
+        Date timeApiRequest = new Date();
+
         // For swagger documentation, we should let any request to UI thing go through
         if (httpServletRequest.getMethod().equals("GET")) {
             if (httpServletRequest.getRequestURI().endsWith("/swagger-ui.html") ||
@@ -69,6 +69,7 @@ public class KalApiTokenFilter implements Filter {
                     httpServletRequest.getRequestURI().endsWith("/swagger-resources") ||
                     httpServletRequest.getRequestURI().endsWith("/configuration/ui") ||
                     httpServletRequest.getRequestURI().endsWith("/configuration/security") ||
+                    httpServletRequest.getRequestURI().endsWith("/project-info") ||
                     httpServletRequest.getRequestURI().contains("webjars/springfox-swagger-ui")) {
                 chain.doFilter(httpServletRequest, response);
                 return;
@@ -85,8 +86,8 @@ public class KalApiTokenFilter implements Filter {
             chain.doFilter(httpServletRequest, response);
             return;
         }
-        
-     // Very specific URLs that cannot send token when clicking on link to download file
+
+        // Very specific URLs that cannot send token when clicking on link to download file
         // TODO Should be removed
         if (httpServletRequest.getRequestURI().contains("/adminwebsocket/policy-numbers/upload/")) {
             chain.doFilter(httpServletRequest, response);
@@ -122,49 +123,49 @@ public class KalApiTokenFilter implements Filter {
             sendErrorToResponse(ErrorCode.UI_UNAUTHORIZED.apply("Provided token doesn't give access to API"), (HttpServletResponse) response);
             return;
         }
-        
+
         Date timeApiResponse = new Date();
-        long s1 = Integer.parseInt(secondFormat.format(timeApiRequest),10);
-        long s2 = Integer.parseInt(secondFormat.format(timeApiResponse),10);
-        long m1 = Integer.parseInt(millisecondFormat.format(timeApiRequest),10);
-        long m2 = Integer.parseInt(millisecondFormat.format(timeApiResponse),10);
+        long s1 = Integer.parseInt(secondFormat.format(timeApiRequest), 10);
+        long s2 = Integer.parseInt(secondFormat.format(timeApiResponse), 10);
+        long m1 = Integer.parseInt(millisecondFormat.format(timeApiRequest), 10);
+        long m2 = Integer.parseInt(millisecondFormat.format(timeApiResponse), 10);
         long diffSecond = s2 - s1;
         long diffMillisecond = m2 - m1;
         double diffTotal = Double.parseDouble(Math.abs(diffSecond) + "." + Math.abs(diffMillisecond));
         getAllOfRequestContent(httpServletRequest);
-        logger.info("call to : " + httpServletRequest.getRequestURI() 
-        + " request time is : " + sdf.format(timeApiRequest) 
-        + " response time is : " + sdf.format(timeApiResponse)
-        + " difference is : " + dcf.format(diffTotal) + " seconds. \n ---------------------------------------");
+        logger.info("call to : " + httpServletRequest.getRequestURI()
+                + " request time is : " + sdf.format(timeApiRequest)
+                + " response time is : " + sdf.format(timeApiResponse)
+                + " difference is : " + dcf.format(diffTotal) + " seconds. \n ---------------------------------------");
 
         chain.doFilter(request, response);
     }
-    
-    private void getAllOfRequestContent(HttpServletRequest request){
-    	logger.info("|'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''|");
-    	//method
-    	String method = request.getMethod();
-    	logger.info("Method is : "+method);
-    	//header
-    	Enumeration headerNames = request.getHeaderNames();
-    	while(headerNames.hasMoreElements()) {
-    	  String headerName = (String)headerNames.nextElement();
-    	  logger.info("Header Name - " + headerName + ", Value - " + request.getHeader(headerName));
-    	}
-    	//body
-    	Enumeration params = request.getParameterNames(); 
-    	while(params.hasMoreElements()){
-    	 String paramName = (String)params.nextElement();
-    	 logger.info("Parameter Name - "+paramName+", Value - "+request.getParameter(paramName));
-    	}
-    	logger.info("|................................................................|");
+
+    private void getAllOfRequestContent(HttpServletRequest request) {
+        logger.info("|'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''|");
+        //method
+        String method = request.getMethod();
+        logger.info("Method is : " + method);
+        //header
+        Enumeration headerNames = request.getHeaderNames();
+        while (headerNames.hasMoreElements()) {
+            String headerName = (String) headerNames.nextElement();
+            logger.info("Header Name - " + headerName + ", Value - " + request.getHeader(headerName));
+        }
+        //body
+        Enumeration params = request.getParameterNames();
+        while (params.hasMoreElements()) {
+            String paramName = (String) params.nextElement();
+            logger.info("Parameter Name - " + paramName + ", Value - " + request.getParameter(paramName));
+        }
+        logger.info("|................................................................|");
     }
 
     @Override
     public void destroy() {
 
     }
-    
+
     private void sendErrorToResponse(Error error, HttpServletResponse response) {
         byte[] content = JsonUtil.getJson(error);
 
