@@ -32,6 +32,7 @@ public class RsaUtil {
 	private static final String PRIVATE_KEY_NAME = "private.key";
 	private static final String PUBLIC_KEY_NAME = "public.key";
 	public static final String ALGORITHM = "RSA";
+	private static final Integer LENGTH_CHECKING_LIMIT = 24;
 	
 	private final static Logger logger = LoggerFactory.getLogger(RsaUtil.class);
 	
@@ -46,7 +47,7 @@ public class RsaUtil {
 	        //generateKey();
 			logger.error("cannot find key .....");
 	      }
-		if(text.length()<14){
+		if(text.length()<(LENGTH_CHECKING_LIMIT+1)){
 			return text;
 		}
 		String privateKeyFileString = getPathFileName() + PRIVATE_KEY_NAME;
@@ -83,7 +84,7 @@ public class RsaUtil {
 	        //generateKey();
 			logger.error("cannot find key .....");
 	      }
-		if(text.length()>13){
+		if(text.length()>LENGTH_CHECKING_LIMIT){
 			return text;
 		}
 		  String publicKeyFileString = getPathFileName() + PUBLIC_KEY_NAME;
