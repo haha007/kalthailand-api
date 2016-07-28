@@ -24,19 +24,17 @@ public class PolicyNumberSettingServiceTest extends ELifeTest {
     public static final Logger logger = LoggerFactory.getLogger(PolicyNumberSettingServiceTest.class);
 
     @Inject
-    private PolicyNumberService policyNumberService;
-
-    @Inject
     private PolicyNumberSettingService policyNumberSettingService;
 
     @Test
     public void get_policy_setting_not_empty() throws Exception {
-        PolicyNumberSetting policySetting = policyNumberSettingService.loadPolicyNumberSetting();
+        PolicyNumberSetting policySetting = policyNumberSettingService.loadSetting();
         logger.info("Quota Setting: {}", ObjectMapperUtil.toStringMultiLine(policySetting));
         Assert.assertNotNull(policySetting);
         Assert.assertTrue(policySetting.getTriggerPercent() > 0);
         Assert.assertTrue(policySetting.getTriggerPercent() <= 100);
         Assert.assertTrue(!policySetting.getEmailList().isEmpty());
     }
+
 
 }

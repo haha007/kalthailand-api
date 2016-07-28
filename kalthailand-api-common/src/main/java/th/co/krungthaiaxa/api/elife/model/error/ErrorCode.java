@@ -3,10 +3,15 @@ package th.co.krungthaiaxa.api.elife.model.error;
 import java.util.function.Function;
 
 public class ErrorCode {
-
-    public static final Function<String, Error> UNKNOWN_ERROR = msg -> new Error("0000", "Unknown error: " + msg, "This is an unknown error. Please contact administrator to get more information.");
+    public static final String ERROR_CODE_UNKNOWN_ERROR = "0000";
+    public static final Function<String, Error> UNKNOWN_ERROR = msg -> new Error(ERROR_CODE_UNKNOWN_ERROR, "Unknown error: " + msg, "This is an unknown error. Please contact administrator to get more information.");
     public static final Function<String, Error> BAD_REQUEST = msg -> new Error("0001", "Bad request error: " + msg, "Your request is not compatible with server. Please recheck the API");
-    public static final String ERROR_CODE_BEAN_VALIDATION = "0002";
+
+    //Bean Validation (0010 -> 0019)
+    public static final String ERROR_CODE_BEAN_VALIDATION = "0010";
+
+    //File Exception (0020 -> 0029)
+    public static final String ERROR_CODE_FILE_NOT_FOUND = "0020";
 
     // Watermarking
     public static final Error WATERMARK_IMAGE_INPUT_NOT_READABLE = new Error("0101", "Unable to upload your picture", "The image cannot be read as stream");
@@ -40,16 +45,20 @@ public class ErrorCode {
             "There was an error while trying to validate the policy after validating the payment. Error is [" + msg + "].");
     public static final Error AGENT_CODE_FORMAT_ERROR = new Error("0410", "Agent code is not in format '123456-12-123456'.", "Agent code is not in format '123456-12-123456'.");
     public static final Error REAL_CAPTURE_API_HAS_TO_BE_USED = new Error("0411", "When validating a Policy in Production, only real call to Line Pay is allowed.", "When validating a Policy in Production, only real call to Line Pay is allowed.");
+
     // Line
     public static final Error UNABLE_TO_DECRYPT = new Error("0501", "Unable to get your user ID", "The provided text could not be decrypted");
     public static final Error UNABLE_TO_GET_LINE_BC = new Error("0502", "Unable to get line bc", "The provided mid is not valid or have no line bc data along with input mid");
     public static final Function<String, Error> UNABLE_TO_CAPTURE_PAYMENT = msg -> new Error("0503", "Unable to confirm the payment. Error is [" + msg + "]", "Unable to confirm the payment. Error is [" + msg + "]");
     public static final String ERROR_CODE_LINE_TOKEN_NOT_EXIST = "0504";
+
     // Document
     public static final Error POLICY_DOES_NOT_CONTAIN_DOCUMENT = new Error("0601", "Unable to locate the document", "The given document id does not exist for the given policy");
     public static final Error UNABLE_TO_DOWNLOAD_DOCUMENT = new Error("0602", "Unable to download the document", "Processing for create e-receipt fail");
+
     // Email
-    public static final Function<String, Error> UNABLE_TO_SEND_EMAIL = msg -> new Error("0701", "Unable to send email", "Error message is:" + msg);
+    public static final String ERROR_CODE_EMAIL_SENDER = "0701";
+    public static final Function<String, Error> UNABLE_TO_SEND_EMAIL = msg -> new Error(ERROR_CODE_EMAIL_SENDER, "Unable to send email", "Error message is:" + msg);
 
     // Watermarking
     public static final Function<String, Error> INVALID_COLLECTION_FILE = msg -> new Error("0901", "Unable to upload the collection file. Error is: [" + msg + "]", "Unable to upload the collection file. Error is: [" + msg + "]");

@@ -33,6 +33,20 @@ public class PolicyNumberSetting {
     @ElementNotBlank
     private List<String> emailList;
 
+    /**
+     * The time trigger setting (in seconds).
+     */
+    @NotNull
+    private Long timeTrigger;
+
+    public Long getTimeTrigger() {
+        return timeTrigger;
+    }
+
+    public void setTimeTrigger(Long timeTrigger) {
+        this.timeTrigger = timeTrigger;
+    }
+
     public Integer getTriggerPercent() {
         return triggerPercent;
     }
@@ -51,7 +65,8 @@ public class PolicyNumberSetting {
 
     @Override
     public String toString() {
-        return "PolicyNumberSetting [triggerPercent=" + triggerPercent + ", emailList=" + emailList + "]";
+        return "PolicyNumberSetting [id=" + id + ", triggerPercent=" + triggerPercent + ", emailList=" + emailList
+                + ", timeTrigger=" + timeTrigger + "]";
     }
 
     public String getId() {
