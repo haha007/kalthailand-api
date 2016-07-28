@@ -164,6 +164,8 @@
         var nbLinesAdded = 0;
 
         fetchPolicyQuotaInfo();
+        
+        $scope.timeTriggerList = [{"value":3600,"name":"1 Time/Hour"},{"value":86400,"name":"1 Time/Day"}];
 
         $scope.uploadNewPolicyNumbers = function (event) {
             event.preventDefault();
