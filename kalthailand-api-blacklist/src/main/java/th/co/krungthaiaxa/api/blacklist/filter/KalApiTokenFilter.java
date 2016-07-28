@@ -66,6 +66,7 @@ public class KalApiTokenFilter implements Filter {
                 httpRequest.getRequestURI().endsWith("/swagger-ui.html") ||
                 httpRequest.getRequestURI().endsWith("/images/favicon-16x16.png") ||
                 httpRequest.getRequestURI().endsWith("/images/favicon-32x32.png") ||
+                httpRequest.getRequestURI().endsWith("/project-info") ||
                 httpRequest.getRequestURI().contains("/webjars/springfox-swagger-ui/")) {
             chain.doFilter(request, response);
             return;

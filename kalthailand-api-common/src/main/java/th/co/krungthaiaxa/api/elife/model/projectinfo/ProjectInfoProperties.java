@@ -1,4 +1,4 @@
-package th.co.krungthaiaxa.api.elife;
+package th.co.krungthaiaxa.api.elife.model.projectinfo;
 
 import java.io.Serializable;
 

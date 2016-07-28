@@ -1,4 +1,4 @@
-package th.co.krungthaiaxa.api.elife;
+package th.co.krungthaiaxa.api.elife.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,21 +7,24 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
+import org.springframework.stereotype.Service;
+import th.co.krungthaiaxa.api.elife.model.projectinfo.ProjectInfoProperties;
 import th.co.krungthaiaxa.api.elife.utils.ProfileHelper;
 
 import javax.inject.Inject;
 import java.io.IOException;
 import java.util.Properties;
 
-@Configuration
-public class ProjectInfoConfiguration {
-    public static final Logger LOGGER = LoggerFactory.getLogger(ProjectInfoConfiguration.class);
+@Service
+public class ProjectInfoService {
+    public static final Logger LOGGER = LoggerFactory.getLogger(ProjectInfoService.class);
+
+    private final ProfileHelper profileHelper;
 
     @Inject
-    ProfileHelper profileHelper;
+    public ProjectInfoService(ProfileHelper profileHelper) {this.profileHelper = profileHelper;}
 
-    @Bean
-    public ProjectInfoProperties projectInfoProperties() {
+    public ProjectInfoProperties loadProjectInfoProperties() {
         String propertiesFile = "/build.properties";
         ProjectInfoProperties projectInfoProperties = new ProjectInfoProperties();
         projectInfoProperties.setProfiles(profileHelper.getUsingProfiles());

@@ -4,7 +4,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import th.co.krungthaiaxa.api.elife.ProjectInfoProperties;
+import th.co.krungthaiaxa.api.elife.model.projectinfo.ProjectInfoProperties;
 
 import javax.inject.Inject;
 
