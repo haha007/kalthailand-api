@@ -77,15 +77,19 @@ public class PolicyNumbersQuotaCheckerTest {
      */
     @Test
     public void policy_number_quota_checker_should_work_normally() {
-        long totalPolicyNumbers = policyNumberService.countAllPolicyNumbers();
-        long availablePolicyNumbers = policyNumberService.countAvailablePolicyNumbers();
-        long usedPolicyNumbers = totalPolicyNumbers - availablePolicyNumbers;
-        double usedPercent = ((double) usedPolicyNumbers / totalPolicyNumbers) * 100;
-        int triggerPercent = policyNumberSettingService.loadSetting().getTriggerPercent();
+        PolicyNumbersQuotaCheckerService.PolicyNumbersQuotaCheckerResult checkerResult = policyNumbersQuotaCheckerService.checkEnoughRemainPolicyNumbers();
+        if (checkerResult != null) {
+            long totalPolicyNumbers = checkerResult.getTotalPolicyNumbers();
+            long availablePolicyNumbers = checkerResult.getAvailablePolicyNumbers();
+            long usedPolicyNumbers = totalPolicyNumbers - availablePolicyNumbers;
 
-        boolean expectResultOfCheckingOverQuota = Math.round(usedPercent) >= triggerPercent;
-        boolean actualResultOfCheckingOverQuota = policyNumbersQuotaCheckerService.checkEnoughRemainPolicyNumbers();
-        Assert.assertEquals(expectResultOfCheckingOverQuota, actualResultOfCheckingOverQuota);
+            double usedPercent = ((double) usedPolicyNumbers / totalPolicyNumbers) * 100;
+            int triggerPercent = checkerResult.getPolicyNumberSetting().getTriggerPercent();
+            boolean expectResultOfCheckingOverQuota = Math.round(usedPercent) >= triggerPercent;
+
+            boolean actualResultOfCheckingOverQuota = checkerResult.isNearlyOverQuota();
+            Assert.assertEquals(expectResultOfCheckingOverQuota, actualResultOfCheckingOverQuota);
+        }
     }
 
     private void createSamplePolicies(int numberOfPolicies) {

@@ -22,3 +22,12 @@ Quote API endpoints:
 Policy API endpoints:
 - **_/ebiz/policy_**, method **_POST_**: creates a policy out of a quote if and only if all data has been validated
 - **_/ebiz/policy_**, method **_PUT_**: updates a policy. Possibly to save an online transaction status (so far only LINE is supported)
+
+Maven build:
+- On local machine, if you are using Tomcat, then use command line:
+  mvn clean install
+- On production, it's using JBoss which is an JavaEE container, so we need to use command line:
+  mvn clean install -P jee
+Reason:
+The artifact "javax.mail" in group "com.sun.mail" package is provided by JavaEE container. So with JBoss, it's already provided. But with Tomcat, we have to include it in libraries.
+(You can see more detail in api-parent/pom.xml)

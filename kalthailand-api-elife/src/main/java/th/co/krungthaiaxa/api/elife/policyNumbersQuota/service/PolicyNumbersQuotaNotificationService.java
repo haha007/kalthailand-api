@@ -2,6 +2,7 @@ package th.co.krungthaiaxa.api.elife.policyNumbersQuota.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.elife.data.PolicyNumberSetting;
 import th.co.krungthaiaxa.api.elife.data.PolicyNumbersQuotaNotification;
@@ -12,22 +13,22 @@ import th.co.krungthaiaxa.api.elife.utils.IOUtil;
 
 import javax.inject.Inject;
 import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
 /**
  * @author khoi.tran on 7/26/16.
- *         This cronjob will check the current policy numbers, wether is more than the setting percentage or not.
  *         When the current policy numbers are more than setting percentage, we will send the notification to users (the notification can be mail or web notification, or mobile notification..., but now we only support email).
  */
 @Service
 public class PolicyNumbersQuotaNotificationService {
     public static final Logger LOGGER = LoggerFactory.getLogger(PolicyNumbersQuotaNotificationService.class);
-
     private final EmailService emailService;
     private final PolicyNumbersQuotaNotificationRepository policyNumbersQuotaNotificationRepository;
     private final PolicyNumberSettingService policyNumberSettingService;
+
+    @Value("${policynumbersquota.cron.time.scale}")
+    private long timeScale;
 
     @Inject
     public PolicyNumbersQuotaNotificationService(EmailService emailService, PolicyNumbersQuotaNotificationRepository policyNumbersQuotaNotificationRepository, PolicyNumberSettingService policyNumberSettingService) {
@@ -40,13 +41,7 @@ public class PolicyNumbersQuotaNotificationService {
         String emailContent = populateEmailContent(policyNumbersQuotaCheckerResult);
         PolicyNumberSetting policyNumberSetting = policyNumbersQuotaCheckerResult.getPolicyNumberSetting();
         List<String> notificationSettingEmails = policyNumberSetting.getEmailList();
-        Long notificationTriggerSeconds = policyNumberSetting.getTimeTrigger();
-        if (notificationTriggerSeconds == null || notificationTriggerSeconds <= 0) {
-            policyNumberSetting = policyNumberSettingService.updateDefaultTriggerTime(policyNumberSetting);
-            policyNumbersQuotaCheckerResult.setPolicyNumberSetting(policyNumberSetting);
-            LOGGER.warn("There's no triggerTime in PolicyNumberSetting, so we will update the setting with default triggerTime");
-            notificationTriggerSeconds = policyNumberSetting.getTimeTrigger();
-        }
+        long notificationTriggerSeconds = getNotificationTriggerSecondsFromSetting(policyNumbersQuotaCheckerResult);
         for (String email : notificationSettingEmails) {
             Optional<PolicyNumbersQuotaNotification> policyNumbersQuotaNotificationOptional = policyNumbersQuotaNotificationRepository.findOneByNotificationEmail(email);
             PolicyNumbersQuotaNotification policyNumbersQuotaNotification = policyNumbersQuotaNotificationOptional.orElse(initCurrentPolicyNumbersQuotaNotification(email));
@@ -56,6 +51,25 @@ public class PolicyNumbersQuotaNotificationService {
                 policyNumbersQuotaNotificationRepository.save(policyNumbersQuotaNotification);
             }
         }
+    }
+
+    /**
+     * This method will ensure that the trigger time is never null.
+     * If the setting doesn't have this value, it will update to the setting.
+     *
+     * @param policyNumbersQuotaCheckerResult
+     * @return
+     */
+    private long getNotificationTriggerSecondsFromSetting(PolicyNumbersQuotaCheckerService.PolicyNumbersQuotaCheckerResult policyNumbersQuotaCheckerResult) {
+        PolicyNumberSetting policyNumberSetting = policyNumbersQuotaCheckerResult.getPolicyNumberSetting();
+        Long notificationTriggerSeconds = policyNumberSetting.getTimeTrigger();
+        if (notificationTriggerSeconds == null || notificationTriggerSeconds <= 0) {
+            policyNumberSetting = policyNumberSettingService.updateDefaultTriggerTime(policyNumberSetting);
+            policyNumbersQuotaCheckerResult.setPolicyNumberSetting(policyNumberSetting);
+            LOGGER.warn("There's no triggerTime in PolicyNumberSetting, so we will update the setting with default triggerTime");
+            notificationTriggerSeconds = policyNumberSetting.getTimeTrigger();
+        }
+        return notificationTriggerSeconds;
     }
 
     private PolicyNumbersQuotaNotification initCurrentPolicyNumbersQuotaNotification(String email) {
@@ -77,7 +91,7 @@ public class PolicyNumbersQuotaNotificationService {
             return true;
         } else {
             secondsFromLastNotification = Instant.now().getEpochSecond() - lastNotificationTime.getEpochSecond();
-            return secondsFromLastNotification >= notificationTriggerSeconds;
+            return secondsFromLastNotification * timeScale >= notificationTriggerSeconds;
         }
     }
 

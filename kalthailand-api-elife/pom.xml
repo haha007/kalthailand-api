@@ -74,11 +74,20 @@
         </dependency>
 
         <!-- provided stuff -->
-        <dependency>
-            <groupId>com.sun.mail</groupId>
-            <artifactId>javax.mail</artifactId>
-            <scope>provided</scope>
-        </dependency>
+        <!--
+        JavaMail API. It is already included in EE environment (that's why you can use it on your live server), but it is not included in SE environment.
+        So we don't need to add it here.
+        -->
+        <!-- <dependency>
+             <groupId>com.sun.mail</groupId>
+             <artifactId>javax.mail</artifactId>
+             &lt;!&ndash;<scope>provided</scope>&ndash;&gt;
+         </dependency>
+         <dependency>
+             <groupId>javax.mail</groupId>
+             <artifactId>javax.mail-api</artifactId>
+             <version>1.5.5</version>
+         </dependency>-->
 
         <!-- test stuff -->
         <dependency>

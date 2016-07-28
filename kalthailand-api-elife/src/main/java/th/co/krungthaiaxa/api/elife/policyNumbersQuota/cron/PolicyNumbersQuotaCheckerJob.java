@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.elife.policyNumbersQuota.service.PolicyNumbersQuotaCheckerService;
+import th.co.krungthaiaxa.api.elife.utils.ObjectMapperUtil;
 
 import javax.inject.Inject;
 
@@ -22,8 +23,8 @@ public class PolicyNumbersQuotaCheckerJob {
     public PolicyNumbersQuotaCheckerJob(PolicyNumbersQuotaCheckerService policyNumbersQuotaCheckerService) {this.policyNumbersQuotaCheckerService = policyNumbersQuotaCheckerService;}
 
     public void execute() {
-        boolean overQuota = policyNumbersQuotaCheckerService.checkEnoughRemainPolicyNumbers();
-        LOGGER.debug("The current policy numbers is check wether over trigger percentage: {}", overQuota);
+        PolicyNumbersQuotaCheckerService.PolicyNumbersQuotaCheckerResult checkResult = policyNumbersQuotaCheckerService.checkEnoughRemainPolicyNumbers();
+        LOGGER.debug("The current policy numbers is check wether over trigger percentage: {}", ObjectMapperUtil.toStringMultiLine(checkResult));
     }
 
 }

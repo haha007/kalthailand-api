@@ -30,22 +30,21 @@ public class PolicyNumbersQuotaCheckerService {
 
     /**
      * @return whether the current policies will over quota in the near future or not (current used percentage of policies numbers is over notification percentage or not).
+     * If there's no policy numbers, the result is null.
      */
-    public boolean checkEnoughRemainPolicyNumbers() {
+    public PolicyNumbersQuotaCheckerResult checkEnoughRemainPolicyNumbers() {
         long totalPolicyNumbers = policyNumberService.countAllPolicyNumbers();
         if (totalPolicyNumbers == 0) {
             LOGGER.warn("The current totalPolicyNumbers is 0. No need to check.");
-            return false;
+            return null;
         }
         long availablePolicyNumbers = policyNumberService.countAvailablePolicyNumbers();
         PolicyNumberSetting policyNumberSetting = policyNumberSettingService.loadSetting();
         PolicyNumbersQuotaCheckerResult checkerResult = isUsedPercentOverTriggerPercent(totalPolicyNumbers, availablePolicyNumbers, policyNumberSetting);
         if (checkerResult.isNearlyOverQuota()) {
             policyNumbersQuotaNotificationService.sendNotification(checkerResult);
-            return true;
-        } else {
-            return false;
         }
+        return checkerResult;
     }
 
     private PolicyNumbersQuotaCheckerResult isUsedPercentOverTriggerPercent(long totalPolicyNumbers, long availablePolicyNumbers, PolicyNumberSetting policyNumberSetting) {
