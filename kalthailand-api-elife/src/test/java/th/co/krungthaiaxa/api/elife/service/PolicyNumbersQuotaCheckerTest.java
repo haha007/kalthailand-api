@@ -42,11 +42,6 @@ public class PolicyNumbersQuotaCheckerTest {
     public final GreenMailRule greenMail = new GreenMailRule(ServerSetupTest.SMTP_IMAP);
 
     @Inject
-    private PolicyNumberService policyNumberService;
-    @Inject
-    private PolicyNumberSettingService policyNumberSettingService;
-
-    @Inject
     private PolicyService policyService;
     @Inject
     private QuoteService quoteService;
@@ -64,7 +59,8 @@ public class PolicyNumbersQuotaCheckerTest {
     }
 
     /**
-     * @implNote Before running this, you must have public.key & private.key on your folder "/opt/keys".
+     * @implNote When trying to test, you may want to create more policy to reach the quota, then you can use this method.
+     * Before running this, you must have public.key & private.key on your folder "/opt/keys".
      * If not exist, you can generate them by using RSAUtil.generateKeys()
      */
 //    @Test
