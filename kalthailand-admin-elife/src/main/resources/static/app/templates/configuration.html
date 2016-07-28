@@ -47,9 +47,11 @@
 	                <div class="form-group">
 	                    <label for="timeTriggerID" class="col-sm-4 control-label">Trigger time</label>
 	                    <div class="col-sm-4">
-	                    	<select class="form-control" id="timeTrigger" ng-options="tmTrigger as tmTrigger.name for tmTrigger in timeTriggerList track by tmTrigger.value" ng-model="settings.timeTrigger" ></select>
+	                    	<select class="form-control" id="timeTrigger" ng-model="settings.timeTrigger" >
+							  <option value="3600" ng-selected="settings.timeTrigger==3600" >1 Time/Hour</option>
+							  <option value="86400" ng-selected="settings.timeTrigger==86400" >1 Time/Day</option>
+							</select>
 	                    </div>
-	                    <div>{{settings.timeTrigger}}</div>
 	                </div>
 	                <div class="form-group">
 	                    <label for="policyID" class="col-sm-4 control-label">Receipients</label>
