@@ -1,5 +1,6 @@
 package th.co.krungthaiaxa.api.elife.policyNumbersQuota.service;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,12 +10,17 @@ import th.co.krungthaiaxa.api.elife.data.PolicyNumbersQuotaNotification;
 import th.co.krungthaiaxa.api.elife.policyNumbersQuota.repository.PolicyNumbersQuotaNotificationRepository;
 import th.co.krungthaiaxa.api.elife.service.EmailService;
 import th.co.krungthaiaxa.api.elife.service.PolicyNumberSettingService;
+import th.co.krungthaiaxa.api.elife.utils.EmailUtil;
 import th.co.krungthaiaxa.api.elife.utils.IOUtil;
 
 import javax.inject.Inject;
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+
+import static org.apache.commons.io.IOUtils.toByteArray;
 
 /**
  * @author khoi.tran on 7/26/16.
@@ -39,6 +45,8 @@ public class PolicyNumbersQuotaNotificationService {
 
     public void sendNotification(PolicyNumbersQuotaCheckerService.PolicyNumbersQuotaCheckerResult policyNumbersQuotaCheckerResult) {
         String emailContent = populateEmailContent(policyNumbersQuotaCheckerResult);
+        List<Pair<byte[], String>> imagesPairs = emailService.getDefaultImagePairs();
+
         PolicyNumberSetting policyNumberSetting = policyNumbersQuotaCheckerResult.getPolicyNumberSetting();
         List<String> notificationSettingEmails = policyNumberSetting.getEmailList();
         long notificationTriggerSeconds = getNotificationTriggerSecondsFromSetting(policyNumbersQuotaCheckerResult);
@@ -46,7 +54,7 @@ public class PolicyNumbersQuotaNotificationService {
             Optional<PolicyNumbersQuotaNotification> policyNumbersQuotaNotificationOptional = policyNumbersQuotaNotificationRepository.findOneByNotificationEmail(email);
             PolicyNumbersQuotaNotification policyNumbersQuotaNotification = policyNumbersQuotaNotificationOptional.orElse(initCurrentPolicyNumbersQuotaNotification(email));
             if (isOverNotificationDuration(policyNumbersQuotaNotification, notificationTriggerSeconds)) {
-                emailService.sendEmail(email, "Available Policy Numbers will be no more soon.", emailContent);
+                emailService.sendEmail(email, "Available Policy Numbers will be no more soon.", emailContent, imagesPairs);
                 policyNumbersQuotaNotification.setNotificationTime(Instant.now());
                 policyNumbersQuotaNotificationRepository.save(policyNumbersQuotaNotification);
             }

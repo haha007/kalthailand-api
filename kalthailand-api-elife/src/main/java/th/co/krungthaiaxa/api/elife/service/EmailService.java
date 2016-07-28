@@ -17,6 +17,7 @@ import th.co.krungthaiaxa.api.elife.model.ProductIFinePremium;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
 import th.co.krungthaiaxa.api.elife.utils.EmailSender;
+import th.co.krungthaiaxa.api.elife.utils.EmailUtil;
 
 import javax.inject.Inject;
 import javax.mail.MessagingException;
@@ -28,8 +29,10 @@ import java.time.chrono.ThaiBuddhistDate;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static org.apache.commons.io.IOUtils.toByteArray;
@@ -61,9 +64,9 @@ public class EmailService {
         this.saleIllustrationiFineService = saleIllustrationiFineService;
     }
 
-    public void sendEmail(String toEmail, String emailSubject, String emailContent) {
+    public void sendEmail(String toEmail, String emailSubject, String emailContent, List<Pair<byte[], String>> imagesPairs) {
         try {
-            emailSender.sendEmail(emailName, toEmail, emailSubject, emailContent, Collections.EMPTY_LIST, Collections.EMPTY_LIST);
+            emailSender.sendEmail(emailName, toEmail, emailSubject, emailContent, imagesPairs, Collections.EMPTY_LIST);
             logger.debug(MARKER_EMAIL, "The email was sent to {}", toEmail);
         } catch (MessagingException | IOException e) {
             throw new EmailException("Cannot send email: " + e.getMessage(), e);
@@ -248,5 +251,14 @@ public class EmailService {
     private String getThaiDate(LocalDate localDate) {
         ThaiBuddhistDate tdate = ThaiBuddhistDate.from(localDate);
         return tdate.format(ofPattern("dd/MM/yyyy"));
+    }
+
+    public List<Pair<byte[], String>> getDefaultImagePairs(){
+        Map<String, String> imagesMap = new HashMap<>();
+        imagesMap.put("<imageElife>", "/images/email/logo.png");
+        imagesMap.put("<imgF>", "/images/email/facebook-logo.png");
+        imagesMap.put("<imgT>", "/images/email/twitter-logo.png");
+        imagesMap.put("<imgY>", "/images/email/youtube-logo.png");
+        return EmailUtil.createBase64ImagePairs(imagesMap);
     }
 }
