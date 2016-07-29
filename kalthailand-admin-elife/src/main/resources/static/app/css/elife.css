@@ -104,3 +104,19 @@ body {
     display: inline-block;
     border-radius: 50%;
 }
+
+.global-alert-container {
+	position: fixed;
+    top: 0;
+    color: rgba(255, 0, 0, 0.86);
+    font-size: large;
+    left: 0;
+    z-index: 10000;
+    width: 100%;
+    font-weight: bold;
+}
+
+.global-alert-container .text {
+    text-align: center;
+    padding: 10px;
+}
