@@ -18,6 +18,7 @@ public class ProjectInfoConfiguration {
 
     @Bean
     public ProjectInfoProperties projectInfoProperties() {
+        LOGGER.debug("Load Project Info");
         return projectInfoService.loadProjectInfoProperties();
     }
 }

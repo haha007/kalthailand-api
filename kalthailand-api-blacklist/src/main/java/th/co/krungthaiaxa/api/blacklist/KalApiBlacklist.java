@@ -5,6 +5,7 @@ import com.google.common.base.Predicates;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -18,36 +19,37 @@ import java.util.Date;
 
 @SpringBootApplication
 @EnableSwagger2
+@ComponentScan({ "th.co.krungthaiaxa.api.blacklist", "th.co.krungthaiaxa.api.elife" })
 public class KalApiBlacklist {
-	public static void main(String[] args) {
-		SpringApplication.run(KalApiBlacklist.class, args);
-	}
-	
-	@Bean
-	public Docket configureSwagger() {
-		return new Docket(DocumentationType.SWAGGER_2)
-				.select()
-				.apis(RequestHandlerSelectors.any())
-				.paths(paths())
-				.build()
-				.useDefaultResponseMessages(false)
-				.pathMapping("/")
-				.apiInfo(metadata())
-				.directModelSubstitute(LocalDate.class, Date.class);
-	}
-	
-	private ApiInfo metadata() {
-		return new ApiInfoBuilder()
-				.title("Blacklist API")
-				.description("Blacklist API for Krunghtai Axa")
-				.version("1.0.0")
-				.license("License")
-				.build();
-	}
-	
-	private Predicate<String> paths() {
-		return Predicates.or(
-				PathSelectors.regex("/blacklist.*"));
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(KalApiBlacklist.class, args);
+    }
+
+    @Bean
+    public Docket configureSwagger() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .select()
+                .apis(RequestHandlerSelectors.any())
+                .paths(paths())
+                .build()
+                .useDefaultResponseMessages(false)
+                .pathMapping("/")
+                .apiInfo(metadata())
+                .directModelSubstitute(LocalDate.class, Date.class);
+    }
+
+    private ApiInfo metadata() {
+        return new ApiInfoBuilder()
+                .title("Blacklist API")
+                .description("Blacklist API for Krunghtai Axa")
+                .version("1.0.0")
+                .license("License")
+                .build();
+    }
+
+    private Predicate<String> paths() {
+        return Predicates.or(
+                PathSelectors.regex("/blacklist.*"));
+    }
 
 }
