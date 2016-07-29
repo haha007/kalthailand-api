@@ -15,9 +15,9 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import th.co.krungthaiaxa.api.elife.ELifeTest;
 import th.co.krungthaiaxa.api.elife.KalApiApplication;
-import th.co.krungthaiaxa.api.elife.model.error.Error;
-import th.co.krungthaiaxa.api.elife.model.error.ErrorCode;
-import th.co.krungthaiaxa.api.elife.utils.JsonUtil;
+import th.co.krungthaiaxa.api.common.model.error.Error;
+import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
+import th.co.krungthaiaxa.api.common.utils.JsonUtil;
 
 import java.io.IOException;
 import java.net.URI;

@@ -20,7 +20,7 @@ import org.xml.sax.helpers.DefaultHandler;
 import th.co.krungthaiaxa.api.elife.data.PolicyNumber;
 import th.co.krungthaiaxa.api.elife.exception.ElifeException;
 import th.co.krungthaiaxa.api.elife.repository.PolicyNumberRepository;
-import th.co.krungthaiaxa.api.elife.utils.JsonUtil;
+import th.co.krungthaiaxa.api.common.utils.JsonUtil;
 
 import javax.inject.Inject;
 import javax.xml.parsers.ParserConfigurationException;

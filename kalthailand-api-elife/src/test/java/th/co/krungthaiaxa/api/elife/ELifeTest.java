@@ -23,7 +23,7 @@ import th.co.krungthaiaxa.api.elife.tmc.TMCSendingPDFResponse;
 import th.co.krungthaiaxa.api.elife.tmc.TMCSendingPDFResponseRemark;
 import th.co.krungthaiaxa.api.elife.tmc.wsdl.ReceivePDFJSON;
 import th.co.krungthaiaxa.api.elife.tmc.wsdl.ReceivePDFJSONResponse;
-import th.co.krungthaiaxa.api.elife.utils.JsonUtil;
+import th.co.krungthaiaxa.api.common.utils.JsonUtil;
 
 import javax.inject.Inject;
 import java.net.URI;

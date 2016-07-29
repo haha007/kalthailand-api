@@ -10,14 +10,11 @@ import th.co.krungthaiaxa.api.elife.data.PolicyNumbersQuotaNotification;
 import th.co.krungthaiaxa.api.elife.policyNumbersQuota.repository.PolicyNumbersQuotaNotificationRepository;
 import th.co.krungthaiaxa.api.elife.service.EmailService;
 import th.co.krungthaiaxa.api.elife.service.PolicyNumberSettingService;
-import th.co.krungthaiaxa.api.elife.utils.EmailUtil;
-import th.co.krungthaiaxa.api.elife.utils.IOUtil;
+import th.co.krungthaiaxa.api.common.utils.IOUtil;
 
 import javax.inject.Inject;
 import java.time.Instant;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static org.apache.commons.io.IOUtils.toByteArray;

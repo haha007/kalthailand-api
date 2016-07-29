@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.elife.policyNumbersQuota.service.PolicyNumbersQuotaCheckerService;
-import th.co.krungthaiaxa.api.elife.utils.ObjectMapperUtil;
+import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
 
 import javax.inject.Inject;
 

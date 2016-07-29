@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
@@ -21,6 +22,7 @@ import java.util.Date;
 @SpringBootApplication
 @EnableSwagger2
 @EnableScheduling
+@ComponentScan({ "th.co.krungthaiaxa.api.elife", "th.co.krungthaiaxa.api.common" })
 public class KalApiApplication {
     public static void main(String[] args) {
         SpringApplication.run(KalApiApplication.class, args);

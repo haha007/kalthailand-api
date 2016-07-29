@@ -10,13 +10,13 @@ import org.springframework.web.bind.annotation.*;
 import th.co.krungthaiaxa.api.elife.exception.ElifeException;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
-import th.co.krungthaiaxa.api.elife.model.error.ErrorCode;
+import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
 import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
 import th.co.krungthaiaxa.api.elife.service.EmailService;
-import th.co.krungthaiaxa.api.elife.model.error.Error;
+import th.co.krungthaiaxa.api.common.model.error.Error;
 import th.co.krungthaiaxa.api.elife.service.QuoteService;
-import th.co.krungthaiaxa.api.elife.utils.JsonUtil;
+import th.co.krungthaiaxa.api.common.utils.JsonUtil;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -26,7 +26,7 @@ import java.util.Optional;
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
-import static th.co.krungthaiaxa.api.elife.utils.JsonUtil.getJson;
+import static th.co.krungthaiaxa.api.common.utils.JsonUtil.getJson;
 
 @RestController
 @Api(value = "Quotes")

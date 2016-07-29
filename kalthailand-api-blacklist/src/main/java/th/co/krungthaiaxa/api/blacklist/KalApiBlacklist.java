@@ -19,7 +19,7 @@ import java.util.Date;
 
 @SpringBootApplication
 @EnableSwagger2
-@ComponentScan({ "th.co.krungthaiaxa.api.blacklist", "th.co.krungthaiaxa.api.elife" })
+@ComponentScan({ "th.co.krungthaiaxa.api.blacklist", "th.co.krungthaiaxa.api.common" })
 public class KalApiBlacklist {
     public static void main(String[] args) {
         SpringApplication.run(KalApiBlacklist.class, args);

@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 import th.co.krungthaiaxa.api.elife.data.PolicyNumberSetting;
-import th.co.krungthaiaxa.api.elife.model.error.Error;
+import th.co.krungthaiaxa.api.common.model.error.Error;
 import th.co.krungthaiaxa.api.elife.service.PolicyNumberSettingService;
 
 import javax.inject.Inject;

@@ -14,7 +14,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayRecurringResponse;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayResponse;
-import th.co.krungthaiaxa.api.elife.utils.JsonUtil;
+import th.co.krungthaiaxa.api.common.utils.JsonUtil;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -35,7 +35,7 @@ import javax.inject.Inject;
 import static java.nio.charset.Charset.forName;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.OK;
-import static th.co.krungthaiaxa.api.elife.utils.JsonUtil.getJson;
+import static th.co.krungthaiaxa.api.common.utils.JsonUtil.getJson;
 
 @Service
 public class LineService {

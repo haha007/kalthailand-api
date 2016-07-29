@@ -4,8 +4,8 @@ import org.quartz.JobDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean;
-import th.co.krungthaiaxa.api.elife.exeption.UnexpectedException;
-import th.co.krungthaiaxa.api.elife.model.enums.DurationUnit;
+import th.co.krungthaiaxa.api.common.exeption.UnexpectedException;
+import th.co.krungthaiaxa.api.common.model.enums.DurationUnit;
 
 import javax.annotation.PostConstruct;
 import java.text.ParseException;

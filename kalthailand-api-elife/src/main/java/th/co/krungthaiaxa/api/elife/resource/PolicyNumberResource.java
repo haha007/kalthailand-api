@@ -9,9 +9,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.xml.sax.SAXException;
+import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
 import th.co.krungthaiaxa.api.elife.data.PolicyNumber;
 import th.co.krungthaiaxa.api.elife.exception.ElifeException;
-import th.co.krungthaiaxa.api.elife.model.error.Error;
+import th.co.krungthaiaxa.api.common.model.error.Error;
 import th.co.krungthaiaxa.api.elife.service.PolicyNumberService;
 import th.co.krungthaiaxa.api.elife.service.PolicyQuotaService;
 
@@ -22,8 +23,7 @@ import java.io.IOException;
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
-import static th.co.krungthaiaxa.api.elife.model.error.ErrorCode.*;
-import static th.co.krungthaiaxa.api.elife.utils.JsonUtil.getJson;
+import static th.co.krungthaiaxa.api.common.utils.JsonUtil.getJson;
 
 @RestController
 @Api(value = "PolicyNumber")
@@ -51,7 +51,7 @@ public class PolicyNumberResource {
         try {
             return new ResponseEntity<>(getJson(policyQuotaService.readPolicyNumberExcelFile(file.getInputStream())), CREATED);
         } catch (IOException | SAXException | OpenXML4JException | ParserConfigurationException | IllegalArgumentException | ElifeException e) {
-            return new ResponseEntity<>(getJson(INVALID_POLICY_NUMBER_EXCEL_FILE), NOT_ACCEPTABLE);
+            return new ResponseEntity<>(getJson(ErrorCode.INVALID_POLICY_NUMBER_EXCEL_FILE), NOT_ACCEPTABLE);
         }
     }
 

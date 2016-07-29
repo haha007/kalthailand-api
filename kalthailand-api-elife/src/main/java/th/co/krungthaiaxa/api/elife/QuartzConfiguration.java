@@ -8,8 +8,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import th.co.krungthaiaxa.api.elife.policyNumbersQuota.cron.PolicyNumbersQuotaCheckerJob;
-import th.co.krungthaiaxa.api.elife.exeption.UnexpectedException;
-import th.co.krungthaiaxa.api.elife.model.enums.DurationUnit;
+import th.co.krungthaiaxa.api.common.exeption.UnexpectedException;
+import th.co.krungthaiaxa.api.common.model.enums.DurationUnit;
 
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;

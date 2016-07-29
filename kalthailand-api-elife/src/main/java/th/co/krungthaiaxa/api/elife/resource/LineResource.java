@@ -8,9 +8,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
 import th.co.krungthaiaxa.api.elife.model.LineBC;
 import th.co.krungthaiaxa.api.elife.model.Mid;
-import th.co.krungthaiaxa.api.elife.model.error.Error;
+import th.co.krungthaiaxa.api.common.model.error.Error;
 import th.co.krungthaiaxa.api.elife.service.LineBCService;
 import th.co.krungthaiaxa.api.elife.utils.Decrypt;
 
@@ -19,8 +20,7 @@ import java.util.Optional;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
-import static th.co.krungthaiaxa.api.elife.model.error.ErrorCode.*;
-import static th.co.krungthaiaxa.api.elife.utils.JsonUtil.getJson;
+import static th.co.krungthaiaxa.api.common.utils.JsonUtil.getJson;
 
 @RestController
 @Api(value = "Line")
@@ -50,7 +50,7 @@ public class LineResource {
         if (lineBCData.isPresent()) {
             return new ResponseEntity<>(getJson(lineBCData.get()), HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(getJson(UNABLE_TO_GET_LINE_BC), NOT_FOUND);
+            return new ResponseEntity<>(getJson(ErrorCode.UNABLE_TO_GET_LINE_BC), NOT_FOUND);
         }
     }
 
@@ -68,12 +68,12 @@ public class LineResource {
             decrypted = Decrypt.decrypt(value, secretkey);
         } catch (Exception e) {
             logger.error("Unable to decrypt [" + value + "]", e);
-            return new ResponseEntity<>(getJson(UNABLE_TO_DECRYPT), BAD_REQUEST);
+            return new ResponseEntity<>(getJson(ErrorCode.UNABLE_TO_DECRYPT), BAD_REQUEST);
         }
 
         if (!decrypted.contains(".")) {
             logger.error("Decrypted value doesn't contain a '.'");
-            return new ResponseEntity<>(getJson(INVALID_LINE_ID), BAD_REQUEST);
+            return new ResponseEntity<>(getJson(ErrorCode.INVALID_LINE_ID), BAD_REQUEST);
         }
 
         logger.info("Value has been successfuly decrypted");

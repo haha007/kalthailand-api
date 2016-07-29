@@ -17,7 +17,7 @@ import javax.inject.Inject;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.PUT;
-import static th.co.krungthaiaxa.api.elife.utils.JsonUtil.getJson;
+import static th.co.krungthaiaxa.api.common.utils.JsonUtil.getJson;
 
 @RestController
 @Api(value = "Products")

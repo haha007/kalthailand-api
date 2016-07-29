@@ -19,7 +19,7 @@ import java.util.Date;
 
 @SpringBootApplication
 @EnableSwagger2
-@ComponentScan({ "th.co.krungthaiaxa.api.signing", "th.co.krungthaiaxa.api.elife" })
+@ComponentScan({ "th.co.krungthaiaxa.api.signing", "th.co.krungthaiaxa.api.common" })
 public class KALApiSigning {
 	public static void main(String[] args) {
 		SpringApplication.run(KALApiSigning.class, args);

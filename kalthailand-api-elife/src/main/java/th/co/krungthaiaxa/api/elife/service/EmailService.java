@@ -10,14 +10,14 @@ import org.slf4j.MarkerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
-import th.co.krungthaiaxa.api.elife.exeption.EmailException;
+import th.co.krungthaiaxa.api.common.exeption.EmailException;
 import th.co.krungthaiaxa.api.elife.model.Person;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.ProductIFinePremium;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
 import th.co.krungthaiaxa.api.elife.utils.EmailSender;
-import th.co.krungthaiaxa.api.elife.utils.EmailUtil;
+import th.co.krungthaiaxa.api.common.utils.EmailUtil;
 
 import javax.inject.Inject;
 import javax.mail.MessagingException;

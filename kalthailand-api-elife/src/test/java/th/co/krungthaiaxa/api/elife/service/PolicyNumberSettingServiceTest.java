@@ -12,7 +12,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.api.elife.ELifeTest;
 import th.co.krungthaiaxa.api.elife.KalApiApplication;
 import th.co.krungthaiaxa.api.elife.data.PolicyNumberSetting;
-import th.co.krungthaiaxa.api.elife.utils.ObjectMapperUtil;
+import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
 
 import javax.inject.Inject;
 

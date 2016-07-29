@@ -14,13 +14,13 @@ import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.enums.DocumentType;
 import th.co.krungthaiaxa.api.elife.tmc.wsdl.ReceivePDFJSON;
 import th.co.krungthaiaxa.api.elife.tmc.wsdl.ReceivePDFJSONResponse;
-import th.co.krungthaiaxa.api.elife.utils.JsonUtil;
+import th.co.krungthaiaxa.api.common.utils.JsonUtil;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
 
 import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.notNull;
-import static th.co.krungthaiaxa.api.elife.utils.JsonUtil.getJson;
+import static th.co.krungthaiaxa.api.common.utils.JsonUtil.getJson;
 
 @Component
 public class TMCClient extends WebServiceGatewaySupport {
