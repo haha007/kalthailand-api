@@ -13,6 +13,7 @@ public class ErrorCode {
 
     //File Exception (0020 -> 0029)
     public static final String ERROR_CODE_FILE_NOT_FOUND = "0020";
+    public static final String ERROR_CODE_FILE_IO = "0021";
 
     // Watermarking
     public static final Error WATERMARK_IMAGE_INPUT_NOT_READABLE = new Error("0101", "Unable to upload your picture", "The image cannot be read as stream");
