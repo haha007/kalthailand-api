@@ -25,7 +25,7 @@
         };
     });
 
-    app.controller('DashboardController', function ($scope, $rootScope, $route, Dashboard, $localStorage, $location) {
+    app.controller('DashboardController', function ($scope, $rootScope , $http, $route, Dashboard, PolicyQuotaConfig, $localStorage, $location) {
         $scope.$route = $route;
 
         $scope.currentPage = 1;
@@ -45,6 +45,7 @@
         $scope.search = searchForPolicies;
         $scope.pageChanged = searchForPolicies;
         searchForPolicies();
+        fetchPolicyQuotaInfo();
 
         $scope.dateOptions = {
             dateDisabled: false,
@@ -65,6 +66,73 @@
             event.preventDefault();
             searchForPolicies();
         };
+        
+        function fetchPolicyQuotaInfo() {
+        	
+        	var callCount = 0;
+        	var policyQuota;
+        	var availablePolicyCount
+        	var triggerPercent;
+        	
+        	PolicyQuotaConfig
+        	.get({id: 0},
+                function (successResponse) {
+                    triggerPercent = successResponse.triggerPercent;
+                    done();
+                },
+                function (errorResponse) {
+                    console.log(errorResponse.data.userMessage);
+                    done();
+                });
+        	
+            $http.get(window.location.origin + '/api-elife/policy-numbers/count', {}).then(
+                function (successResponse) {
+                    policyQuota = successResponse.data;
+                    done();
+                },
+                function (errorResponse) {
+                    console.log(errorResponse);
+                    done();
+                });
+
+            $http.get(window.location.origin + '/api-elife/policy-numbers/available/count', {}).then(
+                function (successResponse) {
+                    availablePolicyCount = successResponse.data;
+                    done();
+                },
+                function (errorResponse) {
+                    console.log(errorResponse);
+                    done();
+                });
+            
+            function done(){
+            	if(++callCount === 3) {
+            		
+            		if(!availablePolicyCount) {
+            			console.log('Unable to fetch availablePolicyCount');
+            			return;
+            		}
+            		if(!policyQuota) {
+            			console.log('Unable to fetch policyQuota');
+            			return;
+            		}
+            		if(!triggerPercent) {
+            			console.log('Unable to fetch triggerPercent');
+            			return;
+            		}
+            		
+            		var usagePercent = (policyQuota - availablePolicyCount) / policyQuota * 100;
+            		
+            		if( usagePercent >= triggerPercent) {
+            			$scope.policyAlmostFull = true;
+            		}
+            		
+            		return;
+            	}
+            }
+
+        }
+
 
         function searchForPolicies() {
             Dashboard.get(
