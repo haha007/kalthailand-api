@@ -105,8 +105,9 @@ public class PolicyNumbersQuotaNotificationService {
         emailContent = emailContent.replace("%TOTAL_POLICY_NUMBERS%", "" + policyNumbersQuotaCheckerResult.getTotalPolicyNumbers());
         long usedPolicyNumbers = policyNumbersQuotaCheckerResult.getTotalPolicyNumbers() - policyNumbersQuotaCheckerResult.getAvailablePolicyNumbers();
         emailContent = emailContent.replace("%USED_POLICY_NUMBERS%", "" + usedPolicyNumbers);
-        emailContent = emailContent.replace("%USED_POLICY_NUMBERS_PERCENT%", "" + policyNumbersQuotaCheckerResult.getUsedPercent());
+        emailContent = emailContent.replace("%USED_POLICY_NUMBERS_PERCENT%", String.format("%.2f", policyNumbersQuotaCheckerResult.getUsedPercent()));
         emailContent = emailContent.replace("%TRIGGER_POLICY_NUMBERS_PERCENT%", "" + policyNumbersQuotaCheckerResult.getPolicyNumberSetting().getTriggerPercent());
         return emailContent;
     }
+
 }
