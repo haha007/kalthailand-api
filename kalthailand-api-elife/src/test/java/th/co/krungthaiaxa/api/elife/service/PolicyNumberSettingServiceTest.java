@@ -33,8 +33,6 @@ public class PolicyNumberSettingServiceTest extends ELifeTest {
         Assert.assertNotNull(policySetting);
         Assert.assertTrue(policySetting.getTriggerPercent() > 0);
         Assert.assertTrue(policySetting.getTriggerPercent() <= 100);
-        Assert.assertTrue(!policySetting.getEmailList().isEmpty());
     }
-
 
 }
