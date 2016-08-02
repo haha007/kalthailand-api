@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import th.co.krungthaiaxa.api.common.utils.StringUtil;
 import th.co.krungthaiaxa.api.elife.data.PolicyNumberSetting;
 import th.co.krungthaiaxa.api.elife.data.PolicyNumbersQuotaNotification;
 import th.co.krungthaiaxa.api.elife.policyNumbersQuota.repository.PolicyNumbersQuotaNotificationRepository;
@@ -97,11 +98,17 @@ public class PolicyNumbersQuotaNotificationService {
         } else {
             Instant now = Instant.now();
             secondsFromLastNotification = now.getEpochSecond() - lastNotificationTime.getEpochSecond();
-            LOGGER.debug("Last now time: {} , seconds: {}", now, now.getEpochSecond());
-            LOGGER.debug("Last notification time: {} , seconds: {}", lastNotificationTime, lastNotificationTime.getEpochSecond());
-            LOGGER.debug("SecondsFromLastNotification: {}", secondsFromLastNotification);
-            LOGGER.debug("NotificationTriggerSeconds: {}", notificationTriggerSeconds);
-            return (secondsFromLastNotification + 1l) * timeScale >= notificationTriggerSeconds;
+            long scaledSecondsFromLastNotification = (secondsFromLastNotification + 1l) * timeScale;
+            boolean result = scaledSecondsFromLastNotification >= notificationTriggerSeconds;
+            String msg = StringUtil.newString(
+                    "Current time: ", now, ", second: ", now.getEpochSecond(),
+                    "\nLast notification time: ", lastNotificationTime, ", second: ", lastNotificationTime.getEpochSecond(),
+                    "\nSecondsFromLastNotification: ", secondsFromLastNotification,
+                    "\nNotificationTriggerSeconds: ", notificationTriggerSeconds,
+                    "\nScaledSecondsFromLastNotification: ", scaledSecondsFromLastNotification,
+                    "\nResultSendEmail: ", result);
+            LOGGER.debug(msg);
+            return result;
         }
     }
 
@@ -114,5 +121,12 @@ public class PolicyNumbersQuotaNotificationService {
         emailContent = emailContent.replace("%TRIGGER_POLICY_NUMBERS_PERCENT%", "" + policyNumbersQuotaCheckerResult.getPolicyNumberSetting().getTriggerPercent());
         return emailContent;
     }
-
+//
+//    public static void main(String[] a) {
+//        PolicyNumbersQuotaNotificationService service = new PolicyNumbersQuotaNotificationService(null, null, null);
+//        PolicyNumbersQuotaNotification policyNumbersQuotaNotification = new PolicyNumbersQuotaNotification();
+//        policyNumbersQuotaNotification.setNotificationEmail("khoi.tran@pyramid-consultingcom");
+//        policyNumbersQuotaNotification.setNotificationTime(Instant.now());
+//        service.isOverNotificationDuration(policyNumbersQuotaNotification, 3600l);
+//    }
 }
