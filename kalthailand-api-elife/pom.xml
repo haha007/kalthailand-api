@@ -151,7 +151,7 @@
                     <generatePackage>th.co.krungthaiaxa.api.elife.tmc.wsdl</generatePackage>
                     <schemas>
                         <schema>
-                            <url>${basedir}/src/main/resources/wsdl/tmc_soap_service.wsdl</url>
+                            <url>${main.basedir}/src/main/resources/wsdl/tmc_soap_service.wsdl</url>
                         </schema>
                     </schemas>
                 </configuration>
