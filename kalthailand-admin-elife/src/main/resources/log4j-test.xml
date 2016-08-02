@@ -6,8 +6,31 @@
             <param name="ConversionPattern" value="[%p] %d{ISO8601} [%t] %C - %m%n"/>
         </layout>
     </appender>
+    <appender name="FILE" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="file" value="${catalina.home}/logs/admin-elife.log"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="[%p] %d{ISO8601} [%t] %C - %m%n"/>
+        </layout>
+    </appender>
+    <appender name="FILE_REQUEST" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="file" value="${catalina.home}/logs/admin-elife.request.log"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="[%p] %d{ISO8601} [%t] %C - %m%n"/>
+        </layout>
+    </appender>
+
+
+    <category name="th.co.krungthaiaxa">
+        <priority value="DEBUG"/>
+    </category>
+    <category name="th.co.krungthaiaxa.admin.elife.log.RequestLogUtil" additivity="false">
+        <priority value="DEBUG"/>
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE_REQUEST"/>
+    </category>
     <root>
         <priority value="INFO"/>
         <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE"/>
     </root>
 </log4j:configuration>

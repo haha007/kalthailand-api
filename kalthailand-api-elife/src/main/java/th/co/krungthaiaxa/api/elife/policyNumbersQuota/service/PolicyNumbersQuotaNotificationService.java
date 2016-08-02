@@ -121,12 +121,4 @@ public class PolicyNumbersQuotaNotificationService {
         emailContent = emailContent.replace("%TRIGGER_POLICY_NUMBERS_PERCENT%", "" + policyNumbersQuotaCheckerResult.getPolicyNumberSetting().getTriggerPercent());
         return emailContent;
     }
-//
-//    public static void main(String[] a) {
-//        PolicyNumbersQuotaNotificationService service = new PolicyNumbersQuotaNotificationService(null, null, null);
-//        PolicyNumbersQuotaNotification policyNumbersQuotaNotification = new PolicyNumbersQuotaNotification();
-//        policyNumbersQuotaNotification.setNotificationEmail("khoi.tran@pyramid-consultingcom");
-//        policyNumbersQuotaNotification.setNotificationTime(Instant.now());
-//        service.isOverNotificationDuration(policyNumbersQuotaNotification, 3600l);
-//    }
 }

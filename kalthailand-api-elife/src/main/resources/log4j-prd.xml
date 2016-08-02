@@ -16,7 +16,7 @@
     <appender name="FILE_POLICY_NUMBERS_JOB" class="org.apache.log4j.DailyRollingFileAppender">
         <param name="file" value="/opt/elife/logs/api-elife.policy-numbers.log"/>
         <layout class="org.apache.log4j.PatternLayout">
-            <param name="ConversionPattern" value="${app.root} [%p] %d{ISO8601} [%t] %C - %m%n"/>
+            <param name="ConversionPattern" value="[%p] %d{ISO8601} [%t] %C - %m%n"/>
         </layout>
     </appender>
     <category name="th.co.krungthaiaxa.api.elife.policyNumbersQuota" additivity="false">
