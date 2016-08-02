@@ -52,7 +52,7 @@ public class PolicyNumbersQuotaNotificationService {
             Optional<PolicyNumbersQuotaNotification> policyNumbersQuotaNotificationOptional = policyNumbersQuotaNotificationRepository.findOneByNotificationEmail(email);
             PolicyNumbersQuotaNotification policyNumbersQuotaNotification = policyNumbersQuotaNotificationOptional.orElse(initCurrentPolicyNumbersQuotaNotification(email));
             if (isOverNotificationDuration(policyNumbersQuotaNotification, notificationTriggerSeconds)) {
-                emailService.sendEmail(email, "Available Policy Numbers will be no more soon.", emailContent, imagesPairs);
+                emailService.sendEmail(email, "Available Policy Number will run out soon.", emailContent, imagesPairs);
                 policyNumbersQuotaNotification.setNotificationTime(Instant.now());
                 policyNumbersQuotaNotificationRepository.save(policyNumbersQuotaNotification);
             }
