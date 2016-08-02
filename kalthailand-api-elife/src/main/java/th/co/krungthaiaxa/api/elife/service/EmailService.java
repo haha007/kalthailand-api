@@ -40,7 +40,6 @@ import static org.apache.commons.io.IOUtils.toByteArray;
 @Service
 public class EmailService {
     private final static Logger logger = LoggerFactory.getLogger(EmailService.class);
-    private final static Marker MARKER_EMAIL = MarkerFactory.getMarker("EMAIL");
     private final EmailSender emailSender;
     private final SaleIllustration10ECService saleIllustration10ECService;
     private final SaleIllustrationiFineService saleIllustrationiFineService;
@@ -67,7 +66,7 @@ public class EmailService {
     public void sendEmail(String toEmail, String emailSubject, String emailContent, List<Pair<byte[], String>> imagesPairs) {
         try {
             emailSender.sendEmail(emailName, toEmail, emailSubject, emailContent, imagesPairs, Collections.EMPTY_LIST);
-            logger.debug(MARKER_EMAIL, "The email was sent to {}", toEmail);
+            logger.debug("The email was sent to {}", toEmail);
         } catch (MessagingException | IOException e) {
             throw new EmailException("Cannot send email: " + e.getMessage(), e);
         }
@@ -253,7 +252,7 @@ public class EmailService {
         return tdate.format(ofPattern("dd/MM/yyyy"));
     }
 
-    public List<Pair<byte[], String>> getDefaultImagePairs(){
+    public List<Pair<byte[], String>> getDefaultImagePairs() {
         Map<String, String> imagesMap = new HashMap<>();
         imagesMap.put("<imageElife>", "/images/email/logo.png");
         imagesMap.put("<imgF>", "/images/email/facebook-logo.png");

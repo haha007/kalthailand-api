@@ -30,7 +30,7 @@ public class PolicyNumberSettingService {
             policyNumberSettingRepository.save(setting);
         } else {
             if (settings.size() > 1) {
-                logger.warn("We actually use only the first one setting. Other settings will be ingnored.");
+                logger.trace("We actually use only the first one setting. Other settings will be ingnored.");
             }
             setting = settings.get(0);
         }

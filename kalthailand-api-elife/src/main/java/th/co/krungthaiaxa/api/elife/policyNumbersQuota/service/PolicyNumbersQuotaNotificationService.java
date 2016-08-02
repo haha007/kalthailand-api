@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import th.co.krungthaiaxa.api.common.utils.StringUtil;
 import th.co.krungthaiaxa.api.elife.data.PolicyNumberSetting;
 import th.co.krungthaiaxa.api.elife.data.PolicyNumbersQuotaNotification;
 import th.co.krungthaiaxa.api.elife.policyNumbersQuota.repository.PolicyNumbersQuotaNotificationRepository;
@@ -51,7 +52,7 @@ public class PolicyNumbersQuotaNotificationService {
             Optional<PolicyNumbersQuotaNotification> policyNumbersQuotaNotificationOptional = policyNumbersQuotaNotificationRepository.findOneByNotificationEmail(email);
             PolicyNumbersQuotaNotification policyNumbersQuotaNotification = policyNumbersQuotaNotificationOptional.orElse(initCurrentPolicyNumbersQuotaNotification(email));
             if (isOverNotificationDuration(policyNumbersQuotaNotification, notificationTriggerSeconds)) {
-                emailService.sendEmail(email, "Available Policy Numbers will be no more soon.", emailContent, imagesPairs);
+                emailService.sendEmail(email, "Available Policy Number will run out soon.", emailContent, imagesPairs);
                 policyNumbersQuotaNotification.setNotificationTime(Instant.now());
                 policyNumbersQuotaNotificationRepository.save(policyNumbersQuotaNotification);
             }
@@ -95,8 +96,19 @@ public class PolicyNumbersQuotaNotificationService {
         if (lastNotificationTime == null) {
             return true;
         } else {
-            secondsFromLastNotification = Instant.now().getEpochSecond() - lastNotificationTime.getEpochSecond();
-            return secondsFromLastNotification * timeScale >= notificationTriggerSeconds;
+            Instant now = Instant.now();
+            secondsFromLastNotification = now.getEpochSecond() - lastNotificationTime.getEpochSecond();
+            long scaledSecondsFromLastNotification = (secondsFromLastNotification + 1l) * timeScale;
+            boolean result = scaledSecondsFromLastNotification >= notificationTriggerSeconds;
+            String msg = StringUtil.newString(
+                    "Current time: ", now, ", second: ", now.getEpochSecond(),
+                    "\nLast notification time: ", lastNotificationTime, ", second: ", lastNotificationTime.getEpochSecond(),
+                    "\nSecondsFromLastNotification: ", secondsFromLastNotification,
+                    "\nNotificationTriggerSeconds: ", notificationTriggerSeconds,
+                    "\nScaledSecondsFromLastNotification: ", scaledSecondsFromLastNotification,
+                    "\nResultSendEmail: ", result);
+            LOGGER.debug(msg);
+            return result;
         }
     }
 
@@ -109,5 +121,4 @@ public class PolicyNumbersQuotaNotificationService {
         emailContent = emailContent.replace("%TRIGGER_POLICY_NUMBERS_PERCENT%", "" + policyNumbersQuotaCheckerResult.getPolicyNumberSetting().getTriggerPercent());
         return emailContent;
     }
-
 }
