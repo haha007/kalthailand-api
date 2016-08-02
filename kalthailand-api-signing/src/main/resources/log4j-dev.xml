@@ -7,7 +7,7 @@
         </layout>
     </appender>
     <appender name="FILE" class="org.apache.log4j.DailyRollingFileAppender">
-        <param name="file" value="logs/api-signing.log"/>
+        <param name="file" value="${catalina.home}/logs/api-signing.log"/>
         <layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern" value="[%p] %d{ISO8601} [%t] %C - %m%n"/>
         </layout>

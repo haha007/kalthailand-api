@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+import th.co.krungthaiaxa.admin.elife.log.RequestLogUtil;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -24,11 +25,13 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.Period;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.OK;
@@ -51,13 +54,8 @@ public class ClientSideRoleFilter implements Filter {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
-        
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss.SSS");
-        SimpleDateFormat secondFormat = new SimpleDateFormat("ss");
-        SimpleDateFormat millisecondFormat = new SimpleDateFormat("SSS");
-        DecimalFormat dcf = new DecimalFormat("#0.00");
-        Date timeApiRequest = new Date();    
-        
+
+        Instant startTime = Instant.now();
         if (!httpServletRequest.getRequestURI().endsWith(".htm") && !httpServletRequest.getRequestURI().endsWith(".html")) {
             // nothing to do on any request that is not to an html file
             filterChain.doFilter(servletRequest, servletResponse);
@@ -84,42 +82,9 @@ public class ClientSideRoleFilter implements Filter {
 
         String modifiedResponse = modify(httpServletRequest, new String(wrappedResponse.getByteArray()), properties);
         servletResponse.setContentLength(modifiedResponse.length());
-        
-        Date timeApiResponse = new Date();
-        long s1 = Integer.parseInt(secondFormat.format(timeApiRequest),10);
-        long s2 = Integer.parseInt(secondFormat.format(timeApiResponse),10);
-        long m1 = Integer.parseInt(millisecondFormat.format(timeApiRequest),10);
-        long m2 = Integer.parseInt(millisecondFormat.format(timeApiResponse),10);
-        long diffSecond = s2 - s1;
-        long diffMillisecond = m2 - m1;
-        double diffTotal = Double.parseDouble(Math.abs(diffSecond) + "." + Math.abs(diffMillisecond));
-        getAllOfRequestContent(httpServletRequest);
-        logger.info("call to : " + httpServletRequest.getRequestURI() 
-        + " request time is : " + sdf.format(timeApiRequest) 
-        + " response time is : " + sdf.format(timeApiResponse)
-        + " difference is : " + dcf.format(diffTotal) + " seconds. \n ---------------------------------------");
-        
+
+        RequestLogUtil.logRequestWithRunningTime(httpServletRequest, startTime);
         servletResponse.getOutputStream().write(modifiedResponse.getBytes());
-    }
-    
-    private void getAllOfRequestContent(HttpServletRequest request){
-    	logger.info("|'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''|");
-    	//method
-    	String method = request.getMethod();
-    	logger.info("Method is : "+method);
-    	//header
-    	Enumeration headerNames = request.getHeaderNames();
-    	while(headerNames.hasMoreElements()) {
-    	  String headerName = (String)headerNames.nextElement();
-    	  logger.info("Header Name - " + headerName + ", Value - " + request.getHeader(headerName));
-    	}
-    	//body
-    	Enumeration params = request.getParameterNames(); 
-    	while(params.hasMoreElements()){
-    	 String paramName = (String)params.nextElement();
-    	 logger.info("Parameter Name - "+paramName+", Value - "+request.getParameter(paramName));
-    	}
-    	logger.info("|................................................................|");
     }
 
     @Override
@@ -140,7 +105,7 @@ public class ClientSideRoleFilter implements Filter {
                 String requiredRoles = properties.getProperty(propertyName);
                 String[] requiredRoleList = requiredRoles.split(",");
                 boolean hasRequiredRole = false;
-                for (int i=0;i<requiredRoleList.length && !hasRequiredRole;i++) {
+                for (int i = 0; i < requiredRoleList.length && !hasRequiredRole; i++) {
                     hasRequiredRole = validateTokenAgainstRole(httpServletRequest.getHeader(tokenHeader), requiredRoleList[i]);
                 }
 
