@@ -95,7 +95,11 @@ public class PolicyNumbersQuotaNotificationService {
         if (lastNotificationTime == null) {
             return true;
         } else {
-            secondsFromLastNotification = Instant.now().getEpochSecond() - lastNotificationTime.getEpochSecond();
+            Instant now = Instant.now();
+            secondsFromLastNotification = now.getEpochSecond() - lastNotificationTime.getEpochSecond();
+            LOGGER.debug("Last notification time: {}, now: {}", lastNotificationTime.getEpochSecond(), now);
+            LOGGER.debug("SecondsFromLastNotification: {}", secondsFromLastNotification);
+            LOGGER.debug("NotificationTriggerSeconds: {}", notificationTriggerSeconds);
             return (secondsFromLastNotification + 1l) * timeScale >= notificationTriggerSeconds;
         }
     }

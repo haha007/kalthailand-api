@@ -25,7 +25,7 @@
         </layout>
     </appender>
 
-    <category name="th.co.krungthaiaxa.api.elife.policyNumbersQuota.cron" additivity="false">
+    <category name="th.co.krungthaiaxa.api.elife.policyNumbersQuota" additivity="false">
         <priority value="DEBUG"/>
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="FILE_POLICY_NUMBERS_JOB"/>

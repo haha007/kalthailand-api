@@ -19,7 +19,7 @@
             <param name="ConversionPattern" value="${app.root} [%p] %d{ISO8601} [%t] %C - %m%n"/>
         </layout>
     </appender>
-    <category name="th.co.krungthaiaxa.api.elife.policyNumbersQuota.cron" additivity="false">
+    <category name="th.co.krungthaiaxa.api.elife.policyNumbersQuota" additivity="false">
         <priority value="DEBUG"/>
         <appender-ref ref="FILE_POLICY_NUMBERS_JOB"/>
     </category>
