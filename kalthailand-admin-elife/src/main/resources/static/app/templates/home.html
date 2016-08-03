@@ -106,6 +106,7 @@
                         <th>Agent code 1</th>
                         <th>Agent code 2</th>
                         <th>Validation Agent code</th>
+                        <th>Creation time</th>
                     </tr>
                     <tr ng-repeat="item in policies.content">
                         <td><a href="#policy-detail?policyID={{ item.policyId }}">{{ item.policyId }}</a></td>
@@ -117,8 +118,9 @@
                         <td>{{ item.insureds[0].insuredPreviousInformations[1] }}</td>
                         <td>{{ item.insureds[0].insuredPreviousInformations[2] }}</td>
                         <td>{{ item.validationAgentCode }}</td>
+                        <td>{{ item.creationDateTime | date:'dd-MM-yyyy HH:mm:ss'}}</td>
                     </tr>
-                </table>  
+                </table>
                 Page {{ currentPage }} / {{ otalPages }}. Number of items: {{ totalItems }} <a href="{{downloadUrl}}">Download as Excel File</a>.
             </div>
         </div>

@@ -2,6 +2,7 @@ package th.co.krungthaiaxa.api.elife.model;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -9,6 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -34,6 +36,9 @@ public class Policy implements Serializable {
     private List<th.co.krungthaiaxa.api.elife.model.Document> documents = new ArrayList<>();
     private String validationAgentCode;
     private String validationAgentName;
+
+    private Instant creationDateTime;
+    private Instant lastUpdateDateTime;
 
     public String getId() {
         return id;
@@ -140,6 +145,42 @@ public class Policy implements Serializable {
 
     public void setValidationAgentName(String validationAgentName) {
         this.validationAgentName = validationAgentName;
+    }
+
+    /**
+     * We have to extract creationDateTime from Id because the old structure doesn't have creation time field.
+     * So this code should work well with both old (no creationDateTime field) & new data (has creationDateTime field)
+     *
+     * @return the creationDateTime. If not found, it will get data from id.
+     */
+    public Instant getCreationDateTime() {
+        setCreateDateTimeFromIdIfNecessary();
+        return creationDateTime;
+    }
+
+    public void setCreationDateTime(Instant creationDateTime) {
+        if (creationDateTime != null) {
+            this.creationDateTime = creationDateTime;
+        } else {
+            setCreateDateTimeFromIdIfNecessary();
+        }
+    }
+
+    private void setCreateDateTimeFromIdIfNecessary() {
+        if (creationDateTime == null) {
+            if (id != null) {
+                ObjectId objectId = new ObjectId(id);
+                creationDateTime = Instant.ofEpochMilli(objectId.getDate().getTime());
+            }
+        }
+    }
+
+    public Instant getLastUpdateDateTime() {
+        return lastUpdateDateTime;
+    }
+
+    public void setLastUpdateDateTime(Instant lastUpdateDateTime) {
+        this.lastUpdateDateTime = lastUpdateDateTime;
     }
 
     @Override
