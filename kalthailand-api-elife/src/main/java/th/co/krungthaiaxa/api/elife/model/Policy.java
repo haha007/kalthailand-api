@@ -37,6 +37,7 @@ public class Policy implements Serializable {
     private String validationAgentCode;
     private String validationAgentName;
 
+    private Instant validationDateTime;
     private Instant creationDateTime;
     private Instant lastUpdateDateTime;
 
@@ -204,5 +205,13 @@ public class Policy implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(id, policyId, quoteId, status, commonData, premiumsData, insureds, coverages, payments, documents, validationAgentCode);
+    }
+
+    public Instant getValidationDateTime() {
+        return validationDateTime;
+    }
+
+    public void setValidationDateTime(Instant validationDateTime) {
+        this.validationDateTime = validationDateTime;
     }
 }

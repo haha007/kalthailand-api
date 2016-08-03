@@ -313,7 +313,7 @@ public class PolicyService {
         }
     }
 
-    public void updatePolicyAfterPolicyHasBeenValidated(Policy policy, String agentCode, String agentName, String token) {
+    public Policy updatePolicyAfterPolicyHasBeenValidated(Policy policy, String agentCode, String agentName, String token) {
         if (!policy.getStatus().equals(PENDING_VALIDATION)) {
             throw new ElifeException("Can't validate policy [" + policy.getPolicyId() + "], it is not pending for validation.");
         }
@@ -342,8 +342,10 @@ public class PolicyService {
         }
 
         policy.setStatus(VALIDATED);
-        policy.setLastUpdateDateTime(Instant.now());
-        policyRepository.save(policy);
+        Instant now = Instant.now();
+        policy.setValidationDateTime(now);
+        policy.setLastUpdateDateTime(now);
+        policy = policyRepository.save(policy);
         logger.info(String.format("Policy [%1$s] has been updated as Validated.", policy.getPolicyId()));
 
         // Send Email
@@ -387,6 +389,7 @@ public class PolicyService {
         } catch (ElifeException e) {
             logger.error("Unable to send validated application Form to TMC on policy [" + policy.getPolicyId() + "].", e);
         }
+        return policy;
     }
 
     public void sendNotificationsWhenUserNotRespondingToCalls(Policy policy) throws IOException, MessagingException {

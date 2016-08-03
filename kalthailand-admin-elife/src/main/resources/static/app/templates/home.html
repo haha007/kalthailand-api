@@ -118,7 +118,8 @@
                         <td>{{ item.insureds[0].insuredPreviousInformations[1] }}</td>
                         <td>{{ item.insureds[0].insuredPreviousInformations[2] }}</td>
                         <td>{{ item.validationAgentCode }}</td>
-                        <td>{{ item.creationDateTime | date:'dd-MM-yyyy HH:mm:ss'}}</td>
+                        <td>{{ item.creationDateTime | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+                        <td>{{ item.validationDateTime | date:'yyyy-MM-dd HH:mm:ss'}}</td>
                     </tr>
                 </table>
                 Page {{ currentPage }} / {{ otalPages }}. Number of items: {{ totalItems }} <a href="{{downloadUrl}}">Download as Excel File</a>.
