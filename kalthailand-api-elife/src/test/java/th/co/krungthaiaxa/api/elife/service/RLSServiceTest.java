@@ -1,6 +1,5 @@
 package th.co.krungthaiaxa.api.elife.service;
 
-
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -36,6 +35,7 @@ import th.co.krungthaiaxa.api.elife.repository.PolicyRepository;
 import javax.inject.Inject;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -274,39 +274,40 @@ public class RLSServiceTest extends ELifeTest {
         assertThat(payment.getPaymentInformations().get(0).getRejectionErrorCode()).isEqualTo(LineService.LINE_PAY_INTERNAL_ERROR);
         assertThat(payment.getPaymentInformations().get(0).getRejectionErrorMessage()).isEqualTo(ERROR_NO_REGISTRATION_KEY_FOUND);
     }
-/*
-    @Test
-    public void should_create_a_deduction_file_line_with_success() throws IOException {
-        when(lineService.capturePayment(anyString(), anyDouble(), anyString())).thenReturn(TestUtil.linePayResponse("0000", "success"));
 
-        Policy policy = getValidatedPolicy(EVERY_MONTH);
-        CollectionFileLine collectionFileLine = collectionFileLine(policy, 100.0);
-        rlsService.addPaymentId(collectionFileLine);
-        DeductionFile deductionFile = new DeductionFile();
-        rlsService.processCollectionFileLine(deductionFile, collectionFileLine);
+    /*
+        @Test
+        public void should_create_a_deduction_file_line_with_success() throws IOException {
+            when(lineService.capturePayment(anyString(), anyDouble(), anyString())).thenReturn(TestUtil.linePayResponse("0000", "success"));
 
-        assertThat(deductionFile.getLines()).hasSize(1);
-        assertThat(deductionFile.getLines().get(0).getAmount()).isEqualTo(100.0);
-        assertThat(deductionFile.getLines().get(0).getBankCode()).isEqualTo("myBankCode");
-        assertThat(deductionFile.getLines().get(0).getPaymentMode()).isEqualTo("M");
-        assertThat(deductionFile.getLines().get(0).getPolicyNumber()).isEqualTo(policy.getPolicyId());
-        assertThat(deductionFile.getLines().get(0).getProcessDate()).isEqualToIgnoringMinutes(LocalDateTime.now());
-        assertThat(deductionFile.getLines().get(0).getRejectionCode()).isEqualTo("0000");
+            Policy policy = getValidatedPolicy(EVERY_MONTH);
+            CollectionFileLine collectionFileLine = collectionFileLine(policy, 100.0);
+            rlsService.addPaymentId(collectionFileLine);
+            DeductionFile deductionFile = new DeductionFile();
+            rlsService.processCollectionFileLine(deductionFile, collectionFileLine);
 
-        Payment payment = paymentRepository.findOne(collectionFileLine.getPaymentId());
-        Assertions.assertThat(payment.getStatus()).isEqualTo(PaymentStatus.INCOMPLETE);
-        assertThat(payment.getEffectiveDate()).isNull();
-        assertThat(payment.getPaymentInformations()).hasSize(1);
-        assertThat(payment.getPaymentInformations().get(0).getAmount().getValue()).isEqualTo(100.0);
-        assertThat(payment.getPaymentInformations().get(0).getAmount().getCurrencyCode()).isEqualTo("THB");
-        Assertions.assertThat(payment.getPaymentInformations().get(0).getChannel()).isEqualTo(ChannelType.LINE);
-        assertThat(payment.getPaymentInformations().get(0).getCreditCardName()).isEqualTo("myCreditCardName");
-        assertThat(payment.getPaymentInformations().get(0).getDate()).isEqualTo(LocalDate.now());
-        assertThat(payment.getPaymentInformations().get(0).getMethod()).isEqualTo("myMethod");
-        assertThat(payment.getPaymentInformations().get(0).getRejectionErrorCode()).isEqualTo("0000");
-        assertThat(payment.getPaymentInformations().get(0).getRejectionErrorMessage()).isEqualTo("success");
-    }
-*/
+            assertThat(deductionFile.getLines()).hasSize(1);
+            assertThat(deductionFile.getLines().get(0).getAmount()).isEqualTo(100.0);
+            assertThat(deductionFile.getLines().get(0).getBankCode()).isEqualTo("myBankCode");
+            assertThat(deductionFile.getLines().get(0).getPaymentMode()).isEqualTo("M");
+            assertThat(deductionFile.getLines().get(0).getPolicyNumber()).isEqualTo(policy.getPolicyId());
+            assertThat(deductionFile.getLines().get(0).getProcessDate()).isEqualToIgnoringMinutes(LocalDateTime.now());
+            assertThat(deductionFile.getLines().get(0).getRejectionCode()).isEqualTo("0000");
+
+            Payment payment = paymentRepository.findOne(collectionFileLine.getPaymentId());
+            Assertions.assertThat(payment.getStatus()).isEqualTo(PaymentStatus.INCOMPLETE);
+            assertThat(payment.getEffectiveDate()).isNull();
+            assertThat(payment.getPaymentInformations()).hasSize(1);
+            assertThat(payment.getPaymentInformations().get(0).getAmount().getValue()).isEqualTo(100.0);
+            assertThat(payment.getPaymentInformations().get(0).getAmount().getCurrencyCode()).isEqualTo("THB");
+            Assertions.assertThat(payment.getPaymentInformations().get(0).getChannel()).isEqualTo(ChannelType.LINE);
+            assertThat(payment.getPaymentInformations().get(0).getCreditCardName()).isEqualTo("myCreditCardName");
+            assertThat(payment.getPaymentInformations().get(0).getDate()).isEqualTo(LocalDate.now());
+            assertThat(payment.getPaymentInformations().get(0).getMethod()).isEqualTo("myMethod");
+            assertThat(payment.getPaymentInformations().get(0).getRejectionErrorCode()).isEqualTo("0000");
+            assertThat(payment.getPaymentInformations().get(0).getRejectionErrorMessage()).isEqualTo("success");
+        }
+    */
     /*
     @Test
     public void should_mark_collection_file_as_processed() throws IOException {
@@ -357,32 +358,33 @@ public class RLSServiceTest extends ELifeTest {
         assertThatThrownBy(() -> rlsService.createDeductionExcelFile(collectionFile.getDeductionFile()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
-/*
-    @Test
-    public void should_create_deduction_file_with_proper_header() throws IOException, InvalidFormatException {
-        when(lineService.capturePayment(anyString(), anyDouble(), anyString())).thenReturn(TestUtil.linePayResponse("0000", "success"));
-        Policy policy = getValidatedPolicy(EVERY_MONTH);
 
-        CollectionFile collectionFile = getValidatedCollectionFile(
-                collectionFileLine(policy, 100.0)
-        );
-        rlsService.processLatestCollectionFile();
+    /*
+        @Test
+        public void should_create_deduction_file_with_proper_header() throws IOException, InvalidFormatException {
+            when(lineService.capturePayment(anyString(), anyDouble(), anyString())).thenReturn(TestUtil.linePayResponse("0000", "success"));
+            Policy policy = getValidatedPolicy(EVERY_MONTH);
 
-        CollectionFile updatedCollectionFile = collectionFileRepository.findOne(collectionFile.getId());
-        byte[] excelFileContent = rlsService.createDeductionExcelFile(updatedCollectionFile.getDeductionFile());
+            CollectionFile collectionFile = getValidatedCollectionFile(
+                    collectionFileLine(policy, 100.0)
+            );
+            rlsService.processLatestCollectionFile();
 
-        assertThat(excelFileContent).isNotNull();
-        Workbook wb = WorkbookFactory.create(new ByteArrayInputStream(excelFileContent));
-        assertThat(wb.getSheet("LFPATPTDR6")).isNotNull();
-        assertThat(wb.getSheet("LFPATPTDR6").getLastRowNum()).isEqualTo(1);
-        assertThat(wb.getSheet("LFPATPTDR6").getRow(0).getCell(0).getStringCellValue()).isEqualTo("M93RPNO6");
-        assertThat(wb.getSheet("LFPATPTDR6").getRow(0).getCell(1).getStringCellValue()).isEqualTo("M93RBKCD6");
-        assertThat(wb.getSheet("LFPATPTDR6").getRow(0).getCell(2).getStringCellValue()).isEqualTo("M93RPMOD6");
-        assertThat(wb.getSheet("LFPATPTDR6").getRow(0).getCell(3).getStringCellValue()).isEqualTo("M93RPRM6");
-        assertThat(wb.getSheet("LFPATPTDR6").getRow(0).getCell(4).getStringCellValue()).isEqualTo("M93RDOC6");
-        assertThat(wb.getSheet("LFPATPTDR6").getRow(0).getCell(5).getStringCellValue()).isEqualTo("M93RJCD6");
-    }
-    */
+            CollectionFile updatedCollectionFile = collectionFileRepository.findOne(collectionFile.getId());
+            byte[] excelFileContent = rlsService.createDeductionExcelFile(updatedCollectionFile.getDeductionFile());
+
+            assertThat(excelFileContent).isNotNull();
+            Workbook wb = WorkbookFactory.create(new ByteArrayInputStream(excelFileContent));
+            assertThat(wb.getSheet("LFPATPTDR6")).isNotNull();
+            assertThat(wb.getSheet("LFPATPTDR6").getLastRowNum()).isEqualTo(1);
+            assertThat(wb.getSheet("LFPATPTDR6").getRow(0).getCell(0).getStringCellValue()).isEqualTo("M93RPNO6");
+            assertThat(wb.getSheet("LFPATPTDR6").getRow(0).getCell(1).getStringCellValue()).isEqualTo("M93RBKCD6");
+            assertThat(wb.getSheet("LFPATPTDR6").getRow(0).getCell(2).getStringCellValue()).isEqualTo("M93RPMOD6");
+            assertThat(wb.getSheet("LFPATPTDR6").getRow(0).getCell(3).getStringCellValue()).isEqualTo("M93RPRM6");
+            assertThat(wb.getSheet("LFPATPTDR6").getRow(0).getCell(4).getStringCellValue()).isEqualTo("M93RDOC6");
+            assertThat(wb.getSheet("LFPATPTDR6").getRow(0).getCell(5).getStringCellValue()).isEqualTo("M93RJCD6");
+        }
+        */
 /*
     @Test
     public void should_create_deduction_file() throws IOException, InvalidFormatException {
@@ -457,7 +459,7 @@ public class RLSServiceTest extends ELifeTest {
         policy.setStatus(PolicyStatus.VALIDATED);
         policy.getPayments().stream().forEach(payment -> payment.setRegistrationKey("something"));
         paymentRepository.save(policy.getPayments());
-
+        policy.setLastUpdateDateTime(Instant.now());
         return policyRepository.save(policy);
     }
 }
