@@ -101,12 +101,13 @@ public class PolicyNumbersQuotaNotificationService {
             long scaledSecondsFromLastNotification = (secondsFromLastNotification + 1l) * timeScale;
             boolean result = scaledSecondsFromLastNotification >= notificationTriggerSeconds;
             String msg = StringUtil.newString(
-                    "Current time: ", now, ", second: ", now.getEpochSecond(),
-                    "\nLast notification time: ", lastNotificationTime, ", second: ", lastNotificationTime.getEpochSecond(),
-                    "\nSecondsFromLastNotification: ", secondsFromLastNotification,
-                    "\nNotificationTriggerSeconds: ", notificationTriggerSeconds,
-                    "\nScaledSecondsFromLastNotification: ", scaledSecondsFromLastNotification,
-                    "\nResultSendEmail: ", result);
+                    "\n\tEmail: ", StringUtil.maskEmail(policyNumbersQuotaNotification.getNotificationEmail()),
+                    "\n\tCurrent time: ", now, ", second: ", now.getEpochSecond(),
+                    "\n\tLast notification time: ", lastNotificationTime, ", second: ", lastNotificationTime.getEpochSecond(),
+                    "\n\tSecondsFromLastNotification: ", secondsFromLastNotification,
+                    "\n\tNotificationTriggerSeconds: ", notificationTriggerSeconds,
+                    "\n\tScaledSecondsFromLastNotification: ", scaledSecondsFromLastNotification,
+                    "\n\tResultSendEmail: ", result);
             LOGGER.debug(msg);
             return result;
         }
