@@ -52,8 +52,11 @@ public class PolicyNumbersQuotaNotificationService {
             Optional<PolicyNumbersQuotaNotification> policyNumbersQuotaNotificationOptional = policyNumbersQuotaNotificationRepository.findOneByNotificationEmail(email);
             PolicyNumbersQuotaNotification policyNumbersQuotaNotification = policyNumbersQuotaNotificationOptional.orElse(initCurrentPolicyNumbersQuotaNotification(email));
             if (isOverNotificationDuration(policyNumbersQuotaNotification, notificationTriggerSeconds)) {
+                Instant notificationTime = Instant.now();
+                //Sending notification email can take longer than 1 minutes depend on network.
+                //But we need to send 1 email/hour, so the notificationTime should be calculated before sending notification email.
                 emailService.sendEmail(email, "Available Policy Number will run out soon.", emailContent, imagesPairs);
-                policyNumbersQuotaNotification.setNotificationTime(Instant.now());
+                policyNumbersQuotaNotification.setNotificationTime(notificationTime);
                 policyNumbersQuotaNotificationRepository.save(policyNumbersQuotaNotification);
             }
         }
