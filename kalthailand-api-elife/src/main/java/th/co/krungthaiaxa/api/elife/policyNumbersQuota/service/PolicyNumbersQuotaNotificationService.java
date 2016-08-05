@@ -48,15 +48,15 @@ public class PolicyNumbersQuotaNotificationService {
         PolicyNumberSetting policyNumberSetting = policyNumbersQuotaCheckerResult.getPolicyNumberSetting();
         List<String> notificationSettingEmails = policyNumberSetting.getEmailList();
         long notificationTriggerSeconds = getNotificationTriggerSecondsFromSetting(policyNumbersQuotaCheckerResult);
+        Instant checkingTime = Instant.now();
+        //Sending notification email can take longer than 1 minutes depend on network.
+        //But we need to send 1 email/hour, so the notificationTime should be calculated before sending notification email.
         for (String email : notificationSettingEmails) {
             Optional<PolicyNumbersQuotaNotification> policyNumbersQuotaNotificationOptional = policyNumbersQuotaNotificationRepository.findOneByNotificationEmail(email);
             PolicyNumbersQuotaNotification policyNumbersQuotaNotification = policyNumbersQuotaNotificationOptional.orElse(initCurrentPolicyNumbersQuotaNotification(email));
-            if (isOverNotificationDuration(policyNumbersQuotaNotification, notificationTriggerSeconds)) {
-                Instant notificationTime = Instant.now();
-                //Sending notification email can take longer than 1 minutes depend on network.
-                //But we need to send 1 email/hour, so the notificationTime should be calculated before sending notification email.
+            if (isOverNotificationDuration(checkingTime, policyNumbersQuotaNotification, notificationTriggerSeconds)) {
                 emailService.sendEmail(email, "Available Policy Number will run out soon.", emailContent, imagesPairs);
-                policyNumbersQuotaNotification.setNotificationTime(notificationTime);
+                policyNumbersQuotaNotification.setNotificationTime(checkingTime);
                 policyNumbersQuotaNotificationRepository.save(policyNumbersQuotaNotification);
             }
         }
@@ -93,19 +93,18 @@ public class PolicyNumbersQuotaNotificationService {
      * @param notificationTriggerSeconds     the duration of notification.
      * @return check whether the email was sent before the input @beforeSeconds or not.
      */
-    private boolean isOverNotificationDuration(PolicyNumbersQuotaNotification policyNumbersQuotaNotification, long notificationTriggerSeconds) {
+    private boolean isOverNotificationDuration(Instant checkingTime, PolicyNumbersQuotaNotification policyNumbersQuotaNotification, long notificationTriggerSeconds) {
         Instant lastNotificationTime = policyNumbersQuotaNotification.getNotificationTime();
         long secondsFromLastNotification;
         if (lastNotificationTime == null) {
             return true;
         } else {
-            Instant now = Instant.now();
-            secondsFromLastNotification = now.getEpochSecond() - lastNotificationTime.getEpochSecond();
+            secondsFromLastNotification = checkingTime.getEpochSecond() - lastNotificationTime.getEpochSecond();
             long scaledSecondsFromLastNotification = (secondsFromLastNotification + 1l) * timeScale;
             boolean result = scaledSecondsFromLastNotification >= notificationTriggerSeconds;
             String msg = StringUtil.newString(
                     "\n\tEmail: ", StringUtil.maskEmail(policyNumbersQuotaNotification.getNotificationEmail()),
-                    "\n\tCurrent time: ", now, ", second: ", now.getEpochSecond(),
+                    "\n\tCurrent time: ", checkingTime, ", second: ", checkingTime.getEpochSecond(),
                     "\n\tLast notification time: ", lastNotificationTime, ", second: ", lastNotificationTime.getEpochSecond(),
                     "\n\tSecondsFromLastNotification: ", secondsFromLastNotification,
                     "\n\tNotificationTriggerSeconds: ", notificationTriggerSeconds,
