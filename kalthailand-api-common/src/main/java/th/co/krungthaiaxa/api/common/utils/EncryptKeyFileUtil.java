@@ -1,7 +1,6 @@
 package th.co.krungthaiaxa.api.common.utils;
 
-import org.bouncycastle.util.io.pem.PemObject;
-import org.bouncycastle.util.io.pem.PemReader;
+
 import sun.security.rsa.RSAPublicKeyImpl;
 import th.co.krungthaiaxa.api.common.exeption.FileIOException;
 import th.co.krungthaiaxa.api.common.exeption.FileNotFoundException;
@@ -97,7 +96,7 @@ public class EncryptKeyFileUtil {
             dis.readFully(keyBytes);
             return keyBytes;
         } catch (IOException e) {
-            throw new FileIOException(String.format("Cannot load file '%s'", fileName));
+            throw new FileNotFoundException(String.format("Cannot load file '%s'", fileName));
         } finally {
             try {
                 if (fis != null) {
@@ -107,28 +106,11 @@ public class EncryptKeyFileUtil {
                     dis.close();
                 }
             } catch (IOException e) {
-                throw new FileIOException(String.format("Cannot close file reader '%s'", fileName));
+                throw new FileNotFoundException(String.format("Cannot close file reader '%s'", fileName));
             }
         }
     }
 
-    public static byte[] loadPemFile(String fileName) {
-        PemReader pemReader = null;
-        try {
-            pemReader = new PemReader(new InputStreamReader(new FileInputStream(fileName)));
-            PemObject pemObject = pemReader.readPemObject();
-            return pemObject.getContent();
-        } catch (IOException e) {
-            throw new FileNotFoundException(String.format("Cannot load file '%s'", fileName));
-        } finally {
-            try {
-                if (pemReader != null) {
-                    pemReader.close();
-                }
-            } catch (IOException e) {
-                throw new FileIOException(String.format("Cannot close file reader '%s'", fileName));
-            }
-        }
-    }
+    
 
 }
