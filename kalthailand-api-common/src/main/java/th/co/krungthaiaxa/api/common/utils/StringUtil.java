@@ -16,7 +16,7 @@ public class StringUtil {
 
     /**
      * Applies the specified mask to the card number.
-     *
+     * 
      * @param string The string in plain format
      * @return The masked card number
      */
@@ -37,6 +37,12 @@ public class StringUtil {
         return maskedString.toString();
     }
 
+    /**
+     * This method is usually used in writing log.
+     * We usually dont' want to write email information into logs files (because of security). So this method will help you to put some mask characters.
+     * @param email The original email, e.g. "myemail@axa.com"
+     * @return masked email, e.g. "mye********om"
+     */
     public static String maskEmail(String email) {
         return maskString(email, 3, 2);
     }

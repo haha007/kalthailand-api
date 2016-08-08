@@ -6,6 +6,13 @@
             <param name="ConversionPattern" value="[%p] %d{ISO8601} [%t] %C - %m%n"/>
         </layout>
     </appender>
+
+    <category name="org">
+        <priority value="WARN"/>
+    </category>
+    <category name="springfox">
+        <priority value="WARN"/>
+    </category>
     <root>
         <priority value="INFO"/>
         <appender-ref ref="STDOUT"/>
