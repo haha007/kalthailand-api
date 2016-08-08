@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.text.DecimalFormat;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.chrono.ThaiBuddhistDate;
@@ -56,10 +57,10 @@ public class DocumentService {
 
     @Inject
     public DocumentService(DocumentRepository documentRepository,
-                           DocumentDownloadRepository documentDownloadRepository,
-                           PolicyRepository policyRepository,
-                           ApplicationFormService applicationFormService,
-                           DAFormService daFormService, SigningClient signingClient) {
+            DocumentDownloadRepository documentDownloadRepository,
+            PolicyRepository policyRepository,
+            ApplicationFormService applicationFormService,
+            DAFormService daFormService, SigningClient signingClient) {
         this.documentRepository = documentRepository;
         this.documentDownloadRepository = documentDownloadRepository;
         this.policyRepository = policyRepository;
@@ -97,6 +98,7 @@ public class DocumentService {
         documentDownloadRepository.save(documentDownload);
 
         policy.addDocument(document);
+        policy.setLastUpdateDateTime(Instant.now());
         policyRepository.save(policy);
         return document;
     }
@@ -169,8 +171,8 @@ public class DocumentService {
         Optional<Document> documentPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(ERECEIPT_PDF)).findFirst();
         if (ereceiptImage != null && !documentPdf.isPresent()) {
             try {
-                byte[] decodedNonSignedPdf =  createEreceiptPDF(ereceiptImage);
-                byte[] encodedNonSignedPdf =  Base64.getEncoder().encode(decodedNonSignedPdf);
+                byte[] decodedNonSignedPdf = createEreceiptPDF(ereceiptImage);
+                byte[] encodedNonSignedPdf = Base64.getEncoder().encode(decodedNonSignedPdf);
                 byte[] encodedSignedPdf = signingClient.getEncodedSignedPdfDocument(encodedNonSignedPdf, token);
                 byte[] decodedSignedPdf = Base64.getDecoder().decode(encodedSignedPdf);
                 addDocument(policy, decodedSignedPdf, "application/pdf", ERECEIPT_PDF);
@@ -281,24 +283,24 @@ public class DocumentService {
 
         //PaymentMode
         switch (policy.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode()) {
-            case EVERY_YEAR:
-                graphics.drawString("X", 286, 376);
-                break;
-            case EVERY_HALF_YEAR:
-                graphics.drawString("X", 390, 376);
-                break;
-            case EVERY_QUARTER:
-                graphics.drawString("X", 541, 376);
-                break;
-            case EVERY_MONTH:
-                graphics.drawString("X", 692, 376);
-                break;
-            default:
-                logger.error("Invalid PaymentMode");
+        case EVERY_YEAR:
+            graphics.drawString("X", 286, 376);
+            break;
+        case EVERY_HALF_YEAR:
+            graphics.drawString("X", 390, 376);
+            break;
+        case EVERY_QUARTER:
+            graphics.drawString("X", 541, 376);
+            break;
+        case EVERY_MONTH:
+            graphics.drawString("X", 692, 376);
+            break;
+        default:
+            logger.error("Invalid PaymentMode");
         }
         //Memo
         graphics.drawString("X", 89, 439);
-        
+
         //ID-Card
         char[] numberIds = policy.getInsureds().get(0).getPerson().getRegistrations().get(0).getId().toCharArray();
         graphics.drawString(String.valueOf(numberIds[0]), 896, 495);
@@ -330,7 +332,7 @@ public class DocumentService {
         graphics.drawString(formatter.format(policy.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()), 1026, 644);
         //Letter Premiums
         graphics.drawString(new ThaiBahtUtil().getText(policy.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()), 296, 643);
-        
+
         //TMC Agent Code
         if (policy.getValidationAgentName() != null) {
             graphics.drawString(policy.getValidationAgentName(), 879, 714);

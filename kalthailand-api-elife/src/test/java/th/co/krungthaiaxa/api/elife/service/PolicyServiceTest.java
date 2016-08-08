@@ -3,6 +3,7 @@ package th.co.krungthaiaxa.api.elife.service;
 import com.icegreen.greenmail.junit.GreenMailRule;
 import com.icegreen.greenmail.util.ServerSetupTest;
 import org.assertj.core.api.Assertions;
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,6 +25,8 @@ import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 import th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus;
 
 import javax.inject.Inject;
+
+import java.time.Instant;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -254,13 +257,19 @@ public class PolicyServiceTest extends ELifeTest {
 
     @Test
     public void should_update_policy_status_to_validated_and_attach_5_documents() {
-        Policy policy = getPolicy();
+        Instant beforeValidate = Instant.now();
 
+        Policy policy = getPolicy();
         policyService.updatePolicyAfterFirstPaymentValidated(policy);
         policyService.updatePolicyAfterPolicyHasBeenValidated(policy, "999999-99-999999", "agentName", "token");
 
-        Assertions.assertThat(policy.getStatus()).isEqualTo(PolicyStatus.VALIDATED);
+        Policy policyAfterUpdate = policyService.findPolicy(policy.getPolicyId()).get();
+        Assertions.assertThat(policyAfterUpdate.getStatus()).isEqualTo(PolicyStatus.VALIDATED);
         Assertions.assertThat(policy.getDocuments()).hasSize(5);
+
+        Instant afterValidate = Instant.now();
+        Instant validationTime = policyAfterUpdate.getValidationDateTime();
+        Assert.assertTrue(validationTime.isAfter(beforeValidate) && validationTime.isBefore(afterValidate));
     }
 
     @Test

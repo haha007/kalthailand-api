@@ -32,6 +32,7 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -106,12 +107,12 @@ public class RLSService {
     public List<CollectionFile> getCollectionFiles() {
         return collectionFileRepository.findAll(new Sort(Sort.Direction.DESC, "receivedDate"));
     }
-    
+
     @Scheduled(cron = "0 0 9-17 * * ?")
     public void processLatestCollectionFile() {
-        List<CollectionFile> collectionFiles = collectionFileRepository.findByJobStartedDateNull();       
-        logger.info("<<<<<<<<<<<<<<<<<<<<<<<<<<<<< START PROCESS RECURRING PAYMENT WITH TIME ("+LocalDateTime.now(of(SHORT_IDS.get("VST")))+") >>>>>>>>>>>>>>>>>>>>>>>>>>>");
-        for (CollectionFile collectionFile : collectionFiles) {        	
+        List<CollectionFile> collectionFiles = collectionFileRepository.findByJobStartedDateNull();
+        logger.info("<<<<<<<<<<<<<<<<<<<<<<<<<<<<< START PROCESS RECURRING PAYMENT WITH TIME (" + LocalDateTime.now(of(SHORT_IDS.get("VST"))) + ") >>>>>>>>>>>>>>>>>>>>>>>>>>>");
+        for (CollectionFile collectionFile : collectionFiles) {
             logger.info("Found [" + collectionFiles.size() + "] collection(s) file to process.");
             collectionFile.setJobStartedDate(LocalDateTime.now(of(SHORT_IDS.get("VST"))));
             DeductionFile deductionFile = new DeductionFile();
@@ -123,7 +124,7 @@ public class RLSService {
             collectionFile.setJobEndedDate(LocalDateTime.now(of(SHORT_IDS.get("VST"))));
             collectionFileRepository.save(collectionFile);
         }
-        logger.info("<<<<<<<<<<<<<<<<<<<<<<<<<<<<< STOP PROCESS RECURRING PAYMENT WITH TIME ("+LocalDateTime.now(of(SHORT_IDS.get("VST")))+") >>>>>>>>>>>>>>>>>>>>>>>>>>>");
+        logger.info("<<<<<<<<<<<<<<<<<<<<<<<<<<<<< STOP PROCESS RECURRING PAYMENT WITH TIME (" + LocalDateTime.now(of(SHORT_IDS.get("VST"))) + ") >>>>>>>>>>>>>>>>>>>>>>>>>>>");
     }
 
     public byte[] createDeductionExcelFile(DeductionFile deductionFile) {
@@ -270,6 +271,7 @@ public class RLSService {
         }
         paymentRepository.save(newPayment);
         policy.get().addPayment(newPayment);
+        policy.get().setLastUpdateDateTime(Instant.now());
         policyRepository.save(policy.get());
         collectionFileLine.setPaymentId(newPayment.getPaymentId());
         logger.info("A new payment with id [" + newPayment.getPaymentId() + "] has been created and used for the " +
@@ -291,13 +293,13 @@ public class RLSService {
         }
 
         LinePayRecurringResponse linePayResponse;
-        Policy policy = policyRepository.findByPolicyId(payment.getPolicyId());        	
-    	String regKey = payment.getRegistrationKey();
-    	Double amt = collectionFileLine.getPremiumAmount();
-    	String currencyCode = payment.getAmount().getCurrencyCode();
-    	String productId = policy.getCommonData().getProductId();
-    	String orderId = "R-"+payment.getPolicyId()+"-"+(new SimpleDateFormat("yyyyMMddhhmmssSSS").format(new Date()));
-    	/*System.out.println("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+        Policy policy = policyRepository.findByPolicyId(payment.getPolicyId());
+        String regKey = payment.getRegistrationKey();
+        Double amt = collectionFileLine.getPremiumAmount();
+        String currencyCode = payment.getAmount().getCurrencyCode();
+        String productId = policy.getCommonData().getProductId();
+        String orderId = "R-" + payment.getPolicyId() + "-" + (new SimpleDateFormat("yyyyMMddhhmmssSSS").format(new Date()));
+        /*System.out.println("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
     	System.out.println("paymentId : "+paymentId);
     	System.out.println("regKey : " +regKey);
     	System.out.println("amt : " +amt);
@@ -305,8 +307,8 @@ public class RLSService {
     	System.out.println("productId : " +productId);
     	System.out.println("orderId : " + orderId);
     	System.out.println("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");*/
-        try {        	
-            linePayResponse = lineService.preApproved(regKey, amt, currencyCode,productId, orderId);
+        try {
+            linePayResponse = lineService.preApproved(regKey, amt, currencyCode, productId, orderId);
         } catch (IOException | RuntimeException e) {
             // An error occured while trying to contact LinePay
             logger.error("An error occured while trying to contact LinePay on payment id [" + paymentId + "]", e);
@@ -317,8 +319,8 @@ public class RLSService {
         }
 
         deductionFile.addLine(getDeductionFileLine(collectionFileLine, linePayResponse.getReturnCode()));
-        policyService.updateRecurringPayment(payment, amount, payment.getAmount().getCurrencyCode(), LINE, linePayResponse, paymentId,regKey,amt,productId,orderId);
-        
+        policyService.updateRecurringPayment(payment, amount, payment.getAmount().getCurrencyCode(), LINE, linePayResponse, paymentId, regKey, amt, productId, orderId);
+
         logger.info("Finished processing collection file line with payment id [" + paymentId + "]");
     }
 
@@ -344,7 +346,7 @@ public class RLSService {
                 text(deductionFileLine.getPaymentMode()),
                 text(deductionFileLine.getAmount().toString()),
                 text(ofPattern("yyyyMMdd").format(deductionFileLine.getProcessDate())),
-                text((deductionFileLine.getRejectionCode().equals("0000")?"":deductionFileLine.getRejectionCode())));
+                text((deductionFileLine.getRejectionCode().equals("0000") ? "" : deductionFileLine.getRejectionCode())));
     }
 
     public void setLineService(LineService lineService) {

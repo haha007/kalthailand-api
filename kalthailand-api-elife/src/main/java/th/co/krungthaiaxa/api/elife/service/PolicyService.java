@@ -3,6 +3,7 @@ package th.co.krungthaiaxa.api.elife.service;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
+import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -31,6 +32,7 @@ import javax.inject.Inject;
 import javax.mail.MessagingException;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
@@ -129,6 +131,9 @@ public class PolicyService {
 
             policy.getPayments().stream().forEach(paymentRepository::save);
             policy.setStatus(PENDING_PAYMENT);
+            Instant now = Instant.now();
+            policy.setCreationDateTime(now);
+            policy.setLastUpdateDateTime(now);
             policy = policyRepository.save(policy);
             policyNumber.get().setPolicy(policy);
             policyNumberRepository.save(policyNumber.get());
@@ -255,6 +260,7 @@ public class PolicyService {
         }
 
         policy.setStatus(PENDING_VALIDATION);
+        policy.setLastUpdateDateTime(Instant.now());
         policyRepository.save(policy);
 
         // Send Email
@@ -307,7 +313,7 @@ public class PolicyService {
         }
     }
 
-    public void updatePolicyAfterPolicyHasBeenValidated(Policy policy, String agentCode, String agentName, String token) {
+    public Policy updatePolicyAfterPolicyHasBeenValidated(Policy policy, String agentCode, String agentName, String token) {
         if (!policy.getStatus().equals(PENDING_VALIDATION)) {
             throw new ElifeException("Can't validate policy [" + policy.getPolicyId() + "], it is not pending for validation.");
         }
@@ -336,7 +342,10 @@ public class PolicyService {
         }
 
         policy.setStatus(VALIDATED);
-        policyRepository.save(policy);
+        Instant now = Instant.now();
+        policy.setValidationDateTime(now);
+        policy.setLastUpdateDateTime(now);
+        policy = policyRepository.save(policy);
         logger.info(String.format("Policy [%1$s] has been updated as Validated.", policy.getPolicyId()));
 
         // Send Email
@@ -380,6 +389,7 @@ public class PolicyService {
         } catch (ElifeException e) {
             logger.error("Unable to send validated application Form to TMC on policy [" + policy.getPolicyId() + "].", e);
         }
+        return policy;
     }
 
     public void sendNotificationsWhenUserNotRespondingToCalls(Policy policy) throws IOException, MessagingException {
