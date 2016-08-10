@@ -9,53 +9,82 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.itextpdf.text.pdf.StringUtils;
-
 import th.co.krungthaiaxa.api.common.utils.EncryptUtil;
+import th.co.krungthaiaxa.api.elife.model.Coverage;
+import th.co.krungthaiaxa.api.elife.model.CoverageBeneficiary;
+import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.model.Payment;
+import th.co.krungthaiaxa.api.elife.model.Person;
 import th.co.krungthaiaxa.api.elife.model.Policy;
+import th.co.krungthaiaxa.api.elife.model.Registration;
 import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
 import th.co.krungthaiaxa.api.elife.repository.PolicyRepository;
 
 @Service
 public class EncryptService {
-	
-	private final static Logger logger = LoggerFactory.getLogger(EncryptService.class);	
-	private final PolicyRepository policyRepository;
-	private final PaymentRepository paymentRepository;
-	//must be compatible between thai id (13) and regkey (?)
-	private final int PLAIN_TEXT_SIZE = 20;
-	
-	@Inject
-	public EncryptService(PolicyRepository policyRepository, PaymentRepository paymentRepository){
-		this.policyRepository = policyRepository;
-		this.paymentRepository = paymentRepository;
-	}
-	
-	public void encryptData(){
-		List<Policy> policies  = (List<Policy>) policyRepository.findAll();		
-		for(int a=0;a<policies.size();a++){
-			if(!StringUtil.isBlank(policies.get(a).getInsureds().get(0).getPerson().getRegistrations().get(0).getId())&&
-					policies.get(a).getInsureds().get(0).getPerson().getRegistrations().get(0).getId().length()<PLAIN_TEXT_SIZE){
-				policies.get(a).getInsureds().get(0).getPerson().getRegistrations().get(0).setId(EncryptUtil.encrypt(policies.get(a).getInsureds().get(0).getPerson().getRegistrations().get(0).getId()));
-			}
-			int benefitSize = policies.get(a).getCoverages().size();
-			for(int b=0;b<benefitSize;b++){
-				if(!StringUtil.isBlank(policies.get(a).getCoverages().get(0).getBeneficiaries().get(b).getPerson().getRegistrations().get(0).getId())&&
-						policies.get(a).getCoverages().get(0).getBeneficiaries().get(b).getPerson().getRegistrations().get(0).getId().length()<PLAIN_TEXT_SIZE){
-					policies.get(a).getCoverages().get(0).getBeneficiaries().get(b).getPerson().getRegistrations().get(0).setId(EncryptUtil.encrypt(policies.get(a).getCoverages().get(0).getBeneficiaries().get(b).getPerson().getRegistrations().get(0).getId()));
-				}
-			}
-			List<Payment> payments = paymentRepository.findByPolicyId(policies.get(a).getPolicyId());
-			for(int c=0;c<payments.size();c++){
-				if(!StringUtil.isBlank(payments.get(c).getRegistrationKey())&&
-						payments.get(c).getRegistrationKey().length()<PLAIN_TEXT_SIZE){
-					payments.get(c).setRegistrationKey(EncryptUtil.encrypt(payments.get(c).getRegistrationKey()));
-				}
-			}
-			paymentRepository.save(payments);
-		}
-		policyRepository.save(policies);
-	}
-	
+
+    private final static Logger logger = LoggerFactory.getLogger(EncryptService.class);
+    private final PolicyRepository policyRepository;
+    private final PaymentRepository paymentRepository;
+
+    /**
+     * Must be compatible between thai id (13) and registrationKey (?)
+     * Not sure how long the registrationKey, but it not longer than 50 chars. And the encrypted text is never less than 50 chars.
+     */
+    private final int PLAIN_TEXT_MAX_SIZE = 50;
+
+    @Inject
+    public EncryptService(PolicyRepository policyRepository, PaymentRepository paymentRepository) {
+        this.policyRepository = policyRepository;
+        this.paymentRepository = paymentRepository;
+    }
+
+    public void encryptData() {
+        List<Policy> policies = (List<Policy>) policyRepository.findAll();
+
+        for (Policy policy : policies) {
+            List<Insured> insureds = policy.getInsureds();
+            for (Insured insured : insureds) {
+                encryptRegistrationIdForPerson(insured.getPerson());
+            }
+
+            List<Coverage> coverages = policy.getCoverages();
+            for (Coverage coverage : coverages) {
+                List<CoverageBeneficiary> coverageBeneficiaries = coverage.getBeneficiaries();
+                for (CoverageBeneficiary coverageBeneficiary : coverageBeneficiaries) {
+                    encryptRegistrationIdForPerson(coverageBeneficiary.getPerson());
+                }
+            }
+
+            List<Payment> payments = paymentRepository.findByPolicyId(policy.getPolicyId());
+            for (Payment payment : payments) {
+                if (shouldEncrypt(payment.getRegistrationKey())) {
+                    payment.setRegistrationKey(EncryptUtil.encrypt(payment.getRegistrationKey()));
+                }
+            }
+            paymentRepository.save(payments);
+        }
+        policyRepository.save(policies);
+    }
+
+    private void encryptRegistrationIdForPerson(Person person) {
+        if (person == null) {
+            logger.warn("The person is null, cannot encrypt it's registration Id");
+            return;
+        }
+        List<Registration> registrations = person.getRegistrations();
+        for (Registration registration : registrations) {
+            if (shouldEncrypt(registration.getId())) {
+                registration.setId(EncryptUtil.encrypt(registration.getId()));
+            }
+        }
+    }
+
+    private boolean shouldEncrypt(String text) {
+        return !StringUtil.isBlank(text) || isPlainText(text);
+    }
+
+    private boolean isPlainText(String text) {
+        return text.length() < PLAIN_TEXT_MAX_SIZE;
+    }
 }
