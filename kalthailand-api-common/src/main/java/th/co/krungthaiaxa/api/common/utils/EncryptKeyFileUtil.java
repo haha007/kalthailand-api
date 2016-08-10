@@ -7,6 +7,9 @@ import th.co.krungthaiaxa.api.common.exeption.FileNotFoundException;
 import th.co.krungthaiaxa.api.common.exeption.UnexpectedException;
 
 import javax.crypto.KeyGenerator;
+
+import org.apache.commons.io.IOUtils;
+
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -86,29 +89,12 @@ public class EncryptKeyFileUtil {
     }
 
     public static byte[] loadFile(String fileName) {
-        File f = new File(fileName);
-        FileInputStream fis = null;
-        DataInputStream dis = null;
         try {
-            fis = new FileInputStream(f);
-            dis = new DataInputStream(fis);
-            byte[] keyBytes = new byte[(int) f.length()];
-            dis.readFully(keyBytes);
+            byte[] keyBytes = IOUtils.toByteArray(EncryptKeyFileUtil.class.getResourceAsStream(fileName));
             return keyBytes;
         } catch (IOException e) {
             throw new FileNotFoundException(String.format("Cannot load file '%s'", fileName));
-        } finally {
-            try {
-                if (fis != null) {
-                    fis.close();
-                }
-                if (dis != null) {
-                    dis.close();
-                }
-            } catch (IOException e) {
-                throw new FileNotFoundException(String.format("Cannot close file reader '%s'", fileName));
-            }
-        }
+        } 
     }
 
     

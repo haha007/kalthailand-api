@@ -16,11 +16,8 @@ import java.security.PublicKey;
 public class EncryptUtil {
     private final static Logger LOGGER = LoggerFactory.getLogger(EncryptUtil.class);
 
-    private static final String PRIVATE_KEY_FILE_PATH = "/opt/keys/private_key.der";
-    private static final String PUBLIC_KEY_FILE_PATH = "/opt/keys/public_key.der";
-
-//    private static final String PRIVATE_KEY_FILE_PATH = "/opt/keys/new_rsa";
-//    private static final String PUBLIC_KEY_FILE_PATH = "/opt/keys/new_rsa.pub";
+    private static final String PRIVATE_KEY_FILE_PATH = "/private_key.der";
+    private static final String PUBLIC_KEY_FILE_PATH = "/public_key.der";
 
     private static final PrivateKey PRIVATE_KEY = EncryptKeyFileUtil.loadPrivateKey(PRIVATE_KEY_FILE_PATH);
     private static final PublicKey PUBLIC_KEY = EncryptKeyFileUtil.loadPublicKey(PUBLIC_KEY_FILE_PATH);
