@@ -14,26 +14,30 @@ import static org.apache.commons.io.IOUtils.toByteArray;
  * @author khoi.tran on 7/26/16.
  */
 public class IOUtil {
-    private static final Logger LOG = LoggerFactory.getLogger(IOUtil.class);
+    public static final Logger LOG = LoggerFactory.getLogger(IOUtil.class);
 
     /**
-     * @param pathString relative resource, such as "/email-content/email-phone-wrong-number.txt".
+     * @param path a relative path in classpath. E.g. "images/email/logo.png"
+     *             From Class, the path is relative to the package of the class unless you include a leading slash.
+     *             So if you don't want to use the current package, include a slash like this: "/SomeTextFile.txt"
      * @return
      */
-    public static String loadTextFile(String pathString) {
+    public static String loadTextFileInClassPath(String path) {
         try {
-            return IOUtils.toString(IOUtil.class.getResourceAsStream(pathString), Charset.forName("UTF-8"));
+            return IOUtils.toString(IOUtil.class.getResourceAsStream(path), Charset.forName("UTF-8"));
         } catch (IOException e) {
-            String msg = String.format("Cannot load String from '%s'", pathString);
+            String msg = String.format("Cannot load String from '%s'", path);
             throw new FileNotFoundException(msg, e);
         }
     }
 
     /**
-     * @param path a relative path. E.g. "/images/email/logo.png"
+     * @param path a relative path in classpath. E.g. "images/email/logo.png"
+     *             From Class, the path is relative to the package of the class unless you include a leading slash.
+     *             So if you don't want to use the current package, include a slash like this: "/SomeTextFile.txt"
      * @return
      */
-    public static byte[] loadBinaryFile(String path) {
+    public static byte[] loadBinaryFileInClassPath(String path) {
         try {
             return IOUtils.toByteArray(IOUtil.class.getResourceAsStream(path));
         } catch (IOException e) {

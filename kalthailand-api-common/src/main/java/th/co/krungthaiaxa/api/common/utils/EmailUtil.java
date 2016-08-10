@@ -26,6 +26,6 @@ public class EmailUtil {
     }
 
     private static Pair<byte[], String> createBase64ImagePair(Map.Entry<String, String> mapEntry) {
-        return Pair.of(IOUtil.loadBinaryFile(mapEntry.getValue()), mapEntry.getKey());
+        return Pair.of(IOUtil.loadBinaryFileInClassPath(mapEntry.getValue()), mapEntry.getKey());
     }
 }

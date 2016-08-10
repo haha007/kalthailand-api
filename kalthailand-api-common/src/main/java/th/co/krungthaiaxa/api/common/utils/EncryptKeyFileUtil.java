@@ -1,28 +1,11 @@
 package th.co.krungthaiaxa.api.common.utils;
 
-
-import sun.security.rsa.RSAPublicKeyImpl;
-import th.co.krungthaiaxa.api.common.exeption.FileIOException;
-import th.co.krungthaiaxa.api.common.exeption.FileNotFoundException;
 import th.co.krungthaiaxa.api.common.exeption.UnexpectedException;
 
-import javax.crypto.KeyGenerator;
-
-import org.apache.commons.io.IOUtils;
-
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.security.KeyFactory;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.interfaces.RSAKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
@@ -39,18 +22,6 @@ import java.security.spec.X509EncodedKeySpec;
  * <p>
  * Output public key portion in DER format (so Java can read it)
  * $ openssl rsa -in private_key.pem -pubout -outform DER -out public_key.der
- * <p>
- * <p>
- * Method 2:
- * ssh-keygen -f "/opt/keys/new_rsa" -t rsa
- * <p>
- * Result:
- * new_rsa (private file)
- * new_rsa.pub (public file)
- *
- * openssl rsa -in new_rsa -out new_rsa.der -outform DER -pubout writing RSA key
- * ssh-keygen -f new_rsa.pub -e -m PKCS8 | openssl pkey -pubin -outform DER
-
  */
 public class EncryptKeyFileUtil {
     public static final String ENCRYPTION_ALGORITHM = "RSA";
@@ -67,7 +38,7 @@ public class EncryptKeyFileUtil {
     public static PrivateKey loadPrivateKey(String filename) {
         try {
             KeyFactory factory = KEY_FACTORY;
-            byte[] content = loadFile(filename);
+            byte[] content = IOUtil.loadBinaryFileInClassPath(filename);
             PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(content);
             return factory.generatePrivate(keySpec);
         } catch (InvalidKeySpecException e) {
@@ -79,7 +50,7 @@ public class EncryptKeyFileUtil {
     public static PublicKey loadPublicKey(String filename) {
         try {
             KeyFactory factory = KEY_FACTORY;
-            byte[] content = loadFile(filename);
+            byte[] content = IOUtil.loadBinaryFileInClassPath(filename);
             X509EncodedKeySpec keySpec = new X509EncodedKeySpec(content);
             return factory.generatePublic(keySpec);
         } catch (InvalidKeySpecException e) {
@@ -87,16 +58,4 @@ public class EncryptKeyFileUtil {
             throw new UnexpectedException(msg, e);
         }
     }
-
-    public static byte[] loadFile(String fileName) {
-        try {
-            byte[] keyBytes = IOUtils.toByteArray(EncryptKeyFileUtil.class.getResourceAsStream(fileName));
-            return keyBytes;
-        } catch (IOException e) {
-            throw new FileNotFoundException(String.format("Cannot load file '%s'", fileName));
-        } 
-    }
-
-    
-
 }
