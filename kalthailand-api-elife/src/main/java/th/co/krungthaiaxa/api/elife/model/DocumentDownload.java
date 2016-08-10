@@ -6,6 +6,11 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+/**
+ * This class contains the binary content of {@link Document}.
+ * TODO In my opinion, we should change the relationship between {@link Document} and {@link DocumentDownload}. It should be {@link Document#documentDownloadId}, not {@link DocumentDownload#documentId}.
+ * With current relationship, one Document metadata can point to many DocumentDownload binary (in theory), it's not good.
+ */
 @Document
 @ApiModel(description = "Data concerning policy documents content")
 public class DocumentDownload {
@@ -17,7 +22,7 @@ public class DocumentDownload {
     private String mimeType;
     private String content;
 
-    @ApiModelProperty(value = "The document conent id")
+    @ApiModelProperty(value = "The document content id")
     public String getId() {
         return id;
     }
