@@ -39,7 +39,7 @@ public class EncryptService {
         this.paymentRepository = paymentRepository;
     }
 
-    public void encryptData() {
+    public void encryptThaiIdAndRegistrationKey() {
         List<Policy> policies = (List<Policy>) policyRepository.findAll();
 
         for (Policy policy : policies) {
@@ -67,6 +67,11 @@ public class EncryptService {
         policyRepository.save(policies);
     }
 
+    /**
+     * registrationId of a person is actually the thaiId.
+     *
+     * @param person
+     */
     private void encryptRegistrationIdForPerson(Person person) {
         if (person == null) {
             logger.warn("The person is null, cannot encrypt it's registration Id");

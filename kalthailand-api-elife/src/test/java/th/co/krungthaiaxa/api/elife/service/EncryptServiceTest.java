@@ -14,9 +14,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
-import th.co.krungthaiaxa.api.common.utils.EncryptUtil;
 import th.co.krungthaiaxa.api.elife.KalApiApplication;
-import th.co.krungthaiaxa.api.elife.model.Coverage;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
@@ -70,7 +68,7 @@ public class EncryptServiceTest {
 			}
 		}
 		
-		encryptService.encryptData();
+		encryptService.encryptThaiIdAndRegistrationKey();
 		
 		policies = null;
 		policies = (List<Policy>) policyRepository.findAll();
