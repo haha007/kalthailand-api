@@ -11,7 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
  * TODO In my opinion, we should change the relationship between {@link Document} and {@link DocumentDownload}. It should be {@link Document#documentDownloadId}, not {@link DocumentDownload#documentId}.
  * With current relationship, one Document metadata can point to many DocumentDownload binary (in theory), it's not good.
  */
-@Document
+@Document(collection = "documentDownload")
 @ApiModel(description = "Data concerning policy documents content")
 public class DocumentDownload {
     @Id

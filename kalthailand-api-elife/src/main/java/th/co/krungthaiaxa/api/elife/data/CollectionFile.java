@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Document
+@Document(collection = "collectionFile")
 public class CollectionFile {
     @Id
     private String id;

@@ -12,7 +12,6 @@ import org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper;
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
 import org.springframework.data.mongodb.core.convert.MongoTypeMapper;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -54,6 +53,7 @@ class MongoDbConfiguration extends AbstractMongoConfiguration {
 
     /**
      * This config will make Spring don't save class name into DB (remove field "_class").
+     * View more at http://athlan.pl/spring-data-mongodb-remove-_class-define-explicitly
      * Therefore we can refactor & rename those class in the future without causing any problem.
      *
      * @return

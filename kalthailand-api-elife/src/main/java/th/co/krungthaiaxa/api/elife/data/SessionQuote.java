@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@Document
+@Document(collection = "sessionQuote")
 @CompoundIndexes({
         @CompoundIndex(name = "SessionQuote_UniqueKey",
                 unique = true,

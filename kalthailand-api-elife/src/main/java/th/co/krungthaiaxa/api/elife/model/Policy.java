@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Objects;
 
 @ApiModel(description = "Data concerning the policy")
-@Document
+@Document(collection = "policy")
 public class Policy implements Serializable {
     @Id
     private String id;

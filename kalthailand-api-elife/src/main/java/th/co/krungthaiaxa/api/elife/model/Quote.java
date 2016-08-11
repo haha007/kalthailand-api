@@ -14,7 +14,7 @@ import java.util.Objects;
 
 @ApiModel(description = "This is the description of a quote and only a quote. It holds all properties gathered from " +
         "user before the quote got transformed into a Policy")
-@Document
+@Document(collection = "quote")
 public class Quote implements Serializable {
     @Id
     private String id;

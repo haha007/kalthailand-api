@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document
+@Document(collection = "blackListed")
 @CompoundIndexes({
         @CompoundIndex(name = "BlackListed_UniqueKey",
                 unique = true,

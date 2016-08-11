@@ -12,7 +12,7 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
-@Document
+@Document(collection = "policyNumberSetting")
 public class PolicyNumberSetting {
     @Id
     private String id;
