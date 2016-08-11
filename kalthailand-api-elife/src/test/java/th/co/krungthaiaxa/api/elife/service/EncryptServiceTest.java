@@ -15,8 +15,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import th.co.krungthaiaxa.api.elife.KalApiApplication;
+import th.co.krungthaiaxa.api.elife.model.Coverage;
+import th.co.krungthaiaxa.api.elife.model.CoverageBeneficiary;
+import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.Policy;
+import th.co.krungthaiaxa.api.elife.model.Registration;
 import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
 import th.co.krungthaiaxa.api.elife.repository.PolicyRepository;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -45,24 +49,29 @@ public class EncryptServiceTest {
 		int policyEncryptTextCount = 0;
 		int benefitEncryptTextCount = 0;
 		int paymentEncryptTextCount = 0;
+		
 		List<Policy> policies = (List<Policy>) policyRepository.findAll();
 		
-		for(int a=0;a<policies.size();a++){
-			if(!StringUtil.isBlank(policies.get(a).getInsureds().get(0).getPerson().getRegistrations().get(0).getId())&&
-					policies.get(a).getInsureds().get(0).getPerson().getRegistrations().get(0).getId().length()<PLAIN_TEXT_SIZE){
-				policyPlainTextCount++;
+		for (Policy policy : policies) {
+			for (Insured insured : policy.getInsureds()) {
+				for (Registration registration : insured.getPerson().getRegistrations()) {
+					if (isValidBeforeEncrypt(registration.getId())) {
+						policyPlainTextCount++;
+					}
+				}
+				
 			}
-			int benefitSize = policies.get(a).getCoverages().size();
-			for(int b=0;b<benefitSize;b++){
-				if(!StringUtil.isBlank(policies.get(a).getCoverages().get(0).getBeneficiaries().get(b).getPerson().getRegistrations().get(0).getId())&&
-						policies.get(a).getCoverages().get(0).getBeneficiaries().get(b).getPerson().getRegistrations().get(0).getId().length()<PLAIN_TEXT_SIZE){
-					benefitPlainTextCount++;
+			for(Coverage coverage : policy.getCoverages()){
+				for(CoverageBeneficiary coverageBeneficiary : coverage.getBeneficiaries()){
+					for(Registration registration : coverageBeneficiary.getPerson().getRegistrations()){
+						if(isValidBeforeEncrypt(registration.getId())){
+							benefitPlainTextCount++;
+						}
+					}
 				}
 			}
-			List<Payment> payments = paymentRepository.findByPolicyId(policies.get(a).getPolicyId());
-			for(int c=0;c<payments.size();c++){
-				if(!StringUtil.isBlank(payments.get(c).getRegistrationKey())&&
-						payments.get(c).getRegistrationKey().length()<PLAIN_TEXT_SIZE){
+			for(Payment payment : paymentRepository.findByPolicyId(policy.getPolicyId())){
+				if(isValidBeforeEncrypt(payment.getRegistrationKey())){
 					paymentPlainTextCount++;
 				}
 			}
@@ -70,29 +79,34 @@ public class EncryptServiceTest {
 		
 		encryptService.encryptThaiIdAndRegistrationKey();
 		
-		policies = null;
 		policies = (List<Policy>) policyRepository.findAll();
-		for(int a=0;a<policies.size();a++){
-			if(!StringUtil.isBlank(policies.get(a).getInsureds().get(0).getPerson().getRegistrations().get(0).getId())&&
-					policies.get(a).getInsureds().get(0).getPerson().getRegistrations().get(0).getId().length()>PLAIN_TEXT_SIZE){
-				policyEncryptTextCount++;
+		
+		for(Policy policy : policies){
+			for(Insured insured : policy.getInsureds()){
+				for(Registration registration : insured.getPerson().getRegistrations()){
+					if(isValidAfterEncrypted(registration.getId())){
+						policyPlainTextCount++;
+					}
+				}
+				
 			}
-			int benefitSize = policies.get(a).getCoverages().size();
-			for(int b=0;b<benefitSize;b++){
-				if(!StringUtil.isBlank(policies.get(a).getCoverages().get(0).getBeneficiaries().get(b).getPerson().getRegistrations().get(0).getId())&&
-						policies.get(a).getCoverages().get(0).getBeneficiaries().get(b).getPerson().getRegistrations().get(0).getId().length()>PLAIN_TEXT_SIZE){
-					benefitEncryptTextCount++;
+			for(Coverage coverage : policy.getCoverages()){
+				for(CoverageBeneficiary coverageBeneficiary : coverage.getBeneficiaries()){
+					for(Registration registration : coverageBeneficiary.getPerson().getRegistrations()){
+						if(isValidAfterEncrypted(registration.getId())){
+							benefitPlainTextCount++;
+						}
+					}
 				}
 			}
-			List<Payment> payments = paymentRepository.findByPolicyId(policies.get(a).getPolicyId());
-			for(int c=0;c<payments.size();c++){
-				if(!StringUtil.isBlank(payments.get(c).getRegistrationKey())&&
-						payments.get(c).getRegistrationKey().length()>PLAIN_TEXT_SIZE){
-					paymentEncryptTextCount++;
+			for(Payment payment : paymentRepository.findByPolicyId(policy.getPolicyId())){
+				if(isValidAfterEncrypted(payment.getRegistrationKey())){
+					paymentPlainTextCount++;
 				}
 			}
 		}
 		
+		//fix test fail if already encrypted.
 		if(policyPlainTextCount==0&&benefitPlainTextCount==0&&paymentPlainTextCount==0){
 			policyPlainTextCount = policyEncryptTextCount;
 			benefitPlainTextCount = benefitEncryptTextCount;
@@ -103,6 +117,14 @@ public class EncryptServiceTest {
 		assertThat(benefitPlainTextCount).isEqualTo(benefitEncryptTextCount);
 		assertThat(paymentPlainTextCount).isEqualTo(paymentEncryptTextCount);
 		
+	}
+	
+	private boolean isValidBeforeEncrypt(String text){
+		return !StringUtil.isBlank(text) && text.length()<PLAIN_TEXT_SIZE;
+	}
+	
+	private boolean isValidAfterEncrypted(String text){
+		return !StringUtil.isBlank(text) && text.length()>PLAIN_TEXT_SIZE;
 	}
 
 }

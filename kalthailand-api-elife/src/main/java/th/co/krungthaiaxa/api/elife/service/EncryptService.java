@@ -86,7 +86,7 @@ public class EncryptService {
     }
 
     private boolean shouldEncrypt(String text) {
-        return !StringUtil.isBlank(text) || isPlainText(text);
+        return !StringUtil.isBlank(text) && isPlainText(text);
     }
 
     private boolean isPlainText(String text) {
