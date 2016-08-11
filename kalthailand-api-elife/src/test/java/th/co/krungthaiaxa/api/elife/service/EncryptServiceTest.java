@@ -85,7 +85,7 @@ public class EncryptServiceTest {
 			for(Insured insured : policy.getInsureds()){
 				for(Registration registration : insured.getPerson().getRegistrations()){
 					if(isValidAfterEncrypted(registration.getId())){
-						policyPlainTextCount++;
+						policyEncryptTextCount++;
 					}
 				}
 				
@@ -94,14 +94,14 @@ public class EncryptServiceTest {
 				for(CoverageBeneficiary coverageBeneficiary : coverage.getBeneficiaries()){
 					for(Registration registration : coverageBeneficiary.getPerson().getRegistrations()){
 						if(isValidAfterEncrypted(registration.getId())){
-							benefitPlainTextCount++;
+							benefitEncryptTextCount++;
 						}
 					}
 				}
 			}
 			for(Payment payment : paymentRepository.findByPolicyId(policy.getPolicyId())){
 				if(isValidAfterEncrypted(payment.getRegistrationKey())){
-					paymentPlainTextCount++;
+					paymentEncryptTextCount++;
 				}
 			}
 		}
