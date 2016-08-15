@@ -71,7 +71,7 @@ public class EncryptRegistrationIdsAndKeysServiceTest {
      * @throws IllegalAccessException
      */
     @Test
-    public void should_equals_between_before_encrypt_and_after_encrypt_fo_policy_insured_and_benefit_thai_id_and_line_pay_regkey_success() throws NoSuchFieldException, IllegalAccessException {
+    public void data_in_db_must_be_encrypted() throws NoSuchFieldException, IllegalAccessException {
 
         encryptRegistrationIdsAndKeysService.encryptRegistrationIdAndRegistrationKey();
 
