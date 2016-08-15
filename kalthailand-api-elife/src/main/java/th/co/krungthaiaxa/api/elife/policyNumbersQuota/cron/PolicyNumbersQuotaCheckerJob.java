@@ -23,6 +23,7 @@ public class PolicyNumbersQuotaCheckerJob {
     public PolicyNumbersQuotaCheckerJob(PolicyNumbersQuotaCheckerService policyNumbersQuotaCheckerService) {this.policyNumbersQuotaCheckerService = policyNumbersQuotaCheckerService;}
 
     public void execute() {
+        LOGGER.debug("Start Job");
         PolicyNumbersQuotaCheckerService.PolicyNumbersQuotaCheckerResult checkResult = policyNumbersQuotaCheckerService.checkEnoughRemainPolicyNumbers();
         LOGGER.debug("The current policy numbers is check wether over trigger percentage: {}", ObjectMapperUtil.toStringMultiLine(checkResult));
     }

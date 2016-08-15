@@ -3,7 +3,7 @@ package th.co.krungthaiaxa.api.elife.data;
 import java.time.LocalDate;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document
+@Document(collection = "lineToken")
 public class LineToken {
 	
 	private Integer rowId;

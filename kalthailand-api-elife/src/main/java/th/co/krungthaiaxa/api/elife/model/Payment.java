@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Objects;
 
 @ApiModel(description = "Data concerning the payment")
-@Document
+@Document(collection = "payment")
 public class Payment {
     @Id
     private String paymentId;
@@ -80,11 +80,11 @@ public class Payment {
 
     @ApiModelProperty(value = "The payment's registration key in case of recurring payment. This is used by pay gateway like LINE Pay.")
     public String getRegistrationKey() {
-        return (StringUtil.isBlank(registrationKey)?registrationKey:RsaUtil.decrypt(registrationKey));
+        return (StringUtil.isBlank(registrationKey) ? registrationKey : RsaUtil.decrypt(registrationKey));
     }
 
     public void setRegistrationKey(String registrationKey) {
-        this.registrationKey = (StringUtil.isBlank(registrationKey)?registrationKey:RsaUtil.encrypt(registrationKey));
+        this.registrationKey = (StringUtil.isBlank(registrationKey) ? registrationKey : RsaUtil.encrypt(registrationKey));
     }
 
     @ApiModelProperty(required = true, value = "Status of the payment")

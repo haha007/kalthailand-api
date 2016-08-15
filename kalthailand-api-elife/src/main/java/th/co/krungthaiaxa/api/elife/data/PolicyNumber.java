@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 
-@Document
+@Document(collection = "policyNumber")
 public class PolicyNumber {
     @Id
     private String id;

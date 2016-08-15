@@ -9,7 +9,10 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-@org.springframework.data.mongodb.core.mapping.Document
+/**
+ * This class is actually contains only metadata, the binary data of file is stored in {@link DocumentDownload}.
+ */
+@org.springframework.data.mongodb.core.mapping.Document(collection = "document")
 @ApiModel(description = "Data concerning policy documents saved on server side")
 public class Document implements Serializable {
     @Id

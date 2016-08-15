@@ -30,6 +30,14 @@
         <priority value="DEBUG"/>
         <appender-ref ref="FILE_EMAIL"/>
     </category>
+
+
+    <category name="org">
+        <priority value="WARN"/>
+    </category>
+    <category name="springfox">
+        <priority value="WARN"/>
+    </category>
     <root>
         <priority value="INFO"/>
         <appender-ref ref="FILE"/>
