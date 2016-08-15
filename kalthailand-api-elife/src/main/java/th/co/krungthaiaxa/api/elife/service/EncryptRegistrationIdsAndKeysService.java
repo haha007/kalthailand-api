@@ -19,9 +19,9 @@ import javax.inject.Inject;
 import java.util.List;
 
 @Service
-public class EncryptService {
+public class EncryptRegistrationIdsAndKeysService {
 
-    private final static Logger logger = LoggerFactory.getLogger(EncryptService.class);
+    private final static Logger logger = LoggerFactory.getLogger(EncryptRegistrationIdsAndKeysService.class);
     private final PolicyRepository policyRepository;
     private final PaymentRepository paymentRepository;
 
@@ -32,13 +32,13 @@ public class EncryptService {
     private final int PLAIN_TEXT_MAX_SIZE = 30;
 
     @Inject
-    public EncryptService(PolicyRepository policyRepository, PaymentRepository paymentRepository) {
+    public EncryptRegistrationIdsAndKeysService(PolicyRepository policyRepository, PaymentRepository paymentRepository) {
         this.policyRepository = policyRepository;
         this.paymentRepository = paymentRepository;
     }
 
     public void encryptRegistrationIdAndRegistrationKey() {
-        List<Policy> policies = (List<Policy>) policyRepository.findAll();
+        List<Policy> policies = policyRepository.findAll();
 
         for (Policy policy : policies) {
             List<Insured> insureds = policy.getInsureds();

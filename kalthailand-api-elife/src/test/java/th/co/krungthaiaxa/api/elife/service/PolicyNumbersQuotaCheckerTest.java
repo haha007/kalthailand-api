@@ -2,7 +2,6 @@ package th.co.krungthaiaxa.api.elife.service;
 
 import com.icegreen.greenmail.junit.GreenMailRule;
 import com.icegreen.greenmail.util.ServerSetupTest;
-import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -15,18 +14,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.api.elife.KalApiApplication;
 import th.co.krungthaiaxa.api.elife.TestUtil;
-import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
-import th.co.krungthaiaxa.api.elife.policyNumbersQuota.cron.PolicyNumbersQuotaCheckerJob;
 import th.co.krungthaiaxa.api.elife.policyNumbersQuota.service.PolicyNumbersQuotaCheckerService;
-import th.co.krungthaiaxa.api.elife.utils.RsaUtil;
 
 import javax.inject.Inject;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Base64;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 

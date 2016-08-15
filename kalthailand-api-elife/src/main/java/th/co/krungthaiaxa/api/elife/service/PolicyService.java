@@ -3,18 +3,24 @@ package th.co.krungthaiaxa.api.elife.service;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
-import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import th.co.krungthaiaxa.api.common.utils.EncryptUtil;
 import th.co.krungthaiaxa.api.elife.client.CDBClient;
 import th.co.krungthaiaxa.api.elife.data.PolicyNumber;
 import th.co.krungthaiaxa.api.elife.exception.ElifeException;
 import th.co.krungthaiaxa.api.elife.exception.PolicyValidationException;
-import th.co.krungthaiaxa.api.elife.model.*;
+import th.co.krungthaiaxa.api.elife.model.Document;
+import th.co.krungthaiaxa.api.elife.model.DocumentDownload;
+import th.co.krungthaiaxa.api.elife.model.Payment;
+import th.co.krungthaiaxa.api.elife.model.PaymentInformation;
+import th.co.krungthaiaxa.api.elife.model.Policy;
+import th.co.krungthaiaxa.api.elife.model.Quote;
+import th.co.krungthaiaxa.api.elife.model.Registration;
 import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
 import th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus;
 import th.co.krungthaiaxa.api.elife.model.enums.RegistrationTypeName;
@@ -24,9 +30,12 @@ import th.co.krungthaiaxa.api.elife.model.line.LinePayResponse;
 import th.co.krungthaiaxa.api.elife.products.Product;
 import th.co.krungthaiaxa.api.elife.products.ProductFactory;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
-import th.co.krungthaiaxa.api.elife.repository.*;
+import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
+import th.co.krungthaiaxa.api.elife.repository.PolicyCriteriaRepository;
+import th.co.krungthaiaxa.api.elife.repository.PolicyNumberRepository;
+import th.co.krungthaiaxa.api.elife.repository.PolicyRepository;
+import th.co.krungthaiaxa.api.elife.repository.QuoteRepository;
 import th.co.krungthaiaxa.api.elife.tmc.TMCClient;
-import th.co.krungthaiaxa.api.elife.utils.RsaUtil;
 
 import javax.inject.Inject;
 import javax.mail.MessagingException;
@@ -35,7 +44,11 @@ import java.nio.charset.Charset;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.*;
+import java.util.Base64;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static java.time.format.DateTimeFormatter.ofPattern;
@@ -43,10 +56,18 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.isTrue;
 import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.notNull;
-import static th.co.krungthaiaxa.api.elife.model.enums.DocumentType.*;
-import static th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus.*;
+import static th.co.krungthaiaxa.api.elife.model.enums.DocumentType.APPLICATION_FORM;
+import static th.co.krungthaiaxa.api.elife.model.enums.DocumentType.APPLICATION_FORM_VALIDATED;
+import static th.co.krungthaiaxa.api.elife.model.enums.DocumentType.DA_FORM;
+import static th.co.krungthaiaxa.api.elife.model.enums.DocumentType.ERECEIPT_PDF;
+import static th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus.COMPLETED;
+import static th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus.INCOMPLETE;
+import static th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus.NOT_PROCESSED;
+import static th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus.OVERPAID;
 import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.EVERY_MONTH;
-import static th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus.*;
+import static th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus.PENDING_PAYMENT;
+import static th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus.PENDING_VALIDATION;
+import static th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus.VALIDATED;
 import static th.co.krungthaiaxa.api.elife.products.ProductUtils.amount;
 
 @Service
@@ -179,7 +200,7 @@ public class PolicyService {
         paymentInformation.setRejectionErrorCode(linePayResponse.getReturnCode());
         paymentInformation.setRejectionErrorMessage(linePayResponse.getReturnMessage());
         if (linePayResponse.getReturnCode().equals("0000")) {
-            String msg = "transactionDate:" + linePayResponse.getInfo().getTransactionDate() + " ,transactionId:" + linePayResponse.getInfo().getTransactionId() + " ,paymentId=" + paymentId + " ,regKey=" + RsaUtil.encrypt(regKey) + " ,amt=" + amt + " ,productId=" + productId
+            String msg = "transactionDate:" + linePayResponse.getInfo().getTransactionDate() + " ,transactionId:" + linePayResponse.getInfo().getTransactionId() + " ,paymentId=" + paymentId + " ,regKey=" + EncryptUtil.encrypt(regKey) + " ,amt=" + amt + " ,productId=" + productId
                     + " ,orderId=" + orderId;
             paymentInformation.setStatus(SuccessErrorStatus.SUCCESS);
             paymentInformation.setMethod(msg);

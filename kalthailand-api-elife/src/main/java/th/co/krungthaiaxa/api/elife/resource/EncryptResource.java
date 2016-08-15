@@ -16,7 +16,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import th.co.krungthaiaxa.api.common.model.error.Error;
 import th.co.krungthaiaxa.api.elife.model.Policy;
-import th.co.krungthaiaxa.api.elife.service.EncryptService;
+import th.co.krungthaiaxa.api.elife.service.EncryptRegistrationIdsAndKeysService;
 
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
@@ -25,11 +25,11 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 public class EncryptResource {
 
     private final static Logger logger = LoggerFactory.getLogger(EncryptResource.class);
-    private final EncryptService encryptService;
+    private final EncryptRegistrationIdsAndKeysService encryptRegistrationIdsAndKeysService;
 
     @Inject
-    public EncryptResource(EncryptService encryptService) {
-        this.encryptService = encryptService;
+    public EncryptResource(EncryptRegistrationIdsAndKeysService encryptRegistrationIdsAndKeysService) {
+        this.encryptRegistrationIdsAndKeysService = encryptRegistrationIdsAndKeysService;
     }
 
     @ApiOperation(value = "Encrypt Existing Plain Text Data for Insure and Benefit thai Id and Line Pay Reg Key.", notes = "Encrypt Existing Plain Text Data for Insure and Benefit thai Id and Line Pay Reg Key.", response = Policy.class)
@@ -39,7 +39,7 @@ public class EncryptResource {
     @RequestMapping(value = "/data-migration/encrypt", produces = APPLICATION_JSON_VALUE, method = PUT)
     @ResponseBody
     public void encryptThaiIdAndRegistrationKey() {
-        encryptService.encryptRegistrationIdAndRegistrationKey();
+        encryptRegistrationIdsAndKeysService.encryptRegistrationIdAndRegistrationKey();
     }
 
 }

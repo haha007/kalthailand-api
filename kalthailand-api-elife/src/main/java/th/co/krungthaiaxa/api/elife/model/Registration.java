@@ -2,13 +2,12 @@ package th.co.krungthaiaxa.api.elife.model;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.jsoup.helper.StringUtil;
 import th.co.krungthaiaxa.api.common.utils.EncryptUtil;
 import th.co.krungthaiaxa.api.elife.model.enums.RegistrationTypeName;
 
 import java.io.Serializable;
 import java.util.Objects;
-
-import org.jsoup.helper.StringUtil;
 
 @ApiModel(description = "Data concerning nationality-dependent registrations for the party. e.g. Social Security, " +
         "passport, taxes identification number, insurance company registration, driver license")
