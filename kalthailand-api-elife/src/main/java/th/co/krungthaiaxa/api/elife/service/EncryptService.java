@@ -1,14 +1,9 @@
 package th.co.krungthaiaxa.api.elife.service;
 
-import java.util.List;
-
-import javax.inject.Inject;
-
 import org.jsoup.helper.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
 import th.co.krungthaiaxa.api.common.utils.EncryptUtil;
 import th.co.krungthaiaxa.api.elife.model.Coverage;
 import th.co.krungthaiaxa.api.elife.model.CoverageBeneficiary;
@@ -20,6 +15,9 @@ import th.co.krungthaiaxa.api.elife.model.Registration;
 import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
 import th.co.krungthaiaxa.api.elife.repository.PolicyRepository;
 
+import javax.inject.Inject;
+import java.util.List;
+
 @Service
 public class EncryptService {
 
@@ -28,10 +26,10 @@ public class EncryptService {
     private final PaymentRepository paymentRepository;
 
     /**
-     * Must be compatible between thai id (13) and registrationKey (?)
-     * Not sure how long the registrationKey, but it not longer than 50 chars. And the encrypted text is never less than 50 chars.
+     * Must be compatible between registration id (at this moment the registrationId is mostly thaiId which maximum 13 chars) and registrationKey (?)
+     * Not sure how long the registrationKey, but it not longer than 30 chars. And the encrypted text is never less than 30 chars.
      */
-    private final int PLAIN_TEXT_MAX_SIZE = 50;
+    private final int PLAIN_TEXT_MAX_SIZE = 30;
 
     @Inject
     public EncryptService(PolicyRepository policyRepository, PaymentRepository paymentRepository) {
@@ -39,7 +37,7 @@ public class EncryptService {
         this.paymentRepository = paymentRepository;
     }
 
-    public void encryptThaiIdAndRegistrationKey() {
+    public void encryptRegistrationIdAndRegistrationKey() {
         List<Policy> policies = (List<Policy>) policyRepository.findAll();
 
         for (Policy policy : policies) {

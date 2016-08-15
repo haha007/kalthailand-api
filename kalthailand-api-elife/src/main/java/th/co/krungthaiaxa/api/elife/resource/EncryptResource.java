@@ -39,7 +39,7 @@ public class EncryptResource {
     @RequestMapping(value = "/data-migration/encrypt", produces = APPLICATION_JSON_VALUE, method = PUT)
     @ResponseBody
     public void encryptThaiIdAndRegistrationKey() {
-        encryptService.encryptThaiIdAndRegistrationKey();
+        encryptService.encryptRegistrationIdAndRegistrationKey();
     }
 
 }

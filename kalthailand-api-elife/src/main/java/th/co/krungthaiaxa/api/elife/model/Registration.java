@@ -2,8 +2,8 @@ package th.co.krungthaiaxa.api.elife.model;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import th.co.krungthaiaxa.api.common.utils.EncryptUtil;
 import th.co.krungthaiaxa.api.elife.model.enums.RegistrationTypeName;
-import th.co.krungthaiaxa.api.elife.utils.RsaUtil;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -13,16 +13,37 @@ import org.jsoup.helper.StringUtil;
 @ApiModel(description = "Data concerning nationality-dependent registrations for the party. e.g. Social Security, " +
         "passport, taxes identification number, insurance company registration, driver license")
 public class Registration implements Serializable {
+    public static final int REGISTRATION_ID_PLAIN_TEXT_MAX_LENGTH = 30;
+
     private String id;
+
     private RegistrationTypeName typeName;
 
     @ApiModelProperty(value = " The registration identifier assigned by the registration authority")
     public String getId() {
-        return (StringUtil.isBlank(id)?id:RsaUtil.decrypt(id));
+        String result = this.id;
+        if (!StringUtil.isBlank(this.id) && isEncrypted(this.id)) {
+            result = EncryptUtil.decrypt(this.id);
+        }
+        return result;
     }
 
     public void setId(String id) {
-        this.id = (StringUtil.isBlank(id)?id:RsaUtil.encrypt(id));
+        String result = id;
+        if (!StringUtil.isBlank(id) && !isEncrypted(id)) {
+            result = EncryptUtil.encrypt(id);
+        }
+        this.id = result;
+    }
+
+    /**
+     * This method is used only to compatible to old data (plaintext).
+     *
+     * @param registrationId
+     * @return
+     */
+    private boolean isEncrypted(String registrationId) {
+        return registrationId.length() > REGISTRATION_ID_PLAIN_TEXT_MAX_LENGTH;
     }
 
     @ApiModelProperty(value = "The type of registration")

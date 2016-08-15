@@ -77,7 +77,7 @@ public class EncryptServiceTest {
 			}
 		}
 		
-		encryptService.encryptThaiIdAndRegistrationKey();
+		encryptService.encryptRegistrationIdAndRegistrationKey();
 		
 		policies = (List<Policy>) policyRepository.findAll();
 		

@@ -2,12 +2,11 @@ package th.co.krungthaiaxa.api.elife.model;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-
 import org.jsoup.helper.StringUtil;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import th.co.krungthaiaxa.api.common.utils.EncryptUtil;
 import th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus;
-import th.co.krungthaiaxa.api.elife.utils.RsaUtil;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -17,6 +16,8 @@ import java.util.Objects;
 @ApiModel(description = "Data concerning the payment")
 @Document(collection = "payment")
 public class Payment {
+
+    public static int REGISTRATION_KEY_PLAIN_TEXT_MAX_LENGTH = 30;
     @Id
     private String paymentId;
     private String policyId;
@@ -80,11 +81,28 @@ public class Payment {
 
     @ApiModelProperty(value = "The payment's registration key in case of recurring payment. This is used by pay gateway like LINE Pay.")
     public String getRegistrationKey() {
-        return (StringUtil.isBlank(registrationKey) ? registrationKey : RsaUtil.decrypt(registrationKey));
+        String result = registrationKey;
+        if (!StringUtil.isBlank(registrationKey) && isEncrypted(registrationKey)) {
+            result = EncryptUtil.decrypt(registrationKey);
+        }
+        return result;
     }
 
     public void setRegistrationKey(String registrationKey) {
-        this.registrationKey = (StringUtil.isBlank(registrationKey) ? registrationKey : RsaUtil.encrypt(registrationKey));
+        String result = registrationKey;
+        if (!StringUtil.isBlank(registrationKey) && !isEncrypted(registrationKey)) {
+            result = EncryptUtil.encrypt(registrationKey);
+        }
+        this.registrationKey = result;
+    }
+
+    /**
+     * This method is used only to compatible to old data (plaintext).
+     * @param registrationKey
+     * @return
+     */
+    private boolean isEncrypted(String registrationKey) {
+        return registrationKey.length() > REGISTRATION_KEY_PLAIN_TEXT_MAX_LENGTH;
     }
 
     @ApiModelProperty(required = true, value = "Status of the payment")
