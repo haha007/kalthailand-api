@@ -9,27 +9,33 @@ public class ProductFactory {
     private final ProductIBegin productIBegin;
     private final ProductIFine productIFine;
     private final ProductIGen productIGen;
+    private final ProductIProtect productIProtect;
 
     @Inject
-    public ProductFactory(ProductIBegin productIBegin, ProductIFine productIFine, ProductIGen productIGen) {
+    public ProductFactory(ProductIBegin productIBegin, ProductIFine productIFine, ProductIGen productIGen, ProductIProtect productIProtect) {
         this.productIBegin = productIBegin;
         this.productIFine = productIFine;
         this.productIGen = productIGen;
+        this.productIProtect = productIProtect;
     }
 
-    public Product getProduct(String productId) {
-        if (productId.equals(ProductType.PRODUCT_10_EC.getName())) {
+    /**
+     * @param productName get from {@link ProductType#getName()}.
+     * @return
+     */
+    public Product getProduct(String productName) {
+        if (productName.equals(ProductType.PRODUCT_10_EC.getName())) {
             return new Product10EC();
-        } else if (productId.equals(ProductType.PRODUCT_IBEGIN.getName())) {
+        } else if (productName.equals(ProductType.PRODUCT_IBEGIN.getName())) {
             return productIBegin;
-        } else if (productId.equals(ProductType.PRODUCT_IFINE.getName())) {
+        } else if (productName.equals(ProductType.PRODUCT_IFINE.getName())) {
             return productIFine;
-        } else if (productId.equals(ProductType.PRODUCT_IGEN.getName())) {
+        } else if (productName.equals(ProductType.PRODUCT_IGEN.getName())) {
             return productIGen;
-        } else if (productId.equals(ProductType.PRODUCT_IPROTECT.getName())) {
-            return new ProductIProtect();
+        } else if (productName.equals(ProductType.PRODUCT_IPROTECT.getName())) {
+            return productIProtect;
         } else {
-            throw new IllegalArgumentException("The Product [" + productId + "] is unknown.");
+            throw new IllegalArgumentException("The Product [" + productName + "] is unknown.");
         }
     }
 }

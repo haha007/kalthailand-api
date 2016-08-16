@@ -8,6 +8,10 @@ import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 
 import java.time.LocalDate;
 
+/**
+ * In order to create a quotation, we need to know the input of customer (productType, dateOfBirth, gender, occupation...).
+ * So this class will encapsulate the input of user in order to create the quotation.
+ */
 @ApiModel(description = "Data concerning quote for a product")
 public class ProductQuotation {
     private ProductType productType;
@@ -18,6 +22,9 @@ public class ProductQuotation {
     private PeriodicityCode periodicityCode;
     private Integer nbOfYearsOfPayment;
     private Integer occupationId;
+    /**
+     * This is the name in one of following enums {@link th.co.krungthaiaxa.api.elife.model.enums.ProductIFinePackage} or {@link ProductIProtectPackage}
+     */
     private String packageName;
     private Integer declaredTaxPercentAtSubscription;
 

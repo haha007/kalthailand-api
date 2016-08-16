@@ -32,6 +32,6 @@ import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.isFalse;
 import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.notNull;
 import static th.co.krungthaiaxa.api.elife.products.ProductUtils.amountTHB;
 
-public enum ProductIProtectSubType {
+public enum ProductIProtectPackage {
     IPROTECT_5, IPROTECT10, IPROTECT85;
 }

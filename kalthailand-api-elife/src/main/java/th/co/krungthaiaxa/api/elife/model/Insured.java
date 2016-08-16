@@ -10,6 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * The information about insured user at the moment creating quotation.
+ */
 @ApiModel(description = "Data concerning the insured user")
 public class Insured implements Serializable {
     private InsuredType type;
@@ -208,6 +211,7 @@ public class Insured implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(type, mainInsuredIndicator, startDate, endDate, ageAtSubscription, professionName, professionDescription, employerName, annualIncome, incomeSources, person, fatca, healthStatus, declaredTaxPercentAtSubscription, additionalInformationFreeText, insuredPreviousInformations);
+        return Objects.hash(type, mainInsuredIndicator, startDate, endDate, ageAtSubscription, professionName, professionDescription, employerName, annualIncome, incomeSources, person, fatca, healthStatus, declaredTaxPercentAtSubscription, additionalInformationFreeText,
+                insuredPreviousInformations);
     }
 }

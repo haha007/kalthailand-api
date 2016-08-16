@@ -1,6 +1,7 @@
 package th.co.krungthaiaxa.api.elife.products;
 
 import org.apache.commons.lang3.SerializationUtils;
+import org.springframework.stereotype.Component;
 import th.co.krungthaiaxa.api.elife.exception.PolicyValidationException;
 import th.co.krungthaiaxa.api.elife.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.api.elife.model.Amount;
@@ -31,6 +32,7 @@ import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.isFalse;
 import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.notNull;
 import static th.co.krungthaiaxa.api.elife.products.ProductUtils.amountTHB;
 
+@Component
 public class ProductIProtect implements Product {
     public final static int DURATION_COVERAGE_IN_YEAR = 10;
     public final static int DURATION_PAYMENT_IN_YEAR = 6;

@@ -51,7 +51,7 @@ public class ProductIFine implements Product {
                 .findFirst();
 
         // Do we have enough to calculate anything
-        if (!hasEnoughTocalculate(productQuotation)) {
+        if (!hasEnoughInfoToCalculate(productQuotation)) {
             // we need to delete what might have been calculated before
             resetCalculatedStuff(quote, hasIFineCoverage);
             return;
@@ -59,24 +59,24 @@ public class ProductIFine implements Product {
 
         OccupationType occupationType = occupationTypeRepository.findByOccId(productQuotation.getOccupationId());
 
-        Insured insured = quote.getInsureds().stream().filter(Insured::getMainInsuredIndicator).findFirst().get();
+        Insured mainInsured = quote.getInsureds().stream().filter(Insured::getMainInsuredIndicator).findFirst().get();
 
         // copy data already gathered in ProductQuotation
         Integer age = ProductUtils.getAge(productQuotation.getDateOfBirth());
         quote.getPremiumsData().getFinancialScheduler().getPeriodicity().setCode(productQuotation.getPeriodicityCode());
-        insured.getPerson().setBirthDate(productQuotation.getDateOfBirth());
-        insured.setAgeAtSubscription(age);
-        insured.getPerson().setGenderCode(productQuotation.getGenderCode());
-        insured.setProfessionId(productQuotation.getOccupationId());
-        insured.setProfessionName(occupationType.getOccTextTh());
+        mainInsured.getPerson().setBirthDate(productQuotation.getDateOfBirth());
+        mainInsured.setAgeAtSubscription(age);
+        mainInsured.getPerson().setGenderCode(productQuotation.getGenderCode());
+        mainInsured.setProfessionId(productQuotation.getOccupationId());
+        mainInsured.setProfessionName(occupationType.getOccTextTh());
 
         // cannot be too young or too old
-        ProductUtils.checkInsuredAge(insured, MIN_AGE, MAX_AGE);
+        ProductUtils.checkInsuredAge(mainInsured, MIN_AGE, MAX_AGE);
 
         // Set dates based on current date and product duration
-        insured.setStartDate(now(of(SHORT_IDS.get("VST"))));
-        insured.setEndDate(insured.getStartDate().plusYears(DURATION_COVERAGE_IN_YEAR));
-        quote.getPremiumsData().getFinancialScheduler().setEndDate(insured.getStartDate().plusYears(DURATION_PAYMENT_IN_YEAR));
+        mainInsured.setStartDate(now(of(SHORT_IDS.get("VST"))));
+        mainInsured.setEndDate(mainInsured.getStartDate().plusYears(DURATION_COVERAGE_IN_YEAR));
+        quote.getPremiumsData().getFinancialScheduler().setEndDate(mainInsured.getStartDate().plusYears(DURATION_PAYMENT_IN_YEAR));
 
         // get iFine package from package name
         ProductIFinePackage productIFinePackage = getPackage(productQuotation.getPackageName());
@@ -108,7 +108,7 @@ public class ProductIFine implements Product {
         productIFinePremium.setMedicalCareCost(amountTHB(deathByAccident * 10 / 100));
 
         // calculates rates
-        ProductIFineRate productIFineRate = productIFineRateRepository.findByPlanNameAndGender(productQuotation.getPackageName(), insured.getPerson().getGenderCode().name());
+        ProductIFineRate productIFineRate = productIFineRateRepository.findByPlanNameAndGender(productQuotation.getPackageName(), mainInsured.getPerson().getGenderCode().name());
         Double taxDeductibleRate = productIFineRate.getTaxDeductibleRate().get(age - 18);
         Double nonTaxDeductibleRate = productIFineRate.getNonTaxDeductibleRate().get(age - 18);
         Double riskOccupationCharge = 0.0;
@@ -221,7 +221,7 @@ public class ProductIFine implements Product {
         return result;
     }
 
-    private boolean hasEnoughTocalculate(ProductQuotation productQuotation) {
+    private boolean hasEnoughInfoToCalculate(ProductQuotation productQuotation) {
         // Do we have a birth date to calculate the age of insured
         boolean hasAnyDateOfBirth = productQuotation.getDateOfBirth() != null;
         if (!hasAnyDateOfBirth) {
