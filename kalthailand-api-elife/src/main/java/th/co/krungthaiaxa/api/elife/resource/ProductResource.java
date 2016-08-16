@@ -6,9 +6,11 @@ import io.swagger.annotations.ApiParam;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import th.co.krungthaiaxa.api.elife.products.Product;
 import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
+import th.co.krungthaiaxa.api.elife.products.ProductType;
 import th.co.krungthaiaxa.api.elife.products.ProductAmounts;
 import th.co.krungthaiaxa.api.elife.products.ProductFactory;
 
@@ -17,6 +19,7 @@ import javax.inject.Inject;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.PUT;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static th.co.krungthaiaxa.api.common.utils.JsonUtil.getJson;
 
 @RestController
@@ -37,5 +40,11 @@ public class ProductResource {
             @RequestBody ProductQuotation productQuotationJson) {
         Product product = productFactory.getProduct(productQuotationJson.getProductType().getName());
         return new ResponseEntity<>(getJson(product.getProductAmounts(productQuotationJson)), OK);
+    }
+    
+    @ApiOperation(value = "Gets Product ID", notes = "Gets product ID, " , response = ProductType.class, responseContainer = "List")
+    @RequestMapping(value = "/products/criteria-list", produces = APPLICATION_JSON_VALUE, method = GET)
+    public ResponseEntity<byte[]> getProductList() {
+        return new ResponseEntity<>(getJson(productFactory.getProductCriteriaList()), OK);
     }
 }

@@ -2,7 +2,13 @@ package th.co.krungthaiaxa.api.elife.products;
 
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import javax.inject.Inject;
+import static th.co.krungthaiaxa.api.elife.products.ProductType.*;
 
 @Component
 public class ProductFactory {
@@ -29,5 +35,37 @@ public class ProductFactory {
         } else {
             throw new IllegalArgumentException("The Product [" + productId + "] is unknown.");
         }
+    }
+    
+    public List<Map<String,Object>> getProductCriteriaList(){
+    	
+    	String id = "id";
+    	String name = "name";
+    	
+    	List<Map<String,Object>> productCriteriaList = new ArrayList<>();
+    	
+    	Map<String,Object> mapIBegin = new HashMap<>();
+    	mapIBegin.put(id, ProductType.PRODUCT_IBEGIN);
+    	mapIBegin.put(name, ProductType.PRODUCT_IBEGIN.getName());
+    	
+    	Map<String,Object> mapIFine = new HashMap<>();
+    	mapIFine.put(id, ProductType.PRODUCT_IFINE);
+    	mapIFine.put(name, ProductType.PRODUCT_IFINE.getName());
+    	
+    	Map<String,Object> mapIGen = new HashMap<>();
+    	mapIGen.put(id, ProductType.PRODUCT_IGEN);
+    	mapIGen.put(name, ProductType.PRODUCT_IGEN.getName());
+    	
+    	Map<String,Object> map10EC = new HashMap<>();
+    	map10EC.put(id, ProductType.PRODUCT_10_EC);
+    	map10EC.put(name, ProductType.PRODUCT_10_EC.getName());
+    	
+    	productCriteriaList.add(map10EC);
+    	productCriteriaList.add(mapIBegin);
+    	productCriteriaList.add(mapIFine);
+    	productCriteriaList.add(mapIGen);
+    	
+    	return productCriteriaList;
+    	
     }
 }

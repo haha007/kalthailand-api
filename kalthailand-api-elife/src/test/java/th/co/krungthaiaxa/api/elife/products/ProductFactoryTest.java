@@ -13,6 +13,9 @@ import javax.inject.Inject;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.util.List;
+import java.util.Map;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiApplication.class)
 @WebAppConfiguration
@@ -49,5 +52,18 @@ public class ProductFactoryTest {
     public void should_return_iGen_product() {
         Product product = productFactory.getProduct(ProductType.PRODUCT_IGEN.getName());
         assertThat(product).isInstanceOf(ProductIGen.class);
+    }
+    
+    @Test
+    public void should_return_product_criteria_list(){
+    	List<Map<String,Object>> productCriteriaList = productFactory.getProductCriteriaList();
+    	assertThat(productCriteriaList.toString()).containsOnlyOnce(ProductType.PRODUCT_10_EC.toString());
+    	assertThat(productCriteriaList.toString()).containsOnlyOnce(ProductType.PRODUCT_10_EC.getName());
+    	assertThat(productCriteriaList.toString()).containsOnlyOnce(ProductType.PRODUCT_IBEGIN.toString());
+    	assertThat(productCriteriaList.toString()).containsOnlyOnce(ProductType.PRODUCT_IBEGIN.getName());
+    	assertThat(productCriteriaList.toString()).containsOnlyOnce(ProductType.PRODUCT_IFINE.toString());
+    	assertThat(productCriteriaList.toString()).containsOnlyOnce(ProductType.PRODUCT_IFINE.getName());
+    	assertThat(productCriteriaList.toString()).containsOnlyOnce(ProductType.PRODUCT_IGEN.toString());
+    	assertThat(productCriteriaList.toString()).containsOnlyOnce(ProductType.PRODUCT_IGEN.getName());
     }
 }
