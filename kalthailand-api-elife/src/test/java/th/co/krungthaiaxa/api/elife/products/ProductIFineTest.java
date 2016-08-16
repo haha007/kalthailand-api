@@ -21,7 +21,7 @@ import static th.co.krungthaiaxa.api.elife.TestUtil.productQuotation;
 import static th.co.krungthaiaxa.api.elife.TestUtil.quote;
 import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.EVERY_MONTH;
 import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.EVERY_YEAR;
-import static th.co.krungthaiaxa.api.elife.model.enums.ProductIFinePackage.*;
+import static th.co.krungthaiaxa.api.elife.products.ProductIFinePackage.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiApplication.class)

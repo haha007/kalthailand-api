@@ -1,7 +1,7 @@
-package th.co.krungthaiaxa.api.elife.products;
+package th.co.krungthaiaxa.api.elife.products.iprotect;
 
 import org.apache.commons.lang3.SerializationUtils;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.elife.exception.PolicyValidationException;
 import th.co.krungthaiaxa.api.elife.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.api.elife.model.Amount;
@@ -15,6 +15,12 @@ import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.PremiumsData;
 import th.co.krungthaiaxa.api.elife.model.ProductIGenPremium;
 import th.co.krungthaiaxa.api.elife.model.Quote;
+import th.co.krungthaiaxa.api.elife.products.ProductAmounts;
+import th.co.krungthaiaxa.api.elife.products.ProductIGenRate;
+import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
+import th.co.krungthaiaxa.api.elife.products.ProductService;
+import th.co.krungthaiaxa.api.elife.products.ProductType;
+import th.co.krungthaiaxa.api.elife.products.ProductUtils;
 import th.co.krungthaiaxa.api.elife.repository.ProductIGenRateRepository;
 
 import javax.inject.Inject;
@@ -32,16 +38,19 @@ import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.isFalse;
 import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.notNull;
 import static th.co.krungthaiaxa.api.elife.products.ProductUtils.amountTHB;
 
-@Component
+@Service
 public class ProductIProtectService implements ProductService {
-    public final static int DURATION_COVERAGE_IN_YEAR = 10;
-    public final static int DURATION_PAYMENT_IN_YEAR = 6;
+    public final static int DURATION_COVERAGE_IN_YEAR = 85;//Protect maximum 85 (iProtect85): year protect = 85 - current age.
+    public final static Integer DURATION_PAYMENT_IN_YEAR = null;//Depend on the iProtectPackage (5, 10 or 85 years)
     public final static String PRODUCT_NAME = "Product iProtect";
     public final static String PRODUCT_CURRENCY = "THB";
-    public static final Double SUM_INSURED_MIN = 100000.0;
-    public static final Double SUM_INSURED_MAX = 1000000.0;
-    public static final Double PREMIUM_MIN = 2682.0;
-    public static final Double PREMIUM_MAX = 308000.0;
+    public static final Double SUM_INSURED_MIN = null;//calculate by premium & age
+    public static final Double SUM_INSURED_MAX = 1500000.0;//1.5M
+    //Sum assured min: 200,000 //Cell 'fill in information'!C40
+
+    public static final Double PREMIUM_MAX = null;//depend on age
+    //Total premium - min (monthly): 1000 //Cell 'fill in information'!C39
+    public static final Double PREMIUM_MIN = 1000.0;//annual premium: 12K
     public static final int MAX_AGE = 70;
     public static final int MIN_AGE = 20;
 

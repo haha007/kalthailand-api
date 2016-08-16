@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import th.co.krungthaiaxa.api.elife.model.enums.GenderCode;
 import th.co.krungthaiaxa.api.elife.model.Amount;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
+import th.co.krungthaiaxa.api.elife.products.iprotect.ProductIProtectPackage;
 
 import java.time.LocalDate;
 
@@ -23,7 +24,7 @@ public class ProductQuotation {
     private Integer nbOfYearsOfPayment;
     private Integer occupationId;
     /**
-     * This is the name in one of following enums {@link th.co.krungthaiaxa.api.elife.model.enums.ProductIFinePackage} or {@link ProductIProtectPackage}
+     * This is the name in one of following enums {@link ProductIFinePackage} or {@link ProductIProtectPackage}
      */
     private String packageName;
     private Integer declaredTaxPercentAtSubscription;

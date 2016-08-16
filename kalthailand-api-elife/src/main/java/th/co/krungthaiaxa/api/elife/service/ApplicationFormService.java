@@ -14,6 +14,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.elife.model.*;
 import th.co.krungthaiaxa.api.elife.model.enums.*;
+import th.co.krungthaiaxa.api.elife.products.ProductIFinePackage;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
 
 import javax.inject.Inject;

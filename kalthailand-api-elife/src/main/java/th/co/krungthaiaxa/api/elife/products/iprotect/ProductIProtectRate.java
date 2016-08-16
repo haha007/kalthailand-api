@@ -1,4 +1,4 @@
-package th.co.krungthaiaxa.api.elife.products;
+package th.co.krungthaiaxa.api.elife.products.iprotect;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
-@Document
+@Document(collection = "productIProtectRate")
 public class ProductIProtectRate {
     @Id
     private String id;

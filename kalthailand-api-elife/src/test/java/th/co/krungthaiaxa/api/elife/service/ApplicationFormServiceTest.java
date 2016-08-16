@@ -10,6 +10,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.api.elife.ELifeTest;
 import th.co.krungthaiaxa.api.elife.model.*;
 import th.co.krungthaiaxa.api.elife.model.enums.*;
+import th.co.krungthaiaxa.api.elife.products.ProductIFinePackage;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
 import th.co.krungthaiaxa.api.elife.KalApiApplication;
 

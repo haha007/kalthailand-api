@@ -2,7 +2,7 @@ package th.co.krungthaiaxa.api.elife.model;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import th.co.krungthaiaxa.api.elife.model.enums.ProductIFinePackage;
+import th.co.krungthaiaxa.api.elife.products.ProductIFinePackage;
 
 import java.io.Serializable;
 import java.util.Objects;

@@ -1,6 +1,10 @@
 package th.co.krungthaiaxa.api.elife.utils;
 
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 
 import java.math.BigInteger;
@@ -10,18 +14,26 @@ import static com.google.common.collect.Lists.newArrayList;
 import static org.apache.poi.ss.usermodel.Cell.CELL_TYPE_FORMULA;
 
 public class ExcelUtils {
+    public static double getDouble(Row row, int cellIndex) {
+        return row.getCell(cellIndex, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL).getNumericCellValue();
+    }
+
+    public static int getInteger(Row row, int cellIndex) {
+        return (int) getDouble(row, cellIndex);
+    }
+
     public static String getCellValueAsString(Cell cell) {
         if (cell == null) {
             return null;
         }
 
         switch (cell.getCellType()) {
-            case Cell.CELL_TYPE_STRING:
-                return cell.getStringCellValue();
-            case Cell.CELL_TYPE_NUMERIC:
-                return String.valueOf(cell.getNumericCellValue());
-            default:
-                return null;
+        case Cell.CELL_TYPE_STRING:
+            return cell.getStringCellValue();
+        case Cell.CELL_TYPE_NUMERIC:
+            return String.valueOf(cell.getNumericCellValue());
+        default:
+            return null;
         }
     }
 
@@ -31,10 +43,10 @@ public class ExcelUtils {
         }
 
         switch (cell.getCellType()) {
-            case Cell.CELL_TYPE_NUMERIC:
-                return cell.getNumericCellValue();
-            default:
-                return null;
+        case Cell.CELL_TYPE_NUMERIC:
+            return cell.getNumericCellValue();
+        default:
+            return null;
         }
     }
 

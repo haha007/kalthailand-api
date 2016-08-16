@@ -1,4 +1,4 @@
-package th.co.krungthaiaxa.api.elife.model.enums;
+package th.co.krungthaiaxa.api.elife.products;
 
 public enum ProductIFinePackage {
     IFINE1(100000.0, 500000.0, 500000.0, 1000.0, 500000.0),

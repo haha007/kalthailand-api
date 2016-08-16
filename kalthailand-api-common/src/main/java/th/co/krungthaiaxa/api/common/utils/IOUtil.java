@@ -6,9 +6,8 @@ import org.slf4j.LoggerFactory;
 import th.co.krungthaiaxa.api.common.exeption.FileNotFoundException;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.Charset;
-
-import static org.apache.commons.io.IOUtils.toByteArray;
 
 /**
  * @author khoi.tran on 7/26/16.
@@ -44,5 +43,9 @@ public class IOUtil {
             String msg = String.format("Cannot load String from '%s'", path);
             throw new FileNotFoundException(msg, e);
         }
+    }
+
+    public static InputStream loadInputStreamFileInClassPath(String path) {
+        return IOUtil.class.getResourceAsStream(path);
     }
 }

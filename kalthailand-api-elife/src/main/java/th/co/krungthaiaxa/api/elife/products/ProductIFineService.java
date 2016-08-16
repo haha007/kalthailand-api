@@ -14,7 +14,6 @@ import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.PremiumsData;
 import th.co.krungthaiaxa.api.elife.model.ProductIFinePremium;
 import th.co.krungthaiaxa.api.elife.model.Quote;
-import th.co.krungthaiaxa.api.elife.model.enums.ProductIFinePackage;
 import th.co.krungthaiaxa.api.elife.repository.OccupationTypeRepository;
 import th.co.krungthaiaxa.api.elife.repository.ProductIFineRateRepository;
 
@@ -34,6 +33,9 @@ public class ProductIFineService implements ProductService {
     public final static Integer DURATION_PAYMENT_IN_YEAR = 10;
     public final static String PRODUCT_IFINE_NAME = "Product iFine";
     public final static String CURRENCY = "THB";
+    /**
+     * For understanding "sum insured" & "sum assured", please read here: http://www.livemint.com/Money/Ksp8iZvMDxOm9wdYSXuwnK/Did-you-know--What8217s-the-difference-between-sum-assur.html
+     */
     public static final Double SUM_INSURED_MIN = 100000.0;
     public static final Double SUM_INSURED_MAX = 300000.0;
     public static final Double PREMIUM_MIN = null;
