@@ -4,17 +4,7 @@ import org.apache.commons.lang3.SerializationUtils;
 import org.springframework.stereotype.Component;
 import th.co.krungthaiaxa.api.elife.exception.PolicyValidationException;
 import th.co.krungthaiaxa.api.elife.exception.QuoteCalculationException;
-import th.co.krungthaiaxa.api.elife.model.Amount;
-import th.co.krungthaiaxa.api.elife.model.CommonData;
-import th.co.krungthaiaxa.api.elife.model.Coverage;
-import th.co.krungthaiaxa.api.elife.model.DatedAmount;
-import th.co.krungthaiaxa.api.elife.model.FinancialScheduler;
-import th.co.krungthaiaxa.api.elife.model.Insured;
-import th.co.krungthaiaxa.api.elife.model.Periodicity;
-import th.co.krungthaiaxa.api.elife.model.Policy;
-import th.co.krungthaiaxa.api.elife.model.PremiumsData;
-import th.co.krungthaiaxa.api.elife.model.ProductIGenPremium;
-import th.co.krungthaiaxa.api.elife.model.Quote;
+import th.co.krungthaiaxa.api.elife.model.*;
 import th.co.krungthaiaxa.api.elife.repository.ProductIGenRateRepository;
 
 import javax.inject.Inject;
@@ -27,17 +17,15 @@ import java.util.Optional;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
-import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.isEqual;
-import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.isFalse;
-import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.notNull;
+import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.*;
 import static th.co.krungthaiaxa.api.elife.products.ProductUtils.amountTHB;
 
 @Component
-public class ProductIProtect implements Product {
+public class ProductIGenService implements ProductService {
     public final static int DURATION_COVERAGE_IN_YEAR = 10;
     public final static int DURATION_PAYMENT_IN_YEAR = 6;
-    public final static String PRODUCT_NAME = "Product iProtect";
-    public final static String PRODUCT_CURRENCY = "THB";
+    public final static String PRODUCT_IGEN_NAME = "Product iGen";
+    public final static String PRODUCT_IGEN_CURRENCY = "THB";
     public static final Double SUM_INSURED_MIN = 100000.0;
     public static final Double SUM_INSURED_MAX = 1000000.0;
     public static final Double PREMIUM_MIN = 2682.0;
@@ -49,7 +37,7 @@ public class ProductIProtect implements Product {
     private ProductIGenRateRepository productIGenRateRepository;
 
     @Override
-    public void calculateQuote(Quote quote, ProductQuotation productQuotation) {
+    public void calculateQuote(Quote quote, ProductQuotation productQuotation)  {
         if (productQuotation == null) {
             return;
         }
@@ -57,7 +45,7 @@ public class ProductIProtect implements Product {
         Optional<Coverage> hasIFineCoverage = quote.getCoverages()
                 .stream()
                 .filter(coverage -> coverage.getName() != null)
-                .filter(coverage -> coverage.getName().equalsIgnoreCase(PRODUCT_NAME))
+                .filter(coverage -> coverage.getName().equalsIgnoreCase(PRODUCT_IGEN_NAME))
                 .findFirst();
 
         // Do we have enough to calculate anything
@@ -111,7 +99,7 @@ public class ProductIProtect implements Product {
         }
 
         // cannot insure too much or not enough
-        checkSumInsured(premiumsData, PRODUCT_CURRENCY, SUM_INSURED_MIN, SUM_INSURED_MAX);
+        checkSumInsured(premiumsData, PRODUCT_IGEN_CURRENCY, SUM_INSURED_MIN, SUM_INSURED_MAX);
         checkPremium(premiumsData);
 
         // calculates yearly cash backs
@@ -131,11 +119,11 @@ public class ProductIProtect implements Product {
         premiumsData.getProductIGenPremium().setYearlyCashBacksMaximumBenefit(calculateDatedAmount(quote, 45, productIGenRate.getMaximumExtraDvdRate()));
 
         // calculate tax deduction
-        premiumsData.getProductIGenPremium().setYearlyTaxDeduction(ProductUtils.calculateTaxReturnFor10ECOrIGen(quote, PRODUCT_CURRENCY));
+        premiumsData.getProductIGenPremium().setYearlyTaxDeduction(ProductUtils.calculateTaxReturnFor10ECOrIGen(quote, PRODUCT_IGEN_CURRENCY));
 
         if (!hasIFineCoverage.isPresent()) {
             Coverage coverage = new Coverage();
-            coverage.setName(PRODUCT_NAME);
+            coverage.setName(PRODUCT_IGEN_NAME);
             quote.addCoverage(coverage);
         }
     }
@@ -143,7 +131,7 @@ public class ProductIProtect implements Product {
     @Override
     public void getPolicyFromQuote(Policy policy, Quote quote) {
         // check for mandatory data
-        checkCommonData(getCommonData());
+        checkCommonData(initCommonData());
         ProductUtils.checkInsured(quote);
 
         // There is only one insured at this point
@@ -178,7 +166,7 @@ public class ProductIProtect implements Product {
     }
 
     @Override
-    public CommonData getCommonData() {
+    public CommonData initCommonData() {
         CommonData commonData = new CommonData();
         commonData.setMaxAge(MAX_AGE);
         commonData.setMaxPremium(amountTHB(PREMIUM_MAX));
@@ -189,15 +177,15 @@ public class ProductIProtect implements Product {
         commonData.setNbOfYearsOfCoverage(DURATION_COVERAGE_IN_YEAR);
         commonData.setNbOfYearsOfPremium(DURATION_PAYMENT_IN_YEAR);
         commonData.setProductId(ProductType.PRODUCT_IGEN.getName());
-        commonData.setProductCurrency(PRODUCT_CURRENCY);
-        commonData.setProductName(PRODUCT_NAME);
+        commonData.setProductCurrency(PRODUCT_IGEN_CURRENCY);
+        commonData.setProductName(PRODUCT_IGEN_NAME);
         return commonData;
     }
 
     @Override
-    public ProductAmounts getProductAmounts(ProductQuotation productQuotation) {
+    public ProductAmounts initProductAmounts(ProductQuotation productQuotation) {
         ProductAmounts productAmounts = new ProductAmounts();
-        productAmounts.setCommonData(getCommonData());
+        productAmounts.setCommonData(initCommonData());
         if (productQuotation.getDateOfBirth() == null || productQuotation.getPeriodicityCode() == null) {
             return productAmounts;
         }
@@ -214,7 +202,7 @@ public class ProductIProtect implements Product {
     }
 
     @Override
-    public PremiumsData getPremiumData() {
+    public PremiumsData initPremiumData() {
         FinancialScheduler financialScheduler = new FinancialScheduler();
         financialScheduler.setPeriodicity(new Periodicity());
 
@@ -260,7 +248,7 @@ public class ProductIProtect implements Product {
 
     private static void checkCommonData(CommonData commonData) {
         isEqual(commonData.getProductId(), ProductType.PRODUCT_IGEN.getName(), PolicyValidationException.productIGenExpected);
-        isEqual(commonData.getProductName(), PRODUCT_NAME, PolicyValidationException.productIGenExpected);
+        isEqual(commonData.getProductName(), PRODUCT_IGEN_NAME, PolicyValidationException.productIGenExpected);
     }
 
     private static void checkIGenPremiumsData(PremiumsData premiumsData, LocalDate startDate) {
@@ -270,7 +258,7 @@ public class ProductIProtect implements Product {
         notNull(premiumsData.getProductIGenPremium().getSumInsured().getCurrencyCode(), PolicyValidationException.premiumnsSumInsuredNoCurrency);
         notNull(premiumsData.getProductIGenPremium().getSumInsured().getValue(), PolicyValidationException.premiumnsSumInsuredNoAmount);
 
-        checkSumInsured(premiumsData, PRODUCT_CURRENCY, SUM_INSURED_MIN, SUM_INSURED_MAX);
+        checkSumInsured(premiumsData, PRODUCT_IGEN_CURRENCY, SUM_INSURED_MIN, SUM_INSURED_MAX);
         ProductIGenPremium productIGenPremium = premiumsData.getProductIGenPremium();
         ProductUtils.checkDatedAmounts(productIGenPremium.getEndOfContractBenefitsAverage(), startDate, DURATION_COVERAGE_IN_YEAR);
         ProductUtils.checkDatedAmounts(productIGenPremium.getEndOfContractBenefitsMaximum(), startDate, DURATION_COVERAGE_IN_YEAR);
@@ -288,7 +276,7 @@ public class ProductIProtect implements Product {
             return;
         }
 
-        isEqual(PRODUCT_CURRENCY, premiumsData.getFinancialScheduler().getModalAmount().getCurrencyCode(), QuoteCalculationException.premiumCurrencyException.apply(PRODUCT_CURRENCY));
+        isEqual(PRODUCT_IGEN_CURRENCY, premiumsData.getFinancialScheduler().getModalAmount().getCurrencyCode(), QuoteCalculationException.premiumCurrencyException.apply(PRODUCT_IGEN_CURRENCY));
         isFalse(premiumsData.getFinancialScheduler().getModalAmount().getValue() > PREMIUM_MAX, QuoteCalculationException.premiumTooHighException.apply(PREMIUM_MAX));
         isFalse(premiumsData.getFinancialScheduler().getModalAmount().getValue() < PREMIUM_MIN, QuoteCalculationException.premiumTooLowException.apply(PREMIUM_MIN));
     }

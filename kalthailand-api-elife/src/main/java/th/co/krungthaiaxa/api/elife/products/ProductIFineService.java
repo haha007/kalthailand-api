@@ -5,7 +5,15 @@ import org.springframework.stereotype.Component;
 import th.co.krungthaiaxa.api.elife.data.OccupationType;
 import th.co.krungthaiaxa.api.elife.exception.PolicyValidationException;
 import th.co.krungthaiaxa.api.elife.exception.QuoteCalculationException;
-import th.co.krungthaiaxa.api.elife.model.*;
+import th.co.krungthaiaxa.api.elife.model.CommonData;
+import th.co.krungthaiaxa.api.elife.model.Coverage;
+import th.co.krungthaiaxa.api.elife.model.FinancialScheduler;
+import th.co.krungthaiaxa.api.elife.model.Insured;
+import th.co.krungthaiaxa.api.elife.model.Periodicity;
+import th.co.krungthaiaxa.api.elife.model.Policy;
+import th.co.krungthaiaxa.api.elife.model.PremiumsData;
+import th.co.krungthaiaxa.api.elife.model.ProductIFinePremium;
+import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.enums.ProductIFinePackage;
 import th.co.krungthaiaxa.api.elife.repository.OccupationTypeRepository;
 import th.co.krungthaiaxa.api.elife.repository.ProductIFineRateRepository;
@@ -21,7 +29,7 @@ import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.notNull;
 import static th.co.krungthaiaxa.api.elife.products.ProductUtils.amountTHB;
 
 @Component
-public class ProductIFine implements Product {
+public class ProductIFineService implements ProductService {
     public final static Integer DURATION_COVERAGE_IN_YEAR = 10;
     public final static Integer DURATION_PAYMENT_IN_YEAR = 10;
     public final static String PRODUCT_IFINE_NAME = "Product iFine";
@@ -139,7 +147,7 @@ public class ProductIFine implements Product {
     @Override
     public void getPolicyFromQuote(Policy policy, Quote quote) {
         // check for mandatory data
-        checkCommonData(getCommonData());
+        checkCommonData(initCommonData());
         ProductUtils.checkInsured(quote);
 
         // There is only one insured at this point
@@ -173,7 +181,7 @@ public class ProductIFine implements Product {
     }
 
     @Override
-    public CommonData getCommonData() {
+    public CommonData initCommonData() {
         CommonData commonData = new CommonData();
         commonData.setProductId(ProductType.PRODUCT_IFINE.getName());
         commonData.setProductCurrency(CURRENCY);
@@ -190,9 +198,9 @@ public class ProductIFine implements Product {
     }
 
     @Override
-    public ProductAmounts getProductAmounts(ProductQuotation productQuotation) {
+    public ProductAmounts initProductAmounts(ProductQuotation productQuotation) {
         ProductAmounts productAmounts = new ProductAmounts();
-        productAmounts.setCommonData(getCommonData());
+        productAmounts.setCommonData(initCommonData());
         productAmounts.setMaxPremium(amountTHB(PREMIUM_MAX));
         productAmounts.setMaxSumInsured(amountTHB(SUM_INSURED_MAX));
         productAmounts.setMinPremium(amountTHB(PREMIUM_MIN));
@@ -201,7 +209,7 @@ public class ProductIFine implements Product {
     }
 
     @Override
-    public PremiumsData getPremiumData() {
+    public PremiumsData initPremiumData() {
         FinancialScheduler financialScheduler = new FinancialScheduler();
         financialScheduler.setPeriodicity(new Periodicity());
 

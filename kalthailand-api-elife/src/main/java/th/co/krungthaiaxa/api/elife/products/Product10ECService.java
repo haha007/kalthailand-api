@@ -18,7 +18,7 @@ import static java.lang.Boolean.TRUE;
 import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.*;
 import static th.co.krungthaiaxa.api.elife.products.ProductUtils.*;
 
-public class Product10EC implements Product {
+public class Product10ECService implements ProductService {
     public final static int DURATION_COVERAGE_IN_YEAR = 10;
     public final static int DURATION_PAYMENT_IN_YEAR = 6;
     public final static String PRODUCT_10_EC_NAME = "Product 10 EC";
@@ -169,7 +169,7 @@ public class Product10EC implements Product {
     @Override
     public void getPolicyFromQuote(Policy policy, Quote quote) {
         // check for mandatory data
-        checkCommonData(getCommonData());
+        checkCommonData(initCommonData());
         ProductUtils.checkInsured(quote);
 
         // There is only one insured at this point
@@ -204,7 +204,7 @@ public class Product10EC implements Product {
     }
 
     @Override
-    public CommonData getCommonData() {
+    public CommonData initCommonData() {
         CommonData commonData = new CommonData();
         commonData.setMaxAge(MAX_AGE);
         commonData.setMaxPremium(amount(PREMIUM_MAX, PRODUCT_10_EC_CURRENCY));
@@ -221,9 +221,9 @@ public class Product10EC implements Product {
     }
 
     @Override
-    public ProductAmounts getProductAmounts(ProductQuotation productQuotation) {
+    public ProductAmounts initProductAmounts(ProductQuotation productQuotation) {
         ProductAmounts productAmounts = new ProductAmounts();
-        productAmounts.setCommonData(getCommonData());
+        productAmounts.setCommonData(initCommonData());
         if (productQuotation.getDateOfBirth() == null || productQuotation.getPeriodicityCode() == null) {
             return productAmounts;
         }
@@ -238,7 +238,7 @@ public class Product10EC implements Product {
     }
 
     @Override
-    public PremiumsData getPremiumData() {
+    public PremiumsData initPremiumData() {
         FinancialScheduler financialScheduler = new FinancialScheduler();
         financialScheduler.setPeriodicity(new Periodicity());
 

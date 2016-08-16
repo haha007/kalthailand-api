@@ -15,7 +15,7 @@ import static th.co.krungthaiaxa.api.elife.products.ProductUtils.amount;
 import static th.co.krungthaiaxa.api.elife.products.ProductUtils.amountTHB;
 
 @Component
-public class ProductIBegin implements Product {
+public class ProductIBeginService implements ProductService {
     public final static Integer DURATION_COVERAGE_IN_YEAR = null;
     public final static Integer DURATION_PAYMENT_IN_YEAR = 10;
     public final static String PRODUCT_IBEGIN_ID = "iBegin";
@@ -99,7 +99,7 @@ public class ProductIBegin implements Product {
     }
 
     @Override
-    public CommonData getCommonData() {
+    public CommonData initCommonData() {
         CommonData commonData = new CommonData();
         commonData.setMaxAge(MAX_AGE);
         commonData.setMaxPremium(amountTHB(PREMIUM_MAX));
@@ -116,7 +116,7 @@ public class ProductIBegin implements Product {
     }
 
     @Override
-    public PremiumsData getPremiumData() {
+    public PremiumsData initPremiumData() {
         FinancialScheduler financialScheduler = new FinancialScheduler();
         financialScheduler.setPeriodicity(new Periodicity());
 
@@ -130,7 +130,7 @@ public class ProductIBegin implements Product {
     }
 
     @Override
-    public ProductAmounts getProductAmounts(ProductQuotation productQuotation) {
+    public ProductAmounts initProductAmounts(ProductQuotation productQuotation) {
         return null;
     }
 

@@ -27,8 +27,8 @@ import th.co.krungthaiaxa.api.elife.model.enums.RegistrationTypeName;
 import th.co.krungthaiaxa.api.elife.model.enums.SuccessErrorStatus;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayRecurringResponse;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayResponse;
-import th.co.krungthaiaxa.api.elife.products.Product;
-import th.co.krungthaiaxa.api.elife.products.ProductFactory;
+import th.co.krungthaiaxa.api.elife.products.ProductService;
+import th.co.krungthaiaxa.api.elife.products.ProductServiceFactory;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
 import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
 import th.co.krungthaiaxa.api.elife.repository.PolicyCriteriaRepository;
@@ -84,7 +84,7 @@ public class PolicyService {
     private final LineService lineService;
     private final DocumentService documentService;
     private final SMSApiService smsApiService;
-    private final ProductFactory productFactory;
+    private final ProductServiceFactory productServiceFactory;
     private final CDBClient cdbClient;
 
     @Inject
@@ -100,7 +100,7 @@ public class PolicyService {
             EmailService emailService,
             LineService lineService, DocumentService documentService,
             SMSApiService smsApiService,
-            ProductFactory productFactory, CDBClient cdbClient) {
+            ProductServiceFactory productServiceFactory, CDBClient cdbClient) {
         this.tmcClient = tmcClient;
         this.cdbClient = cdbClient;
         this.paymentRepository = paymentRepository;
@@ -112,7 +112,7 @@ public class PolicyService {
         this.lineService = lineService;
         this.documentService = documentService;
         this.smsApiService = smsApiService;
-        this.productFactory = productFactory;
+        this.productServiceFactory = productServiceFactory;
     }
 
     public Page<Policy> findAll(String policyId, ProductType productType, PolicyStatus status, Boolean nonEmptyAgentCode, LocalDate startDate,
@@ -147,8 +147,8 @@ public class PolicyService {
             policy = new Policy();
             policy.setPolicyId(policyNumber.get().getPolicyId());
 
-            Product product = productFactory.getProduct(quote.getCommonData().getProductId());
-            product.getPolicyFromQuote(policy, quote);
+            ProductService productService = productServiceFactory.getProduct(quote.getCommonData().getProductId());
+            productService.getPolicyFromQuote(policy, quote);
 
             policy.getPayments().stream().forEach(paymentRepository::save);
             policy.setStatus(PENDING_PAYMENT);

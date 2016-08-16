@@ -71,7 +71,7 @@ public class PolicyResourceTest extends ELifeTest {
 
     @Test
     public void should_return_error_when_creating_policy_from_none_existing_quote() throws IOException {
-        String jsonQuote = TestUtil.getJSon(TestUtil.quote(TestUtil.product10EC()));
+        String jsonQuote = TestUtil.getJSon(TestUtil.quote(TestUtil.product10ECService()));
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(base)
                 .queryParam("sessionId", randomNumeric(20))
                 .queryParam("channelType", ChannelType.LINE.name());

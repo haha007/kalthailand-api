@@ -180,7 +180,7 @@ public class TestUtil {
         }
     }
 
-    public static Quote quote(Product product) {
+    public static Quote quote(ProductService productService) {
         Periodicity periodicity = new Periodicity();
         periodicity.setCode(null);
 
@@ -195,27 +195,27 @@ public class TestUtil {
         emptyInsured.setType(InsuredType.Insured);
 
         Quote quote = new Quote();
-        quote.setCommonData(product.getCommonData());
-        quote.setPremiumsData(product.getPremiumData());
+        quote.setCommonData(productService.initCommonData());
+        quote.setPremiumsData(productService.initPremiumData());
         quote.addInsured(emptyInsured);
 
         return quote;
     }
 
-    public static Product10EC product10EC() {
-        return new Product10EC();
+    public static Product10ECService product10ECService() {
+        return new Product10ECService();
     }
 
-    public static ProductIBegin productIBegin() {
-        return new ProductIBegin();
+    public static ProductIBeginService productIBeginService() {
+        return new ProductIBeginService();
     }
 
-    public static ProductIFine productIFine() {
-        return new ProductIFine();
+    public static ProductIFineService productIFineService() {
+        return new ProductIFineService();
     }
 
-    public static ProductIGen productIGen() {
-        return new ProductIGen();
+    public static ProductIGenService productIGenService() {
+        return new ProductIGenService();
     }
 
     public static CoverageBeneficiary beneficiary(Double benefitPercent) {

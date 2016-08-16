@@ -25,11 +25,11 @@ import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.*;
 @ActiveProfiles("test")
 public class ProductIBeginTest {
     @Inject
-    private ProductIBegin productIBegin;
+    private ProductIBeginService productIBegin;
 
     @Test
     public void should_calculate_premium_from_sum_insured_with_yearly_periodicity_male_age_50() throws Exception {
-        Quote quote = quote(TestUtil.productIBegin());
+        Quote quote = quote(TestUtil.productIBeginService());
         productIBegin.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IBEGIN, 50, EVERY_YEAR, 200000.0, GenderCode.MALE));
         Amount result = quote.getPremiumsData().getFinancialScheduler().getModalAmount();
         assertThat(result.getCurrencyCode()).isEqualTo("THB");
@@ -38,7 +38,7 @@ public class ProductIBeginTest {
 
     @Test
     public void should_calculate_premium_from_sum_insured_with_yearly_periodicity_female_age_50() throws Exception {
-        Quote quote = quote(TestUtil.productIBegin());
+        Quote quote = quote(TestUtil.productIBeginService());
         productIBegin.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IBEGIN, 50, EVERY_YEAR, 200000.0, GenderCode.FEMALE));
         Amount result = quote.getPremiumsData().getFinancialScheduler().getModalAmount();
         assertThat(result.getCurrencyCode()).isEqualTo("THB");
@@ -47,7 +47,7 @@ public class ProductIBeginTest {
 
     @Test
     public void should_calculate_premium_from_sum_insured_with_half_year_periodicity_male_age_50() throws Exception {
-        Quote quote = quote(TestUtil.productIBegin());
+        Quote quote = quote(TestUtil.productIBeginService());
         productIBegin.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IBEGIN, 50, EVERY_HALF_YEAR, 200000.0, GenderCode.MALE));
         Amount result = quote.getPremiumsData().getFinancialScheduler().getModalAmount();
         assertThat(result.getCurrencyCode()).isEqualTo("THB");
@@ -56,7 +56,7 @@ public class ProductIBeginTest {
 
     @Test
     public void should_calculate_premium_from_sum_insured_with_half_year_periodicity_female_age_50() throws Exception {
-        Quote quote = quote(TestUtil.productIBegin());
+        Quote quote = quote(TestUtil.productIBeginService());
         productIBegin.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IBEGIN, 50, EVERY_HALF_YEAR, 200000.0, GenderCode.FEMALE));
         Amount result = quote.getPremiumsData().getFinancialScheduler().getModalAmount();
         assertThat(result.getCurrencyCode()).isEqualTo("THB");
@@ -65,7 +65,7 @@ public class ProductIBeginTest {
 
     @Test
     public void should_calculate_premium_from_sum_insured_with_quarterly_periodicity_male_age_50() throws Exception {
-        Quote quote = quote(TestUtil.productIBegin());
+        Quote quote = quote(TestUtil.productIBeginService());
         productIBegin.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IBEGIN, 50, EVERY_QUARTER, 200000.0, GenderCode.MALE));
         Amount result = quote.getPremiumsData().getFinancialScheduler().getModalAmount();
         assertThat(result.getCurrencyCode()).isEqualTo("THB");
@@ -74,7 +74,7 @@ public class ProductIBeginTest {
 
     @Test
     public void should_calculate_premium_from_sum_insured_with_quarterly_periodicity_female_age_50() throws Exception {
-        Quote quote = quote(TestUtil.productIBegin());
+        Quote quote = quote(TestUtil.productIBeginService());
         productIBegin.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IBEGIN, 50, EVERY_QUARTER, 200000.0, GenderCode.FEMALE));
         Amount result = quote.getPremiumsData().getFinancialScheduler().getModalAmount();
         assertThat(result.getCurrencyCode()).isEqualTo("THB");
@@ -83,7 +83,7 @@ public class ProductIBeginTest {
 
     @Test
     public void should_calculate_premium_from_sum_insured_with_monthly_periodicity_male_age_50() throws Exception {
-        Quote quote = quote(TestUtil.productIBegin());
+        Quote quote = quote(TestUtil.productIBeginService());
         productIBegin.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IBEGIN, 50, EVERY_MONTH, 200000.0, GenderCode.MALE));
         Amount result = quote.getPremiumsData().getFinancialScheduler().getModalAmount();
         assertThat(result.getCurrencyCode()).isEqualTo("THB");
@@ -92,7 +92,7 @@ public class ProductIBeginTest {
 
     @Test
     public void should_calculate_premium_from_sum_insured_with_monthly_periodicity_female_age_50() throws Exception {
-        Quote quote = quote(TestUtil.productIBegin());
+        Quote quote = quote(TestUtil.productIBeginService());
         productIBegin.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IBEGIN, 50, EVERY_MONTH, 200000.0, GenderCode.FEMALE));
         Amount result = quote.getPremiumsData().getFinancialScheduler().getModalAmount();
         assertThat(result.getCurrencyCode()).isEqualTo("THB");
@@ -101,7 +101,7 @@ public class ProductIBeginTest {
 
     @Test
     public void should_calculate_premium_from_sum_insured_with_yearly_periodicity_and_age_55() throws Exception {
-        Quote quote = quote(TestUtil.productIBegin());
+        Quote quote = quote(TestUtil.productIBeginService());
         productIBegin.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IBEGIN, 55, EVERY_YEAR, 200000.0, GenderCode.MALE));
         Amount result = quote.getPremiumsData().getFinancialScheduler().getModalAmount();
         assertThat(result.getCurrencyCode()).isEqualTo("THB");
@@ -110,7 +110,7 @@ public class ProductIBeginTest {
 
     @Test
     public void should_calculate_premium_from_sum_insured_with_yearly_periodicity_and_age_60() throws Exception {
-        Quote quote = quote(TestUtil.productIBegin());
+        Quote quote = quote(TestUtil.productIBeginService());
         productIBegin.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IBEGIN, 60, EVERY_YEAR, 200000.0, GenderCode.MALE));
         Amount result = quote.getPremiumsData().getFinancialScheduler().getModalAmount();
         assertThat(result.getCurrencyCode()).isEqualTo("THB");
@@ -119,7 +119,7 @@ public class ProductIBeginTest {
 
     @Test
     public void should_calculate_premium_from_sum_insured_with_yearly_periodicity_and_age_65() throws Exception {
-        Quote quote = quote(TestUtil.productIBegin());
+        Quote quote = quote(TestUtil.productIBeginService());
         productIBegin.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IBEGIN, 65, EVERY_YEAR, 200000.0, GenderCode.MALE));
         Amount result = quote.getPremiumsData().getFinancialScheduler().getModalAmount();
         assertThat(result.getCurrencyCode()).isEqualTo("THB");
@@ -128,7 +128,7 @@ public class ProductIBeginTest {
 
     @Test
     public void should_calculate_premium_from_sum_insured_with_yearly_periodicity_and_age_70() throws Exception {
-        Quote quote = quote(TestUtil.productIBegin());
+        Quote quote = quote(TestUtil.productIBeginService());
         productIBegin.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IBEGIN, 70, EVERY_YEAR, 200000.0, GenderCode.MALE));
         Amount result = quote.getPremiumsData().getFinancialScheduler().getModalAmount();
         assertThat(result.getCurrencyCode()).isEqualTo("THB");

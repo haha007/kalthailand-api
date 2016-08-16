@@ -7,10 +7,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import th.co.krungthaiaxa.api.elife.products.Product;
+import th.co.krungthaiaxa.api.elife.products.ProductService;
 import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
 import th.co.krungthaiaxa.api.elife.products.ProductAmounts;
-import th.co.krungthaiaxa.api.elife.products.ProductFactory;
+import th.co.krungthaiaxa.api.elife.products.ProductServiceFactory;
 
 import javax.inject.Inject;
 
@@ -22,11 +22,11 @@ import static th.co.krungthaiaxa.api.common.utils.JsonUtil.getJson;
 @RestController
 @Api(value = "Products")
 public class ProductResource {
-    private final ProductFactory productFactory;
+    private final ProductServiceFactory productServiceFactory;
 
     @Inject
-    public ProductResource(ProductFactory productFactory) {
-        this.productFactory = productFactory;
+    public ProductResource(ProductServiceFactory productServiceFactory) {
+        this.productServiceFactory = productServiceFactory;
     }
 
     @ApiOperation(value = "Product premiums", notes = "Gets product min and max amounts for sum insured and premium, " +
@@ -35,7 +35,7 @@ public class ProductResource {
     public ResponseEntity<byte[]> getProductAmounts(
             @ApiParam(value = "The product details for which to get the min and max amounts")
             @RequestBody ProductQuotation productQuotationJson) {
-        Product product = productFactory.getProduct(productQuotationJson.getProductType().getName());
-        return new ResponseEntity<>(getJson(product.getProductAmounts(productQuotationJson)), OK);
+        ProductService productService = productServiceFactory.getProduct(productQuotationJson.getProductType().getName());
+        return new ResponseEntity<>(getJson(productService.initProductAmounts(productQuotationJson)), OK);
     }
 }

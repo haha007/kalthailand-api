@@ -32,7 +32,7 @@ import static th.co.krungthaiaxa.api.elife.TestUtil.productQuotation;
 import static th.co.krungthaiaxa.api.elife.TestUtil.quote;
 import static th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus.NOT_PROCESSED;
 import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.*;
-import static th.co.krungthaiaxa.api.elife.products.ProductIGen.*;
+import static th.co.krungthaiaxa.api.elife.products.ProductIGenService.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiApplication.class)
@@ -40,11 +40,11 @@ import static th.co.krungthaiaxa.api.elife.products.ProductIGen.*;
 @ActiveProfiles("test")
 public class ProductIGenTest {
     @Inject
-    private ProductIGen productIGen;
+    private ProductIGenService productIGen;
 
     @Test
     public void should_return_amount_for_30_yo_monthly() throws Exception {
-        ProductAmounts productAmounts = productIGen.getProductAmounts(TestUtil.productQuotation(30, EVERY_MONTH));
+        ProductAmounts productAmounts = productIGen.initProductAmounts(TestUtil.productQuotation(30, EVERY_MONTH));
         assertThat(productAmounts.getMinPremium().getValue()).isEqualTo(2772.0);
         assertThat(productAmounts.getMaxPremium().getValue()).isEqualTo(27720.0);
         assertThat(productAmounts.getMinSumInsured().getValue()).isEqualTo(100000.0);
@@ -53,7 +53,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_return_amount_for_30_yo_quarterly() throws Exception {
-        ProductAmounts productAmounts = productIGen.getProductAmounts(TestUtil.productQuotation(30, EVERY_QUARTER));
+        ProductAmounts productAmounts = productIGen.initProductAmounts(TestUtil.productQuotation(30, EVERY_QUARTER));
         assertThat(productAmounts.getMinPremium().getValue()).isEqualTo(8316.0);
         assertThat(productAmounts.getMaxPremium().getValue()).isEqualTo(83160.0);
         assertThat(productAmounts.getMinSumInsured().getValue()).isEqualTo(100000.0);
@@ -62,7 +62,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_return_amount_for_30_yo_half_yearly() throws Exception {
-        ProductAmounts productAmounts = productIGen.getProductAmounts(TestUtil.productQuotation(30, EVERY_HALF_YEAR));
+        ProductAmounts productAmounts = productIGen.initProductAmounts(TestUtil.productQuotation(30, EVERY_HALF_YEAR));
         assertThat(productAmounts.getMinPremium().getValue()).isEqualTo(16016.0);
         assertThat(productAmounts.getMaxPremium().getValue()).isEqualTo(160160.0);
         assertThat(productAmounts.getMinSumInsured().getValue()).isEqualTo(100000.0);
@@ -71,7 +71,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_return_amount_for_30_yo_yearly() throws Exception {
-        ProductAmounts productAmounts = productIGen.getProductAmounts(TestUtil.productQuotation(30, EVERY_YEAR));
+        ProductAmounts productAmounts = productIGen.initProductAmounts(TestUtil.productQuotation(30, EVERY_YEAR));
         assertThat(productAmounts.getMinPremium().getValue()).isEqualTo(30800.0);
         assertThat(productAmounts.getMaxPremium().getValue()).isEqualTo(308000.0);
         assertThat(productAmounts.getMinSumInsured().getValue()).isEqualTo(100000.0);
@@ -80,7 +80,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_return_amount_for_48_yo_yearly() throws Exception {
-        ProductAmounts productAmounts = productIGen.getProductAmounts(TestUtil.productQuotation(48, EVERY_YEAR));
+        ProductAmounts productAmounts = productIGen.initProductAmounts(TestUtil.productQuotation(48, EVERY_YEAR));
         assertThat(productAmounts.getMinPremium().getValue()).isEqualTo(30600.0);
         assertThat(productAmounts.getMaxPremium().getValue()).isEqualTo(306000.0);
         assertThat(productAmounts.getMinSumInsured().getValue()).isEqualTo(100000.0);
@@ -89,7 +89,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_return_amount_for_53_yo_yearly() throws Exception {
-        ProductAmounts productAmounts = productIGen.getProductAmounts(TestUtil.productQuotation(53, EVERY_YEAR));
+        ProductAmounts productAmounts = productIGen.initProductAmounts(TestUtil.productQuotation(53, EVERY_YEAR));
         assertThat(productAmounts.getMinPremium().getValue()).isEqualTo(30400.0);
         assertThat(productAmounts.getMaxPremium().getValue()).isEqualTo(304000.0);
         assertThat(productAmounts.getMinSumInsured().getValue()).isEqualTo(100000.0);
@@ -98,7 +98,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_return_amount_for_58_yo_yearly() throws Exception {
-        ProductAmounts productAmounts = productIGen.getProductAmounts(TestUtil.productQuotation(58, EVERY_YEAR));
+        ProductAmounts productAmounts = productIGen.initProductAmounts(TestUtil.productQuotation(58, EVERY_YEAR));
         assertThat(productAmounts.getMinPremium().getValue()).isEqualTo(30100.0);
         assertThat(productAmounts.getMaxPremium().getValue()).isEqualTo(301000.0);
         assertThat(productAmounts.getMinSumInsured().getValue()).isEqualTo(100000.0);
@@ -107,7 +107,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_return_amount_for_63_yo_yearly() throws Exception {
-        ProductAmounts productAmounts = productIGen.getProductAmounts(TestUtil.productQuotation(63, EVERY_YEAR));
+        ProductAmounts productAmounts = productIGen.initProductAmounts(TestUtil.productQuotation(63, EVERY_YEAR));
         assertThat(productAmounts.getMinPremium().getValue()).isEqualTo(30000.0);
         assertThat(productAmounts.getMaxPremium().getValue()).isEqualTo(300000.0);
         assertThat(productAmounts.getMinSumInsured().getValue()).isEqualTo(100000.0);
@@ -116,7 +116,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_return_amount_for_68_yo_yearly() throws Exception {
-        ProductAmounts productAmounts = productIGen.getProductAmounts(TestUtil.productQuotation(68, EVERY_YEAR));
+        ProductAmounts productAmounts = productIGen.initProductAmounts(TestUtil.productQuotation(68, EVERY_YEAR));
         assertThat(productAmounts.getMinPremium().getValue()).isEqualTo(29800.0);
         assertThat(productAmounts.getMaxPremium().getValue()).isEqualTo(298000.0);
         assertThat(productAmounts.getMinSumInsured().getValue()).isEqualTo(100000.0);
@@ -125,7 +125,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_throw_error_if_age_at_subscription_is_less_than_20() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
 
         assertThatThrownBy(() -> productIGen.calculateQuote(quote, productQuotation(19, EVERY_YEAR, 1000000.0)))
                 .isInstanceOf(QuoteCalculationException.class)
@@ -134,7 +134,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_throw_error_if_age_at_subscription_is_more_than_70() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
 
         assertThatThrownBy(() -> productIGen.calculateQuote(quote, productQuotation(71, EVERY_YEAR, 1000000.0)))
                 .isInstanceOf(QuoteCalculationException.class)
@@ -143,7 +143,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_return_error_when_sum_insured_is_over_the_limit() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
 
         assertThatThrownBy(() -> productIGen.calculateQuote(quote, productQuotation(25, EVERY_YEAR, 1000001.0)))
                 .isInstanceOf(QuoteCalculationException.class)
@@ -152,7 +152,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_return_error_when_sum_insured_is_below_the_limit() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
 
         assertThatThrownBy(() -> productIGen.calculateQuote(quote, productQuotation(25, EVERY_YEAR, 99999.0)))
                 .isInstanceOf(QuoteCalculationException.class)
@@ -161,7 +161,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_set_sum_insured_to_true_when_sum_insured_provided() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
 
         productIGen.calculateQuote(quote, productQuotation(25, EVERY_YEAR, 308000.0, true));
         assertThat(quote.getPremiumsData().getProductIGenPremium().getSumInsuredOption()).isTrue();
@@ -169,7 +169,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_set_sum_insured_to_false_when_premium_provided() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
 
         productIGen.calculateQuote(quote, productQuotation(25, EVERY_YEAR, 308000.0, false));
         assertThat(quote.getPremiumsData().getProductIGenPremium().getSumInsuredOption()).isFalse();
@@ -177,7 +177,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_calculate_sum_insured_from_premium_with_yearly_periodicity_and_age_25() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
 
         productIGen.calculateQuote(quote, productQuotation(25, EVERY_YEAR, 308000.0, false));
         Amount result = quote.getPremiumsData().getProductIGenPremium().getSumInsured();
@@ -187,7 +187,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_calculate_sum_insured_from_premium_with_yearly_periodicity_and_age_46() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
 
         productIGen.calculateQuote(quote, productQuotation(46, EVERY_YEAR, 306000.0, false));
         Amount result = quote.getPremiumsData().getProductIGenPremium().getSumInsured();
@@ -197,7 +197,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_calculate_sum_insured_from_premium_with_yearly_periodicity_and_age_51() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
 
         productIGen.calculateQuote(quote, productQuotation(51, EVERY_YEAR, 304000.0, false));
         Amount result = quote.getPremiumsData().getProductIGenPremium().getSumInsured();
@@ -207,7 +207,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_calculate_sum_insured_from_premium_with_yearly_periodicity_and_age_56() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
 
         productIGen.calculateQuote(quote, productQuotation(56, EVERY_YEAR, 301000.0, false));
         Amount result = quote.getPremiumsData().getProductIGenPremium().getSumInsured();
@@ -217,7 +217,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_calculate_sum_insured_from_premium_with_yearly_periodicity_and_age_61() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
 
         productIGen.calculateQuote(quote, productQuotation(61, EVERY_YEAR, 300000.0, false));
         Amount result = quote.getPremiumsData().getProductIGenPremium().getSumInsured();
@@ -227,7 +227,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_calculate_sum_insured_from_premium_with_yearly_periodicity_and_age_66() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
 
         productIGen.calculateQuote(quote, productQuotation(66, EVERY_YEAR, 298000.0, false));
         Amount result = quote.getPremiumsData().getProductIGenPremium().getSumInsured();
@@ -237,7 +237,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_calculate_premium_from_sum_insured_with_yearly_periodicity_and_age_25() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
 
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         Amount result = quote.getPremiumsData().getFinancialScheduler().getModalAmount();
@@ -247,7 +247,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_calculate_premium_from_sum_insured_with_monthly_periodicity_and_age_25() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
 
         productIGen.calculateQuote(quote, productQuotation(25, EVERY_MONTH, 1000000.0));
         Amount result = quote.getPremiumsData().getFinancialScheduler().getModalAmount();
@@ -257,7 +257,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_calculate_premium_from_sum_insured_with_quarter_periodicity_and_age_25() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
 
         productIGen.calculateQuote(quote, productQuotation(25, EVERY_QUARTER, 1000000.0));
         Amount result = quote.getPremiumsData().getFinancialScheduler().getModalAmount();
@@ -267,7 +267,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_calculate_premium_from_sum_insured_with_half_year_periodicity_and_age_25() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
 
         productIGen.calculateQuote(quote, productQuotation(25, EVERY_HALF_YEAR, 1000000.0));
         Amount result = quote.getPremiumsData().getFinancialScheduler().getModalAmount();
@@ -277,7 +277,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_calculate_premium_from_sum_insured_with_yearly_periodicity_and_age_46() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
 
         productIGen.calculateQuote(quote, productQuotation(46, EVERY_YEAR, 1000000.0));
         Amount result = quote.getPremiumsData().getFinancialScheduler().getModalAmount();
@@ -287,7 +287,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_calculate_premium_from_sum_insured_with_yearly_periodicity_and_age_51() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
 
         productIGen.calculateQuote(quote, productQuotation(51, EVERY_YEAR, 1000000.0));
         Amount result = quote.getPremiumsData().getFinancialScheduler().getModalAmount();
@@ -297,7 +297,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_calculate_premium_from_sum_insured_with_yearly_periodicity_and_age_56() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
 
         productIGen.calculateQuote(quote, productQuotation(56, EVERY_YEAR, 1000000.0));
         Amount result = quote.getPremiumsData().getFinancialScheduler().getModalAmount();
@@ -307,7 +307,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_calculate_premium_from_sum_insured_with_yearly_periodicity_and_age_61() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
 
         productIGen.calculateQuote(quote, productQuotation(61, EVERY_YEAR, 1000000.0));
         Amount result = quote.getPremiumsData().getFinancialScheduler().getModalAmount();
@@ -317,7 +317,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_calculate_premium_from_sum_insured_with_yearly_periodicity_and_age_66() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
 
         productIGen.calculateQuote(quote, productQuotation(66, EVERY_YEAR, 1000000.0));
         Amount result = quote.getPremiumsData().getFinancialScheduler().getModalAmount();
@@ -327,7 +327,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_calculate_end_dates_and_start_date() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
 
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         quote.getInsureds().get(0).setStartDate(null);
@@ -344,7 +344,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_calculate_tax_return_for_1_million_sum_insured_and_5_percent_tax_rate() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
 
         productIGen.calculateQuote(quote, productQuotation(EVERY_HALF_YEAR, 1000000.0, 5));
         Amount result = quote.getPremiumsData().getProductIGenPremium().getYearlyTaxDeduction();
@@ -354,7 +354,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_calculate_tax_return_for_1_thousand_sum_insured_and_5_percent_tax_rate() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
 
         productIGen.calculateQuote(quote, productQuotation(EVERY_QUARTER, 100000.0, 5));
         Amount result = quote.getPremiumsData().getProductIGenPremium().getYearlyTaxDeduction();
@@ -364,7 +364,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_calculate_tax_return_for_1_million_sum_insured_and_20_percent_tax_rate() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
 
         productIGen.calculateQuote(quote, productQuotation(EVERY_YEAR, 1000000.0, 20));
         Amount result = quote.getPremiumsData().getProductIGenPremium().getYearlyTaxDeduction();
@@ -374,7 +374,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_calculate_tax_return_for_1_thousand_sum_insured_and_20_percent_tax_rate() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
 
         productIGen.calculateQuote(quote, productQuotation(EVERY_MONTH, 100000.0, 20));
         Amount result = quote.getPremiumsData().getProductIGenPremium().getYearlyTaxDeduction();
@@ -384,7 +384,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_calculate_tax_return_for_1_million_sum_insured_and_70_percent_tax_rate() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
 
         productIGen.calculateQuote(quote, productQuotation(EVERY_YEAR, 1000000.0, 70));
         Amount result = quote.getPremiumsData().getProductIGenPremium().getYearlyTaxDeduction();
@@ -394,7 +394,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_calculate_yearly_cash_back_from_1_million_sum_insured() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
 
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         LocalDate startDate = quote.getInsureds().get(0).getStartDate();
@@ -437,7 +437,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_calculate_minimum_end_of_contract_benefits_from_1_million_sum_insured() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
 
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         LocalDate startDate = quote.getInsureds().get(0).getStartDate();
@@ -481,7 +481,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_calculate_minimum_end_of_contract_benefits_from_510_thousand_sum_insured() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
 
         productIGen.calculateQuote(quote, productQuotation(35, EVERY_YEAR, 510000.0));
         LocalDate startDate = quote.getInsureds().get(0).getStartDate();
@@ -524,7 +524,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_calculate_average_end_of_contract_benefits_from_1_million_sum_insured() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
 
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         LocalDate startDate = quote.getInsureds().get(0).getStartDate();
@@ -567,7 +567,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_calculate_maximum_end_of_contract_benefits_from_1_million_sum_insured() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
 
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         LocalDate startDate = quote.getInsureds().get(0).getStartDate();
@@ -610,7 +610,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_calculate_average_yearly_cashback_dividend_from_1_million_sum_insured() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
 
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         LocalDate startDate = quote.getInsureds().get(0).getStartDate();
@@ -653,7 +653,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_calculate_maximum_yearly_cashback_dividend_from_1_million_sum_insured() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
 
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         LocalDate startDate = quote.getInsureds().get(0).getStartDate();
@@ -696,7 +696,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_calculate_average_yearly_cashback_benefit_from_1_million_sum_insured() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
 
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         LocalDate startDate = quote.getInsureds().get(0).getStartDate();
@@ -739,7 +739,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_calculate_maximum_yearly_cashback_benefit_from_1_million_sum_insured() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
 
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         LocalDate startDate = quote.getInsureds().get(0).getStartDate();
@@ -782,7 +782,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_return_error_when_create_policy_with_no_main_insured() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).setMainInsuredIndicator(FALSE);
@@ -793,7 +793,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_return_error_when_create_policy_with_more_than_one_insured() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.addInsured(TestUtil.insured(30));
@@ -805,7 +805,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_return_error_when_create_policy_with_insured_with_no_insured_type() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).setType(null);
@@ -817,7 +817,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_return_error_when_create_policy_with_no_insured() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().remove(0);
@@ -829,7 +829,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_return_error_when_create_policy_with_insured_with_no_person() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).setPerson(null);
@@ -841,7 +841,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_return_error_when_create_policy_with_at_least_one_person_with_no_given_name() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).getPerson().setGivenName(null);
@@ -853,7 +853,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_return_error_when_create_policy_with_at_least_one_person_with_no_surname() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).getPerson().setSurName(null);
@@ -865,7 +865,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_return_error_when_create_policy_with_at_least_one_person_with_no_title() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).getPerson().setTitle(null);
@@ -877,7 +877,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_return_error_when_create_policy_with_at_least_one_person_with_no_gender() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).getPerson().setGenderCode(null);
@@ -889,7 +889,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_return_error_when_create_policy_with_at_least_one_person_with_no_height() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).getHealthStatus().setHeightInCm(null);
@@ -901,7 +901,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_return_error_when_create_policy_with_main_insured_with_no_marital_status() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).getPerson().setMaritalStatus(null);
@@ -913,7 +913,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_return_error_when_create_policy_with_main_insured_with_no_weight() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).getHealthStatus().setWeightInKg(null);
@@ -925,7 +925,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_return_error_when_create_policy_with_main_insured_with_no_weight_change() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).getHealthStatus().setWeightChangeInLast6Months(null);
@@ -937,7 +937,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_return_error_when_create_policy_with_main_insured_with_weight_change_and_no_reason() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).getHealthStatus().setWeightChangeInLast6Months(TRUE);
@@ -949,7 +949,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_return_error_when_create_policy_with_main_insured_with_no_declaredTax() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).setDeclaredTaxPercentAtSubscription(null);
@@ -961,7 +961,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_return_error_when_create_policy_with_main_insured_with_no_disable_status() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).getHealthStatus().setDisableOrImmunoDeficient(null);
@@ -973,7 +973,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_return_error_when_create_policy_with_main_insured_with_no_hospitalized_status() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).getHealthStatus().setHospitalizedInLast6Months(null);
@@ -985,7 +985,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_return_error_when_create_policy_with_main_insured_with_no_denied_policy_status() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).getHealthStatus().setDeniedOrCounterOffer(null);
@@ -997,7 +997,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_return_error_when_create_policy_with_insured_with_no_start_date() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).setStartDate(null);
@@ -1009,7 +1009,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_return_error_when_create_policy_with_insured_with_a_start_date_not_server_date() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).setStartDate(now().minusDays(1));
@@ -1021,7 +1021,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_return_error_when_create_policy_with_main_insured_with_no_end_date() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).setEndDate(null);
@@ -1033,7 +1033,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_return_error_when_create_policy_with_main_insured_with_no_age() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).setAgeAtSubscription(null);
@@ -1045,7 +1045,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_return_error_when_create_policy_with_main_insured_with_no_profession_id() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).setProfessionId(null);
@@ -1057,7 +1057,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_return_error_when_create_policy_with_main_insured_with_no_profession_name() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).setProfessionName(null);
@@ -1069,7 +1069,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_return_error_when_create_policy_with_main_insured_with_no_dob() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).getPerson().setBirthDate(null);
@@ -1081,7 +1081,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_return_error_when_create_policy_with_main_insured_with_no_email() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).getPerson().setEmail(null);
@@ -1093,7 +1093,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_return_error_when_create_policy_with_main_insured_invalid_emails() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).getPerson().setEmail("me");
@@ -1137,7 +1137,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_return_error_when_create_policy_with_main_insured_with_no_geo_address() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).getPerson().setCurrentAddress(null);
@@ -1149,7 +1149,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_return_thailand_as_country_when_create_policy_with_main_insured_with_address_but_no_country() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         Policy policy = new Policy();
@@ -1159,7 +1159,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_return_error_when_create_policy_with_main_insured_with_address_but_no_district() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).getPerson().getCurrentAddress().setDistrict(null);
@@ -1171,7 +1171,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_return_error_when_create_policy_with_main_insured_with_address_but_no_postcode() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).getPerson().getCurrentAddress().setPostCode(null);
@@ -1183,7 +1183,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_return_error_when_create_policy_with_main_insured_with_address_but_no_street_address_1() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).getPerson().getCurrentAddress().setStreetAddress1(null);
@@ -1195,7 +1195,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_return_error_when_create_policy_with_main_insured_with_address_but_no_street_address_2() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).getPerson().getCurrentAddress().setStreetAddress2(null);
@@ -1207,7 +1207,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_return_error_when_create_policy_with_main_insured_with_address_but_no_sub_country() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).getPerson().getCurrentAddress().setSubCountry(null);
@@ -1219,7 +1219,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_return_error_when_create_policy_with_main_insured_with_address_but_no_sub_district() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).getPerson().getCurrentAddress().setSubdistrict(null);
@@ -1231,7 +1231,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_return_error_when_create_policy_with_main_insured_with_no_phone() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).getPerson().setHomePhoneNumber(null);
@@ -1244,7 +1244,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_return_error_when_create_policy_with_main_insured_with_invalid_thai_id() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).getPerson().getRegistrations().get(0).setId("123456789");
@@ -1256,7 +1256,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_return_error_when_create_policy_with_beneficiary_with_invalid_thai_id() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getCoverages().get(0).getBeneficiaries().get(0).getPerson().getRegistrations().get(0).setId("123456789");
@@ -1268,7 +1268,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_return_error_when_create_policy_with_no_beneficiary() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         TestUtil.quote(quote);
         Policy policy = new Policy();
@@ -1279,7 +1279,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_return_error_when_create_policy_with_a_beneficiary_with_no_age() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getCoverages().get(0).getBeneficiaries().get(0).setAgeAtSubscription(null);
@@ -1291,7 +1291,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_return_error_when_create_policy_with_too_many_beneficiaries() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         TestUtil.quote(quote, TestUtil.beneficiary(1.0, "1"), TestUtil.beneficiary(1.0, "2"), TestUtil.beneficiary(1.0, "3"), TestUtil.beneficiary(1.0, "4"),
                 TestUtil.beneficiary(1.0, "5"), TestUtil.beneficiary(1.0, "6"), TestUtil.beneficiary(94.0, "7"));
@@ -1303,7 +1303,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_return_error_when_create_policy_with_beneficiaries_for_percent_sum_different_than_100() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         TestUtil.quote(quote, TestUtil.beneficiary(1.0, "1"), TestUtil.beneficiary(1.0, "2"), TestUtil.beneficiary(1.0, "3"), TestUtil.beneficiary(1.0, "4"),
                 TestUtil.beneficiary(94.0, "5"));
@@ -1315,7 +1315,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_return_error_when_create_policy_with_1_beneficiary_id_equal_to_insured_id() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0, "3101202780273"));
         quote.getCoverages().get(0).getBeneficiaries().get(0).getPerson().getRegistrations().get(0).setId(
@@ -1328,7 +1328,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_return_error_when_create_policy_with_2_beneficiaries_with_same_id() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         TestUtil.quote(quote, TestUtil.beneficiary(1.0, "3101202780273"), TestUtil.beneficiary(99.0, "3101202780273"));
         Policy policy = new Policy();
@@ -1339,7 +1339,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_return_error_when_create_policy_with_main_insured_too_young() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).setAgeAtSubscription(19);
@@ -1352,7 +1352,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_return_error_when_create_policy_with_main_insured_too_old() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).setAgeAtSubscription(71);
@@ -1365,7 +1365,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_copy_quote_details_into_policy() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         Policy policy = new Policy();
@@ -1380,7 +1380,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_get_6_payments_when_choosing_yearly_schedule() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         Policy policy = new Policy();
@@ -1401,7 +1401,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_get_12_payments_when_choosing_half_year_schedule() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
         productIGen.calculateQuote(quote, productQuotation(25, EVERY_HALF_YEAR, 1000000.0));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
 
@@ -1423,7 +1423,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_get_24_payments_when_choosing_quarter_schedule() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
         productIGen.calculateQuote(quote, productQuotation(25, EVERY_QUARTER, 1000000.0));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
 
@@ -1445,7 +1445,7 @@ public class ProductIGenTest {
 
     @Test
     public void should_get_72_payments_when_choosing_monthly_schedule() throws Exception {
-        Quote quote = quote(TestUtil.productIGen());
+        Quote quote = quote(TestUtil.productIGenService());
         productIGen.calculateQuote(quote, productQuotation(25, EVERY_MONTH, 1000000.0));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
 

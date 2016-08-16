@@ -1,7 +1,6 @@
 package th.co.krungthaiaxa.api.elife.products;
 
 import org.junit.Assert;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,8 +40,6 @@ public class ProductIFineConcurrentTest {
     public static final Logger LOGGER = LoggerFactory.getLogger(ProductIFineConcurrentTest.class);
     @Inject
     private QuoteService quoteService;
-    @Inject
-    private ProductIFine productIFine;
 
     private List<ProductQuotation> initProductQuotations() {
         List<ProductQuotation> result = new ArrayList<>();
@@ -56,7 +53,7 @@ public class ProductIFineConcurrentTest {
         return result;
     }
 
-    @Test
+    //    @Test
     public void should_run_concurrently() throws InterruptedException {
         ExecutorService executor = Executors.newCachedThreadPool();
         try {

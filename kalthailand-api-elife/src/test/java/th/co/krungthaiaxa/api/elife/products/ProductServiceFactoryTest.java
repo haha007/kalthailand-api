@@ -17,37 +17,37 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @SpringApplicationConfiguration(classes = KalApiApplication.class)
 @WebAppConfiguration
 @ActiveProfiles("test")
-public class ProductFactoryTest {
+public class ProductServiceFactoryTest {
     @Inject
-    private ProductFactory productFactory;
+    private ProductServiceFactory productServiceFactory;
 
     @Test
     public void should_return_error_when_product_id_is_unknown() {
-        assertThatThrownBy(() -> productFactory.getProduct("something"))
+        assertThatThrownBy(() -> productServiceFactory.getProduct("something"))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     public void should_return_10EC_product() {
-        Product product = productFactory.getProduct(ProductType.PRODUCT_10_EC.getName());
-        assertThat(product).isInstanceOf(Product10EC.class);
+        ProductService productService = productServiceFactory.getProduct(ProductType.PRODUCT_10_EC.getName());
+        assertThat(productService).isInstanceOf(Product10ECService.class);
     }
 
     @Test
     public void should_return_iBegin_product() {
-        Product product = productFactory.getProduct(ProductType.PRODUCT_IBEGIN.getName());
-        assertThat(product).isInstanceOf(ProductIBegin.class);
+        ProductService productService = productServiceFactory.getProduct(ProductType.PRODUCT_IBEGIN.getName());
+        assertThat(productService).isInstanceOf(ProductIBeginService.class);
     }
 
     @Test
     public void should_return_iFine_product() {
-        Product product = productFactory.getProduct(ProductType.PRODUCT_IFINE.getName());
-        assertThat(product).isInstanceOf(ProductIFine.class);
+        ProductService productService = productServiceFactory.getProduct(ProductType.PRODUCT_IFINE.getName());
+        assertThat(productService).isInstanceOf(ProductIFineService.class);
     }
 
     @Test
     public void should_return_iGen_product() {
-        Product product = productFactory.getProduct(ProductType.PRODUCT_IGEN.getName());
-        assertThat(product).isInstanceOf(ProductIGen.class);
+        ProductService productService = productServiceFactory.getProduct(ProductType.PRODUCT_IGEN.getName());
+        assertThat(productService).isInstanceOf(ProductIGenService.class);
     }
 }

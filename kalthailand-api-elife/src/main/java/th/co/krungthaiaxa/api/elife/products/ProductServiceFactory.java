@@ -5,14 +5,14 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 
 @Component
-public class ProductFactory {
-    private final ProductIBegin productIBegin;
-    private final ProductIFine productIFine;
-    private final ProductIGen productIGen;
-    private final ProductIProtect productIProtect;
+public class ProductServiceFactory {
+    private final ProductIBeginService productIBegin;
+    private final ProductIFineService productIFine;
+    private final ProductIGenService productIGen;
+    private final ProductIProtectService productIProtect;
 
     @Inject
-    public ProductFactory(ProductIBegin productIBegin, ProductIFine productIFine, ProductIGen productIGen, ProductIProtect productIProtect) {
+    public ProductServiceFactory(ProductIBeginService productIBegin, ProductIFineService productIFine, ProductIGenService productIGen, ProductIProtectService productIProtect) {
         this.productIBegin = productIBegin;
         this.productIFine = productIFine;
         this.productIGen = productIGen;
@@ -23,9 +23,9 @@ public class ProductFactory {
      * @param productName get from {@link ProductType#getName()}.
      * @return
      */
-    public Product getProduct(String productName) {
+    public ProductService getProduct(String productName) {
         if (productName.equals(ProductType.PRODUCT_10_EC.getName())) {
-            return new Product10EC();
+            return new Product10ECService();
         } else if (productName.equals(ProductType.PRODUCT_IBEGIN.getName())) {
             return productIBegin;
         } else if (productName.equals(ProductType.PRODUCT_IFINE.getName())) {

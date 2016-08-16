@@ -11,8 +11,8 @@ import th.co.krungthaiaxa.api.elife.model.*;
 import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
 import th.co.krungthaiaxa.api.elife.model.enums.InsuredType;
 import th.co.krungthaiaxa.api.elife.model.enums.RegistrationTypeName;
-import th.co.krungthaiaxa.api.elife.products.Product;
-import th.co.krungthaiaxa.api.elife.products.ProductFactory;
+import th.co.krungthaiaxa.api.elife.products.ProductService;
+import th.co.krungthaiaxa.api.elife.products.ProductServiceFactory;
 import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
 import th.co.krungthaiaxa.api.elife.repository.OccupationTypeRepository;
 import th.co.krungthaiaxa.api.elife.repository.QuoteRepository;
@@ -32,19 +32,19 @@ public class QuoteService {
     private final static Logger logger = LoggerFactory.getLogger(QuoteService.class);
     private final SessionQuoteRepository sessionQuoteRepository;
     private final QuoteRepository quoteRepository;
-    private final ProductFactory productFactory;
+    private final ProductServiceFactory productServiceFactory;
     private final OccupationTypeRepository occupationTypeRepository;
     private final BlackListClient blackListClient;
 
     @Inject
     public QuoteService(SessionQuoteRepository sessionQuoteRepository,
                         QuoteRepository quoteRepository,
-                        ProductFactory productFactory,
+                        ProductServiceFactory productServiceFactory,
                         OccupationTypeRepository occupationTypeRepository,
                         BlackListClient blackListClient) {
         this.sessionQuoteRepository = sessionQuoteRepository;
         this.quoteRepository = quoteRepository;
-        this.productFactory = productFactory;
+        this.productServiceFactory = productServiceFactory;
         this.occupationTypeRepository = occupationTypeRepository;
         this.blackListClient = blackListClient;
     }
@@ -63,7 +63,7 @@ public class QuoteService {
     }
 
     public Quote createQuote(String sessionId, ChannelType channelType, ProductQuotation productQuotation) {
-        Product product = productFactory.getProduct(productQuotation.getProductType().getName());
+        ProductService productService = productServiceFactory.getProduct(productQuotation.getProductType().getName());
 
         Person person = new Person();
         if (ChannelType.LINE.equals(channelType)) {
@@ -82,12 +82,12 @@ public class QuoteService {
         quote.setCreationDateTime(now);
         quote.setLastUpdateDateTime(now);
         quote.setQuoteId(randomNumeric(20));
-        quote.setCommonData(product.getCommonData());
-        quote.setPremiumsData(product.getPremiumData());
+        quote.setCommonData(productService.initCommonData());
+        quote.setPremiumsData(productService.initPremiumData());
         quote.addInsured(insured);
 
         //calculate
-        product.calculateQuote(quote, productQuotation);
+        productService.calculateQuote(quote, productQuotation);
 
         quote = quoteRepository.save(quote);
 
