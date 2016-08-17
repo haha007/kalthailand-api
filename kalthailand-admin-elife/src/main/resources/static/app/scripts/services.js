@@ -87,7 +87,7 @@
     });
 
     app.factory('PolicyDetail', function ($resource) {
-        return $resource(window.location.origin + '/api-elife/policies/:id', { id: '@id' }, {});
+        return $resource(window.location.origin + '/api-elife/policies/:id', {}, {});
     });
 
     app.factory('PolicyNotification', function ($resource) {
@@ -114,6 +114,10 @@
                 return config;
             }
         };
+    });
+    
+    app.factory('ProductCriteria', function ($resource) {
+        return $resource(window.location.origin + '/api-elife/products/criteria-list');
     });
 
     app.config(function ($httpProvider) {
