@@ -15,10 +15,13 @@ import th.co.krungthaiaxa.api.elife.products.Product;
 import th.co.krungthaiaxa.api.elife.products.ProductFactory;
 import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
 import th.co.krungthaiaxa.api.elife.repository.OccupationTypeRepository;
+import th.co.krungthaiaxa.api.elife.repository.QuoteCriteriaRepository;
 import th.co.krungthaiaxa.api.elife.repository.QuoteRepository;
 import th.co.krungthaiaxa.api.elife.repository.SessionQuoteRepository;
 
 import javax.inject.Inject;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -35,18 +38,21 @@ public class QuoteService {
     private final ProductFactory productFactory;
     private final OccupationTypeRepository occupationTypeRepository;
     private final BlackListClient blackListClient;
+    private final QuoteCriteriaRepository quoteCriteriaRepository;
 
     @Inject
     public QuoteService(SessionQuoteRepository sessionQuoteRepository,
                         QuoteRepository quoteRepository,
                         ProductFactory productFactory,
                         OccupationTypeRepository occupationTypeRepository,
-                        BlackListClient blackListClient) {
+                        BlackListClient blackListClient,
+                        QuoteCriteriaRepository quoteCriteriaRepository) {
         this.sessionQuoteRepository = sessionQuoteRepository;
         this.quoteRepository = quoteRepository;
         this.productFactory = productFactory;
         this.occupationTypeRepository = occupationTypeRepository;
         this.blackListClient = blackListClient;
+        this.quoteCriteriaRepository = quoteCriteriaRepository;
     }
 
     public Optional<Quote> getLatestQuote(String sessionId, ChannelType channelType) {
@@ -141,5 +147,9 @@ public class QuoteService {
         return sessionQuote.getQuotes().stream()
                 .filter(quote -> quote.getQuoteId().equals(quoteId))
                 .findFirst();
+    }
+    
+    public Long getTotalQuoteCount(String productId, LocalDate startDate, LocalDate endDate){
+    	return quoteCriteriaRepository.quoteCount(productId, startDate, endDate);
     }
 }

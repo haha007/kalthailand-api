@@ -71,14 +71,14 @@ public static void main(String[] args) throws ParseException {
 
 	}
 	*/
-/*
+
 	public static void main(String[] args) throws ParseException {
 		
-		String dbIp = "10.22.248.52";
+		String dbIp = "localhost";
 		int dbPort = 27117;
 		String dbName = "elife";
 		String uName = "elifeuser";
-		String uPass = "28$Jp7$tsld7nZ";
+		String uPass = "password";
 
 		try {
 			
@@ -91,7 +91,8 @@ public static void main(String[] args) throws ParseException {
 				DBCollection quote = db.getCollection("quote");
 				BasicDBObject quoteQuery = new BasicDBObject();
 				DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ENGLISH);
-				quoteQuery.put("creationDateTime", BasicDBObjectBuilder.start("$gte", format.parse("2016-07-04T00:00:00.000Z")).add("$lte", format.parse("2016-07-10T23:59:59.999Z")).get());
+				quoteQuery.put("creationDateTime", BasicDBObjectBuilder.start("$gte", format.parse("2016-08-01T00:00:00.000Z")).add("$lte", format.parse("2016-08-17T23:59:59.999Z")).get());
+				quoteQuery.put("commonData.productId", "10EC");
 				DBCursor quoteCursor = quote.find(quoteQuery);
 				
 				System.out.println("quote count : "+quoteCursor.count());
@@ -144,5 +145,5 @@ public static void main(String[] args) throws ParseException {
 		} 
 
 	}
-*/
+
 }

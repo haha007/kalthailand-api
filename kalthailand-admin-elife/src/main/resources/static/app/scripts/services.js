@@ -119,5 +119,9 @@
     app.config(function ($httpProvider) {
         $httpProvider.interceptors.push('httpRequestInterceptor');
     });
+    
+    app.factory('TotalQuoteCount', function ($resource) {
+        return $resource(window.location.origin + '/api-elife/quotes/count/:productId/:fromDate/:toDate', { productId: '@productId', fromDate: '@fromDate', toDate: '@toDate' }, {});
+    });
 
 })();

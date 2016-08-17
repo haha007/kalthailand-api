@@ -1,6 +1,8 @@
 package th.co.krungthaiaxa.api.elife.resource;
 
 import io.swagger.annotations.*;
+
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,6 +15,7 @@ import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
 import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
 import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
+import th.co.krungthaiaxa.api.elife.repository.QuoteCriteriaRepository;
 import th.co.krungthaiaxa.api.elife.service.EmailService;
 import th.co.krungthaiaxa.api.common.model.error.Error;
 import th.co.krungthaiaxa.api.elife.service.QuoteService;
@@ -21,6 +24,8 @@ import th.co.krungthaiaxa.api.common.utils.JsonUtil;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 import static org.springframework.http.HttpStatus.*;
@@ -185,6 +190,33 @@ public class QuoteResource {
         }
 
         return new ResponseEntity<>(getJson(updatedQuote), OK);
+    }
+    
+    @ApiOperation(value = "Get total number of quote", notes = "Get total number of quote" , response = Integer.class)
+    @RequestMapping(value = "/quotes/count/{productId}/{dateFrom}/{dateTo}", produces = APPLICATION_JSON_VALUE, method = GET)
+    public ResponseEntity<byte[]> getProductList(
+    		@ApiParam(value = "The product Id", required = true)
+            @PathVariable String productId,
+            @ApiParam(value = "The date from", required = true)
+            @PathVariable String dateFrom,
+            @ApiParam(value = "The date to", required = true)
+            @PathVariable String dateTo) {
+    	
+    	System.out.println("productId:"+productId);
+    	System.out.println("dateFrom:"+dateFrom);
+    	System.out.println("dateTo:"+dateTo);
+    	
+    	LocalDate startDate = null;
+        if (StringUtils.isNoneEmpty(dateFrom)) {
+            startDate = LocalDate.from(DateTimeFormatter.ISO_DATE_TIME.parse(dateFrom));
+        }
+        
+        LocalDate endDate = null;
+        if (StringUtils.isNoneEmpty(dateTo)) {
+            endDate = LocalDate.from(DateTimeFormatter.ISO_DATE_TIME.parse(dateTo));
+        }
+        
+        return new ResponseEntity<>(getJson(quoteService.getTotalQuoteCount(productId, startDate, endDate)), OK);
     }
 
 }
