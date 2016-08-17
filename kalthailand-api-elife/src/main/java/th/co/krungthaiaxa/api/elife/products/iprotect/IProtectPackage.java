@@ -10,6 +10,16 @@ package th.co.krungthaiaxa.api.elife.products.iprotect;
  * <p>
  * However, on online, we only support iProtect10, and it's called iProtectS.
  */
-public enum ProductIProtectPackage {
-    IPROTECT10;
+public enum IProtectPackage {
+    IPROTECT10(10);
+    /**
+     * The number of years which a customer has to pay to buy the product.
+     */
+    private final int paymentYears;
+
+    IProtectPackage(int paymentYears) {this.paymentYears = paymentYears;}
+
+    public int getPaymentYears() {
+        return paymentYears;
+    }
 }

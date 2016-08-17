@@ -19,18 +19,18 @@ import java.util.List;
 @SpringApplicationConfiguration(classes = KalApiApplication.class)
 @WebAppConfiguration
 @ActiveProfiles("test")
-public class ProductIProtectRateLoaderServiceTest {
-    public static final Logger LOGGER = LoggerFactory.getLogger(ProductIProtectRateLoaderServiceTest.class);
+public class IProtectRateLoaderServiceTest {
+    public static final Logger LOGGER = LoggerFactory.getLogger(IProtectRateLoaderServiceTest.class);
     @Inject
-    ProductIProtectRateLoaderService productIProtectRateLoaderService;
+    IProtectRateLoaderService IProtectRateLoaderService;
 
     @Test
     public void loadPredefinedRates() {
-        List<IprotectPredefinedRate> productIProtectRates = productIProtectRateLoaderService.getPredefinedIProtectRates(ProductIProtectPackage.IPROTECT10);
+        List<IProtectPredefinedRate> productIProtectRates = IProtectRateLoaderService.getPredefinedIProtectRates(IProtectPackage.IPROTECT10);
         LOGGER.trace(ObjectMapperUtil.toStringMultiLineForEachElement(productIProtectRates));
 
         Assert.assertTrue(!productIProtectRates.isEmpty());
-        for (IprotectPredefinedRate productIProtectRate : productIProtectRates) {
+        for (IProtectPredefinedRate productIProtectRate : productIProtectRates) {
             Assert.assertTrue(productIProtectRate.getAge() >= 0);
             Assert.assertTrue(productIProtectRate.getFemaleRate() > 0);
             Assert.assertTrue(productIProtectRate.getMaleRate() > 0);

@@ -2,10 +2,10 @@ package th.co.krungthaiaxa.api.elife.products;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import th.co.krungthaiaxa.api.elife.model.enums.GenderCode;
 import th.co.krungthaiaxa.api.elife.model.Amount;
+import th.co.krungthaiaxa.api.elife.model.enums.GenderCode;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
-import th.co.krungthaiaxa.api.elife.products.iprotect.ProductIProtectPackage;
+import th.co.krungthaiaxa.api.elife.products.iprotect.IProtectPackage;
 
 import java.time.LocalDate;
 
@@ -18,13 +18,19 @@ public class ProductQuotation {
     private ProductType productType;
     private LocalDate dateOfBirth;
     private GenderCode genderCode;
+
+    /**
+     * A customer can input either premiumAmount or sumInsuredAmount.
+     * When he inputs premiumAmount, we will calculate sumInsuredAmount (based on premiumAmount).
+     * If he inputs sumInsuredAmount, we will calculate premiumAmount (based on sumInsuredAmount)
+     */
     private Amount premiumAmount;
     private Amount sumInsuredAmount;
     private PeriodicityCode periodicityCode;
     private Integer nbOfYearsOfPayment;
     private Integer occupationId;
     /**
-     * This is the name in one of following enums {@link ProductIFinePackage} or {@link ProductIProtectPackage}
+     * This is the name in one of following enums {@link ProductIFinePackage} or {@link IProtectPackage}
      */
     private String packageName;
     private Integer declaredTaxPercentAtSubscription;

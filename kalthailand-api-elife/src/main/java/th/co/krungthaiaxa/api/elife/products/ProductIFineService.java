@@ -160,6 +160,7 @@ public class ProductIFineService implements ProductService {
         ProductUtils.checkMainInsured(insured);
 
         // Recalculate the quote
+        //TODO this method do nothing!!!
         calculateQuote(quote, null);
 
         // check for calculated data

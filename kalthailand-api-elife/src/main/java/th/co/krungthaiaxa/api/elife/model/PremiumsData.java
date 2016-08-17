@@ -6,14 +6,18 @@ import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import java.util.Objects;
 
+/**
+ * This is the premium data which will be applied for all products.
+ */
 @ApiModel(description = "Data concerning premiums (price for the coverage and benefit agreed) to all commercial types",
-        subTypes = {Product10ECPremium.class})
+        subTypes = { Product10ECPremium.class })//TODO change it to PremiumsData.class or remove it.
 public class PremiumsData implements Serializable {
     private FinancialScheduler financialScheduler;
     private Product10ECPremium product10ECPremium;
     private ProductIBeginPremium productIBeginPremium;
     private ProductIFinePremium productIFinePremium;
     private ProductIGenPremium productIGenPremium;
+    private ProductIProtectPremium productIProtectPremium;
 
     @ApiModelProperty(value = "The definition of how the premiums must be paid")
     public FinancialScheduler getFinancialScheduler() {
@@ -75,5 +79,13 @@ public class PremiumsData implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(financialScheduler, product10ECPremium, productIBeginPremium, productIFinePremium, productIGenPremium);
+    }
+
+    public ProductIProtectPremium getProductIProtectPremium() {
+        return productIProtectPremium;
+    }
+
+    public void setProductIProtectPremium(ProductIProtectPremium productIProtectPremium) {
+        this.productIProtectPremium = productIProtectPremium;
     }
 }

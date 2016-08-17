@@ -1,34 +1,60 @@
 package th.co.krungthaiaxa.api.elife.products;
 
+import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
 import th.co.krungthaiaxa.api.elife.exception.PolicyValidationException;
-import th.co.krungthaiaxa.api.elife.model.*;
+import th.co.krungthaiaxa.api.elife.model.Amount;
+import th.co.krungthaiaxa.api.elife.model.Coverage;
+import th.co.krungthaiaxa.api.elife.model.CoverageBeneficiary;
+import th.co.krungthaiaxa.api.elife.model.DatedAmount;
+import th.co.krungthaiaxa.api.elife.model.GeographicalAddress;
+import th.co.krungthaiaxa.api.elife.model.Insured;
+import th.co.krungthaiaxa.api.elife.model.Payment;
+import th.co.krungthaiaxa.api.elife.model.Person;
+import th.co.krungthaiaxa.api.elife.model.Policy;
+import th.co.krungthaiaxa.api.elife.model.Quote;
+import th.co.krungthaiaxa.api.elife.model.Registration;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
-import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.*;
+import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.isEqual;
+import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.isFalse;
+import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.isNotEqual;
+import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.isTrue;
+import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.notNull;
 import static th.co.krungthaiaxa.api.elife.exception.PolicyValidationException.*;
-import static th.co.krungthaiaxa.api.elife.exception.QuoteCalculationException.*;
+import static th.co.krungthaiaxa.api.elife.exception.QuoteCalculationException.ageIsEmptyException;
+import static th.co.krungthaiaxa.api.elife.exception.QuoteCalculationException.ageIsTooHighException;
+import static th.co.krungthaiaxa.api.elife.exception.QuoteCalculationException.ageIsTooLowException;
 
 public class ProductUtils {
+    public static final String CURRENCY_THB = "THB";
+    /**
+     * At this moment, this modalFactor is still the same for every products. If in the future it's different for one product, please customize it.
+     */
     public static Function<PeriodicityCode, Double> modalFactor = periodicityCode -> {
         switch (periodicityCode) {
-            case EVERY_MONTH:
-                return 0.09;
-            case EVERY_QUARTER:
-                return 0.27;
-            case EVERY_HALF_YEAR:
-                return 0.52;
-            case EVERY_YEAR:
-                return 1.0;
-            default:
-                throw new RuntimeException("The periodicity [" + periodicityCode.name() + "] is invalid to get modal factor");
+        case EVERY_MONTH:
+            return 0.09;
+        case EVERY_QUARTER:
+            return 0.27;
+        case EVERY_HALF_YEAR:
+            return 0.52;
+        case EVERY_YEAR:
+            return 1.0;
+        default:
+            //TODO should create a specific Exception, using RuntimeException is not a good practices.
+            throw new RuntimeException("The periodicity [" + periodicityCode.name() + "] is invalid to get modal factor");
         }
     };
 
@@ -155,13 +181,13 @@ public class ProductUtils {
         isFalse(beneficiaries.size() > 6, beneficiariesTooMany);
         isEqual(beneficiaries.stream().mapToDouble(CoverageBeneficiary::getCoverageBenefitPercentage).sum(), 100.0, beneficiariesPercentSumNot100);
         isFalse(beneficiaries.stream().filter(coverageBeneficiary -> coverageBeneficiary.getAgeAtSubscription() == null).findFirst().isPresent(), beneficiariesAgeAtSubscriptionEmpty);
-        
+
         isFalse(beneficiaries.stream().filter(coverageBeneficiary -> !checkThaiIDNumbers("benefit", coverageBeneficiary.getPerson())).findFirst().isPresent(), beneficiariesWithWrongIDNumber);
 
         List<String> insuredRegistrationIds = insured.getPerson().getRegistrations().stream()
                 .map(Registration::getId)
                 .collect(toList());
-				
+
         //Edit by santi to ignore benefit id blank value ======================>
         
         /*
@@ -171,15 +197,15 @@ public class ProductUtils {
                 .map(Registration::getId)
                 .collect(toList());
                 */
-        
+
         List<String> beneficiaryRegistrationIds = beneficiaries.stream()
-        		.filter(p -> !p.getPerson().getRegistrations().get(0).getId().equals(""))
-        		.map(p -> p.getPerson().getRegistrations())
+                .filter(p -> !p.getPerson().getRegistrations().get(0).getId().equals(""))
+                .map(p -> p.getPerson().getRegistrations())
                 .flatMap(Collection::stream)
                 .map(Registration::getId)
                 .collect(toList());
-        
-      //Edit by santi to ignore benefit id blank value ======================>
+
+        //Edit by santi to ignore benefit id blank value ======================>
 
         Optional<String> hasABeneficiaryWithSameIdAsInsured = beneficiaryRegistrationIds.stream()
                 .filter(insuredRegistrationIds::contains)
@@ -194,13 +220,13 @@ public class ProductUtils {
     public static boolean checkThaiIDNumbers(String type, Person person) {
         boolean isValid = true;
         for (Registration registration : person.getRegistrations()) {
-        	if(type.equals("benefit")){
-        		if(!registration.getId().equals("")){
-        			isValid = isValid && checkThaiIDNumber(registration.getId());	
-        		}
-        	}else{
-        		isValid = isValid && checkThaiIDNumber(registration.getId());	
-        	}
+            if (type.equals("benefit")) {
+                if (!registration.getId().equals("")) {
+                    isValid = isValid && checkThaiIDNumber(registration.getId());
+                }
+            } else {
+                isValid = isValid && checkThaiIDNumber(registration.getId());
+            }
         }
         return isValid;
     }
@@ -251,7 +277,18 @@ public class ProductUtils {
     }
 
     public static Amount amountTHB(Double value) {
-        return amount(value, "THB");
+        return amount(value, CURRENCY_THB);
+    }
+
+    public static Amount exchangeCurrency(Amount amount, String toCurrencyCode) {
+        if (amount == null) {
+            return null;
+        }
+        if (!toCurrencyCode.equals(amount.getCurrencyCode())) {
+            String msg = String.format("At this moment we don't really support exchange currency yet, so it can only work when two amounts have the same currency. Input: %s.", ObjectMapperUtil.toString(amount));
+            throw new UnsupportedOperationException(msg);
+        }
+        return amount(amount.getValue(), amount.getCurrencyCode());
     }
 
     public static Amount amount(Double value, String currencyCode) {
@@ -273,6 +310,10 @@ public class ProductUtils {
         notNull(datedAmounts.stream().anyMatch(datedAmount -> datedAmount.getDate().isBefore(LocalDate.now())), premiumnsCalculatedAmountDateInThePast);
         notNull(datedAmounts.stream().anyMatch(datedAmount -> datedAmount.getValue() == null), premiumnsCalculatedAmountNoAmount);
         isEqual(filteredDates.size(), 0, premiumnsCalculatedAmountInvalidDate.apply(filteredDates.stream().map(LocalDate::toString).collect(joining(", "))));
+    }
+
+    public static Insured getMainInsured(Quote quote) {
+        return quote.getInsureds().stream().filter(Insured::getMainInsuredIndicator).findFirst().get();
     }
 
     private static boolean isValidEmailAddress(String email) {

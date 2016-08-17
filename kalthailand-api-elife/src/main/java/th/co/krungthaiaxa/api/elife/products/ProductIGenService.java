@@ -4,7 +4,17 @@ import org.apache.commons.lang3.SerializationUtils;
 import org.springframework.stereotype.Component;
 import th.co.krungthaiaxa.api.elife.exception.PolicyValidationException;
 import th.co.krungthaiaxa.api.elife.exception.QuoteCalculationException;
-import th.co.krungthaiaxa.api.elife.model.*;
+import th.co.krungthaiaxa.api.elife.model.Amount;
+import th.co.krungthaiaxa.api.elife.model.CommonData;
+import th.co.krungthaiaxa.api.elife.model.Coverage;
+import th.co.krungthaiaxa.api.elife.model.DatedAmount;
+import th.co.krungthaiaxa.api.elife.model.FinancialScheduler;
+import th.co.krungthaiaxa.api.elife.model.Insured;
+import th.co.krungthaiaxa.api.elife.model.Periodicity;
+import th.co.krungthaiaxa.api.elife.model.Policy;
+import th.co.krungthaiaxa.api.elife.model.PremiumsData;
+import th.co.krungthaiaxa.api.elife.model.ProductIGenPremium;
+import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.repository.ProductIGenRateRepository;
 
 import javax.inject.Inject;
@@ -17,7 +27,9 @@ import java.util.Optional;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
-import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.*;
+import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.isEqual;
+import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.isFalse;
+import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.notNull;
 import static th.co.krungthaiaxa.api.elife.products.ProductUtils.amountTHB;
 
 @Component
@@ -37,7 +49,7 @@ public class ProductIGenService implements ProductService {
     private ProductIGenRateRepository productIGenRateRepository;
 
     @Override
-    public void calculateQuote(Quote quote, ProductQuotation productQuotation)  {
+    public void calculateQuote(Quote quote, ProductQuotation productQuotation) {
         if (productQuotation == null) {
             return;
         }
@@ -143,6 +155,7 @@ public class ProductIGenService implements ProductService {
         checkMainInsuredIGenSpecific(insured);
 
         // Recalculate the quote
+        //TODO this method do nothing!!!
         calculateQuote(quote, null);
 
         // check for calculated data

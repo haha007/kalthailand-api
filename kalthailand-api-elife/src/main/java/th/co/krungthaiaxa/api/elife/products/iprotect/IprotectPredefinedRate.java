@@ -1,12 +1,12 @@
 package th.co.krungthaiaxa.api.elife.products.iprotect;
 
-public class IprotectPredefinedRate {
-    private final ProductIProtectPackage iprotectPackage;
+public class IProtectPredefinedRate {
+    private final IProtectPackage iprotectPackage;
     private final int age;
     private final double maleRate;
     private final double femaleRate;
 
-    public IprotectPredefinedRate(ProductIProtectPackage iprotectPackage, int age, double maleRate, double femaleRate) {
+    public IProtectPredefinedRate(IProtectPackage iprotectPackage, int age, double maleRate, double femaleRate) {
         this.iprotectPackage = iprotectPackage;
         this.age = age;
         this.maleRate = maleRate;
@@ -17,7 +17,7 @@ public class IprotectPredefinedRate {
         return age;
     }
 
-    public ProductIProtectPackage getIprotectPackage() {
+    public IProtectPackage getIprotectPackage() {
         return iprotectPackage;
     }
 
