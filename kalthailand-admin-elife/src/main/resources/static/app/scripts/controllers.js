@@ -35,6 +35,7 @@
         aMonthAgo.setMonth(new Date().getMonth() - 1);
     	$scope.toDateSearch = new Date();
         $scope.fromDateSearch = aMonthAgo;
+        $scope.totalCount = null;
         
         $scope.dateOptions = {
             dateDisabled: false,
@@ -60,14 +61,15 @@
         	TotalQuoteCount.get(
                 {
                     productId: $scope.productTypeSearch,
-                    fromDate: $scope.toDateSearch,
-                    toDate: $scope.fromDateSearch
+                    fromDate: $scope.fromDateSearch.toISOString(),
+                    toDate: $scope.toDateSearch.toISOString()
                 },
                 function (successResponse) {
-                	console.log(successResponse);
+                	$scope.totalCount = successResponse.total;
                 },
                 function (errorResponse) {
-                	console.log(errorResponse);
+                	$scope.totalCount = null;
+                  	console.log(errorResponse);
                 }
             );
         }

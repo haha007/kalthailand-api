@@ -192,19 +192,15 @@ public class QuoteResource {
         return new ResponseEntity<>(getJson(updatedQuote), OK);
     }
     
-    @ApiOperation(value = "Get total number of quote", notes = "Get total number of quote" , response = Integer.class)
+    @ApiOperation(value = "Get total number of quote", notes = "Get total number of quote" , response = Object.class)
     @RequestMapping(value = "/quotes/count/{productId}/{dateFrom}/{dateTo}", produces = APPLICATION_JSON_VALUE, method = GET)
-    public ResponseEntity<byte[]> getProductList(
+    public ResponseEntity<byte[]> getTotalQuoteCount(
     		@ApiParam(value = "The product Id", required = true)
             @PathVariable String productId,
             @ApiParam(value = "The date from", required = true)
             @PathVariable String dateFrom,
             @ApiParam(value = "The date to", required = true)
             @PathVariable String dateTo) {
-    	
-    	System.out.println("productId:"+productId);
-    	System.out.println("dateFrom:"+dateFrom);
-    	System.out.println("dateTo:"+dateTo);
     	
     	LocalDate startDate = null;
         if (StringUtils.isNoneEmpty(dateFrom)) {

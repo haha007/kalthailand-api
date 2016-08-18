@@ -16,7 +16,8 @@
                         <label for="productTypeSearch">Product Type</label>
                     </div>
                     <div class="form-group col-md-2">
-                        <select class="form-control"  id="productTypeSearch" 
+                        <select class="form-control" 
+                        	  ng-required="true"
 						      ng-model="productTypeSearch"
 						      ng-options="pdc.name as pdc.name for pdc in productCriteriaList">
 						</select>
@@ -26,7 +27,7 @@
                     </div>
                     <div class="col-md-3">
                         <p class="input-group">
-                            <input type="text" id="fromDateSearch" class="form-control" uib-datepicker-popup="dd-MM-yyyy" ng-model="fromDateSearch" is-open="fromDateSearch.opened" close-text="Close" datepicker-options="dateOptions"/>
+                            <input readonly type="text" id="fromDateSearch" class="form-control" uib-datepicker-popup="dd-MM-yyyy" ng-model="fromDateSearch" ng-required="true" is-open="fromDateSearch.opened" close-text="Close" datepicker-options="dateOptions"/>
                             <span class="input-group-btn">
                                 <button type="button" class="btn btn-default" ng-click="fromDateSearchOpen()"><i class="glyphicon glyphicon-calendar"></i></button>
                             </span>
@@ -37,20 +38,22 @@
                     </div>
                     <div class="col-md-3">
                         <p class="input-group">
-                            <input type="text" id="toDateSearch" class="form-control" uib-datepicker-popup="dd-MM-yyyy" ng-model="toDateSearch" is-open="toDateSearch.opened" close-text="Close" datepicker-options="dateOptions"/>
+                            <input readonly type="text" id="toDateSearch" class="form-control" uib-datepicker-popup="dd-MM-yyyy" ng-model="toDateSearch" ng-required="true" is-open="toDateSearch.opened" close-text="Close" datepicker-options="dateOptions"/>
                             <span class="input-group-btn">
                                 <button type="button" class="btn btn-default" ng-click="toDateSearchOpen()"><i class="glyphicon glyphicon-calendar"></i></button>
                             </span>
                         </p>
                     </div>
                 </div>
-
                 <div class="form-group">
                     <div class="col-sm-offset-4 col-sm-8">
                         <button type="submit" class="btn btn-default">Search</button>
                     </div>
                 </div>
             </form>
+	        <div class="page-header" ng-show="totalCount != null">
+	            <h1>Quote total count is : {{totalCount | number}}</h1>
+	        </div>
         </div>
         <!-- END Page specific stuff -->
 

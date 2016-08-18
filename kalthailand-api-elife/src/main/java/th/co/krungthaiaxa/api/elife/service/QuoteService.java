@@ -23,6 +23,8 @@ import javax.inject.Inject;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import static java.time.LocalDateTime.now;
@@ -149,7 +151,9 @@ public class QuoteService {
                 .findFirst();
     }
     
-    public Long getTotalQuoteCount(String productId, LocalDate startDate, LocalDate endDate){
-    	return quoteCriteriaRepository.quoteCount(productId, startDate, endDate);
+    public Map<String,Object> getTotalQuoteCount(String productId, LocalDate startDate, LocalDate endDate){
+    	Map<String,Object> responseMap = new HashMap<>();
+    	responseMap.put("total", quoteCriteriaRepository.quoteCount(productId, startDate, endDate));
+    	return responseMap;
     }
 }

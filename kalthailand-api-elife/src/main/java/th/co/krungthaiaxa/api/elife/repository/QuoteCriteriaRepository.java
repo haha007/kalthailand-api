@@ -27,7 +27,7 @@ public class QuoteCriteriaRepository {
 	
 	public Long quoteCount(String productId, LocalDate startDate, LocalDate endDate){
 		Query query = new Query();
-        query.addCriteria(where("commonData.productId").is(productId));
+		query.addCriteria(where("commonData.productId").is(productId));
 		query.addCriteria(where("insureds.startDate").gte(getDateFromLocalDate(startDate)).lte(getDateFromLocalDate(endDate)));
 		return mongoOperations.count(query, Quote.class, "quote");
 	}
