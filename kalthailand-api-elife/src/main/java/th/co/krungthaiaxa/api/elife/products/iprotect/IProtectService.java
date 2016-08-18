@@ -15,9 +15,9 @@ import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.model.Periodicity;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.PremiumsData;
-import th.co.krungthaiaxa.api.elife.model.ProductIGenPremium;
 import th.co.krungthaiaxa.api.elife.model.ProductIProtectPremium;
 import th.co.krungthaiaxa.api.elife.model.Quote;
+import th.co.krungthaiaxa.api.elife.model.enums.GenderCode;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 import th.co.krungthaiaxa.api.elife.products.ProductAmounts;
 import th.co.krungthaiaxa.api.elife.products.ProductIGenRate;
@@ -31,6 +31,7 @@ import th.co.krungthaiaxa.api.elife.repository.ProductIGenRateRepository;
 import javax.inject.Inject;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -45,6 +46,8 @@ import static th.co.krungthaiaxa.api.elife.products.ProductUtils.amountTHB;
 
 @Service
 public class IProtectService implements ProductService {
+
+    private static final int MAX_TAX_DEDUCTION_PER_YEAR = 100000;
     public static final int MAX_COVERAGE_AGE = 85;
     //DURATION_COVERAGE_IN_YEAR = MAX_COVERAGE_AGE - age;
     //public final static int DURATION_COVERAGE_IN_YEAR = 85;//Protect maximum 85 (iProtect85): year protect = 85 - current age.
@@ -66,6 +69,8 @@ public class IProtectService implements ProductService {
     public static final int MIN_AGE = 20;
     //'fill in information'!D11: the limit of premium years is 55
 
+    private static final List<Double> discountRate = Arrays.asList();
+
     @Inject
     private OccupationTypeRepository occupationTypeRepository;
 
@@ -73,21 +78,21 @@ public class IProtectService implements ProductService {
     private ProductIGenRateRepository productIGenRateRepository;
 
     @Inject
-    private IProtectRateLoaderService iProtectRateLoaderService;
+    private IProtectRateService iProtectRateService;
+
+    @Inject
+    private IProtectDiscountRateService iProtectDiscountRateService;
 
     @Override
     public void calculateQuote(Quote quote, ProductQuotation productQuotation) {
         if (productQuotation == null) {
             return;
         }
-        IProtectPackage iProtectPackage = IProtectPackage.valueOf(productQuotation.getPackageName());
-
         Optional<Coverage> hasIFineCoverage = quote.getCoverages()
                 .stream()
                 .filter(coverage -> coverage.getName() != null)
                 .filter(coverage -> coverage.getName().equalsIgnoreCase(PRODUCT_NAME))
                 .findFirst();
-
         // Do we have enough to calculate anything
         if (!validateProductQuotation(productQuotation)) {
             // we need to delete what might have been calculated before
@@ -95,41 +100,29 @@ public class IProtectService implements ProductService {
             resetCalculatedStuff(quote, hasIFineCoverage);
             return;
         }
-
+        //Get data from productQuotation
+        IProtectPackage iProtectPackage = IProtectPackage.valueOf(productQuotation.getPackageName());
+        PeriodicityCode periodicityCode = productQuotation.getPeriodicityCode();
+        GenderCode mainInsuredGenderCode = productQuotation.getGenderCode();
         OccupationType occupationType = occupationTypeRepository.findByOccId(productQuotation.getOccupationId());
-        Insured mainInsured = ProductUtils.getMainInsured(quote);
 
-        //TODO split it to a separated method.
-        // copy data from ProductQuotation to Quote
-        Integer age = ProductUtils.getAge(productQuotation.getDateOfBirth());
-        quote.getPremiumsData().getFinancialScheduler().getPeriodicity().setCode(productQuotation.getPeriodicityCode());
-        mainInsured.getPerson().setBirthDate(productQuotation.getDateOfBirth());
-        mainInsured.setAgeAtSubscription(age);
-        mainInsured.getPerson().setGenderCode(productQuotation.getGenderCode());
-        mainInsured.setProfessionId(productQuotation.getOccupationId());
-        mainInsured.setProfessionName(occupationType.getOccTextTh());
-        mainInsured.setDeclaredTaxPercentAtSubscription(productQuotation.getDeclaredTaxPercentAtSubscription());
-
-        //Calculate Premiums input amount (use PremiumAmount or SumInsuredAmount)
+        //Get data from quote
         PremiumsData premiumsData = quote.getPremiumsData();
         ProductIProtectPremium productIProtectPremium = premiumsData.getProductIProtectPremium();
 
-        if (productQuotation.getSumInsuredAmount() != null && productQuotation.getSumInsuredAmount().getValue() != null) {
-            productIProtectPremium.setSumInsured(exchangeToProductCurrency(productQuotation.getSumInsuredAmount()));
-            productIProtectPremium.setSumInsuredOption(TRUE);
-        } else {
-            premiumsData.getFinancialScheduler().setModalAmount(exchangeToProductCurrency(productQuotation.getPremiumAmount()));
-            productIProtectPremium.setSumInsuredOption(FALSE);
-        }
-
-        // cannot be too young or too old
+        Insured mainInsured = ProductUtils.getMainInsured(quote);
+        //TODO split it to a separated method.
+        // copy data from ProductQuotation to Quote
+        Integer age = ProductUtils.getAge(productQuotation.getDateOfBirth());
+        quote.getPremiumsData().getFinancialScheduler().getPeriodicity().setCode(periodicityCode);
+        mainInsured.getPerson().setBirthDate(productQuotation.getDateOfBirth());
+        mainInsured.setAgeAtSubscription(age);
+        mainInsured.getPerson().setGenderCode(mainInsuredGenderCode);
+        mainInsured.setProfessionId(productQuotation.getOccupationId());
+        mainInsured.setProfessionName(occupationType.getOccTextTh());
+        mainInsured.setDeclaredTaxPercentAtSubscription(productQuotation.getDeclaredTaxPercentAtSubscription());
         ProductUtils.checkInsuredAge(mainInsured, MIN_AGE, MAX_AGE);
 
-        //------------------------------------------------------------------------------------------------------------------------------
-        //Above code is the same for every products. Now below code will be different depend on the product
-        //------------------------------------------------------------------------------------------------------------------------------
-
-        // Set dates based on current date and product duration
         int paymentYears = iProtectPackage.getPaymentYears();
         int coverageYears = MAX_COVERAGE_AGE - age;//TODO recheck
         LocalDate startDate = DateTimeUtil.nowInThaiZoneId();
@@ -137,38 +130,60 @@ public class IProtectService implements ProductService {
         mainInsured.setEndDate(startDate.plusYears(coverageYears));
         premiumsData.getFinancialScheduler().setEndDate(startDate.plusYears(paymentYears));
 
-        // get rates from mongoDB
-        //TODO check not found
-        IProtectPredefinedRate iprotectPredefinedRate = iProtectRateLoaderService.getPredefinedIProtectRates(iProtectPackage, mainInsured.getAgeAtSubscription()).get();
-        //productIProtectRateRepository.findByGender(insured.getPerson().getGenderCode().name());
-        //TODO get rate based on insured.getPerson().getGenderCode().name()
-        double premiumRate = iprotectPredefinedRate.getFemaleRate(); //productIGenRate.getRate().get(insured.getAgeAtSubscription() - MIN_AGE);
+        //Calculate Premiums input amount (use either PremiumAmount or SumInsuredAmount)
 
-        // calculates premium / sum insured
-        PeriodicityCode periodicityCode = quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode();
-        //TODO we can merge with above line for calculating sumInsured & premiumAmount
-        if (productIProtectPremium.getSumInsured() != null) {
+        IProtectRate iProtectRate = validateExistPremiumRate(iProtectPackage, mainInsured);
+        double premiumRate = iProtectRate.getPremiumRate();
+        double occupationRate = getOccupationRate(occupationType);
+
+        if (productQuotation.getSumInsuredAmount() != null && productQuotation.getSumInsuredAmount().getValue() != null) {
+            Amount sumInsured = exchangeToProductCurrency(productQuotation.getSumInsuredAmount());
+            productIProtectPremium.setSumInsuredBeforeDiscount(sumInsured);
+            productIProtectPremium.setSumInsured(sumInsured);
+            productIProtectPremium.setSumInsuredOption(TRUE);
+
             Amount premiumAmount = ProductUtils.getPremiumFromSumInsured(productIProtectPremium.getSumInsured(), premiumRate, periodicityCode);
-            premiumsData.getFinancialScheduler().setModalAmount(premiumAmount);
+            premiumsData.getFinancialScheduler().setModalAmountBeforeDiscount(premiumAmount);
         } else {
+            Amount premiumAmount = exchangeToProductCurrency(productQuotation.getPremiumAmount());
+            premiumsData.getFinancialScheduler().setModalAmountBeforeDiscount(premiumAmount);
+            premiumsData.getFinancialScheduler().setModalAmount(premiumAmount);
+            productIProtectPremium.setSumInsuredOption(FALSE);
+
             Amount sumInsured = ProductUtils.getSumInsuredFromPremium(premiumsData.getFinancialScheduler().getModalAmount(), premiumRate, periodicityCode);
-            premiumsData.getProductIGenPremium().setSumInsured(sumInsured);
+            productIProtectPremium.setSumInsuredBeforeDiscount(sumInsured);
         }
 
-        //calculate premiums
+        //Discount
+        Amount sumInsuredBeforeDiscount = productIProtectPremium.getSumInsuredBeforeDiscount();
+        double discountRate = getDiscountRate(iProtectPackage, productIProtectPremium, sumInsuredBeforeDiscount);
+        if (discountRate > 0) {
+            if (productIProtectPremium.getSumInsuredOption()) {
+                Amount premiumAmount = ProductUtils.getPremiumFromSumInsured(sumInsuredBeforeDiscount, premiumRate, occupationRate, discountRate, periodicityCode);
+                premiumsData.getFinancialScheduler().setModalAmount(premiumAmount);
+            } else {
+                Amount premiumAmount = premiumsData.getFinancialScheduler().getModalAmount();
+                Amount sumInsuredAmountAfterDiscount = ProductUtils.getSumInsuredFromPremium(premiumAmount, premiumRate, occupationRate, discountRate, periodicityCode);
+                productIProtectPremium.setSumInsured(sumInsuredAmountAfterDiscount);
+            }
+        } else {
+            productIProtectPremium.setSumInsured(productIProtectPremium.getSumInsuredBeforeDiscount());
+            premiumsData.getFinancialScheduler().setModalAmount(premiumsData.getFinancialScheduler().getModalAmountBeforeDiscount());
+        }
+
+        //------------------------------------------------------------------------------------------------------------------------------
+        //Above code is the same for every products. Now below code will be different depend on the product
+        //------------------------------------------------------------------------------------------------------------------------------
+
         //TODO add more fields to premiums: taxDeductive,
         Double periodFactor = ProductUtils.modalFactor.apply(quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode());
-        //TODO TaxDeductive
-        //TODO Discount
-        //TODO Death
+        double taxDeductionPerYear = Math.min(mainInsured.getDeclaredTaxPercentAtSubscription() * 100000, MAX_TAX_DEDUCTION_PER_YEAR);//Calculate Sheet (SA) * taxPercent
+        productIProtectPremium.setYearlyTaxDeduction(amount(taxDeductionPerYear));
+        double totalTaxDeduction = taxDeductionPerYear * quote.getCommonData().getNbOfYearsOfCoverage();
+        productIProtectPremium.setTotalTaxDeduction(amount(totalTaxDeduction));
 
-        Double taxDeductible = get2DigitsDouble(productIFinePackage.getSumInsured() * taxDeductibleRate / 1000 * periodFactor);
-        Double nonTaxDeductible = get2DigitsDouble(productIFinePackage.getSumInsured() * (nonTaxDeductibleRate + riskOccupationCharge) / 1000 * periodFactor);
-        Double modalAmount = get2DigitsDouble(productIFinePackage.getSumInsured() * (taxDeductibleRate + nonTaxDeductibleRate + riskOccupationCharge) / 1000 * periodFactor);
-
-        productIFinePremium.setTaxDeductible(amountTHB(taxDeductible));
-        productIFinePremium.setNonTaxDeductible(amountTHB(nonTaxDeductible));
-        quote.getPremiumsData().getFinancialScheduler().setModalAmount(amountTHB(modalAmount));
+        //TODO Death: OK
+        productIProtectPremium.setDeathBenefit(productIProtectPremium.getSumInsured());
 
         // cannot insure too much or not enough
         //TODO compare sumInsureMin & premiumMax to current premiumData with the same periodicity.
@@ -191,11 +206,12 @@ public class IProtectService implements ProductService {
         ProductUtils.checkInsured(quote);
 
         // There is only one insured at this point
-        Insured insured = quote.getInsureds().get(0);
+        Insured insured = ProductUtils.getMainInsured(quote);
 
         // check main insured stuff
         ProductUtils.checkInsuredAge(insured, MIN_AGE, MAX_AGE);
         ProductUtils.checkMainInsured(insured);
+        //TODO must replaced by IProtect
         checkMainInsuredIGenSpecific(insured);
 
         // Recalculate the quote
@@ -263,11 +279,11 @@ public class IProtectService implements ProductService {
         FinancialScheduler financialScheduler = new FinancialScheduler();
         financialScheduler.setPeriodicity(new Periodicity());
 
-        ProductIGenPremium productIGenPremium = new ProductIGenPremium();
+        ProductIProtectPremium productSpecificPremium = new ProductIProtectPremium();
 
         PremiumsData premiumsData = new PremiumsData();
         premiumsData.setFinancialScheduler(financialScheduler);
-        premiumsData.setProductIGenPremium(productIGenPremium);
+        premiumsData.setProductIProtectPremium(productSpecificPremium);
 
         return premiumsData;
     }
@@ -286,6 +302,16 @@ public class IProtectService implements ProductService {
             return false;
         }
         return productQuotation.getPeriodicityCode() != null;
+    }
+
+    private IProtectRate validateExistPremiumRate(IProtectPackage iProtectPackage, Insured insured) {
+        int age = insured.getAgeAtSubscription();
+        GenderCode mainInsuredGenderCode = insured.getPerson().getGenderCode();
+
+        //productIGenRate.getRate().get(insured.getAgeAtSubscription() - MIN_AGE);
+        Optional<IProtectRate> iProtectRateOptional = iProtectRateService.findIProtectRates(iProtectPackage, age, mainInsuredGenderCode);
+        return iProtectRateOptional.
+                orElseThrow(() -> QuoteCalculationException.premiumRateNotFoundException.apply(String.format("packageName: %s, age: %s, gender: %s", iProtectPackage, age, mainInsuredGenderCode)));
     }
 
     //TODO not completed.
@@ -307,7 +333,7 @@ public class IProtectService implements ProductService {
         }
     }
 
-    public static void checkMainInsuredIGenSpecific(Insured insured) {
+    public static void checkMainInsuredIProtectSpecific(Insured insured) {
         notNull(insured.getDeclaredTaxPercentAtSubscription(), PolicyValidationException.mainInsuredWithNoDeclaredTax);
     }
 
@@ -363,5 +389,21 @@ public class IProtectService implements ProductService {
 
     private Amount exchangeToProductCurrency(Amount amount) {
         return ProductUtils.exchangeCurrency(amount, PRODUCT_CURRENCY);
+    }
+
+    private double getDiscountRate(IProtectPackage iProtectPackage, ProductIProtectPremium productIProtectPremium, Amount sumInsuredAmount) {
+        Optional<IProtectDiscountRate> iProtectDiscountRateOptional = iProtectDiscountRateService.findIProtectDiscountRate(iProtectPackage, productIProtectPremium.getSumInsured().getValue());
+        return iProtectDiscountRateOptional
+                .map(IProtectDiscountRate::getDiscountRate)
+                .orElseThrow(() -> QuoteCalculationException.sumInsuredTooLowException.apply(sumInsuredAmount.getValue()));
+    }
+
+    //TODO for this product, the occupation doesn't affect the calculation, so occupationRate is always 0!
+    private double getOccupationRate(OccupationType occupationType) {
+        return 0.0;
+    }
+
+    private Amount amount(double amountValue) {
+        return ProductUtils.amount(amountValue, PRODUCT_CURRENCY);
     }
 }

@@ -2,7 +2,6 @@ package th.co.krungthaiaxa.api.elife.model;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import th.co.krungthaiaxa.api.elife.model.enums.DividendOption;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -12,7 +11,13 @@ import java.util.Objects;
 @ApiModel(description = "10 EC Life Insurance specific Premiums Data")
 public class ProductIProtectPremium implements Serializable {
     private Boolean sumInsuredOption;
+    private Amount sumInsuredBeforeDiscount;
     private Amount sumInsured;
+    private Amount deathBenefit;
+
+    private Amount yearlyTaxDeduction;
+    private Amount totalTaxDeduction;
+
     private List<DatedAmount> yearlyCashBacks = new ArrayList<>();
     private List<DatedAmount> endOfContractBenefitsMinimum = new ArrayList<>();
     private List<DatedAmount> endOfContractBenefitsAverage = new ArrayList<>();
@@ -21,8 +26,6 @@ public class ProductIProtectPremium implements Serializable {
     private List<DatedAmount> yearlyCashBacksMaximumDividende = new ArrayList<>();
     private List<DatedAmount> yearlyCashBacksAverageBenefit = new ArrayList<>();
     private List<DatedAmount> yearlyCashBacksMaximumBenefit = new ArrayList<>();
-    private Amount yearlyTaxDeduction;
-    private DividendOption dividendOption;
 
     @ApiModelProperty(value = "True if the user has chosen to pay on a total Sum Insured base. False otherwise (premium choice). This is set by back end API if an amount is provided in financialScheduler.")
     public Boolean getSumInsuredOption() {
@@ -123,21 +126,17 @@ public class ProductIProtectPremium implements Serializable {
         this.yearlyTaxDeduction = yearlyTaxDeduction;
     }
 
-    @ApiModelProperty(value = "Dividend option. Dividend is either given yearly in cash, or used for next premium or all of it at the end of the product duration.")
-    public DividendOption getDividendOption() {
-        return dividendOption;
-    }
-
-    public void setDividendOption(DividendOption dividendOption) {
-        this.dividendOption = dividendOption;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ProductIProtectPremium that = (ProductIProtectPremium) o;
-        return Objects.equals(sumInsured, that.sumInsured) &&
+        return Objects.equals(sumInsuredBeforeDiscount, that.sumInsuredBeforeDiscount) &&
+                Objects.equals(sumInsured, that.sumInsured) &&
+                Objects.equals(deathBenefit, that.deathBenefit) &&
+                Objects.equals(yearlyTaxDeduction, that.yearlyTaxDeduction) &&
+                Objects.equals(totalTaxDeduction, that.totalTaxDeduction) &&
+
                 Objects.equals(yearlyCashBacks, that.yearlyCashBacks) &&
                 Objects.equals(endOfContractBenefitsMinimum, that.endOfContractBenefitsMinimum) &&
                 Objects.equals(endOfContractBenefitsAverage, that.endOfContractBenefitsAverage) &&
@@ -145,13 +144,42 @@ public class ProductIProtectPremium implements Serializable {
                 Objects.equals(yearlyCashBacksAverageDividende, that.yearlyCashBacksAverageDividende) &&
                 Objects.equals(yearlyCashBacksMaximumDividende, that.yearlyCashBacksMaximumDividende) &&
                 Objects.equals(yearlyCashBacksAverageBenefit, that.yearlyCashBacksAverageBenefit) &&
-                Objects.equals(yearlyCashBacksMaximumBenefit, that.yearlyCashBacksMaximumBenefit) &&
-                Objects.equals(yearlyTaxDeduction, that.yearlyTaxDeduction) &&
-                dividendOption == that.dividendOption;
+                Objects.equals(yearlyCashBacksMaximumBenefit, that.yearlyCashBacksMaximumBenefit)
+                ;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(sumInsured, yearlyCashBacks, endOfContractBenefitsMinimum, endOfContractBenefitsAverage, endOfContractBenefitsMaximum, yearlyCashBacksAverageDividende, yearlyCashBacksMaximumDividende, yearlyCashBacksAverageBenefit, yearlyCashBacksMaximumBenefit, yearlyTaxDeduction, dividendOption);
+        return Objects.hash(sumInsuredBeforeDiscount, sumInsured, deathBenefit, yearlyTaxDeduction, totalTaxDeduction,
+                yearlyCashBacks,
+                endOfContractBenefitsMinimum, endOfContractBenefitsAverage, endOfContractBenefitsMaximum,
+                yearlyCashBacksAverageDividende,
+                yearlyCashBacksMaximumDividende,
+                yearlyCashBacksAverageBenefit,
+                yearlyCashBacksMaximumBenefit);
+    }
+
+    public Amount getDeathBenefit() {
+        return deathBenefit;
+    }
+
+    public void setDeathBenefit(Amount deathBenefit) {
+        this.deathBenefit = deathBenefit;
+    }
+
+    public Amount getTotalTaxDeduction() {
+        return totalTaxDeduction;
+    }
+
+    public void setTotalTaxDeduction(Amount totalTaxDeduction) {
+        this.totalTaxDeduction = totalTaxDeduction;
+    }
+
+    public Amount getSumInsuredBeforeDiscount() {
+        return sumInsuredBeforeDiscount;
+    }
+
+    public void setSumInsuredBeforeDiscount(Amount sumInsuredBeforeDiscount) {
+        this.sumInsuredBeforeDiscount = sumInsuredBeforeDiscount;
     }
 }

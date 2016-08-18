@@ -53,8 +53,8 @@ class MongoDbConfiguration extends AbstractMongoConfiguration {
 
     /**
      * This config will make Spring don't save class name into DB (remove field "_class").
-     * View more at http://athlan.pl/spring-data-mongodb-remove-_class-define-explicitly
      * Therefore we can refactor & rename those class in the future without causing any problem.
+     * View more at http://athlan.pl/spring-data-mongodb-remove-_class-define-explicitly
      *
      * @return
      */

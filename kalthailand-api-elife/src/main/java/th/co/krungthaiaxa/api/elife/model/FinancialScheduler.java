@@ -10,6 +10,11 @@ import java.util.Objects;
 @ApiModel(description = "The definition of how the premiums must be paid")
 public class FinancialScheduler implements Serializable {
     private Periodicity periodicity;
+    /**
+     * This field has value only if a customer input sumInsured (sumInsured before discount won't have value).
+     * If the customer input premium, then modelAmount will be equal to premium, and sumInsured won't have value.
+     */
+    private Amount modalAmountBeforeDiscount;
     private Amount modalAmount;
     private LocalDate endDate;
 
@@ -45,13 +50,22 @@ public class FinancialScheduler implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         FinancialScheduler that = (FinancialScheduler) o;
-        return Objects.equals(periodicity, that.periodicity) &&
+        return Objects.equals(modalAmountBeforeDiscount, that.modalAmountBeforeDiscount) &&
+                Objects.equals(periodicity, that.periodicity) &&
                 Objects.equals(modalAmount, that.modalAmount) &&
                 Objects.equals(endDate, that.endDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(periodicity, modalAmount, endDate);
+        return Objects.hash(modalAmountBeforeDiscount, periodicity, modalAmount, endDate);
+    }
+
+    public Amount getModalAmountBeforeDiscount() {
+        return modalAmountBeforeDiscount;
+    }
+
+    public void setModalAmountBeforeDiscount(Amount modalAmountBeforeDiscount) {
+        this.modalAmountBeforeDiscount = modalAmountBeforeDiscount;
     }
 }

@@ -22,18 +22,35 @@ import java.util.List;
 public class IProtectRateLoaderServiceTest {
     public static final Logger LOGGER = LoggerFactory.getLogger(IProtectRateLoaderServiceTest.class);
     @Inject
-    IProtectRateLoaderService IProtectRateLoaderService;
+    IProtectRateExcelLoaderService iProtectRateLoaderService;
+
+    @Inject
+    IProtectDiscountRateExcelLoaderService iProtectDiscountRateExcelLoaderService;
 
     @Test
     public void loadPredefinedRates() {
-        List<IProtectPredefinedRate> productIProtectRates = IProtectRateLoaderService.getPredefinedIProtectRates(IProtectPackage.IPROTECT10);
-        LOGGER.trace(ObjectMapperUtil.toStringMultiLineForEachElement(productIProtectRates));
+        List<IProtectRate> iprotectRates = iProtectRateLoaderService.saveIProtectRatesFromExcelToDB();
 
-        Assert.assertTrue(!productIProtectRates.isEmpty());
-        for (IProtectPredefinedRate productIProtectRate : productIProtectRates) {
-            Assert.assertTrue(productIProtectRate.getAge() >= 0);
-            Assert.assertTrue(productIProtectRate.getFemaleRate() > 0);
-            Assert.assertTrue(productIProtectRate.getMaleRate() > 0);
+        LOGGER.trace(ObjectMapperUtil.toStringMultiLineForEachElement(iprotectRates));
+
+        Assert.assertTrue(!iprotectRates.isEmpty());
+        for (IProtectRate iprotectRate : iprotectRates) {
+            Assert.assertTrue(iprotectRate.getAge() >= 0);
+            Assert.assertTrue(iprotectRate.getPremiumRate() > 0);
+            Assert.assertTrue(iprotectRate.getGender() != null);
+        }
+    }
+
+    @Test
+    public void loadDiscountRates() {
+        List<IProtectDiscountRate> iProtectDiscountRates = iProtectDiscountRateExcelLoaderService.saveIProtectDiscountRatesFromExcelToDB();
+
+        LOGGER.trace(ObjectMapperUtil.toStringMultiLineForEachElement(iProtectDiscountRates));
+        Assert.assertTrue(!iProtectDiscountRates.isEmpty());
+        for (IProtectDiscountRate iProtectDiscountRate : iProtectDiscountRates) {
+            Assert.assertTrue(iProtectDiscountRate.getSumInsured() >= 0);
+            Assert.assertTrue(iProtectDiscountRate.getDiscountRate() > 0);
+            Assert.assertTrue(iProtectDiscountRate.getPackageName() != null);
         }
     }
 }

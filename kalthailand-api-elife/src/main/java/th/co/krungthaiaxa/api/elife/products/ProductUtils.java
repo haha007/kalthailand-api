@@ -1,6 +1,7 @@
 package th.co.krungthaiaxa.api.elife.products;
 
 import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
+import th.co.krungthaiaxa.api.elife.exception.ElifeException;
 import th.co.krungthaiaxa.api.elife.exception.PolicyValidationException;
 import th.co.krungthaiaxa.api.elife.model.Amount;
 import th.co.krungthaiaxa.api.elife.model.Coverage;
@@ -59,9 +60,23 @@ public class ProductUtils {
     };
 
     public static Amount getPremiumFromSumInsured(Amount sumInsured, Double rate, PeriodicityCode periodicityCode) {
+        return getPremiumFromSumInsured(sumInsured, rate, 0.0, 0.0, periodicityCode);
+    }
+
+    /**
+     * @param sumInsured
+     * @param premiumRate     must be always greater than 0.
+     * @param occupationRate  if the product doesn't affected by occupation, input 0 here.
+     * @param discountRate    if there's no discount, input 0 here.
+     * @param periodicityCode
+     * @return
+     */
+    public static Amount getPremiumFromSumInsured(Amount sumInsured, double premiumRate, double occupationRate, double discountRate, PeriodicityCode periodicityCode) {
+
         Amount result = new Amount();
-        Double value = sumInsured.getValue();
-        value = value * rate;
+        double value = sumInsured.getValue();
+        double rate = validateRates(premiumRate, occupationRate, discountRate);
+        value = value * (rate);
         value = value * modalFactor.apply(periodicityCode);
         value = value / 1000;
         result.setValue((double) (Math.round(value * 100)) / 100);
@@ -69,15 +84,26 @@ public class ProductUtils {
         return result;
     }
 
-    public static Amount getSumInsuredFromPremium(Amount premium, Double rate, PeriodicityCode periodicityCode) {
+    public static Amount getSumInsuredFromPremium(Amount premium, double premiumRate, double occupationRate, double discountRate, PeriodicityCode periodicityCode) {
         Amount result = new Amount();
-        Double value = premium.getValue();
+        double value = premium.getValue();
+        double rate = validateRates(premiumRate, occupationRate, discountRate);
         value = value * 1000;
         value = value / modalFactor.apply(periodicityCode);
         value = value / rate;
         result.setValue((double) (Math.round(value * 100)) / 100);
         result.setCurrencyCode(premium.getCurrencyCode());
         return result;
+    }
+
+    public static Amount getSumInsuredFromPremium(Amount premium, Double premiumRate, PeriodicityCode periodicityCode) {
+        return getSumInsuredFromPremium(premium, premiumRate, 0.0, 0.0, periodicityCode);
+    }
+
+    private static double validateRates(double premiumRate, double occupationRate, double discountRate) {
+        double rate = premiumRate + occupationRate - discountRate;
+        isTrue(rate > 0, new ElifeException(String.format("PremiumRate (%s) + OccupationRate (%s) - DiscountRate (%s) must be > 0, while the result is %s", premiumRate, occupationRate, discountRate, rate)));
+        return rate;
     }
 
     public static void addPayments(Policy policy, int durationPaymentInYears) {
@@ -106,6 +132,7 @@ public class ProductUtils {
         isNotEqual(quote.getInsureds().size(), 0, noInsured);
         isEqual(quote.getInsureds().size(), 1, insuredMoreThanOne);
 
+        //TODO use ProductUtils.getMainInsured(quote);
         Insured insured = quote.getInsureds().get(0);
         notNull(insured.getType(), insuredWithNoType);
         notNull(insured.getMainInsuredIndicator(), insuredWithNoMainInsured);
@@ -132,6 +159,7 @@ public class ProductUtils {
         notNull(insured.getPerson().getMaritalStatus(), mainInsuredWithNoMaritalStatus);
         notNull(insured.getPerson().getBirthDate(), mainInsuredWithNoDOB);
         notNull(insured.getPerson().getEmail(), mainInsuredWithNoEmail);
+        //TODO what if request come from another TimeZone? Recheck where was insured.startDate input?
         isEqual(insured.getStartDate(), LocalDate.now(), startDateNotServerDate);
 
         if (insured.getPerson().getHomePhoneNumber() == null && insured.getPerson().getMobilePhoneNumber() == null) {

@@ -3,21 +3,23 @@ package th.co.krungthaiaxa.api.elife.products.iprotect;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+import th.co.krungthaiaxa.api.elife.model.enums.GenderCode;
 
 /**
- * This class is different from {@link IProtectPredefinedRate}.
- * This is the data related to specific customer, while {@link IProtectPredefinedRate} is pre-defined data of product.
+ * This class is different from {@link IProtectRate}.
+ * This is the data related to specific customer, while {@link IProtectRate} is pre-defined data of product.
  */
 @Document(collection = "productIProtectRate")
-public class ProductIProtectRate {
+public class IProtectRate {
     @Id
     private String id;
     @Indexed
     private IProtectPackage packageName;
     @Indexed
-    private String gender;
-
-    private Double rate;
+    private GenderCode gender;
+    @Indexed
+    private Integer age;
+    private Double premiumRate;
 
     public String getId() {
         return id;
@@ -35,19 +37,27 @@ public class ProductIProtectRate {
         this.packageName = packageName;
     }
 
-    public String getGender() {
+    public GenderCode getGender() {
         return gender;
     }
 
-    public void setGender(String gender) {
+    public void setGender(GenderCode gender) {
         this.gender = gender;
     }
 
-    public Double getRate() {
-        return rate;
+    public Double getPremiumRate() {
+        return premiumRate;
     }
 
-    public void setRate(Double rate) {
-        this.rate = rate;
+    public void setPremiumRate(Double premiumRate) {
+        this.premiumRate = premiumRate;
+    }
+
+    public Integer getAge() {
+        return age;
+    }
+
+    public void setAge(Integer age) {
+        this.age = age;
     }
 }
