@@ -10,85 +10,47 @@
             <div class="page-header">
                 <h1>Total Quote Count</h1>
             </div>
-            <div class="col-sm-12">
-            	<h3 class="pull-left">Remaining Policies: {{availablePolicyCount}}</h5>
-            	<h3 class="pull-right">Quota: {{policyQuota}}</h5>
-            </div>
-            
-            <div class="col-sm-12">
-	            <div class="page-header">
-	                <h3>Settings</h3>
-	            </div>
-	            <form class="form-horizontal" ng-submit="updateQuotaAlert($event)">
-	                <div class="form-group">
-	                    <label for="policyID" class="col-sm-4 control-label">Trigger at</label>
-	                    <div class="col-sm-4">
-	                        <div class="input-group">
-							  <input type="text" class="form-control" ng-model="settings.triggerPercent" placeholder="Percentage"/>
-							  <span class="input-group-addon">%</span>
-							</div>
-	                    </div>
-	                </div>
-	                <div class="form-group">
-	                    <label for="timeTriggerID" class="col-sm-4 control-label">Trigger time</label>
-	                    <div class="col-sm-4">
-							<select class="form-control"  id="timeTrigger" 
-						      ng-model="settings.timeTrigger"
-						      ng-options="ttl.value as ttl.name for ttl in timeTriggerList">
-						     </select>
-	                    </div>
-	                </div>
-	                <div class="form-group">
-	                    <label for="policyID" class="col-sm-4 control-label">Receipients</label>
-	                    <div class="col-sm-4">
-	                        <textarea class="form-control" rows="5" id="emailList" ng-model="settings.emailList" required placeholder="Email seperated by commas" autofocus>
-	                        </textarea>
-	                    </div>
-	                </div>
-	                <div class="form-group">
-	                    <div class="col-sm-offset-4 col-sm-8">
-	                        <button type="submit" class="btn btn-default">Save</button>
-	                    </div>
-	                </div>
-	            </form>
-            
-            </div>
-            
-            <div class="col-sm-12">
-	            <div class="page-header">
-	                <h3>New Policy Numbers Upload</h3>
-	            </div>
-	            <form name="formUpload" ng-submit="uploadNewPolicyNumbers($event)" class="form-inline form-upload">
-	                <div class="form-group">
-	                    <label for="fileToUpload">Choose a black list file to upload</label>
-	                    <input type="file" file-model="file" id="fileToUpload">
-	                </div>
-	                <button type="submit" class="btn btn-primary btn-danger" ng-disabled="isUploading">Submit</button>
-	            </form>
-	            <div class="alert alert-danger" role="alert" ng-show="uploadErrorMessage">
-	                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-	                {{ uploadErrorMessage }}
-	            </div>
-	
-	            <div ng-show="hasUploaded">
-	                <div>&nbsp;</div>
-	                <uib-progress animate="true" max="numberOfLines">
-	                    <uib-bar ng-repeat="bar in stacked track by $index" value="bar.value" type="{{bar.type}}"><span>{{bar.value}}</span></uib-bar>
-	                </uib-progress>
-	                <div>
-	                    <span class="label label-success">{{numberOfLinesAdded}}</span> lines added with valid data
-	                </div>
-	                <div>
-	                    <span class="label label-warning">{{numberOfDuplicateLines}}</span> lines ignored (duplicate + sheet header)
-	                </div>
-	                <div>
-	                    <span class="label label-info">{{numberOfEmptyLines}}</span> empty lines
-	                </div>
-	                <div>Total of <span class="label label-default">{{numberOfLinesAdded + numberOfDuplicateLines + numberOfEmptyLines}}</span> lines processed (some other empty lines might have not been counted)</div>
-	                <div>Total of <span class="label label-default">{{numberOfLines}}</span> lines in the excel file</div>
-	            </div>
-	            
-            </div>
+            <form class="form-horizontal" ng-submit="search($event)">
+                <div class="row">
+                    <div class="col-md-2">
+                        <label for="productTypeSearch">Product Type</label>
+                    </div>
+                    <div class="form-group col-md-2">
+                        <select class="form-control"  id="productTypeSearch" 
+						      ng-model="productTypeSearch"
+						      ng-options="pdc.name as pdc.name for pdc in productCriteriaList">
+						</select>
+                    </div>   
+                    <div class="col-md-1">
+                        <label for="fromDateSearch">From</label>
+                    </div>
+                    <div class="col-md-3">
+                        <p class="input-group">
+                            <input type="text" id="fromDateSearch" class="form-control" uib-datepicker-popup="dd-MM-yyyy" ng-model="fromDateSearch" is-open="fromDateSearch.opened" close-text="Close" datepicker-options="dateOptions"/>
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-default" ng-click="fromDateSearchOpen()"><i class="glyphicon glyphicon-calendar"></i></button>
+                            </span>
+                        </p>
+                    </div>
+                    <div class="col-md-1">
+                        <label for="toDateSearch">To</label>
+                    </div>
+                    <div class="col-md-3">
+                        <p class="input-group">
+                            <input type="text" id="toDateSearch" class="form-control" uib-datepicker-popup="dd-MM-yyyy" ng-model="toDateSearch" is-open="toDateSearch.opened" close-text="Close" datepicker-options="dateOptions"/>
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-default" ng-click="toDateSearchOpen()"><i class="glyphicon glyphicon-calendar"></i></button>
+                            </span>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-offset-4 col-sm-8">
+                        <button type="submit" class="btn btn-default">Search</button>
+                    </div>
+                </div>
+            </form>
         </div>
         <!-- END Page specific stuff -->
 

@@ -24,6 +24,54 @@
                     });
         };
     });
+    
+    app.controller('TotalQuoteCountController', function ($scope, $route, $http, TotalQuoteCount, ProductCriteria, $localStorage){
+    	$scope.$route = $route;
+    	
+    	$scope.TotalQuoteCountSearchSettings = {};
+    	$scope.productCriteriaList = ProductCriteria.query();
+    	$scope.productTypeSearch = null;
+    	var aMonthAgo = new Date();
+        aMonthAgo.setMonth(new Date().getMonth() - 1);
+    	$scope.toDateSearch = new Date();
+        $scope.fromDateSearch = aMonthAgo;
+        
+        $scope.dateOptions = {
+            dateDisabled: false,
+            formatYear: 'yyyy',
+            maxDate: new Date(),
+            startingDay: 1
+        };
+        
+        $scope.fromDateSearchOpen = function () {
+            $scope.fromDateSearch.opened = true;
+        };
+
+        $scope.toDateSearchOpen = function () {
+            $scope.toDateSearch.opened = true;
+        };
+        
+        $scope.search = function (event) {
+            event.preventDefault();
+            searchForTotalQuoteCount();
+        };
+        
+        function searchForTotalQuoteCount() {
+        	TotalQuoteCount.get(
+                {
+                    productId: $scope.productTypeSearch,
+                    fromDate: $scope.toDateSearch,
+                    toDate: $scope.fromDateSearch
+                },
+                function (successResponse) {
+                	console.log(successResponse);
+                },
+                function (errorResponse) {
+                	console.log(errorResponse);
+                }
+            );
+        }
+    });
 
     app.controller('DashboardController', function ($scope, $rootScope , $http, $route, Dashboard, PolicyQuotaConfig, ProductCriteria, $localStorage, $location) {
         $scope.$route = $route;
