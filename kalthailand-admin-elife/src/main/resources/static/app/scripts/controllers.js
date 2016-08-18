@@ -25,7 +25,7 @@
         };
     });
 
-    app.controller('DashboardController', function ($scope, $rootScope , $http, $route, Dashboard, PolicyQuotaConfig, $localStorage, $location) {
+    app.controller('DashboardController', function ($scope, $rootScope , $http, $route, Dashboard, PolicyQuotaConfig, ProductCriteria, $localStorage, $location) {
         $scope.$route = $route;
 
         $scope.currentPage = 1;
@@ -46,6 +46,7 @@
         $scope.pageChanged = searchForPolicies;
         searchForPolicies();
         fetchPolicyQuotaInfo();
+        $scope.productCriteriaList = ProductCriteria.query();
 
         $scope.dateOptions = {
             dateDisabled: false,
