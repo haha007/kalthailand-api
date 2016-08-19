@@ -786,7 +786,7 @@ public class ProductIGenTest {
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).setMainInsuredIndicator(FALSE);
-        assertThatThrownBy(() -> ProductUtils.checkInsured(quote))
+        assertThatThrownBy(() -> ProductUtils.validateMainInsured(quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(PolicyValidationException.noMainInsured.getMessage());
     }

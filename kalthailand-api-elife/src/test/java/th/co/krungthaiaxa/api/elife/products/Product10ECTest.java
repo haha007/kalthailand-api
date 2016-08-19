@@ -769,7 +769,7 @@ public class Product10ECTest {
         TestUtil.product10ECService().calculateQuote(quote, TestUtil.productQuotation(25, PeriodicityCode.EVERY_YEAR, 1000000.0));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).setMainInsuredIndicator(FALSE);
-        assertThatThrownBy(() -> ProductUtils.checkInsured(quote))
+        assertThatThrownBy(() -> ProductUtils.validateMainInsured(quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(PolicyValidationException.noMainInsured.getMessage());
     }

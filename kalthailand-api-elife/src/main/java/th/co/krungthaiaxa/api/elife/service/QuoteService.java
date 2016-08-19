@@ -70,12 +70,12 @@ public class QuoteService {
             person.setLineId(sessionId);
         }
 
-        Insured insured = new Insured();
-        insured.setMainInsuredIndicator(true);
-        insured.setFatca(new Fatca());
-        insured.setHealthStatus(new HealthStatus());
-        insured.setPerson(person);
-        insured.setType(InsuredType.Insured);
+        Insured mainInsured = new Insured();
+        mainInsured.setMainInsuredIndicator(true);
+        mainInsured.setFatca(new Fatca());
+        mainInsured.setHealthStatus(new HealthStatus());
+        mainInsured.setPerson(person);
+        mainInsured.setType(InsuredType.Insured);
 
         Quote quote = new Quote();
         LocalDateTime now = now(of(SHORT_IDS.get("VST")));
@@ -84,7 +84,7 @@ public class QuoteService {
         quote.setQuoteId(randomNumeric(20));
         quote.setCommonData(productService.initCommonData());
         quote.setPremiumsData(productService.initPremiumData());
-        quote.addInsured(insured);
+        quote.addInsured(mainInsured);
 
         //calculate
         productService.calculateQuote(quote, productQuotation);

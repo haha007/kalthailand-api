@@ -11,6 +11,17 @@ public class Amount implements Serializable {
     private Double value;
     private String currencyCode;
 
+    public Amount multiply(double factor) {
+        return amount(this.getValue() * factor, this.getCurrencyCode());
+    }
+
+    public static Amount amount(double value, String currency) {
+        Amount result = new Amount();
+        result.setCurrencyCode(currency);
+        result.setValue(value);
+        return result;
+    }
+
     @ApiModelProperty(required = true, value = "The amount")
     public Double getValue() {
         return value;

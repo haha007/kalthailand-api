@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import th.co.krungthaiaxa.api.elife.model.Amount;
 import th.co.krungthaiaxa.api.elife.model.CommonData;
 
+//TODO I don't understand what's this object for? min/max premium and min/max sumInsured already defined in commonData. Why don't just use commonData?
 @ApiModel(description = "Data common to all quotes commercial types")
 public class ProductAmounts {
     private Amount minPremium;
@@ -48,7 +49,6 @@ public class ProductAmounts {
     public void setMaxSumInsured(Amount maxSumInsured) {
         this.maxSumInsured = maxSumInsured;
     }
-
 
     @ApiModelProperty(required = true, value = "The static data of the product")
     public CommonData getCommonData() {

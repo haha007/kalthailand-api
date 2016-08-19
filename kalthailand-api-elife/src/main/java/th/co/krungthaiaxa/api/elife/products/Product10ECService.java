@@ -129,7 +129,7 @@ public class Product10ECService implements ProductService {
         }
 
         // cannot be too young or too old
-        ProductUtils.checkInsuredAge(insured, MIN_AGE, MAX_AGE);
+        ProductUtils.checkInsuredAgeInRange(insured, MIN_AGE, MAX_AGE);
 
         // Set dates based on current date and product duration
         LocalDate startDate = LocalDate.now(ZoneId.of(ZoneId.SHORT_IDS.get("VST")));
@@ -185,13 +185,13 @@ public class Product10ECService implements ProductService {
     public void getPolicyFromQuote(Policy policy, Quote quote) {
         // check for mandatory data
         checkCommonData(initCommonData());
-        ProductUtils.checkInsured(quote);
+        ProductUtils.validateMainInsured(quote);
 
         // There is only one insured at this point
         Insured insured = quote.getInsureds().get(0);
 
         // check main insured stuff
-        ProductUtils.checkInsuredAge(insured, MIN_AGE, MAX_AGE);
+        ProductUtils.checkInsuredAgeInRange(insured, MIN_AGE, MAX_AGE);
         ProductUtils.checkMainInsured(insured);
         checkMainInsured10ECSpecific(insured);
 
@@ -200,7 +200,7 @@ public class Product10ECService implements ProductService {
         calculateQuote(quote, null);
 
         // check for calculated data
-        ProductUtils.checkCoverage(quote.getCoverages());
+        ProductUtils.validateNumberOfCoverages(quote.getCoverages());
 
         // There is only one coverage at this point
         Coverage coverage = quote.getCoverages().get(0);

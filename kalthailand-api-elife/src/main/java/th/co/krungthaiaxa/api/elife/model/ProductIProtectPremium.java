@@ -4,29 +4,29 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
-@ApiModel(description = "10 EC Life Insurance specific Premiums Data")
+@ApiModel(description = "IProtect Life Insurance specific Premiums Data")
 public class ProductIProtectPremium implements Serializable {
-    private Boolean sumInsuredOption;
-    private Amount sumInsuredBeforeDiscount;
-    private Amount sumInsured;
-    private Amount deathBenefit;
+    private Boolean sumInsuredOption = null;
+    private Amount sumInsuredBeforeDiscount = null;
+    private Amount sumInsured = null;
+    private Amount deathBenefit = null;
 
-    private Amount yearlyTaxDeduction;
-    private Amount totalTaxDeduction;
+    private Amount yearlyTaxDeduction = null;
+    private Amount totalTaxDeduction = null;
 
-    private List<DatedAmount> yearlyCashBacks = new ArrayList<>();
-    private List<DatedAmount> endOfContractBenefitsMinimum = new ArrayList<>();
-    private List<DatedAmount> endOfContractBenefitsAverage = new ArrayList<>();
-    private List<DatedAmount> endOfContractBenefitsMaximum = new ArrayList<>();
-    private List<DatedAmount> yearlyCashBacksAverageDividende = new ArrayList<>();
-    private List<DatedAmount> yearlyCashBacksMaximumDividende = new ArrayList<>();
-    private List<DatedAmount> yearlyCashBacksAverageBenefit = new ArrayList<>();
-    private List<DatedAmount> yearlyCashBacksMaximumBenefit = new ArrayList<>();
+//    private List<IProtectMomentCalculation> yearlyCalculations = new ArrayList<>();
 
+    //    private List<DatedAmount> yearlyCashBacks = new ArrayList<>();
+//    private List<DatedAmount> endOfContractBenefitsMinimum = new ArrayList<>();
+//    private List<DatedAmount> endOfContractBenefitsAverage = new ArrayList<>();
+//    private List<DatedAmount> endOfContractBenefitsMaximum = new ArrayList<>();
+//    private List<DatedAmount> yearlyCashBacksAverageDividende = new ArrayList<>();
+//    private List<DatedAmount> yearlyCashBacksMaximumDividende = new ArrayList<>();
+//    private List<DatedAmount> yearlyCashBacksAverageBenefit = new ArrayList<>();
+//    private List<DatedAmount> yearlyCashBacksMaximumBenefit = new ArrayList<>();
+//
     @ApiModelProperty(value = "True if the user has chosen to pay on a total Sum Insured base. False otherwise (premium choice). This is set by back end API if an amount is provided in financialScheduler.")
     public Boolean getSumInsuredOption() {
         return sumInsuredOption;
@@ -44,78 +44,78 @@ public class ProductIProtectPremium implements Serializable {
     public void setSumInsured(Amount sumInsured) {
         this.sumInsured = sumInsured;
     }
-
-    @ApiModelProperty(value = "Yearly cash backs if cash option is chosen. This is calculated by back end API and cannot be set by client.")
-    public List<DatedAmount> getYearlyCashBacks() {
-        return yearlyCashBacks;
-    }
-
-    public void setYearlyCashBacks(List<DatedAmount> yearlyCashBacks) {
-        this.yearlyCashBacks = yearlyCashBacks;
-    }
-
-    @ApiModelProperty(value = "Yearly minimum returns. This is calculated by back end API and cannot be set by client.")
-    public List<DatedAmount> getEndOfContractBenefitsMinimum() {
-        return endOfContractBenefitsMinimum;
-    }
-
-    public void setEndOfContractBenefitsMinimum(List<DatedAmount> endOfContractBenefitsMinimum) {
-        this.endOfContractBenefitsMinimum = endOfContractBenefitsMinimum;
-    }
-
-    @ApiModelProperty(value = "Yearly average returns. This is calculated by back end API and cannot be set by client.")
-    public List<DatedAmount> getEndOfContractBenefitsAverage() {
-        return endOfContractBenefitsAverage;
-    }
-
-    public void setEndOfContractBenefitsAverage(List<DatedAmount> endOfContractBenefitsAverage) {
-        this.endOfContractBenefitsAverage = endOfContractBenefitsAverage;
-    }
-
-    @ApiModelProperty(value = "Yearly maximum returns. This is calculated by back end API and cannot be set by client.")
-    public List<DatedAmount> getEndOfContractBenefitsMaximum() {
-        return endOfContractBenefitsMaximum;
-    }
-
-    public void setEndOfContractBenefitsMaximum(List<DatedAmount> endOfContractBenefitsMaximum) {
-        this.endOfContractBenefitsMaximum = endOfContractBenefitsMaximum;
-    }
-
-    @ApiModelProperty(value = "Yearly average extra dividend. This is calculated by back end API and cannot be set by client.")
-    public List<DatedAmount> getYearlyCashBacksAverageDividende() {
-        return yearlyCashBacksAverageDividende;
-    }
-
-    public void setYearlyCashBacksAverageDividende(List<DatedAmount> yearlyCashBacksAverageDividende) {
-        this.yearlyCashBacksAverageDividende = yearlyCashBacksAverageDividende;
-    }
-
-    @ApiModelProperty(value = "Yearly maximum extra dividend. This is calculated by back end API and cannot be set by client.")
-    public List<DatedAmount> getYearlyCashBacksMaximumDividende() {
-        return yearlyCashBacksMaximumDividende;
-    }
-
-    public void setYearlyCashBacksMaximumDividende(List<DatedAmount> yearlyCashBacksMaximumDividende) {
-        this.yearlyCashBacksMaximumDividende = yearlyCashBacksMaximumDividende;
-    }
-
-    @ApiModelProperty(value = "Yearly average benefit. This is calculated by back end API and cannot be set by client.")
-    public List<DatedAmount> getYearlyCashBacksAverageBenefit() {
-        return yearlyCashBacksAverageBenefit;
-    }
-
-    public void setYearlyCashBacksAverageBenefit(List<DatedAmount> yearlyCashBacksAverageBenefit) {
-        this.yearlyCashBacksAverageBenefit = yearlyCashBacksAverageBenefit;
-    }
-
-    @ApiModelProperty(value = "Yearly maximum benefit. This is calculated by back end API and cannot be set by client.")
-    public List<DatedAmount> getYearlyCashBacksMaximumBenefit() {
-        return yearlyCashBacksMaximumBenefit;
-    }
-
-    public void setYearlyCashBacksMaximumBenefit(List<DatedAmount> yearlyCashBacksMaximumBenefit) {
-        this.yearlyCashBacksMaximumBenefit = yearlyCashBacksMaximumBenefit;
-    }
+//
+//    @ApiModelProperty(value = "Yearly cash backs if cash option is chosen. This is calculated by back end API and cannot be set by client.")
+//    public List<DatedAmount> getYearlyCashBacks() {
+//        return yearlyCashBacks;
+//    }
+//
+//    public void setYearlyCashBacks(List<DatedAmount> yearlyCashBacks) {
+//        this.yearlyCashBacks = yearlyCashBacks;
+//    }
+//
+//    @ApiModelProperty(value = "Yearly minimum returns. This is calculated by back end API and cannot be set by client.")
+//    public List<DatedAmount> getEndOfContractBenefitsMinimum() {
+//        return endOfContractBenefitsMinimum;
+//    }
+//
+//    public void setEndOfContractBenefitsMinimum(List<DatedAmount> endOfContractBenefitsMinimum) {
+//        this.endOfContractBenefitsMinimum = endOfContractBenefitsMinimum;
+//    }
+//
+//    @ApiModelProperty(value = "Yearly average returns. This is calculated by back end API and cannot be set by client.")
+//    public List<DatedAmount> getEndOfContractBenefitsAverage() {
+//        return endOfContractBenefitsAverage;
+//    }
+//
+//    public void setEndOfContractBenefitsAverage(List<DatedAmount> endOfContractBenefitsAverage) {
+//        this.endOfContractBenefitsAverage = endOfContractBenefitsAverage;
+//    }
+//
+//    @ApiModelProperty(value = "Yearly maximum returns. This is calculated by back end API and cannot be set by client.")
+//    public List<DatedAmount> getEndOfContractBenefitsMaximum() {
+//        return endOfContractBenefitsMaximum;
+//    }
+//
+//    public void setEndOfContractBenefitsMaximum(List<DatedAmount> endOfContractBenefitsMaximum) {
+//        this.endOfContractBenefitsMaximum = endOfContractBenefitsMaximum;
+//    }
+//
+//    @ApiModelProperty(value = "Yearly average extra dividend. This is calculated by back end API and cannot be set by client.")
+//    public List<DatedAmount> getYearlyCashBacksAverageDividende() {
+//        return yearlyCashBacksAverageDividende;
+//    }
+//
+//    public void setYearlyCashBacksAverageDividende(List<DatedAmount> yearlyCashBacksAverageDividende) {
+//        this.yearlyCashBacksAverageDividende = yearlyCashBacksAverageDividende;
+//    }
+//
+//    @ApiModelProperty(value = "Yearly maximum extra dividend. This is calculated by back end API and cannot be set by client.")
+//    public List<DatedAmount> getYearlyCashBacksMaximumDividende() {
+//        return yearlyCashBacksMaximumDividende;
+//    }
+//
+//    public void setYearlyCashBacksMaximumDividende(List<DatedAmount> yearlyCashBacksMaximumDividende) {
+//        this.yearlyCashBacksMaximumDividende = yearlyCashBacksMaximumDividende;
+//    }
+//
+//    @ApiModelProperty(value = "Yearly average benefit. This is calculated by back end API and cannot be set by client.")
+//    public List<DatedAmount> getYearlyCashBacksAverageBenefit() {
+//        return yearlyCashBacksAverageBenefit;
+//    }
+//
+//    public void setYearlyCashBacksAverageBenefit(List<DatedAmount> yearlyCashBacksAverageBenefit) {
+//        this.yearlyCashBacksAverageBenefit = yearlyCashBacksAverageBenefit;
+//    }
+//
+//    @ApiModelProperty(value = "Yearly maximum benefit. This is calculated by back end API and cannot be set by client.")
+//    public List<DatedAmount> getYearlyCashBacksMaximumBenefit() {
+//        return yearlyCashBacksMaximumBenefit;
+//    }
+//
+//    public void setYearlyCashBacksMaximumBenefit(List<DatedAmount> yearlyCashBacksMaximumBenefit) {
+//        this.yearlyCashBacksMaximumBenefit = yearlyCashBacksMaximumBenefit;
+//    }
 
     @ApiModelProperty(value = "Tax deduction per year.")
     public Amount getYearlyTaxDeduction() {
@@ -135,32 +135,43 @@ public class ProductIProtectPremium implements Serializable {
                 Objects.equals(sumInsured, that.sumInsured) &&
                 Objects.equals(deathBenefit, that.deathBenefit) &&
                 Objects.equals(yearlyTaxDeduction, that.yearlyTaxDeduction) &&
-                Objects.equals(totalTaxDeduction, that.totalTaxDeduction) &&
-
-                Objects.equals(yearlyCashBacks, that.yearlyCashBacks) &&
-                Objects.equals(endOfContractBenefitsMinimum, that.endOfContractBenefitsMinimum) &&
-                Objects.equals(endOfContractBenefitsAverage, that.endOfContractBenefitsAverage) &&
-                Objects.equals(endOfContractBenefitsMaximum, that.endOfContractBenefitsMaximum) &&
-                Objects.equals(yearlyCashBacksAverageDividende, that.yearlyCashBacksAverageDividende) &&
-                Objects.equals(yearlyCashBacksMaximumDividende, that.yearlyCashBacksMaximumDividende) &&
-                Objects.equals(yearlyCashBacksAverageBenefit, that.yearlyCashBacksAverageBenefit) &&
-                Objects.equals(yearlyCashBacksMaximumBenefit, that.yearlyCashBacksMaximumBenefit)
+                Objects.equals(totalTaxDeduction, that.totalTaxDeduction)
+//                Objects.equals(yearlyCalculations, that.yearlyCalculations)
+//
+//                Objects.equals(yearlyCashBacks, that.yearlyCashBacks) &&
+//                Objects.equals(endOfContractBenefitsMinimum, that.endOfContractBenefitsMinimum) &&
+//                Objects.equals(endOfContractBenefitsAverage, that.endOfContractBenefitsAverage) &&
+//                Objects.equals(endOfContractBenefitsMaximum, that.endOfContractBenefitsMaximum) &&
+//                Objects.equals(yearlyCashBacksAverageDividende, that.yearlyCashBacksAverageDividende) &&
+//                Objects.equals(yearlyCashBacksMaximumDividende, that.yearlyCashBacksMaximumDividende) &&
+//                Objects.equals(yearlyCashBacksAverageBenefit, that.yearlyCashBacksAverageBenefit) &&
+//                Objects.equals(yearlyCashBacksMaximumBenefit, that.yearlyCashBacksMaximumBenefit)
                 ;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(sumInsuredBeforeDiscount, sumInsured, deathBenefit, yearlyTaxDeduction, totalTaxDeduction,
-                yearlyCashBacks,
-                endOfContractBenefitsMinimum, endOfContractBenefitsAverage, endOfContractBenefitsMaximum,
-                yearlyCashBacksAverageDividende,
-                yearlyCashBacksMaximumDividende,
-                yearlyCashBacksAverageBenefit,
-                yearlyCashBacksMaximumBenefit);
+        return Objects.hash(
+                sumInsuredBeforeDiscount,
+                sumInsured,
+                yearlyTaxDeduction,
+                totalTaxDeduction,
+                deathBenefit
+//                yearlyCalculations
+//                yearlyCashBacks,
+//                endOfContractBenefitsMinimum, endOfContractBenefitsAverage, endOfContractBenefitsMaximum,
+//                yearlyCashBacksAverageDividende,
+//                yearlyCashBacksMaximumDividende,
+//                yearlyCashBacksAverageBenefit,
+//                yearlyCashBacksMaximumBenefit
+        );
     }
 
+    /**
+     * @return It's same as sumInsured.
+     */
     public Amount getDeathBenefit() {
-        return deathBenefit;
+        return this.deathBenefit;
     }
 
     public void setDeathBenefit(Amount deathBenefit) {
@@ -182,4 +193,12 @@ public class ProductIProtectPremium implements Serializable {
     public void setSumInsuredBeforeDiscount(Amount sumInsuredBeforeDiscount) {
         this.sumInsuredBeforeDiscount = sumInsuredBeforeDiscount;
     }
+
+//    public List<IProtectMomentCalculation> getYearlyCalculations() {
+//        return yearlyCalculations;
+//    }
+//
+//    public void setYearlyCalculations(List<IProtectMomentCalculation> yearlyCalculations) {
+//        this.yearlyCalculations = yearlyCalculations;
+//    }
 }

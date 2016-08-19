@@ -3,6 +3,8 @@ package th.co.krungthaiaxa.api.elife.exception;
 import java.util.function.Function;
 
 public class QuoteCalculationException extends ElifeException {
+    public static Function<String, QuoteCalculationException> mainInsuredNotExistException = message -> new QuoteCalculationException("Not found main insured: " + message + ".");
+    public static Function<Integer, QuoteCalculationException> occupationNotExistException = occupationId -> new QuoteCalculationException("Not found occupation " + occupationId + ".");
     public static Function<String, QuoteCalculationException> sumInsuredCurrencyException = currency -> new QuoteCalculationException("Sum insured must be in currency " + currency + ".");
     public static Function<Double, QuoteCalculationException> sumInsuredTooHighException = max -> new QuoteCalculationException("Sum Insured cannot be over " + max + " Baht.");
     public static Function<Double, QuoteCalculationException> sumInsuredTooLowException = min -> new QuoteCalculationException("Sum Insured cannot be lower than " + min + " Baht.");
@@ -14,7 +16,7 @@ public class QuoteCalculationException extends ElifeException {
     public static Function<Integer, QuoteCalculationException> ageIsTooHighException = maxAge -> new QuoteCalculationException("Insured must be less than " + maxAge + " years old.");
     public static QuoteCalculationException ageIsEmptyException = new QuoteCalculationException("Age of main insured is empty.");
 
-    public static QuoteCalculationException iFinePackageNameUnknown = new QuoteCalculationException("The iFine package name is unknown.");
+    public static Function<String, QuoteCalculationException> packageNameUnknown = message -> new QuoteCalculationException("The package name is unknown: " + message);
 
     private QuoteCalculationException(String message) {
         super(message);

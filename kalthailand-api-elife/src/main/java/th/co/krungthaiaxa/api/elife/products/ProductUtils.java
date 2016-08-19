@@ -3,6 +3,7 @@ package th.co.krungthaiaxa.api.elife.products;
 import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
 import th.co.krungthaiaxa.api.elife.exception.ElifeException;
 import th.co.krungthaiaxa.api.elife.exception.PolicyValidationException;
+import th.co.krungthaiaxa.api.elife.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.api.elife.model.Amount;
 import th.co.krungthaiaxa.api.elife.model.Coverage;
 import th.co.krungthaiaxa.api.elife.model.CoverageBeneficiary;
@@ -40,6 +41,7 @@ import static th.co.krungthaiaxa.api.elife.exception.QuoteCalculationException.a
 
 public class ProductUtils {
     public static final String CURRENCY_THB = "THB";
+    public static final int MAX_BENEFICIARIES = 6;
     /**
      * At this moment, this modalFactor is still the same for every products. If in the future it's different for one product, please customize it.
      */
@@ -58,6 +60,10 @@ public class ProductUtils {
             throw new RuntimeException("The periodicity [" + periodicityCode.name() + "] is invalid to get modal factor");
         }
     };
+
+    public static double getModalFactor(PeriodicityCode periodicityCode) {
+        return modalFactor.apply(periodicityCode);
+    }
 
     public static Amount getPremiumFromSumInsured(Amount sumInsured, Double rate, PeriodicityCode periodicityCode) {
         return getPremiumFromSumInsured(sumInsured, rate, 0.0, 0.0, periodicityCode);
@@ -121,35 +127,40 @@ public class ProductUtils {
         ));
     }
 
-    public static void checkInsuredAge(Insured insured, int minAge, int maxAge) {
+    public static void checkInsuredAgeInRange(Insured insured, int minAge, int maxAge) {
         notNull(insured.getAgeAtSubscription(), ageIsEmptyException);
         isFalse(insured.getAgeAtSubscription() > maxAge, ageIsTooHighException.apply(maxAge));
         isFalse(insured.getAgeAtSubscription() < minAge, ageIsTooLowException.apply(minAge));
     }
 
-    public static void checkInsured(Quote quote) {
+    public static Insured validateMainInsured(Quote quote) {
         notNull(quote.getInsureds(), noInsured);
         isNotEqual(quote.getInsureds().size(), 0, noInsured);
         isEqual(quote.getInsureds().size(), 1, insuredMoreThanOne);
 
-        //TODO use ProductUtils.getMainInsured(quote);
-        Insured insured = quote.getInsureds().get(0);
-        notNull(insured.getType(), insuredWithNoType);
-        notNull(insured.getMainInsuredIndicator(), insuredWithNoMainInsured);
-        isFalse(!insured.getMainInsuredIndicator(), noMainInsured);
-        notNull(insured.getFatca(), insuredNoFatca);
-        notNull(insured.getFatca().isBornInUSA(), insuredFatcaInvalid1);
-        notNull(insured.getFatca().isPayTaxInUSA(), insuredFatcaInvalid2);
-        notNull(insured.getFatca().isPermanentResidentOfUSAForTax(), insuredFatcaInvalid3);
-        notNull(insured.getFatca().getPermanentResidentOfUSA(), insuredFatcaInvalid4);
+        Insured mainInsured = validateExistMainInsured(quote);
+        notNull(mainInsured.getType(), insuredWithNoType);
+        notNull(mainInsured.getMainInsuredIndicator(), insuredWithNoMainInsured);
+        isFalse(!mainInsured.getMainInsuredIndicator(), noMainInsured);
+        notNull(mainInsured.getFatca(), insuredNoFatca);
+        notNull(mainInsured.getFatca().isBornInUSA(), insuredFatcaInvalid1);
+        notNull(mainInsured.getFatca().isPayTaxInUSA(), insuredFatcaInvalid2);
+        notNull(mainInsured.getFatca().isPermanentResidentOfUSAForTax(), insuredFatcaInvalid3);
+        notNull(mainInsured.getFatca().getPermanentResidentOfUSA(), insuredFatcaInvalid4);
 
-        notNull(insured.getPerson(), insuredWithNoPerson);
-        notNull(insured.getPerson().getGivenName(), personWithNoGivenName);
-        notNull(insured.getPerson().getSurName(), personWithNoSurname);
-        notNull(insured.getPerson().getTitle(), personWithNoTitle);
-        isTrue(checkThaiIDNumbers("insure", insured.getPerson()), personWithInvalidThaiIdNumber);
+        notNull(mainInsured.getPerson(), insuredWithNoPerson);
+        notNull(mainInsured.getPerson().getGivenName(), personWithNoGivenName);
+        notNull(mainInsured.getPerson().getSurName(), personWithNoSurname);
+        notNull(mainInsured.getPerson().getTitle(), personWithNoTitle);
+        isTrue(checkThaiIDNumbers("insure", mainInsured.getPerson()), personWithInvalidThaiIdNumber);
+        return mainInsured;
     }
 
+    /**
+     * This method is applied only for mainInsured. For other insured, we don't need to check following data?
+     *
+     * @param insured
+     */
     public static void checkMainInsured(Insured insured) {
         notNull(insured.getStartDate(), mainInsuredWithNoStartDate);
         notNull(insured.getEndDate(), mainInsuredWithNoEndDate);
@@ -197,7 +208,7 @@ public class ProductUtils {
         notNull(address.getSubdistrict(), addressWithNoSubDistrict);
     }
 
-    public static void checkCoverage(List<Coverage> coverages) {
+    public static void validateNumberOfCoverages(List<Coverage> coverages) {
         notNull(coverages, coverageExpected);
         isFalse(coverages.size() == 0, coverageExpected);
         isTrue(coverages.size() == 1, coverageMoreThanOne);
@@ -206,7 +217,7 @@ public class ProductUtils {
     public static void checkBeneficiaries(Insured insured, List<CoverageBeneficiary> beneficiaries) {
         notNull(beneficiaries, beneficiariesNone);
         isFalse(beneficiaries.size() == 0, beneficiariesNone);
-        isFalse(beneficiaries.size() > 6, beneficiariesTooMany);
+        isFalse(beneficiaries.size() > MAX_BENEFICIARIES, beneficiariesTooMany);
         isEqual(beneficiaries.stream().mapToDouble(CoverageBeneficiary::getCoverageBenefitPercentage).sum(), 100.0, beneficiariesPercentSumNot100);
         isFalse(beneficiaries.stream().filter(coverageBeneficiary -> coverageBeneficiary.getAgeAtSubscription() == null).findFirst().isPresent(), beneficiariesAgeAtSubscriptionEmpty);
 
@@ -245,6 +256,11 @@ public class ProductUtils {
         isTrue(hasDifferentBeneficiaries, beneficiariesWithSameId);
     }
 
+    /**
+     * @param type   either "benefit" (the person is a beneficiary person) or "insure" (the person is an insured person).
+     * @param person
+     * @return
+     */
     public static boolean checkThaiIDNumbers(String type, Person person) {
         boolean isValid = true;
         for (Registration registration : person.getRegistrations()) {
@@ -328,11 +344,11 @@ public class ProductUtils {
 
     public static void checkDatedAmounts(List<DatedAmount> datedAmounts, LocalDate startDate, Integer durationCoverageInYears) {
         List<LocalDate> allowedDates = new ArrayList<>();
-        IntStream.range(0, 10).forEach(value -> allowedDates.add(startDate.plusYears(value + 1)));
+        IntStream.range(0, durationCoverageInYears).forEach(value -> allowedDates.add(startDate.plusYears(value + 1)));
         List<LocalDate> filteredDates = datedAmounts.stream().map(DatedAmount::getDate).filter(date -> !allowedDates.contains(date)).collect(toList());
 
         notNull(datedAmounts, premiumnsCalculatedAmountEmpty);
-        isEqual(datedAmounts.size(), durationCoverageInYears, premiumnsCalculatedAmountNotFor10Years);
+        isEqual(datedAmounts.size(), durationCoverageInYears, premiumsCalculatedNotEnoughCoverageYears.apply(durationCoverageInYears));
         notNull(datedAmounts.stream().anyMatch(datedAmount -> datedAmount.getCurrencyCode() == null), premiumnsCalculatedAmountNoCurrency);
         notNull(datedAmounts.stream().anyMatch(datedAmount -> datedAmount.getDate() == null), premiumnsCalculatedAmountNoDate);
         notNull(datedAmounts.stream().anyMatch(datedAmount -> datedAmount.getDate().isBefore(LocalDate.now())), premiumnsCalculatedAmountDateInThePast);
@@ -340,8 +356,10 @@ public class ProductUtils {
         isEqual(filteredDates.size(), 0, premiumnsCalculatedAmountInvalidDate.apply(filteredDates.stream().map(LocalDate::toString).collect(joining(", "))));
     }
 
-    public static Insured getMainInsured(Quote quote) {
-        return quote.getInsureds().stream().filter(Insured::getMainInsuredIndicator).findFirst().get();
+    public static Insured validateExistMainInsured(Quote quote) {
+        return quote.getInsureds().stream().filter(Insured::getMainInsuredIndicator)
+                .findFirst()
+                .orElseThrow(() -> QuoteCalculationException.mainInsuredNotExistException.apply("Insured size: " + quote.getInsureds().size()));
     }
 
     private static boolean isValidEmailAddress(String email) {
@@ -349,5 +367,20 @@ public class ProductUtils {
         java.util.regex.Pattern p = java.util.regex.Pattern.compile(ePattern);
         java.util.regex.Matcher m = p.matcher(email);
         return m.matches();
+    }
+
+    public static double convertPeriodicity(double numberInSourcePeriodicity, PeriodicityCode sourcePeriodicity, PeriodicityCode destPeriodicity) {
+        double sourceModalFactor = ProductUtils.getModalFactor(sourcePeriodicity);
+        double destModalFactor = ProductUtils.getModalFactor(destPeriodicity);
+        double numberInYear = numberInSourcePeriodicity / sourceModalFactor;
+        double numberInDestPeriodicity = numberInYear * destModalFactor;
+        return numberInDestPeriodicity;
+    }
+
+    public static <T extends Enum<T>> T validateExistPackageName(Class<T> packageClass, ProductQuotation productQuotation) {
+        String packageName = productQuotation.getPackageName();
+        T productPackage = Enum.valueOf(packageClass, packageName);
+        notNull(productPackage, QuoteCalculationException.packageNameUnknown.apply(packageName));
+        return productPackage;
     }
 }

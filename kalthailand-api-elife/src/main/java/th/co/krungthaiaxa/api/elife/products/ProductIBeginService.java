@@ -66,7 +66,7 @@ public class ProductIBeginService implements ProductService {
         }
 
         // cannot be too young or too old
-        ProductUtils.checkInsuredAge(insured, MIN_AGE, MAX_AGE);
+        ProductUtils.checkInsuredAgeInRange(insured, MIN_AGE, MAX_AGE);
 
         // Set dates based on current date and product duration
         insured.setStartDate(LocalDate.now(ZoneId.of(ZoneId.SHORT_IDS.get("VST"))));

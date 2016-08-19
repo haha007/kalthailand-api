@@ -4,7 +4,6 @@ import org.apache.commons.lang3.SerializationUtils;
 import org.springframework.stereotype.Component;
 import th.co.krungthaiaxa.api.elife.data.OccupationType;
 import th.co.krungthaiaxa.api.elife.exception.PolicyValidationException;
-import th.co.krungthaiaxa.api.elife.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.api.elife.model.CommonData;
 import th.co.krungthaiaxa.api.elife.model.Coverage;
 import th.co.krungthaiaxa.api.elife.model.FinancialScheduler;
@@ -81,7 +80,7 @@ public class ProductIFineService implements ProductService {
         mainInsured.setProfessionName(occupationType.getOccTextTh());
 
         // cannot be too young or too old
-        ProductUtils.checkInsuredAge(mainInsured, MIN_AGE, MAX_AGE);
+        ProductUtils.checkInsuredAgeInRange(mainInsured, MIN_AGE, MAX_AGE);
 
         // Set dates based on current date and product duration
         mainInsured.setStartDate(now(of(SHORT_IDS.get("VST"))));
@@ -89,7 +88,7 @@ public class ProductIFineService implements ProductService {
         quote.getPremiumsData().getFinancialScheduler().setEndDate(mainInsured.getStartDate().plusYears(DURATION_PAYMENT_IN_YEAR));
 
         // get iFine package from package name
-        ProductIFinePackage productIFinePackage = getPackage(productQuotation.getPackageName());
+        ProductIFinePackage productIFinePackage = ProductUtils.validateExistPackageName(ProductIFinePackage.class, productQuotation);
         Double deathByAccident = productIFinePackage.getDeathByAccident();
 
         // set amounts
@@ -150,13 +149,13 @@ public class ProductIFineService implements ProductService {
     public void getPolicyFromQuote(Policy policy, Quote quote) {
         // check for mandatory data
         checkCommonData(initCommonData());
-        ProductUtils.checkInsured(quote);
+        ProductUtils.validateMainInsured(quote);
 
         // There is only one insured at this point
         Insured insured = quote.getInsureds().get(0);
 
         // check main insured stuff
-        ProductUtils.checkInsuredAge(insured, MIN_AGE, MAX_AGE);
+        ProductUtils.checkInsuredAgeInRange(insured, MIN_AGE, MAX_AGE);
         ProductUtils.checkMainInsured(insured);
 
         // Recalculate the quote
@@ -164,7 +163,7 @@ public class ProductIFineService implements ProductService {
         calculateQuote(quote, null);
 
         // check for calculated data
-        ProductUtils.checkCoverage(quote.getCoverages());
+        ProductUtils.validateNumberOfCoverages(quote.getCoverages());
 
         // There is only one coverage at this point
         Coverage coverage = quote.getCoverages().get(0);
@@ -223,13 +222,6 @@ public class ProductIFineService implements ProductService {
         premiumsData.setProductIFinePremium(productIFinePremium);
 
         return premiumsData;
-    }
-
-    private ProductIFinePackage getPackage(String packageName) {
-        ProductIFinePackage result = ProductIFinePackage.valueOf(packageName);
-        notNull(result, QuoteCalculationException.iFinePackageNameUnknown);
-
-        return result;
     }
 
     private boolean hasEnoughInfoToCalculate(ProductQuotation productQuotation) {

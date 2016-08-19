@@ -7,6 +7,7 @@ public class PolicyValidationException extends ElifeException {
     public static PolicyValidationException product10ECExpected = new PolicyValidationException("Product 10 EC is expected to do validation.");
     public static PolicyValidationException productIFineExpected = new PolicyValidationException("Product iFine is expected to do validation.");
     public static PolicyValidationException productIGenExpected = new PolicyValidationException("Product iGen is expected to do validation.");
+    public static PolicyValidationException productIProtectExpected = new PolicyValidationException("Product iProtect is expected to do validation.");
 
     public static PolicyValidationException emptyQuote = new PolicyValidationException("Policy needs a quote to be created.");
     public static PolicyValidationException noneExistingQuote = new PolicyValidationException("The quote to create the policy from does not exist.");
@@ -79,7 +80,7 @@ public class PolicyValidationException extends ElifeException {
     public static PolicyValidationException premiumnsCalculatedAmountDateInThePast = new PolicyValidationException("Policy has a calculated premium with a date in the past.");
     public static PolicyValidationException premiumnsCalculatedAmountNoAmount = new PolicyValidationException("Policy has a calculated premium with no amount.");
     public static Function<String, PolicyValidationException> premiumnsCalculatedAmountInvalidDate = msg -> new PolicyValidationException("Policy has a calculated premium date [" + msg + "] which is invalid date.");
-    public static PolicyValidationException premiumnsCalculatedAmountNotFor10Years = new PolicyValidationException("Policy has calculated premiums for a number of years not compatible with contract duration.");
+    public static Function<Integer, PolicyValidationException> premiumsCalculatedNotEnoughCoverageYears = years -> new PolicyValidationException("Policy has calculated premiums for a number of years not compatible with contract duration: " + years + " years.");
 
     public static PolicyValidationException noPolicyNumberAccessible = new PolicyValidationException("Policy numbers are not available.");
     public static PolicyValidationException noPolicyNumberAvailable = new PolicyValidationException("No more Policy numbers are available.");
