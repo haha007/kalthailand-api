@@ -4,6 +4,7 @@ import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
+import th.co.krungthaiaxa.api.common.validator.BeanValidator;
 import th.co.krungthaiaxa.api.elife.data.OccupationType;
 import th.co.krungthaiaxa.api.elife.exception.PolicyValidationException;
 import th.co.krungthaiaxa.api.elife.exception.QuoteCalculationException;
@@ -25,7 +26,6 @@ import th.co.krungthaiaxa.api.elife.products.ProductService;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
 import th.co.krungthaiaxa.api.elife.products.ProductUtils;
 import th.co.krungthaiaxa.api.elife.repository.OccupationTypeRepository;
-import th.co.krungthaiaxa.api.elife.repository.ProductIGenRateRepository;
 
 import javax.inject.Inject;
 import java.time.LocalDate;
@@ -34,7 +34,6 @@ import java.util.Optional;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.isEqual;
-import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.isFalse;
 import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.isTrue;
 import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.notNull;
 
@@ -69,13 +68,13 @@ public class IProtectService implements ProductService {
     private OccupationTypeRepository occupationTypeRepository;
 
     @Inject
-    private ProductIGenRateRepository productIGenRateRepository;
-
-    @Inject
     private IProtectRateService iProtectRateService;
 
     @Inject
     private IProtectDiscountRateService iProtectDiscountRateService;
+
+    @Inject
+    private BeanValidator beanValidator;
 
     @Override
     public void calculateQuote(Quote quote, ProductQuotation productQuotation) {
@@ -270,7 +269,6 @@ public class IProtectService implements ProductService {
         // check main insured stuff
         ProductUtils.checkInsuredAgeInRange(insured, INSURED_MIN_AGE, INSURED_MAX_AGE);
         ProductUtils.checkMainInsured(insured);
-        //TODO must replaced by IProtect
         checkMainInsuredIProtectSpecific(insured);
 
         // Recalculate the quote
@@ -284,7 +282,7 @@ public class IProtectService implements ProductService {
         Coverage coverage = quote.getCoverages().get(0);
 
         ProductUtils.checkBeneficiaries(insured, coverage.getBeneficiaries());
-        checkIProtectPremiumsData(quote.getPremiumsData(), insured.getStartDate());
+        checkIProtectPremiumsData(quote.getPremiumsData());
 
         // Copy from quote to Policy
         policy.setQuoteId(quote.getQuoteId());
@@ -295,6 +293,19 @@ public class IProtectService implements ProductService {
 
         // Add payment schedule
         ProductUtils.addPayments(policy, quote.getCommonData().getNbOfYearsOfPremium());
+    }
+
+    private void checkIProtectPremiumsData(PremiumsData premiumsData) {
+        notNull(premiumsData, PolicyValidationException.premiumnsDataNone);
+
+        ProductIProtectPremium productIProtectPremium = premiumsData.getProductIProtectPremium();
+        beanValidator.validate(productIProtectPremium, PolicyValidationException.class);
+//        notNull(productIProtectPremium, PolicyValidationException.premiumnsDataNone);
+//        notNull(productIProtectPremium.getSumInsured(), PolicyValidationException.premiumnsDataNoSumInsured);
+//        notNull(productIProtectPremium.getSumInsured().getCurrencyCode(), PolicyValidationException.premiumnsSumInsuredNoCurrency);
+//        notNull(productIProtectPremium.getSumInsured().getValue(), PolicyValidationException.premiumnsSumInsuredNoAmount);
+//        notNull(productIProtectPremium.getDeathBenefit().getValue(), PolicyValidationException.premiumnsDeathBenefitNoValue);
+
     }
 
     @Override
@@ -319,7 +330,7 @@ public class IProtectService implements ProductService {
     }
 
     @Override
-    public ProductAmounts initProductAmounts(ProductQuotation productQuotation) {
+    public ProductAmounts calculateProductAmounts(ProductQuotation productQuotation) {
         ProductAmounts productAmounts = new ProductAmounts();
         productAmounts.setCommonData(initCommonData());
         if (productQuotation.getDateOfBirth() == null || productQuotation.getPeriodicityCode() == null) {
@@ -398,8 +409,8 @@ public class IProtectService implements ProductService {
             return;
         }
         isEqual(PRODUCT_CURRENCY, sumInsured.getCurrencyCode(), QuoteCalculationException.sumInsuredCurrencyException.apply(PRODUCT_CURRENCY));
-        isFalse(sumInsured.getValue() > sumInsuredMax, QuoteCalculationException.sumInsuredTooHighException.apply(sumInsuredMax));
-        isFalse(sumInsured.getValue() < sumInsuredMin, QuoteCalculationException.sumInsuredTooLowException.apply(sumInsuredMin));
+        isTrue(sumInsured.getValue() <= sumInsuredMax, QuoteCalculationException.sumInsuredTooHighException.apply("Maximum: " + sumInsuredMin + ", actual value: " + sumInsured));
+        isTrue(sumInsured.getValue() >= sumInsuredMin, QuoteCalculationException.sumInsuredTooLowException.apply("Minimum: " + sumInsuredMin + ", actual value: " + sumInsured));
     }
 
     //TODO make a common method
@@ -409,8 +420,8 @@ public class IProtectService implements ProductService {
         }
 
         isEqual(PRODUCT_CURRENCY, premiumAmount.getCurrencyCode(), QuoteCalculationException.premiumCurrencyException.apply(PRODUCT_CURRENCY));
-        isTrue(premiumAmount.getValue() > premiumMin, QuoteCalculationException.premiumTooLowException.apply(premiumMin));
-        isTrue(premiumAmount.getValue() < premiumMax, QuoteCalculationException.premiumTooHighException.apply(premiumMax));
+        isTrue(premiumAmount.getValue() >= premiumMin, QuoteCalculationException.premiumTooLowException.apply(premiumMin));
+        isTrue(premiumAmount.getValue() <= premiumMax, QuoteCalculationException.premiumTooHighException.apply(premiumMax));
     }
 
     private static void checkProductType(CommonData commonData) {
@@ -426,10 +437,10 @@ public class IProtectService implements ProductService {
     }
 
     private double getDiscountRate(IProtectPackage iProtectPackage, ProductIProtectPremium productIProtectPremium, Amount sumInsuredAmount) {
-        Optional<IProtectDiscountRate> iProtectDiscountRateOptional = iProtectDiscountRateService.findIProtectDiscountRate(iProtectPackage, productIProtectPremium.getSumInsured().getValue());
+        Optional<IProtectDiscountRate> iProtectDiscountRateOptional = iProtectDiscountRateService.findIProtectDiscountRate(iProtectPackage, sumInsuredAmount.getValue());
         return iProtectDiscountRateOptional
                 .map(IProtectDiscountRate::getDiscountRate)
-                .orElseThrow(() -> QuoteCalculationException.sumInsuredTooLowException.apply(sumInsuredAmount.getValue()));
+                .orElse(0.0);
     }
 
     //For this product, the occupation doesn't affect the calculation, so occupationRate is always 0!
@@ -447,11 +458,18 @@ public class IProtectService implements ProductService {
         private Amount minSumInsured;
         private Amount maxSumInsured;
 
-        public void copyToCommonData(CommonData commonData) {
-            commonData.setMaxSumInsured(maxSumInsured);
-            commonData.setMinSumInsured(minSumInsured);
-            commonData.setMinPremium(minPremium);
-            commonData.setMaxPremium(maxPremium);
+        public void copyToCommonData(CommonData destination) {
+            destination.setMaxSumInsured(maxSumInsured);
+            destination.setMinSumInsured(minSumInsured);
+            destination.setMinPremium(minPremium);
+            destination.setMaxPremium(maxPremium);
+        }
+
+        public void copyToProductAmounts(ProductAmounts destination) {
+            destination.setMaxSumInsured(maxSumInsured);
+            destination.setMinSumInsured(minSumInsured);
+            destination.setMinPremium(minPremium);
+            destination.setMaxPremium(maxPremium);
         }
 
         public Amount getMinPremium() {
@@ -485,5 +503,6 @@ public class IProtectService implements ProductService {
         public void setMaxSumInsured(Amount maxSumInsured) {
             this.maxSumInsured = maxSumInsured;
         }
+
     }
 }

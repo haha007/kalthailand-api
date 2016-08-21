@@ -12,7 +12,7 @@ public interface ProductService {
 
     CommonData initCommonData();
 
-    ProductAmounts initProductAmounts(ProductQuotation productQuotation);
+    ProductAmounts calculateProductAmounts(ProductQuotation productQuotation);
 
     PremiumsData initPremiumData();
 }

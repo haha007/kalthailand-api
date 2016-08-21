@@ -3,17 +3,29 @@ package th.co.krungthaiaxa.api.elife.model;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Objects;
 
 @ApiModel(description = "IProtect Life Insurance specific Premiums Data")
 public class ProductIProtectPremium implements Serializable {
+    @NotNull
     private Boolean sumInsuredOption = null;
+    @Valid
+    @NotNull
     private Amount sumInsuredBeforeDiscount = null;
+    @Valid
+    @NotNull
     private Amount sumInsured = null;
+    @Valid
+    @NotNull
     private Amount deathBenefit = null;
-
+    @Valid
+    @NotNull
     private Amount yearlyTaxDeduction = null;
+    @Valid
+    @NotNull
     private Amount totalTaxDeduction = null;
 
 //    private List<IProtectMomentCalculation> yearlyCalculations = new ArrayList<>();

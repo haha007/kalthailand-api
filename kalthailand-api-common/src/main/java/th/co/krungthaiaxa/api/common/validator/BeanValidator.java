@@ -2,10 +2,13 @@ package th.co.krungthaiaxa.api.common.validator;
 
 import org.springframework.stereotype.Component;
 import th.co.krungthaiaxa.api.common.exeption.BeanValidationException;
+import th.co.krungthaiaxa.api.common.exeption.UnexpectedException;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Set;
 
 /**
@@ -32,6 +35,21 @@ public class BeanValidator {
             Set<ConstraintViolation<Object>> violations = validator.validate(target);
             if (!violations.isEmpty()) {
                 throw new BeanValidationException("Error in BeanValidator", target, violations);
+            }
+        }
+    }
+
+    public <T extends RuntimeException> void validate(Object target, Class<T> exceptionClass) {
+        if (target != null) {
+            Set<ConstraintViolation<Object>> violations = validator.validate(target);
+            if (!violations.isEmpty()) {
+                try {
+                    Constructor<T> exceptionConstructor = exceptionClass.getConstructor(String.class, Object.class, Set.class);
+                    T ex = exceptionConstructor.newInstance("Error in BeanValidator", target, violations);
+                    throw ex;
+                } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
+                    throw new UnexpectedException(String.format("The exception class must has a constructor (String, Object, Set). Your input Exception: %s", exceptionClass.getName()));
+                }
             }
         }
     }

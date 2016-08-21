@@ -29,6 +29,7 @@ import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.isEqual;
 import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.isFalse;
+import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.isTrue;
 import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.notNull;
 import static th.co.krungthaiaxa.api.elife.products.ProductUtils.amountTHB;
 
@@ -196,7 +197,7 @@ public class ProductIGenService implements ProductService {
     }
 
     @Override
-    public ProductAmounts initProductAmounts(ProductQuotation productQuotation) {
+    public ProductAmounts calculateProductAmounts(ProductQuotation productQuotation) {
         ProductAmounts productAmounts = new ProductAmounts();
         productAmounts.setCommonData(initCommonData());
         if (productQuotation.getDateOfBirth() == null || productQuotation.getPeriodicityCode() == null) {
@@ -255,8 +256,9 @@ public class ProductIGenService implements ProductService {
             return;
         }
         isEqual(currency, premiumsData.getProductIGenPremium().getSumInsured().getCurrencyCode(), QuoteCalculationException.sumInsuredCurrencyException.apply(currency));
-        isFalse(premiumsData.getProductIGenPremium().getSumInsured().getValue() > sumInsuredMax, QuoteCalculationException.sumInsuredTooHighException.apply(sumInsuredMax));
-        isFalse(premiumsData.getProductIGenPremium().getSumInsured().getValue() < sumInsuredMin, QuoteCalculationException.sumInsuredTooLowException.apply(sumInsuredMin));
+        Amount sumInsured = premiumsData.getProductIGenPremium().getSumInsured();
+        isTrue(sumInsured.getValue() <= sumInsuredMax, QuoteCalculationException.sumInsuredTooHighException.apply("Maximum: " + sumInsuredMin + ", actual value: " + sumInsured));
+        isTrue(sumInsured.getValue() >= sumInsuredMin, QuoteCalculationException.sumInsuredTooLowException.apply("Minimum: " + sumInsuredMin + ", actual value: " + sumInsured));
     }
 
     private static void checkCommonData(CommonData commonData) {

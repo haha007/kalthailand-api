@@ -1,14 +1,43 @@
 package th.co.krungthaiaxa.api.elife;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import th.co.krungthaiaxa.api.elife.model.*;
-import th.co.krungthaiaxa.api.elife.model.enums.*;
-import th.co.krungthaiaxa.api.elife.products.*;
 import th.co.krungthaiaxa.api.common.model.error.Error;
+import th.co.krungthaiaxa.api.common.utils.JsonUtil;
+import th.co.krungthaiaxa.api.elife.model.Amount;
+import th.co.krungthaiaxa.api.elife.model.Coverage;
+import th.co.krungthaiaxa.api.elife.model.CoverageBeneficiary;
+import th.co.krungthaiaxa.api.elife.model.Document;
+import th.co.krungthaiaxa.api.elife.model.Fatca;
+import th.co.krungthaiaxa.api.elife.model.FinancialScheduler;
+import th.co.krungthaiaxa.api.elife.model.GeographicalAddress;
+import th.co.krungthaiaxa.api.elife.model.HealthStatus;
+import th.co.krungthaiaxa.api.elife.model.Insured;
+import th.co.krungthaiaxa.api.elife.model.Payment;
+import th.co.krungthaiaxa.api.elife.model.PaymentInformation;
+import th.co.krungthaiaxa.api.elife.model.Periodicity;
+import th.co.krungthaiaxa.api.elife.model.Person;
+import th.co.krungthaiaxa.api.elife.model.PhoneNumber;
+import th.co.krungthaiaxa.api.elife.model.Policy;
+import th.co.krungthaiaxa.api.elife.model.Quote;
+import th.co.krungthaiaxa.api.elife.model.Registration;
+import th.co.krungthaiaxa.api.elife.model.enums.BeneficiaryRelationshipType;
+import th.co.krungthaiaxa.api.elife.model.enums.GenderCode;
+import th.co.krungthaiaxa.api.elife.model.enums.InsuredType;
+import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
+import th.co.krungthaiaxa.api.elife.model.enums.PhoneNumberType;
+import th.co.krungthaiaxa.api.elife.model.enums.RegistrationTypeName;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayResponse;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayResponseInfo;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayResponsePaymentInfo;
-import th.co.krungthaiaxa.api.common.utils.JsonUtil;
+import th.co.krungthaiaxa.api.elife.products.Product10ECService;
+import th.co.krungthaiaxa.api.elife.products.ProductAmounts;
+import th.co.krungthaiaxa.api.elife.products.ProductIBeginService;
+import th.co.krungthaiaxa.api.elife.products.ProductIFinePackage;
+import th.co.krungthaiaxa.api.elife.products.ProductIFineService;
+import th.co.krungthaiaxa.api.elife.products.ProductIGenService;
+import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
+import th.co.krungthaiaxa.api.elife.products.ProductService;
+import th.co.krungthaiaxa.api.elife.products.ProductType;
 
 import java.io.IOException;
 import java.util.List;
@@ -65,7 +94,7 @@ public class TestUtil {
     }
 
     public static ProductQuotation productQuotation(ProductIFinePackage productIFinePackage, Integer age, PeriodicityCode periodicityCode, GenderCode genderCode, Boolean riskOccupation) {
-        ProductQuotation productQuotation = productQuotation(ProductType.PRODUCT_IFINE, age, periodicityCode, productIFinePackage.getSumInsured(), true, 23, genderCode);
+        ProductQuotation productQuotation = productQuotation(ProductType.PRODUCT_IFINE, productIFinePackage.name(), age, periodicityCode, productIFinePackage.getSumInsured(), true, 23, genderCode);
         if (riskOccupation) {
             productQuotation.setOccupationId(21);
         } else {
@@ -76,6 +105,10 @@ public class TestUtil {
     }
 
     public static ProductQuotation productQuotation(ProductType productType, Integer age, PeriodicityCode periodicityCode, Double amountValue, Boolean isSumInsured, Integer taxRate, GenderCode genderCode) {
+        return productQuotation(productType, null, age, periodicityCode, amountValue, isSumInsured, taxRate, genderCode);
+    }
+
+    public static ProductQuotation productQuotation(ProductType productType, String packageName, Integer age, PeriodicityCode periodicityCode, Double amountValue, Boolean isSumInsured, Integer taxRate, GenderCode genderCode) {
         Amount amount = amountTHB(amountValue);
 
         ProductQuotation productQuotation = new ProductQuotation();
@@ -85,7 +118,7 @@ public class TestUtil {
         productQuotation.setGenderCode(genderCode);
         productQuotation.setPeriodicityCode(periodicityCode);
         productQuotation.setOccupationId(1);
-        productQuotation.setPackageName(ProductIFinePackage.IFINE1.name());
+        productQuotation.setPackageName(packageName);
         if (isSumInsured) {
             productQuotation.setSumInsuredAmount(amount);
         } else {

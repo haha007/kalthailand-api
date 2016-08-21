@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import th.co.krungthaiaxa.api.common.exeption.BaseException;
 import th.co.krungthaiaxa.api.common.exeption.BeanValidationException;
+import th.co.krungthaiaxa.api.common.exeption.BeanValidationExceptionIfc;
 import th.co.krungthaiaxa.api.common.model.error.Error;
 import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
 import th.co.krungthaiaxa.api.common.model.error.FieldError;
@@ -89,7 +90,12 @@ public class ExceptionTranslator {
     @ResponseBody
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Error processUnknownInternalException(final Exception exception) {
-        final Error result = ErrorCode.UNKNOWN_ERROR.apply(exception.getMessage());
+        Error result;
+        if (exception instanceof BeanValidationExceptionIfc) {
+            result = this.beanValidationExceptionTranslator.toErrorDTO((BeanValidationExceptionIfc) exception);
+        } else {
+            result = ErrorCode.UNKNOWN_ERROR.apply(exception.getMessage());
+        }
         this.loggingMessage(result, exception);
         return result;
     }

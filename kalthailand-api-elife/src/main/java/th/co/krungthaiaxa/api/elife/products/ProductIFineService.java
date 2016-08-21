@@ -200,7 +200,7 @@ public class ProductIFineService implements ProductService {
     }
 
     @Override
-    public ProductAmounts initProductAmounts(ProductQuotation productQuotation) {
+    public ProductAmounts calculateProductAmounts(ProductQuotation productQuotation) {
         ProductAmounts productAmounts = new ProductAmounts();
         productAmounts.setCommonData(initCommonData());
         productAmounts.setMaxPremium(amountTHB(PREMIUM_MAX));

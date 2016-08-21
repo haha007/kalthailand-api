@@ -68,7 +68,7 @@ public class IProtectDiscountRateExcelLoaderService {
     }
 
     private String loadSheetNameForDiscountRate(IProtectPackage iProtectPackage) {
-        return iProtectPackage.name().toLowerCase() + "_discountRate";
+        return "discount_rate";
     }
 
 }

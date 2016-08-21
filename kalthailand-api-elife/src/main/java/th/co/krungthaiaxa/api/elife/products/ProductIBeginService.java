@@ -130,7 +130,7 @@ public class ProductIBeginService implements ProductService {
     }
 
     @Override
-    public ProductAmounts initProductAmounts(ProductQuotation productQuotation) {
+    public ProductAmounts calculateProductAmounts(ProductQuotation productQuotation) {
         return null;
     }
 

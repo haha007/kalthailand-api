@@ -3,6 +3,7 @@ package th.co.krungthaiaxa.api.common.filter;
 import org.hibernate.validator.constraints.ScriptAssert;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.ObjectError;
+import th.co.krungthaiaxa.api.common.exeption.BeanValidationExceptionIfc;
 import th.co.krungthaiaxa.api.common.model.error.Error;
 import th.co.krungthaiaxa.api.common.exeption.BeanValidationException;
 import th.co.krungthaiaxa.api.common.model.error.FieldError;
@@ -61,7 +62,7 @@ public class BeanValidationExceptionTranslator {
         }
     }
 
-    public Error toErrorDTO(BeanValidationException ex) {
+    public Error toErrorDTO(BeanValidationExceptionIfc ex) {
         Error result = new Error(ex.getErrorCode(), ex.getMessage(), ex.getMessage());
         List<FieldError> fieldErrors = toFieldErrorDTOs(ex.getViolations());
         result.setFieldErrors(fieldErrors);

@@ -2,13 +2,17 @@ package th.co.krungthaiaxa.api.elife.model;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.hibernate.validator.constraints.NotBlank;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Objects;
 
 @ApiModel(description = "An amount with its currency")
 public class Amount implements Serializable {
+    @NotNull
     private Double value;
+    @NotBlank
     private String currencyCode;
 
     public Amount multiply(double factor) {

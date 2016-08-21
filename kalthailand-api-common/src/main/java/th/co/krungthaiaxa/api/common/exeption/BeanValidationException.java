@@ -9,7 +9,7 @@ import java.util.Set;
 /**
  * @author khoi.tran
  */
-public class BeanValidationException extends BaseException {
+public class BeanValidationException extends BaseException implements BeanValidationExceptionIfc {
     private static final long serialVersionUID = -5046622369228818254L;
     public static final String ERROR_CODE = ErrorCode.ERROR_CODE_BEAN_VALIDATION;
 

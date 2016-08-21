@@ -39,7 +39,7 @@ public class ProductResource {
             @ApiParam(value = "The product details for which to get the min and max amounts")
             @RequestBody ProductQuotation productQuotationJson) {
         ProductService productService = productServiceFactory.getProduct(productQuotationJson.getProductType().getName());
-        return productService.initProductAmounts(productQuotationJson);
+        return productService.calculateProductAmounts(productQuotationJson);
     }
 
     @ApiOperation(value = "Gets Product ID", notes = "Gets product ID, ", response = ProductType.class, responseContainer = "List")

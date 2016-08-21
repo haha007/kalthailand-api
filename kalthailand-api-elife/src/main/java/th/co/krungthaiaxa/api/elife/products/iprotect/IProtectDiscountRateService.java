@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.elife.repository.ProductIProtectDiscountRateRepository;
 
 import javax.inject.Inject;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -16,7 +17,14 @@ public class IProtectDiscountRateService {
 
     public Optional<IProtectDiscountRate> findIProtectDiscountRate(IProtectPackage iprotectPackage, double sumInsured) {
         PageRequest pageRequest = new PageRequest(0, 1);
-        return productIProtectDiscountRateRepository.findByPackageNameAndSumInsuredLessThan(iprotectPackage, sumInsured, pageRequest);
+        IProtectDiscountRate iProtectDiscountRate;
+        List<IProtectDiscountRate> list = productIProtectDiscountRateRepository.findByPackageNameAndSumInsuredLessThan(iprotectPackage, sumInsured, pageRequest);
+        if (list.isEmpty()) {
+            iProtectDiscountRate = null;
+        } else {
+            iProtectDiscountRate = list.get(0);
+        }
+        return Optional.ofNullable(iProtectDiscountRate);
     }
 
 }

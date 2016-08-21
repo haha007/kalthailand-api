@@ -353,7 +353,7 @@ public class ProductUtils {
         notNull(datedAmounts.stream().anyMatch(datedAmount -> datedAmount.getDate() == null), premiumnsCalculatedAmountNoDate);
         notNull(datedAmounts.stream().anyMatch(datedAmount -> datedAmount.getDate().isBefore(LocalDate.now())), premiumnsCalculatedAmountDateInThePast);
         notNull(datedAmounts.stream().anyMatch(datedAmount -> datedAmount.getValue() == null), premiumnsCalculatedAmountNoAmount);
-        isEqual(filteredDates.size(), 0, premiumnsCalculatedAmountInvalidDate.apply(filteredDates.stream().map(LocalDate::toString).collect(joining(", "))));
+        isEqual(filteredDates.size(), 0, premiumsCalculatedAmountInvalidDate.apply(filteredDates.stream().map(LocalDate::toString).collect(joining(", "))));
     }
 
     public static Insured validateExistMainInsured(Quote quote) {

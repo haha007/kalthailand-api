@@ -7,11 +7,11 @@ import org.springframework.stereotype.Repository;
 import th.co.krungthaiaxa.api.elife.products.iprotect.IProtectDiscountRate;
 import th.co.krungthaiaxa.api.elife.products.iprotect.IProtectPackage;
 
-import java.util.Optional;
+import java.util.List;
 
 @Repository
 public interface ProductIProtectDiscountRateRepository extends PagingAndSortingRepository<IProtectDiscountRate, String> {
 
     @Query("{'packageName': ?0, 'sumInsured': {'$lte': ?1}}")
-    Optional<IProtectDiscountRate> findByPackageNameAndSumInsuredLessThan(IProtectPackage packageName, double sumInsured, Pageable pageable);
+    List<IProtectDiscountRate> findByPackageNameAndSumInsuredLessThan(IProtectPackage packageName, double sumInsured, Pageable pageable);
 }
