@@ -9,16 +9,19 @@ import java.util.Objects;
 
 @ApiModel(description = "The definition of how the premiums must be paid")
 public class FinancialScheduler implements Serializable {
+    @ApiModelProperty(value = "The periodicity of the scheduled payment")
     private Periodicity periodicity;
     /**
      * This field has value only if a customer input sumInsured (sumInsured before discount won't have value).
      * If the customer input premium, then modelAmount will be equal to premium, and sumInsured won't have value.
      */
+    @ApiModelProperty(value = "The premiums value (not discount yet) which customer must pay in a periodicity (month, quarter, year...). This is calculated by back end API if a sum insured amount is provided in premiumsDataLifeInsurance. If this value is provided, then it's the premiumsDataLifeInsurance sum insured that is calculated")
     private Amount modalAmountBeforeDiscount;
+    @ApiModelProperty(value = "The premiums value (after discount) which customer must pay in a periodicity (month, quarter, year...).  This is calculated by back end API if a sum insured amount is provided in premiumsDataLifeInsurance. If this value is provided, then it's the premiumsDataLifeInsurance sum insured that is calculated")
     private Amount modalAmount;
+    @ApiModelProperty(value = "End date of the financial scheduler, e.g. date of end premium payment. This is calculated by back end API and cannot be set by client.")
     private LocalDate endDate;
 
-    @ApiModelProperty(value = "The periodicity of the scheduled payment")
     public Periodicity getPeriodicity() {
         return periodicity;
     }
@@ -27,7 +30,6 @@ public class FinancialScheduler implements Serializable {
         this.periodicity = periodicity;
     }
 
-    @ApiModelProperty(value = "A regularly scheduled payment amount contractually obligated by the policy. This is calculated by back end API if a sum insured amount is provided in premiumsDataLifeInsurance. If this value is provided, then it's the premiumsDataLifeInsurance sum insured that is calculated")
     public Amount getModalAmount() {
         return modalAmount;
     }
@@ -36,7 +38,6 @@ public class FinancialScheduler implements Serializable {
         this.modalAmount = modalAmount;
     }
 
-    @ApiModelProperty(value = "End date of the financial scheduler, e.g. date of end premium payment. This is calculated by back end API and cannot be set by client.")
     public LocalDate getEndDate() {
         return endDate;
     }
@@ -51,14 +52,18 @@ public class FinancialScheduler implements Serializable {
         if (o == null || getClass() != o.getClass()) return false;
         FinancialScheduler that = (FinancialScheduler) o;
         return Objects.equals(modalAmountBeforeDiscount, that.modalAmountBeforeDiscount) &&
-                Objects.equals(periodicity, that.periodicity) &&
                 Objects.equals(modalAmount, that.modalAmount) &&
+                Objects.equals(periodicity, that.periodicity) &&
                 Objects.equals(endDate, that.endDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(modalAmountBeforeDiscount, periodicity, modalAmount, endDate);
+        return Objects.hash(
+                modalAmountBeforeDiscount,
+                modalAmount,
+                periodicity,
+                endDate);
     }
 
     public Amount getModalAmountBeforeDiscount() {
