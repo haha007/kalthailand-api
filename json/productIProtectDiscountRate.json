@@ -1,0 +1,38 @@
+[
+  {
+    "_id": "57b9d293d4c66be50bffa137",
+    "packageName": "IPROTECT10",
+    "sumInsured": 350000,
+    "discountRate": 0
+  },
+  {
+    "_id": "57b9d293d4c66be50bffa138",
+    "packageName": "IPROTECT10",
+    "sumInsured": 500000,
+    "discountRate": 0
+  },
+  {
+    "_id": "57b9d293d4c66be50bffa139",
+    "packageName": "IPROTECT10",
+    "sumInsured": 700000,
+    "discountRate": 0
+  },
+  {
+    "_id": "57b9d293d4c66be50bffa13a",
+    "packageName": "IPROTECT10",
+    "sumInsured": 1000000,
+    "discountRate": 1
+  },
+  {
+    "_id": "57b9d293d4c66be50bffa13b",
+    "packageName": "IPROTECT10",
+    "sumInsured": 3000000,
+    "discountRate": 2
+  },
+  {
+    "_id": "57b9d293d4c66be50bffa13c",
+    "packageName": "IPROTECT10",
+    "sumInsured": 5000000,
+    "discountRate": 3
+  }
+]
