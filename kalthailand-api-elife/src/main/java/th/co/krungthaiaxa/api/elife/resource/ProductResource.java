@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import th.co.krungthaiaxa.api.elife.model.Item;
 import th.co.krungthaiaxa.api.elife.products.ProductAmounts;
 import th.co.krungthaiaxa.api.elife.products.ProductFactory;
 import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
@@ -43,8 +44,8 @@ public class ProductResource {
     }
 
     @ApiOperation(value = "Gets Product ID", notes = "Gets product ID, ", response = ProductType.class, responseContainer = "List")
-    @RequestMapping(value = "/products/criteria-list", produces = APPLICATION_JSON_VALUE, method = GET)
-    public List<ProductType> getProductList() {
-        return productFactory.getProductCriteriaList();
+    @RequestMapping(value = "/products/items", produces = APPLICATION_JSON_VALUE, method = GET)
+    public List<Item> getProductList() {
+        return productFactory.getProductItems();
     }
 }

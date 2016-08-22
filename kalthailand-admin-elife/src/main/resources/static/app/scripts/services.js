@@ -2,7 +2,7 @@
     'use strict';
 
     var app = angular.module('myApp');
-    
+
     app.factory('AuthService', function ($http, $localStorage) {
         var authService = {};
 
@@ -56,7 +56,7 @@
             }
         });
     });
-    
+
     app.factory('PolicyNumberUpload', function ($resource) {
         return $resource(window.location.origin + '/api-elife/policy-numbers/upload', {}, {
             save: {
@@ -79,11 +79,11 @@
     });
 
     app.factory('Dashboard', function ($resource) {
-        return $resource(window.location.origin + '/api-elife/policies', { pageNumber: '@pageNumber', pageSize: '@pageSize' }, {});
+        return $resource(window.location.origin + '/api-elife/policies', {pageNumber: '@pageNumber', pageSize: '@pageSize'}, {});
     });
 
     app.factory('BlackList', function ($resource) {
-        return $resource(window.location.origin + '/api-blacklist/blacklist', { pageNumber: '@pageNumber', pageSize: '@pageSize' }, {});
+        return $resource(window.location.origin + '/api-blacklist/blacklist', {pageNumber: '@pageNumber', pageSize: '@pageSize'}, {});
     });
 
     app.factory('PolicyDetail', function ($resource) {
@@ -91,22 +91,22 @@
     });
 
     app.factory('PolicyNotification', function ($resource) {
-        return $resource(window.location.origin + '/api-elife/policies/:id/reminder/:reminderId', { id: '@id', reminderId: '@reminderId' }, {});
+        return $resource(window.location.origin + '/api-elife/policies/:id/reminder/:reminderId', {id: '@id', reminderId: '@reminderId'}, {});
     });
-    
+
     app.factory('PolicyQuotaConfig', function ($resource) {
-    	return $resource(window.location.origin + '/api-elife/policy-numbers/setting/:id',
+        return $resource(window.location.origin + '/api-elife/policy-numbers/setting/:id',
             {
                 //id: '@rowId'
             },
             {
-    		    update: {
-    			    method: 'PUT'
-    		    }
-    	    }
+                update: {
+                    method: 'PUT'
+                }
+            }
         );
     });
-    
+
     app.factory('httpRequestInterceptor', function ($localStorage) {
         return {
             request: function (config) {
@@ -115,9 +115,9 @@
             }
         };
     });
-    
+
     app.factory('ProductCriteria', function ($resource) {
-        return $resource(window.location.origin + '/api-elife/products/criteria-list');
+        return $resource(window.location.origin + '/api-elife/products/items');
     });
 
     app.config(function ($httpProvider) {

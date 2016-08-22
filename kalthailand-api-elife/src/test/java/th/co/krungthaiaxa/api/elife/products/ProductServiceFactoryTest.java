@@ -1,5 +1,6 @@
 package th.co.krungthaiaxa.api.elife.products;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.SpringApplicationConfiguration;
@@ -7,8 +8,10 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.api.elife.KalApiApplication;
+import th.co.krungthaiaxa.api.elife.model.Item;
 
 import javax.inject.Inject;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -57,14 +60,9 @@ public class ProductServiceFactoryTest {
 
     @Test
     public void should_return_product_criteria_list() {
-        List<ProductType> productCriteriaList = productFactory.getProductCriteriaList();
-        assertThat(productCriteriaList.toString()).containsOnlyOnce(ProductType.PRODUCT_10_EC.toString());
-        assertThat(productCriteriaList.toString()).containsOnlyOnce(ProductType.PRODUCT_10_EC.getName());
-        assertThat(productCriteriaList.toString()).containsOnlyOnce(ProductType.PRODUCT_IBEGIN.toString());
-        assertThat(productCriteriaList.toString()).containsOnlyOnce(ProductType.PRODUCT_IBEGIN.getName());
-        assertThat(productCriteriaList.toString()).containsOnlyOnce(ProductType.PRODUCT_IFINE.toString());
-        assertThat(productCriteriaList.toString()).containsOnlyOnce(ProductType.PRODUCT_IFINE.getName());
-        assertThat(productCriteriaList.toString()).containsOnlyOnce(ProductType.PRODUCT_IGEN.toString());
-        assertThat(productCriteriaList.toString()).containsOnlyOnce(ProductType.PRODUCT_IGEN.getName());
+        List<Item> productCriteriaList = productFactory.getProductItems();
+        List<ProductType> allProductTypes = Arrays.asList(ProductType.values());
+        productCriteriaList.stream().forEach((item) -> Assert.assertTrue(allProductTypes.contains(ProductType.valueOf(item.getValue()))));
+        Assert.assertEquals(productCriteriaList.size(), allProductTypes.size());
     }
 }

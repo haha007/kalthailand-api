@@ -10,22 +10,29 @@ import java.util.Objects;
 
 @ApiModel(description = "IProtect Life Insurance specific Premiums Data")
 public class ProductIProtectPremium implements Serializable {
+    @ApiModelProperty(value = "True if the user has chosen to pay on a total Sum Insured base. False otherwise (premium choice). This is set by back end API if an amount is provided in financialScheduler.")
     @NotNull
     private Boolean sumInsuredOption = null;
     @Valid
     @NotNull
+    @ApiModelProperty(value = "Total sum insured by the product before discount. This is calculated by back end API if an amount is provided in financialScheduler. If this value is provided, then it's the financialScheduler amount that is calculated")
     private Amount sumInsuredBeforeDiscount = null;
     @Valid
     @NotNull
+    @ApiModelProperty(value = "Total sum insured by the product. This is the final value (after discount) and is calculated by back end API if an amount is provided in financialScheduler. If this value is provided, then it's the financialScheduler amount that is calculated")
     private Amount sumInsured = null;
     @Valid
     @NotNull
+    @ApiModelProperty(value = "The money which beneficiaries will receive when insured person is dead. This is the final value (after discount) and is calculated by back end API if an amount is provided in financialScheduler. If this value is provided, then it's the "
+            + "financialScheduler amount that is calculated")
     private Amount deathBenefit = null;
     @Valid
     @NotNull
+    @ApiModelProperty(value = "Tax deduction per year.")
     private Amount yearlyTaxDeduction = null;
     @Valid
     @NotNull
+    @ApiModelProperty(value = "Total tax deduction after all of premium years.")
     private Amount totalTaxDeduction = null;
 
 //    private List<IProtectMomentCalculation> yearlyCalculations = new ArrayList<>();
@@ -39,7 +46,7 @@ public class ProductIProtectPremium implements Serializable {
 //    private List<DatedAmount> yearlyCashBacksAverageBenefit = new ArrayList<>();
 //    private List<DatedAmount> yearlyCashBacksMaximumBenefit = new ArrayList<>();
 //
-    @ApiModelProperty(value = "True if the user has chosen to pay on a total Sum Insured base. False otherwise (premium choice). This is set by back end API if an amount is provided in financialScheduler.")
+//    @ApiModelProperty(value = "True if the user has chosen to pay on a total Sum Insured base. False otherwise (premium choice). This is set by back end API if an amount is provided in financialScheduler.")
     public Boolean getSumInsuredOption() {
         return sumInsuredOption;
     }
@@ -48,7 +55,7 @@ public class ProductIProtectPremium implements Serializable {
         this.sumInsuredOption = sumInsuredOption;
     }
 
-    @ApiModelProperty(value = "Total sum insured by the product. This is calculated by back end API if an amount is provided in financialScheduler. If this value is provided, then it's the financialScheduler amount that is calculated")
+    //    @ApiModelProperty(value = "Total sum insured by the product. This is calculated by back end API if an amount is provided in financialScheduler. If this value is provided, then it's the financialScheduler amount that is calculated")
     public Amount getSumInsured() {
         return sumInsured;
     }
