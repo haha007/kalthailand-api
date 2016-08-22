@@ -14,6 +14,7 @@ import th.co.krungthaiaxa.api.elife.KalApiApplication;
 import th.co.krungthaiaxa.api.elife.model.enums.GenderCode;
 
 import javax.inject.Inject;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,6 +33,9 @@ public class IProtectRateLoaderServiceTest {
     @Inject
     IProtectDiscountRateExcelLoaderService iProtectDiscountRateExcelLoaderService;
 
+    @Inject
+    IProtectDiscountRateService iProtectDiscountRateService;
+
     @Test
     public void save_premium_rates_from_excel_to_db() {
         List<IProtectRate> iprotectRates = iProtectRateLoaderService.saveIProtectRatesFromExcelToDB();
@@ -47,7 +51,7 @@ public class IProtectRateLoaderServiceTest {
     }
 
     @Test
-    public void load_premium_rates_from_excel_to_db() {
+    public void load_premium_rates_from_db() {
         Optional<IProtectRate> iprotectRate = iProtectRateService.findIProtectRates(IProtectPackage.IPROTECT10, 35, GenderCode.MALE);
 
         LOGGER.debug(ObjectMapperUtil.toStringMultiLine(iprotectRate));
@@ -64,6 +68,19 @@ public class IProtectRateLoaderServiceTest {
         for (IProtectDiscountRate iProtectDiscountRate : iProtectDiscountRates) {
             Assert.assertTrue(iProtectDiscountRate.getSumInsured() >= 0);
             Assert.assertTrue(iProtectDiscountRate.getPackageName() != null);
+        }
+    }
+
+    @Test
+    public void load_discount_rates_from_db() {
+        List<Double> sumInsures = Arrays.asList(350000.0, 500000.0, 700000.0, 1000000.0, 3000000.0, 5000000.0);
+        for (Double sumInsure : sumInsures) {
+            IProtectDiscountRate iprotectRate = iProtectDiscountRateService.findIProtectDiscountRate(IProtectPackage.IPROTECT10, sumInsure).get();
+            LOGGER.debug(ObjectMapperUtil.toStringMultiLine(iprotectRate));
+            Assert.assertNotNull(iprotectRate);
+            Assert.assertTrue(iprotectRate.getSumInsured() <= sumInsure);
+            Assert.assertTrue(iprotectRate.getDiscountRate() >= 0.0);
+            Assert.assertNotNull(iprotectRate.getPackageName());
         }
     }
 }

@@ -24,6 +24,10 @@ public class IProtectDiscountRateExcelLoaderService {
     public IProtectDiscountRateExcelLoaderService(ProductIProtectDiscountRateRepository productIProtectDiscountRateRepository) {this.productIProtectDiscountRateRepository = productIProtectDiscountRateRepository;}
 
     public List<IProtectDiscountRate> saveIProtectDiscountRatesFromExcelToDB() {
+        List<IProtectDiscountRate> existingRates = productIProtectDiscountRateRepository.findAll();
+        if (!existingRates.isEmpty()) {
+            return existingRates;
+        }
         List<IProtectDiscountRate> iProtectDiscountRates = loadPredefinedRatesFromExcel(IProtectPackage.IPROTECT10);
         productIProtectDiscountRateRepository.save(iProtectDiscountRates);
         return iProtectDiscountRates;

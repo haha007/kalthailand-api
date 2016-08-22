@@ -37,10 +37,7 @@ public class IProtectServiceTest {
     @Test
     public void create_quote() {
         Quote quote = quoteService.createQuote(randomNumeric(20), ChannelType.LINE, TestUtil.productQuotation(ProductType.PRODUCT_IPROTECT, IProtectPackage.IPROTECT10.name(), 32, PeriodicityCode.EVERY_MONTH, 1000.0, false, 35, GenderCode.MALE));
-//        TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         LOGGER.debug(ObjectMapperUtil.toStringMultiLine(quote));
-//        quote = quoteService.updateQuote(quote, "token");
-
     }
 
 }
