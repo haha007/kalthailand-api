@@ -801,7 +801,7 @@ public class ProductIGenTest {
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.addInsured(TestUtil.insured(30));
         Policy policy = new Policy();
-        assertThatThrownBy(() -> productIGen.getPolicyFromQuote(policy, quote))
+        assertThatThrownBy(() -> productIGen.createPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(PolicyValidationException.insuredMoreThanOne.getMessage());
     }
@@ -813,7 +813,7 @@ public class ProductIGenTest {
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).setType(null);
         Policy policy = new Policy();
-        assertThatThrownBy(() -> productIGen.getPolicyFromQuote(policy, quote))
+        assertThatThrownBy(() -> productIGen.createPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(PolicyValidationException.insuredWithNoType.getMessage());
     }
@@ -825,7 +825,7 @@ public class ProductIGenTest {
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().remove(0);
         Policy policy = new Policy();
-        assertThatThrownBy(() -> productIGen.getPolicyFromQuote(policy, quote))
+        assertThatThrownBy(() -> productIGen.createPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(PolicyValidationException.noInsured.getMessage());
     }
@@ -837,7 +837,7 @@ public class ProductIGenTest {
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).setPerson(null);
         Policy policy = new Policy();
-        assertThatThrownBy(() -> productIGen.getPolicyFromQuote(policy, quote))
+        assertThatThrownBy(() -> productIGen.createPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(PolicyValidationException.insuredWithNoPerson.getMessage());
     }
@@ -849,7 +849,7 @@ public class ProductIGenTest {
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).getPerson().setGivenName(null);
         Policy policy = new Policy();
-        assertThatThrownBy(() -> productIGen.getPolicyFromQuote(policy, quote))
+        assertThatThrownBy(() -> productIGen.createPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(PolicyValidationException.personWithNoGivenName.getMessage());
     }
@@ -861,7 +861,7 @@ public class ProductIGenTest {
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).getPerson().setSurName(null);
         Policy policy = new Policy();
-        assertThatThrownBy(() -> productIGen.getPolicyFromQuote(policy, quote))
+        assertThatThrownBy(() -> productIGen.createPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(PolicyValidationException.personWithNoSurname.getMessage());
     }
@@ -873,7 +873,7 @@ public class ProductIGenTest {
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).getPerson().setTitle(null);
         Policy policy = new Policy();
-        assertThatThrownBy(() -> productIGen.getPolicyFromQuote(policy, quote))
+        assertThatThrownBy(() -> productIGen.createPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(PolicyValidationException.personWithNoTitle.getMessage());
     }
@@ -885,7 +885,7 @@ public class ProductIGenTest {
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).getPerson().setGenderCode(null);
         Policy policy = new Policy();
-        assertThatThrownBy(() -> productIGen.getPolicyFromQuote(policy, quote))
+        assertThatThrownBy(() -> productIGen.createPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(PolicyValidationException.mainInsuredWithNoGenderCode.getMessage());
     }
@@ -897,7 +897,7 @@ public class ProductIGenTest {
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).getHealthStatus().setHeightInCm(null);
         Policy policy = new Policy();
-        assertThatThrownBy(() -> productIGen.getPolicyFromQuote(policy, quote))
+        assertThatThrownBy(() -> productIGen.createPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(PolicyValidationException.mainInsuredWithNoHeight.getMessage());
     }
@@ -909,7 +909,7 @@ public class ProductIGenTest {
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).getPerson().setMaritalStatus(null);
         Policy policy = new Policy();
-        assertThatThrownBy(() -> productIGen.getPolicyFromQuote(policy, quote))
+        assertThatThrownBy(() -> productIGen.createPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(PolicyValidationException.mainInsuredWithNoMaritalStatus.getMessage());
     }
@@ -921,7 +921,7 @@ public class ProductIGenTest {
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).getHealthStatus().setWeightInKg(null);
         Policy policy = new Policy();
-        assertThatThrownBy(() -> productIGen.getPolicyFromQuote(policy, quote))
+        assertThatThrownBy(() -> productIGen.createPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(PolicyValidationException.mainInsuredWithNoWeight.getMessage());
     }
@@ -933,7 +933,7 @@ public class ProductIGenTest {
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).getHealthStatus().setWeightChangeInLast6Months(null);
         Policy policy = new Policy();
-        assertThatThrownBy(() -> productIGen.getPolicyFromQuote(policy, quote))
+        assertThatThrownBy(() -> productIGen.createPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(PolicyValidationException.mainInsuredWithNoWeightChange.getMessage());
     }
@@ -945,7 +945,7 @@ public class ProductIGenTest {
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).getHealthStatus().setWeightChangeInLast6Months(TRUE);
         Policy policy = new Policy();
-        assertThatThrownBy(() -> productIGen.getPolicyFromQuote(policy, quote))
+        assertThatThrownBy(() -> productIGen.createPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(PolicyValidationException.mainInsuredWithNoWeightChangeReason.getMessage());
     }
@@ -957,7 +957,7 @@ public class ProductIGenTest {
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).setDeclaredTaxPercentAtSubscription(null);
         Policy policy = new Policy();
-        assertThatThrownBy(() -> productIGen.getPolicyFromQuote(policy, quote))
+        assertThatThrownBy(() -> productIGen.createPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(PolicyValidationException.mainInsuredWithNoDeclaredTax.getMessage());
     }
@@ -969,7 +969,7 @@ public class ProductIGenTest {
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).getHealthStatus().setDisableOrImmunoDeficient(null);
         Policy policy = new Policy();
-        assertThatThrownBy(() -> productIGen.getPolicyFromQuote(policy, quote))
+        assertThatThrownBy(() -> productIGen.createPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(PolicyValidationException.mainInsuredWithNoDisableStatus.getMessage());
     }
@@ -981,7 +981,7 @@ public class ProductIGenTest {
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).getHealthStatus().setHospitalizedInLast6Months(null);
         Policy policy = new Policy();
-        assertThatThrownBy(() -> productIGen.getPolicyFromQuote(policy, quote))
+        assertThatThrownBy(() -> productIGen.createPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(PolicyValidationException.mainInsuredWithNoHospitalizedStatus.getMessage());
     }
@@ -993,7 +993,7 @@ public class ProductIGenTest {
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).getHealthStatus().setDeniedOrCounterOffer(null);
         Policy policy = new Policy();
-        assertThatThrownBy(() -> productIGen.getPolicyFromQuote(policy, quote))
+        assertThatThrownBy(() -> productIGen.createPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(PolicyValidationException.mainInsuredWithNoDeniedOrCounterOfferStatus.getMessage());
     }
@@ -1005,7 +1005,7 @@ public class ProductIGenTest {
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).setStartDate(null);
         Policy policy = new Policy();
-        assertThatThrownBy(() -> productIGen.getPolicyFromQuote(policy, quote))
+        assertThatThrownBy(() -> productIGen.createPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(PolicyValidationException.mainInsuredWithNoStartDate.getMessage());
     }
@@ -1017,7 +1017,7 @@ public class ProductIGenTest {
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).setStartDate(now().minusDays(1));
         Policy policy = new Policy();
-        assertThatThrownBy(() -> productIGen.getPolicyFromQuote(policy, quote))
+        assertThatThrownBy(() -> productIGen.createPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(PolicyValidationException.startDateNotServerDate.getMessage());
     }
@@ -1029,7 +1029,7 @@ public class ProductIGenTest {
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).setEndDate(null);
         Policy policy = new Policy();
-        assertThatThrownBy(() -> productIGen.getPolicyFromQuote(policy, quote))
+        assertThatThrownBy(() -> productIGen.createPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(PolicyValidationException.mainInsuredWithNoEndDate.getMessage());
     }
@@ -1041,7 +1041,7 @@ public class ProductIGenTest {
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).setAgeAtSubscription(null);
         Policy policy = new Policy();
-        assertThatThrownBy(() -> productIGen.getPolicyFromQuote(policy, quote))
+        assertThatThrownBy(() -> productIGen.createPolicyFromQuote(policy, quote))
                 .isInstanceOf(QuoteCalculationException.class)
                 .hasMessage(QuoteCalculationException.ageIsEmptyException.getMessage());
     }
@@ -1053,7 +1053,7 @@ public class ProductIGenTest {
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).setProfessionId(null);
         Policy policy = new Policy();
-        assertThatThrownBy(() -> productIGen.getPolicyFromQuote(policy, quote))
+        assertThatThrownBy(() -> productIGen.createPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(PolicyValidationException.mainInsuredWithNoProfessionId.getMessage());
     }
@@ -1065,7 +1065,7 @@ public class ProductIGenTest {
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).setProfessionName(null);
         Policy policy = new Policy();
-        assertThatThrownBy(() -> productIGen.getPolicyFromQuote(policy, quote))
+        assertThatThrownBy(() -> productIGen.createPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(PolicyValidationException.mainInsuredWithNoProfessionName.getMessage());
     }
@@ -1077,7 +1077,7 @@ public class ProductIGenTest {
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).getPerson().setBirthDate(null);
         Policy policy = new Policy();
-        assertThatThrownBy(() -> productIGen.getPolicyFromQuote(policy, quote))
+        assertThatThrownBy(() -> productIGen.createPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(PolicyValidationException.mainInsuredWithNoDOB.getMessage());
     }
@@ -1089,7 +1089,7 @@ public class ProductIGenTest {
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).getPerson().setEmail(null);
         Policy policy = new Policy();
-        assertThatThrownBy(() -> productIGen.getPolicyFromQuote(policy, quote))
+        assertThatThrownBy(() -> productIGen.createPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(PolicyValidationException.mainInsuredWithNoEmail.getMessage());
     }
@@ -1101,39 +1101,39 @@ public class ProductIGenTest {
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).getPerson().setEmail("me");
         Policy policy = new Policy();
-        assertThatThrownBy(() -> productIGen.getPolicyFromQuote(policy, quote))
+        assertThatThrownBy(() -> productIGen.createPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(PolicyValidationException.mainInsuredWithInvalidEmail.getMessage());
         quote.getInsureds().get(0).getPerson().setEmail("me.com");
-        assertThatThrownBy(() -> productIGen.getPolicyFromQuote(policy, quote))
+        assertThatThrownBy(() -> productIGen.createPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(PolicyValidationException.mainInsuredWithInvalidEmail.getMessage());
         quote.getInsureds().get(0).getPerson().setEmail("me@me");
-        assertThatThrownBy(() -> productIGen.getPolicyFromQuote(policy, quote))
+        assertThatThrownBy(() -> productIGen.createPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(PolicyValidationException.mainInsuredWithInvalidEmail.getMessage());
         quote.getInsureds().get(0).getPerson().setEmail("me@me.");
-        assertThatThrownBy(() -> productIGen.getPolicyFromQuote(policy, quote))
+        assertThatThrownBy(() -> productIGen.createPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(PolicyValidationException.mainInsuredWithInvalidEmail.getMessage());
         quote.getInsureds().get(0).getPerson().setEmail("me@.com");
-        assertThatThrownBy(() -> productIGen.getPolicyFromQuote(policy, quote))
+        assertThatThrownBy(() -> productIGen.createPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(PolicyValidationException.mainInsuredWithInvalidEmail.getMessage());
         quote.getInsureds().get(0).getPerson().setEmail("me@me.c");
-        assertThatThrownBy(() -> productIGen.getPolicyFromQuote(policy, quote))
+        assertThatThrownBy(() -> productIGen.createPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(PolicyValidationException.mainInsuredWithInvalidEmail.getMessage());
         quote.getInsureds().get(0).getPerson().setEmail("me@*.com");
-        assertThatThrownBy(() -> productIGen.getPolicyFromQuote(policy, quote))
+        assertThatThrownBy(() -> productIGen.createPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(PolicyValidationException.mainInsuredWithInvalidEmail.getMessage());
         quote.getInsureds().get(0).getPerson().setEmail("me..@me.com");
-        assertThatThrownBy(() -> productIGen.getPolicyFromQuote(policy, quote))
+        assertThatThrownBy(() -> productIGen.createPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(PolicyValidationException.mainInsuredWithInvalidEmail.getMessage());
         quote.getInsureds().get(0).getPerson().setEmail("me.@me.1a");
-        assertThatThrownBy(() -> productIGen.getPolicyFromQuote(policy, quote))
+        assertThatThrownBy(() -> productIGen.createPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(PolicyValidationException.mainInsuredWithInvalidEmail.getMessage());
     }
@@ -1145,7 +1145,7 @@ public class ProductIGenTest {
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).getPerson().setCurrentAddress(null);
         Policy policy = new Policy();
-        assertThatThrownBy(() -> productIGen.getPolicyFromQuote(policy, quote))
+        assertThatThrownBy(() -> productIGen.createPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(PolicyValidationException.mainInsuredWithNoGeographicalAddress.getMessage());
     }
@@ -1156,7 +1156,7 @@ public class ProductIGenTest {
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         Policy policy = new Policy();
-        productIGen.getPolicyFromQuote(policy, quote);
+        productIGen.createPolicyFromQuote(policy, quote);
         assertThat(policy.getInsureds().get(0).getPerson().getCurrentAddress().getCountry()).isEqualTo("Thailand");
     }
 
@@ -1167,7 +1167,7 @@ public class ProductIGenTest {
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).getPerson().getCurrentAddress().setDistrict(null);
         Policy policy = new Policy();
-        assertThatThrownBy(() -> productIGen.getPolicyFromQuote(policy, quote))
+        assertThatThrownBy(() -> productIGen.createPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(PolicyValidationException.addressWithNoDistrict.getMessage());
     }
@@ -1179,7 +1179,7 @@ public class ProductIGenTest {
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).getPerson().getCurrentAddress().setPostCode(null);
         Policy policy = new Policy();
-        assertThatThrownBy(() -> productIGen.getPolicyFromQuote(policy, quote))
+        assertThatThrownBy(() -> productIGen.createPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(PolicyValidationException.addressWithNoPostCode.getMessage());
     }
@@ -1191,7 +1191,7 @@ public class ProductIGenTest {
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).getPerson().getCurrentAddress().setStreetAddress1(null);
         Policy policy = new Policy();
-        assertThatThrownBy(() -> productIGen.getPolicyFromQuote(policy, quote))
+        assertThatThrownBy(() -> productIGen.createPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(PolicyValidationException.addressWithNoStreetAddress1.getMessage());
     }
@@ -1203,7 +1203,7 @@ public class ProductIGenTest {
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).getPerson().getCurrentAddress().setStreetAddress2(null);
         Policy policy = new Policy();
-        assertThatThrownBy(() -> productIGen.getPolicyFromQuote(policy, quote))
+        assertThatThrownBy(() -> productIGen.createPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(PolicyValidationException.addressWithNoStreetAddress2.getMessage());
     }
@@ -1215,7 +1215,7 @@ public class ProductIGenTest {
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).getPerson().getCurrentAddress().setSubCountry(null);
         Policy policy = new Policy();
-        assertThatThrownBy(() -> productIGen.getPolicyFromQuote(policy, quote))
+        assertThatThrownBy(() -> productIGen.createPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(PolicyValidationException.addressWithNoSubCountry.getMessage());
     }
@@ -1227,7 +1227,7 @@ public class ProductIGenTest {
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).getPerson().getCurrentAddress().setSubdistrict(null);
         Policy policy = new Policy();
-        assertThatThrownBy(() -> productIGen.getPolicyFromQuote(policy, quote))
+        assertThatThrownBy(() -> productIGen.createPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(PolicyValidationException.addressWithNoSubDistrict.getMessage());
     }
@@ -1240,7 +1240,7 @@ public class ProductIGenTest {
         quote.getInsureds().get(0).getPerson().setHomePhoneNumber(null);
         quote.getInsureds().get(0).getPerson().setMobilePhoneNumber(null);
         Policy policy = new Policy();
-        assertThatThrownBy(() -> productIGen.getPolicyFromQuote(policy, quote))
+        assertThatThrownBy(() -> productIGen.createPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(PolicyValidationException.mainInsuredWithNoPhoneNumber.getMessage());
     }
@@ -1252,7 +1252,7 @@ public class ProductIGenTest {
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).getPerson().getRegistrations().get(0).setId("123456789");
         Policy policy = new Policy();
-        assertThatThrownBy(() -> productIGen.getPolicyFromQuote(policy, quote))
+        assertThatThrownBy(() -> productIGen.createPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(PolicyValidationException.personWithInvalidThaiIdNumber.getMessage());
     }
@@ -1264,7 +1264,7 @@ public class ProductIGenTest {
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getCoverages().get(0).getBeneficiaries().get(0).getPerson().getRegistrations().get(0).setId("123456789");
         Policy policy = new Policy();
-        assertThatThrownBy(() -> productIGen.getPolicyFromQuote(policy, quote))
+        assertThatThrownBy(() -> productIGen.createPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(PolicyValidationException.beneficiariesWithWrongIDNumber.getMessage());
     }
@@ -1275,7 +1275,7 @@ public class ProductIGenTest {
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         TestUtil.quote(quote);
         Policy policy = new Policy();
-        assertThatThrownBy(() -> productIGen.getPolicyFromQuote(policy, quote))
+        assertThatThrownBy(() -> productIGen.createPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(PolicyValidationException.beneficiariesNone.getMessage());
     }
@@ -1287,7 +1287,7 @@ public class ProductIGenTest {
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getCoverages().get(0).getBeneficiaries().get(0).setAgeAtSubscription(null);
         Policy policy = new Policy();
-        assertThatThrownBy(() -> productIGen.getPolicyFromQuote(policy, quote))
+        assertThatThrownBy(() -> productIGen.createPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(PolicyValidationException.beneficiariesAgeAtSubscriptionEmpty.getMessage());
     }
@@ -1299,7 +1299,7 @@ public class ProductIGenTest {
         TestUtil.quote(quote, TestUtil.beneficiary(1.0, "1"), TestUtil.beneficiary(1.0, "2"), TestUtil.beneficiary(1.0, "3"), TestUtil.beneficiary(1.0, "4"),
                 TestUtil.beneficiary(1.0, "5"), TestUtil.beneficiary(1.0, "6"), TestUtil.beneficiary(94.0, "7"));
         Policy policy = new Policy();
-        assertThatThrownBy(() -> productIGen.getPolicyFromQuote(policy, quote))
+        assertThatThrownBy(() -> productIGen.createPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(PolicyValidationException.beneficiariesTooMany.getMessage());
     }
@@ -1311,7 +1311,7 @@ public class ProductIGenTest {
         TestUtil.quote(quote, TestUtil.beneficiary(1.0, "1"), TestUtil.beneficiary(1.0, "2"), TestUtil.beneficiary(1.0, "3"), TestUtil.beneficiary(1.0, "4"),
                 TestUtil.beneficiary(94.0, "5"));
         Policy policy = new Policy();
-        assertThatThrownBy(() -> productIGen.getPolicyFromQuote(policy, quote))
+        assertThatThrownBy(() -> productIGen.createPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(PolicyValidationException.beneficiariesPercentSumNot100.getMessage());
     }
@@ -1324,7 +1324,7 @@ public class ProductIGenTest {
         quote.getCoverages().get(0).getBeneficiaries().get(0).getPerson().getRegistrations().get(0).setId(
                 quote.getInsureds().get(0).getPerson().getRegistrations().get(0).getId());
         Policy policy = new Policy();
-        assertThatThrownBy(() -> productIGen.getPolicyFromQuote(policy, quote))
+        assertThatThrownBy(() -> productIGen.createPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(PolicyValidationException.beneficiariesIdIqualToInsuredId.getMessage());
     }
@@ -1335,7 +1335,7 @@ public class ProductIGenTest {
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         TestUtil.quote(quote, TestUtil.beneficiary(1.0, "3101202780273"), TestUtil.beneficiary(99.0, "3101202780273"));
         Policy policy = new Policy();
-        assertThatThrownBy(() -> productIGen.getPolicyFromQuote(policy, quote))
+        assertThatThrownBy(() -> productIGen.createPolicyFromQuote(policy, quote))
                 .isInstanceOf(PolicyValidationException.class)
                 .hasMessage(PolicyValidationException.beneficiariesWithSameId.getMessage());
     }
@@ -1348,7 +1348,7 @@ public class ProductIGenTest {
         quote.getInsureds().get(0).setAgeAtSubscription(19);
 
         Policy policy = new Policy();
-        assertThatThrownBy(() -> productIGen.getPolicyFromQuote(policy, quote))
+        assertThatThrownBy(() -> productIGen.createPolicyFromQuote(policy, quote))
                 .isInstanceOf(QuoteCalculationException.class)
                 .hasMessage(QuoteCalculationException.ageIsTooLowException.apply(20).getMessage());
     }
@@ -1361,7 +1361,7 @@ public class ProductIGenTest {
         quote.getInsureds().get(0).setAgeAtSubscription(71);
 
         Policy policy = new Policy();
-        assertThatThrownBy(() -> productIGen.getPolicyFromQuote(policy, quote))
+        assertThatThrownBy(() -> productIGen.createPolicyFromQuote(policy, quote))
                 .isInstanceOf(QuoteCalculationException.class)
                 .hasMessage(QuoteCalculationException.ageIsTooHighException.apply(70).getMessage());
     }
@@ -1372,7 +1372,7 @@ public class ProductIGenTest {
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         Policy policy = new Policy();
-        productIGen.getPolicyFromQuote(policy, quote);
+        productIGen.createPolicyFromQuote(policy, quote);
         assertThat(policy.getQuoteId()).isEqualTo(quote.getQuoteId());
         assertThat(policy.getCommonData()).isEqualToComparingFieldByField(quote.getCommonData());
         assertThat(policy.getPremiumsData().getProductIGenPremium()).isEqualToComparingFieldByField(quote.getPremiumsData().getProductIGenPremium());
@@ -1387,7 +1387,7 @@ public class ProductIGenTest {
         productIGen.calculateQuote(quote, productQuotation(ProductType.PRODUCT_IGEN, 25, EVERY_YEAR, 1000000.0));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         Policy policy = new Policy();
-        productIGen.getPolicyFromQuote(policy, quote);
+        productIGen.createPolicyFromQuote(policy, quote);
         LocalDate startDate = policy.getInsureds().get(0).getStartDate();
         List<LocalDate> allowedDates = new ArrayList<>();
         IntStream.range(0, 6).forEach(value -> allowedDates.add(startDate.plusMonths(value * 12)));
@@ -1409,7 +1409,7 @@ public class ProductIGenTest {
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
 
         Policy policy = new Policy();
-        productIGen.getPolicyFromQuote(policy, quote);
+        productIGen.createPolicyFromQuote(policy, quote);
         LocalDate startDate = policy.getInsureds().get(0).getStartDate();
         List<LocalDate> allowedDates = new ArrayList<>();
         IntStream.range(0, 12).forEach(value -> allowedDates.add(startDate.plusMonths(value * 6)));
@@ -1431,7 +1431,7 @@ public class ProductIGenTest {
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
 
         Policy policy = new Policy();
-        productIGen.getPolicyFromQuote(policy, quote);
+        productIGen.createPolicyFromQuote(policy, quote);
         LocalDate startDate = policy.getInsureds().get(0).getStartDate();
         List<LocalDate> allowedDates = new ArrayList<>();
         IntStream.range(0, 24).forEach(value -> allowedDates.add(startDate.plusMonths(value * 3)));
@@ -1453,7 +1453,7 @@ public class ProductIGenTest {
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
 
         Policy policy = new Policy();
-        productIGen.getPolicyFromQuote(policy, quote);
+        productIGen.createPolicyFromQuote(policy, quote);
         LocalDate startDate = policy.getInsureds().get(0).getStartDate();
         List<LocalDate> allowedDates = new ArrayList<>();
         IntStream.range(0, 72).forEach(value -> allowedDates.add(startDate.plusMonths(value)));

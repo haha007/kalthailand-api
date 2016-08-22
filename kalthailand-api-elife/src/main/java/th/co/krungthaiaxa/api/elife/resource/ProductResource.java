@@ -15,6 +15,7 @@ import th.co.krungthaiaxa.api.elife.products.ProductServiceFactory;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
 
 import javax.inject.Inject;
+import javax.validation.Valid;
 import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -38,9 +39,9 @@ public class ProductResource {
     @RequestMapping(value = "/products/amounts", produces = APPLICATION_JSON_VALUE, method = PUT)
     public ProductAmounts getProductAmounts(
             @ApiParam(value = "The product details for which to get the min and max amounts")
-            @RequestBody ProductQuotation productQuotationJson) {
-        ProductService productService = productServiceFactory.getProduct(productQuotationJson.getProductType().getName());
-        return productService.calculateProductAmounts(productQuotationJson);
+            @Valid @RequestBody ProductQuotation productQuotation) {
+        ProductService productService = productServiceFactory.getProduct(productQuotation.getProductType().getName());
+        return productService.calculateProductAmounts(productQuotation);
     }
 
     @ApiOperation(value = "Gets Product ID", notes = "Gets product ID, ", response = ProductType.class, responseContainer = "List")

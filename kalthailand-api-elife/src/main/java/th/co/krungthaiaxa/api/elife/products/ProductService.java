@@ -8,7 +8,7 @@ import th.co.krungthaiaxa.api.elife.model.PremiumsData;
 public interface ProductService {
     void calculateQuote(Quote quote, ProductQuotation productQuotation);
 
-    void getPolicyFromQuote(Policy policy, Quote quote);
+    void createPolicyFromQuote(Policy policy, Quote quote);
 
     CommonData initCommonData();
 

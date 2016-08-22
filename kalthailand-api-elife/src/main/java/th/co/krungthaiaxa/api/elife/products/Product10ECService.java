@@ -183,7 +183,7 @@ public class Product10ECService implements ProductService {
     }
 
     @Override
-    public void getPolicyFromQuote(Policy policy, Quote quote) {
+    public void createPolicyFromQuote(Policy policy, Quote quote) {
         // check for mandatory data
         checkCommonData(initCommonData());
         ProductUtils.validateMainInsured(quote);

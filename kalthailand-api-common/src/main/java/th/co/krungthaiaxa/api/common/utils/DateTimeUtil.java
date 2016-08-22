@@ -2,6 +2,7 @@ package th.co.krungthaiaxa.api.common.utils;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 
@@ -14,11 +15,15 @@ public class DateTimeUtil {
         return ZoneId.of(ZoneId.SHORT_IDS.get("VST"));
     }
 
-    public static LocalDate nowInThaiZoneId() {
+    public static LocalDate nowLocalDateInThaiZoneId() {
         return LocalDate.now(getThaiZoneId());
     }
 
-    public static Instant toInstant(LocalDate localDate){
+    public static LocalDateTime nowLocalDateTimeInThaiZoneId() {
+        return LocalDateTime.now(getThaiZoneId());
+    }
+
+    public static Instant toInstant(LocalDate localDate) {
         return localDate.atStartOfDay().toInstant(ZoneOffset.UTC);
     }
 }

@@ -94,7 +94,7 @@ public class ProductIBeginService implements ProductService {
     }
 
     @Override
-    public void getPolicyFromQuote(Policy policy, Quote quote) {
+    public void createPolicyFromQuote(Policy policy, Quote quote) {
 
     }
 

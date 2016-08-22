@@ -123,7 +123,7 @@ public class IProtectService implements ProductService {
         commonData.setNbOfYearsOfPremium(paymentYears);
         commonData.setNbOfYearsOfCoverage(coverageYears);
 
-        LocalDate startDate = DateTimeUtil.nowInThaiZoneId();
+        LocalDate startDate = DateTimeUtil.nowLocalDateInThaiZoneId();
         mainInsured.setStartDate(startDate);
         mainInsured.setEndDate(startDate.plusYears(coverageYears));
         premiumsData.getFinancialScheduler().setEndDate(startDate.plusYears(paymentYears));
@@ -260,7 +260,7 @@ public class IProtectService implements ProductService {
     }
 
     @Override
-    public void getPolicyFromQuote(Policy policy, Quote quote) {
+    public void createPolicyFromQuote(Policy policy, Quote quote) {
         // check for mandatory data
         checkProductType(initCommonData());
         //TODO refactor following code!
@@ -318,6 +318,8 @@ public class IProtectService implements ProductService {
         commonData.setMaxAge(INSURED_MAX_AGE);
         commonData.setMinAge(INSURED_MIN_AGE);
 
+        commonData.setMinPremium(PREMIUM_PER_MONTH_MIN);
+        commonData.setMaxSumInsured(SUM_INSURED_MAX);
         //They are calculated when calculate quote
 //        commonData.setMaxPremium(amountTHB(PREMIUM_MAX_PER_MONTH));
 //        commonData.setMaxSumInsured(ProductUtils.exchangeCurrency(SUM_INSURED_MAX));
@@ -333,6 +335,7 @@ public class IProtectService implements ProductService {
     public ProductAmounts calculateProductAmounts(ProductQuotation productQuotation) {
         ProductAmounts productAmounts = new ProductAmounts();
         productAmounts.setCommonData(initCommonData());
+        copyCommonDataToProductAmount(productAmounts.getCommonData(), productAmounts);
         if (productQuotation.getDateOfBirth() == null || productQuotation.getPeriodicityCode() == null) {
             return productAmounts;
         }
@@ -429,7 +432,7 @@ public class IProtectService implements ProductService {
 
         //TODO don't need to check it because the displayName can be changed???
         //isEqual(commonData.getProductName(), PRODUCT_TYPE.getDisplayName(), PolicyValidationException.productIProtectExpected);
-        isTrue(!StringUtils.isNotBlank(commonData.getProductName()), PolicyValidationException.productIProtectExpected);
+        isTrue(StringUtils.isNotBlank(commonData.getProductName()), PolicyValidationException.productIProtectExpected);
     }
 
     private Amount exchangeToProductCurrency(Amount amount) {
@@ -504,5 +507,12 @@ public class IProtectService implements ProductService {
             this.maxSumInsured = maxSumInsured;
         }
 
+    }
+
+    private void copyCommonDataToProductAmount(CommonData commonData, ProductAmounts destination) {
+        destination.setMaxSumInsured(commonData.getMaxSumInsured());
+        destination.setMinSumInsured(commonData.getMinSumInsured());
+        destination.setMinPremium(commonData.getMinPremium());
+        destination.setMaxPremium(commonData.getMaxPremium());
     }
 }

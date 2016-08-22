@@ -138,6 +138,7 @@ public class PolicyService {
         Stream<PolicyNumber> availablePolicyNumbers = policyNumberRepository.findByPolicyNull();
         notNull(availablePolicyNumbers, PolicyValidationException.noPolicyNumberAccessible);
 
+        //TODO Refactor to improve performance
         Optional<PolicyNumber> policyNumber = availablePolicyNumbers.sorted((p1, p2) -> p1.getPolicyId().compareTo(p2.getPolicyId())).findFirst();
         isTrue(policyNumber.isPresent(), PolicyValidationException.noPolicyNumberAvailable);
 
@@ -148,7 +149,7 @@ public class PolicyService {
             policy.setPolicyId(policyNumber.get().getPolicyId());
 
             ProductService productService = productServiceFactory.getProduct(quote.getCommonData().getProductId());
-            productService.getPolicyFromQuote(policy, quote);
+            productService.createPolicyFromQuote(policy, quote);
 
             policy.getPayments().stream().forEach(paymentRepository::save);
             policy.setStatus(PENDING_PAYMENT);

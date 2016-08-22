@@ -3,17 +3,23 @@ package th.co.krungthaiaxa.api.elife.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
 import th.co.krungthaiaxa.api.elife.client.BlackListClient;
 import th.co.krungthaiaxa.api.elife.data.OccupationType;
 import th.co.krungthaiaxa.api.elife.data.SessionQuote;
 import th.co.krungthaiaxa.api.elife.exception.ElifeException;
-import th.co.krungthaiaxa.api.elife.model.*;
+import th.co.krungthaiaxa.api.elife.model.Fatca;
+import th.co.krungthaiaxa.api.elife.model.HealthStatus;
+import th.co.krungthaiaxa.api.elife.model.Insured;
+import th.co.krungthaiaxa.api.elife.model.Person;
+import th.co.krungthaiaxa.api.elife.model.Quote;
+import th.co.krungthaiaxa.api.elife.model.Registration;
 import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
 import th.co.krungthaiaxa.api.elife.model.enums.InsuredType;
 import th.co.krungthaiaxa.api.elife.model.enums.RegistrationTypeName;
+import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
 import th.co.krungthaiaxa.api.elife.products.ProductService;
 import th.co.krungthaiaxa.api.elife.products.ProductServiceFactory;
-import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
 import th.co.krungthaiaxa.api.elife.repository.OccupationTypeRepository;
 import th.co.krungthaiaxa.api.elife.repository.QuoteRepository;
 import th.co.krungthaiaxa.api.elife.repository.SessionQuoteRepository;
@@ -38,10 +44,10 @@ public class QuoteService {
 
     @Inject
     public QuoteService(SessionQuoteRepository sessionQuoteRepository,
-                        QuoteRepository quoteRepository,
-                        ProductServiceFactory productServiceFactory,
-                        OccupationTypeRepository occupationTypeRepository,
-                        BlackListClient blackListClient) {
+            QuoteRepository quoteRepository,
+            ProductServiceFactory productServiceFactory,
+            OccupationTypeRepository occupationTypeRepository,
+            BlackListClient blackListClient) {
         this.sessionQuoteRepository = sessionQuoteRepository;
         this.quoteRepository = quoteRepository;
         this.productServiceFactory = productServiceFactory;
@@ -78,7 +84,7 @@ public class QuoteService {
         mainInsured.setType(InsuredType.Insured);
 
         Quote quote = new Quote();
-        LocalDateTime now = now(of(SHORT_IDS.get("VST")));
+        LocalDateTime now = DateTimeUtil.nowLocalDateTimeInThaiZoneId();
         quote.setCreationDateTime(now);
         quote.setLastUpdateDateTime(now);
         quote.setQuoteId(randomNumeric(20));

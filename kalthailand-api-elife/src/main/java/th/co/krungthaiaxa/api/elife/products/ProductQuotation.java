@@ -7,6 +7,7 @@ import th.co.krungthaiaxa.api.elife.model.enums.GenderCode;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 import th.co.krungthaiaxa.api.elife.products.iprotect.IProtectPackage;
 
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 /**
@@ -15,6 +16,7 @@ import java.time.LocalDate;
  */
 @ApiModel(description = "Data concerning quote for a product")
 public class ProductQuotation {
+    @NotNull
     private ProductType productType;
     private LocalDate dateOfBirth;
     private GenderCode genderCode;
