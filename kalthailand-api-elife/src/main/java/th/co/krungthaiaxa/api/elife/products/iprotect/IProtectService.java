@@ -97,7 +97,7 @@ public class IProtectService implements ProductService {
         IProtectPackage iProtectPackage = ProductUtils.validateExistPackageName(IProtectPackage.class, productQuotation);
         PeriodicityCode periodicityCode = productQuotation.getPeriodicityCode();
         GenderCode mainInsuredGenderCode = productQuotation.getGenderCode();
-        OccupationType occupationType = validateExistOccupationId(productQuotation.getOccupationId());
+        OccupationType occupationType = null;//validateExistOccupationId(productQuotation.getOccupationId());
 
         //Get data from quote
         CommonData commonData = quote.getCommonData();
@@ -113,8 +113,8 @@ public class IProtectService implements ProductService {
         Integer mainInsuredAge = ProductUtils.getAge(productQuotation.getDateOfBirth());
         mainInsured.setAgeAtSubscription(mainInsuredAge);
         mainInsured.getPerson().setGenderCode(mainInsuredGenderCode);
-        mainInsured.setProfessionId(occupationType.getOccId());
-        mainInsured.setProfessionName(occupationType.getOccTextTh());
+//        mainInsured.setProfessionId(occupationType.getOccId());
+//        mainInsured.setProfessionName(occupationType.getOccTextTh());
         mainInsured.setDeclaredTaxPercentAtSubscription(productQuotation.getDeclaredTaxPercentAtSubscription());
         ProductUtils.checkInsuredAgeInRange(mainInsured, INSURED_MIN_AGE, INSURED_MAX_AGE);
 
@@ -372,9 +372,9 @@ public class IProtectService implements ProductService {
         if (productQuotation.getGenderCode() == null) {
             return false;
         }
-        if (productQuotation.getOccupationId() == null) {
-            return false;
-        }
+//        if (productQuotation.getOccupationId() == null) {
+//            return false;
+//        }
         if (productQuotation.getPackageName() == null) {
             return false;
         }
