@@ -15,6 +15,7 @@ import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
 import th.co.krungthaiaxa.api.elife.ELifeTest;
 import th.co.krungthaiaxa.api.elife.KalApiApplication;
 import th.co.krungthaiaxa.api.elife.TestUtil;
+import th.co.krungthaiaxa.api.elife.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.api.elife.model.Amount;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.ProductIProtectPremium;
@@ -57,7 +58,7 @@ public class IProtectServiceTest extends ELifeTest {
     private static Quote quote = null;
 
     @Test
-    public void test_00_create_product_amount_no_birthday_success() {
+    public void test_00_create_productAmounts_no_birthday_success() {
         ProductQuotation productQuotation = new ProductQuotation();
         productQuotation.setProductType(ProductType.PRODUCT_IPROTECT);
         productQuotation.setPeriodicityCode(PeriodicityCode.EVERY_YEAR);
@@ -66,7 +67,7 @@ public class IProtectServiceTest extends ELifeTest {
     }
 
     @Test
-    public void test_00_calculate_product_amount_success() {
+    public void test_00_calculate_productAmounts_success() {
         ProductQuotation productQuotation = new ProductQuotation();
         productQuotation.setProductType(ProductType.PRODUCT_IPROTECT);
         productQuotation.setPackageName(IProtectPackage.IPROTECT10.name());
@@ -87,56 +88,48 @@ public class IProtectServiceTest extends ELifeTest {
     @Test
     public void test_01_create_quote() {
         //These testing numbers are calculated by Excel file from Business team. So the result from our program should match the number of business team.
-        testPremiumToSumInsured(1000, 282798);
-        testSumInsuredToPremium(282798, 1000);
+        testCreateQuotePremiumToSumInsured(1000, 282798);
+        testCreateQuoteSumInsuredToPremium(282798, 1000);
 
     }
 
     @Test
     public void test_01_create_quote_with_discount() {
         //These testing numbers are calculated by Excel file from Business team. So the result from our program should match the number of business team.
-        testPremiumToSumInsured(4500, 1272588.44, 1305824);
-        testSumInsuredToPremium(1305824, 4500);
+        testCreateQuotePremiumToSumInsured(4500, 1272588.44, 1305824);
+        testCreateQuoteSumInsuredToPremium(1305824, 4500);
     }
 
-    @Test
-    public void test_01_create_quote_error_when_over_maximum_value() {
-        testPremiumToSumInsured(6000, 4886625);//Too much sumInsured
-        testSumInsuredToPremium(1500001, 16400);
+    @Test(expected = QuoteCalculationException.class)
+    public void test_01_create_quote_error_when_premium_bigger_maximum_value() {
+        createQuote(false, 6000);
     }
 
-    private void testPremiumToSumInsured(double inputPremium, double expectSumInsured) {
-        testPremiumToSumInsured(false, inputPremium, null, expectSumInsured);
+    @Test(expected = QuoteCalculationException.class)
+    public void test_01_create_quote_error_when_sumInsured_bigger_maximum_value() {
+        createQuote(true, 1500001);
     }
 
-    private void testPremiumToSumInsured(double inputPremium, double expectSumInsuredBeforeDiscount, double expectSumInsured) {
-        testPremiumToSumInsured(false, inputPremium, expectSumInsuredBeforeDiscount, expectSumInsured);
+    private void testCreateQuotePremiumToSumInsured(double inputPremium, double expectSumInsured) {
+        testCreateQuote(false, inputPremium, null, expectSumInsured);
     }
 
-    private void testSumInsuredToPremium(double inputSumInsured, double expectPremium) {
-        testPremiumToSumInsured(true, inputSumInsured, null, expectPremium);
+    private void testCreateQuotePremiumToSumInsured(double inputPremium, double expectSumInsuredBeforeDiscount, double expectSumInsured) {
+        testCreateQuote(false, inputPremium, expectSumInsuredBeforeDiscount, expectSumInsured);
     }
 
-    private void testSumInsuredToPremium(double inputSumInsured, double expectPremiumBeforDiscount, double expectPremium) {
-        testPremiumToSumInsured(true, inputSumInsured, expectPremiumBeforDiscount, expectPremium);
+    private void testCreateQuoteSumInsuredToPremium(double inputSumInsured, double expectPremium) {
+        testCreateQuote(true, inputSumInsured, null, expectPremium);
     }
 
-    private void testPremiumToSumInsured(boolean isInputSumInsured, double inputAmountValue, Double expectOutputAmountBeforeDiscount, double expectOutput) {
-        int age = 32;
-        PeriodicityCode periodicityCode = PeriodicityCode.EVERY_MONTH;
-        int taxPercentage = 35;
+    private void testCreateQuoteSumInsuredToPremium(double inputSumInsured, double expectPremiumBeforDiscount, double expectPremium) {
+        testCreateQuote(true, inputSumInsured, expectPremiumBeforDiscount, expectPremium);
+    }
 
-        ProductQuotation productQuotation = TestUtil.productQuotation(
-                ProductType.PRODUCT_IPROTECT,
-                IProtectPackage.IPROTECT10.name(),
-                age,
-                periodicityCode,
-                inputAmountValue, isInputSumInsured,
-                taxPercentage,
-                GenderCode.MALE);
-        quote = quoteService.createQuote(randomNumeric(20), ChannelType.LINE, productQuotation);
-        LOGGER.debug(ObjectMapperUtil.toStringMultiLine(quote));
+    private void testCreateQuote(boolean isInputSumInsured, double inputAmountValue, Double expectOutputAmountBeforeDiscount, double expectOutput) {
+        quote = createQuote(isInputSumInsured, inputAmountValue);
 
+        //Get result values
         Amount premiumAmountBeforeDiscount = quote.getPremiumsData().getFinancialScheduler().getModalAmountBeforeDiscount();
         Amount premiumAmount = quote.getPremiumsData().getFinancialScheduler().getModalAmount();
         Amount sumInsured = quote.getPremiumsData().getProductIProtectPremium().getSumInsured();
@@ -155,6 +148,7 @@ public class IProtectServiceTest extends ELifeTest {
             calculatedOutputBeforeDiscount = sumInsuredBeforeDiscount;
         }
 
+        //Assert
         Assert.assertEquals(inputAmountValue, calculatedInput.getValue(), AMOUNT_DELTA);
 
         Assert.assertEquals(expectOutput, Math.ceil(calculatedOutput.getValue()), AMOUNT_DELTA);
@@ -164,12 +158,29 @@ public class IProtectServiceTest extends ELifeTest {
         Assert.assertEquals(calculatedOutput.getCurrencyCode(), calculatedOutputBeforeDiscount.getCurrencyCode());
     }
 
+    private Quote createQuote(boolean isInputSumInsured, double inputAmountValue) {
+        int age = 32;
+        PeriodicityCode periodicityCode = PeriodicityCode.EVERY_MONTH;
+        int taxPercentage = 35;
+
+        ProductQuotation productQuotation = TestUtil.productQuotation(
+                ProductType.PRODUCT_IPROTECT,
+                IProtectPackage.IPROTECT10.name(),
+                age,
+                periodicityCode,
+                inputAmountValue, isInputSumInsured,
+                taxPercentage,
+                GenderCode.MALE);
+        Quote quote = quoteService.createQuote(randomNumeric(20), ChannelType.LINE, productQuotation);
+        LOGGER.debug(ObjectMapperUtil.toStringMultiLine(quote));
+        return quote;
+    }
+
     @Test
     public void test_02_01_update_quote() {
         if (quote == null) {
             test_01_create_quote();
         }
-        TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote = quoteService.updateQuote(quote, "token");
     }
 
@@ -184,7 +195,7 @@ public class IProtectServiceTest extends ELifeTest {
     }
 
     @Test
-    public void test_calculate_quote_when_missing_both_premium_and_sumInsured() {
+    public void test_create_quote_success_when_missing_both_premium_and_sumInsured() {
         ProductQuotation productQuotation = new ProductQuotation();
         productQuotation.setProductType(ProductType.PRODUCT_IPROTECT);
         productQuotation.setPackageName(IProtectPackage.IPROTECT10.name());
