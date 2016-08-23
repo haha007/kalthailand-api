@@ -17,6 +17,7 @@ import th.co.krungthaiaxa.api.elife.KalApiApplication;
 import th.co.krungthaiaxa.api.elife.TestUtil;
 import th.co.krungthaiaxa.api.elife.model.Amount;
 import th.co.krungthaiaxa.api.elife.model.Policy;
+import th.co.krungthaiaxa.api.elife.model.ProductIProtectPremium;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
 import th.co.krungthaiaxa.api.elife.model.enums.GenderCode;
@@ -180,5 +181,27 @@ public class IProtectServiceTest extends ELifeTest {
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         Policy policy = policyService.createPolicy(quote);
         Assert.assertEquals(policy.getPolicyId(), quote.getPolicyId());
+    }
+
+    @Test
+    public void test_calculate_quote_when_missing_both_premium_and_sumInsured() {
+        ProductQuotation productQuotation = new ProductQuotation();
+        productQuotation.setProductType(ProductType.PRODUCT_IPROTECT);
+        productQuotation.setPackageName(IProtectPackage.IPROTECT10.name());
+        productQuotation.setDateOfBirth(LocalDate.of(1990, 12, 2));
+        productQuotation.setGenderCode(GenderCode.MALE);
+        productQuotation.setOccupationId(null);
+        productQuotation.setSumInsuredAmount(null);
+        productQuotation.setPremiumAmount(new Amount());
+        productQuotation.setPeriodicityCode(PeriodicityCode.EVERY_YEAR);
+        Quote quote = quoteService.createQuote(randomNumeric(20), ChannelType.LINE, productQuotation);
+        LOGGER.debug(ObjectMapperUtil.toStringMultiLine(quote));
+        Assert.assertNotNull(quote);
+        ProductIProtectPremium iProtectPremium = quote.getPremiumsData().getProductIProtectPremium();
+        Assert.assertNull(iProtectPremium.getSumInsured());
+        Assert.assertNull(iProtectPremium.getSumInsuredBeforeDiscount());
+        Assert.assertNull(iProtectPremium.getDeathBenefit());
+        Assert.assertNull(iProtectPremium.getTotalTaxDeduction());
+        Assert.assertNull(iProtectPremium.getYearlyTaxDeduction());
     }
 }

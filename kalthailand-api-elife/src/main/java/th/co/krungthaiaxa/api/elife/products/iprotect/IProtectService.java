@@ -26,6 +26,7 @@ import th.co.krungthaiaxa.api.elife.products.ProductService;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
 import th.co.krungthaiaxa.api.elife.products.ProductUtils;
 import th.co.krungthaiaxa.api.elife.repository.OccupationTypeRepository;
+import th.co.krungthaiaxa.api.elife.utils.AmountUtil;
 
 import javax.inject.Inject;
 import java.time.LocalDate;
@@ -87,9 +88,7 @@ public class IProtectService implements ProductService {
                 .filter(coverage -> coverage.getName().equalsIgnoreCase(PRODUCT_TYPE.getDisplayName()))
                 .findFirst();
         // Do we have enough to calculate anything
-        if (!validateProductQuotation(productQuotation)) {
-            // we need to delete what might have been calculated before
-            //TODO In which case we have to reset the quote???
+        if (!checkProductQuotationEnoughDataToCalculate(productQuotation)) {
             resetCalculatedStuff(quote, hasIFineCoverage);
             return;
         }
@@ -365,7 +364,11 @@ public class IProtectService implements ProductService {
         return premiumsData;
     }
 
-    private boolean validateProductQuotation(ProductQuotation productQuotation) {
+    /**
+     * @param productQuotation
+     * @return don't throw Exception here, just reset calculated values if there's not enough information to calculate.
+     */
+    private boolean checkProductQuotationEnoughDataToCalculate(ProductQuotation productQuotation) {
         if (productQuotation.getDateOfBirth() == null) {
             return false;
         }
@@ -375,10 +378,16 @@ public class IProtectService implements ProductService {
 //        if (productQuotation.getOccupationId() == null) {
 //            return false;
 //        }
-        if (productQuotation.getPackageName() == null) {
+        if (StringUtils.isBlank(productQuotation.getPackageName())) {
             return false;
         }
-        return productQuotation.getPeriodicityCode() != null;
+        if (AmountUtil.isBlank(productQuotation.getSumInsuredAmount()) && AmountUtil.isBlank(productQuotation.getPremiumAmount())) {
+            return false;
+        }
+        if (productQuotation.getPeriodicityCode() == null) {
+            return false;
+        }
+        return true;
     }
 
     private IProtectRate validateExistPremiumRate(IProtectPackage iProtectPackage, int insuredAge, GenderCode insuredGenderCode) {
