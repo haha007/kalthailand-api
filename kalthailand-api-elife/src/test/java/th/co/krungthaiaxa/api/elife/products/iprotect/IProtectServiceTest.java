@@ -85,8 +85,43 @@ public class IProtectServiceTest extends ELifeTest {
 
     @Test
     public void test_01_create_quote() {
+        //These testing numbers are calculated by Excel file from Business team. So the result from our program should match the number of business team.
+        testPremiumToSumInsured(1000, 282798);
+        testSumInsuredToPremium(282798, 1000);
+
+    }
+
+    @Test
+    public void test_01_create_quote_with_discount() {
+        //These testing numbers are calculated by Excel file from Business team. So the result from our program should match the number of business team.
+        testPremiumToSumInsured(4500, 1272588.44, 1305824);
+        testSumInsuredToPremium(1305824, 4500);
+    }
+
+    @Test
+    public void test_01_create_quote_error_when_over_maximum_value() {
+        testPremiumToSumInsured(6000, 4886625);//Too much sumInsured
+        testSumInsuredToPremium(1500001, 16400);
+    }
+
+    private void testPremiumToSumInsured(double inputPremium, double expectSumInsured) {
+        testPremiumToSumInsured(false, inputPremium, null, expectSumInsured);
+    }
+
+    private void testPremiumToSumInsured(double inputPremium, double expectSumInsuredBeforeDiscount, double expectSumInsured) {
+        testPremiumToSumInsured(false, inputPremium, expectSumInsuredBeforeDiscount, expectSumInsured);
+    }
+
+    private void testSumInsuredToPremium(double inputSumInsured, double expectPremium) {
+        testPremiumToSumInsured(true, inputSumInsured, null, expectPremium);
+    }
+
+    private void testSumInsuredToPremium(double inputSumInsured, double expectPremiumBeforDiscount, double expectPremium) {
+        testPremiumToSumInsured(true, inputSumInsured, expectPremiumBeforDiscount, expectPremium);
+    }
+
+    private void testPremiumToSumInsured(boolean isInputSumInsured, double inputAmountValue, Double expectOutputAmountBeforeDiscount, double expectOutput) {
         int age = 32;
-        double premium = 1000;
         PeriodicityCode periodicityCode = PeriodicityCode.EVERY_MONTH;
         int taxPercentage = 35;
 
@@ -95,14 +130,37 @@ public class IProtectServiceTest extends ELifeTest {
                 IProtectPackage.IPROTECT10.name(),
                 age,
                 periodicityCode,
-                premium, false,
+                inputAmountValue, isInputSumInsured,
                 taxPercentage,
                 GenderCode.MALE);
         quote = quoteService.createQuote(randomNumeric(20), ChannelType.LINE, productQuotation);
         LOGGER.debug(ObjectMapperUtil.toStringMultiLine(quote));
-        Assert.assertEquals(premium, quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue(), AMOUNT_DELTA);
+
+        Amount premiumAmountBeforeDiscount = quote.getPremiumsData().getFinancialScheduler().getModalAmountBeforeDiscount();
+        Amount premiumAmount = quote.getPremiumsData().getFinancialScheduler().getModalAmount();
         Amount sumInsured = quote.getPremiumsData().getProductIProtectPremium().getSumInsured();
-        Assert.assertEquals(sumInsured.getValue(), 282798, AMOUNT_DELTA);
+        Amount sumInsuredBeforeDiscount = quote.getPremiumsData().getProductIProtectPremium().getSumInsuredBeforeDiscount();
+
+        Amount calculatedInput;
+        Amount calculatedOutput;
+        Amount calculatedOutputBeforeDiscount;
+        if (isInputSumInsured) {
+            calculatedInput = sumInsured;
+            calculatedOutput = premiumAmount;
+            calculatedOutputBeforeDiscount = premiumAmountBeforeDiscount;
+        } else {
+            calculatedInput = premiumAmount;
+            calculatedOutput = sumInsured;
+            calculatedOutputBeforeDiscount = sumInsuredBeforeDiscount;
+        }
+
+        Assert.assertEquals(inputAmountValue, calculatedInput.getValue(), AMOUNT_DELTA);
+
+        Assert.assertEquals(expectOutput, Math.ceil(calculatedOutput.getValue()), AMOUNT_DELTA);
+        if (expectOutputAmountBeforeDiscount != null) {
+            Assert.assertEquals(expectOutputAmountBeforeDiscount, calculatedOutputBeforeDiscount.getValue(), AMOUNT_DELTA);
+        }
+        Assert.assertEquals(calculatedOutput.getCurrencyCode(), calculatedOutputBeforeDiscount.getCurrencyCode());
     }
 
     @Test

@@ -188,7 +188,7 @@ public class IProtectService implements ProductService {
         ProductIProtectPremium productIProtectPremium = premiumsData.getProductIProtectPremium();
 
         Amount sumInsuredBeforeDiscount = productIProtectPremium.getSumInsuredBeforeDiscount();
-        double discountRate = getDiscountRate(iProtectPackage, productIProtectPremium, sumInsuredBeforeDiscount);
+        double discountRate = getDiscountRate(iProtectPackage, sumInsuredBeforeDiscount);
         if (discountRate > 0) {
             if (productIProtectPremium.getSumInsuredOption()) {
                 Amount premiumAmount = ProductUtils.getPremiumFromSumInsured(sumInsuredBeforeDiscount, premiumRate, occupationRate, discountRate, periodicityCode);
@@ -412,7 +412,7 @@ public class IProtectService implements ProductService {
             return;
         }
         isEqual(PRODUCT_CURRENCY, sumInsured.getCurrencyCode(), QuoteCalculationException.sumInsuredCurrencyException.apply(PRODUCT_CURRENCY));
-        isTrue(sumInsured.getValue() <= sumInsuredMax, QuoteCalculationException.sumInsuredTooHighException.apply("Maximum: " + sumInsuredMin + ", actual value: " + sumInsured));
+        isTrue(sumInsured.getValue() <= sumInsuredMax, QuoteCalculationException.sumInsuredTooHighException.apply("Maximum: " + sumInsuredMax + ", actual value: " + sumInsured));
         isTrue(sumInsured.getValue() >= sumInsuredMin, QuoteCalculationException.sumInsuredTooLowException.apply("Minimum: " + sumInsuredMin + ", actual value: " + sumInsured));
     }
 
@@ -439,7 +439,7 @@ public class IProtectService implements ProductService {
         return ProductUtils.exchangeCurrency(amount, PRODUCT_CURRENCY);
     }
 
-    private double getDiscountRate(IProtectPackage iProtectPackage, ProductIProtectPremium productIProtectPremium, Amount sumInsuredAmount) {
+    private double getDiscountRate(IProtectPackage iProtectPackage, Amount sumInsuredAmount) {
         Optional<IProtectDiscountRate> iProtectDiscountRateOptional = iProtectDiscountRateService.findIProtectDiscountRate(iProtectPackage, sumInsuredAmount.getValue());
         return iProtectDiscountRateOptional
                 .map(IProtectDiscountRate::getDiscountRate)

@@ -1,6 +1,7 @@
 package th.co.krungthaiaxa.api.elife.products.iprotect;
 
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.elife.repository.ProductIProtectDiscountRateRepository;
 
@@ -16,7 +17,8 @@ public class IProtectDiscountRateService {
     public IProtectDiscountRateService(ProductIProtectDiscountRateRepository productIProtectDiscountRateRepository) {this.productIProtectDiscountRateRepository = productIProtectDiscountRateRepository;}
 
     public Optional<IProtectDiscountRate> findIProtectDiscountRate(IProtectPackage iprotectPackage, double sumInsured) {
-        PageRequest pageRequest = new PageRequest(0, 1);
+        Sort sort = new Sort(Sort.Direction.DESC, "sumInsured");
+        PageRequest pageRequest = new PageRequest(0, 1, sort);
         IProtectDiscountRate iProtectDiscountRate;
         List<IProtectDiscountRate> list = productIProtectDiscountRateRepository.findByPackageNameAndSumInsuredLessThan(iprotectPackage, sumInsured, pageRequest);
         if (list.isEmpty()) {
