@@ -125,7 +125,7 @@
     });
     
     app.factory('TotalQuoteCount', function ($resource) {
-        return $resource(window.location.origin + '/api-elife/quotes/count/:productId/:fromDate/:toDate', { productId: '@productId', fromDate: '@fromDate', toDate: '@toDate' }, {});
+        return $resource(window.location.origin + '/api-elife/quotes/count/:fromDate/:toDate', { fromDate: '@fromDate', toDate: '@toDate' }, {});
     });
 
 })();

@@ -3,6 +3,8 @@ package th.co.krungthaiaxa.api.elife.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -25,9 +27,19 @@ public class QuoteCriteriaRepositoryTest {
 	private QuoteCriteriaRepository quoteCriteriaRepository;
 	
 	@Test
-	public void should_return_ifine_quote_count_more_than_zero(){	
+	public void should_return_quote_count_greather_than_zero(){	
 		LocalDate today = LocalDate.now();
-		assertThat(quoteCriteriaRepository.quoteCount("iFine", today, today)).isGreaterThan(0);		
+		LocalDate beforeDay = today.minusDays(30);
+		List<Map<String,Object>> listCount = quoteCriteriaRepository.quoteCount(beforeDay, today);
+		assertThat(listCount.size()).isGreaterThan(0);		
 	}	
+	
+	@Test
+	public void should_return_quote_count_zero(){
+		LocalDate today = LocalDate.now();
+		LocalDate beforeDay = today.minusDays(30);
+		List<Map<String,Object>> listCount = quoteCriteriaRepository.quoteCount(today, beforeDay);
+		assertThat(listCount.size()).isEqualTo(0);		
+	}
 
 }

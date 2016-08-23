@@ -1,5 +1,10 @@
 package th.co.krungthaiaxa.api.elife.service;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -18,19 +23,26 @@ import th.co.krungthaiaxa.api.elife.repository.OccupationTypeRepository;
 import th.co.krungthaiaxa.api.elife.repository.QuoteCriteriaRepository;
 import th.co.krungthaiaxa.api.elife.repository.QuoteRepository;
 import th.co.krungthaiaxa.api.elife.repository.SessionQuoteRepository;
+import th.co.krungthaiaxa.api.elife.utils.ExcelUtils;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletResponse;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import static java.time.LocalDateTime.now;
 import static java.time.ZoneId.SHORT_IDS;
 import static java.time.ZoneId.of;
+import static java.time.format.DateTimeFormatter.ofPattern;
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
+import static th.co.krungthaiaxa.api.elife.utils.ExcelUtils.text;
 
 @Service
 public class QuoteService {
@@ -151,9 +163,37 @@ public class QuoteService {
                 .findFirst();
     }
     
-    public Map<String,Object> getTotalQuoteCount(String productId, LocalDate startDate, LocalDate endDate){
+    public Map<String,Object> getTotalQuoteCount(LocalDate startDate, LocalDate endDate){
     	Map<String,Object> responseMap = new HashMap<>();
-    	responseMap.put("total", quoteCriteriaRepository.quoteCount(productId, startDate, endDate));
+    	responseMap.put("content", quoteCriteriaRepository.quoteCount(startDate, endDate));
     	return responseMap;
+    }
+    
+    public byte[] downloadTotalQuoteCount(LocalDate startDate, LocalDate endDate, String nowString){    	
+    	List<Map<String,Object>> listTotalQuoteCount = quoteCriteriaRepository.quoteCount(startDate, endDate);
+    	
+    	String now = nowString;
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("TotalQuoteCountExtract_" + now);
+        
+        ExcelUtils.appendRow(sheet,
+                text("Product"),
+                text("Total Quotes"));
+        listTotalQuoteCount.stream().forEach(tmp -> createTotalQuoteCountExtractExcelFileLine(sheet, tmp));
+        ExcelUtils.autoWidthAllColumns(workbook);
+        
+        byte[] content;
+        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+            workbook.write(byteArrayOutputStream);
+            content = byteArrayOutputStream.toByteArray();
+        } catch (IOException e) {
+            throw new IllegalStateException("Unable to write content of excel total quote count file", e);
+        }
+        
+        return content;
+    }
+    
+    private void createTotalQuoteCountExtractExcelFileLine(Sheet sheet, Map<String,Object> m) {
+    	ExcelUtils.appendRow(sheet, text(""+m.get("productId")),text(""+m.get("quoteCount")));
     }
 }

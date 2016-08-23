@@ -25,17 +25,14 @@
         };
     });
     
-    app.controller('TotalQuoteCountController', function ($scope, $route, $http, TotalQuoteCount, ProductCriteria, $localStorage){
+    app.controller('TotalQuoteCountController', function ($scope, $route, $http, TotalQuoteCount, $localStorage){
     	$scope.$route = $route;
-    	
-    	$scope.TotalQuoteCountSearchSettings = {};
-    	$scope.productCriteriaList = ProductCriteria.query();
-    	$scope.productTypeSearch = null;
-    	var aMonthAgo = new Date();
-        aMonthAgo.setMonth(new Date().getMonth() - 1);
-    	$scope.toDateSearch = new Date();
-        $scope.fromDateSearch = aMonthAgo;
-        $scope.totalCount = null;
+        
+        var aDateAgo = new Date();
+        aDateAgo.setDate(new Date().getDate() - 7);
+        $scope.toDateSearch = new Date();
+        $scope.fromDateSearch = aDateAgo;
+        $scope.responseText = null;
         
         $scope.dateOptions = {
             dateDisabled: false,
@@ -57,22 +54,30 @@
             searchForTotalQuoteCount();
         };
         
+        $scope.downloadExcelFile = function(){
+        	var url = window.location.origin 
+            + '/api-elife/quotes/count/download?'  
+            + 'dateFrom=' + $scope.fromDateSearch.toISOString() 
+            + '&dateTo=' + $scope.toDateSearch.toISOString();
+        	window.open(url, "_blank");
+        }
+        
         function searchForTotalQuoteCount() {
         	TotalQuoteCount.get(
                 {
-                    productId: $scope.productTypeSearch,
                     fromDate: $scope.fromDateSearch.toISOString(),
                     toDate: $scope.toDateSearch.toISOString()
                 },
                 function (successResponse) {
-                	$scope.totalCount = successResponse.total;
+                	$scope.responseText = successResponse.content;
                 },
                 function (errorResponse) {
-                	$scope.totalCount = null;
+                	$scope.responseText = null;
                   	console.log(errorResponse);
                 }
             );
-        }
+        } 
+        
     });
 
     app.controller('DashboardController', function ($scope, $rootScope , $http, $route, Dashboard, PolicyQuotaConfig, ProductCriteria, $localStorage, $location) {
