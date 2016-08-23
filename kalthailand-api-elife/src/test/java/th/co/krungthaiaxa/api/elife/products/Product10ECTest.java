@@ -2,6 +2,7 @@ package th.co.krungthaiaxa.api.elife.products;
 
 import org.junit.Test;
 import th.co.krungthaiaxa.api.elife.TestUtil;
+import th.co.krungthaiaxa.api.elife.exception.MainInsuredException;
 import th.co.krungthaiaxa.api.elife.exception.PolicyValidationException;
 import th.co.krungthaiaxa.api.elife.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.api.elife.model.Amount;
@@ -769,8 +770,8 @@ public class Product10ECTest {
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).setMainInsuredIndicator(FALSE);
         assertThatThrownBy(() -> ProductUtils.validateMainInsured(quote))
-                .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(PolicyValidationException.noMainInsured.getMessage());
+                .isInstanceOf(MainInsuredException.class);
+//                .hasMessage(PolicyValidationException.noMainInsured.getMessage());
     }
 
     @Test

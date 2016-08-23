@@ -8,6 +8,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.api.elife.KalApiApplication;
 import th.co.krungthaiaxa.api.elife.TestUtil;
+import th.co.krungthaiaxa.api.elife.exception.MainInsuredException;
 import th.co.krungthaiaxa.api.elife.exception.PolicyValidationException;
 import th.co.krungthaiaxa.api.elife.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.api.elife.model.Amount;
@@ -790,8 +791,8 @@ public class ProductIGenTest {
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote.getInsureds().get(0).setMainInsuredIndicator(FALSE);
         assertThatThrownBy(() -> ProductUtils.validateMainInsured(quote))
-                .isInstanceOf(PolicyValidationException.class)
-                .hasMessage(PolicyValidationException.noMainInsured.getMessage());
+                .isInstanceOf(MainInsuredException.class);
+//                .hasMessage(PolicyValidationException.noMainInsured.getMessage());
     }
 
     @Test

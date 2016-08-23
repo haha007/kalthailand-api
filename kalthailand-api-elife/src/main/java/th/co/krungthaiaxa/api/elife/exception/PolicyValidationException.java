@@ -11,6 +11,7 @@ import java.util.function.Function;
 /**
  * I don't like the old code because we have to write every exception for each field. That's exhausted!
  * We should make it works with BeanValidator based on Annotation!
+ * So in order to compatible with old code, the old exceptions (product10ECExpected, productIFineExpected...) will have null error target and empty violations.
  */
 public class PolicyValidationException extends ElifeException implements BeanValidationExceptionIfc {
     private static final String ERROR_CODE = ErrorCode.ERROR_CODE_BEAN_VALIDATION;

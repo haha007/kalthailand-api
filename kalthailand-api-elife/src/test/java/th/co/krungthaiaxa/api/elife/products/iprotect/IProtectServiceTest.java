@@ -17,6 +17,7 @@ import th.co.krungthaiaxa.api.elife.KalApiApplication;
 import th.co.krungthaiaxa.api.elife.TestUtil;
 import th.co.krungthaiaxa.api.elife.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.api.elife.model.Amount;
+import th.co.krungthaiaxa.api.elife.model.CommonData;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.ProductIProtectPremium;
 import th.co.krungthaiaxa.api.elife.model.Quote;
@@ -58,16 +59,17 @@ public class IProtectServiceTest extends ELifeTest {
     private static Quote quote = null;
 
     @Test
-    public void test_00_create_productAmounts_no_birthday_success() {
+    public void test_create_productAmounts_no_birthday_success() {
         ProductQuotation productQuotation = new ProductQuotation();
         productQuotation.setProductType(ProductType.PRODUCT_IPROTECT);
+        productQuotation.setPackageName(IProtectPackage.IPROTECT10.name());
         productQuotation.setPeriodicityCode(PeriodicityCode.EVERY_YEAR);
         ProductAmounts productAmounts = productService.calculateProductAmounts(productQuotation);
         LOGGER.debug(ObjectMapperUtil.toStringMultiLine(productAmounts));
     }
 
     @Test
-    public void test_00_calculate_productAmounts_success() {
+    public void test_calculate_productAmounts_success() {
         ProductQuotation productQuotation = new ProductQuotation();
         productQuotation.setProductType(ProductType.PRODUCT_IPROTECT);
         productQuotation.setPackageName(IProtectPackage.IPROTECT10.name());
@@ -77,12 +79,11 @@ public class IProtectServiceTest extends ELifeTest {
         productQuotation.setPeriodicityCode(PeriodicityCode.EVERY_YEAR);
         ProductAmounts productAmounts = productService.calculateProductAmounts(productQuotation);
         LOGGER.debug(ObjectMapperUtil.toStringMultiLine(productAmounts));
-        Assert.assertNotNull(productAmounts.getMaxSumInsured());
-        Assert.assertNotNull(productAmounts.getMinPremium());
-        Assert.assertNotNull(productAmounts.getMinSumInsured());
-        Assert.assertNotNull(productAmounts.getMaxPremium());
-//        Assert.assertNotNull(productAmounts.getCommonData().getMaxSumInsured());
-//        Assert.assertNotNull(productAmounts.getCommonData().getMinPremium());
+        CommonData commonData = productAmounts.getCommonData();
+        Assert.assertNotNull(commonData.getMaxSumInsured());
+        Assert.assertNotNull(commonData.getMinPremium());
+        Assert.assertNotNull(commonData.getMinSumInsured());
+        Assert.assertNotNull(commonData.getMaxPremium());
     }
 
     @Test

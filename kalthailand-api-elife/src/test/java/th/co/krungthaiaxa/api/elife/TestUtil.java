@@ -105,7 +105,11 @@ public class TestUtil {
     }
 
     public static ProductQuotation productQuotation(ProductType productType, Integer age, PeriodicityCode periodicityCode, Double amountValue, Boolean isSumInsured, Integer taxRate, GenderCode genderCode) {
-        return productQuotation(productType, null, age, periodicityCode, amountValue, isSumInsured, taxRate, genderCode);
+        String packageName = null;
+        if (productType == ProductType.PRODUCT_IFINE) {
+            packageName = ProductIFinePackage.IFINE1.name();
+        }
+        return productQuotation(productType, packageName, age, periodicityCode, amountValue, isSumInsured, taxRate, genderCode);
     }
 
     public static ProductQuotation productQuotation(ProductType productType, String packageName, Integer age, PeriodicityCode periodicityCode, Double amountValue, Boolean isSumInsured, Integer taxRate, GenderCode genderCode) {

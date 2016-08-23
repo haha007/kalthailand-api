@@ -11,6 +11,8 @@ import java.util.function.Function;
  * For example:
  * For exception {@link #mainInsuredNotExistException} cannot be reused for different requests: {@link th.co.krungthaiaxa.api.elife.service.QuoteService#createQuote(String, ChannelType, ProductQuotation)} and
  * {@link th.co.krungthaiaxa.api.elife.service.PolicyService#createPolicy(Quote)}.
+ * <p>
+ * Besides, I don't want to create exception for each fields, similar to {@link PolicyValidationException}.
  */
 public class QuoteCalculationException extends ElifeException {
     public static Function<String, QuoteCalculationException> mainInsuredNotExistException = message -> new QuoteCalculationException("Not found main insured: " + message + ".");

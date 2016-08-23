@@ -8,9 +8,25 @@ import th.co.krungthaiaxa.api.elife.model.CommonData;
 //TODO I don't understand what's this object for? min/max premium and min/max sumInsured already defined in commonData. Why don't just use commonData?
 @ApiModel(description = "Data common to all quotes commercial types")
 public class ProductAmounts {
+    /**
+     * @deprecated please use {@link CommonData#getMinPremium()}.
+     */
+    @Deprecated
     private Amount minPremium;
+    /**
+     * @deprecated please use {@link CommonData#getMaxPremium()}.
+     */
+    @Deprecated
     private Amount maxPremium;
+    /**
+     * @deprecated please use {@link CommonData#getMinSumInsured()}.
+     */
+    @Deprecated
     private Amount minSumInsured;
+    /**
+     * @deprecated please use {@link CommonData#getMaxSumInsured()}.
+     */
+    @Deprecated
     private Amount maxSumInsured;
     private CommonData commonData;
 

@@ -1,7 +1,9 @@
 package th.co.krungthaiaxa.api.elife.products;
 
+import org.apache.commons.lang3.StringUtils;
 import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
 import th.co.krungthaiaxa.api.elife.exception.ElifeException;
+import th.co.krungthaiaxa.api.elife.exception.MainInsuredException;
 import th.co.krungthaiaxa.api.elife.exception.PolicyValidationException;
 import th.co.krungthaiaxa.api.elife.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.api.elife.model.Amount;
@@ -140,8 +142,8 @@ public class ProductUtils {
 
         Insured mainInsured = validateExistMainInsured(quote);
         notNull(mainInsured.getType(), insuredWithNoType);
-        notNull(mainInsured.getMainInsuredIndicator(), insuredWithNoMainInsured);
-        isFalse(!mainInsured.getMainInsuredIndicator(), noMainInsured);
+        isTrue((mainInsured.getMainInsuredIndicator() != null && mainInsured.getMainInsuredIndicator()), new MainInsuredException("The insured person is not the main insured."));
+//        isFalse(!mainInsured.getMainInsuredIndicator(), noMainInsured);
         notNull(mainInsured.getFatca(), insuredNoFatca);
         notNull(mainInsured.getFatca().isBornInUSA(), insuredFatcaInvalid1);
         notNull(mainInsured.getFatca().isPayTaxInUSA(), insuredFatcaInvalid2);
@@ -359,7 +361,7 @@ public class ProductUtils {
     public static Insured validateExistMainInsured(Quote quote) {
         return quote.getInsureds().stream().filter(Insured::getMainInsuredIndicator)
                 .findFirst()
-                .orElseThrow(() -> QuoteCalculationException.mainInsuredNotExistException.apply("Insured size: " + quote.getInsureds().size()));
+                .orElseThrow(() -> new MainInsuredException("Insured size: " + quote.getInsureds().size()));
     }
 
     private static boolean isValidEmailAddress(String email) {
@@ -379,6 +381,7 @@ public class ProductUtils {
 
     public static <T extends Enum<T>> T validateExistPackageName(Class<T> packageClass, ProductQuotation productQuotation) {
         String packageName = productQuotation.getPackageName();
+        isTrue(StringUtils.isNotBlank(packageName), QuoteCalculationException.packageNameUnknown.apply("package name " + packageName + ""));
         T productPackage = Enum.valueOf(packageClass, packageName);
         notNull(productPackage, QuoteCalculationException.packageNameUnknown.apply(packageName));
         return productPackage;
