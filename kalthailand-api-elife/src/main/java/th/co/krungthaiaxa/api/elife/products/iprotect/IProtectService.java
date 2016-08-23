@@ -344,7 +344,7 @@ public class IProtectService implements ProductService {
         IProtectPackage iProtectPackage = ProductUtils.validateExistPackageName(IProtectPackage.class, productQuotation);
         ProductAmounts productAmounts = new ProductAmounts();
         productAmounts.setCommonData(initCommonData(iProtectPackage));
-//        copyCommonDataToProductAmount(productAmounts.getCommonData(), productAmounts);
+        copyCommonDataToProductAmount(productAmounts.getCommonData(), productAmounts);
         if (productQuotation.getDateOfBirth() == null || productQuotation.getPeriodicityCode() == null) {
             return productAmounts;
         }
@@ -354,7 +354,7 @@ public class IProtectService implements ProductService {
         GenderCode mainInsuredGenderCode = productQuotation.getGenderCode();
         double premiumRate = validateExistPremiumRate(iProtectPackage, mainInsuredAge, mainInsuredGenderCode).getPremiumRate();
         AmountLimits amountLimits = calculateAmountLimits(iProtectPackage, premiumRate, productQuotation.getPeriodicityCode());
-//        amountLimits.copyToProductAmounts(productAmounts);
+        amountLimits.copyToProductAmounts(productAmounts);
         amountLimits.copyToCommonData(productAmounts.getCommonData());
         return productAmounts;
     }
@@ -475,13 +475,13 @@ public class IProtectService implements ProductService {
             destination.setMinPremium(minPremium);
             destination.setMaxPremium(maxPremium);
         }
-//
-//        public void copyToProductAmounts(ProductAmounts destination) {
-//            destination.setMaxSumInsured(maxSumInsured);
-//            destination.setMinSumInsured(minSumInsured);
-//            destination.setMinPremium(minPremium);
-//            destination.setMaxPremium(maxPremium);
-//        }
+
+        public void copyToProductAmounts(ProductAmounts destination) {
+            destination.setMaxSumInsured(maxSumInsured);
+            destination.setMinSumInsured(minSumInsured);
+            destination.setMinPremium(minPremium);
+            destination.setMaxPremium(maxPremium);
+        }
 
         public Amount getMinPremium() {
             return minPremium;
@@ -517,10 +517,10 @@ public class IProtectService implements ProductService {
 
     }
 
-//    private void copyCommonDataToProductAmount(CommonData commonData, ProductAmounts destination) {
-//        destination.setMaxSumInsured(commonData.getMaxSumInsured());
-//        destination.setMinSumInsured(commonData.getMinSumInsured());
-//        destination.setMinPremium(commonData.getMinPremium());
-//        destination.setMaxPremium(commonData.getMaxPremium());
-//    }
+    private void copyCommonDataToProductAmount(CommonData commonData, ProductAmounts destination) {
+        destination.setMaxSumInsured(commonData.getMaxSumInsured());
+        destination.setMinSumInsured(commonData.getMinSumInsured());
+        destination.setMinPremium(commonData.getMinPremium());
+        destination.setMaxPremium(commonData.getMaxPremium());
+    }
 }
