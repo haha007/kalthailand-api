@@ -5,27 +5,21 @@ import io.swagger.annotations.ApiModelProperty;
 import th.co.krungthaiaxa.api.elife.model.Amount;
 import th.co.krungthaiaxa.api.elife.model.CommonData;
 
-//TODO I don't understand what's this object for? min/max premium and min/max sumInsured already defined in commonData. Why don't just use commonData?
-@ApiModel(description = "Data common to all quotes commercial types")
+/**
+ * The mix/max values in ProductAmounts is used for limit the input values from client.
+ * The mix/max values in CommonData is used for validate the calculated values.
+ * They have different meaning.
+ */
+@ApiModel(description = "The mix/max values in ProductAmounts is used for limit the input values from client, while the mix/max values in CommonData is used for validate the calculated values. "
+        + "Their values may be the same in most of cases, but their meaning are different.")
 public class ProductAmounts {
-    /**
-     * @deprecated please use {@link CommonData#getMinPremium()}.
-     */
+
     @Deprecated
     private Amount minPremium;
-    /**
-     * @deprecated please use {@link CommonData#getMaxPremium()}.
-     */
     @Deprecated
     private Amount maxPremium;
-    /**
-     * @deprecated please use {@link CommonData#getMinSumInsured()}.
-     */
     @Deprecated
     private Amount minSumInsured;
-    /**
-     * @deprecated please use {@link CommonData#getMaxSumInsured()}.
-     */
     @Deprecated
     private Amount maxSumInsured;
     private CommonData commonData;
