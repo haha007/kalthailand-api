@@ -15,8 +15,19 @@ public class Amount implements Serializable {
     @NotBlank
     private String currencyCode;
 
+    /**
+     * NEVER remove this. It's required for Json constructor & DB persistence.
+     */
+    public Amount() {
+    }
+
+    public Amount(Double value, String currencyCode) {
+        this.value = value;
+        this.currencyCode = currencyCode;
+    }
+
     public Amount multiply(double factor) {
-        return amount(this.getValue() * factor, this.getCurrencyCode());
+        return new Amount(this.getValue() * factor, this.getCurrencyCode());
     }
 
     public static Amount amount(double value, String currency) {

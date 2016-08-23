@@ -28,7 +28,6 @@ import java.util.Optional;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.isEqual;
-import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.isFalse;
 import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.isTrue;
 import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.notNull;
 import static th.co.krungthaiaxa.api.elife.products.ProductUtils.amountTHB;
@@ -113,7 +112,8 @@ public class ProductIGenService implements ProductService {
 
         // cannot insure too much or not enough
         checkSumInsured(premiumsData, PRODUCT_IGEN_CURRENCY, SUM_INSURED_MIN, SUM_INSURED_MAX);
-        checkPremium(premiumsData);
+        ProductUtils.validatePremiumAmountInRange(premiumsData.getFinancialScheduler().getModalAmount(), PREMIUM_MIN, PREMIUM_MAX);
+//        checkPremium(premiumsData);
 
         // calculates yearly cash backs
         premiumsData.getProductIGenPremium().setYearlyCashBacks(calculateDatedAmount(quote, null, productIGenRate.getDvdRate()));
@@ -285,16 +285,16 @@ public class ProductIGenService implements ProductService {
         ProductUtils.checkDatedAmounts(productIGenPremium.getYearlyCashBacksMaximumDividende(), startDate, DURATION_COVERAGE_IN_YEAR);
     }
 
-    private static void checkPremium(PremiumsData premiumsData) {
-        if (premiumsData.getFinancialScheduler().getModalAmount() == null || premiumsData.getFinancialScheduler().getModalAmount().getValue() == null) {
-            // no amount to check
-            return;
-        }
-
-        isEqual(PRODUCT_IGEN_CURRENCY, premiumsData.getFinancialScheduler().getModalAmount().getCurrencyCode(), QuoteCalculationException.premiumCurrencyException.apply(PRODUCT_IGEN_CURRENCY));
-        isFalse(premiumsData.getFinancialScheduler().getModalAmount().getValue() > PREMIUM_MAX, QuoteCalculationException.premiumTooHighException.apply(PREMIUM_MAX));
-        isFalse(premiumsData.getFinancialScheduler().getModalAmount().getValue() < PREMIUM_MIN, QuoteCalculationException.premiumTooLowException.apply(PREMIUM_MIN));
-    }
+//    private static void checkPremium(PremiumsData premiumsData) {
+//        if (premiumsData.getFinancialScheduler().getModalAmount() == null || premiumsData.getFinancialScheduler().getModalAmount().getValue() == null) {
+//            // no amount to check
+//            return;
+//        }
+//
+//        isEqual(PRODUCT_IGEN_CURRENCY, premiumsData.getFinancialScheduler().getModalAmount().getCurrencyCode(), QuoteCalculationException.premiumCurrencyException.apply(PRODUCT_IGEN_CURRENCY));
+//        isFalse(premiumsData.getFinancialScheduler().getModalAmount().getValue() > PREMIUM_MAX, QuoteCalculationException.premiumTooHighException.apply(PREMIUM_MAX));
+//        isFalse(premiumsData.getFinancialScheduler().getModalAmount().getValue() < PREMIUM_MIN, QuoteCalculationException.premiumTooLowException.apply(PREMIUM_MIN));
+//    }
 
     private static List<DatedAmount> calculateDatedAmount(Quote quote, Integer percentRate, List<Double> dividends) {
         List<DatedAmount> result = new ArrayList<>();

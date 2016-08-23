@@ -147,7 +147,7 @@ public class IProtectService implements ProductService {
         productIProtectPremium.setTotalTaxDeduction(amount(totalTaxDeduction));
         productIProtectPremium.setDeathBenefit(productIProtectPremium.getSumInsured());
 
-        AmountLimits amountLimits = calculateAmountLimits(premiumRate, periodicityCode);
+        AmountLimits amountLimits = calculateAmountLimits(iProtectPackage, premiumRate, periodicityCode);
         amountLimits.copyToCommonData(commonData);
         validateLimitsForInputAmounts(quote, amountLimits);
 
@@ -213,10 +213,14 @@ public class IProtectService implements ProductService {
         return occupationType;
     }
 
-    private AmountLimits calculateAmountLimits(double premiumRate, PeriodicityCode periodicityCode) {
-        Amount maxPremiumByPeriodicityAmount = ProductUtils.getPremiumFromSumInsured(SUM_INSURED_MAX, premiumRate, periodicityCode);
+    private AmountLimits calculateAmountLimits(IProtectPackage iProtectPackage, double premiumRate, PeriodicityCode periodicityCode) {
+        double occupationRateForMaxium = 0.0;
+        double discountRateForSumInsuredMax = getDiscountRate(iProtectPackage, SUM_INSURED_MAX);
+        double discountRateMin = 0.0;
+
+        Amount maxPremiumByPeriodicityAmount = ProductUtils.getPremiumFromSumInsured(SUM_INSURED_MAX, premiumRate, occupationRateForMaxium, discountRateForSumInsuredMax, periodicityCode);
         double minPremiumByPeriodicity = ProductUtils.convertPeriodicity(PREMIUM_PER_MONTH_MIN.getValue(), PeriodicityCode.EVERY_MONTH, periodicityCode);
-        Amount minSumInsured = ProductUtils.getSumInsuredFromPremium(PREMIUM_PER_MONTH_MIN, premiumRate, PeriodicityCode.EVERY_MONTH);
+        Amount minSumInsured = ProductUtils.getSumInsuredFromPremium(PREMIUM_PER_MONTH_MIN, premiumRate, occupationRateForMaxium, discountRateMin, PeriodicityCode.EVERY_MONTH);
         Amount maxSumInsured = SUM_INSURED_MAX;
 
         AmountLimits amountLimits = new AmountLimits();
@@ -233,8 +237,8 @@ public class IProtectService implements ProductService {
     private void validateLimitsForInputAmounts(Quote quote, AmountLimits amountLimits) {
         Amount sumInsuredAmount = quote.getPremiumsData().getProductIProtectPremium().getSumInsured();
         Amount premiumAmount = quote.getPremiumsData().getFinancialScheduler().getModalAmount();
-        validateSumInsuredAmountInRange(sumInsuredAmount, amountLimits.getMinSumInsured().getValue(), amountLimits.getMaxSumInsured().getValue());
-        validatePremiumAmountInRange(premiumAmount, amountLimits.getMinPremium().getValue(), amountLimits.getMaxPremium().getValue());
+        ProductUtils.validateSumInsuredAmountInRange(sumInsuredAmount, amountLimits.getMinSumInsured().getValue(), amountLimits.getMaxSumInsured().getValue());
+        ProductUtils.validatePremiumAmountInRange(premiumAmount, amountLimits.getMinPremium().getValue(), amountLimits.getMaxPremium().getValue());
     }
 
     private void calculateYearlyPremium(Quote quote, Insured mainInsured) {
@@ -349,7 +353,7 @@ public class IProtectService implements ProductService {
         Integer mainInsuredAge = ProductUtils.getAge(productQuotation.getDateOfBirth());
         GenderCode mainInsuredGenderCode = productQuotation.getGenderCode();
         double premiumRate = validateExistPremiumRate(iProtectPackage, mainInsuredAge, mainInsuredGenderCode).getPremiumRate();
-        AmountLimits amountLimits = calculateAmountLimits(premiumRate, productQuotation.getPeriodicityCode());
+        AmountLimits amountLimits = calculateAmountLimits(iProtectPackage, premiumRate, productQuotation.getPeriodicityCode());
 //        amountLimits.copyToProductAmounts(productAmounts);
         amountLimits.copyToCommonData(productAmounts.getCommonData());
         return productAmounts;
@@ -429,26 +433,7 @@ public class IProtectService implements ProductService {
         notNull(insured.getDeclaredTaxPercentAtSubscription(), PolicyValidationException.mainInsuredWithNoDeclaredTax);
     }
 
-    private static void validateSumInsuredAmountInRange(Amount sumInsured, Double sumInsuredMin, Double sumInsuredMax) {
-        if (sumInsured == null || sumInsured.getValue() == null) {
-            // no amount to check
-            return;
-        }
-        isEqual(PRODUCT_CURRENCY, sumInsured.getCurrencyCode(), QuoteCalculationException.sumInsuredCurrencyException.apply(PRODUCT_CURRENCY));
-        isTrue(sumInsured.getValue() <= sumInsuredMax, QuoteCalculationException.sumInsuredTooHighException.apply("Maximum: " + sumInsuredMax + ", actual value: " + sumInsured));
-        isTrue(sumInsured.getValue() >= sumInsuredMin, QuoteCalculationException.sumInsuredTooLowException.apply("Minimum: " + sumInsuredMin + ", actual value: " + sumInsured));
-    }
-
     //TODO make a common method
-    private static void validatePremiumAmountInRange(Amount premiumAmount, double premiumMin, double premiumMax) {
-        if (premiumAmount == null || premiumAmount.getValue() == null) {
-            return;
-        }
-
-        isEqual(PRODUCT_CURRENCY, premiumAmount.getCurrencyCode(), QuoteCalculationException.premiumCurrencyException.apply(PRODUCT_CURRENCY));
-        isTrue(premiumAmount.getValue() >= premiumMin, QuoteCalculationException.premiumTooLowException.apply(premiumMin));
-        isTrue(premiumAmount.getValue() <= premiumMax, QuoteCalculationException.premiumTooHighException.apply(premiumMax));
-    }
 
     private static void checkProductType(CommonData commonData) {
         isEqual(commonData.getProductId(), PRODUCT_TYPE.getName(), PolicyValidationException.productIProtectExpected);

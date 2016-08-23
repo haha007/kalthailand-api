@@ -386,4 +386,20 @@ public class ProductUtils {
         notNull(productPackage, QuoteCalculationException.packageNameUnknown.apply(packageName));
         return productPackage;
     }
+
+    public static void validatePremiumAmountInRange(Amount premiumAmount, double premiumMin, double premiumMax) {
+        if (premiumAmount == null || premiumAmount.getValue() == null) {
+            return;
+        }
+        isTrue(premiumAmount.getValue() >= premiumMin, QuoteCalculationException.premiumTooHighException.apply("Minimum: " + premiumMin + ", actual value: " + premiumAmount));
+        isTrue(premiumAmount.getValue() <= premiumMax, QuoteCalculationException.premiumTooLowException.apply("Maximum: " + premiumMax + ", actual value: " + premiumAmount));
+    }
+
+    public static void validateSumInsuredAmountInRange(Amount sumInsured, Double sumInsuredMin, Double sumInsuredMax) {
+        if (sumInsured == null || sumInsured.getValue() == null) {
+            return;
+        }
+        isTrue(sumInsured.getValue() <= sumInsuredMax, QuoteCalculationException.sumInsuredTooHighException.apply("Maximum: " + sumInsuredMax + ", actual value: " + sumInsured));
+        isTrue(sumInsured.getValue() >= sumInsuredMin, QuoteCalculationException.sumInsuredTooLowException.apply("Minimum: " + sumInsuredMin + ", actual value: " + sumInsured));
+    }
 }

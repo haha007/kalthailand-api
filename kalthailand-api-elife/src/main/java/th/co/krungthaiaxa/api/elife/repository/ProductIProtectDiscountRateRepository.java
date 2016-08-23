@@ -14,4 +14,7 @@ public interface ProductIProtectDiscountRateRepository extends MongoRepository<I
 
     @Query("{'packageName': ?0, 'sumInsured': {'$lte': ?1}}")
     List<IProtectDiscountRate> findByPackageNameAndSumInsuredLessThan(IProtectPackage packageName, double sumInsured, Pageable pageable);
+
+    @Query("{'packageName': ?0}")
+    List<IProtectDiscountRate> findByPackageName(IProtectPackage iProtectPackage, Pageable pageRequest);
 }
