@@ -41,28 +41,23 @@ import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.notNull;
 @Service
 public class IProtectService implements ProductService {
 
-    private static final int TAX_DEDUCTION_PER_YEAR_MAX = 100000;
+    private static final ProductType PRODUCT_TYPE = ProductType.PRODUCT_IPROTECT;
     public static final int INSURED_COVERAGE_AGE_MAX = 85;
-//    public final static Integer DURATION_PAYMENT_IN_YEAR = null;//Depend on the iProtectPackage (5, 10 or 85 years)
+    private static final int TAX_DEDUCTION_PER_YEAR_MAX = 100000;
+
+    //    public final static Integer DURATION_PAYMENT_IN_YEAR = null;//Depend on the iProtectPackage (5, 10 or 85 years)
 
     public final static String PRODUCT_CURRENCY = ProductUtils.CURRENCY_THB;
-    //Sum assured min: 200,000 //Cell 'fill in information'!C40
-
-    //    public static final Double SUM_INSURED_MIN = null;//calculate from PREMIUM_MIN
-    //200K 'iProtect - Quote & Result'!C45//When calculate to Premium, it must not less than 1000 THB/month
-    //282,798 'iProtect - Product Detail'!C39
-    //TODO not used yet!
-    //SumInsured is always calculated by year!
-//    public static final Amount SUM_INSURED_MIN = ProductUtils.amountTHB(282798.0);
+    //    public static final Amount SUM_INSURED_MIN;//Calculated from PREMIMUM_PER_MONTH_MIN
     public static final Amount SUM_INSURED_MAX = amount(1500000.0);//1.5M
-    //    public static final Amount PREMIUM_MAX_PER_MONTH = ProductUtils.amountTHB(57435.0);//based on UI, not calculate from SUM_INSURED_MAX
+    //    public static final Amount PREMIUM_MAX_PER_MONTH //Calculated from SUM_INSURED_MAX
     public static final Amount PREMIUM_PER_MONTH_MIN = amount(1000.0);//Minimum Premium/month, Cell 'fill in information'!C39
     public static final int INSURED_MAX_AGE = 70;
-    public static final int INSURED_MIN_AGE = 20;
-    public static final boolean NEED_OCCUPATION = false;
-    //'fill in information'!D11: the limit of premium years is 55
 
-    private static final ProductType PRODUCT_TYPE = ProductType.PRODUCT_IPROTECT;
+    public static final int INSURED_MIN_AGE = 20;
+
+    //All calculation of this product doesn't related to Occupation
+    public static final boolean NEED_OCCUPATION = false;
 
     @Inject
     private OccupationTypeRepository occupationTypeRepository;
@@ -103,7 +98,6 @@ public class IProtectService implements ProductService {
         Insured mainInsured = ProductUtils.validateExistMainInsured(quote);
 
         // Copy data from ProductQuotation to Quote
-        //TODO split it to a separated method.
         premiumsData.getFinancialScheduler().getPeriodicity().setCode(periodicityCode);
 
         mainInsured.getPerson().setBirthDate(productQuotation.getDateOfBirth());
@@ -136,11 +130,6 @@ public class IProtectService implements ProductService {
         double premiumRate = validateExistPremiumRate(iProtectPackage, mainInsuredAge, mainInsuredGenderCode).getPremiumRate();
         calculateSumInsuredAndPremiumAmounts(premiumsData, productQuotation, iProtectPackage, premiumRate, occupationRate, periodicityCode);
 
-        //------------------------------------------------------------------------------------------------------------------------------
-        //Above code is the same for every products. Now below code will be different depend on the product
-        //------------------------------------------------------------------------------------------------------------------------------
-
-        //TODO
         double taxDeductionPerYear = Math.min(mainInsured.getDeclaredTaxPercentAtSubscription() * 100000, TAX_DEDUCTION_PER_YEAR_MAX);//Calculate Sheet (SA) * taxPercent
         productIProtectPremium.setYearlyTaxDeduction(amount(taxDeductionPerYear));
         double totalTaxDeduction = taxDeductionPerYear * quote.getCommonData().getNbOfYearsOfCoverage();
@@ -151,7 +140,8 @@ public class IProtectService implements ProductService {
         amountLimits.copyToCommonData(commonData);
         validateLimitsForInputAmounts(quote, amountLimits);
 
-//        calculateYearlyPremium(quote, mainInsured);
+        //In this product, we don't need to calculate yearlyPremium.
+        //        calculateYearlyPremium(quote, mainInsured);
 
         if (!hasIFineCoverage.isPresent()) {
             Coverage coverage = new Coverage();
@@ -240,6 +230,7 @@ public class IProtectService implements ProductService {
         ProductUtils.validateSumInsuredAmountInRange(sumInsuredAmount, amountLimits.getMinSumInsured().getValue(), amountLimits.getMaxSumInsured().getValue());
         ProductUtils.validatePremiumAmountInRange(premiumAmount, amountLimits.getMinPremium().getValue(), amountLimits.getMaxPremium().getValue());
     }
+
 
     private void calculateYearlyPremium(Quote quote, Insured mainInsured) {
 //        ProductIProtectPremium productIProtectPremium = quote.getPremiumsData().getProductIProtectPremium();
