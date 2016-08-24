@@ -45,6 +45,11 @@
                 controller: 'ConfigurationController',
                 activeTab: 'configuration'
             })
+            .when('/total-quote-count', {
+            	templateUrl: 'app/templates/total-quote-count.html',
+            	controller: 'TotalQuoteCountController',
+            	activeTab: 'total-quote-count'
+            })
             .otherwise({
                 redirectTo: '/home'
             });

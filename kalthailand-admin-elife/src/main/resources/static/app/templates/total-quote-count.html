@@ -1,0 +1,68 @@
+<div ng-include="'app/templates/partials/header.html'"></div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div ng-include="'app/templates/partials/sidebar.html'"></div>
+
+        <!-- BEGIN Page specific stuff -->        
+
+        <div ng-cloak class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main ng-cloak" id="totalQuoteCountContainer">
+            <div class="page-header">
+                <h1>Total Quote Count</h1>
+            </div>
+            <form class="form-horizontal" ng-submit="search($event)">
+                <div class="row"> 
+                    <div class="col-md-1">
+                        <label for="fromDateSearch">From</label>
+                    </div>
+                    <div class="col-md-3">
+                        <p class="input-group">
+                            <input readonly type="text" id="fromDateSearch" class="form-control" uib-datepicker-popup="dd-MM-yyyy" ng-model="fromDateSearch" ng-required="true" is-open="fromDateSearch.opened" close-text="Close" datepicker-options="dateOptions"/>
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-default" ng-click="fromDateSearchOpen()"><i class="glyphicon glyphicon-calendar"></i></button>
+                            </span>
+                        </p>
+                    </div>
+                    <div class="col-md-1">
+                        <label for="toDateSearch">To</label>
+                    </div>
+                    <div class="col-md-3">
+                        <p class="input-group">
+                            <input readonly type="text" id="toDateSearch" class="form-control" uib-datepicker-popup="dd-MM-yyyy" ng-model="toDateSearch" ng-required="true" is-open="toDateSearch.opened" close-text="Close" datepicker-options="dateOptions"/>
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-default" ng-click="toDateSearchOpen()"><i class="glyphicon glyphicon-calendar"></i></button>
+                            </span>
+                        </p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-8" >
+                        <button type="submit" class="btn btn-default" style="margin-right:10px;">Search Quote Count</button> 
+                        <a ng-click="downloadExcelFile()">
+                        	<button type="button" class="btn btn-default">
+                        		Download Export Excel
+                        	</button>
+                        </a>
+                    </div>
+                </div>                
+            </form>
+            <div ng-show="responseText !=null && responseText.length != 0">
+                <table class="table table-bordered table-striped table-hover table-condensed">
+                    <tr>
+                        <th>Product</th>
+                        <th>Total Quotes</th>
+                    </tr>
+                    <tr ng-repeat="item in responseText">
+                        <td>{{ item.productId }}</td>
+                        <td>{{ item.quoteCount | number }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <!-- END Page specific stuff -->
+
+    </div>
+</div>
+
+</body>
+</html>

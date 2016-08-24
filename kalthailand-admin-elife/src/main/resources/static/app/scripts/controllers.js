@@ -24,6 +24,61 @@
                     });
         };
     });
+    
+    app.controller('TotalQuoteCountController', function ($scope, $route, $http, TotalQuoteCount, $localStorage){
+    	$scope.$route = $route;
+        
+        var aDateAgo = new Date();
+        aDateAgo.setDate(new Date().getDate() - 7);
+        $scope.toDateSearch = new Date();
+        $scope.fromDateSearch = aDateAgo;
+        $scope.responseText = null;
+        
+        $scope.dateOptions = {
+            dateDisabled: false,
+            formatYear: 'yyyy',
+            maxDate: new Date(),
+            startingDay: 1
+        };
+        
+        $scope.fromDateSearchOpen = function () {
+            $scope.fromDateSearch.opened = true;
+        };
+
+        $scope.toDateSearchOpen = function () {
+            $scope.toDateSearch.opened = true;
+        };
+        
+        $scope.search = function (event) {
+            event.preventDefault();
+            searchForTotalQuoteCount();
+        };
+        
+        $scope.downloadExcelFile = function(){
+        	var url = window.location.origin 
+            + '/api-elife/quotes/count/download?'  
+            + 'dateFrom=' + $scope.fromDateSearch.toISOString() 
+            + '&dateTo=' + $scope.toDateSearch.toISOString();
+        	window.open(url, "_blank");
+        }
+        
+        function searchForTotalQuoteCount() {
+        	TotalQuoteCount.get(
+                {
+                    fromDate: $scope.fromDateSearch.toISOString(),
+                    toDate: $scope.toDateSearch.toISOString()
+                },
+                function (successResponse) {
+                	$scope.responseText = successResponse.content;
+                },
+                function (errorResponse) {
+                	$scope.responseText = null;
+                  	console.log(errorResponse);
+                }
+            );
+        } 
+        
+    });
 
     app.controller('DashboardController', function ($scope, $rootScope , $http, $route, Dashboard, PolicyQuotaConfig, ProductCriteria, $localStorage, $location) {
         $scope.$route = $route;

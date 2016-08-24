@@ -200,7 +200,7 @@ public class TestUtil {
         quote.getInsureds().get(0).getPerson().setMobilePhoneNumber(phoneNumber);
         quote.getInsureds().get(0).getPerson().setSurName("ศรีสุข");
         quote.getInsureds().get(0).getPerson().setTitle("MR");
-        quote.getInsureds().get(0).getPerson().addRegistration(registration("3841200364454"));
+        quote.getInsureds().get(0).getPerson().addRegistration(registration("3101202780273"));
 
         if (quote.getPremiumsData().getProduct10ECPremium() != null) {
             quote.getPremiumsData().getProduct10ECPremium().setDividendOption(YEARLY_FOR_NEXT_PREMIUM);

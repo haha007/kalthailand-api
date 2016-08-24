@@ -5,6 +5,8 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,9 +31,16 @@ import th.co.krungthaiaxa.api.elife.service.QuoteService;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Map;
 import java.util.Optional;
 
+import static java.time.LocalDateTime.now;
+import static java.time.format.DateTimeFormatter.ofPattern;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_ACCEPTABLE;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -152,7 +161,7 @@ public class QuoteResource {
             return new ResponseEntity<>(getJson(quoteService.createQuote(sessionId, channelType, productQuotation)), OK);
         } catch (ElifeException e) {
             logger.error("Unable to create a quote", e);
-            return new ResponseEntity<>(getJson(ErrorCode.QUOTE_NOT_CREATED.apply(e.getMessage())), INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(getJson(ErrorCode.QUOTE_NOT_CREATED), INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -200,5 +209,138 @@ public class QuoteResource {
 
         return new ResponseEntity<>(getJson(updatedQuote), OK);
     }
+
+    @ApiOperation(value = "Get total number of quote", notes = "Get total number of quote", response = Object.class)
+    @RequestMapping(value = "/quotes/count/{dateFrom}/{dateTo}", produces = APPLICATION_JSON_VALUE, method = GET)
+    public Map<String, Object> getTotalQuoteCount(
+            @ApiParam(value = "The date from", required = true)
+            @PathVariable String dateFrom,
+            @ApiParam(value = "The date to", required = true)
+            @PathVariable String dateTo) {
+
+        LocalDate startDate = null;
+        if (StringUtils.isNoneEmpty(dateFrom)) {
+            startDate = LocalDate.from(DateTimeFormatter.ISO_DATE_TIME.parse(dateFrom));
+        }
+
+        LocalDate endDate = null;
+        if (StringUtils.isNoneEmpty(dateTo)) {
+            endDate = LocalDate.from(DateTimeFormatter.ISO_DATE_TIME.parse(dateTo));
+        }
+
+        return quoteService.getTotalQuoteCount(startDate, endDate);
+    }
+
+    @ApiOperation(value = "Download total number of quote excel file", notes = "Download total number of quote excel file", response = Quote.class, responseContainer = "List")
+    @RequestMapping(value = "/quotes/count/download", method = GET)
+    @ResponseBody
+    public void downloadTotalQuoteCountExcelFile(
+            @ApiParam(value = "The date from")
+            @RequestParam(required = true) String dateFrom,
+            @ApiParam(value = "The date to")
+            @RequestParam(required = true) String dateTo,
+            HttpServletResponse response) {
+
+        LocalDate startDate = null;
+        if (StringUtils.isNoneEmpty(dateFrom)) {
+            startDate = LocalDate.from(DateTimeFormatter.ISO_DATE_TIME.parse(dateFrom));
+        }
+
+        LocalDate endDate = null;
+        if (StringUtils.isNoneEmpty(dateTo)) {
+            endDate = LocalDate.from(DateTimeFormatter.ISO_DATE_TIME.parse(dateTo));
+        }
+
+        String now = getDateTimeNow();
+
+        byte[] content = quoteService.downloadTotalQuoteCount(startDate, endDate, now);
+
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setContentLength(content.length);
+
+        String fileName = "eLife_TotalQuoteCountExtract_" + now + ".xlsx";
+        // set headers for the response
+        String headerKey = "Content-Disposition";
+        String headerValue = String.format("attachment; filename=\"%s\"", fileName);
+        response.setHeader(headerKey, headerValue);
+
+        try (OutputStream outStream = response.getOutputStream()) {
+            IOUtils.write(content, outStream);
+        } catch (IOException e) {
+            logger.error("Unable to download the quote total count excel file", e);
+        }
+
+    }
+
+    private String getDateTimeNow() {
+        return ofPattern("yyyyMMdd_HHmmss").format(now());
+    }
+
+    /*
+     @ApiOperation(value = "Policies extract", notes = "Gets the policy extract for commission calculation. Result is an Excel file", response = Policy.class, responseContainer = "List")
+    @RequestMapping(value = "/policies/extract/download", method = GET)
+    @ResponseBody
+    public void getPoliciesExcelFile(
+            @ApiParam(value = "Part of policy Id to filter with")
+            @RequestParam(required = false) String policyId,
+            @ApiParam(value = "The product type to filter with")
+            @RequestParam(required = false) ProductType productType,
+            @ApiParam(value = "The policy status to filter with")
+            @RequestParam(required = false) PolicyStatus status,
+            @ApiParam(value = "True to return only Policies with previous agent code, false to return Policies with empty agent codes, empty to return all Policies")
+            @RequestParam(required = false) Boolean nonEmptyAgentCode,
+            @ApiParam(value = "To filter Policies starting after the given date")
+            @RequestParam(required = false) String fromDate,
+            @ApiParam(value = "To filter Policies ending before the given date")
+            @RequestParam(required = false) String toDate,
+            HttpServletResponse response) {
+        LocalDate startDate = null;
+        if (StringUtils.isNoneEmpty(fromDate)) {
+            startDate = LocalDate.from(DateTimeFormatter.ISO_DATE_TIME.parse(fromDate));
+        }
+
+        LocalDate endDate = null;
+        if (StringUtils.isNoneEmpty(toDate)) {
+            endDate = LocalDate.from(DateTimeFormatter.ISO_DATE_TIME.parse(toDate));
+        }
+
+        List<Policy> policies = policyService.findAll(policyId, productType, status, nonEmptyAgentCode, startDate, endDate);
+
+        String now = ofPattern("yyyyMMdd_HHmmss").format(now());
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("PolicyExtract_" + now);
+
+        ExcelUtils.appendRow(sheet,
+                text("Policy ID"),
+                text("Previous Policy ID"),
+                text("Agent Code 1"),
+                text("Agent Code 2"));
+        policies.stream().forEach(tmp -> createPolicyExtractExcelFileLine(sheet, tmp));
+        ExcelUtils.autoWidthAllColumns(workbook);
+
+        byte[] content;
+        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+            workbook.write(byteArrayOutputStream);
+            content = byteArrayOutputStream.toByteArray();
+        } catch (IOException e) {
+            throw new IllegalStateException("Unable to write content of excel deduction file", e);
+        }
+
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setContentLength(content.length);
+
+        String fileName = "eLife_PolicyExtract_" + now + ".xlsx";
+        // set headers for the response
+        String headerKey = "Content-Disposition";
+        String headerValue = String.format("attachment; filename=\"%s\"", fileName);
+        response.setHeader(headerKey, headerValue);
+
+        try (OutputStream outStream = response.getOutputStream()) {
+            IOUtils.write(content, outStream);
+        } catch (IOException e) {
+            logger.error("Unable to download the deduction file", e);
+        }
+    }
+     */
 
 }
