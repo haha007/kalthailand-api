@@ -57,7 +57,7 @@ public class IProtectService implements ProductService {
     public static final int INSURED_MIN_AGE = 20;
 
     //All calculation of this product doesn't related to Occupation
-    public static final boolean NEED_OCCUPATION = false;
+    public static final boolean NEED_OCCUPATION = true;
 
     @Inject
     private OccupationTypeRepository occupationTypeRepository;
@@ -136,7 +136,7 @@ public class IProtectService implements ProductService {
         productIProtectPremium.setTotalTaxDeduction(amount(totalTaxDeduction));
         productIProtectPremium.setDeathBenefit(productIProtectPremium.getSumInsured());
 
-        AmountLimits amountLimits = calculateAmountLimits(iProtectPackage, premiumRate, periodicityCode);
+        AmountLimits amountLimits = calculateAmountLimits(iProtectPackage, premiumRate, occupationRate, periodicityCode);
         amountLimits.copyToCommonData(commonData);
         validateLimitsForInputAmounts(quote, amountLimits);
 
@@ -203,7 +203,18 @@ public class IProtectService implements ProductService {
         return occupationType;
     }
 
-    private AmountLimits calculateAmountLimits(IProtectPackage iProtectPackage, double premiumRate, PeriodicityCode periodicityCode) {
+    private double validateExistOccupationRateIfNecessary(ProductQuotation productQuotation) {
+        double occupationRate;
+        if (NEED_OCCUPATION) {
+            OccupationType occupationType = validateExistOccupationId(productQuotation.getOccupationId());
+            occupationRate = getOccupationRate(occupationType);
+        } else {
+            occupationRate = 0.0;
+        }
+        return occupationRate;
+    }
+
+    private AmountLimits calculateAmountLimits(IProtectPackage iProtectPackage, double premiumRate, double occupationRate, PeriodicityCode periodicityCode) {
         double occupationRateForMaxium = 0.0;
         double discountRateForSumInsuredMax = getDiscountRate(iProtectPackage, SUM_INSURED_MAX);
         double discountRateMin = 0.0;
@@ -230,7 +241,6 @@ public class IProtectService implements ProductService {
         ProductUtils.validateSumInsuredAmountInRange(sumInsuredAmount, amountLimits.getMinSumInsured().getValue(), amountLimits.getMaxSumInsured().getValue());
         ProductUtils.validatePremiumAmountInRange(premiumAmount, amountLimits.getMinPremium().getValue(), amountLimits.getMaxPremium().getValue());
     }
-
 
     private void calculateYearlyPremium(Quote quote, Insured mainInsured) {
 //        ProductIProtectPremium productIProtectPremium = quote.getPremiumsData().getProductIProtectPremium();
@@ -344,7 +354,9 @@ public class IProtectService implements ProductService {
         Integer mainInsuredAge = ProductUtils.getAge(productQuotation.getDateOfBirth());
         GenderCode mainInsuredGenderCode = productQuotation.getGenderCode();
         double premiumRate = validateExistPremiumRate(iProtectPackage, mainInsuredAge, mainInsuredGenderCode).getPremiumRate();
-        AmountLimits amountLimits = calculateAmountLimits(iProtectPackage, premiumRate, productQuotation.getPeriodicityCode());
+
+        double occupationRate = validateExistOccupationRateIfNecessary(productQuotation);
+        AmountLimits amountLimits = calculateAmountLimits(iProtectPackage, premiumRate, occupationRate, productQuotation.getPeriodicityCode());
         amountLimits.copyToProductAmounts(productAmounts);
         amountLimits.copyToCommonData(productAmounts.getCommonData());
         return productAmounts;
