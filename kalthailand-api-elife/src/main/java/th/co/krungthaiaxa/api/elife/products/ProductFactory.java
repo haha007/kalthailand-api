@@ -18,7 +18,7 @@ public class ProductFactory {
     private Item toItem(ProductType productType) {
         Item result = new Item();
         result.setName(productType.getName());
-        result.setValue(productType.getId());
+        result.setValue(productType.name());
         return result;
     }
 }

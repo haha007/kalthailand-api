@@ -12,10 +12,6 @@ public enum ProductType {
         this.name = name;
     }
 
-    public String getId() {
-        return name;
-    }
-
     public String getName() {
         return name;
     }

@@ -26,6 +26,7 @@
     </dependencies>
 
     <build>
+        <finalName>api-common</finalName>
         <plugins>
             <!-- EXPORT PROJECT INFORMATION TO PROPERTIES: BEGIN -->
             <!-- Export information into properties file -->
