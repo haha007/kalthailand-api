@@ -68,7 +68,7 @@ public class PolicyValidationException extends ElifeException implements BeanVal
     public static PolicyValidationException beneficiariesNone = new PolicyValidationException("There must be at least one beneficiary.", ERROR_TARGET, VIOLATIONS);
     public static PolicyValidationException beneficiariesTooMany = new PolicyValidationException("There are too many beneficiaries.", ERROR_TARGET, VIOLATIONS);
     public static PolicyValidationException beneficiariesPercentSumNot100 = new PolicyValidationException("The sum of percent between beneficiaries is not 100.", ERROR_TARGET, VIOLATIONS);
-    public static PolicyValidationException beneficiariesIdIqualToInsuredId = new PolicyValidationException("The beneficiary cannot be the insured.", ERROR_TARGET, VIOLATIONS);
+    public static PolicyValidationException beneficiariesIdIqualToInsuredId = new PolicyValidationException("The beneficiary Id equals to insuredId. So it cannot be the insured.", ERROR_TARGET, VIOLATIONS);
     public static PolicyValidationException beneficiariesWithSameId = new PolicyValidationException("The beneficiaries must be unique.", ERROR_TARGET, VIOLATIONS);
     public static PolicyValidationException beneficiariesAgeAtSubscriptionEmpty = new PolicyValidationException("The beneficiaries age must be filled in.", ERROR_TARGET, VIOLATIONS);
     public static PolicyValidationException beneficiariesWithWrongIDNumber = new PolicyValidationException("At least one beneficiary has an invalid Thai ID number.", ERROR_TARGET, VIOLATIONS);

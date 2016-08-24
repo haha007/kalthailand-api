@@ -1,10 +1,5 @@
 package th.co.krungthaiaxa.api.elife.service;
 
-import java.lang.reflect.Field;
-import java.util.List;
-
-import javax.inject.Inject;
-
 import org.jsoup.helper.StringUtil;
 import org.junit.After;
 import org.junit.Assert;
@@ -17,7 +12,6 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-
 import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
 import th.co.krungthaiaxa.api.elife.KalApiApplication;
 import th.co.krungthaiaxa.api.elife.model.Coverage;
@@ -29,7 +23,9 @@ import th.co.krungthaiaxa.api.elife.model.Registration;
 import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
 import th.co.krungthaiaxa.api.elife.repository.PolicyRepository;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import javax.inject.Inject;
+import java.lang.reflect.Field;
+import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiApplication.class)
