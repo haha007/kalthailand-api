@@ -130,7 +130,8 @@ public class IProtectService implements ProductService {
         double premiumRate = validateExistPremiumRate(iProtectPackage, mainInsuredAge, mainInsuredGenderCode).getPremiumRate();
         calculateSumInsuredAndPremiumAmounts(premiumsData, productQuotation, iProtectPackage, premiumRate, occupationRate, periodicityCode);
 
-        double taxDeductionPerYear = Math.min(mainInsured.getDeclaredTaxPercentAtSubscription() * 100000, TAX_DEDUCTION_PER_YEAR_MAX);//Calculate Sheet (SA) * taxPercent
+        Amount annualPremiumAmount = ProductUtils.getAnnualPremium(getPremium(quote), periodicityCode);
+        double taxDeductionPerYear = Math.min(((double) mainInsured.getDeclaredTaxPercentAtSubscription() / 100) * annualPremiumAmount.getValue(), TAX_DEDUCTION_PER_YEAR_MAX);//Calculate Sheet (SA) * taxPercent
         productIProtectPremium.setYearlyTaxDeduction(amount(taxDeductionPerYear));
         double totalTaxDeduction = taxDeductionPerYear * quote.getCommonData().getNbOfYearsOfCoverage();
         productIProtectPremium.setTotalTaxDeduction(amount(totalTaxDeduction));
@@ -148,6 +149,10 @@ public class IProtectService implements ProductService {
             coverage.setName(PRODUCT_TYPE.getDisplayName());
             quote.addCoverage(coverage);
         }
+    }
+
+    public static Amount getPremium(Quote quote) {
+        return quote.getPremiumsData().getFinancialScheduler().getModalAmount();
     }
 
     private void calculateSumInsuredAndPremiumAmounts(PremiumsData premiumsData, ProductQuotation productQuotation, IProtectPackage iProtectPackage, double premiumRate, double occupationRate, PeriodicityCode periodicityCode) {
