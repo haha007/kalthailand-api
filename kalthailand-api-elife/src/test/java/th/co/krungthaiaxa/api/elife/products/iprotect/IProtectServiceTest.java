@@ -65,6 +65,7 @@ public class IProtectServiceTest extends ELifeTest {
         //These testing numbers are calculated by Excel file from Business team. So the result from our program should match the number of business team.
 //        testCreateQuotePremiumToSumInsured(1000, 282798.0);
         testCreateQuotePremiumToSumInsured(1351.8, 382286.0);
+        Assert.assertEquals(5257.0, quote.getPremiumsData().getProductIProtectPremium().getYearlyTaxDeduction().getValue(), AMOUNT_DELTA);
 
     }
 

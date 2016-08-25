@@ -72,8 +72,8 @@ public class ProductUtils {
     }
 
     public static Amount getAnnualPremium(Amount premium, PeriodicityCode periodicityCode) {
-        double timeFactor = modalFactor.apply(periodicityCode);// 12.0 / (double) periodicityCode.getNbOfMonths();
-        return premium.divide(timeFactor);
+        double value = convertPeriodicity(premium.getValue(), periodicityCode, PeriodicityCode.EVERY_YEAR);
+        return new Amount(value, premium.getCurrencyCode());
     }
 
     /**
