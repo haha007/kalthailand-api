@@ -11,8 +11,11 @@ import th.co.krungthaiaxa.api.elife.ELifeTest;
 import th.co.krungthaiaxa.api.elife.model.*;
 import th.co.krungthaiaxa.api.elife.model.enums.*;
 import th.co.krungthaiaxa.api.elife.products.ProductIFinePackage;
+import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
+import th.co.krungthaiaxa.api.elife.products.iprotect.IProtectPackage;
 import th.co.krungthaiaxa.api.elife.KalApiApplication;
+import th.co.krungthaiaxa.api.elife.TestUtil;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -21,7 +24,7 @@ import static org.apache.commons.io.FileUtils.writeByteArrayToFile;
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static th.co.krungthaiaxa.api.elife.TestUtil.*;
-import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.EVERY_YEAR;
+import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.*;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -252,6 +255,63 @@ public class ApplicationFormServiceTest extends ELifeTest{
         // check if file exist and can read as PDF
         assertThat(pdfFile.exists()).isTrue();
         assertThat(new PdfReader(pdfContent)).isNotNull();
+    }
+    
+    @Test
+    public void should_iprotect_generate_not_validate_application_pdf_file() throws Exception {
+        Policy policy = getPolicyiProtect();
+
+        policy.getInsureds().get(0).getPerson().setTitle("MRS");
+        policy.getInsureds().get(0).getPerson().setGenderCode(GenderCode.MALE);
+        policy.getInsureds().get(0).getPerson().setMaritalStatus(MaritalStatus.WIDOW);
+        GeographicalAddress address = new GeographicalAddress();
+        address.setStreetAddress1("test");
+        address.setStreetAddress2("555");
+        address.setSubdistrict("subdistrict");
+        address.setDistrict("district");
+        address.setSubCountry("province");
+        address.setPostCode("11111");
+        policy.getInsureds().get(0).getPerson().setRegistrationAddress(address);
+        PhoneNumber phone = new PhoneNumber();
+        phone.setNumber("022222222");
+        policy.getInsureds().get(0).getPerson().setHomePhoneNumber(phone);
+        policy.getInsureds().get(0).setProfessionName("ข้าราชการ-พนักงานฝ่ายปกครอง");
+        policy.getInsureds().get(0).setProfessionDescription("test description");
+        policy.getInsureds().get(0).setAnnualIncome("9999999");
+        policy.getInsureds().get(0).addIncomeSource("test source income");
+        policy.getInsureds().get(0).setEmployerName("test workplace");
+
+        byte[] pdfContent = appService.generateNotValidatedApplicationForm(policy);
+        File pdfFile = new File("target/application-not-validated-iprotect-form.pdf");
+        writeByteArrayToFile(pdfFile, pdfContent);
+
+        // check if file exist and can read as PDF
+        assertThat(pdfFile.exists()).isTrue();
+        assertThat(new PdfReader(pdfContent)).isNotNull();
+    }
+    
+    private Policy getPolicyiProtect() {
+        Quote quote = quoteService.createQuote(randomNumeric(20), ChannelType.LINE, 
+        		createDefaultProductQuotation());
+        quote(quote, beneficiary(100.0));
+        quote = quoteService.updateQuote(quote, "token");
+
+        return policyService.createPolicy(quote);
+    }
+    
+    private ProductQuotation createDefaultProductQuotation() {
+        int age = 32;
+        PeriodicityCode periodicityCode = PeriodicityCode.EVERY_MONTH;
+        int taxPercentage = 35;
+
+        return TestUtil.productQuotation(
+                ProductType.PRODUCT_IPROTECT,
+                IProtectPackage.IPROTECT10.name(),
+                age,
+                periodicityCode,
+                282797.43, true,
+                taxPercentage,
+                GenderCode.MALE);
     }
 
     private Policy getPolicyiFine() {

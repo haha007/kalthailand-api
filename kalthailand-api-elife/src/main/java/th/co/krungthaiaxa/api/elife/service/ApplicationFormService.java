@@ -291,6 +291,8 @@ public class ApplicationFormService {
             } else if (pol.getPremiumsData().getProductIFinePremium().getProductIFinePackage().equals(ProductIFinePackage.IFINE5)) {
                 writeText(pdfContentByte, font, MARK, 292, 766, MEDIUM_SIZE);
             }
+        } else if (pol.getCommonData().getProductId().equals(ProductType.PRODUCT_IPROTECT.getName())) {
+        	writeText(pdfContentByte, font, MARK, 348, 814, MEDIUM_SIZE);
         }
 
         //coverage period
