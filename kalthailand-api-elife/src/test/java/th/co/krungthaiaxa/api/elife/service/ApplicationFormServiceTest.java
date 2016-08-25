@@ -261,28 +261,62 @@ public class ApplicationFormServiceTest extends ELifeTest{
     public void should_iprotect_generate_not_validate_application_pdf_file() throws Exception {
         Policy policy = getPolicyiProtect();
 
-        policy.getInsureds().get(0).getPerson().setTitle("MRS");
+        policy.getInsureds().get(0).getPerson().setTitle("MR");
         policy.getInsureds().get(0).getPerson().setGenderCode(GenderCode.MALE);
         policy.getInsureds().get(0).getPerson().setMaritalStatus(MaritalStatus.WIDOW);
         GeographicalAddress address = new GeographicalAddress();
-        address.setStreetAddress1("test");
-        address.setStreetAddress2("555");
-        address.setSubdistrict("subdistrict");
-        address.setDistrict("district");
-        address.setSubCountry("province");
-        address.setPostCode("11111");
+        address.setStreetAddress1("123/456 ม.พฤกษา");
+        address.setStreetAddress2("ซ.อ่อนนุช 34");
+        address.setSubdistrict("แขวงวัดดอกไม้");
+        address.setDistrict("เขตดินแดง");
+        address.setSubCountry("กรุงเทพ ฯ");
+        address.setPostCode("10140");
         policy.getInsureds().get(0).getPerson().setRegistrationAddress(address);
         PhoneNumber phone = new PhoneNumber();
         phone.setNumber("022222222");
         policy.getInsureds().get(0).getPerson().setHomePhoneNumber(phone);
         policy.getInsureds().get(0).setProfessionName("ข้าราชการ-พนักงานฝ่ายปกครอง");
-        policy.getInsureds().get(0).setProfessionDescription("test description");
+        policy.getInsureds().get(0).setProfessionDescription("ดูแลนักการเมืองไทย");
         policy.getInsureds().get(0).setAnnualIncome("9999999");
-        policy.getInsureds().get(0).addIncomeSource("test source income");
-        policy.getInsureds().get(0).setEmployerName("test workplace");
+        policy.getInsureds().get(0).addIncomeSource("ปล้นเขากิน");
+        policy.getInsureds().get(0).setEmployerName("ดาวโลก");
 
         byte[] pdfContent = appService.generateNotValidatedApplicationForm(policy);
         File pdfFile = new File("target/application-not-validated-iprotect-form.pdf");
+        writeByteArrayToFile(pdfFile, pdfContent);
+
+        // check if file exist and can read as PDF
+        assertThat(pdfFile.exists()).isTrue();
+        assertThat(new PdfReader(pdfContent)).isNotNull();
+    }
+    
+    @Test
+    public void should_iprotect_generate_validate_application_pdf_file() throws Exception {
+        Policy policy = getPolicyiProtect();
+
+        policy.getInsureds().get(0).getPerson().setTitle("MR");
+        policy.getInsureds().get(0).getPerson().setGenderCode(GenderCode.MALE);
+        policy.getInsureds().get(0).getPerson().setMaritalStatus(MaritalStatus.WIDOW);
+        GeographicalAddress address = new GeographicalAddress();
+        address.setStreetAddress1("123/456 ม.พฤกษา");
+        address.setStreetAddress2("ซ.อ่อนนุช 34");
+        address.setSubdistrict("แขวงวัดดอกไม้");
+        address.setDistrict("เขตดินแดง");
+        address.setSubCountry("กรุงเทพ ฯ");
+        address.setPostCode("10140");
+        policy.getInsureds().get(0).getPerson().setRegistrationAddress(address);
+        PhoneNumber phone = new PhoneNumber();
+        phone.setNumber("022222222");
+        policy.getInsureds().get(0).getPerson().setHomePhoneNumber(phone);
+        policy.getInsureds().get(0).setProfessionName("ข้าราชการ-พนักงานฝ่ายปกครอง");
+        policy.getInsureds().get(0).setProfessionDescription("ดูแลนักการเมืองไทย");
+        policy.getInsureds().get(0).setAnnualIncome("9999999");
+        policy.getInsureds().get(0).addIncomeSource("ปล้นเขากิน");
+        policy.getInsureds().get(0).setEmployerName("ดาวโลก");
+        policy.setValidationAgentCode("000000-00-000000");
+
+        byte[] pdfContent = appService.generateValidatedApplicationForm(policy);
+        File pdfFile = new File("target/application-validated-iprotect-form.pdf");
         writeByteArrayToFile(pdfFile, pdfContent);
 
         // check if file exist and can read as PDF

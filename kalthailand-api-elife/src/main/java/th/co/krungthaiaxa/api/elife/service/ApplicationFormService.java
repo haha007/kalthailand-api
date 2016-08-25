@@ -232,7 +232,8 @@ public class ApplicationFormService {
         //contact email
         writeText(pdfContentByte, font, person.getEmail(), 74, 204, MEDIUM_SIZE);
 
-        if (pol.getCommonData().getProductId().equals(ProductType.PRODUCT_IFINE.getName())) {
+        if (pol.getCommonData().getProductId().equals(ProductType.PRODUCT_IFINE.getName()) ||
+        		pol.getCommonData().getProductId().equals(ProductType.PRODUCT_IPROTECT.getName())) {
             if (pol.getInsureds().get(0).getProfessionName().equals("คนงานก่อสร้าง")) {
                 writeText(pdfContentByte, font, MARK, 36, 134, MEDIUM_SIZE);
             } else if (pol.getInsureds().get(0).getProfessionName().equals("คนขับรถแท๊กซี่ / คนขับรถมอเตอร์ไซค์รับจ้าง")) {
@@ -273,12 +274,10 @@ public class ApplicationFormService {
         if (pol.getCommonData().getProductId().equals(ProductType.PRODUCT_10_EC.getName())) {
             writeText(pdfContentByte, font, MARK, 348, 814, MEDIUM_SIZE);
             writeText(pdfContentByte, font, MARK, 350, 780, MEDIUM_SIZE);
-
             //Premium
             writeText(pdfContentByte, font, MONEY_FORMAT.format(getYearlyPremium(pol.getPremiumsData().getFinancialScheduler().getModalAmount().getValue(), pol.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode())), 434, 780, MEDIUM_SIZE);
         } else if (pol.getCommonData().getProductId().equals(ProductType.PRODUCT_IFINE.getName())) {
             writeText(pdfContentByte, font, MARK, 38, 802, MEDIUM_SIZE);
-
             //Plan
             if (pol.getPremiumsData().getProductIFinePremium().getProductIFinePackage().equals(ProductIFinePackage.IFINE1)) {
                 writeText(pdfContentByte, font, MARK, 96, 766, MEDIUM_SIZE);
@@ -292,8 +291,11 @@ public class ApplicationFormService {
                 writeText(pdfContentByte, font, MARK, 292, 766, MEDIUM_SIZE);
             }
         } else if (pol.getCommonData().getProductId().equals(ProductType.PRODUCT_IPROTECT.getName())) {
-        	writeText(pdfContentByte, font, MARK, 348, 814, MEDIUM_SIZE);
-        }
+        	writeText(pdfContentByte, font, MARK, 348, 814, MEDIUM_SIZE);        	
+        	writeText(pdfContentByte, font, MARK, 350, 780, MEDIUM_SIZE);
+        	//premium
+        	writeText(pdfContentByte, font, MONEY_FORMAT.format(pol.getPremiumsData().getProductIProtectPremium().getSumInsured().getValue()), 430, 780, MEDIUM_SIZE);
+        }        
 
         //coverage period
         writeText(pdfContentByte, font, String.valueOf(pol.getCommonData().getNbOfYearsOfCoverage()), 114, 604, MEDIUM_SIZE);
