@@ -63,7 +63,9 @@ public class IProtectServiceTest extends ELifeTest {
     @Test
     public void test_01_createQuote_with_default_value_01() {
         //These testing numbers are calculated by Excel file from Business team. So the result from our program should match the number of business team.
-        testCreateQuotePremiumToSumInsured(1000, 282798.0);
+//        testCreateQuotePremiumToSumInsured(1000, 282798.0);
+        testCreateQuotePremiumToSumInsured(1351.8, 382286.0);
+
     }
 
     @Test

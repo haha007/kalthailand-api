@@ -71,10 +71,11 @@ public class ProductUtils {
         return getPremiumFromSumInsured(sumInsured, rate, 0.0, 0.0, periodicityCode);
     }
 
-
-    public static Amount getAnnualPremium(Amount premium, PeriodicityCode periodicityCode){
-        return premium.multiply(periodicityCode.getNbOfMonths());
+    public static Amount getAnnualPremium(Amount premium, PeriodicityCode periodicityCode) {
+        double timeFactor = modalFactor.apply(periodicityCode);// 12.0 / (double) periodicityCode.getNbOfMonths();
+        return premium.divide(timeFactor);
     }
+
     /**
      * @param sumInsured
      * @param premiumRate     must be always greater than 0.
