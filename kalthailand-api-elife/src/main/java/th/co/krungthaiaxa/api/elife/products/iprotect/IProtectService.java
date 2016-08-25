@@ -93,6 +93,7 @@ public class IProtectService implements ProductService {
 
         //Get data from quote
         CommonData commonData = quote.getCommonData();
+        commonData.setPackageName(iProtectPackage.name());
         PremiumsData premiumsData = quote.getPremiumsData();
         ProductIProtectPremium productIProtectPremium = premiumsData.getProductIProtectPremium();
         Insured mainInsured = ProductUtils.validateExistMainInsured(quote);
@@ -248,6 +249,7 @@ public class IProtectService implements ProductService {
         ProductUtils.validatePremiumAmountInRange(premiumAmount, amountLimits.getMinPremium().getValue(), amountLimits.getMaxPremium().getValue());
     }
 
+    //TODO I don't remove this method because this code can be used in the future.
     private void calculateYearlyPremium(Quote quote, Insured mainInsured) {
 //        ProductIProtectPremium productIProtectPremium = quote.getPremiumsData().getProductIProtectPremium();
 //        List<IProtectMomentCalculation> yearlyCalculations = productIProtectPremium.getYearlyCalculations();
@@ -370,6 +372,7 @@ public class IProtectService implements ProductService {
 
     private CommonData initCommonData(IProtectPackage iProtectPackage) {
         CommonData commonData = initCommonData();
+        commonData.setPackageName(iProtectPackage.name());
         commonData.setNbOfYearsOfPremium(iProtectPackage.getPaymentYears());
         return commonData;
     }
