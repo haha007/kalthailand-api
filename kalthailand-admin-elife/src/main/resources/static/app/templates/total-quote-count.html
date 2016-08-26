@@ -11,6 +11,14 @@
                 <h1>Total Quote Count</h1>
             </div>
             <form class="form-horizontal" ng-submit="search($event)">
+                <div class="alert alert-danger" role="alert" ng-show="errorMessage">
+                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                    An error occured. {{ errorMessage }}
+                </div>
+                <div class="alert alert-success" role="alert" ng-show="successMessage">
+                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                    {{ successMessage }}
+                </div>
                 <div class="row">
                     <div class="col-md-1">
                         <label for="fromDateSearch">From</label>
