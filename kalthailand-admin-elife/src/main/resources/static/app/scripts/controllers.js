@@ -24,23 +24,24 @@
                     });
         };
     });
-    
-    app.controller('TotalQuoteCountController', function ($scope, $route, $http, TotalQuoteCount, $localStorage){
-    	$scope.$route = $route;
-        
+
+    app.controller('TotalQuoteCountController', function ($scope, $route, $http, $localStorage) {
+        $scope.$route = $route;
+
         var aDateAgo = new Date();
         aDateAgo.setDate(new Date().getDate() - 7);
         $scope.toDateSearch = new Date();
         $scope.fromDateSearch = aDateAgo;
         $scope.responseText = null;
-        
+        $scope.sessionQuoteCounts = [];
+
         $scope.dateOptions = {
             dateDisabled: false,
             formatYear: 'yyyy',
             maxDate: new Date(),
             startingDay: 1
         };
-        
+
         $scope.fromDateSearchOpen = function () {
             $scope.fromDateSearch.opened = true;
         };
@@ -48,39 +49,40 @@
         $scope.toDateSearchOpen = function () {
             $scope.toDateSearch.opened = true;
         };
-        
+
         $scope.search = function (event) {
             event.preventDefault();
             searchForTotalQuoteCount();
         };
-        
-        $scope.downloadExcelFile = function(){
-        	var url = window.location.origin 
-            + '/api-elife/quotes/count/download?'  
-            + 'dateFrom=' + $scope.fromDateSearch.toISOString() 
-            + '&dateTo=' + $scope.toDateSearch.toISOString();
-        	window.open(url, "_blank");
+
+        $scope.downloadExcelFile = function () {
+            var url = window.location.origin
+                + '/api-elife/session-quotes/all-products-counts-export?'
+                + 'fromDate=' + $scope.fromDateSearch.toISOString()
+                + '&toDate=' + $scope.toDateSearch.toISOString();
+            window.open(url, "_blank");
         }
-        
+
         function searchForTotalQuoteCount() {
-        	TotalQuoteCount.get(
-                {
-                    fromDate: $scope.fromDateSearch.toISOString(),
-                    toDate: $scope.toDateSearch.toISOString()
-                },
-                function (successResponse) {
-                	$scope.responseText = successResponse.content;
-                },
-                function (errorResponse) {
-                	$scope.responseText = null;
-                  	console.log(errorResponse);
-                }
-            );
-        } 
-        
+            var fromDate = $scope.fromDateSearch;//.toISOString();
+            var toDate = $scope.toDateSearch;//.toISOString();
+            $http.get(window.location.origin + '/api-elife/session-quotes/all-products-counts?'
+                    + 'fromDate=' + fromDate
+                    + '&toDate=' + toDate)
+                .then(
+                    function (successResponse) {
+                        $scope.sessionQuoteCounts = successResponse.data;
+                    },
+                    function (errorResponse) {
+                        $scope.sessionQuoteCounts = [];
+                        console.log(errorResponse);
+                    }
+                );
+        }
+
     });
 
-    app.controller('DashboardController', function ($scope, $rootScope , $http, $route, Dashboard, PolicyQuotaConfig, ProductCriteria, $localStorage, $location) {
+    app.controller('DashboardController', function ($scope, $rootScope, $http, $route, Dashboard, PolicyQuotaConfig, ProductCriteria, $localStorage, $location) {
         $scope.$route = $route;
 
         $scope.currentPage = 1;
@@ -122,25 +124,25 @@
             event.preventDefault();
             searchForPolicies();
         };
-        
+
         function fetchPolicyQuotaInfo() {
-        	
-        	var callCount = 0;
-        	var policyQuota;
-        	var availablePolicyCount
-        	var triggerPercent;
-        	
-        	PolicyQuotaConfig
-        	.get({id: 0},
-                function (successResponse) {
-                    triggerPercent = successResponse.triggerPercent;
-                    done();
-                },
-                function (errorResponse) {
-                    console.log(errorResponse.data.userMessage);
-                    done();
-                });
-        	
+
+            var callCount = 0;
+            var policyQuota;
+            var availablePolicyCount
+            var triggerPercent;
+
+            PolicyQuotaConfig
+                .get({id: 0},
+                    function (successResponse) {
+                        triggerPercent = successResponse.triggerPercent;
+                        done();
+                    },
+                    function (errorResponse) {
+                        console.log(errorResponse.data.userMessage);
+                        done();
+                    });
+
             $http.get(window.location.origin + '/api-elife/policy-numbers/count', {}).then(
                 function (successResponse) {
                     policyQuota = successResponse.data;
@@ -160,31 +162,31 @@
                     console.log(errorResponse);
                     done();
                 });
-            
-            function done(){
-            	if(++callCount === 3) {
-            		
-            		if(!availablePolicyCount) {
-            			console.log('Unable to fetch availablePolicyCount');
-            			return;
-            		}
-            		if(!policyQuota) {
-            			console.log('Unable to fetch policyQuota');
-            			return;
-            		}
-            		if(!triggerPercent) {
-            			console.log('Unable to fetch triggerPercent');
-            			return;
-            		}
-            		
-            		var usagePercent = (policyQuota - availablePolicyCount) / policyQuota * 100;
-            		
-            		if( usagePercent >= triggerPercent) {
-            			$scope.policyAlmostFull = true;
-            		}
-            		
-            		return;
-            	}
+
+            function done() {
+                if (++callCount === 3) {
+
+                    if (!availablePolicyCount) {
+                        console.log('Unable to fetch availablePolicyCount');
+                        return;
+                    }
+                    if (!policyQuota) {
+                        console.log('Unable to fetch policyQuota');
+                        return;
+                    }
+                    if (!triggerPercent) {
+                        console.log('Unable to fetch triggerPercent');
+                        return;
+                    }
+
+                    var usagePercent = (policyQuota - availablePolicyCount) / policyQuota * 100;
+
+                    if (usagePercent >= triggerPercent) {
+                        $scope.policyAlmostFull = true;
+                    }
+
+                    return;
+                }
             }
 
         }
@@ -288,8 +290,8 @@
         var nbLinesAdded = 0;
 
         fetchPolicyQuotaInfo();
-        
-        $scope.timeTriggerList = [{"value":3600,"name":"1 Time/Hour"},{"value":86400,"name":"1 Time/Day"}];
+
+        $scope.timeTriggerList = [{"value": 3600, "name": "1 Time/Hour"}, {"value": 86400, "name": "1 Time/Day"}];
 
         $scope.uploadNewPolicyNumbers = function (event) {
             event.preventDefault();

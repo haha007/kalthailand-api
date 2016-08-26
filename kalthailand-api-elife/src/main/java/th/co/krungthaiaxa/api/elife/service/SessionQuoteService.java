@@ -14,7 +14,7 @@ import th.co.krungthaiaxa.api.elife.utils.ExcelUtils;
 import javax.inject.Inject;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,25 +29,24 @@ public class SessionQuoteService {
     @Inject
     public SessionQuoteService(SessionQuoteRepository sessionQuoteRepository) {this.sessionQuoteRepository = sessionQuoteRepository;}
 
-    public List<SessionQuoteCount> countSessionQuotesOfAllProducts(LocalDate startDate, LocalDate endDate) {
+    public List<SessionQuoteCount> countSessionQuotesOfAllProducts(LocalDateTime startDate, LocalDateTime endDate) {
         List<SessionQuoteCount> result = Arrays.asList(ProductType.values()).stream()
                 .map(productType -> countSessionQuotes(productType, startDate, endDate))
                 .collect(Collectors.toList());
         return result;
     }
 
-    private SessionQuoteCount countSessionQuotes(ProductType productType, LocalDate startDate, LocalDate endDate) {
-        long countForEachProduct = sessionQuoteRepository.countByProductIdAndStartDateInRange(productType.getName(), startDate.atStartOfDay(), endDate.atStartOfDay());
+    private SessionQuoteCount countSessionQuotes(ProductType productType, LocalDateTime startDate, LocalDateTime endDate) {
+        long countForEachProduct = sessionQuoteRepository.countByProductIdAndStartDateInRange(productType.getName(), startDate, endDate);
         return new SessionQuoteCount(productType.getName(), countForEachProduct);
     }
 
     //TODO not refactor yet.
-    public byte[] exportTotalQuotesCountReport(LocalDate startDate, LocalDate endDate, String nowString) {
+    public byte[] exportTotalQuotesCountReport(LocalDateTime startDate, LocalDateTime endDate) {
         List<SessionQuoteCount> listTotalQuoteCount = countSessionQuotesOfAllProducts(startDate, endDate);
 
-        String now = nowString;
         Workbook workbook = new XSSFWorkbook();
-        Sheet sheet = workbook.createSheet("TotalQuoteCountExtract_" + now);
+        Sheet sheet = workbook.createSheet("Session Quotes Counts");
 
         ExcelUtils.appendRow(sheet,
                 text("Product"),

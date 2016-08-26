@@ -35,9 +35,9 @@ public class SessionQuoteRepositoryTest {
             Instant startTimeForProduct = Instant.now();
             long countForEachProduct = sessionQuoteRepository.countByProductIdAndStartDateInRange(productType.getName(), beforeDay.atStartOfDay(), today.atStartOfDay());
             totalCount += countForEachProduct;
-            logRuntime(startTimeForProduct, String.format("\tCount [%s]: %s", productType.getName(), countForEachProduct));
+            logRuntime(startTimeForProduct, String.format("\t[%s]: %s", productType.getName(), countForEachProduct));
         }
-        logRuntime(startTime, String.format("Count for way 2: %s", totalCount));
+        logRuntime(startTime, String.format("Total session quotes: %s", totalCount));
     }
 
     private Instant logRuntime(Instant startTime, String msg) {
