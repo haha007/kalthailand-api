@@ -1,9 +1,5 @@
 package th.co.krungthaiaxa.api.elife.service;
 
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.assertj.core.api.Assertions;
 import org.junit.After;
 import org.junit.Before;
@@ -14,31 +10,30 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import th.co.krungthaiaxa.api.common.utils.IOUtil;
 import th.co.krungthaiaxa.api.elife.ELifeTest;
+import th.co.krungthaiaxa.api.elife.KalApiApplication;
 import th.co.krungthaiaxa.api.elife.TestUtil;
 import th.co.krungthaiaxa.api.elife.data.CollectionFile;
 import th.co.krungthaiaxa.api.elife.data.CollectionFileLine;
 import th.co.krungthaiaxa.api.elife.data.DeductionFile;
-import th.co.krungthaiaxa.api.elife.data.DeductionFileLine;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
 import th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus;
+import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 import th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus;
 import th.co.krungthaiaxa.api.elife.repository.CollectionFileRepository;
 import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
-import th.co.krungthaiaxa.api.elife.KalApiApplication;
-import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 import th.co.krungthaiaxa.api.elife.repository.PolicyRepository;
 
 import javax.inject.Inject;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 import static java.time.LocalDateTime.now;
@@ -275,6 +270,13 @@ public class RLSServiceTest extends ELifeTest {
         assertThat(payment.getPaymentInformations().get(0).getRejectionErrorMessage()).isEqualTo(ERROR_NO_REGISTRATION_KEY_FOUND);
     }
 
+    //    @Test
+    public void run_cron_job() {
+        InputStream inputStream = IOUtil.loadInputStreamFileInClassPath("/collection-file/LFDISC6.xls");
+        rlsService.importCollectionFile(inputStream);
+        rlsService.processLatestCollectionFile();
+    }
+
     /*
         @Test
         public void should_create_a_deduction_file_line_with_success() throws IOException {
@@ -462,4 +464,5 @@ public class RLSServiceTest extends ELifeTest {
         policy.setLastUpdateDateTime(Instant.now());
         return policyRepository.save(policy);
     }
+
 }

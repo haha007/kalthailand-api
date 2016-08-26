@@ -72,7 +72,7 @@
                 .then(
                     function (successResponse) {
                         $scope.sessionQuoteCounts = successResponse.data;
-                        $scope.successMessage = "Counted success! From date: '" + $scope.fromDateSearch.toDateString() + "', to date: '" + $scope.toDateSearch.toDateString() + "'";
+                        $scope.successMessage = "Success! Counted from date: '" + $scope.fromDateSearch.toDateString() + "', to date: '" + $scope.toDateSearch.toDateString() + "'";
                         $scope.errorMessage = null;
                     },
                     function (errorResponse) {
