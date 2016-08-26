@@ -18,6 +18,7 @@ import th.co.krungthaiaxa.api.elife.TestUtil;
 import th.co.krungthaiaxa.api.elife.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.api.elife.model.Amount;
 import th.co.krungthaiaxa.api.elife.model.CommonData;
+import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.ProductIProtectPremium;
 import th.co.krungthaiaxa.api.elife.model.Quote;
@@ -62,7 +63,10 @@ public class IProtectServiceTest extends ELifeTest {
     @Test
     public void test_01_createQuote_with_default_value_01() {
         //These testing numbers are calculated by Excel file from Business team. So the result from our program should match the number of business team.
-        testCreateQuotePremiumToSumInsured(1000, 282798.0);
+//        testCreateQuotePremiumToSumInsured(1000, 282798.0);
+        testCreateQuotePremiumToSumInsured(1351.8, 382286.0);
+        Assert.assertEquals(5257.0, quote.getPremiumsData().getProductIProtectPremium().getYearlyTaxDeduction().getValue(), AMOUNT_DELTA);
+
     }
 
     @Test
@@ -105,7 +109,7 @@ public class IProtectServiceTest extends ELifeTest {
         productQuotation.setPackageName(IProtectPackage.IPROTECT10.name());
         productQuotation.setDateOfBirth(LocalDate.of(1990, 12, 2));
         productQuotation.setGenderCode(GenderCode.MALE);
-        productQuotation.setOccupationId(null);
+        productQuotation.setOccupationId(1);
         productQuotation.setPeriodicityCode(PeriodicityCode.EVERY_YEAR);
         ProductAmounts productAmounts = productService.calculateProductAmounts(productQuotation);
         LOGGER.debug(ObjectMapperUtil.toStringMultiLine(productAmounts));
@@ -191,6 +195,19 @@ public class IProtectServiceTest extends ELifeTest {
 
     private void testCreateQuote(boolean isInputSumInsured, double inputAmountValue, Double expectOutputAmountBeforeDiscount, Double expectOutput) {
         quote = createQuote(isInputSumInsured, inputAmountValue);
+        assertSumInsuredAndPremiumCalculation(isInputSumInsured, inputAmountValue, expectOutputAmountBeforeDiscount, expectOutput);
+        assertEnoughData(quote);
+    }
+
+    private void assertEnoughData(Quote quote) {
+        Insured mainInsured = ProductUtils.validateExistMainInsured(quote);
+
+        //Check occupation Information
+        Assert.assertNotNull(mainInsured.getProfessionId());
+        Assert.assertNotNull(mainInsured.getProfessionName());
+    }
+
+    private void assertSumInsuredAndPremiumCalculation(boolean isInputSumInsured, double inputAmountValue, Double expectOutputAmountBeforeDiscount, Double expectOutput) {
 
         //Get result values
         Amount premiumAmountBeforeDiscount = quote.getPremiumsData().getFinancialScheduler().getModalAmountBeforeDiscount();

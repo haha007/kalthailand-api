@@ -6,6 +6,6 @@ import th.co.krungthaiaxa.api.elife.data.SessionQuote;
 import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
 
 @Repository
-public interface SessionQuoteRepository extends PagingAndSortingRepository<SessionQuote, String> {
+public interface SessionQuoteRepository extends SessionQuoteRepositoryExtends, PagingAndSortingRepository<SessionQuote, String> {
     SessionQuote findBySessionIdAndChannelType(String sessionId, ChannelType channelType);
 }

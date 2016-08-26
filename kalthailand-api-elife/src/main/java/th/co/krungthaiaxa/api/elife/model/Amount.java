@@ -30,6 +30,10 @@ public class Amount implements Serializable {
         return new Amount(this.getValue() * factor, this.getCurrencyCode());
     }
 
+    public Amount divide(double factor) {
+        return new Amount(this.getValue() / factor, this.getCurrencyCode());
+    }
+
     public static Amount amount(double value, String currency) {
         Amount result = new Amount();
         result.setCurrencyCode(currency);

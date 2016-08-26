@@ -52,12 +52,12 @@ public class IProtectService implements ProductService {
     public static final Amount SUM_INSURED_MAX = amount(1500000.0);//1.5M
     //    public static final Amount PREMIUM_MAX_PER_MONTH //Calculated from SUM_INSURED_MAX
     public static final Amount PREMIUM_PER_MONTH_MIN = amount(1000.0);//Minimum Premium/month, Cell 'fill in information'!C39
-    public static final int INSURED_MAX_AGE = 70;
+    public static final int INSURED_MAX_AGE = 55;
 
     public static final int INSURED_MIN_AGE = 20;
 
     //All calculation of this product doesn't related to Occupation
-    public static final boolean NEED_OCCUPATION = false;
+    public static final boolean NEED_OCCUPATION = true;
 
     @Inject
     private OccupationTypeRepository occupationTypeRepository;
@@ -93,6 +93,7 @@ public class IProtectService implements ProductService {
 
         //Get data from quote
         CommonData commonData = quote.getCommonData();
+        commonData.setPackageName(iProtectPackage.name());
         PremiumsData premiumsData = quote.getPremiumsData();
         ProductIProtectPremium productIProtectPremium = premiumsData.getProductIProtectPremium();
         Insured mainInsured = ProductUtils.validateExistMainInsured(quote);
@@ -130,13 +131,15 @@ public class IProtectService implements ProductService {
         double premiumRate = validateExistPremiumRate(iProtectPackage, mainInsuredAge, mainInsuredGenderCode).getPremiumRate();
         calculateSumInsuredAndPremiumAmounts(premiumsData, productQuotation, iProtectPackage, premiumRate, occupationRate, periodicityCode);
 
-        double taxDeductionPerYear = Math.min(mainInsured.getDeclaredTaxPercentAtSubscription() * 100000, TAX_DEDUCTION_PER_YEAR_MAX);//Calculate Sheet (SA) * taxPercent
+        Amount premium = getPremium(quote);
+        Amount annualPremiumAmount = ProductUtils.getAnnualPremium(premium, periodicityCode);
+        double taxDeductionPerYear = Math.min(((double) mainInsured.getDeclaredTaxPercentAtSubscription() / 100) * annualPremiumAmount.getValue(), TAX_DEDUCTION_PER_YEAR_MAX);//Calculate Sheet (SA) * taxPercent
         productIProtectPremium.setYearlyTaxDeduction(amount(taxDeductionPerYear));
         double totalTaxDeduction = taxDeductionPerYear * quote.getCommonData().getNbOfYearsOfCoverage();
         productIProtectPremium.setTotalTaxDeduction(amount(totalTaxDeduction));
         productIProtectPremium.setDeathBenefit(productIProtectPremium.getSumInsured());
 
-        AmountLimits amountLimits = calculateAmountLimits(iProtectPackage, premiumRate, periodicityCode);
+        AmountLimits amountLimits = calculateAmountLimits(iProtectPackage, premiumRate, occupationRate, periodicityCode);
         amountLimits.copyToCommonData(commonData);
         validateLimitsForInputAmounts(quote, amountLimits);
 
@@ -148,6 +151,10 @@ public class IProtectService implements ProductService {
             coverage.setName(PRODUCT_TYPE.getDisplayName());
             quote.addCoverage(coverage);
         }
+    }
+
+    public static Amount getPremium(Quote quote) {
+        return quote.getPremiumsData().getFinancialScheduler().getModalAmount();
     }
 
     private void calculateSumInsuredAndPremiumAmounts(PremiumsData premiumsData, ProductQuotation productQuotation, IProtectPackage iProtectPackage, double premiumRate, double occupationRate, PeriodicityCode periodicityCode) {
@@ -203,7 +210,18 @@ public class IProtectService implements ProductService {
         return occupationType;
     }
 
-    private AmountLimits calculateAmountLimits(IProtectPackage iProtectPackage, double premiumRate, PeriodicityCode periodicityCode) {
+    private double validateExistOccupationRateIfNecessary(ProductQuotation productQuotation) {
+        double occupationRate;
+        if (NEED_OCCUPATION) {
+            OccupationType occupationType = validateExistOccupationId(productQuotation.getOccupationId());
+            occupationRate = getOccupationRate(occupationType);
+        } else {
+            occupationRate = 0.0;
+        }
+        return occupationRate;
+    }
+
+    private AmountLimits calculateAmountLimits(IProtectPackage iProtectPackage, double premiumRate, double occupationRate, PeriodicityCode periodicityCode) {
         double occupationRateForMaxium = 0.0;
         double discountRateForSumInsuredMax = getDiscountRate(iProtectPackage, SUM_INSURED_MAX);
         double discountRateMin = 0.0;
@@ -231,7 +249,7 @@ public class IProtectService implements ProductService {
         ProductUtils.validatePremiumAmountInRange(premiumAmount, amountLimits.getMinPremium().getValue(), amountLimits.getMaxPremium().getValue());
     }
 
-
+    //TODO I don't remove this method because this code can be used in the future.
     private void calculateYearlyPremium(Quote quote, Insured mainInsured) {
 //        ProductIProtectPremium productIProtectPremium = quote.getPremiumsData().getProductIProtectPremium();
 //        List<IProtectMomentCalculation> yearlyCalculations = productIProtectPremium.getYearlyCalculations();
@@ -344,7 +362,9 @@ public class IProtectService implements ProductService {
         Integer mainInsuredAge = ProductUtils.getAge(productQuotation.getDateOfBirth());
         GenderCode mainInsuredGenderCode = productQuotation.getGenderCode();
         double premiumRate = validateExistPremiumRate(iProtectPackage, mainInsuredAge, mainInsuredGenderCode).getPremiumRate();
-        AmountLimits amountLimits = calculateAmountLimits(iProtectPackage, premiumRate, productQuotation.getPeriodicityCode());
+
+        double occupationRate = validateExistOccupationRateIfNecessary(productQuotation);
+        AmountLimits amountLimits = calculateAmountLimits(iProtectPackage, premiumRate, occupationRate, productQuotation.getPeriodicityCode());
         amountLimits.copyToProductAmounts(productAmounts);
         amountLimits.copyToCommonData(productAmounts.getCommonData());
         return productAmounts;
@@ -352,6 +372,7 @@ public class IProtectService implements ProductService {
 
     private CommonData initCommonData(IProtectPackage iProtectPackage) {
         CommonData commonData = initCommonData();
+        commonData.setPackageName(iProtectPackage.name());
         commonData.setNbOfYearsOfPremium(iProtectPackage.getPaymentYears());
         return commonData;
     }

@@ -11,6 +11,8 @@ public class CommonData implements Serializable {
     private String productId;
     private String productName;
     private String productCurrency;
+    @ApiModelProperty(required = true, value = "Some product has many packages. For example: iFine has packages iFine1, iFine2, iFine3..., iProtect has packages iProtect5, iProtect10, iProtect85.")
+    private String packageName;
     private Integer nbOfYearsOfCoverage;
     private Integer nbOfYearsOfPremium;
     private Amount minPremium;
@@ -140,5 +142,13 @@ public class CommonData implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(productId, productName, nbOfYearsOfCoverage, nbOfYearsOfPremium, minPremium, maxPremium, minSumInsured, maxSumInsured, minAge, maxAge);
+    }
+
+    public String getPackageName() {
+        return packageName;
+    }
+
+    public void setPackageName(String packageName) {
+        this.packageName = packageName;
     }
 }

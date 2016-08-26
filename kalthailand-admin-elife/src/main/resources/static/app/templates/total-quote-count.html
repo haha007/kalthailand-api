@@ -4,14 +4,22 @@
     <div class="row">
         <div ng-include="'app/templates/partials/sidebar.html'"></div>
 
-        <!-- BEGIN Page specific stuff -->        
+        <!-- BEGIN Page specific stuff -->
 
         <div ng-cloak class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main ng-cloak" id="totalQuoteCountContainer">
             <div class="page-header">
                 <h1>Total Quote Count</h1>
             </div>
             <form class="form-horizontal" ng-submit="search($event)">
-                <div class="row"> 
+                <div class="alert alert-danger" role="alert" ng-show="errorMessage">
+                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                    An error occured. {{ errorMessage }}
+                </div>
+                <div class="alert alert-success" role="alert" ng-show="successMessage">
+                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                    {{ successMessage }}
+                </div>
+                <div class="row">
                     <div class="col-md-1">
                         <label for="fromDateSearch">From</label>
                     </div>
@@ -36,23 +44,23 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <div class="col-md-8" >
-                        <button type="submit" class="btn btn-default" style="margin-right:10px;">Search Quote Count</button> 
+                    <div class="col-md-8">
+                        <button type="submit" class="btn btn-default" style="margin-right:10px;">Search Quote Count</button>
                         <a ng-click="downloadExcelFile()">
-                        	<button type="button" class="btn btn-default">
-                        		Download Export Excel
-                        	</button>
+                            <button type="button" class="btn btn-default">
+                                Download Export Excel
+                            </button>
                         </a>
                     </div>
-                </div>                
+                </div>
             </form>
-            <div ng-show="responseText !=null && responseText.length != 0">
+            <div ng-show="sessionQuoteCounts !=null && sessionQuoteCounts.length > 0">
                 <table class="table table-bordered table-striped table-hover table-condensed">
                     <tr>
                         <th>Product</th>
                         <th>Total Quotes</th>
                     </tr>
-                    <tr ng-repeat="item in responseText">
+                    <tr ng-repeat="item in sessionQuoteCounts">
                         <td>{{ item.productId }}</td>
                         <td>{{ item.quoteCount | number }}</td>
                     </tr>
