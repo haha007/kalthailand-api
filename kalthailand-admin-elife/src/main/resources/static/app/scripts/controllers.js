@@ -57,15 +57,15 @@
 
         $scope.downloadExcelFile = function () {
             var url = window.location.origin
-                + '/api-elife/session-quotes/all-products-counts-export?'
+                + '/api-elife/session-quotes/all-products-counts/download?'
                 + 'fromDate=' + $scope.fromDateSearch.toISOString()
                 + '&toDate=' + $scope.toDateSearch.toISOString();
             window.open(url, "_blank");
         }
 
         function searchForTotalQuoteCount() {
-            var fromDate = $scope.fromDateSearch;//.toISOString();
-            var toDate = $scope.toDateSearch;//.toISOString();
+            var fromDate = $scope.fromDateSearch.toISOString();
+            var toDate = $scope.toDateSearch.toISOString();
             $http.get(window.location.origin + '/api-elife/session-quotes/all-products-counts?'
                     + 'fromDate=' + fromDate
                     + '&toDate=' + toDate)

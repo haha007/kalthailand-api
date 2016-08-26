@@ -52,7 +52,7 @@ public class SessionQuoteResource {
     }
 
     @ApiOperation(value = "Excel report for counting session quotes", notes = "Export Excel report for counting sessionQuotes for every product", response = Quote.class, responseContainer = "List")
-    @RequestMapping(value = "/session-quotes/all-products-counts-export", method = GET)
+    @RequestMapping(value = "/session-quotes/all-products-counts/download", method = GET)
     @ResponseBody
     public void downloadTotalQuoteCountExcelFile(
             @ApiParam(value = "The start searching date", required = true)
