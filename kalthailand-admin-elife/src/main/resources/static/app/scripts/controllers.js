@@ -244,7 +244,7 @@
         }
     });
 
-    app.controller('CollectionFileController', function ($scope, $route, CollectionFile, $localStorage) {
+    app.controller('CollectionFileController', function ($scope, $route, $http, CollectionFile, $localStorage) {
         $scope.$route = $route;
 
 
@@ -265,6 +265,16 @@
                 .catch(function (errorResponse) {
                     // For error state
                     $scope.errorMessage = errorResponse.data.userMessage;
+                });
+        }
+
+        $scope.processLastCollectionFiles = function (event) {
+            $http.get(window.location.origin + '/api-elife/RLS/collectionFile/process', {}).then(
+                function (successResponse) {
+                    $scope.collectionFiles = successResponse.data;
+                },
+                function (errorResponse) {
+                    console.log(errorResponse);
                 });
         }
 

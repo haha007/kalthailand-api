@@ -6,7 +6,11 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
 import th.co.krungthaiaxa.api.elife.data.CollectionFile;
@@ -16,10 +20,13 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
 
 import static java.time.LocalDateTime.now;
 import static java.time.format.DateTimeFormatter.ofPattern;
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NOT_ACCEPTABLE;
+import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
@@ -81,5 +88,11 @@ public class RLSResource {
         } catch (IOException e) {
             logger.error("Unable to download the deduction file", e);
         }
+    }
+
+    @ApiOperation(value = "Get Deduction file", notes = "Get a Deduction file")
+    @RequestMapping(value = "/RLS/collectionFile/process", produces = APPLICATION_JSON_VALUE, method = GET)
+    public List<CollectionFile> processCollectionFile() {
+        return rlsService.processLatestCollectionFiles();
     }
 }

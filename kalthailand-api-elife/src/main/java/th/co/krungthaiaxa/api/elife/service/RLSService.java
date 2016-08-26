@@ -1,6 +1,7 @@
 package th.co.krungthaiaxa.api.elife.service;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
@@ -22,7 +23,6 @@ import th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 import th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayRecurringResponse;
-import th.co.krungthaiaxa.api.elife.model.line.LinePayResponse;
 import th.co.krungthaiaxa.api.elife.repository.CollectionFileRepository;
 import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
 import th.co.krungthaiaxa.api.elife.repository.PolicyRepository;
@@ -109,7 +109,11 @@ public class RLSService {
     }
 
     @Scheduled(cron = "0 0 9-17 * * ?")
-    public void processLatestCollectionFile() {
+    public void processLatestCollectionFilesJob() {
+        processLatestCollectionFiles();
+    }
+
+    public List<CollectionFile> processLatestCollectionFiles() {
         List<CollectionFile> collectionFiles = collectionFileRepository.findByJobStartedDateNull();
         logger.info("<<<<<<<<<<<<<<<<<<<<<<<<<<<<< START PROCESS RECURRING PAYMENT WITH TIME (" + LocalDateTime.now(of(SHORT_IDS.get("VST"))) + ") >>>>>>>>>>>>>>>>>>>>>>>>>>>");
         for (CollectionFile collectionFile : collectionFiles) {
@@ -125,6 +129,7 @@ public class RLSService {
             collectionFileRepository.save(collectionFile);
         }
         logger.info("<<<<<<<<<<<<<<<<<<<<<<<<<<<<< STOP PROCESS RECURRING PAYMENT WITH TIME (" + LocalDateTime.now(of(SHORT_IDS.get("VST"))) + ") >>>>>>>>>>>>>>>>>>>>>>>>>>>");
+        return collectionFiles;
     }
 
     public byte[] createDeductionExcelFile(DeductionFile deductionFile) {
@@ -233,11 +238,11 @@ public class RLSService {
         LocalDate todayMinus28Days = now.minusDays(28);
 
         // There should be a scheduled payment for which due date is within the last 28 days
-        Optional<Payment> payment = policy.get().getPayments()
-                .stream()
-                .filter(tmp -> tmp.getStatus().equals(PaymentStatus.NOT_PROCESSED))
-                .filter(tmp -> tmp.getDueDate().isAfter(todayMinus28Days))
-                .filter(tmp -> tmp.getDueDate().isBefore(now.plusDays(1))) // plus 1 day because a.isBefore(a) = false
+        List<Payment> payments = policy.get().getPayments();
+        Optional<Payment> payment = payments.stream()
+                .filter(ipayment -> ipayment.getStatus().equals(PaymentStatus.NOT_PROCESSED))
+                .filter(ipayment -> ipayment.getDueDate().isAfter(todayMinus28Days))
+                .filter(ipayment -> ipayment.getDueDate().isBefore(now.plusDays(1))) // plus 1 day because a.isBefore(a) = false
                 .findFirst();
 
         if (payment.isPresent()) {
@@ -249,23 +254,18 @@ public class RLSService {
 
         // If payment isn't found, Collection file "always win", and the payment received in the collection has to go through
         // But for the payment to go through, we need to find the registration key that was used previously
-        Optional<String> lastRegistrationKey = policy.get().getPayments()
-                .stream()
-                .filter(tmp -> tmp.getRegistrationKey() != null)
-                .sorted((o1, o2) -> o1.getDueDate().compareTo(o2.getDueDate()))
-                .map(Payment::getRegistrationKey)
-                .findFirst();
+        String lastRegistrationKey = findLastRegistrationKey(policy.get());
 
         Payment newPayment = new Payment(policy.get().getPolicyId(),
                 collectionFileLine.getPremiumAmount(),
                 policy.get().getCommonData().getProductCurrency(),
                 LocalDate.now(of(SHORT_IDS.get("VST"))));
-        if (!lastRegistrationKey.isPresent()) {
+        if (StringUtils.isBlank(lastRegistrationKey)) {
             logger.info("Unable to find a schedule payment for policy [" + policy.get().getPolicyId() + "] and a " +
-                    "previously used registration key, will create one payment from scratch, byt payment will fail " +
+                    "previously used registration key, will create one payment from scratch, but payment will fail " +
                     "since it has no registration key");
         } else {
-            newPayment.setRegistrationKey(lastRegistrationKey.get());
+            newPayment.setRegistrationKey(lastRegistrationKey);
             logger.info("Unable to find a schedule payment for policy [" + policy.get().getPolicyId() + "], will " +
                     "create one from scratch");
         }
@@ -278,29 +278,42 @@ public class RLSService {
                 "collection file line about policy [" + policy.get().getPolicyId() + "] ");
     }
 
+    //TODO should change to improve performance
+    private String findLastRegistrationKey(Policy policy) {
+        String lastRegistrationKey = policy.getPayments()
+                .stream()
+                .filter(tmp -> tmp.getRegistrationKey() != null)
+                .sorted((o1, o2) -> o1.getDueDate().compareTo(o2.getDueDate()))
+                .map(Payment::getRegistrationKey)
+                .findFirst().get();
+        return lastRegistrationKey;
+    }
+
     void processCollectionFileLine(DeductionFile deductionFile, CollectionFileLine collectionFileLine) {
         String paymentId = collectionFileLine.getPaymentId();
         Double amount = collectionFileLine.getPremiumAmount();
         Payment payment = paymentRepository.findOne(paymentId);
 
-        if (payment.getRegistrationKey() == null) {
+        //TODO Get the lastRegistrationKey: need to find another way to improve performance.
+        Policy policy = policyRepository.findByPolicyId(payment.getPolicyId());
+        String lastRegistrationKey = findLastRegistrationKey(policy);
+
+        if (lastRegistrationKey == null) {
             // This should not happen since the registration key should always be found
-            logger.error("No registration key was found in payment id [" + paymentId + "]");
-            deductionFile.addLine(getDeductionFileLine(collectionFileLine, LINE_PAY_INTERNAL_ERROR));
-            policyService.updatePaymentWithErrorStatus(payment, amount, payment.getAmount().getCurrencyCode(), LINE, LINE_PAY_INTERNAL_ERROR,
-                    ERROR_NO_REGISTRATION_KEY_FOUND);
+            String msg = String.format("No registration key was found in payment id [%s], policyId [%s]", paymentId, payment.getPolicyId());
+            logger.error(msg);
+            deductionFile.addLine(getDeductionFileLine(collectionFileLine, LINE_PAY_INTERNAL_ERROR, msg));
+            policyService.updatePaymentWithErrorStatus(payment, amount, payment.getAmount().getCurrencyCode(), LINE, LINE_PAY_INTERNAL_ERROR, ERROR_NO_REGISTRATION_KEY_FOUND);
             return;
         }
 
         LinePayRecurringResponse linePayResponse;
-        Policy policy = policyRepository.findByPolicyId(payment.getPolicyId());
-        String regKey = payment.getRegistrationKey();
         Double amt = collectionFileLine.getPremiumAmount();
         String currencyCode = payment.getAmount().getCurrencyCode();
         String productId = policy.getCommonData().getProductId();
         String orderId = "R-" + payment.getPolicyId() + "-" + (new SimpleDateFormat("yyyyMMddhhmmssSSS").format(new Date()));
         /*System.out.println("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
-    	System.out.println("paymentId : "+paymentId);
+        System.out.println("paymentId : "+paymentId);
     	System.out.println("regKey : " +regKey);
     	System.out.println("amt : " +amt);
     	System.out.println("currencyCode : " +currencyCode);
@@ -308,23 +321,34 @@ public class RLSService {
     	System.out.println("orderId : " + orderId);
     	System.out.println("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");*/
         try {
-            linePayResponse = lineService.preApproved(regKey, amt, currencyCode, productId, orderId);
+            linePayResponse = lineService.preApproved(lastRegistrationKey, amt, currencyCode, productId, orderId);
+            if (linePayResponse == null) {
+                //TODO should throw Exception
+//                linePayResponse = new LinePayRecurringResponse();
+//                linePayResponse.setReturnCode("0");
+//                linePayResponse.setReturnMessage("Don't receive any thing from server.");
+                String msg = String.format("An error occured while calling preApprove of LinePay on payment id [{}]", paymentId);
+                deductionFile.addLine(getDeductionFileLine(collectionFileLine, LINE_PAY_INTERNAL_ERROR, msg));
+                return;
+            }
         } catch (IOException | RuntimeException e) {
             // An error occured while trying to contact LinePay
-            logger.error("An error occured while trying to contact LinePay on payment id [" + paymentId + "]", e);
-            deductionFile.addLine(getDeductionFileLine(collectionFileLine, LINE_PAY_INTERNAL_ERROR));
+            String msg = String.format("An error occured while trying to contact LinePay on payment id [{}]", paymentId);
+            logger.error(msg, e);
+            deductionFile.addLine(getDeductionFileLine(collectionFileLine, LINE_PAY_INTERNAL_ERROR, msg));
             policyService.updatePaymentWithErrorStatus(payment, amount, payment.getAmount().getCurrencyCode(), LINE, LINE_PAY_INTERNAL_ERROR,
                     "Error while contacting Line Pay API. Payment may be successful. Error is [" + e.getMessage() + "].");
             return;
         }
 
-        deductionFile.addLine(getDeductionFileLine(collectionFileLine, linePayResponse.getReturnCode()));
-        policyService.updateRecurringPayment(payment, amount, payment.getAmount().getCurrencyCode(), LINE, linePayResponse, paymentId, regKey, amt, productId, orderId);
+        DeductionFileLine deductionFileLine = getDeductionFileLine(collectionFileLine, linePayResponse.getReturnCode(), linePayResponse.getReturnMessage());
+        deductionFile.addLine(deductionFileLine);
+        policyService.updateRecurringPayment(payment, amount, payment.getAmount().getCurrencyCode(), LINE, linePayResponse, paymentId, lastRegistrationKey, amt, productId, orderId);
 
         logger.info("Finished processing collection file line with payment id [" + paymentId + "]");
     }
 
-    private DeductionFileLine getDeductionFileLine(CollectionFileLine collectionFileLine, String errorCode) {
+    private DeductionFileLine getDeductionFileLine(CollectionFileLine collectionFileLine, String errorCode, String errorMessage) {
         Optional<Policy> policy = policyService.findPolicy(collectionFileLine.getPolicyNumber());
         isTrue(policy.isPresent(), "Unable to find a policy [" + collectionFileLine.getPolicyNumber() + "]");
 
@@ -336,6 +360,7 @@ public class RLSService {
         deductionFileLine.setPolicyNumber(collectionFileLine.getPolicyNumber());
         deductionFileLine.setProcessDate(LocalDateTime.now());
         deductionFileLine.setRejectionCode(errorCode);
+        deductionFileLine.setRejectionMessage(errorMessage);
         return deductionFileLine;
     }
 

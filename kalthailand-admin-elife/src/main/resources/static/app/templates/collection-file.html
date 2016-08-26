@@ -54,6 +54,41 @@
                     <td><a href="/api-elife/RLS/deduction/download/{{collectionFile.id}}" ng-show="collectionFile.deductionFile.lines && collectionFile.deductionFile.lines.length != 0">Download</a></td>
                 </tr>
             </table>
+            <div>
+                <div class="page-header">
+                    <h3></h3>
+                </div>
+                <div>
+                    <button type="button" class="btn btn-default" style="margin-right:10px;" ng-click="processLastCollectionFiles()">Process Last Collection Files</button>
+                </div>
+                <div>&nbsp;</div>
+                <div ng-repeat="collectionFile in collectionFiles">
+                    <div>Collection file Id: {{collectionFile.id}}</div>
+                    <table ng-show="collectionFile.deductionFile.lines.length > 0" class="table table-bordered table-striped table-hover table-condensed">
+                        <tr>
+                            <td>Policy Number</td>
+                            <td>Bank Code</td>
+                            <td>Payment Mode</td>
+                            <td>Amount</td>
+                            <td>Process Date</td>
+                            <td>Result code</td>
+                            <td>Result Message</td>
+                        </tr>
+                        <tbody>
+                        <tr ng-repeat="deductiveLine in collectionFile.deductionFile.lines">
+                            <td>{{deductiveLine.policyNumber}}</td>
+                            <td>{{deductiveLine.bankCode}}</td>
+                            <td>{{deductiveLine.paymentMode}}</td>
+                            <td>{{deductiveLine.amount}}</td>
+                            <td>{{deductiveLine.processDate | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+                            <td>{{deductiveLine.rejectionCode}}</td>
+                            <td>{{deductiveLine.rejectionMessage}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
         </div>
         <!-- END Page specific stuff -->
 

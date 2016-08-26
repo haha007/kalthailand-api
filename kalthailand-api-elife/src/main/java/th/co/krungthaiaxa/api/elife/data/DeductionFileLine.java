@@ -9,6 +9,7 @@ public class DeductionFileLine {
     private Double amount;
     private LocalDateTime processDate;
     private String rejectionCode;
+    private String rejectionMessage;
 
     public String getPolicyNumber() {
         return policyNumber;
@@ -56,5 +57,13 @@ public class DeductionFileLine {
 
     public void setRejectionCode(String rejectionCode) {
         this.rejectionCode = rejectionCode;
+    }
+
+    public String getRejectionMessage() {
+        return rejectionMessage;
+    }
+
+    public void setRejectionMessage(String rejectionMessage) {
+        this.rejectionMessage = rejectionMessage;
     }
 }
