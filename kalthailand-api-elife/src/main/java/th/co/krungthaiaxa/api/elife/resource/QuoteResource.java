@@ -23,11 +23,13 @@ import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
 import th.co.krungthaiaxa.api.common.utils.JsonUtil;
 import th.co.krungthaiaxa.api.elife.exception.ElifeException;
 import th.co.krungthaiaxa.api.elife.model.Quote;
+import th.co.krungthaiaxa.api.elife.model.SessionQuoteCount;
 import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
 import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
 import th.co.krungthaiaxa.api.elife.service.EmailService;
 import th.co.krungthaiaxa.api.elife.service.QuoteService;
+import th.co.krungthaiaxa.api.elife.service.SessionQuoteService;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -36,7 +38,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Map;
+import java.util.List;
 import java.util.Optional;
 
 import static java.time.LocalDateTime.now;
@@ -56,13 +58,15 @@ import static th.co.krungthaiaxa.api.common.utils.JsonUtil.getJson;
 public class QuoteResource {
     private final static Logger logger = LoggerFactory.getLogger(QuoteResource.class);
     private final QuoteService quoteService;
+    private final SessionQuoteService sessionQuoteService;
     private final EmailService emailService;
     @Value("${kal.api.auth.header}")
     private String tokenHeader;
 
     @Inject
-    public QuoteResource(QuoteService quoteService, EmailService emailService) {
+    public QuoteResource(QuoteService quoteService, SessionQuoteService sessionQuoteService, EmailService emailService) {
         this.quoteService = quoteService;
+        this.sessionQuoteService = sessionQuoteService;
         this.emailService = emailService;
     }
 
@@ -210,9 +214,10 @@ public class QuoteResource {
         return new ResponseEntity<>(getJson(updatedQuote), OK);
     }
 
-    @ApiOperation(value = "Get total number of quote", notes = "Get total number of quote", response = Object.class)
+    @ApiOperation(value = "Count sessionQuotes for every product", notes = "Count sessionQuotes for every product", response = SessionQuoteCount.class, responseContainer = "List")
     @RequestMapping(value = "/quotes/count/{dateFrom}/{dateTo}", produces = APPLICATION_JSON_VALUE, method = GET)
-    public Map<String, Object> getTotalQuoteCount(
+    @ResponseBody
+    public List<SessionQuoteCount> getTotalQuoteCount(
             @ApiParam(value = "The date from", required = true)
             @PathVariable String dateFrom,
             @ApiParam(value = "The date to", required = true)
@@ -228,7 +233,7 @@ public class QuoteResource {
             endDate = LocalDate.from(DateTimeFormatter.ISO_DATE_TIME.parse(dateTo));
         }
 
-        return quoteService.getTotalQuoteCount(startDate, endDate);
+        return sessionQuoteService.countSessionQuotesOfAllProducts(startDate, endDate);
     }
 
     @ApiOperation(value = "Download total number of quote excel file", notes = "Download total number of quote excel file", response = Quote.class, responseContainer = "List")
@@ -253,7 +258,7 @@ public class QuoteResource {
 
         String now = getDateTimeNow();
 
-        byte[] content = quoteService.downloadTotalQuoteCount(startDate, endDate, now);
+        byte[] content = sessionQuoteService.exportTotalQuotesCountReport(startDate, endDate, now);
 
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         response.setContentLength(content.length);

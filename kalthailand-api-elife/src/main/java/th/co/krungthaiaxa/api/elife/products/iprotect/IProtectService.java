@@ -52,7 +52,7 @@ public class IProtectService implements ProductService {
     public static final Amount SUM_INSURED_MAX = amount(1500000.0);//1.5M
     //    public static final Amount PREMIUM_MAX_PER_MONTH //Calculated from SUM_INSURED_MAX
     public static final Amount PREMIUM_PER_MONTH_MIN = amount(1000.0);//Minimum Premium/month, Cell 'fill in information'!C39
-    public static final int INSURED_MAX_AGE = 70;
+    public static final int INSURED_MAX_AGE = 55;
 
     public static final int INSURED_MIN_AGE = 20;
 
