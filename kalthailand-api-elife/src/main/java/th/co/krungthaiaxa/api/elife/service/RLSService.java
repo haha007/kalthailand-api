@@ -323,21 +323,16 @@ public class RLSService {
         try {
             linePayResponse = lineService.preApproved(lastRegistrationKey, amt, currencyCode, productId, orderId);
             if (linePayResponse == null) {
-                //TODO should throw Exception
-//                linePayResponse = new LinePayRecurringResponse();
-//                linePayResponse.setReturnCode("0");
-//                linePayResponse.setReturnMessage("Don't receive any thing from server.");
-                String msg = String.format("An error occured while calling preApprove of LinePay on payment id [{}]", paymentId);
+                String msg = String.format("Error while calling lineService.preApprove() on payment id [%s]: response is null.", paymentId);
                 deductionFile.addLine(getDeductionFileLine(collectionFileLine, LINE_PAY_INTERNAL_ERROR, msg));
                 return;
             }
         } catch (IOException | RuntimeException e) {
-            // An error occured while trying to contact LinePay
-            String msg = String.format("An error occured while trying to contact LinePay on payment id [{}]", paymentId);
+            // An error occur while trying to contact LinePay
+            String msg = String.format("Error while calling lineService.preApprove() on payment id [%s]: %s", paymentId, e.getMessage());
             logger.error(msg, e);
             deductionFile.addLine(getDeductionFileLine(collectionFileLine, LINE_PAY_INTERNAL_ERROR, msg));
-            policyService.updatePaymentWithErrorStatus(payment, amount, payment.getAmount().getCurrencyCode(), LINE, LINE_PAY_INTERNAL_ERROR,
-                    "Error while contacting Line Pay API. Payment may be successful. Error is [" + e.getMessage() + "].");
+            policyService.updatePaymentWithErrorStatus(payment, amount, payment.getAmount().getCurrencyCode(), LINE, LINE_PAY_INTERNAL_ERROR, msg);
             return;
         }
 
@@ -345,7 +340,7 @@ public class RLSService {
         deductionFile.addLine(deductionFileLine);
         policyService.updateRecurringPayment(payment, amount, payment.getAmount().getCurrencyCode(), LINE, linePayResponse, paymentId, lastRegistrationKey, amt, productId, orderId);
 
-        logger.info("Finished processing collection file line with payment id [" + paymentId + "]");
+        logger.debug("Finished processing collection file line with payment id [" + paymentId + "]");
     }
 
     private DeductionFileLine getDeductionFileLine(CollectionFileLine collectionFileLine, String errorCode, String errorMessage) {

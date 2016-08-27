@@ -40,6 +40,7 @@ import static th.co.krungthaiaxa.api.common.utils.JsonUtil.getJson;
 public class LineService {
     private final static Logger logger = LoggerFactory.getLogger(LineService.class);
     public static final String LINE_PAY_INTERNAL_ERROR = "9000";
+    public static final String PREAPPROVE_CODE_SUCCESS = "0000";
     @Value("${line.pay.id}")
     private String linePayId;
     @Value("${line.pay.secret.key}")
