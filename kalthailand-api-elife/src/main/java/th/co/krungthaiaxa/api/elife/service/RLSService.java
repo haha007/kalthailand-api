@@ -245,6 +245,13 @@ public class RLSService {
                 .filter(ipayment -> ipayment.getDueDate().isBefore(now.plusDays(1))) // plus 1 day because a.isBefore(a) = false
                 .findFirst();
 
+        if (!payment.isPresent()) {
+            payment = payments.stream()
+                    .filter(ipayment -> ipayment.getStatus().equals(PaymentStatus.INCOMPLETE))
+                    .filter(ipayment -> ipayment.getDueDate().isAfter(todayMinus28Days))
+                    .filter(ipayment -> ipayment.getDueDate().isBefore(now.plusDays(1))) // plus 1 day because a.isBefore(a) = false
+                    .findFirst();
+        }
         if (payment.isPresent()) {
             collectionFileLine.setPaymentId(payment.get().getPaymentId());
             logger.info("Existing payment id [" + payment.get().getPaymentId() + "] has been added for the " +
