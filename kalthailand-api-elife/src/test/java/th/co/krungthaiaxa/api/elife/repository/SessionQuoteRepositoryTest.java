@@ -8,6 +8,7 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import th.co.krungthaiaxa.api.common.utils.LogUtil;
 import th.co.krungthaiaxa.api.elife.KalApiApplication;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
 
@@ -35,16 +36,9 @@ public class SessionQuoteRepositoryTest {
             Instant startTimeForProduct = Instant.now();
             long countForEachProduct = sessionQuoteRepository.countByProductIdAndStartDateInRange(productType.getName(), beforeDay.atStartOfDay(), today.atStartOfDay());
             totalCount += countForEachProduct;
-            logRuntime(startTimeForProduct, String.format("\t[%s]: %s", productType.getName(), countForEachProduct));
+            LogUtil.logRuntime(startTimeForProduct, String.format("\t[%s]: %s", productType.getName(), countForEachProduct));
         }
-        logRuntime(startTime, String.format("Total session quotes: %s", totalCount));
+        LogUtil.logRuntime(startTime, String.format("Total session quotes: %s", totalCount));
     }
 
-    private Instant logRuntime(Instant startTime, String msg) {
-        Instant now = Instant.now();
-        long runTimeMilli = now.toEpochMilli() - startTime.toEpochMilli();
-        long runTimeSeconds = runTimeMilli / 1000;
-        logger.debug(String.format("%s \t Runtime: %s ms ~ %s s", msg, runTimeMilli, runTimeSeconds));
-        return now;
-    }
 }

@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import th.co.krungthaiaxa.api.common.utils.LogUtil;
 import th.co.krungthaiaxa.api.elife.data.CollectionFile;
 import th.co.krungthaiaxa.api.elife.data.CollectionFileLine;
 import th.co.krungthaiaxa.api.elife.data.DeductionFile;
@@ -71,6 +72,7 @@ public class RLSService {
     private final PaymentRepository paymentRepository;
     private final PolicyRepository policyRepository;
     private final PolicyService policyService;
+    private final PaymentService paymentService;
     private LineService lineService;
 
     private Function<PeriodicityCode, String> paymentMode = periodicityCode -> {
@@ -86,11 +88,12 @@ public class RLSService {
     };
 
     @Inject
-    public RLSService(CollectionFileRepository collectionFileRepository, PaymentRepository paymentRepository, PolicyRepository policyRepository, PolicyService policyService, LineService lineService) {
+    public RLSService(CollectionFileRepository collectionFileRepository, PaymentRepository paymentRepository, PolicyRepository policyRepository, PolicyService policyService, PaymentService paymentService, LineService lineService) {
         this.collectionFileRepository = collectionFileRepository;
         this.paymentRepository = paymentRepository;
         this.policyRepository = policyRepository;
         this.policyService = policyService;
+        this.paymentService = paymentService;
         this.lineService = lineService;
     }
 
@@ -114,6 +117,7 @@ public class RLSService {
     }
 
     public List<CollectionFile> processLatestCollectionFiles() {
+        Instant startTime = Instant.now();
         List<CollectionFile> collectionFiles = collectionFileRepository.findByJobStartedDateNull();
         logger.info("<<<<<<<<<<<<<<<<<<<<<<<<<<<<< START PROCESS RECURRING PAYMENT WITH TIME (" + LocalDateTime.now(of(SHORT_IDS.get("VST"))) + ") >>>>>>>>>>>>>>>>>>>>>>>>>>>");
         for (CollectionFile collectionFile : collectionFiles) {
@@ -128,7 +132,7 @@ public class RLSService {
             collectionFile.setJobEndedDate(LocalDateTime.now(of(SHORT_IDS.get("VST"))));
             collectionFileRepository.save(collectionFile);
         }
-        logger.info("<<<<<<<<<<<<<<<<<<<<<<<<<<<<< STOP PROCESS RECURRING PAYMENT WITH TIME (" + LocalDateTime.now(of(SHORT_IDS.get("VST"))) + ") >>>>>>>>>>>>>>>>>>>>>>>>>>>");
+        LogUtil.logRuntime(startTime, "<<<<<<<<<<<<<<<<<<<<<<<<<<<<< STOP PROCESS RECURRING PAYMENT WITH TIME (" + LocalDateTime.now(of(SHORT_IDS.get("VST"))) + ") >>>>>>>>>>>>>>>>>>>>>>>>>>>");
         return collectionFiles;
     }
 
@@ -226,7 +230,8 @@ public class RLSService {
     }
 
     void addPaymentId(CollectionFileLine collectionFileLine) {
-        Optional<Policy> policy = policyService.findPolicy(collectionFileLine.getPolicyNumber());
+        String policyId = collectionFileLine.getPolicyNumber();
+        Optional<Policy> policy = policyService.findPolicy(policyId);
         isTrue(policy.isPresent(), "Unable to find a policy [" + collectionFileLine.getPolicyNumber() + "]");
         isTrue(policy.get().getStatus().equals(PolicyStatus.VALIDATED), "The policy [" +
                 collectionFileLine.getPolicyNumber() + "] has not been validated and payments can't go through without validation");
@@ -236,32 +241,20 @@ public class RLSService {
         // 28 is the maximum nb of days between a scheduled payment and collection file first cycle start date
         LocalDate now = now();
         LocalDate todayMinus28Days = now.minusDays(28);
+        LocalDate tomorrow = now.plusDays(1);
 
         // There should be a scheduled payment for which due date is within the last 28 days
-        List<Payment> payments = policy.get().getPayments();
-        Optional<Payment> payment = payments.stream()
-                .filter(ipayment -> ipayment.getStatus().equals(PaymentStatus.NOT_PROCESSED))
-                .filter(ipayment -> ipayment.getDueDate().isAfter(todayMinus28Days))
-                .filter(ipayment -> ipayment.getDueDate().isBefore(now.plusDays(1))) // plus 1 day because a.isBefore(a) = false
-                .findFirst();
-
-        if (!payment.isPresent()) {
-            payment = payments.stream()
-                    .filter(ipayment -> ipayment.getStatus().equals(PaymentStatus.INCOMPLETE))
-                    .filter(ipayment -> ipayment.getDueDate().isAfter(todayMinus28Days))
-                    .filter(ipayment -> ipayment.getDueDate().isBefore(now.plusDays(1))) // plus 1 day because a.isBefore(a) = false
-                    .findFirst();
-        }
-        if (payment.isPresent()) {
-            collectionFileLine.setPaymentId(payment.get().getPaymentId());
-            logger.info("Existing payment id [" + payment.get().getPaymentId() + "] has been added for the " +
+        Optional<Payment> notCompletedPaymentInThisMonth = paymentRepository.findOneByPolicyIdAndDueDateRangeAndInStatus(policyId, todayMinus28Days, tomorrow, PaymentStatus.NOT_PROCESSED);
+        if (notCompletedPaymentInThisMonth.isPresent()) {
+            collectionFileLine.setPaymentId(notCompletedPaymentInThisMonth.get().getPaymentId());
+            logger.info("Existing payment id [" + notCompletedPaymentInThisMonth.get().getPaymentId() + "] has been added for the " +
                     "collection file line about policy [" + policy.get().getPolicyId() + "] ");
             return;
         }
 
         // If payment isn't found, Collection file "always win", and the payment received in the collection has to go through
         // But for the payment to go through, we need to find the registration key that was used previously
-        String lastRegistrationKey = findLastRegistrationKey(policy.get());
+        String lastRegistrationKey = findLastRegistrationKey(policyId);
 
         Payment newPayment = new Payment(policy.get().getPolicyId(),
                 collectionFileLine.getPremiumAmount(),
@@ -285,15 +278,13 @@ public class RLSService {
                 "collection file line about policy [" + policy.get().getPolicyId() + "] ");
     }
 
-    //TODO should change to improve performance
-    private String findLastRegistrationKey(Policy policy) {
-        String lastRegistrationKey = policy.getPayments()
-                .stream()
-                .filter(tmp -> tmp.getRegistrationKey() != null)
-                .sorted((o1, o2) -> o1.getDueDate().compareTo(o2.getDueDate()))
-                .map(Payment::getRegistrationKey)
-                .findFirst().orElse(null);
-        return lastRegistrationKey;
+    private String findLastRegistrationKey(String policyNumber) {
+        Optional<Payment> paymentOptional = paymentService.findLastestPaymentByPolicyNumberAndRegKeyNotNull(policyNumber);
+        if (paymentOptional.isPresent()) {
+            return paymentOptional.get().getRegistrationKey();
+        } else {
+            return null;
+        }
     }
 
     void processCollectionFileLine(DeductionFile deductionFile, CollectionFileLine collectionFileLine) {
@@ -301,9 +292,8 @@ public class RLSService {
         Double amount = collectionFileLine.getPremiumAmount();
         Payment payment = paymentRepository.findOne(paymentId);
 
-        //TODO Get the lastRegistrationKey: need to find another way to improve performance.
         Policy policy = policyRepository.findByPolicyId(payment.getPolicyId());
-        String lastRegistrationKey = findLastRegistrationKey(policy);
+        String lastRegistrationKey = findLastRegistrationKey(payment.getPolicyId());
 
         if (lastRegistrationKey == null) {
             // This should not happen since the registration key should always be found

@@ -270,7 +270,7 @@ public class RLSServiceTest extends ELifeTest {
         assertThat(payment.getPaymentInformations().get(0).getRejectionErrorMessage()).isEqualTo(ERROR_NO_REGISTRATION_KEY_FOUND);
     }
 
-    //    @Test
+    @Test
     public void run_cron_job() {
         InputStream inputStream = IOUtil.loadInputStreamFileInClassPath("/collection-file/LFDISC6_01.xls");
         rlsService.importCollectionFile(inputStream);
