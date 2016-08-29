@@ -285,7 +285,7 @@ public class RLSService {
                 .filter(tmp -> tmp.getRegistrationKey() != null)
                 .sorted((o1, o2) -> o1.getDueDate().compareTo(o2.getDueDate()))
                 .map(Payment::getRegistrationKey)
-                .findFirst().get();
+                .findFirst().orElse(null);
         return lastRegistrationKey;
     }
 
