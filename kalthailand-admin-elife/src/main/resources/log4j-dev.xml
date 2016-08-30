@@ -25,7 +25,6 @@
     </category>
     <category name="th.co.krungthaiaxa.admin.elife.log.RequestLogUtil" additivity="false">
         <priority value="DEBUG"/>
-        <appender-ref ref="STDOUT"/>
         <appender-ref ref="FILE_REQUEST"/>
     </category>
 

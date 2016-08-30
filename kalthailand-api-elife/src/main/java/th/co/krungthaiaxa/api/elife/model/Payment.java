@@ -13,6 +13,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * If a payment session is fail for any reason, the status will be {@link PaymentStatus#INCOMPLETE} or {@link PaymentStatus#OVERPAID}.
+ * Then if payment is processed in the next time, it will create another payment object.
+ */
 @ApiModel(description = "Data concerning the payment")
 @Document(collection = "payment")
 public class Payment {
@@ -98,6 +102,7 @@ public class Payment {
 
     /**
      * This method is used only to compatible to old data (plaintext).
+     *
      * @param registrationKey
      * @return
      */

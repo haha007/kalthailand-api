@@ -426,7 +426,6 @@ public class IProtectService implements ProductService {
                 orElseThrow(() -> QuoteCalculationException.premiumRateNotFoundException.apply(String.format("packageName: %s, age: %s, gender: %s", iProtectPackage, insuredAge, insuredGenderCode)));
     }
 
-    //TODO not completed.
     private static void resetCalculatedStuff(Quote quote, Optional<Coverage> coverage) {
         ProductIProtectPremium productIProtectPremium = quote.getPremiumsData().getProductIProtectPremium();
         if (productIProtectPremium != null) {
@@ -444,8 +443,6 @@ public class IProtectService implements ProductService {
     public static void checkMainInsuredIProtectSpecific(Insured insured) {
         notNull(insured.getDeclaredTaxPercentAtSubscription(), PolicyValidationException.mainInsuredWithNoDeclaredTax);
     }
-
-    //TODO make a common method
 
     private static void checkProductType(CommonData commonData) {
         isEqual(commonData.getProductId(), PRODUCT_TYPE.getName(), PolicyValidationException.productIProtectExpected);
