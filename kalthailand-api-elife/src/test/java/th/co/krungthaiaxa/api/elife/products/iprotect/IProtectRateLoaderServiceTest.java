@@ -12,6 +12,9 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
 import th.co.krungthaiaxa.api.elife.KalApiApplication;
 import th.co.krungthaiaxa.api.elife.model.enums.GenderCode;
+import th.co.krungthaiaxa.api.elife.products.iprotect.data.IProtectDiscountRate;
+import th.co.krungthaiaxa.api.elife.products.iprotect.data.IProtectPackage;
+import th.co.krungthaiaxa.api.elife.products.iprotect.data.IProtectRate;
 
 import javax.inject.Inject;
 import java.util.Arrays;

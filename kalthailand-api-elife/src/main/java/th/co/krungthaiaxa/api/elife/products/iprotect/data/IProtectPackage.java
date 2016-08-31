@@ -1,4 +1,4 @@
-package th.co.krungthaiaxa.api.elife.products.iprotect;
+package th.co.krungthaiaxa.api.elife.products.iprotect.data;
 
 /**
  * In reality, when an agency sell products to customer, they have 3 packages:
