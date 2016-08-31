@@ -52,19 +52,25 @@ public class JasperUtil {
         JasperPrint jasperPrint = null;
 
         InputStream inStream = IOUtil.loadInputStreamFileInClassPath(jrxmlPath);
+        if (inStream == null) {
+            String msg = String.format("Cannot find jrxmlPath '%s'", jrxmlPath);
+            throw new JasperException(msg);
+        }
         try {
             JasperDesign jasperDesign = JRXmlLoader.load(inStream);
             JasperReport jasperReport = JasperCompileManager.compileReport(jasperDesign);
             jasperReport.setWhenNoDataType(WhenNoDataTypeEnum.ALL_SECTIONS_NO_DETAIL);
             jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
         } catch (JRException jre) {
-            logger.error("Error creating Pdf", jre);
+            String msg = String.format("Cannot create pdf from jrxmlPath '%s'", jrxmlPath);
+            throw new JasperException(msg, jre);
         } finally {
             if (inStream != null) {
                 try {
                     inStream.close();
                 } catch (IOException e) {
-                    logger.error("Error closing stream", e);
+                    String msg = String.format("Error closing stream from jrxmlPath '%s'", jrxmlPath);
+                    logger.error(msg, e);
                 }
             }
         }

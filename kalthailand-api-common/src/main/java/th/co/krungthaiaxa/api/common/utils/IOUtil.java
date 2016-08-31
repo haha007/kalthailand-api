@@ -1,10 +1,13 @@
 package th.co.krungthaiaxa.api.common.utils;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import th.co.krungthaiaxa.api.common.exeption.FileIOException;
 import th.co.krungthaiaxa.api.common.exeption.FileNotFoundException;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
@@ -28,6 +31,21 @@ public class IOUtil {
             String msg = String.format("Cannot load String from '%s'", path);
             throw new FileNotFoundException(msg, e);
         }
+    }
+
+    public static File createParentFolderIfNecessary(String filePath) {
+        File destinationFile = new File(filePath);
+
+        String parentPath = destinationFile.getParent();
+        File parentFolder = new File(parentPath);
+        try {
+            if (!parentFolder.exists()) {
+                FileUtils.forceMkdir(parentFolder);
+            }
+        } catch (IOException e) {
+            throw new FileIOException(String.format("Cannot create folder '%s'", parentFolder.getAbsolutePath()), e);
+        }
+        return parentFolder;
     }
 
     /**

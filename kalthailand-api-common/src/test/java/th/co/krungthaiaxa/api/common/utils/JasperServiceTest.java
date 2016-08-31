@@ -2,23 +2,42 @@ package th.co.krungthaiaxa.api.common.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import th.co.krungthaiaxa.api.common.service.JasperService;
-
-import java.util.HashMap;
 
 /**
  * @author khoi.tran on 8/31/16.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
 public class JasperServiceTest {
 
     JasperService jasperService = new JasperService(new ObjectMapper());
 
     @Test
     public void testPdfGenerator() {
-        Object dataSource = new HashMap<>();
-        jasperService.exportPdfFile("/jasper/sample/input.jrxml", dataSource, "/jasper/sample/output.pdf");
+        SampleData sampleData = new SampleData();
+        sampleData.setFirstname("Khoi");
+        sampleData.setLastname("Tran");
+
+        jasperService.exportPdfFile("/test/jasper/sample.jrxml", sampleData, "target/test/jasper/sample-output.pdf");
+    }
+
+    private static class SampleData {
+        private String firstname;
+        private String lastname;
+
+        public String getFirstname() {
+            return firstname;
+        }
+
+        public void setFirstname(String firstname) {
+            this.firstname = firstname;
+        }
+
+        public String getLastname() {
+            return lastname;
+        }
+
+        public void setLastname(String lastname) {
+            this.lastname = lastname;
+        }
     }
 }
