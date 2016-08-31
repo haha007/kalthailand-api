@@ -1,4 +1,4 @@
-package th.co.krungthaiaxa.api.elife.commission.model;
+package th.co.krungthaiaxa.api.elife.commission.data;
 
 /**
  * @author khoi.tran on 8/30/16.
