@@ -3,6 +3,14 @@
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<queryString language="json">
+		<![CDATA[{
+	"firstname":"Khoi",
+	"lastname":"Tran"
+}]]>
+	</queryString>
+	<field name="myName" class="java.lang.String"/>
+	<filterExpression><![CDATA[firstname + lastname]]></filterExpression>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -10,7 +18,7 @@
 		<band height="79" splitType="Stretch">
 			<textField>
 				<reportElement x="0" y="59" width="100" height="20" uuid="42e012f9-ae9c-4b3d-8c68-3eb320048ee5"/>
-				<textFieldExpression><![CDATA[$F{field}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{myName}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="0" y="0" width="555" height="49" uuid="b83c7ff6-481f-4b7c-92ec-95b384903b6c"/>
