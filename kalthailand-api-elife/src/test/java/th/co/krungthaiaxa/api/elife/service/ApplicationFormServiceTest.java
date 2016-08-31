@@ -1,21 +1,37 @@
 package th.co.krungthaiaxa.api.elife.service;
 
+import com.itextpdf.text.log.Logger;
+import com.itextpdf.text.log.LoggerFactory;
 import com.itextpdf.text.pdf.PdfReader;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import th.co.krungthaiaxa.api.common.utils.IOUtil;
 import th.co.krungthaiaxa.api.elife.ELifeTest;
-import th.co.krungthaiaxa.api.elife.model.*;
-import th.co.krungthaiaxa.api.elife.model.enums.*;
+import th.co.krungthaiaxa.api.elife.KalApiApplication;
+import th.co.krungthaiaxa.api.elife.TestUtil;
+import th.co.krungthaiaxa.api.elife.model.CoverageBeneficiary;
+import th.co.krungthaiaxa.api.elife.model.GeographicalAddress;
+import th.co.krungthaiaxa.api.elife.model.Periodicity;
+import th.co.krungthaiaxa.api.elife.model.Person;
+import th.co.krungthaiaxa.api.elife.model.PhoneNumber;
+import th.co.krungthaiaxa.api.elife.model.Policy;
+import th.co.krungthaiaxa.api.elife.model.Quote;
+import th.co.krungthaiaxa.api.elife.model.Registration;
+import th.co.krungthaiaxa.api.elife.model.enums.BeneficiaryRelationshipType;
+import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
+import th.co.krungthaiaxa.api.elife.model.enums.DividendOption;
+import th.co.krungthaiaxa.api.elife.model.enums.GenderCode;
+import th.co.krungthaiaxa.api.elife.model.enums.MaritalStatus;
+import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 import th.co.krungthaiaxa.api.elife.products.ProductIFinePackage;
 import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
-import th.co.krungthaiaxa.api.elife.products.iprotect.data.IProtectPackage;
-import th.co.krungthaiaxa.api.elife.KalApiApplication;
-import th.co.krungthaiaxa.api.elife.TestUtil;
+import th.co.krungthaiaxa.api.elife.products.iprotect.IProtectPackage;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -23,21 +39,37 @@ import java.io.File;
 import static org.apache.commons.io.FileUtils.writeByteArrayToFile;
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
-import static th.co.krungthaiaxa.api.elife.TestUtil.*;
-import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.*;
-
+import static th.co.krungthaiaxa.api.elife.TestUtil.beneficiary;
+import static th.co.krungthaiaxa.api.elife.TestUtil.productQuotation;
+import static th.co.krungthaiaxa.api.elife.TestUtil.quote;
+import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.EVERY_YEAR;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiApplication.class)
 @WebAppConfiguration
 @ActiveProfiles("test")
-public class ApplicationFormServiceTest extends ELifeTest{
+public class ApplicationFormServiceTest extends ELifeTest {
+    Logger logger = LoggerFactory.getLogger(ApplicationFormService.class);
     @Inject
     private ApplicationFormService appService;
     @Inject
     private PolicyService policyService;
     @Inject
     private QuoteService quoteService;
+
+    @Test
+    public void test_limit_size_of_application_form() {
+        String filePath = ApplicationFormService.FILE_PATH;
+        long sizeLimit = ApplicationFormService.LIMIT_SIZE;
+        long actualSize = IOUtil.loadBinaryFileInClassPath("/" + filePath).length;
+
+        double actualSizeMB = (double) actualSize / (1024 * 1024);
+        double sizeLimitMB = (double) sizeLimit / (1024 * 1024);
+        String msg = String.format("Size of application form %s is %s bytes (%s MB). Actual size: %s bytes (%s MB)", filePath, sizeLimit, sizeLimitMB, actualSize, actualSizeMB);
+
+        logger.info(msg);
+        Assert.assertTrue(msg, actualSize <= ApplicationFormService.LIMIT_SIZE);
+    }
 
     @Test
     public void should_10ec_generate_not_validate_application_pdf_file() throws Exception {
@@ -144,7 +176,6 @@ public class ApplicationFormServiceTest extends ELifeTest{
         //weight change in last 6 months
         policy.getInsureds().get(0).getHealthStatus().setWeightChangeInLast6Months(true);
         policy.getInsureds().get(0).getHealthStatus().setWeightChangeInLast6MonthsReason("น้ำหนักเพิ่ม");
-
 
         byte[] pdfContent = appService.generateNotValidatedApplicationForm(policy);
         File pdfFile = new File("target/application-not-validated-10ec-form.pdf");
@@ -256,7 +287,7 @@ public class ApplicationFormServiceTest extends ELifeTest{
         assertThat(pdfFile.exists()).isTrue();
         assertThat(new PdfReader(pdfContent)).isNotNull();
     }
-    
+
     @Test
     public void should_iprotect_generate_not_validate_application_pdf_file() throws Exception {
         Policy policy = getPolicyiProtect();
@@ -289,7 +320,7 @@ public class ApplicationFormServiceTest extends ELifeTest{
         assertThat(pdfFile.exists()).isTrue();
         assertThat(new PdfReader(pdfContent)).isNotNull();
     }
-    
+
     @Test
     public void should_iprotect_generate_validate_application_pdf_file() throws Exception {
         Policy policy = getPolicyiProtect();
@@ -323,16 +354,16 @@ public class ApplicationFormServiceTest extends ELifeTest{
         assertThat(pdfFile.exists()).isTrue();
         assertThat(new PdfReader(pdfContent)).isNotNull();
     }
-    
+
     private Policy getPolicyiProtect() {
-        Quote quote = quoteService.createQuote(randomNumeric(20), ChannelType.LINE, 
-        		createDefaultProductQuotation());
+        Quote quote = quoteService.createQuote(randomNumeric(20), ChannelType.LINE,
+                createDefaultProductQuotation());
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateQuote(quote, "token");
 
         return policyService.createPolicy(quote);
     }
-    
+
     private ProductQuotation createDefaultProductQuotation() {
         int age = 32;
         PeriodicityCode periodicityCode = PeriodicityCode.EVERY_MONTH;
