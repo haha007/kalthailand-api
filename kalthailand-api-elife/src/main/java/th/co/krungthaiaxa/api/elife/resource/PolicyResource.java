@@ -474,14 +474,14 @@ public class PolicyResource {
             info.addPayInfo(payResponsePaymentInfo);
 
             linePayResponse = new LinePayResponse();
-            linePayResponse.setReturnCode("0000");
+            linePayResponse.setReturnCode(LineService.RESPONSE_CODE_SUCCESS);
             linePayResponse.setReturnMessage("This is a fake call to Line Pay API with success");
             linePayResponse.setInfo(info);
         }
 
         if (linePayResponse == null) {
             return new ResponseEntity<>(getJson(ErrorCode.UNABLE_TO_CAPTURE_PAYMENT.apply("No way to call Line Pay capture API has been provided")), NOT_ACCEPTABLE);
-        } else if (!linePayResponse.getReturnCode().equals("0000")) {
+        } else if (!linePayResponse.getReturnCode().equals(LineService.RESPONSE_CODE_SUCCESS)) {
             String msg = "Confirming payment didn't go through. Error code is [" + linePayResponse.getReturnCode() + "], error message is [" + linePayResponse.getReturnMessage() + "]";
             return new ResponseEntity<>(getJson(ErrorCode.UNABLE_TO_CAPTURE_PAYMENT.apply(msg)), NOT_ACCEPTABLE);
         }
