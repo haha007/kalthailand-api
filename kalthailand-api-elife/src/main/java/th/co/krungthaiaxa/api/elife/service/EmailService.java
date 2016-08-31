@@ -5,36 +5,30 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.Marker;
-import org.slf4j.MarkerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.common.exeption.EmailException;
+import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
 import th.co.krungthaiaxa.api.elife.model.Person;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.ProductIFinePremium;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
+import th.co.krungthaiaxa.api.elife.products.iprotect.IProtectEmailService;
 import th.co.krungthaiaxa.api.elife.utils.EmailSender;
-import th.co.krungthaiaxa.api.common.utils.EmailUtil;
 
 import javax.inject.Inject;
 import javax.mail.MessagingException;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.text.DecimalFormat;
-import java.time.LocalDate;
-import java.time.chrono.ThaiBuddhistDate;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
-import static java.time.format.DateTimeFormatter.ofPattern;
 import static org.apache.commons.io.IOUtils.toByteArray;
 
 @Service
@@ -43,6 +37,7 @@ public class EmailService {
     private final EmailSender emailSender;
     private final SaleIllustration10ECService saleIllustration10ECService;
     private final SaleIllustrationiFineService saleIllustrationiFineService;
+    private final IProtectEmailService iProtectEmailService;
     @Value("${email.name}")
     private String emailName;
     @Value("${email.subject.quote}")
@@ -57,15 +52,20 @@ public class EmailService {
     private Locale thLocale = new Locale("th", "");
 
     @Inject
-    public EmailService(EmailSender emailSender, SaleIllustration10ECService saleIllustration10ECService, SaleIllustrationiFineService saleIllustrationiFineService) {
+    public EmailService(EmailSender emailSender, SaleIllustration10ECService saleIllustration10ECService, SaleIllustrationiFineService saleIllustrationiFineService, IProtectEmailService iProtectEmailService) {
         this.emailSender = emailSender;
         this.saleIllustration10ECService = saleIllustration10ECService;
         this.saleIllustrationiFineService = saleIllustrationiFineService;
+        this.iProtectEmailService = iProtectEmailService;
     }
 
     public void sendEmail(String toEmail, String emailSubject, String emailContent, List<Pair<byte[], String>> imagesPairs) {
+        sendEmail(toEmail, emailSubject, emailContent, imagesPairs, Collections.EMPTY_LIST);
+    }
+
+    public void sendEmail(String toEmail, String emailSubject, String emailContent, List<Pair<byte[], String>> imagesPairs, List<Pair<byte[], String>> attachments) {
         try {
-            emailSender.sendEmail(emailName, toEmail, emailSubject, emailContent, imagesPairs, Collections.EMPTY_LIST);
+            emailSender.sendEmail(emailName, toEmail, emailSubject, emailContent, imagesPairs, attachments);
             logger.debug("The email was sent to {}", toEmail);
         } catch (MessagingException | IOException e) {
             throw new EmailException("Cannot send email: " + e.getMessage(), e);
@@ -89,6 +89,7 @@ public class EmailService {
     public void sendQuoteiFineEmail(Quote quote) throws IOException, MessagingException, DocumentException {
         logger.info("Sending quote iFine email");
         List<Pair<byte[], String>> base64ImgFileNames = new ArrayList<>();
+
         base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/logo.png")), "<imageLogo>"));
         //generate sale illustration iFine pdf file
         List<Pair<byte[], String>> attachments = new ArrayList<>();
@@ -207,7 +208,7 @@ public class EmailService {
         String decimalFormat = "#,##0.00";
         String emailContent = IOUtils.toString(this.getClass().getResourceAsStream("/email-content/email-quote-ifine-content.txt"), Charset.forName("UTF-8"));
         ProductIFinePremium p = quote.getPremiumsData().getProductIFinePremium();
-        return emailContent.replace("%2$s", getThaiDate(quote.getInsureds().get(0).getStartDate()))
+        return emailContent.replace("%2$s", DateTimeUtil.formatThaiDate(quote.getInsureds().get(0).getStartDate()))
                 .replace("%3$s", "'" + getLineURL() + "fatca-questions/" + quote.getQuoteId() + "'")
                 .replace("%4$s", String.valueOf(quote.getCommonData().getNbOfYearsOfCoverage()))
                 .replace("%5$s", String.valueOf(quote.getCommonData().getNbOfYearsOfPremium()))
@@ -247,17 +248,7 @@ public class EmailService {
         return "https://line.me/R/ch/" + lineId + "/elife/th/";
     }
 
-    private String getThaiDate(LocalDate localDate) {
-        ThaiBuddhistDate tdate = ThaiBuddhistDate.from(localDate);
-        return tdate.format(ofPattern("dd/MM/yyyy"));
-    }
-
-    public List<Pair<byte[], String>> getDefaultImagePairs() {
-        Map<String, String> imagesMap = new HashMap<>();
-        imagesMap.put("<imageElife>", "/images/email/logo.png");
-        imagesMap.put("<imgF>", "/images/email/facebook-logo.png");
-        imagesMap.put("<imgT>", "/images/email/twitter-logo.png");
-        imagesMap.put("<imgY>", "/images/email/youtube-logo.png");
-        return EmailUtil.createBase64ImagePairs(imagesMap);
+    public void sendQuoteIProtect(Quote quote) {
+        iProtectEmailService.sendQuoteIProtect(quote);
     }
 }

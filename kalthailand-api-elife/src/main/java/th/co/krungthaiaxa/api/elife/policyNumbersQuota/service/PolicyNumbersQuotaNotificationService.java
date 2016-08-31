@@ -5,20 +5,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import th.co.krungthaiaxa.api.common.utils.IOUtil;
 import th.co.krungthaiaxa.api.common.utils.StringUtil;
 import th.co.krungthaiaxa.api.elife.data.PolicyNumberSetting;
 import th.co.krungthaiaxa.api.elife.data.PolicyNumbersQuotaNotification;
 import th.co.krungthaiaxa.api.elife.policyNumbersQuota.repository.PolicyNumbersQuotaNotificationRepository;
 import th.co.krungthaiaxa.api.elife.service.EmailService;
 import th.co.krungthaiaxa.api.elife.service.PolicyNumberSettingService;
-import th.co.krungthaiaxa.api.common.utils.IOUtil;
+import th.co.krungthaiaxa.api.elife.utils.EmailUtil;
 
 import javax.inject.Inject;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
-
-import static org.apache.commons.io.IOUtils.toByteArray;
 
 /**
  * @author khoi.tran on 7/26/16.
@@ -43,7 +42,7 @@ public class PolicyNumbersQuotaNotificationService {
 
     public void sendNotification(PolicyNumbersQuotaCheckerService.PolicyNumbersQuotaCheckerResult policyNumbersQuotaCheckerResult) {
         String emailContent = populateEmailContent(policyNumbersQuotaCheckerResult);
-        List<Pair<byte[], String>> imagesPairs = emailService.getDefaultImagePairs();
+        List<Pair<byte[], String>> imagesPairs = EmailUtil.getDefaultImagePairs();
 
         PolicyNumberSetting policyNumberSetting = policyNumbersQuotaCheckerResult.getPolicyNumberSetting();
         List<String> notificationSettingEmails = policyNumberSetting.getEmailList();
