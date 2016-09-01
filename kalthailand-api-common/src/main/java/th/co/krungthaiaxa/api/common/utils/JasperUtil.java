@@ -43,6 +43,7 @@ public class JasperUtil {
             JsonDataSource jsonDataSource = new JsonDataSource(jsonDataSourceInputSteam, null);
             JasperPrint jasperPrint = export(jrxmlPath, null, jsonDataSource);
             JasperExportManager.exportReportToPdfFile(jasperPrint, destinationFile);
+            logger.debug("Exported file '{}'", destinationFile);
         } catch (JRException e) {
             throw new JasperException("Cannot read datasource from jsonInputStream. " + e.getMessage(), e);
         }
@@ -62,14 +63,14 @@ public class JasperUtil {
             jasperReport.setWhenNoDataType(WhenNoDataTypeEnum.ALL_SECTIONS_NO_DETAIL);
             jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
         } catch (JRException jre) {
-            String msg = String.format("Cannot create pdf from jrxmlPath '%s'", jrxmlPath);
+            String msg = String.format("Cannot create pdf from jrxmlPath '%s'. %s", jrxmlPath, jre.getMessage());
             throw new JasperException(msg, jre);
         } finally {
             if (inStream != null) {
                 try {
                     inStream.close();
                 } catch (IOException e) {
-                    String msg = String.format("Error closing stream from jrxmlPath '%s'", jrxmlPath);
+                    String msg = String.format("Error closing stream from jrxmlPath '%s'. %s", jrxmlPath, e.getMessage());
                     logger.error(msg, e);
                 }
             }
