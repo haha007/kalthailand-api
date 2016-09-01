@@ -11,7 +11,7 @@ import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.model.ProductIFinePremium;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.products.ProductUtils;
-import th.co.krungthaiaxa.api.elife.service.EmailService;
+import th.co.krungthaiaxa.api.elife.utils.EmailSender;
 import th.co.krungthaiaxa.api.elife.utils.EmailUtil;
 
 import javax.inject.Inject;
@@ -25,15 +25,17 @@ import java.util.List;
 public class IProtectEmailService {
     private final static Logger logger = LoggerFactory.getLogger(IProtectEmailService.class);
     public static final String EMAIL_PATH = "/email-content/email-quote-iprotect-content.html";
+    @Value("${email.name}")
+    private String fromEmail;
     @Value("${email.subject.quote}")
     private String emailQuoteSubject;
 
-    private final EmailService emailService;
+    private final EmailSender emailSender;
     private final IProtectSaleIllustrationService iProtectSaleIllustrationService;
 
     @Inject
-    public IProtectEmailService(EmailService emailService, IProtectSaleIllustrationService iProtectSaleIllustrationService) {
-        this.emailService = emailService;
+    public IProtectEmailService(EmailSender emailSender, IProtectSaleIllustrationService iProtectSaleIllustrationService) {
+        this.emailSender = emailSender;
         this.iProtectSaleIllustrationService = iProtectSaleIllustrationService;
     }
 
@@ -43,7 +45,7 @@ public class IProtectEmailService {
         List<Pair<byte[], String>> attachments = new ArrayList<>();
         attachments.add(iProtectSaleIllustrationService.generatePDF(quote));
         Insured mainInsured = ProductUtils.validateExistMainInsured(quote);
-        emailService.sendEmail(mainInsured.getPerson().getEmail(), emailQuoteSubject, getEmailContent(quote), base64ImgFileNames, attachments);
+        emailSender.sendEmail(fromEmail, mainInsured.getPerson().getEmail(), emailQuoteSubject, getEmailContent(quote), base64ImgFileNames, attachments);
         logger.info("Quote iProtect email sent!");
     }
 

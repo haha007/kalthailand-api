@@ -17,6 +17,7 @@ import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
 import javax.inject.Inject;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -55,6 +56,23 @@ public class PaymentServiceTest {
         payment.setRegistrationKey(regKey);
         payment.setDueDate(dueDate);
         return paymentRepository.save(payment);
+    }
+
+    @Test
+    public void can_get_null_value() {
+        List<String> testingRegistrationKeys = Arrays.asList(null, "", " ", "aaa");
+        for (String testingRegistrationKey : testingRegistrationKeys) {
+            Payment payment = new Payment();
+            payment.setRegistrationKey(testingRegistrationKey);
+            String resultRegistrationKey = payment.getRegistrationKey();
+
+            if (testingRegistrationKey == null) {
+                Assert.assertNull(resultRegistrationKey);
+            } else {
+                Assert.assertEquals(testingRegistrationKey, resultRegistrationKey);
+            }
+        }
+
     }
 
 }

@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
-import th.co.krungthaiaxa.api.common.exeption.EmailException;
 import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
 import th.co.krungthaiaxa.api.elife.model.Person;
 import th.co.krungthaiaxa.api.elife.model.Policy;
@@ -64,12 +63,8 @@ public class EmailService {
     }
 
     public void sendEmail(String toEmail, String emailSubject, String emailContent, List<Pair<byte[], String>> imagesPairs, List<Pair<byte[], String>> attachments) {
-        try {
-            emailSender.sendEmail(emailName, toEmail, emailSubject, emailContent, imagesPairs, attachments);
-            logger.debug("The email was sent to {}", toEmail);
-        } catch (MessagingException | IOException e) {
-            throw new EmailException("Cannot send email: " + e.getMessage(), e);
-        }
+        emailSender.sendEmail(emailName, toEmail, emailSubject, emailContent, imagesPairs, attachments);
+        logger.debug("The email was sent to {}", toEmail);
     }
 
     public void sendQuote10ECEmail(Quote quote, String base64Image) throws IOException, MessagingException, DocumentException {

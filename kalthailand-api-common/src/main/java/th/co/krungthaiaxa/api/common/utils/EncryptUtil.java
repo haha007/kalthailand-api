@@ -43,7 +43,7 @@ public class EncryptUtil {
             cipher.init(Cipher.DECRYPT_MODE, PRIVATE_KEY);
             cipherText = cipher.doFinal(Base64.decodeBase64(encodedText));
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | BadPaddingException | IllegalBlockSizeException | InvalidKeyException ex) {
-            LOGGER.error("Error while decrypt", ex);
+            LOGGER.error("Error while decrypt '{}'", encodedText, ex);
         }
         return new String(cipherText);
     }
