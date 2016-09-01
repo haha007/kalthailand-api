@@ -1,10 +1,15 @@
 package th.co.krungthaiaxa.api.elife.products.iprotect;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.jsoup.helper.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
+
+import com.itextpdf.text.DocumentException;
+
 import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
 import th.co.krungthaiaxa.api.common.utils.IOUtil;
 import th.co.krungthaiaxa.api.elife.model.Insured;
@@ -15,8 +20,14 @@ import th.co.krungthaiaxa.api.elife.utils.EmailSender;
 import th.co.krungthaiaxa.api.elife.utils.EmailUtil;
 
 import javax.inject.Inject;
+
+import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * @author khoi.tran on 8/31/16.
@@ -24,11 +35,16 @@ import java.util.List;
 @Service
 public class IProtectEmailService {
     private final static Logger logger = LoggerFactory.getLogger(IProtectEmailService.class);
-    public static final String EMAIL_PATH = "/email-content/email-quote-iprotect-content.html";
+    public static final String EMAIL_PATH = "/email-content/email-quote-iprotect-content.txt";
     @Value("${email.name}")
     private String fromEmail;
     @Value("${email.subject.quote}")
     private String emailQuoteSubject;
+    @Value("${line.app.id}")
+    private String lineId;
+    @Inject
+    private MessageSource messageSource;
+    private Locale thLocale = new Locale("th","");
 
     private final EmailSender emailSender;
     private final IProtectSaleIllustrationService iProtectSaleIllustrationService;
@@ -43,40 +59,39 @@ public class IProtectEmailService {
         logger.info("Sending quote iProtect email...");
         List<Pair<byte[], String>> base64ImgFileNames = EmailUtil.getDefaultImagePairs();
         List<Pair<byte[], String>> attachments = new ArrayList<>();
-        attachments.add(iProtectSaleIllustrationService.generatePDF(quote));
+        try {
+			attachments.add(iProtectSaleIllustrationService.generatePDF(quote));
+		} catch (DocumentException e) {
+			logger.error(e.getMessage());
+		} catch (IOException e) {
+			logger.error(e.getMessage());
+		}
         Insured mainInsured = ProductUtils.validateExistMainInsured(quote);
         emailSender.sendEmail(fromEmail, mainInsured.getPerson().getEmail(), emailQuoteSubject, getEmailContent(quote), base64ImgFileNames, attachments);
         logger.info("Quote iProtect email sent!");
     }
 
     private String getEmailContent(Quote quote) {
-        String decimalFormat = "#,##0.00";
+        String dcFormat = "#,##0.00";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        DecimalFormat dcf = new DecimalFormat(dcFormat);
         String emailContent = IOUtil.loadTextFileInClassPath(EMAIL_PATH);
-        ProductIFinePremium p = quote.getPremiumsData().getProductIFinePremium();
-        return emailContent.replace("%2$s", DateTimeUtil.formatThaiDateTime(quote.getCreationDateTime()))
-                //TODO need to continue
-//                .replace("%3$s", "'" + getLineURL() + "fatca-questions/" + quote.getQuoteId() + "'")
-//                .replace("%4$s", String.valueOf(quote.getCommonData().getNbOfYearsOfCoverage()))
-//                .replace("%5$s", String.valueOf(quote.getCommonData().getNbOfYearsOfPremium()))
-//                .replace("%6$s", String.valueOf(quote.getInsureds().get(0).getAgeAtSubscription()))
-//                .replace("%7$s", messageSource.getMessage("payment.mode." + quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().toString(), null, thLocale))
-//                .replace("%8$s", (new DecimalFormat(decimalFormat)).format(p.getSumInsured().getValue()))
-//                .replace("%9$s", (new DecimalFormat(decimalFormat)).format(p.getAccidentSumInsured().getValue()))
-//                .replace("%10$s", (new DecimalFormat(decimalFormat)).format(p.getDeathByAccidentInPublicTransport().getValue()))
-//                .replace("%11$s", (new DecimalFormat(decimalFormat)).format(p.getLossOfHandOrLeg().getValue()))
-//                .replace("%12$s", (new DecimalFormat(decimalFormat)).format(p.getLossOfSight().getValue()))
-//                .replace("%13$s", (new DecimalFormat(decimalFormat)).format(p.getLossOfHearingMin().getValue()) + " - " + (new DecimalFormat(decimalFormat)).format(p.getLossOfHearingMax().getValue()))
-//                .replace("%14$s", (new DecimalFormat(decimalFormat)).format(p.getLossOfSpeech().getValue()))
-//                .replace("%15$s", (new DecimalFormat(decimalFormat)).format(p.getLossOfCorneaForBothEyes().getValue()))
-//                .replace("%16$s", (new DecimalFormat(decimalFormat)).format(p.getLossOfFingersMin().getValue()) + " - " + (new DecimalFormat(decimalFormat)).format(p.getLossOfFingersMax().getValue()))
-//                .replace("%17$s", (new DecimalFormat(decimalFormat)).format(p.getNoneCurableBoneFracture().getValue()))
-//                .replace("%18$s", (new DecimalFormat(decimalFormat)).format(p.getLegsShortenBy5cm().getValue()))
-//                .replace("%19$s", (new DecimalFormat(decimalFormat)).format(p.getBurnInjuryMin().getValue()) + " - " + (new DecimalFormat(decimalFormat)).format(p.getBurnInjuryMax().getValue()))
-//                .replace("%20$s", (new DecimalFormat(decimalFormat)).format(p.getMedicalCareCost().getValue()))
-//                .replace("%21$s", (new DecimalFormat(decimalFormat)).format(p.getHospitalizationSumInsured().getValue()))
-//                .replace("%22$s", "'" + getLineURL() + "'")
-//                .replace("%23$s", "'" + getLineURL() + "fatca-questions/" + quote.getQuoteId() + "'")
-//                .replace("%24$s", "'" + getLineURL() + "quote-product/line-iFine" + "'")
-                ;
+        Integer taxDeclared = (quote.getInsureds().get(0).getDeclaredTaxPercentAtSubscription()==null?0:quote.getInsureds().get(0).getDeclaredTaxPercentAtSubscription());
+        return emailContent.replace("%1$s", quote.getCreationDateTime().plusYears(543).format(formatter))
+                .replace("%2$s", "'" + getLineURL() + "fatca-questions/" + quote.getQuoteId() + "'")
+                .replace("%3$s", dcf.format(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()))
+                .replace("%4$s", dcf.format(quote.getPremiumsData().getProductIProtectPremium().getDeathBenefit().getValue()))
+                .replace("%5$s", dcf.format(quote.getPremiumsData().getProductIProtectPremium().getSumInsured().getValue()))
+                .replace("%6$s", dcf.format(quote.getPremiumsData().getProductIProtectPremium().getYearlyTaxDeduction().getValue()))
+                .replace("%7$s", dcf.format(quote.getPremiumsData().getProductIProtectPremium().getTotalTaxDeduction().getValue()))
+                .replace("%8$s", "'" + getLineURL() + "'")
+                .replace("%9$s", "'" + getLineURL() + "fatca-questions/" + quote.getQuoteId() + "'")
+                .replace("%10$s", "'" + getLineURL() + "quote-product/line-iProtect" + "'")
+                .replace("%11$s", String.valueOf(taxDeclared))
+                .replace("%12$s", messageSource.getMessage("payment.mode."+quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().toString(), null, thLocale));
+    }
+    
+    private String getLineURL() {
+    	return "https://line.me/R/ch/" + lineId + "/elife/th/";
     }
 }

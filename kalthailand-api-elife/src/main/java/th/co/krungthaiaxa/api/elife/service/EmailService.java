@@ -243,7 +243,7 @@ public class EmailService {
         return "https://line.me/R/ch/" + lineId + "/elife/th/";
     }
 
-    public void sendQuoteIProtect(Quote quote) {
+    public void sendQuoteIProtect(Quote quote){
         iProtectEmailService.sendQuoteIProtect(quote);
     }
 }

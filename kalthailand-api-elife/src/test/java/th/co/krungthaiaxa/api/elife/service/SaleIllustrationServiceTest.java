@@ -10,7 +10,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.api.elife.ELifeTest;
 import th.co.krungthaiaxa.api.elife.KalApiApplication;
+import th.co.krungthaiaxa.api.elife.model.Amount;
+import th.co.krungthaiaxa.api.elife.model.Periodicity;
 import th.co.krungthaiaxa.api.elife.model.Quote;
+import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
+import th.co.krungthaiaxa.api.elife.products.ProductType;
+import th.co.krungthaiaxa.api.elife.products.iprotect.IProtectSaleIllustrationService;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -34,9 +39,55 @@ public class SaleIllustrationServiceTest extends ELifeTest {
     @Inject
     private SaleIllustrationiFineService saleIllustrationiFineService;
     @Inject
+    private IProtectSaleIllustrationService iProtectSaleIllustrationService;
+    @Inject
     private QuoteService quoteService;
 
     private final String base64 = "";
+    
+    @Test
+    public void should_generate_sale_illustration_iprotect_monthly_pdf_file()throws  Exception {
+    	Quote quote = quoteService.createQuote("xxx", LINE, productQuotation(ProductType.PRODUCT_IPROTECT, 55, EVERY_YEAR, 100000.0));
+        quote(quote, beneficiary(100.0));
+        quote = quoteService.updateQuote(quote, "token");
+        Amount am = new Amount(1000.0, "THB");
+        quote.getPremiumsData().getFinancialScheduler().setModalAmount(am);
+        quote.getPremiumsData().getProductIProtectPremium().setDeathBenefit(am);
+        quote.getPremiumsData().getProductIProtectPremium().setSumInsured(am);
+        quote.getPremiumsData().getProductIProtectPremium().setYearlyTaxDeduction(am);
+        quote.getPremiumsData().getProductIProtectPremium().setTotalTaxDeduction(am); 
+        Periodicity periodicity = new Periodicity();
+        periodicity.setCode(PeriodicityCode.EVERY_MONTH);
+        quote.getPremiumsData().getFinancialScheduler().setPeriodicity(periodicity);
+        quote.getPremiumsData().getProductIProtectPremium().setSumInsured(am);
+
+        Pair<byte[], String> pair = iProtectSaleIllustrationService.generatePDF(quote);
+        assertThat(pair.getLeft()).isNotEmpty();
+        assertThat(pair.getRight()).isNotEmpty();
+        FileUtils.writeByteArrayToFile(new File("target/" + pair.getRight()), pair.getLeft());
+    }
+    
+    @Test
+    public void should_generate_sale_illustration_iprotect_yearly_pdf_file()throws  Exception {
+    	Quote quote = quoteService.createQuote("xxx", LINE, productQuotation(ProductType.PRODUCT_IPROTECT, 55, EVERY_YEAR, 100000.0));
+        quote(quote, beneficiary(100.0));
+        quote = quoteService.updateQuote(quote, "token");
+        Amount am = new Amount(1000.0, "THB");
+        quote.getPremiumsData().getFinancialScheduler().setModalAmount(am);
+        quote.getPremiumsData().getProductIProtectPremium().setDeathBenefit(am);
+        quote.getPremiumsData().getProductIProtectPremium().setSumInsured(am);
+        quote.getPremiumsData().getProductIProtectPremium().setYearlyTaxDeduction(am);
+        quote.getPremiumsData().getProductIProtectPremium().setTotalTaxDeduction(am); 
+        Periodicity periodicity = new Periodicity();
+        periodicity.setCode(PeriodicityCode.EVERY_YEAR);
+        quote.getPremiumsData().getFinancialScheduler().setPeriodicity(periodicity);
+        quote.getPremiumsData().getProductIProtectPremium().setSumInsured(am);
+
+        Pair<byte[], String> pair = iProtectSaleIllustrationService.generatePDF(quote);
+        assertThat(pair.getLeft()).isNotEmpty();
+        assertThat(pair.getRight()).isNotEmpty();
+        FileUtils.writeByteArrayToFile(new File("target/" + pair.getRight()), pair.getLeft());
+    }
 
     @Test
     public void should_generate_sale_illustration_10ec_pdf_file()throws  Exception {
