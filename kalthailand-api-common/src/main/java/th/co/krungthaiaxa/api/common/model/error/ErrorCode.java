@@ -14,6 +14,12 @@ public class ErrorCode {
     public static final String ERROR_CODE_FILE_NOT_FOUND = "0020";
     public static final String ERROR_CODE_FILE_IO = "0021";
 
+    //Json Exception (0030 -> 0039)
+    public static final String ERROR_CODE_JSON_CONVERTER = "0030";
+
+    //Jasper Exception (0040 -> 0049)
+    public static final String ERROR_CODE_JASPER = "0040";
+
     // Watermarking
     public static final Error WATERMARK_IMAGE_INPUT_NOT_READABLE = new Error("0101", "Unable to upload your picture", "The image cannot be read as stream");
     public static final Error INVALID_LINE_ID = new Error("0102", "Unable to get your user ID", "Unable to get mid out of decrypted value");

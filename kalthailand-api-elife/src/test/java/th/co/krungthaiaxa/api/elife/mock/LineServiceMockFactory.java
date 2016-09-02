@@ -38,7 +38,7 @@ public class LineServiceMockFactory {
                     linePayRecurringResponseInfo.setTransactionId("MockTransId_" + System.currentTimeMillis());
                     linePayRecurringResponseInfo.setTransactionDate(LocalDateTime.now().toString());
 
-                    result.setReturnCode(LineService.PREAPPROVE_CODE_SUCCESS);
+                    result.setReturnCode(LineService.RESPONSE_CODE_SUCCESS);
                     result.setReturnMessage("Mocktest return success");
                     result.setInfo(linePayRecurringResponseInfo);
                     return result;

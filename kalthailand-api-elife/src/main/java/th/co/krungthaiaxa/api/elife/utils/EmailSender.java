@@ -5,11 +5,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import th.co.krungthaiaxa.api.common.exeption.EmailException;
+import th.co.krungthaiaxa.api.common.utils.StringUtil;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
-import javax.mail.*;
-import javax.mail.internet.*;
+import javax.mail.BodyPart;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Multipart;
+import javax.mail.Session;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+import javax.mail.internet.MimeUtility;
 import javax.mail.util.ByteArrayDataSource;
 import java.io.IOException;
 import java.util.Date;
@@ -29,18 +39,22 @@ public class EmailSender {
     private String smtpPort;
 
     public void sendEmail(String fromEmailAddress, String toEmailAddress, String emailSubject, String emailContent,
-                          List<Pair<byte[], String>> images, List<Pair<byte[], String>> attachments)
-            throws MessagingException, IOException {
+            List<Pair<byte[], String>> images, List<Pair<byte[], String>> attachments) {
         hasText(smtpHost, "smtpHost is a mandatory value and cannot be null/blank");
         hasText(smtpPort, "smtpPort is a mandatory value and cannot be null/blank");
 
-        send(generateMessage(fromEmailAddress, toEmailAddress, emailSubject, emailContent, images, attachments));
+        try {
+            send(generateMessage(fromEmailAddress, toEmailAddress, emailSubject, emailContent, images, attachments));
+        } catch (MessagingException | IOException e) {
+            String msg = String.format("Error sending email. fromEmail: '%s', toEmail: '%s'", StringUtil.maskEmail(fromEmailAddress), StringUtil.maskEmail(toEmailAddress));
+            throw new EmailException(msg, e);
+        }
         logger.info("Email successfully sent");
     }
 
     private MimeMessage generateMessage(String fromEmailAddress, String toEmailAddress, String emailSubject,
-                                        String emailContent, List<Pair<byte[], String>> images,
-                                        List<Pair<byte[], String>> attachments)
+            String emailContent, List<Pair<byte[], String>> images,
+            List<Pair<byte[], String>> attachments)
             throws MessagingException, IOException {
 
         notNull(fromEmailAddress, "email from is required");

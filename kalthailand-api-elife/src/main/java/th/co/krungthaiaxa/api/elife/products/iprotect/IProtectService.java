@@ -25,6 +25,9 @@ import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
 import th.co.krungthaiaxa.api.elife.products.ProductService;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
 import th.co.krungthaiaxa.api.elife.products.ProductUtils;
+import th.co.krungthaiaxa.api.elife.products.iprotect.data.IProtectDiscountRate;
+import th.co.krungthaiaxa.api.elife.products.iprotect.data.IProtectPackage;
+import th.co.krungthaiaxa.api.elife.products.iprotect.data.IProtectRate;
 import th.co.krungthaiaxa.api.elife.repository.OccupationTypeRepository;
 import th.co.krungthaiaxa.api.elife.utils.AmountUtil;
 

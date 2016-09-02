@@ -21,10 +21,13 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.api.elife.ELifeTest;
 import th.co.krungthaiaxa.api.elife.KalApiApplication;
+import th.co.krungthaiaxa.api.elife.model.Amount;
 import th.co.krungthaiaxa.api.elife.model.Document;
 import th.co.krungthaiaxa.api.elife.model.DocumentDownload;
+import th.co.krungthaiaxa.api.elife.model.Periodicity;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.Quote;
+import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
 
 import javax.inject.Inject;
@@ -99,11 +102,60 @@ public class EmailServiceTest extends ELifeTest {
     }
 
     @Test
+    public void should_send_quote_iprotect_email_monthly_with_proper_from_address() throws Exception {
+        Quote quote = quoteService.createQuote("xxx", LINE, productQuotation(ProductType.PRODUCT_IPROTECT, 55, EVERY_YEAR, 100000.0));
+        quote(quote, beneficiary(100.0));
+        quote = quoteService.updateQuote(quote, "token");
+        //quote.getInsureds().get(0).getPerson().setEmail("chr_biz@hotmail.com");
+        quote.getInsureds().get(0).getPerson().setEmail("santi.lik@krungthai-axa.co.th");
+        Amount am = new Amount(1000.0, "THB");
+        quote.getPremiumsData().getFinancialScheduler().setModalAmount(am);
+        quote.getPremiumsData().getProductIProtectPremium().setDeathBenefit(am);
+        quote.getPremiumsData().getProductIProtectPremium().setSumInsured(am);
+        quote.getPremiumsData().getProductIProtectPremium().setYearlyTaxDeduction(am);
+        quote.getPremiumsData().getProductIProtectPremium().setTotalTaxDeduction(am); 
+        Periodicity periodicity = new Periodicity();
+        periodicity.setCode(PeriodicityCode.EVERY_MONTH);
+        quote.getPremiumsData().getFinancialScheduler().setPeriodicity(periodicity);
+        
+        
+        emailService.sendQuoteIProtect(quote);
+        assertThat(greenMail.getReceivedMessages()).hasSize(1);
+        MimeMessage email = greenMail.getReceivedMessages()[0];
+        assertThat(email.getFrom()).containsOnly(new InternetAddress(emailName));
+    }
+
+    @Test
+    public void should_send_quote_iprotect_email_yearly_with_proper_from_address() throws Exception {
+        Quote quote = quoteService.createQuote("xxx", LINE, productQuotation(ProductType.PRODUCT_IPROTECT, 55, EVERY_YEAR, 100000.0));
+        quote(quote, beneficiary(100.0));
+        quote = quoteService.updateQuote(quote, "token");
+        //quote.getInsureds().get(0).getPerson().setEmail("chr_biz@hotmail.com");
+        quote.getInsureds().get(0).getPerson().setEmail("santi.lik@krungthai-axa.co.th");
+        Amount am = new Amount(1000.0, "THB");
+        quote.getPremiumsData().getFinancialScheduler().setModalAmount(am);
+        quote.getPremiumsData().getProductIProtectPremium().setDeathBenefit(am);
+        quote.getPremiumsData().getProductIProtectPremium().setSumInsured(am);
+        quote.getPremiumsData().getProductIProtectPremium().setYearlyTaxDeduction(am);
+        quote.getPremiumsData().getProductIProtectPremium().setTotalTaxDeduction(am); 
+        Periodicity periodicity = new Periodicity();
+        periodicity.setCode(PeriodicityCode.EVERY_YEAR);
+        quote.getPremiumsData().getFinancialScheduler().setPeriodicity(periodicity);
+        
+        
+        emailService.sendQuoteIProtect(quote);
+        assertThat(greenMail.getReceivedMessages()).hasSize(1);
+        MimeMessage email = greenMail.getReceivedMessages()[0];
+        assertThat(email.getFrom()).containsOnly(new InternetAddress(emailName));
+    }
+
+    @Test
     public void should_send_quote_ifine_email_with_proper_from_address() throws Exception {
         Quote quote = quoteService.createQuote("xxx", LINE, productQuotation(PRODUCT_IFINE, 55, EVERY_YEAR, 100000.0));
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateQuote(quote, "token");
         quote.getInsureds().get(0).getPerson().setEmail("santi.lik@krungthai-axa.co.th");
+        //quote.getInsureds().get(0).getPerson().setEmail("chr_biz@hotmail.com");
         emailService.sendQuoteiFineEmail(quote);
         assertThat(greenMail.getReceivedMessages()).hasSize(1);
         MimeMessage email = greenMail.getReceivedMessages()[0];

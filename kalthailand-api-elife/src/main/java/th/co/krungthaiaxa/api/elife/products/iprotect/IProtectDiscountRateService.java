@@ -4,6 +4,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.elife.exception.QuoteCalculationException;
+import th.co.krungthaiaxa.api.elife.products.iprotect.data.IProtectDiscountRate;
+import th.co.krungthaiaxa.api.elife.products.iprotect.data.IProtectPackage;
 import th.co.krungthaiaxa.api.elife.repository.ProductIProtectDiscountRateRepository;
 
 import javax.inject.Inject;

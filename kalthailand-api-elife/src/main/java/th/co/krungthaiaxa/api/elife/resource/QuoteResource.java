@@ -50,6 +50,7 @@ public class QuoteResource {
     private final QuoteService quoteService;
     private final SessionQuoteService sessionQuoteService;
     private final EmailService emailService;
+
     @Value("${kal.api.auth.header}")
     private String tokenHeader;
 
@@ -82,10 +83,16 @@ public class QuoteResource {
         }
 
         try {
-            if (quote.get().getCommonData().getProductId().equals(ProductType.PRODUCT_10_EC.getName())) {
+            String productId = quote.get().getCommonData().getProductId();
+
+            if (productId.equals(ProductType.PRODUCT_10_EC.getName())) {
                 emailService.sendQuote10ECEmail(quote.get(), base64Image);
-            } else if (quote.get().getCommonData().getProductId().equals(ProductType.PRODUCT_IFINE.getName())) {
+            } else if (productId.equals(ProductType.PRODUCT_IFINE.getName())) {
                 emailService.sendQuoteiFineEmail(quote.get());
+            } else if (productId.equals(ProductType.PRODUCT_IPROTECT.getName())) {
+                emailService.sendQuoteIProtect(quote.get());
+            } else {
+                logger.debug("No mail to send for product {}", productId);
             }
         } catch (Exception e) {
             logger.error("Unable to send email for [" + quote.get().getInsureds().get(0).getPerson().getEmail() + "]", e);

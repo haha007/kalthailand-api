@@ -200,7 +200,7 @@ public class PolicyService {
         PaymentInformation paymentInformation = new PaymentInformation();
         paymentInformation.setRejectionErrorCode(linePayResponse.getReturnCode());
         paymentInformation.setRejectionErrorMessage(linePayResponse.getReturnMessage());
-        if (linePayResponse.getReturnCode().equals(LineService.PREAPPROVE_CODE_SUCCESS)) {
+        if (linePayResponse.getReturnCode().equals(LineService.RESPONSE_CODE_SUCCESS)) {
             String msg = "transactionDate:" + linePayResponse.getInfo().getTransactionDate() + " ,transactionId:" + linePayResponse.getInfo().getTransactionId() + " ,paymentId=" + paymentId + " ,regKey=" + EncryptUtil.encrypt(regKey) + " ,amt=" + amt + " ,productId=" + productId
                     + " ,orderId=" + orderId;
             paymentInformation.setStatus(SuccessErrorStatus.SUCCESS);

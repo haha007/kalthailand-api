@@ -27,4 +27,6 @@ public class EncryptUtilTest {
         LOGGER.info("Plain text: \n" + plainText);
         Assert.assertEquals(originalText, plainText);
     }
+
+
 }
