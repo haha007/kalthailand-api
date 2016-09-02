@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import th.co.krungthaiaxa.api.common.exeption.UnexpectedException;
 import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
 import th.co.krungthaiaxa.api.common.utils.LogUtil;
 import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
@@ -75,6 +76,7 @@ public class RLSService {
     private final PolicyRepository policyRepository;
     private final PolicyService policyService;
     private final PaymentService paymentService;
+    //    private final DeductionFileRepository deductionFileRepository;
     private LineService lineService;
 
     private Function<PeriodicityCode, String> paymentMode = periodicityCode -> {
@@ -96,6 +98,7 @@ public class RLSService {
         this.policyRepository = policyRepository;
         this.policyService = policyService;
         this.paymentService = paymentService;
+//        this.deductionFileRepository = deductionFileRepository;
         this.lineService = lineService;
     }
 
@@ -127,6 +130,7 @@ public class RLSService {
             processCollectionFile(collectionFile);
         }
         LogUtil.logRuntime(startTime, "<<<<<<<<<<<<<<<<<<<<<<<<<<<<< STOP PROCESS RECURRING PAYMENT WITH TIME (" + LocalDateTime.now(of(SHORT_IDS.get("VST"))) + ") >>>>>>>>>>>>>>>>>>>>>>>>>>>");
+
         return collectionFiles;
     }
 
@@ -140,6 +144,8 @@ public class RLSService {
                 processCollectionFileLine(deductionFile, collectionFileLine);
             }
             collectionFile.setJobEndedDate(DateTimeUtil.nowLocalDateTimeInThaiZoneId());
+//            deductionFile = deductionFileRepository.save(collectionFile.getDeductionFile());
+//            collectionFile.setDeductionFile(deductionFile);
             collectionFileRepository.save(collectionFile);
         } catch (Exception ex) {
             logger.error("Error while process collection file:" + ObjectMapperUtil.toStringMultiLine(collectionFile));
@@ -204,7 +210,9 @@ public class RLSService {
         CollectionFile collectionFile = new CollectionFile();
         collectionFile.setReceivedDate(LocalDateTime.now());
         StringBuilder stringBuilder = new StringBuilder();
+        int rowId = 0;
         while (rowIterator.hasNext()) {
+            rowId++;
             Row currentRow = rowIterator.next();
             String collectionDate = ExcelUtils.getCellValueAsString(currentRow.getCell(0));
             String collectionBank = ExcelUtils.getCellValueAsString(currentRow.getCell(1));
@@ -212,6 +220,11 @@ public class RLSService {
             String policyNumber = ExcelUtils.getCellValueAsString(currentRow.getCell(3));
             String paymentMode = ExcelUtils.getCellValueAsString(currentRow.getCell(4));
             Double premiumAmount = ExcelUtils.getCellValueAsDouble(currentRow.getCell(5));
+
+            if (StringUtils.isBlank(collectionDate) || StringUtils.isBlank(collectionBank) || StringUtils.isBlank(bankCode) || StringUtils.isBlank(policyNumber) || StringUtils.isBlank(paymentMode) || premiumAmount == null) {
+                logger.warn("Ignore the row[{}] because there's not enough information.", rowId);
+                continue;
+            }
 
             stringBuilder.append(collectionDate);
             stringBuilder.append(collectionBank);
@@ -309,15 +322,24 @@ public class RLSService {
         String resultCode = LINE_PAY_INTERNAL_ERROR;
         try {
             Policy policy = policyRepository.findByPolicyId(policyId);
+            if (policy == null) {
+                throw new UnexpectedException("Not found policy " + policyId);
+            }
             PeriodicityCode periodicityCode = policy.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode();
             paymentModeString = paymentMode.apply(periodicityCode);
             String productId = policy.getCommonData().getProductId();
 
             payment = paymentRepository.findOne(paymentId);
+            if (payment == null) {
+                throw new UnexpectedException("Not found payment " + paymentId);
+            }
             currencyCode = payment.getAmount().getCurrencyCode();
             String orderId = "R-" + payment.getPolicyId() + "-" + (new SimpleDateFormat("yyyyMMddhhmmssSSS").format(new Date()));
 
             String lastRegistrationKey = findLastRegistrationKey(payment.getPolicyId());
+            if (StringUtils.isBlank(lastRegistrationKey)) {
+                throw new UnexpectedException("Not found registrationKey for policy " + policyId + ", paymentId " + paymentId);
+            }
             LinePayRecurringResponse linePayResponse = lineService.preApproved(lastRegistrationKey, premiumAmount, currencyCode, productId, orderId);
             resultCode = linePayResponse.getReturnCode();
             resultMessage = linePayResponse.getReturnMessage();

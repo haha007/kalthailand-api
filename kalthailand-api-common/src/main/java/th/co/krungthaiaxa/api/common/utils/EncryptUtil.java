@@ -25,19 +25,22 @@ public class EncryptUtil {
 
     /**
      * This method will retry decrypted text 3 times.
+     * OK, normally we don't need to retry 3 times like this. But this data is very important, if we store the encoded text (in DB) which cannot decrypt again, we will lose that data.
+     * That's not good!
+     * You may ask why cannot decrypt the encoded text? Yes, it should be able to decrypt. But 99.99%, not sure 100%. So I just want to make sure it's always OK.
      *
      * @param plainText
      * @return
      */
     public static String encrypt(String plainText) {
-        String decryptedText = null;
-        String encryptedText = null;
+        String decodedText = null;
+        String encodedText = null;
         int count = 0;
-        while (!isEncryptedSuccess(plainText, decryptedText) && count < MAX_ENCRYPT_TRY) {
+        while (!isEncryptedSuccess(plainText, decodedText) && count < MAX_ENCRYPT_TRY) {
             count++;
-            encryptedText = encryptOne(plainText);
+            encodedText = encryptOne(plainText);
             try {
-                decryptedText = decrypt(encryptedText);
+                decodedText = decrypt(encodedText);
             } catch (EncryptException ex) {
                 LOGGER.error("Cannot decrypt[{}] the encrypted text '{}' ", count, plainText);
             }
@@ -45,11 +48,11 @@ public class EncryptUtil {
         if (count >= MAX_ENCRYPT_TRY) {
             throw new EncryptException("Cannot encrypt after retrying {} times.", MAX_ENCRYPT_TRY);
         }
-        return encryptedText    ;
+        return encodedText;
     }
 
-    private static boolean isEncryptedSuccess(String plainText, String decryptedText) {
-        return (decryptedText != null && decryptedText.equals(plainText));
+    private static boolean isEncryptedSuccess(String plainText, String decodedText) {
+        return (decodedText != null && decodedText.equals(plainText));
     }
 
     public static String encryptOne(String plainText) {

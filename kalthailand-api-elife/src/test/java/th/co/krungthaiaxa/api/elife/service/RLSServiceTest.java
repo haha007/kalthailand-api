@@ -2,6 +2,7 @@ package th.co.krungthaiaxa.api.elife.service;
 
 import org.assertj.core.api.Assertions;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,7 +45,6 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.EVERY_MONTH;
 import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.EVERY_YEAR;
-import static th.co.krungthaiaxa.api.elife.service.RLSService.ERROR_NO_REGISTRATION_KEY_FOUND;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiApplication.class)
@@ -265,7 +265,7 @@ public class RLSServiceTest extends ELifeTest {
         assertThat(payment.getPaymentInformations().get(0).getDate()).isEqualTo(LocalDate.now());
         assertThat(payment.getPaymentInformations().get(0).getMethod()).isNull();
         assertThat(payment.getPaymentInformations().get(0).getRejectionErrorCode()).isEqualTo(LineService.LINE_PAY_INTERNAL_ERROR);
-        assertThat(payment.getPaymentInformations().get(0).getRejectionErrorMessage()).isEqualTo(ERROR_NO_REGISTRATION_KEY_FOUND);
+        Assert.assertNotNull(payment.getPaymentInformations().get(0).getRejectionErrorMessage());
     }
 
     @Test

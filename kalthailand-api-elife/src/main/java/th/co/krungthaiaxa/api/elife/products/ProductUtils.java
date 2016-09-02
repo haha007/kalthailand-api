@@ -71,6 +71,13 @@ public class ProductUtils {
         return getPremiumFromSumInsured(sumInsured, rate, 0.0, 0.0, periodicityCode);
     }
 
+    /**
+     * This is not the total amount in a year.
+     *
+     * @param premium
+     * @param periodicityCode
+     * @return
+     */
     public static Amount getAnnualPremium(Amount premium, PeriodicityCode periodicityCode) {
         double value = convertPeriodicity(premium.getValue(), periodicityCode, PeriodicityCode.EVERY_YEAR);
         return new Amount(value, premium.getCurrencyCode());
