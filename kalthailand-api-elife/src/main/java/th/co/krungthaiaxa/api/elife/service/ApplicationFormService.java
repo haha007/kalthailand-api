@@ -12,8 +12,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
-import th.co.krungthaiaxa.api.elife.model.*;
-import th.co.krungthaiaxa.api.elife.model.enums.*;
+import th.co.krungthaiaxa.api.elife.model.CoverageBeneficiary;
+import th.co.krungthaiaxa.api.elife.model.GeographicalAddress;
+import th.co.krungthaiaxa.api.elife.model.Insured;
+import th.co.krungthaiaxa.api.elife.model.Person;
+import th.co.krungthaiaxa.api.elife.model.Policy;
+import th.co.krungthaiaxa.api.elife.model.enums.GenderCode;
+import th.co.krungthaiaxa.api.elife.model.enums.MaritalStatus;
+import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
+import th.co.krungthaiaxa.api.elife.model.enums.RegistrationTypeName;
 import th.co.krungthaiaxa.api.elife.products.ProductIFinePackage;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
 
@@ -23,22 +30,32 @@ import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.chrono.ThaiBuddhistDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static java.util.stream.Collectors.joining;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
-import static th.co.krungthaiaxa.api.elife.model.enums.DividendOption.*;
-import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.*;
+import static th.co.krungthaiaxa.api.elife.model.enums.DividendOption.IN_FINE;
+import static th.co.krungthaiaxa.api.elife.model.enums.DividendOption.YEARLY_CASH;
+import static th.co.krungthaiaxa.api.elife.model.enums.DividendOption.YEARLY_FOR_NEXT_PREMIUM;
+import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.EVERY_HALF_YEAR;
+import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.EVERY_MONTH;
+import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.EVERY_QUARTER;
+import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.EVERY_YEAR;
 
 @Service
 public class ApplicationFormService {
     private final static Logger logger = LoggerFactory.getLogger(ApplicationFormService.class);
     private static final float VERY_SMALL_SIZE = 7f;
     private static final float SMALL_SIZE = 10f;
-    private static final float MEDIUM_SIZE = 13f;    
+    private static final float MEDIUM_SIZE = 13f;
     private static final float BIG_SIZE = 25f;
-
+    public static final long LIMIT_SIZE = 2097152;//2MB
+    public static final String FILE_PATH = "application-form/empty-application-form.pdf";
     @Inject
     private MessageSource messageSource;
     private Locale thLocale = new Locale("th", "");
@@ -57,7 +74,7 @@ public class ApplicationFormService {
     private byte[] generateValidatedApplicationForm(Policy policy, boolean validatedPolicy) throws Exception {
         ByteArrayOutputStream content = new ByteArrayOutputStream();
 
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("application-form/empty-application-form.pdf");
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(FILE_PATH);
         PdfReader pdfReader = new PdfReader(inputStream);
         PdfStamper pdfStamper = new PdfStamper(pdfReader, content);
 
@@ -233,7 +250,7 @@ public class ApplicationFormService {
         writeText(pdfContentByte, font, person.getEmail(), 74, 204, MEDIUM_SIZE);
 
         if (pol.getCommonData().getProductId().equals(ProductType.PRODUCT_IFINE.getName()) ||
-        		pol.getCommonData().getProductId().equals(ProductType.PRODUCT_IPROTECT.getName())) {
+                pol.getCommonData().getProductId().equals(ProductType.PRODUCT_IPROTECT.getName())) {
             if (pol.getInsureds().get(0).getProfessionName().equals("คนงานก่อสร้าง")) {
                 writeText(pdfContentByte, font, MARK, 36, 134, MEDIUM_SIZE);
             } else if (pol.getInsureds().get(0).getProfessionName().equals("คนขับรถแท๊กซี่ / คนขับรถมอเตอร์ไซค์รับจ้าง")) {
@@ -291,11 +308,11 @@ public class ApplicationFormService {
                 writeText(pdfContentByte, font, MARK, 292, 766, MEDIUM_SIZE);
             }
         } else if (pol.getCommonData().getProductId().equals(ProductType.PRODUCT_IPROTECT.getName())) {
-        	writeText(pdfContentByte, font, MARK, 348, 814, MEDIUM_SIZE);        	
-        	writeText(pdfContentByte, font, MARK, 350, 780, MEDIUM_SIZE);
-        	//premium
-        	writeText(pdfContentByte, font, MONEY_FORMAT.format(pol.getPremiumsData().getProductIProtectPremium().getSumInsured().getValue()), 430, 780, MEDIUM_SIZE);
-        }        
+            writeText(pdfContentByte, font, MARK, 348, 814, MEDIUM_SIZE);
+            writeText(pdfContentByte, font, MARK, 350, 780, MEDIUM_SIZE);
+            //premium
+            writeText(pdfContentByte, font, MONEY_FORMAT.format(pol.getPremiumsData().getProductIProtectPremium().getSumInsured().getValue()), 430, 780, MEDIUM_SIZE);
+        }
 
         //coverage period
         writeText(pdfContentByte, font, String.valueOf(pol.getCommonData().getNbOfYearsOfCoverage()), 114, 604, MEDIUM_SIZE);
