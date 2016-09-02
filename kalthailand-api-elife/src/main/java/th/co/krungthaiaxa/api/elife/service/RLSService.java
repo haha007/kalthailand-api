@@ -14,6 +14,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.common.utils.LogUtil;
+import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
 import th.co.krungthaiaxa.api.elife.data.CollectionFile;
 import th.co.krungthaiaxa.api.elife.data.CollectionFileLine;
 import th.co.krungthaiaxa.api.elife.data.DeductionFile;
@@ -231,6 +232,10 @@ public class RLSService {
 
     void addPaymentId(CollectionFileLine collectionFileLine) {
         String policyId = collectionFileLine.getPolicyNumber();
+        if (StringUtils.isBlank(policyId)) {
+            logger.warn("Ignore the collectionFileLine because policyNumber is empty: " + ObjectMapperUtil.toStringMultiLine(collectionFileLine));
+            return;
+        }
         Optional<Policy> policy = policyService.findPolicy(policyId);
         isTrue(policy.isPresent(), "Unable to find a policy [" + collectionFileLine.getPolicyNumber() + "]");
         isTrue(policy.get().getStatus().equals(PolicyStatus.VALIDATED), "The policy [" +

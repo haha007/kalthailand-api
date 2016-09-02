@@ -3,6 +3,7 @@ package th.co.krungthaiaxa.api.common.utils;
 import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import th.co.krungthaiaxa.api.common.exeption.EncryptException;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -23,28 +24,24 @@ public class EncryptUtil {
     private static final PublicKey PUBLIC_KEY = EncryptKeyFileUtil.loadPublicKey(PUBLIC_KEY_FILE_PATH);
 
     public static String encrypt(String plainText) {
-        byte[] cipherText = null;
-        final Cipher cipher;
         try {
-            cipher = Cipher.getInstance(EncryptKeyFileUtil.ENCRYPTION_ALGORITHM);
+            Cipher cipher = Cipher.getInstance(EncryptKeyFileUtil.ENCRYPTION_ALGORITHM);
             cipher.init(Cipher.ENCRYPT_MODE, PUBLIC_KEY);
-            cipherText = cipher.doFinal(plainText.getBytes());
+            byte[] cipherText = cipher.doFinal(plainText.getBytes());
+            return new String(Base64.encodeBase64(cipherText));
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | BadPaddingException | IllegalBlockSizeException | InvalidKeyException ex) {
-            LOGGER.error("Error while encrypt", ex);
+            throw new EncryptException("Error while encrypt. " + ex.getMessage(), ex);
         }
-        return new String(Base64.encodeBase64(cipherText));
     }
 
     public static String decrypt(String encodedText) {
-        byte[] cipherText = null;
-        final Cipher cipher;
         try {
-            cipher = Cipher.getInstance(EncryptKeyFileUtil.ENCRYPTION_ALGORITHM);
+            Cipher cipher = Cipher.getInstance(EncryptKeyFileUtil.ENCRYPTION_ALGORITHM);
             cipher.init(Cipher.DECRYPT_MODE, PRIVATE_KEY);
-            cipherText = cipher.doFinal(Base64.decodeBase64(encodedText));
+            byte[] cipherText = cipher.doFinal(Base64.decodeBase64(encodedText));
+            return new String(cipherText);
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | BadPaddingException | IllegalBlockSizeException | InvalidKeyException ex) {
-            LOGGER.error("Error while decrypt", ex);
+            throw new EncryptException("Error while decrypt. " + ex.getMessage(), ex);
         }
-        return new String(cipherText);
     }
 }
