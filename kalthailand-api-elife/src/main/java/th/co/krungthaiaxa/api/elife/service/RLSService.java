@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
 import th.co.krungthaiaxa.api.common.utils.LogUtil;
 import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
 import th.co.krungthaiaxa.api.elife.data.CollectionFile;
@@ -121,20 +122,28 @@ public class RLSService {
         Instant startTime = Instant.now();
         List<CollectionFile> collectionFiles = collectionFileRepository.findByJobStartedDateNull();
         logger.info("<<<<<<<<<<<<<<<<<<<<<<<<<<<<< START PROCESS RECURRING PAYMENT WITH TIME (" + LocalDateTime.now(of(SHORT_IDS.get("VST"))) + ") >>>>>>>>>>>>>>>>>>>>>>>>>>>");
+        logger.info("Found [" + collectionFiles.size() + "] collection(s) file to process.");
         for (CollectionFile collectionFile : collectionFiles) {
-            logger.info("Found [" + collectionFiles.size() + "] collection(s) file to process.");
-            collectionFile.setJobStartedDate(LocalDateTime.now(of(SHORT_IDS.get("VST"))));
+            processCollectionFile(collectionFile);
+        }
+        LogUtil.logRuntime(startTime, "<<<<<<<<<<<<<<<<<<<<<<<<<<<<< STOP PROCESS RECURRING PAYMENT WITH TIME (" + LocalDateTime.now(of(SHORT_IDS.get("VST"))) + ") >>>>>>>>>>>>>>>>>>>>>>>>>>>");
+        return collectionFiles;
+    }
+
+    private void processCollectionFile(CollectionFile collectionFile) {
+        try {
+            collectionFile.setJobStartedDate(DateTimeUtil.nowLocalDateTimeInThaiZoneId());
             DeductionFile deductionFile = new DeductionFile();
             collectionFile.setDeductionFile(deductionFile);
             logger.info("Found [" + collectionFile.getLines().size() + "] collection(s) line(s) to process.");
             for (CollectionFileLine collectionFileLine : collectionFile.getLines()) {
                 processCollectionFileLine(deductionFile, collectionFileLine);
             }
-            collectionFile.setJobEndedDate(LocalDateTime.now(of(SHORT_IDS.get("VST"))));
+            collectionFile.setJobEndedDate(DateTimeUtil.nowLocalDateTimeInThaiZoneId());
             collectionFileRepository.save(collectionFile);
+        } catch (Exception ex) {
+            logger.error("Error while process collection file:" + ObjectMapperUtil.toStringMultiLine(collectionFile));
         }
-        LogUtil.logRuntime(startTime, "<<<<<<<<<<<<<<<<<<<<<<<<<<<<< STOP PROCESS RECURRING PAYMENT WITH TIME (" + LocalDateTime.now(of(SHORT_IDS.get("VST"))) + ") >>>>>>>>>>>>>>>>>>>>>>>>>>>");
-        return collectionFiles;
     }
 
     public byte[] createDeductionExcelFile(DeductionFile deductionFile) {
@@ -232,10 +241,7 @@ public class RLSService {
 
     void addPaymentId(CollectionFileLine collectionFileLine) {
         String policyId = collectionFileLine.getPolicyNumber();
-        if (StringUtils.isBlank(policyId)) {
-            logger.warn("Ignore the collectionFileLine because policyNumber is empty: " + ObjectMapperUtil.toStringMultiLine(collectionFileLine));
-            return;
-        }
+        isTrue(StringUtils.isNotBlank(policyId), "policyNumber must be notempty: " + ObjectMapperUtil.toStringMultiLine(collectionFileLine));
         Optional<Policy> policy = policyService.findPolicy(policyId);
         isTrue(policy.isPresent(), "Unable to find a policy [" + collectionFileLine.getPolicyNumber() + "]");
         isTrue(policy.get().getStatus().equals(PolicyStatus.VALIDATED), "The policy [" +
@@ -294,66 +300,48 @@ public class RLSService {
 
     void processCollectionFileLine(DeductionFile deductionFile, CollectionFileLine collectionFileLine) {
         String paymentId = collectionFileLine.getPaymentId();
-        Double amount = collectionFileLine.getPremiumAmount();
-        Payment payment = paymentRepository.findOne(paymentId);
-
-        Policy policy = policyRepository.findByPolicyId(payment.getPolicyId());
-        String lastRegistrationKey = findLastRegistrationKey(payment.getPolicyId());
-
-        if (lastRegistrationKey == null) {
-            // This should not happen since the registration key should always be found
-            String msg = String.format("No registration key was found in payment id [%s], policyId [%s]", paymentId, payment.getPolicyId());
-            logger.error(msg);
-            deductionFile.addLine(getDeductionFileLine(collectionFileLine, LINE_PAY_INTERNAL_ERROR, msg));
-            policyService.updatePaymentWithErrorStatus(payment, amount, payment.getAmount().getCurrencyCode(), LINE, LINE_PAY_INTERNAL_ERROR, ERROR_NO_REGISTRATION_KEY_FOUND);
-            return;
-        }
-
-        LinePayRecurringResponse linePayResponse;
-        Double amt = collectionFileLine.getPremiumAmount();
-        String currencyCode = payment.getAmount().getCurrencyCode();
-        String productId = policy.getCommonData().getProductId();
-        String orderId = "R-" + payment.getPolicyId() + "-" + (new SimpleDateFormat("yyyyMMddhhmmssSSS").format(new Date()));
-        /*System.out.println("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
-        System.out.println("paymentId : "+paymentId);
-    	System.out.println("regKey : " +regKey);
-    	System.out.println("amt : " +amt);
-    	System.out.println("currencyCode : " +currencyCode);
-    	System.out.println("productId : " +productId);
-    	System.out.println("orderId : " + orderId);
-    	System.out.println("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");*/
+        String policyId = collectionFileLine.getPolicyNumber();
+        Double premiumAmount = collectionFileLine.getPremiumAmount();
+        Payment payment = null;
+        String currencyCode = null;
+        String paymentModeString = null;
+        String resultMessage = "CollectionFileLine is not processed completely yet. " + ObjectMapperUtil.toStringMultiLine(collectionFileLine);
+        String resultCode = LINE_PAY_INTERNAL_ERROR;
         try {
-            linePayResponse = lineService.preApproved(lastRegistrationKey, amt, currencyCode, productId, orderId);
-            if (linePayResponse == null) {
-                String msg = String.format("Error while calling lineService.preApprove() on payment id [%s]: response is null.", paymentId);
-                deductionFile.addLine(getDeductionFileLine(collectionFileLine, LINE_PAY_INTERNAL_ERROR, msg));
-                return;
+            Policy policy = policyRepository.findByPolicyId(policyId);
+            PeriodicityCode periodicityCode = policy.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode();
+            paymentModeString = paymentMode.apply(periodicityCode);
+            String productId = policy.getCommonData().getProductId();
+
+            payment = paymentRepository.findOne(paymentId);
+            currencyCode = payment.getAmount().getCurrencyCode();
+            String orderId = "R-" + payment.getPolicyId() + "-" + (new SimpleDateFormat("yyyyMMddhhmmssSSS").format(new Date()));
+
+            String lastRegistrationKey = findLastRegistrationKey(payment.getPolicyId());
+            LinePayRecurringResponse linePayResponse = lineService.preApproved(lastRegistrationKey, premiumAmount, currencyCode, productId, orderId);
+            resultCode = linePayResponse.getReturnCode();
+            resultMessage = linePayResponse.getReturnMessage();
+            policyService.updateRecurringPayment(payment, premiumAmount, currencyCode, LINE, linePayResponse, paymentId, lastRegistrationKey, premiumAmount, productId, orderId);
+        } catch (Exception ex) {
+            logger.error("Error when process collection line: " + ex.getMessage() + ". Collection line:\n" + ObjectMapperUtil.toStringMultiLine(collectionFileLine), ex);
+            resultCode = LINE_PAY_INTERNAL_ERROR;
+            resultMessage = ex.getMessage();
+            if (payment != null) {
+                policyService.updatePaymentWithErrorStatus(payment, premiumAmount, currencyCode, LINE, resultCode, resultMessage);
             }
-        } catch (IOException | RuntimeException e) {
-            // An error occur while trying to contact LinePay
-            String msg = String.format("Error while calling lineService.preApprove() on payment id [%s]: %s", paymentId, e.getMessage());
-            logger.error(msg, e);
-            deductionFile.addLine(getDeductionFileLine(collectionFileLine, LINE_PAY_INTERNAL_ERROR, msg));
-            policyService.updatePaymentWithErrorStatus(payment, amount, payment.getAmount().getCurrencyCode(), LINE, LINE_PAY_INTERNAL_ERROR, msg);
-            return;
+        } finally {
+            DeductionFileLine deductionFileLine = initDeductionFileLine(collectionFileLine, paymentModeString, resultCode, resultMessage);
+            deductionFile.addLine(deductionFileLine);
+            logger.debug("Finished processing collection file line with payment id [" + paymentId + "]");
         }
-
-        DeductionFileLine deductionFileLine = getDeductionFileLine(collectionFileLine, linePayResponse.getReturnCode(), linePayResponse.getReturnMessage());
-        deductionFile.addLine(deductionFileLine);
-        policyService.updateRecurringPayment(payment, amount, payment.getAmount().getCurrencyCode(), LINE, linePayResponse, paymentId, lastRegistrationKey, amt, productId, orderId);
-
-        logger.debug("Finished processing collection file line with payment id [" + paymentId + "]");
     }
 
-    private DeductionFileLine getDeductionFileLine(CollectionFileLine collectionFileLine, String errorCode, String errorMessage) {
-        Optional<Policy> policy = policyService.findPolicy(collectionFileLine.getPolicyNumber());
-        isTrue(policy.isPresent(), "Unable to find a policy [" + collectionFileLine.getPolicyNumber() + "]");
+    private DeductionFileLine initDeductionFileLine(CollectionFileLine collectionFileLine, String paymentMode, String errorCode, String errorMessage) {
 
-        PeriodicityCode periodicityCode = policy.get().getPremiumsData().getFinancialScheduler().getPeriodicity().getCode();
         DeductionFileLine deductionFileLine = new DeductionFileLine();
         deductionFileLine.setAmount(collectionFileLine.getPremiumAmount());
         deductionFileLine.setBankCode(collectionFileLine.getBankCode());
-        deductionFileLine.setPaymentMode(paymentMode.apply(periodicityCode));
+        deductionFileLine.setPaymentMode(paymentMode);
         deductionFileLine.setPolicyNumber(collectionFileLine.getPolicyNumber());
         deductionFileLine.setProcessDate(LocalDateTime.now());
         deductionFileLine.setRejectionCode(errorCode);

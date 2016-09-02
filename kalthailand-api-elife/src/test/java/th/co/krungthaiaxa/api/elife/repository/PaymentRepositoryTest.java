@@ -8,6 +8,7 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -53,12 +54,13 @@ public class PaymentRepositoryTest {
         }
     }
 
-    @Test
-    public void testAllRegistrationKeys() throws NoSuchFieldException {
+    //    @Test
+    public void testDecryptAllRegistrationKeysInPayments() throws NoSuchFieldException {
         Field registrationKey = Payment.class.getDeclaredField("registrationKey");
         registrationKey.setAccessible(true);
         StringBuilder finalResult = new StringBuilder();
-        List<Payment> payments = paymentRepository.findByRegKeyNotNull();
+        Sort sort = new Sort(Sort.Direction.ASC, "policyId");
+        List<Payment> payments = paymentRepository.findByRegKeyNotEmpty(sort);
         for (Payment payment : payments) {
             String csvRow = reportCsvRow(registrationKey, payment);
             finalResult.append(csvRow);
@@ -92,8 +94,10 @@ public class PaymentRepositoryTest {
         }
 
         String rowOriginalData = String.format("%s,%s,%s,%s", result, payment.getPolicyId(), payment.getPaymentId(), regKeyNoBase64Length);
-        if (regKeyNoBase64Length.equals("0") || regKeyNoBase64Length.equals("")) {
+        if (regKeyEncryptedNoBase64Bytes.length == 0) {
             rowOriginalData += "," + escape(regKeyEncryptedNoBase64);
+        } else {
+            rowOriginalData += "," + escape(plainText);
         }
 //        String row = String.format(",%s,%s,%s,%s\n", escape(regKeyEncryptedWithBase64), "" + regKeyEncryptedNoBase64Bytes.length, escape(regKeyEncryptedNoBase64), escape(plainText));
 //        return rowOriginalData + row;
