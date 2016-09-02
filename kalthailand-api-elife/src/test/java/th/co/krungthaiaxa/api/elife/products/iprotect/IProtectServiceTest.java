@@ -63,11 +63,16 @@ public class IProtectServiceTest extends ELifeTest {
 
     @Test
     public void test_01_createQuote_with_default_value_01() {
-        //These testing numbers are calculated by Excel file from Business team. So the result from our program should match the number of business team.
-//        testCreateQuotePremiumToSumInsured(1000, 282798.0);
         testCreateQuotePremiumToSumInsured(1351.8, 382286.0);
-        Assert.assertEquals(5257.0, quote.getPremiumsData().getProductIProtectPremium().getYearlyTaxDeduction().getValue(), AMOUNT_DELTA);
+        Assert.assertEquals(5677.56, quote.getPremiumsData().getProductIProtectPremium().getYearlyTaxDeduction().getValue(), AMOUNT_DELTA);
 
+    }
+
+    @Test
+    public void test_tax_value() {
+        testCreateQuotePremiumToSumInsured(1000.0, null);
+        LOGGER.debug("yearly tax: " + quote.getPremiumsData().getProductIProtectPremium().getYearlyTaxDeduction().getValue());
+        Assert.assertEquals(4200.0, quote.getPremiumsData().getProductIProtectPremium().getYearlyTaxDeduction().getValue(), AMOUNT_DELTA);
     }
 
     @Test

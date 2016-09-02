@@ -71,6 +71,16 @@ public class ProductUtils {
         return getPremiumFromSumInsured(sumInsured, rate, 0.0, 0.0, periodicityCode);
     }
 
+    /**
+     * This is not always the total money the customer must pay in a year.
+     * 1) If the customer pay by year, then this is the total money must be paid in a year.
+     * 2) If the customer pay by month, then the total money must be paid is premium(monthly) * 12 (different from annualPremium).
+     * The annualPremium in this case will be premium(monthly) / modalFactor (0.09)
+     *
+     * @param premium
+     * @param periodicityCode
+     * @return
+     */
     public static Amount getAnnualPremium(Amount premium, PeriodicityCode periodicityCode) {
         double value = convertPeriodicity(premium.getValue(), periodicityCode, PeriodicityCode.EVERY_YEAR);
         return new Amount(value, premium.getCurrencyCode());
