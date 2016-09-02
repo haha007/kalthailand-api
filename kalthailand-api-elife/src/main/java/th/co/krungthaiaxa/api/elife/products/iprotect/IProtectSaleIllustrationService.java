@@ -110,7 +110,6 @@ public class IProtectSaleIllustrationService {
         table1.addCell(addData("* หมายเหตุ", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
         table1.addCell(addData("- โปรดศึกษา อ่าน และทำความเข้าใจรายละเอียดเพิ่มเติมในเอกสารประกอบการขายของบริษัทฯ", getFontExtraSmallStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
         table1.addCell(addData("- อายุขณะเอาประกันภัย 20-55 ปี", getFontExtraSmallStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table1.addCell(addData("- จำนวนเงินเอาประกันภัยขั้นต่ำ 282,798 บาท", getFontExtraSmallStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
         table1.addCell(addData("- เบี้ยประกันต่อเดือนต้องไม่ต่ำกว่า 1,000 บาท", getFontExtraSmallStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
 
 
