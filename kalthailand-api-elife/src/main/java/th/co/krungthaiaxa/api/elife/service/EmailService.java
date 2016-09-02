@@ -189,6 +189,8 @@ public class EmailService {
             sumInsure = money.format(pol.getPremiumsData().getProductIFinePremium().getSumInsured().getValue());
         } else if (pol.getCommonData().getProductId().equals(ProductType.PRODUCT_IGEN.getName())) {
             sumInsure = money.format(pol.getPremiumsData().getProductIGenPremium().getSumInsured().getValue());
+        } else if (pol.getCommonData().getProductId().equals(ProductType.PRODUCT_IPROTECT.getName())) {
+        	sumInsure = money.format(pol.getPremiumsData().getProductIProtectPremium().getSumInsured().getValue());
         }
         return emailContent.replace("%FULL_NAME%", person.getGivenName() + " " + person.getSurName())
                 .replace("%POLICY_ID%", pol.getPolicyId())
