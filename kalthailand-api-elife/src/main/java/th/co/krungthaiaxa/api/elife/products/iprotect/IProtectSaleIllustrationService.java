@@ -97,7 +97,7 @@ public class IProtectSaleIllustrationService {
         table1.addCell(addData("กรณีครบสัญญาเมื่ออายุ 85 ปี", getFontNormalStyle(), null, TB_HORIZONTAL_ALIGN_LEFT, null));
         table1.addCell(addData(toCurrency(p.getSumInsured().getValue()) + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT, null));
         table1.addCell(addLine(false, tbCols));
-        table1.addCell(addData("กรณีรับครั้งเดียว ณ ครบกำหนดสัญญา", getFontHeaderStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
+        table1.addCell(addData("ผลประโยชน์ทางภาษี", getFontHeaderStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
         table1.addCell(addData("ลดหย่อนภาษีที่อัตราสูงสุด", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
         table1.addCell(addData("ที่ชำระ "+String.valueOf(taxDeclared)+"% ต่อเดือน", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
         table1.addCell(addLine(false, tbCols));
