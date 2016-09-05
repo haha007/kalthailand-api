@@ -21,8 +21,6 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
-import th.co.krungthaiaxa.api.common.service.JasperService;
-import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
 import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.model.ProductIProtectPremium;
 import th.co.krungthaiaxa.api.elife.model.Quote;
