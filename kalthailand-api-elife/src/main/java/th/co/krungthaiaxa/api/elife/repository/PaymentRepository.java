@@ -31,4 +31,7 @@ public interface PaymentRepository extends MongoRepository<Payment, String> {
             + " ]"
             + "}")
     Optional<Payment> findOneByRegKeyNotNullAndPolicyId(String policyNumber, Sort sort);
+
+    @Query(value = "{'$and': [{'registrationKey':{'$ne': null}}, {'registrationKey':{'$ne': ''}}]}")
+    List<Payment> findByRegKeyNotEmpty(Sort sort);
 }

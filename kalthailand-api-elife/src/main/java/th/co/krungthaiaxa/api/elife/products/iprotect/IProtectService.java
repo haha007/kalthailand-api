@@ -135,8 +135,9 @@ public class IProtectService implements ProductService {
         calculateSumInsuredAndPremiumAmounts(premiumsData, productQuotation, iProtectPackage, premiumRate, occupationRate, periodicityCode);
 
         Amount premium = getPremium(quote);
-        Amount annualPremiumAmount = ProductUtils.getAnnualPremium(premium, periodicityCode);
-        double taxDeductionPerYear = Math.min(((double) mainInsured.getDeclaredTaxPercentAtSubscription() / 100) * annualPremiumAmount.getValue(), TAX_DEDUCTION_PER_YEAR_MAX);//Calculate Sheet (SA) * taxPercent
+        Amount totalPremiumInAYear = premium.multiply(PeriodicityCode.EVERY_YEAR.getNbOfMonths() / periodicityCode.getNbOfMonths());
+//        Amount annualPremiumAmount = ProductUtils.getAnnualPremium(premium, periodicityCode);
+        double taxDeductionPerYear = Math.min(((double) mainInsured.getDeclaredTaxPercentAtSubscription() / 100) * totalPremiumInAYear.getValue(), TAX_DEDUCTION_PER_YEAR_MAX);//Calculate Sheet (SA) * taxPercent
         productIProtectPremium.setYearlyTaxDeduction(amount(taxDeductionPerYear));
         double totalTaxDeduction = taxDeductionPerYear * quote.getCommonData().getNbOfYearsOfPremium();
         productIProtectPremium.setTotalTaxDeduction(amount(totalTaxDeduction));

@@ -63,7 +63,7 @@
                 </div>
                 <div>&nbsp;</div>
                 <div ng-repeat="collectionFile in collectionFiles">
-                    <div>Collection file Id: {{collectionFile.id}}</div>
+                    <div>Collection file: {{collectionFile.receivedDate | date:'yyyy-MM-dd HH:MM:ss Z'}}</div>
                     <table ng-show="collectionFile.deductionFile.lines.length > 0" class="table table-bordered table-striped table-hover table-condensed">
                         <tr>
                             <td>Policy Number</td>

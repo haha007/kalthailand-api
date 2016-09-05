@@ -108,8 +108,8 @@
                      <tr><td colspan="3" class="white-bold" align="center" style="font-size:4pt;" ><a style="color:white;text-decoration:underline;" href="https://www.krungthai-axa.co.th/th/disclaimer">Privacy Policy</a></td></tr>
                      <tr><td colspan="3" class="white-bold" align="center" style="font-size:4pt;" >Copyright &copy; 2015 Krungthai-AXA Insurance PCL</td></tr>
                      <tr><td colspan="3"><div style="height:10px;"></div></td></tr>
-                     <tr><td colspan="3" class="white-normal" align="center" style="font-size:4pt;" >บมจ.กรุงไทย-แอกซ่า สำนักงานใหญ่ 2034/116-123, 136-143 อิตัลไทย ทาวเวอร์</td></tr>
-                     <tr><td colspan="3" class="white-normal" align="center" style="font-size:4pt;" ><span>ชั้น 27-28, 32-33 ถ.เพชรบุรีตัดใหม่ แขวงบางกะปิ เขตห้วยขวาง กรุงเทพมหานคร 10310</span></td></tr>
+                     <tr><td colspan="3" class="white-normal" align="center" style="font-size:4pt;" >บมจ.กรุงไทย-แอกซ่า สำนักงานใหญ่ เลขที่ 9 อาคาร จี ทาวเวอร์ แกรนด์ รามา 9</td></tr>
+                     <tr><td colspan="3" class="white-normal" align="center" style="font-size:4pt;" ><span>ชั้นที่ 1, 20-27 ถนนพระราม 9 แขวงห้วยขวาง เขตห้วยขวาง กรุงเทพมหานคร 10310</span></td></tr>
                   </table>
                </div>
             </td>
