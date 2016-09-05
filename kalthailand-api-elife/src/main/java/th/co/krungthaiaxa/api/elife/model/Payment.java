@@ -21,7 +21,7 @@ import java.util.Objects;
 @Document(collection = "payment")
 public class Payment {
 
-    public static int REGISTRATION_KEY_PLAIN_TEXT_MAX_LENGTH = 30;
+    public static int REGISTRATION_KEY_PLAIN_TEXT_MAX_LENGTH = 100;
     @Id
     private String paymentId;
     private String policyId;
