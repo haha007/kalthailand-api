@@ -1,19 +1,21 @@
 package th.co.krungthaiaxa.api.elife.commission.data;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
 
+import java.time.Instant;
 import java.util.List;
 
 /**
  * @author khoi.tran on 8/30/16.
  */
-@Document(collection = "commissionRate")
-public class CommissionRate {
+@Document(collection = "commission")
+public class CommissionPlan {
     @Id
-    private String id;
+    private ObjectId id;
     @Indexed
     private String unitCode;
     /**
@@ -26,11 +28,14 @@ public class CommissionRate {
     private CustomerCategory customerCategory;
     private List<CommissionTargetGroup> targetGroups;
 
-    public String getId() {
+    private Instant createdDateTime;
+    private Instant updatedDateTime;
+
+    public ObjectId getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(ObjectId id) {
         this.id = id;
     }
 
@@ -64,5 +69,21 @@ public class CommissionRate {
 
     public void setTargetGroups(List<CommissionTargetGroup> targetGroups) {
         this.targetGroups = targetGroups;
+    }
+
+    public Instant getCreatedDateTime() {
+        return createdDateTime;
+    }
+
+    public void setCreatedDateTime(Instant createdDateTime) {
+        this.createdDateTime = createdDateTime;
+    }
+
+    public Instant getUpdatedDateTime() {
+        return updatedDateTime;
+    }
+
+    public void setUpdatedDateTime(Instant updatedDateTime) {
+        this.updatedDateTime = updatedDateTime;
     }
 }
