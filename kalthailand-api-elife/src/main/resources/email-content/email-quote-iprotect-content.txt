@@ -112,7 +112,7 @@
 				<td class="tb-value" valign="top">%5$s บาท</td>
 			</tr>
 			<tr>
-				<td colspan="2" class="bd-header">ผลประโยชน์เพิ่มเติม</td>
+				<td colspan="2" class="bd-header">ผลประโยชน์ทางภาษี</td>
 			</tr>
 			<tr>
 				<td colspan="2" class="gray-text" >ลดหย่อนภาษีที่อัตราสูงสุด</td>

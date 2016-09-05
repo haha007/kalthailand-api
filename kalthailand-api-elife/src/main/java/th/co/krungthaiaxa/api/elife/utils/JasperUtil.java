@@ -1,4 +1,4 @@
-package th.co.krungthaiaxa.api.common.utils;
+package th.co.krungthaiaxa.api.elife.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.sf.jasperreports.engine.JRDataSource;
@@ -15,6 +15,7 @@ import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import th.co.krungthaiaxa.api.common.exeption.JasperException;
+import th.co.krungthaiaxa.api.common.utils.IOUtil;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -194,7 +194,7 @@ public class EmailService {
         }
         return emailContent.replace("%FULL_NAME%", person.getGivenName() + " " + person.getSurName())
                 .replace("%POLICY_ID%", pol.getPolicyId())
-                .replace("%PLAN%", messageSource.getMessage("product.id." + pol.getCommonData().getProductId(), null, thLocale) + " (" + pol.getCommonData().getProductId() + ")")
+                .replace("%PLAN%", messageSource.getMessage("product.id." + pol.getCommonData().getProductId(), null, thLocale) + " (" + messageSource.getMessage("product.id." + pol.getCommonData().getProductId(), null, null) + ")")
                 .replace("%PAYMENT_YEAR%", String.valueOf(pol.getCommonData().getNbOfYearsOfPremium()))
                 .replace("%PAYMENT_MODE%", messageSource.getMessage("payment.mode." + pol.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().toString(), null, thLocale))
                 .replace("%SUM_INSURE%", sumInsure)

@@ -1,10 +1,10 @@
-package th.co.krungthaiaxa.api.common.service;
+package th.co.krungthaiaxa.api.elife.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.common.utils.IOUtil;
-import th.co.krungthaiaxa.api.common.utils.JasperUtil;
 import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
+import th.co.krungthaiaxa.api.elife.utils.JasperUtil;
 
 import javax.inject.Inject;
 import java.io.File;

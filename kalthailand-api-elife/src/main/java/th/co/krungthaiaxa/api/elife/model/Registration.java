@@ -12,7 +12,7 @@ import java.util.Objects;
 @ApiModel(description = "Data concerning nationality-dependent registrations for the party. e.g. Social Security, " +
         "passport, taxes identification number, insurance company registration, driver license")
 public class Registration implements Serializable {
-    public static final int REGISTRATION_ID_PLAIN_TEXT_MAX_LENGTH = 30;
+    public static final int REGISTRATION_ID_PLAIN_TEXT_MAX_LENGTH = 100;
 
     private String id;
 
