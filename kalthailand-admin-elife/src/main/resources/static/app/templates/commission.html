@@ -1,0 +1,36 @@
+<div ng-include="'app/templates/partials/header.html'"></div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div ng-include="'app/templates/partials/sidebar.html'"></div>
+
+        <!-- BEGIN Page specific stuff -->
+        <style>
+            .form-upload {
+                border: 1px solid #eee;
+                margin-bottom: 20px;
+                padding: 5px;
+            }
+        </style>
+
+        <div ng-cloak class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main ng-cloak" id="collectionFileListContainer">
+            <div class="page-header">
+                <h1>Commission Plans</h1>
+            </div>
+            <div ng-include="'app/templates/partials/message.html'"></div>
+
+            <table class="table table-bordered table-striped table-hover table-condensed">
+                <tr>
+                    <td>Created At</td>
+                    <td>Updated At</td>
+                </tr>
+                <tr ng-repeat="commissionPlan in service.commissionPlans">
+                    <td>{{ commissionPlan.updatedDateTime | date:'yyyy-MM-dd HH:mm:ss Z'}}</td>
+                    <td>{{ commissionPlan.updatedDateTime | date:'yyyy-MM-dd HH:mm:ss Z'}}</td>
+                </tr>
+            </table>
+        </div>
+        <!-- END Page specific stuff -->
+
+    </div>
+</div>

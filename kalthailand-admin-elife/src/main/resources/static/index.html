@@ -12,8 +12,8 @@
     <title>Login</title>
 
     <!-- Bootstrap core CSS -->
-    <link rel="stylesheet" href="bower_components/bootstrap-css-only/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="bower_components/angular-bootstrap/ui-bootstrap-csp.css" />
+    <link rel="stylesheet" href="bower_components/bootstrap-css-only/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="bower_components/angular-bootstrap/ui-bootstrap-csp.css"/>
 
     <!-- Custom styles for this template -->
     <link href="app/css/login.css" rel="stylesheet">
@@ -30,17 +30,19 @@
     <script src="bower_components/sockjs/sockjs.min.js"></script>
     <script src="bower_components/stomp-websocket/lib/stomp.min.js"></script>
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="app/scripts/service-commission.js"></script>
     <script src="app/scripts/app.js"></script>
     <script src="app/scripts/controllers.js"></script>
     <script src="app/scripts/services.js"></script>
+
 </head>
 
 <body ng-app="myApp">
-	<div class="alert alert-warning" ng-show="errorMsg">
-	  <p align="center">{{errorMsg}}</p>
-	</div>
-    <div class="container" ng-view>
-    </div>
+<div class="alert alert-warning" ng-show="errorMsg">
+    <p align="center">{{errorMsg}}</p>
+</div>
+<div class="container" ng-view>
+</div>
 </body>
 
 </html>

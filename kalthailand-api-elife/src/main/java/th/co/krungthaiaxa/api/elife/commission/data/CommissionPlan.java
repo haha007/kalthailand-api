@@ -12,11 +12,14 @@ import java.util.List;
 /**
  * @author khoi.tran on 8/30/16.
  */
-@Document(collection = "commission")
+@Document(collection = "commissionPlan")
 public class CommissionPlan {
     @Id
     private ObjectId id;
     @Indexed
+    /**
+     * This can be any string. For example 40002, 20001...
+     */
     private String unitCode;
     /**
      * PlanCode is the combination productType and packageName (e.g. {@link ProductType#PRODUCT_IFINE}_{@link th.co.krungthaiaxa.api.elife.products.ProductIFinePackage#IFINE1}.

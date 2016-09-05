@@ -24,12 +24,17 @@ public class CommissionPlanService {
 
     public List<CommissionPlan> saveCommissions(List<CommissionPlan> commissionPlans) {
         for (CommissionPlan commissionPlan : commissionPlans) {
-            Instant processingDateTime = Instant.now();
-            if (commissionPlan.getCreatedDateTime() != null) {
-                commissionPlan.setCreatedDateTime(processingDateTime);
-            }
-            commissionPlan.setUpdatedDateTime(processingDateTime);
+            preSaveCommissionPlan(commissionPlan);
         }
         return commissionPlanRepository.save(commissionPlans);
+    }
+
+    private void preSaveCommissionPlan(CommissionPlan commissionPlan) {
+        //TODO validate percentage, unitcode, product name...
+        Instant processingDateTime = Instant.now();
+        if (commissionPlan.getCreatedDateTime() == null) {
+            commissionPlan.setCreatedDateTime(processingDateTime);
+        }
+        commissionPlan.setUpdatedDateTime(processingDateTime);
     }
 }

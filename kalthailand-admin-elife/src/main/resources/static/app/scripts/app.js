@@ -50,6 +50,11 @@
             	controller: 'TotalQuoteCountController',
             	activeTab: 'total-quote-count'
             })
+            .when('/commission', {
+                templateUrl: 'app/templates/commission.html',
+                controller: 'CommissionController',
+                activeTab: 'commission'
+            })
             .otherwise({
                 redirectTo: '/home'
             });

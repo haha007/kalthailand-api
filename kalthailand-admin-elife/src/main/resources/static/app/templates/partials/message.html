@@ -1,0 +1,7 @@
+<div class="alert alert-danger" role="alert" ng-show="errorMessage">
+    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+    {{ service.errorMessage }}
+</div>
+<div class="alert alert-info" role="alert" ng-hide="collectionFiles && collectionFiles.length > 0">
+    {{ service.successMessage }}
+</div>

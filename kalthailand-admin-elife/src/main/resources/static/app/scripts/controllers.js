@@ -694,5 +694,11 @@
                     $scope.sumInsured = null;
                 });
         }
+
+
+    });
+
+    app.controller('CommissionController', function (CommissionService, $scope, $route, $http, $localStorage) {
+        $scope.service = CommissionService;
     });
 })();
