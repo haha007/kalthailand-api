@@ -5,11 +5,17 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.TestRestTemplate;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -28,18 +34,24 @@ import java.util.Base64;
 
 import static java.nio.charset.Charset.forName;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpMethod.POST;
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.NOT_ACCEPTABLE;
+import static org.springframework.http.HttpStatus.OK;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KALApiSigning.class)
 @WebAppConfiguration
 @ActiveProfiles("test")
-@IntegrationTest({"server.port=0"})
+@IntegrationTest({ "server.port=0" })
 public class DocumentResourceTest {
+    private static final Logger LOGGER = LoggerFactory.getLogger(DocumentResourceTest.class);
+
     @Value("${kal.api.auth.header}")
     private String tokenHeader;
     @Value("${local.server.port}")
@@ -99,7 +111,7 @@ public class DocumentResourceTest {
         HttpEntity entity = new HttpEntity<>(getBase64("/application-form.pdf"), getHeadersWithFakeToken("123"));
         URI base = new URI("http://localhost:" + port + "/documents/signpdf");
         ResponseEntity<String> response = restTemplate.exchange(base, POST, entity, String.class);
-
+        LOGGER.debug("Response: " + response.getBody());
         assertThat(response.getStatusCode().value()).isEqualTo(OK.value());
         assertThat(Base64.getDecoder().decode(response.getBody())).isNotNull();
     }
