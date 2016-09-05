@@ -65,6 +65,9 @@ public final class ObjectMapperUtil {
     }
 
     public static String toString(Object object) {
+        if (object == null) {
+            return null;
+        }
         return ReflectionToStringBuilder.toString(object, ToStringStyle.DEFAULT_STYLE);
     }
 
@@ -75,6 +78,9 @@ public final class ObjectMapperUtil {
      * @return
      */
     public static String toStringMultiLine(Object object) {
+        if (object == null) {
+            return null;
+        }
         return ReflectionToStringBuilder.toString(object, ToStringStyle.MULTI_LINE_STYLE);
     }
 
@@ -85,6 +91,9 @@ public final class ObjectMapperUtil {
      * @return
      */
     public static String toStringMultiLineForEachElement(List<?> list) {
+        if (list == null) {
+            return null;
+        }
         StringBuilder result = new StringBuilder("[\n");
         for (Object element : list) {
             result.append(toStringMultiLine(element));

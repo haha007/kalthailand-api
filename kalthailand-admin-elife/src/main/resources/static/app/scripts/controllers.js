@@ -271,7 +271,8 @@
         $scope.processLastCollectionFiles = function (event) {
             $http.get(window.location.origin + '/api-elife/RLS/collectionFile/process', {}).then(
                 function (successResponse) {
-                    $scope.collectionFiles = successResponse.data;
+                    //$scope.collectionFiles = successResponse.data;
+                    fetchCollectionFileDetails();
                 },
                 function (errorResponse) {
                     console.log(errorResponse);
