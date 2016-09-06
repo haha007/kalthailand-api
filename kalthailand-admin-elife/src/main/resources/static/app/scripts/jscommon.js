@@ -127,7 +127,7 @@ function isArray(obj) {
 function hasValue(variable) {
     return (typeof variable !== 'undefined') && (variable !== null);
 }
-function hasValueNotEmpty(variable) {
+function isNotBlank(variable) {
     return (typeof variable !== 'undefined') && (variable !== null) && (variable.length !== 0);
 }
 function isUndefined(value) {
@@ -155,8 +155,4 @@ function numericOnly(field) {
 
     if (isNaN(num))
         field.value = num.replace(string, "");
-}
-
-function hasValue(value) {
-    return (value !== undefined && value != null);
 }

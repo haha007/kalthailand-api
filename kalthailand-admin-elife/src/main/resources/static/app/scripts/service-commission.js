@@ -19,17 +19,30 @@ CommissionService.prototype.findAllCommissionPlans = function () {
     self.$http.get(window.location.origin + '/api-elife/commissions/plans', {}).then(
         function (successResponse) {
             self.commissionPlans = successResponse.data;
-            self.successMessage = "Loaded commission plans";
+            self.showSuccessMessage("Loaded commission plans");
+            self.validateCommissionPlans();
         },
         function (errorResponse) {
-            self.errorMessage = errorResponse.data;
-            console.log(errorResponse);
+            self.showErrorMessage(errorResponse.data);
         }
     );
 };
-
+CommissionService.prototype.showSuccessMessage = function (msg) {
+    var self = this;
+    self.successMessage = msg;
+    self.errorMessage = null;
+};
+CommissionService.prototype.showErrorMessage = function (msg) {
+    var self = this;
+    self.successMessage = null;
+    self.errorMessage = msg;
+    console.log(msg);
+};
 CommissionService.prototype.saveAllCommissionPlans = function () {
     var self = this;
+    if (!self.validateCommissionPlans()) {
+        return;
+    }
     self.$http.post(window.location.origin + '/api-elife/commissions/plans', self.commissionPlans).then(
         function (successResponse) {
             self.commissionPlans = successResponse.data;
@@ -50,6 +63,67 @@ CommissionService.prototype.removeCommissionPlan = function (commissionPlan) {
     var self = this;
     self.commissionPlans.remove(commissionPlan);
 };
+CommissionService.prototype.validateCommissionPlans = function () {
+    var self = this;
+    var isSuccess = true;
+    for (var i = 0; i < self.commissionPlans.length; i++) {
+        var commissionPlan = self.commissionPlans[i];
+        isSuccess = self.validateCommissionPlan(commissionPlan);
+        if (!isSuccess) {
+            break;
+        }
+    }
+    if (isSuccess) {
+        self.showSuccessMessage("Input numbers are OK!")
+    }
+    return isSuccess;
+};
+CommissionService.prototype.validateCommissionPlan = function (commissionPlan) {
+    var self = this;
+    var isSuccess = true;
+    isSuccess = self.checkHasRequiredInputsInCommissionPlan(commissionPlan);
+    if (!isSuccess) {
+        self.showErrorMessage("Some commission plans are missing some inputs.");
+        self.statusStyleCommissionPlan(commissionPlan, isSuccess);
+        return isSuccess;
+    }
+
+    var commissionTargetGroups = commissionPlan.targetGroups;
+    for (var i = 0; i < commissionTargetGroups.length; i++) {
+        var commissionTargetGroup = commissionTargetGroups[i];
+        var sumPercentage = self.sumPercentageInCommissionGroup(commissionTargetGroup);
+        if (sumPercentage != 100) {
+            var msg = "Invalid commission: " + commissionPlan.unitCode + "-" + commissionPlan.planCode + "-" + commissionPlan.customerCategory + ": Group '" + commissionTargetGroup.targetGroupType + "'. Sum percentage: " + sumPercentage;
+            self.showErrorMessage(msg);
+            isSuccess = false;
+            break;
+        }
+    }
+    self.statusStyleCommissionPlan(commissionPlan, isSuccess);
+    return isSuccess;
+};
+CommissionService.prototype.checkHasRequiredInputsInCommissionPlan = function (commissionPlan) {
+    return (isNotBlank(commissionPlan.unitCode) && isNotBlank(commissionPlan.planCode) && isNotBlank(commissionPlan.customerCategory));
+};
+
+CommissionService.prototype.statusStyleCommissionPlan = function (commissionPlan, validateResult) {
+    var self = this;
+    if (validateResult) {
+        commissionPlan.styleClass = "";
+    } else {
+        commissionPlan.styleClass = "has-error";
+    }
+};
+CommissionService.prototype.sumPercentageInCommissionGroup = function (commissionTargetGroup) {
+    var commissionTargetEntities = commissionTargetGroup.targetEntities;
+    var sumPercentage = 0;
+    for (var i = 0; i < commissionTargetEntities.length; i++) {
+        var commissionTargetEntity = commissionTargetEntities[i];
+        sumPercentage += +commissionTargetEntity.percentage;
+    }
+    return (sumPercentage);
+}
+//CONSTRUCT COMMISSION PLANS ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 CommissionService.prototype.constructCommissionPlan = function () {
     var self = this;
 
@@ -88,7 +162,7 @@ CommissionService.prototype.constructCommissionTargetEntities = function () {
     }
     return targetEntities;
 };
-//HELPER METHODS TO SHOW COMMISSION TARGET ENTITIES ####################################################
+//HELPER METHODS TO SHOW COMMISSION TARGET ENTITIES /////////////////////////////////////////////////////////////////////////
 CommissionService.prototype.findCommissionGroupInPlan = function (commissionPlan, groupType) {
     var self = this;
     var targetGroups = commissionPlan.targetGroups;

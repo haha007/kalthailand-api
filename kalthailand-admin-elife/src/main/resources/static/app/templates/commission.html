@@ -5,14 +5,6 @@
         <div ng-include="'app/templates/partials/sidebar.html'"></div>
 
         <!-- BEGIN Page specific stuff -->
-        <style>
-            .form-upload {
-                border: 1px solid #eee;
-                margin-bottom: 20px;
-                padding: 5px;
-            }
-        </style>
-
         <div ng-cloak class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-1 main ng-cloak" id="collectionFileListContainer">
             <div class="page-header">
                 <h1>Commission Plans</h1>
@@ -29,12 +21,11 @@
                         <span>{{commissionGroupType}}</span>
                     </th>
                     <th>
-                        <button ng-click="service.addCommissionPlan()">+</button>
+                        <button class="btn btn-sm btn-primary" ng-click="service.addCommissionPlan()">+</button>
                     </th>
                 </tr>
                 <tr>
                     <th ng-repeat-start="commissionGroupType in service.commissionGroupTypes" ng-if='false'>
-                        <!--Never show this column {{$index}}{{commissionGroupType}}-->
                     </th>
                     <th ng-repeat-end ng-repeat-start="targetEntityType in service.commissionTargetEntityTypes" style="text-transform: capitalize;"><!--{{$index}}-->{{targetEntityType | lowercase}}</th>
                     <th ng-repeat-end ng-if='false'><!--{{$index}} Never show this column--></th>
@@ -42,50 +33,35 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="commissionPlan in service.commissionPlans">
+                <tr ng-repeat="commissionPlan in service.commissionPlans" class="form-group" ng-class="commissionPlan.styleClass">
                     <td>
-                        <input type="text" ng-model="commissionPlan.unitCode" style="width: 75px;" ng-disabled="service.isCommissionPlanReadonly(commissionPlan)"/>
+                        <input type="text" ng-model="commissionPlan.unitCode" class="form-control" style="width: 75px;" ng-disabled="service.isCommissionPlanReadonly(commissionPlan)"/>
                     </td>
                     <td>
                         <select class="form-control" style="min-width: 100px;" ng-disabled="service.isCommissionPlanReadonly(commissionPlan)"
                                 ng-model="commissionPlan.planCode"
                                 ng-options="product.name as product.name for product in service.products">
                         </select>
-                        <!--<input type="text" ng-model="commissionPlan.planCode" style="width: 75px;"/>-->
                     </td>
                     <td>
                         <select class="form-control" ng-disabled="service.isCommissionPlanReadonly(commissionPlan)"
                                 ng-model="commissionPlan.customerCategory"
                                 ng-options="customerCategory.value as customerCategory.label for customerCategory in service.customerCategories" style="width: 75px;">
                         </select>
-                        <!--<input type="text" ng-model="commissionPlan.customerCategory" style="width: 75px;"/>-->
                     </td>
                     <td ng-repeat-start="commissionGroupType in service.commissionGroupTypes" ng-if="false"><!--Never show this column--></td>
                     <td ng-repeat-end ng-repeat-start="commissionEntityType in service.commissionTargetEntityTypes">
-                        <input type="text" style="width: 50px" ng-model="service.findCommissionTargetEntityInPlan(commissionPlan, commissionGroupType, commissionEntityType).percentage"/>
+                        <input type="text" class="form-control" style="width: 60px" ng-model="service.findCommissionTargetEntityInPlan(commissionPlan, commissionGroupType, commissionEntityType).percentage" ng-change="service.validateCommissionPlans()"/>
                     </td>
                     <td ng-repeat-end ng-if="false"><!--Never show this column--></td>
                     <td>
-                        <button ng-click="service.removeCommissionPlan(commissionPlan)">-</button>
+                        <button class="btn btn-sm btn-danger" ng-click="service.removeCommissionPlan(commissionPlan)">-</button>
                         <!--ng-disabled="service.isCommissionPlanReadonly(commissionPlan)"-->
                     </td>
-                    <!--<td>{{ commissionPlan.createdDateTime | date:'yyyy-MM-dd HH:mm'}}</td>-->
                 </tr>
-
-                <!--<tr ng-repeat="commissionPlan in service.commissionPlans">
-                    <td>{{$index}}</td>
-                    <td ng-repeat-start="targetGroup in commissionPlan.targetGroups" ng-if="false">&lt;!&ndash;Never show this column&ndash;&gt;</td>
-                    <td ng-repeat-end ng-repeat-start="targetEntity in targetGroup.targetEntities">
-                        {{targetGroup.targetGroupType}}-{{targetEntity.targetEntityType}}:
-                        {{targetEntity.percentage}}
-                    </td>
-                    <td ng-repeat-end ng-if="false">&lt;!&ndash;Never show this column&ndash;&gt;</td>
-                    <td>{{ commissionPlan.updatedDateTime | date:'yyyy-MM-dd HH:mm:ss Z'}}</td>
-                    <td>{{ commissionPlan.updatedDateTime | date:'yyyy-MM-dd HH:mm:ss Z'}}</td>
-                </tr>-->
                 </tbody>
             </table>
-            <button ng-click="service.saveAllCommissionPlans()">Save all Commission Plans</button>
+            <button class="btn btn-sm btn-default" ng-click="service.saveAllCommissionPlans()">Save all Commission Plans</button>
 
         </div>
         <!-- END Page specific stuff -->
