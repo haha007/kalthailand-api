@@ -5,7 +5,7 @@ import th.co.krungthaiaxa.api.elife.commission.data.CommissionPlan;
 import th.co.krungthaiaxa.api.elife.commission.repositories.CommissionPlanRepository;
 
 import javax.inject.Inject;
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -22,7 +22,8 @@ public class CommissionPlanService {
         return commissionPlanRepository.findAll();
     }
 
-    public List<CommissionPlan> saveCommissions(List<CommissionPlan> commissionPlans) {
+    public List<CommissionPlan> putCommissions(List<CommissionPlan> commissionPlans) {
+        commissionPlanRepository.deleteAll();
         for (CommissionPlan commissionPlan : commissionPlans) {
             preSaveCommissionPlan(commissionPlan);
         }
@@ -31,7 +32,7 @@ public class CommissionPlanService {
 
     private void preSaveCommissionPlan(CommissionPlan commissionPlan) {
         //TODO validate percentage, unitcode, product name...
-        Instant processingDateTime = Instant.now();
+        LocalDateTime processingDateTime = LocalDateTime.now();
         if (commissionPlan.getCreatedDateTime() == null) {
             commissionPlan.setCreatedDateTime(processingDateTime);
         }

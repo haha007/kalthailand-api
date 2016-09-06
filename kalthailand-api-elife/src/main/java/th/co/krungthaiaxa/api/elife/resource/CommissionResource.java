@@ -6,9 +6,9 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import th.co.krungthaiaxa.api.common.model.error.Error;
 import th.co.krungthaiaxa.api.elife.commission.data.CommissionPlan;
@@ -34,7 +34,6 @@ public class CommissionResource {
             @ApiResponse(code = 500, message = "If there's any internal error", response = Error.class)
     })
     @RequestMapping(value = "/commissions/plans", produces = APPLICATION_JSON_VALUE, method = GET)
-    @ResponseBody
     public List<CommissionPlan> findAllCommissionPlans() {
         return commissionPlanService.findAll();
     }
@@ -47,8 +46,7 @@ public class CommissionResource {
             @ApiResponse(code = 500, message = "If there's any internal error", response = Error.class)
     })
     @RequestMapping(value = "/commissions/plans", produces = APPLICATION_JSON_VALUE, method = RequestMethod.POST)
-    @ResponseBody
-    public List<CommissionPlan> saveCommissionsPlans(List<CommissionPlan> savingCommissionPlans) {
-        return commissionPlanService.saveCommissions(savingCommissionPlans);
+    public List<CommissionPlan> saveCommissionsPlans(@RequestBody List<CommissionPlan> savingCommissionPlans) {
+        return commissionPlanService.putCommissions(savingCommissionPlans);
     }
 }

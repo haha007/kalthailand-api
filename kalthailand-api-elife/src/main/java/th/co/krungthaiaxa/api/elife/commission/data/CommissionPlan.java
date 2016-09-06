@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -31,8 +31,8 @@ public class CommissionPlan {
     private CustomerCategory customerCategory;
     private List<CommissionTargetGroup> targetGroups;
 
-    private Instant createdDateTime;
-    private Instant updatedDateTime;
+    private LocalDateTime createdDateTime;
+    private LocalDateTime updatedDateTime;
 
     public ObjectId getId() {
         return id;
@@ -74,19 +74,19 @@ public class CommissionPlan {
         this.targetGroups = targetGroups;
     }
 
-    public Instant getCreatedDateTime() {
+    public LocalDateTime getCreatedDateTime() {
         return createdDateTime;
     }
 
-    public void setCreatedDateTime(Instant createdDateTime) {
+    public void setCreatedDateTime(LocalDateTime createdDateTime) {
         this.createdDateTime = createdDateTime;
     }
 
-    public Instant getUpdatedDateTime() {
+    public LocalDateTime getUpdatedDateTime() {
         return updatedDateTime;
     }
 
-    public void setUpdatedDateTime(Instant updatedDateTime) {
+    public void setUpdatedDateTime(LocalDateTime updatedDateTime) {
         this.updatedDateTime = updatedDateTime;
     }
 }

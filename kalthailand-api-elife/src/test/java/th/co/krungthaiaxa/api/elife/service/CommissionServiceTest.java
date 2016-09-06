@@ -13,6 +13,7 @@ import th.co.krungthaiaxa.api.elife.commission.data.CommissionTargetEntity;
 import th.co.krungthaiaxa.api.elife.commission.data.CommissionTargetEntityType;
 import th.co.krungthaiaxa.api.elife.commission.data.CommissionTargetGroup;
 import th.co.krungthaiaxa.api.elife.commission.data.CommissionTargetGroupType;
+import th.co.krungthaiaxa.api.elife.commission.data.CustomerCategory;
 import th.co.krungthaiaxa.api.elife.commission.service.CommissionPlanService;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
 
@@ -31,19 +32,20 @@ public class CommissionServiceTest extends ELifeTest {
     @Test
     public void test_create_commission_with_good_data() {
         List<CommissionPlan> commissionPlans = new ArrayList<>();
-        CommissionPlan commissionPlan = constructCommissionPlan("40001", ProductType.PRODUCT_IPROTECT, new double[][] { { 25, 15, 20, 15, 25 }, { 10, 20, 30, 40, 0 } });
-        commissionPlans.add(commissionPlan);
-        commissionPlanService.saveCommissions(commissionPlans);
+        commissionPlans.add(constructCommissionPlan("40001", ProductType.PRODUCT_IPROTECT, CustomerCategory.NEW, new double[][] { { 25, 15, 20, 15, 25 }, { 10, 20, 30, 40, 0 } }));
+        commissionPlans.add(constructCommissionPlan("40002", ProductType.PRODUCT_IPROTECT, CustomerCategory.EXISTING, new double[][] { { 25, 15, 20, 15, 25 }, { 10, 20, 30, 40, 0 } }));
+        commissionPlanService.putCommissions(commissionPlans);
     }
 
     /**
      * @param unitCode View more at {@link CommissionPlan#unitCode}
      * @return
      */
-    public static CommissionPlan constructCommissionPlan(String unitCode, ProductType productType, double[][] commissionValues) {
+    public static CommissionPlan constructCommissionPlan(String unitCode, ProductType productType, CustomerCategory customerCategory, double[][] commissionValues) {
         CommissionPlan commissionPlan = new CommissionPlan();
         commissionPlan.setPlanCode(productType.getName());
         commissionPlan.setUnitCode(unitCode);
+        commissionPlan.setCustomerCategory(customerCategory);
 
         List<CommissionTargetGroup> targetGroups = new ArrayList<>();
         constructAddingTargetGroup(targetGroups, CommissionTargetGroupType.FY, commissionValues[0][0], commissionValues[0][1], commissionValues[0][2], commissionValues[0][3], commissionValues[0][4]);
