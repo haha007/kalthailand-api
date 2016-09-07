@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import th.co.krungthaiaxa.api.common.utils.LogUtil;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -15,10 +16,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Enumeration;
+import java.time.Instant;
 import java.util.Optional;
 
 public class JwtAuthenticationTokenFilter extends UsernamePasswordAuthenticationFilter {
@@ -32,13 +30,8 @@ public class JwtAuthenticationTokenFilter extends UsernamePasswordAuthentication
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
-        
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss.SSS");
-        SimpleDateFormat secondFormat = new SimpleDateFormat("ss");
-        SimpleDateFormat millisecondFormat = new SimpleDateFormat("SSS");
-        DecimalFormat dcf = new DecimalFormat("#0.00");
-        Date timeApiRequest = new Date();    
-        
+        Instant startTime = LogUtil.logRequestStarting(httpRequest);
+
         String authToken = httpRequest.getHeader(this.tokenHeader);
         Optional<String> username = jwtTokenUtil.getUsernameFromToken(authToken);
 
@@ -50,41 +43,9 @@ public class JwtAuthenticationTokenFilter extends UsernamePasswordAuthentication
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         }
-        
-        Date timeApiResponse = new Date();
-        long s1 = Integer.parseInt(secondFormat.format(timeApiRequest),10);
-        long s2 = Integer.parseInt(secondFormat.format(timeApiResponse),10);
-        long m1 = Integer.parseInt(millisecondFormat.format(timeApiRequest),10);
-        long m2 = Integer.parseInt(millisecondFormat.format(timeApiResponse),10);
-        long diffSecond = s2 - s1;
-        long diffMillisecond = m2 - m1;
-        double diffTotal = Double.parseDouble(Math.abs(diffSecond) + "." + Math.abs(diffMillisecond));
-        getAllOfRequestContent(httpRequest);
-        logger.info("call to : " + httpRequest.getRequestURI() 
-        + " request time is : " + sdf.format(timeApiRequest) 
-        + " response time is : " + sdf.format(timeApiResponse)
-        + " difference is : " + dcf.format(diffTotal) + " seconds. \n ---------------------------------------");
 
+        LogUtil.logRuntime(startTime, LogUtil.toStringRequestURL(httpRequest));
         chain.doFilter(request, response);
     }
-    
-    private void getAllOfRequestContent(HttpServletRequest request){
-    	logger.info("|'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''|");
-    	//method
-    	String method = request.getMethod();
-    	logger.info("Method is : "+method);
-    	//header
-    	Enumeration headerNames = request.getHeaderNames();
-    	while(headerNames.hasMoreElements()) {
-    	  String headerName = (String)headerNames.nextElement();
-    	  logger.info("Header Name - " + headerName + ", Value - " + request.getHeader(headerName));
-    	}
-    	//body
-    	Enumeration params = request.getParameterNames(); 
-    	while(params.hasMoreElements()){
-    	 String paramName = (String)params.nextElement();
-    	 logger.info("Parameter Name - "+paramName+", Value - "+request.getParameter(paramName));
-    	}
-    	logger.info("|................................................................|");
-    }
+
 }

@@ -15,18 +15,21 @@ import org.springframework.web.util.UriComponentsBuilder;
 import th.co.krungthaiaxa.api.blacklist.model.Error;
 import th.co.krungthaiaxa.api.blacklist.model.ErrorCode;
 import th.co.krungthaiaxa.api.blacklist.utils.JsonUtil;
+import th.co.krungthaiaxa.api.common.utils.LogUtil;
 
-import javax.servlet.*;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Enumeration;
+import java.time.Instant;
 
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.OK;
@@ -51,13 +54,8 @@ public class KalApiTokenFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
-        
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss.SSS");
-        SimpleDateFormat secondFormat = new SimpleDateFormat("ss");
-        SimpleDateFormat millisecondFormat = new SimpleDateFormat("SSS");
-        DecimalFormat dcf = new DecimalFormat("#0.00");
-        Date timeApiRequest = new Date();        
-        
+        Instant startTime = LogUtil.logRequestStarting(httpRequest);
+
         // Swagger requests shoud always go through
         if (httpRequest.getRequestURI().endsWith("/v2/api-docs") ||
                 httpRequest.getRequestURI().endsWith("/configuration/ui") ||
@@ -112,42 +110,9 @@ public class KalApiTokenFilter implements Filter {
             sendErrorToResponse(ErrorCode.UNAUTHORIZED.apply("Provided token doesn't give access to API"), (HttpServletResponse) response);
             return;
         }
-        
-        Date timeApiResponse = new Date();
-        long s1 = Integer.parseInt(secondFormat.format(timeApiRequest),10);
-        long s2 = Integer.parseInt(secondFormat.format(timeApiResponse),10);
-        long m1 = Integer.parseInt(millisecondFormat.format(timeApiRequest),10);
-        long m2 = Integer.parseInt(millisecondFormat.format(timeApiResponse),10);
-        long diffSecond = s2 - s1;
-        long diffMillisecond = m2 - m1;
-        double diffTotal = Double.parseDouble(Math.abs(diffSecond) + "." + Math.abs(diffMillisecond));
-        getAllOfRequestContent(httpRequest);
-        logger.info("call to : " + httpRequest.getRequestURI() 
-        + " request time is : " + sdf.format(timeApiRequest) 
-        + " response time is : " + sdf.format(timeApiResponse)
-        + " difference is : " + dcf.format(diffTotal) + " seconds. \n ---------------------------------------");
 
+        LogUtil.logRuntime(startTime, LogUtil.toStringRequestURL(httpRequest));
         chain.doFilter(request, response);
-    }
-    
-    private void getAllOfRequestContent(HttpServletRequest request){
-    	logger.info("|'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''|");
-    	//method
-    	String method = request.getMethod();
-    	logger.info("Method is : "+method);
-    	//header
-    	Enumeration headerNames = request.getHeaderNames();
-    	while(headerNames.hasMoreElements()) {
-    	  String headerName = (String)headerNames.nextElement();
-    	  logger.info("Header Name - " + headerName + ", Value - " + request.getHeader(headerName));
-    	}
-    	//body
-    	Enumeration params = request.getParameterNames(); 
-    	while(params.hasMoreElements()){
-    	 String paramName = (String)params.nextElement();
-    	 logger.info("Parameter Name - "+paramName+", Value - "+request.getParameter(paramName));
-    	}
-    	logger.info("|................................................................|");
     }
 
     @Override
