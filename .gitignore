@@ -9,3 +9,4 @@
 build.properties
 sample.jasper
 kalthailand-api-elife/regKey*.csv
+*.log
