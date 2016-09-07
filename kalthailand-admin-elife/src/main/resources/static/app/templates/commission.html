@@ -38,10 +38,12 @@
                         <input type="text" ng-model="commissionPlan.unitCode" class="form-control" style="width: 75px;" ng-disabled="service.isCommissionPlanReadonly(commissionPlan)"/>
                     </td>
                     <td>
-                        <select class="form-control" style="min-width: 100px;" ng-disabled="service.isCommissionPlanReadonly(commissionPlan)"
-                                ng-model="commissionPlan.planCode"
-                                ng-options="product.name as product.name for product in service.products">
-                        </select>
+                        <input type="text" ng-model="commissionPlan.planCode" class="form-control" style="width: 75px;" ng-disabled="service.isCommissionPlanReadonly(commissionPlan)"/>
+                        <!--
+                                                <select class="form-control" style="min-width: 100px;" ng-disabled="service.isCommissionPlanReadonly(commissionPlan)"
+                                                        ng-model="commissionPlan.planCode"
+                                                        ng-options="product.name as product.name for product in service.products">
+                                                </select>-->
                     </td>
                     <td>
                         <select class="form-control" ng-disabled="service.isCommissionPlanReadonly(commissionPlan)"
@@ -55,7 +57,7 @@
                     </td>
                     <td ng-repeat-end ng-if="false"><!--Never show this column--></td>
                     <td>
-                        <button class="btn btn-sm btn-danger" ng-click="service.removeCommissionPlan(commissionPlan)">-</button>
+                        <button class="btn btn-sm btn-danger" ng-click="service.removeCommissionPlan(commissionPlan)" ng-disabled="service.isCommissionPlanReadonly(commissionPlan)">-</button>
                         <!--ng-disabled="service.isCommissionPlanReadonly(commissionPlan)"-->
                     </td>
                 </tr>
