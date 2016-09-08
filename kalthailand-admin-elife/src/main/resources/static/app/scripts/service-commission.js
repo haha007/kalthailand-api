@@ -194,7 +194,7 @@ CommissionService.prototype.constructCommissionPlan = function () {
     var commissionTargetGroups = [];
     for (var i = 0; i < groupTypes.length; i++) {
         var groupType = groupTypes[i];
-        commissionTargetGroups.push(self.constructCommissionGroups(groupType));
+        commissionTargetGroups.push(self.constructCommissionGroups(groupType.value));
     }
 
     return {
