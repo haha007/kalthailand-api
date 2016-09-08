@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import th.co.krungthaiaxa.api.common.model.error.Error;
+import th.co.krungthaiaxa.api.elife.commission.data.CommissionCalculationSession;
 import th.co.krungthaiaxa.api.elife.commission.data.CommissionPlan;
 import th.co.krungthaiaxa.api.elife.commission.service.CommissionPlanService;
 
@@ -48,5 +49,12 @@ public class CommissionResource {
     @RequestMapping(value = "/commissions/plans", produces = APPLICATION_JSON_VALUE, method = RequestMethod.POST)
     public List<CommissionPlan> saveCommissionsPlans(@RequestBody List<CommissionPlan> savingCommissionPlans) {
         return commissionPlanService.putCommissions(savingCommissionPlans);
+    }
+
+    @ApiOperation(value = "Calculate commission for policies.", notes = "Calculate commission for input policies based on commission plans.", response = CommissionCalculationSession.class)
+    @ApiResponses({ @ApiResponse(code = 500, message = "If there's any internal error", response = Error.class) })
+    @RequestMapping(value = "/commissions/calculation", produces = APPLICATION_JSON_VALUE, method = RequestMethod.POST)
+    public CommissionCalculationSession calculateCommissionsForPolicies(@RequestBody List<String> policyNumbers) {
+        return commissionPlanService.calculateCommissionForPolicies(policyNumbers);
     }
 }
