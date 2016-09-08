@@ -79,7 +79,11 @@ function isEqualsByFields(objA, objB, fieldExpressions) {
         var ivalB = fieldValuesB[i];
         if (hasValue(ivalA)) {
             if (hasValue(ivalB)) {
-                if (fieldValuesA[i] != fieldValuesB[i]) {
+                if (isString(ivalA)) {
+                    ivalA = ivalA.toUpperCase();
+                    ivalB = ivalB.toUpperCase();
+                }
+                if (ivalA != ivalB) {
                     return false;
                 }
             } else {
@@ -100,6 +104,9 @@ function getFields(obj, fieldExpressions) {
     }
     return values;
 };
+function isString(obj) {
+    return (typeof obj === 'string' || obj instanceof String);
+}
 /**
  * http://stackoverflow.com/questions/6491463/accessing-nested-javascript-objects-with-string-key
  * @param object
