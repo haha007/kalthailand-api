@@ -8,7 +8,7 @@ function CommissionService($http, ProductCriteria) {
         , {value: "NEW", label: "New"}
     ];
 
-    this.products = ProductCriteria.query();
+    //this.products = ProductCriteria.query();
     this.findAllCommissionPlans();
 };
 CommissionService.prototype.isCommissionPlanReadonly = function (commissionPlan) {
@@ -19,7 +19,7 @@ CommissionService.prototype.findAllCommissionPlans = function () {
     self.$http.get(window.location.origin + '/api-elife/commissions/plans', {}).then(
         function (successResponse) {
             self.commissionPlans = successResponse.data;
-            self.showSuccessMessage("Loaded commission plans");
+            self.showInfoMessage("Loaded commission plans");
             self.validateCommissionPlans();
         },
         function (errorResponse) {
@@ -27,13 +27,21 @@ CommissionService.prototype.findAllCommissionPlans = function () {
         }
     );
 };
+CommissionService.prototype.showInfoMessage = function (msg) {
+    var self = this;
+    self.infoMessage = msg;
+    self.successMessage = null;
+    self.errorMessage = null;
+};
 CommissionService.prototype.showSuccessMessage = function (msg) {
     var self = this;
+    self.infoMessage = null;
     self.successMessage = msg;
     self.errorMessage = null;
 };
 CommissionService.prototype.showErrorMessage = function (msg) {
     var self = this;
+    self.infoMessage = null;
     self.successMessage = null;
     self.errorMessage = msg;
     console.log(msg);
@@ -58,10 +66,13 @@ CommissionService.prototype.addCommissionPlan = function () {
     var self = this;
     var newCommissionPlan = self.constructCommissionPlan();
     self.commissionPlans.push(newCommissionPlan);
+    //Need to show alert message for new commission
+    self.validateCommissionPlan(newCommissionPlan);
 };
 CommissionService.prototype.removeCommissionPlan = function (commissionPlan) {
     var self = this;
     self.commissionPlans.remove(commissionPlan);
+    self.validateCommissionPlans();
 };
 CommissionService.prototype.validateCommissionPlans = function () {
     var self = this;
@@ -74,7 +85,9 @@ CommissionService.prototype.validateCommissionPlans = function () {
         }
     }
     if (isSuccess) {
-        self.showSuccessMessage("Input numbers are OK!")
+        if (self.commissionPlans.length > 0) {
+            self.showSuccessMessage("All input values are correct!")
+        }
     }
     return isSuccess;
 };
@@ -83,7 +96,7 @@ CommissionService.prototype.validateCommissionPlan = function (commissionPlan) {
     var isSuccess = true;
     isSuccess = self.checkHasRequiredInputsInCommissionPlan(commissionPlan);
     if (!isSuccess) {
-        self.showErrorMessage("Some commission plans are missing some inputs.");
+        self.showErrorMessage("Some commission plans don't have enough input values.");
         self.statusStyleCommissionPlan(commissionPlan, isSuccess);
         return isSuccess;
     }
@@ -93,7 +106,7 @@ CommissionService.prototype.validateCommissionPlan = function (commissionPlan) {
         var commissionTargetGroup = commissionTargetGroups[i];
         var sumPercentage = self.sumPercentageInCommissionGroup(commissionTargetGroup);
         if (sumPercentage != 100) {
-            var msg = "Invalid commission: " + commissionPlan.unitCode + "-" + commissionPlan.planCode + "-" + commissionPlan.customerCategory + ": Group '" + commissionTargetGroup.targetGroupType + "'. Sum percentage: " + sumPercentage;
+            var msg = "Invalid commission: " + commissionPlan.unitCode + "-" + commissionPlan.planCode + "-" + commissionPlan.customerCategory + ": Group '" + commissionTargetGroup.targetGroupType + "' has totally " + sumPercentage + "%";
             self.showErrorMessage(msg);
             isSuccess = false;
             break;

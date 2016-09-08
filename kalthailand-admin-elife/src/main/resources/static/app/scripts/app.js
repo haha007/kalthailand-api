@@ -2,6 +2,7 @@
     'use strict';
 
     var app = angular.module('myApp', [
+        //'ngShortcut',
         'ngResource',
         'file-model',
         'ngStorage',
@@ -46,9 +47,9 @@
                 activeTab: 'configuration'
             })
             .when('/total-quote-count', {
-            	templateUrl: 'app/templates/total-quote-count.html',
-            	controller: 'TotalQuoteCountController',
-            	activeTab: 'total-quote-count'
+                templateUrl: 'app/templates/total-quote-count.html',
+                controller: 'TotalQuoteCountController',
+                activeTab: 'total-quote-count'
             })
             .when('/commission', {
                 templateUrl: 'app/templates/commission.html',
@@ -63,15 +64,15 @@
 
     function runFn($rootScope, $location, $templateCache, AuthService) {
         $rootScope.$on('$routeChangeStart', routeChangeStart);
-        
+
         function routeChangeStart(event, next, current) {
-        	
-        	// Remove template caching to accept server side rules ->
-        	$templateCache.remove('app/templates/partials/sidebar.html');
-        	$templateCache.remove('app/templates/home.html');
-        	// Remove template caching to accept server side rules <-
-            
-        	if (!AuthService.isAuthenticated()) {
+
+            // Remove template caching to accept server side rules ->
+            $templateCache.remove('app/templates/partials/sidebar.html');
+            $templateCache.remove('app/templates/home.html');
+            // Remove template caching to accept server side rules <-
+
+            if (!AuthService.isAuthenticated()) {
                 // User is not logged in
                 console.log('User not logged in');
                 $rootScope.errorMsg = 'Session expired. Please login again.';
@@ -85,4 +86,4 @@
         }
     }
 
-} ());
+}());

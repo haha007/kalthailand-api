@@ -1,3 +1,5 @@
+<!--Shortcut: https://github.com/philippbosch/ng-shortcut-->
+
 <div ng-include="'app/templates/partials/header.html'"></div>
 
 <div class="container-fluid">
@@ -7,7 +9,7 @@
         <!-- BEGIN Page specific stuff -->
         <div ng-cloak class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-1 main ng-cloak" id="collectionFileListContainer">
             <div class="page-header">
-                <h1>Commission Plans</h1>
+                <h1>Commission Setting</h1>
             </div>
             <div ng-include="'app/templates/partials/message.html'"></div>
 
@@ -20,7 +22,7 @@
                     <th style="text-align: center" ng-repeat="commissionGroupType in service.commissionGroupTypes" colspan="{{service.commissionTargetEntityTypes.length}}">
                         <span>{{commissionGroupType}}</span>
                     </th>
-                    <th>
+                    <th rowspan="2">
                         <button class="btn btn-sm btn-primary" ng-click="service.addCommissionPlan()">+</button>
                     </th>
                 </tr>
@@ -29,16 +31,16 @@
                     </th>
                     <th ng-repeat-end ng-repeat-start="targetEntityType in service.commissionTargetEntityTypes" style="text-transform: capitalize;"><!--{{$index}}-->{{targetEntityType | lowercase}}</th>
                     <th ng-repeat-end ng-if='false'><!--{{$index}} Never show this column--></th>
-                    <th></th>
+                    <!--<th></th>-->
                 </tr>
                 </thead>
                 <tbody>
                 <tr ng-repeat="commissionPlan in service.commissionPlans" class="form-group" ng-class="commissionPlan.styleClass">
                     <td>
-                        <input type="text" ng-model="commissionPlan.unitCode" class="form-control" style="width: 75px;" ng-disabled="service.isCommissionPlanReadonly(commissionPlan)"/>
+                        <input type="text" ng-model="commissionPlan.unitCode" class="form-control" style="width: 75px;" ng-disabled="service.isCommissionPlanReadonly(commissionPlan)" ng-change="service.validateCommissionPlans()"/>
                     </td>
                     <td>
-                        <input type="text" ng-model="commissionPlan.planCode" class="form-control" style="width: 75px;" ng-disabled="service.isCommissionPlanReadonly(commissionPlan)"/>
+                        <input type="text" ng-model="commissionPlan.planCode" class="form-control" style="width: 75px;" ng-disabled="service.isCommissionPlanReadonly(commissionPlan)" ng-change="service.validateCommissionPlans()"/>
                         <!--
                                                 <select class="form-control" style="min-width: 100px;" ng-disabled="service.isCommissionPlanReadonly(commissionPlan)"
                                                         ng-model="commissionPlan.planCode"
@@ -47,6 +49,7 @@
                     </td>
                     <td>
                         <select class="form-control" ng-disabled="service.isCommissionPlanReadonly(commissionPlan)"
+                                ng-change="service.validateCommissionPlans()"
                                 ng-model="commissionPlan.customerCategory"
                                 ng-options="customerCategory.value as customerCategory.label for customerCategory in service.customerCategories" style="width: 75px;">
                         </select>
