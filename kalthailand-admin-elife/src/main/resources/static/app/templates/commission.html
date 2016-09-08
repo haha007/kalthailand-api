@@ -16,6 +16,7 @@
             <table class="table table-bordered table-striped table-hover table-condensed">
                 <thead>
                 <tr>
+                    <th rowspan="2"></th>
                     <th rowspan="2">Unit Code</th>
                     <th rowspan="2">Plan Code</th>
                     <th rowspan="2">Customer Category</th>
@@ -36,6 +37,7 @@
                 </thead>
                 <tbody>
                 <tr ng-repeat="commissionPlan in service.commissionPlans" class="form-group" ng-class="commissionPlan.styleClass">
+                    <td>{{($index + 1)}}</td>
                     <td>
                         <input type="text"
                                limit-to="6"
