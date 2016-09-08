@@ -1,5 +1,6 @@
-function CommissionService($http, ProductCriteria) {
+function CommissionService($http, $sce, ProductCriteria) {
     this.$http = $http;
+    this.$sce = $sce;
     this.commissionPlans = undefined;//Will be loaded from server
     this.commissionGroupTypes = ['FY', 'OV'];//View {@link CommissionTargetGroupType}.
     this.commissionTargetEntityTypes = ['AFFILIATE', 'COMPANY', 'TSR', 'MKR', 'DISTRIBUTION'];//View {@link CommissionTargetEntityType}.
@@ -7,7 +8,6 @@ function CommissionService($http, ProductCriteria) {
         {value: "EXISTING", label: "Existing"}
         , {value: "NEW", label: "New"}
     ];
-
     //this.products = ProductCriteria.query();
     this.findAllCommissionPlans();
 };
@@ -43,7 +43,7 @@ CommissionService.prototype.showErrorMessage = function (msg) {
     var self = this;
     self.infoMessage = null;
     self.successMessage = null;
-    self.errorMessage = msg;
+    self.errorMessage = hasValue(msg) ? self.$sce.trustAsHtml(msg) : null;
     console.log(msg);
 };
 CommissionService.prototype.saveAllCommissionPlans = function () {
@@ -85,11 +85,31 @@ CommissionService.prototype.validateCommissionPlans = function () {
         }
     }
     if (isSuccess) {
+        isSuccess = self.validateDuplicatePKCommissionPlan();
+    }
+    if (isSuccess) {
         if (self.commissionPlans.length > 0) {
             self.showSuccessMessage("All input values are correct!")
         }
     }
     return isSuccess;
+};
+CommissionService.prototype.validateDuplicatePKCommissionPlan = function () {
+    var self = this;
+
+    var duplicates = self.commissionPlans.getDuplicatesByFields(["unitCode", "planCode", "customerCategory"])
+    if (duplicates.length == 0) {
+        return true;
+    } else {
+        var duplicateMessage = "Duplicate settings: <ul> ";
+        for (var i = 0; i < duplicates.length; i++) {
+            var duplicate = duplicates[i];
+            duplicateMessage += "<li>[" + (duplicate.indexA + 1) + " & " + (duplicate.indexB + 1) + "] " + duplicate.itemA.unitCode + " - " + duplicate.itemA.planCode + " - " + duplicate.itemA.customerCategory + "</li>";
+        }
+        duplicateMessage += "</ul>"
+        self.showErrorMessage(duplicateMessage);
+        return false;
+    }
 };
 CommissionService.prototype.validateCommissionPlan = function (commissionPlan) {
     var self = this;
@@ -204,3 +224,4 @@ CommissionService.prototype.findCommissionTargetEntityInPlan = function (commiss
     if (targetGroup == null) return null;
     return self.findCommissionTargetEntityInGroup(targetGroup, entityType);
 };
+

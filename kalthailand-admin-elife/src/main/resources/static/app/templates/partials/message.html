@@ -1,6 +1,6 @@
 <div class="alert alert-danger" role="alert" ng-show="service.errorMessage">
     <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-    {{ service.errorMessage }}
+    <span ng-bind-html="service.errorMessage"></span>
 </div>
 <div class="alert alert-success" role="alert" ng-show="service.successMessage">
     {{ service.successMessage }}

@@ -48,6 +48,59 @@ Array.prototype.sortByField = function (fieldName, asc) {
     this.sort(compareFn);
 }
 /**
+ * @param fieldExpressions array of field to check duplicated.
+ */
+Array.prototype.getDuplicatesByFields = function (fieldExpressions) {
+    var duplicates = [];
+    var length = this.length;
+    for (var i = 0; i < length - 1; i++) {
+        var itemi = this[i];
+        for (var j = i + 1; j < length; j++) {
+            var itemj = this[j];
+            if (isEqualsByFields(itemi, itemj, fieldExpressions)) {
+                duplicates.push(
+                    {
+                        indexA: i
+                        , indexB: j
+                        , itemA: itemi
+                        , itemB: itemj
+                    }
+                );
+            }
+        }
+    }
+    return duplicates;
+};
+function isEqualsByFields(objA, objB, fieldExpressions) {
+    var fieldValuesA = getFields(objA, fieldExpressions);
+    var fieldValuesB = getFields(objB, fieldExpressions);
+    for (var i = 0; i < fieldExpressions.length; i++) {
+        var ivalA = fieldValuesA[i];
+        var ivalB = fieldValuesB[i];
+        if (hasValue(ivalA)) {
+            if (hasValue(ivalB)) {
+                if (fieldValuesA[i] != fieldValuesB[i]) {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        } else {
+            if (hasValue(ivalB)) {
+                return false;
+            }
+        }
+    }
+    return true;
+};
+function getFields(obj, fieldExpressions) {
+    var values = [];
+    for (var i = 0; i < fieldExpressions.length; i++) {
+        values.push(getField(obj, fieldExpressions[i]));
+    }
+    return values;
+};
+/**
  * http://stackoverflow.com/questions/6491463/accessing-nested-javascript-objects-with-string-key
  * @param object
  * @param fieldExpression

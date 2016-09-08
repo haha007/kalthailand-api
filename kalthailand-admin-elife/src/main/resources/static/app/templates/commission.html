@@ -20,7 +20,7 @@
                     <th rowspan="2">Plan Code</th>
                     <th rowspan="2">Customer Category</th>
                     <th style="text-align: center" ng-repeat="commissionGroupType in service.commissionGroupTypes" colspan="{{service.commissionTargetEntityTypes.length}}">
-                        <span>{{commissionGroupType}}</span>
+                        <span>{{commissionGroupType}} %</span>
                     </th>
                     <th rowspan="2">
                         <button class="btn btn-sm btn-primary" ng-click="service.addCommissionPlan()">+</button>
@@ -37,10 +37,13 @@
                 <tbody>
                 <tr ng-repeat="commissionPlan in service.commissionPlans" class="form-group" ng-class="commissionPlan.styleClass">
                     <td>
-                        <input type="text" ng-model="commissionPlan.unitCode" class="form-control" style="width: 75px;" ng-disabled="service.isCommissionPlanReadonly(commissionPlan)" ng-change="service.validateCommissionPlans()"/>
+                        <input type="text"
+                               limit-to="6"
+                               ng-model="commissionPlan.unitCode" class="form-control" style="width: 75px;" ng-disabled="service.isCommissionPlanReadonly(commissionPlan)" ng-change="service.validateCommissionPlans()"/>
                     </td>
                     <td>
-                        <input type="text" ng-model="commissionPlan.planCode" class="form-control" style="width: 75px;" ng-disabled="service.isCommissionPlanReadonly(commissionPlan)" ng-change="service.validateCommissionPlans()"/>
+                        <input limit-to="7"
+                               type="text" ng-model="commissionPlan.planCode" class="form-control" style="width: 75px;" ng-disabled="service.isCommissionPlanReadonly(commissionPlan)" ng-change="service.validateCommissionPlans()"/>
                         <!--
                                                 <select class="form-control" style="min-width: 100px;" ng-disabled="service.isCommissionPlanReadonly(commissionPlan)"
                                                         ng-model="commissionPlan.planCode"

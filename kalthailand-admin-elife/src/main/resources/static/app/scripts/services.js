@@ -124,8 +124,8 @@
         $httpProvider.interceptors.push('httpRequestInterceptor');
     });
 
-    app.factory('CommissionService', function ($http, ProductCriteria) {
-        return new CommissionService($http, ProductCriteria);
+    app.factory('CommissionService', function ($http, $sce, ProductCriteria) {
+        return new CommissionService($http, $sce, ProductCriteria);
     });
 
 })();
