@@ -2,7 +2,10 @@ function CommissionService($http, $sce, ProductCriteria) {
     this.$http = $http;
     this.$sce = $sce;
     this.commissionPlans = undefined;//Will be loaded from server
-    this.commissionGroupTypes = ['FY', 'OV'];//View {@link CommissionTargetGroupType}.
+    this.commissionGroupTypes = [
+        {value: 'FY', label: 'FY', isRequired: true},
+        {value: 'OV', label: 'OV', isRequired: false}
+    ];//View {@link CommissionTargetGroupType}.
     this.commissionTargetEntityTypes = ['AFFILIATE', 'COMPANY', 'TSR', 'MKR', 'DISTRIBUTION'];//View {@link CommissionTargetEntityType}.
     this.customerCategories = [
         {value: "EXISTING", label: "Existing"}
@@ -122,10 +125,16 @@ CommissionService.prototype.validateCommissionPlan = function (commissionPlan) {
     }
 
     var commissionTargetGroups = commissionPlan.targetGroups;
+
     for (var i = 0; i < commissionTargetGroups.length; i++) {
         var commissionTargetGroup = commissionTargetGroups[i];
+        var commissionGroupType = self.findCommissionGroupTypeByValue(commissionTargetGroup.targetGroupType);
+        if (!hasValue(commissionGroupType)) {
+            self.showErrorMessage("Not found commissionGroupType " + commissionTargetGroup);
+            break;
+        }
         var sumPercentage = self.sumPercentageInCommissionGroup(commissionTargetGroup);
-        if (sumPercentage != 100) {
+        if ((commissionGroupType.isRequired || self.hasTargetEntitiesPercentages(commissionTargetGroup)) && sumPercentage != 100) {
             var msg = "Invalid commission: " + commissionPlan.unitCode + "-" + commissionPlan.planCode + "-" + commissionPlan.customerCategory + ": Group '" + commissionTargetGroup.targetGroupType + "' has totally " + sumPercentage + "%";
             self.showErrorMessage(msg);
             isSuccess = false;
@@ -134,6 +143,27 @@ CommissionService.prototype.validateCommissionPlan = function (commissionPlan) {
     }
     self.statusStyleCommissionPlan(commissionPlan, isSuccess);
     return isSuccess;
+};
+CommissionService.prototype.hasTargetEntitiesPercentages = function (commissionTargetGroup) {
+    var commissionTargetEntities = commissionTargetGroup.targetEntities;
+    for (var i = 0; i < commissionTargetEntities.length; i++) {
+        var commissionTargetEntity = commissionTargetEntities[i];
+        var hasValueAndNotZero = isNotBlank(commissionTargetEntity.percentage) && (+commissionTargetEntity.percentage != 0);
+        if (hasValueAndNotZero) {
+            return true;
+        }
+    }
+    return false;
+};
+CommissionService.prototype.findCommissionGroupTypeByValue = function (commissionGroupTypeValue) {
+    var self = this;
+    for (var i = 0; i < self.commissionGroupTypes.length; i++) {
+        var commissionGroupType = self.commissionGroupTypes[i];
+        if (commissionGroupType.value == commissionGroupTypeValue) {
+            return commissionGroupType;
+        }
+    }
+    return null;
 };
 CommissionService.prototype.checkHasRequiredInputsInCommissionPlan = function (commissionPlan) {
     return (isNotBlank(commissionPlan.unitCode) && isNotBlank(commissionPlan.planCode) && isNotBlank(commissionPlan.customerCategory));
@@ -155,7 +185,7 @@ CommissionService.prototype.sumPercentageInCommissionGroup = function (commissio
         sumPercentage += +commissionTargetEntity.percentage;
     }
     return (sumPercentage);
-}
+};
 //CONSTRUCT COMMISSION PLANS ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 CommissionService.prototype.constructCommissionPlan = function () {
     var self = this;
@@ -201,7 +231,7 @@ CommissionService.prototype.findCommissionGroupInPlan = function (commissionPlan
     var targetGroups = commissionPlan.targetGroups;
     for (var i = 0; i < targetGroups.length; i++) {
         var targetGroup = targetGroups[i];
-        if (targetGroup.targetGroupType == groupType) {
+        if (targetGroup.targetGroupType == groupType.value) {
             return targetGroup;
         }
     }

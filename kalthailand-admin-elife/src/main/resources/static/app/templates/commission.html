@@ -1,4 +1,17 @@
 <!--Shortcut: https://github.com/philippbosch/ng-shortcut-->
+<style>
+    .commission-rate {
+        width: 65px;
+    }
+
+    .commission-unitcode {
+        width: 75px;
+    }
+
+    .commission-plancode {
+        width: 90px;
+    }
+</style>
 
 <div ng-include="'app/templates/partials/header.html'"></div>
 
@@ -21,7 +34,7 @@
                     <th rowspan="2">Plan Code</th>
                     <th rowspan="2">Customer Category</th>
                     <th style="text-align: center" ng-repeat="commissionGroupType in service.commissionGroupTypes" colspan="{{service.commissionTargetEntityTypes.length}}">
-                        <span>{{commissionGroupType}} %</span>
+                        <span>{{commissionGroupType.label}} %</span><span ng-show="!commissionGroupType.isRequired"> (Optional)</span>
                     </th>
                     <th rowspan="2">
                         <button class="btn btn-sm btn-primary" ng-click="service.addCommissionPlan()">+</button>
@@ -41,11 +54,11 @@
                     <td>
                         <input type="text"
                                limit-to="6"
-                               ng-model="commissionPlan.unitCode" class="form-control" style="width: 75px;" ng-disabled="service.isCommissionPlanReadonly(commissionPlan)" ng-change="service.validateCommissionPlans()"/>
+                               ng-model="commissionPlan.unitCode" class="form-control commission-unitcode" ng-disabled="service.isCommissionPlanReadonly(commissionPlan)" ng-change="service.validateCommissionPlans()"/>
                     </td>
                     <td>
                         <input limit-to="7"
-                               type="text" ng-model="commissionPlan.planCode" class="form-control" style="width: 75px;" ng-disabled="service.isCommissionPlanReadonly(commissionPlan)" ng-change="service.validateCommissionPlans()"/>
+                               type="text" ng-model="commissionPlan.planCode" class="form-control commission-plancode" ng-disabled="service.isCommissionPlanReadonly(commissionPlan)" ng-change="service.validateCommissionPlans()"/>
                         <!--
                                                 <select class="form-control" style="min-width: 100px;" ng-disabled="service.isCommissionPlanReadonly(commissionPlan)"
                                                         ng-model="commissionPlan.planCode"
@@ -61,7 +74,7 @@
                     </td>
                     <td ng-repeat-start="commissionGroupType in service.commissionGroupTypes" ng-if="false"><!--Never show this column--></td>
                     <td ng-repeat-end ng-repeat-start="commissionEntityType in service.commissionTargetEntityTypes">
-                        <input type="text" class="form-control" style="width: 60px" ng-model="service.findCommissionTargetEntityInPlan(commissionPlan, commissionGroupType, commissionEntityType).percentage" ng-change="service.validateCommissionPlans()"/>
+                        <input type="text" class="form-control commission-rate" ng-model="service.findCommissionTargetEntityInPlan(commissionPlan, commissionGroupType, commissionEntityType).percentage" ng-change="service.validateCommissionPlans()"/>
                     </td>
                     <td ng-repeat-end ng-if="false"><!--Never show this column--></td>
                     <td>
