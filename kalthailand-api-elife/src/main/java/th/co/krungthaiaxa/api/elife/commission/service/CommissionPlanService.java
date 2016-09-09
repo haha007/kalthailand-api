@@ -1,7 +1,6 @@
 package th.co.krungthaiaxa.api.elife.commission.service;
 
 import org.springframework.stereotype.Service;
-import th.co.krungthaiaxa.api.elife.commission.data.CommissionCalculationSession;
 import th.co.krungthaiaxa.api.elife.commission.data.CommissionPlan;
 import th.co.krungthaiaxa.api.elife.commission.repositories.CommissionPlanRepository;
 
@@ -38,9 +37,5 @@ public class CommissionPlanService {
             commissionPlan.setCreatedDateTime(processingDateTime);
         }
         commissionPlan.setUpdatedDateTime(processingDateTime);
-    }
-
-    public CommissionCalculationSession calculateCommissionForPolicies(List<String> policyNumbers) {
-        return null;
     }
 }

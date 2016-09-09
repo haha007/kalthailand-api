@@ -17,7 +17,7 @@ public class CommissionCalculation extends BaseEntity {
     private Agent agent2;
     private double commissionPaymentDistribute1;
     private double commissionPaymentDistribute2;
-    private double commissionPaymentTelrepresentative;
+    private double commissionPaymentTelRepresentative;
     private double commissionPaymentMkt;
     private double commissionPaymentCompany;
 
