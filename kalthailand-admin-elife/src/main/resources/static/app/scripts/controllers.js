@@ -657,7 +657,15 @@
             event.preventDefault();
             searchForPolicyDetail();
         };
-
+        $scope.getProductDisplayName = function (productName){
+        	var newProductName = '';
+        	if (productName=='Product iProtect'){
+        		newProductName='Product iProtect S';
+        	}else{
+        		newProductName = productName;
+        	}
+        	return newProductName;
+        }
         function searchForPolicyDetail() {
             PolicyDetail.get({id: $scope.policyID},
                 function (successResponse) {
