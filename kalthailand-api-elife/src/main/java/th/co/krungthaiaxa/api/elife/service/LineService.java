@@ -157,7 +157,8 @@ public class LineService {
     public LinePayResponse bookPayment(String mid, Policy policy, String amount, String currency) throws IOException {
         logger.info("Booking payment");
         LinePayBookingRequest linePayBookingRequest = new LinePayBookingRequest();
-        linePayBookingRequest.setProductName(policy.getCommonData().getProductName());
+        //TODO Product name here is the product display name. Should never use it. Should use productId.
+        linePayBookingRequest.setProductName(policy.getCommonData().getProductId());
         linePayBookingRequest.setAmount(amount);
         linePayBookingRequest.setCurrency(currency);
         linePayBookingRequest.setCapture(linePayCapture);
@@ -245,7 +246,6 @@ public class LineService {
             data.put("amount", amount);
             data.put("currency", currency);
             data.put("orderId", orderId);
-            //System.out.println("check body : " + data.toString());
 
             //set object to get response
             DataOutputStream wr = new DataOutputStream(conn.getOutputStream());

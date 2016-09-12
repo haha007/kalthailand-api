@@ -38,7 +38,6 @@ import java.util.Optional;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.isEqual;
-import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.isTrue;
 import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.notNull;
 
 @Service
@@ -82,7 +81,7 @@ public class IProtectService implements ProductService {
         Optional<Coverage> hasIFineCoverage = quote.getCoverages()
                 .stream()
                 .filter(coverage -> coverage.getName() != null)
-                .filter(coverage -> coverage.getName().equalsIgnoreCase(PRODUCT_TYPE.getDisplayName()))
+                .filter(coverage -> coverage.getName().equalsIgnoreCase(PRODUCT_TYPE.getLogicName()))
                 .findFirst();
 
         if (!checkProductQuotationEnoughDataToCalculate(productQuotation)) {
@@ -152,7 +151,8 @@ public class IProtectService implements ProductService {
 
         if (!hasIFineCoverage.isPresent()) {
             Coverage coverage = new Coverage();
-            coverage.setName(PRODUCT_TYPE.getDisplayName());
+            //TODO fixme. It should be set productLogicName, not productLogicDisplayName
+            coverage.setName(PRODUCT_TYPE.getLogicName());
             quote.addCoverage(coverage);
         }
     }
@@ -332,7 +332,7 @@ public class IProtectService implements ProductService {
     @Override
     public CommonData initCommonData() {
         CommonData commonData = new CommonData();
-        commonData.setProductId(PRODUCT_TYPE.getName());
+        commonData.setProductId(PRODUCT_TYPE.getLogicName());
         commonData.setProductName(PRODUCT_TYPE.getDisplayName());
         commonData.setProductCurrency(PRODUCT_CURRENCY);
 
@@ -449,11 +449,10 @@ public class IProtectService implements ProductService {
     }
 
     private static void checkProductType(CommonData commonData) {
-        isEqual(commonData.getProductId(), PRODUCT_TYPE.getName(), PolicyValidationException.productIProtectExpected);
+        isEqual(commonData.getProductId(), PRODUCT_TYPE.getLogicName(), PolicyValidationException.productIProtectExpected);
 
-        //TODO don't need to check it because the displayName can be changed???
-        //isEqual(commonData.getProductName(), PRODUCT_TYPE.getDisplayName(), PolicyValidationException.productIProtectExpected);
-        isTrue(StringUtils.isNotBlank(commonData.getProductName()), PolicyValidationException.productIProtectExpected);
+        //Don't need to check equals because the displayName can be changed
+//        isTrue(StringUtils.isNotBlank(commonData.getProductName()), PolicyValidationException.productIProtectExpected);
     }
 
     private Amount exchangeToProductCurrency(Amount amount) {

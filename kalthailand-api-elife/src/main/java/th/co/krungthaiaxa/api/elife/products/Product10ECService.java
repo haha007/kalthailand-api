@@ -36,7 +36,7 @@ import static th.co.krungthaiaxa.api.elife.products.ProductUtils.getSumInsuredFr
 public class Product10ECService implements ProductService {
     public final static int DURATION_COVERAGE_IN_YEAR = 10;
     public final static int DURATION_PAYMENT_IN_YEAR = 6;
-    public final static String PRODUCT_10_EC_NAME = "Product 10 EC";
+    public final static String PRODUCT_10_EC_NAME = ProductType.PRODUCT_10_EC.getLogicDisplayName();
     public final static String PRODUCT_10_EC_CURRENCY = "THB";
     public static final Double SUM_INSURED_MIN = 100000.0;
     public static final Double SUM_INSURED_MAX = 1000000.0;
@@ -231,7 +231,7 @@ public class Product10ECService implements ProductService {
         commonData.setMinSumInsured(amount(SUM_INSURED_MIN, PRODUCT_10_EC_CURRENCY));
         commonData.setNbOfYearsOfCoverage(DURATION_COVERAGE_IN_YEAR);
         commonData.setNbOfYearsOfPremium(DURATION_PAYMENT_IN_YEAR);
-        commonData.setProductId(ProductType.PRODUCT_10_EC.getName());
+        commonData.setProductId(ProductType.PRODUCT_10_EC.getLogicName());
         commonData.setProductCurrency(PRODUCT_10_EC_CURRENCY);
         commonData.setProductName(PRODUCT_10_EC_NAME);
         return commonData;
@@ -301,8 +301,8 @@ public class Product10ECService implements ProductService {
     }
 
     private static void checkCommonData(CommonData commonData) {
-        isEqual(commonData.getProductId(), ProductType.PRODUCT_10_EC.getName(), PolicyValidationException.product10ECExpected);
-        isEqual(commonData.getProductName(), PRODUCT_10_EC_NAME, PolicyValidationException.product10ECExpected);
+        isEqual(commonData.getProductId(), ProductType.PRODUCT_10_EC.getLogicName(), PolicyValidationException.product10ECExpected);
+//        isTrue(StringUtils.isNotBlank(commonData.getProductName()), PolicyValidationException.product10ECExpected);
     }
 
     private static void check10ECPremiumsData(PremiumsData premiumsData, LocalDate startDate) {

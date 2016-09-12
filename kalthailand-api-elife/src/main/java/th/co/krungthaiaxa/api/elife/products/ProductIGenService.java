@@ -36,7 +36,7 @@ import static th.co.krungthaiaxa.api.elife.products.ProductUtils.amountTHB;
 public class ProductIGenService implements ProductService {
     public final static int DURATION_COVERAGE_IN_YEAR = 10;
     public final static int DURATION_PAYMENT_IN_YEAR = 6;
-    public final static String PRODUCT_IGEN_NAME = "Product iGen";
+    public final static String PRODUCT_IGEN_NAME = ProductType.PRODUCT_IGEN.getLogicDisplayName();
     public final static String PRODUCT_IGEN_CURRENCY = "THB";
     public static final Double SUM_INSURED_MIN = 100000.0;
     public static final Double SUM_INSURED_MAX = 1000000.0;
@@ -190,7 +190,7 @@ public class ProductIGenService implements ProductService {
         commonData.setMinSumInsured(amountTHB(SUM_INSURED_MIN));
         commonData.setNbOfYearsOfCoverage(DURATION_COVERAGE_IN_YEAR);
         commonData.setNbOfYearsOfPremium(DURATION_PAYMENT_IN_YEAR);
-        commonData.setProductId(ProductType.PRODUCT_IGEN.getName());
+        commonData.setProductId(ProductType.PRODUCT_IGEN.getLogicName());
         commonData.setProductCurrency(PRODUCT_IGEN_CURRENCY);
         commonData.setProductName(PRODUCT_IGEN_NAME);
         return commonData;
@@ -262,8 +262,8 @@ public class ProductIGenService implements ProductService {
     }
 
     private static void checkCommonData(CommonData commonData) {
-        isEqual(commonData.getProductId(), ProductType.PRODUCT_IGEN.getName(), PolicyValidationException.productIGenExpected);
-        isEqual(commonData.getProductName(), PRODUCT_IGEN_NAME, PolicyValidationException.productIGenExpected);
+        isEqual(commonData.getProductId(), ProductType.PRODUCT_IGEN.getLogicName(), PolicyValidationException.productIGenExpected);
+//        isTrue(StringUtils.isNotBlank(commonData.getProductName()), PolicyValidationException.productIGenExpected);
     }
 
     private static void checkIGenPremiumsData(PremiumsData premiumsData, LocalDate startDate) {

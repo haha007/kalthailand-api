@@ -30,7 +30,7 @@ import static th.co.krungthaiaxa.api.elife.products.ProductUtils.amountTHB;
 public class ProductIFineService implements ProductService {
     public final static Integer DURATION_COVERAGE_IN_YEAR = 10;
     public final static Integer DURATION_PAYMENT_IN_YEAR = 10;
-    public final static String PRODUCT_IFINE_NAME = "Product iFine";
+    public final static String PRODUCT_IFINE_NAME = ProductType.PRODUCT_IFINE.getLogicDisplayName();
     public final static String CURRENCY = "THB";
     /**
      * For understanding "sum insured" & "sum assured", please read here: http://www.livemint.com/Money/Ksp8iZvMDxOm9wdYSXuwnK/Did-you-know--What8217s-the-difference-between-sum-assur.html
@@ -185,7 +185,7 @@ public class ProductIFineService implements ProductService {
     @Override
     public CommonData initCommonData() {
         CommonData commonData = new CommonData();
-        commonData.setProductId(ProductType.PRODUCT_IFINE.getName());
+        commonData.setProductId(ProductType.PRODUCT_IFINE.getLogicName());
         commonData.setProductCurrency(CURRENCY);
         commonData.setProductName(PRODUCT_IFINE_NAME);
         commonData.setMaxAge(MAX_AGE);
@@ -277,8 +277,8 @@ public class ProductIFineService implements ProductService {
     }
 
     private static void checkCommonData(CommonData commonData) {
-        isEqual(commonData.getProductId(), ProductType.PRODUCT_IFINE.getName(), PolicyValidationException.productIFineExpected);
-        isEqual(commonData.getProductName(), PRODUCT_IFINE_NAME, PolicyValidationException.productIFineExpected);
+        isEqual(commonData.getProductId(), ProductType.PRODUCT_IFINE.getLogicName(), PolicyValidationException.productIFineExpected);
+//        isTrue(StringUtils.isNotBlank(commonData.getProductName()), PolicyValidationException.productIFineExpected);
     }
 
     private Double get2DigitsDouble(Double value) {

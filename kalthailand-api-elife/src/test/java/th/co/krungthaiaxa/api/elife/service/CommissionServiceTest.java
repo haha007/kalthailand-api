@@ -43,7 +43,7 @@ public class CommissionServiceTest extends ELifeTest {
      */
     public static CommissionPlan constructCommissionPlan(String unitCode, ProductType productType, CustomerCategory customerCategory, double[][] commissionValues) {
         CommissionPlan commissionPlan = new CommissionPlan();
-        commissionPlan.setPlanCode(productType.getName());
+        commissionPlan.setPlanCode(productType.getLogicName());
         commissionPlan.setUnitCode(unitCode);
         commissionPlan.setCustomerCategory(customerCategory);
 

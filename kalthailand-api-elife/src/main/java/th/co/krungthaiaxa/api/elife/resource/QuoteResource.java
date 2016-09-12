@@ -85,11 +85,11 @@ public class QuoteResource {
         try {
             String productId = quote.get().getCommonData().getProductId();
 
-            if (productId.equals(ProductType.PRODUCT_10_EC.getName())) {
+            if (productId.equals(ProductType.PRODUCT_10_EC.getLogicName())) {
                 emailService.sendQuote10ECEmail(quote.get(), base64Image);
-            } else if (productId.equals(ProductType.PRODUCT_IFINE.getName())) {
+            } else if (productId.equals(ProductType.PRODUCT_IFINE.getLogicName())) {
                 emailService.sendQuoteiFineEmail(quote.get());
-            } else if (productId.equals(ProductType.PRODUCT_IPROTECT.getName())) {
+            } else if (productId.equals(ProductType.PRODUCT_IPROTECT.getLogicName())) {
                 emailService.sendQuoteIProtect(quote.get());
             } else {
                 logger.debug("No mail to send for product {}", productId);
