@@ -666,12 +666,15 @@
                     $scope.errorMessage = null;
                     $scope.successMessage = null;
                     $scope.policyDetail = successResponse;
+                    
                     if (successResponse.premiumsData.product10ECPremium) {
                         $scope.sumInsured = successResponse.premiumsData.product10ECPremium.sumInsured.value + " " + successResponse.premiumsData.product10ECPremium.sumInsured.currencyCode;
-                    }
-                    else {
+                    } else if (successResponse.premiumsData.productIProtectPremium) {
+                    	$scope.sumInsured = successResponse.premiumsData.productIProtectPremium.sumInsured.value + " " + successResponse.premiumsData.productIProtectPremium.sumInsured.currencyCode;
+                    } else if (successResponse.premiumsData.productIFinePremium) {
                         $scope.sumInsured = successResponse.premiumsData.productIFinePremium.sumInsured.value + " " + successResponse.premiumsData.productIFinePremium.sumInsured.currencyCode;
                     }
+                    
                     var periodicity = '' + successResponse.premiumsData.financialScheduler.periodicity.code;
                     $scope.periodicity = periodicity;
                     var premium = successResponse.premiumsData.financialScheduler.modalAmount.value;
