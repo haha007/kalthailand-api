@@ -9,18 +9,20 @@ import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
 import org.springframework.ws.soap.client.core.SoapActionCallback;
 import org.springframework.ws.transport.WebServiceMessageSender;
 import org.springframework.ws.transport.http.HttpComponentsMessageSender;
+import th.co.krungthaiaxa.api.common.utils.JsonUtil;
 import th.co.krungthaiaxa.api.elife.exception.ElifeException;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.enums.DocumentType;
+import th.co.krungthaiaxa.api.elife.products.ProductType;
+import th.co.krungthaiaxa.api.elife.products.ProductUtils;
 import th.co.krungthaiaxa.api.elife.tmc.wsdl.ReceivePDFJSON;
 import th.co.krungthaiaxa.api.elife.tmc.wsdl.ReceivePDFJSONResponse;
-import th.co.krungthaiaxa.api.common.utils.JsonUtil;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
 
-import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.notNull;
 import static th.co.krungthaiaxa.api.common.utils.JsonUtil.getJson;
+import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.notNull;
 
 @Component
 public class TMCClient extends WebServiceGatewaySupport {
@@ -45,11 +47,14 @@ public class TMCClient extends WebServiceGatewaySupport {
 
         TMCSendingPDFRequest tmcSendingPDFRequest = new TMCSendingPDFRequest();
         tmcSendingPDFRequest.setContent(pdfBase64Encoded);
-        tmcSendingPDFRequest.setProductType(policy.getCommonData().getProductName());
+        //TODO Product name here is the product display name. Should never use it. Should use productId.
+        String productLogicName = policy.getCommonData().getProductId();
+        ProductType productType = ProductUtils.validateExistProductTypeByLogicName(productLogicName);
+        tmcSendingPDFRequest.setProductType(productType.getLogicDisplayName());//Cannot change it because TMC system already register iFine and iProtect with logicDisplayName()
         tmcSendingPDFRequest.setCustomerName(
                 policy.getInsureds().get(0).getPerson().getTitle() + " " +
-                policy.getInsureds().get(0).getPerson().getGivenName() + " " +
-                policy.getInsureds().get(0).getPerson().getSurName());
+                        policy.getInsureds().get(0).getPerson().getGivenName() + " " +
+                        policy.getInsureds().get(0).getPerson().getSurName());
         tmcSendingPDFRequest.setCustomerTel(policy.getInsureds().get(0).getPerson().getMobilePhoneNumber().getNumber());
         tmcSendingPDFRequest.setDocumentType(documentType.name());
         tmcSendingPDFRequest.setIdCard(policy.getInsureds().get(0).getPerson().getRegistrations().get(0).getId());

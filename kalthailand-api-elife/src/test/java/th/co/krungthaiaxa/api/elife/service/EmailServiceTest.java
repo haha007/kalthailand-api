@@ -198,11 +198,11 @@ public class EmailServiceTest extends ELifeTest {
         //assertThat("<td align=\"right\" class=\"header-normal\" >" + messageSource.getMessage("payment.mode." + policy.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().toString(), null, thLocale) + "</td>");
         DecimalFormat money = new DecimalFormat("#,##0");
         String sumInsure = "";
-        if (policy.getCommonData().getProductId().equals(ProductType.PRODUCT_10_EC.getName())) {
+        if (policy.getCommonData().getProductId().equals(ProductType.PRODUCT_10_EC.getLogicName())) {
             sumInsure = money.format(policy.getPremiumsData().getProduct10ECPremium().getSumInsured().getValue());
-        } else if (policy.getCommonData().getProductId().equals(ProductType.PRODUCT_IFINE.getName())) {
+        } else if (policy.getCommonData().getProductId().equals(ProductType.PRODUCT_IFINE.getLogicName())) {
             sumInsure = money.format(policy.getPremiumsData().getProductIFinePremium().getSumInsured().getValue());
-        } else if (policy.getCommonData().getProductId().equals(ProductType.PRODUCT_IGEN.getName())) {
+        } else if (policy.getCommonData().getProductId().equals(ProductType.PRODUCT_IGEN.getLogicName())) {
             sumInsure = money.format(policy.getPremiumsData().getProductIGenPremium().getSumInsured().getValue());
         }
         assertThat("<td align=\"right\" class=\"header-normal\" >" + sumInsure + " บาท</td>");

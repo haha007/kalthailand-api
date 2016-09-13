@@ -36,25 +36,25 @@ public class ProductServiceFactoryTest {
 
     @Test
     public void should_return_10EC_product() {
-        ProductService productService = productServiceFactory.getProduct(ProductType.PRODUCT_10_EC.getName());
+        ProductService productService = productServiceFactory.getProduct(ProductType.PRODUCT_10_EC.getLogicName());
         assertThat(productService).isInstanceOf(Product10ECService.class);
     }
 
     @Test
     public void should_return_iBegin_product() {
-        ProductService productService = productServiceFactory.getProduct(ProductType.PRODUCT_IBEGIN.getName());
+        ProductService productService = productServiceFactory.getProduct(ProductType.PRODUCT_IBEGIN.getLogicName());
         assertThat(productService).isInstanceOf(ProductIBeginService.class);
     }
 
     @Test
     public void should_return_iFine_product() {
-        ProductService productService = productServiceFactory.getProduct(ProductType.PRODUCT_IFINE.getName());
+        ProductService productService = productServiceFactory.getProduct(ProductType.PRODUCT_IFINE.getLogicName());
         assertThat(productService).isInstanceOf(ProductIFineService.class);
     }
 
     @Test
     public void should_return_iGen_product() {
-        ProductService productService = productServiceFactory.getProduct(ProductType.PRODUCT_IGEN.getName());
+        ProductService productService = productServiceFactory.getProduct(ProductType.PRODUCT_IGEN.getLogicName());
         assertThat(productService).isInstanceOf(ProductIGenService.class);
     }
 

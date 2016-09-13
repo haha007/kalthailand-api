@@ -32,11 +32,22 @@ public class CommonData implements Serializable {
         this.productId = productId;
     }
 
+    /**
+     * @return
+     * @deprecated Please use productId and based on that get display name, don't use this field anymore.
+     * We still keep it for compatible with old data.
+     */
+    @Deprecated
     @ApiModelProperty(required = true, value = "The name assigned to the product for marketing purposes")
     public String getProductName() {
         return productName;
     }
 
+    /**
+     * @param productName
+     * @deprecated view more at {@link #getProductName()}.
+     */
+    @Deprecated
     public void setProductName(String productName) {
         this.productName = productName;
     }

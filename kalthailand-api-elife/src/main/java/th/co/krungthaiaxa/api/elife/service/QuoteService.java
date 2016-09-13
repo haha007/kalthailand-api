@@ -70,7 +70,7 @@ public class QuoteService {
     }
 
     public Quote createQuote(String sessionId, ChannelType channelType, ProductQuotation productQuotation) {
-        ProductService productService = productServiceFactory.getProduct(productQuotation.getProductType().getName());
+        ProductService productService = productServiceFactory.getProduct(productQuotation.getProductType().getLogicName());
 
         Person person = new Person();
         if (ChannelType.LINE.equals(channelType)) {

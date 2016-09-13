@@ -183,13 +183,13 @@ public class EmailService {
         Person person = pol.getInsureds().get(0).getPerson();
         DecimalFormat money = new DecimalFormat("#,##0");
         String sumInsure = "";
-        if (pol.getCommonData().getProductId().equals(ProductType.PRODUCT_10_EC.getName())) {
+        if (pol.getCommonData().getProductId().equals(ProductType.PRODUCT_10_EC.getLogicName())) {
             sumInsure = money.format(pol.getPremiumsData().getProduct10ECPremium().getSumInsured().getValue());
-        } else if (pol.getCommonData().getProductId().equals(ProductType.PRODUCT_IFINE.getName())) {
+        } else if (pol.getCommonData().getProductId().equals(ProductType.PRODUCT_IFINE.getLogicName())) {
             sumInsure = money.format(pol.getPremiumsData().getProductIFinePremium().getSumInsured().getValue());
-        } else if (pol.getCommonData().getProductId().equals(ProductType.PRODUCT_IGEN.getName())) {
+        } else if (pol.getCommonData().getProductId().equals(ProductType.PRODUCT_IGEN.getLogicName())) {
             sumInsure = money.format(pol.getPremiumsData().getProductIGenPremium().getSumInsured().getValue());
-        } else if (pol.getCommonData().getProductId().equals(ProductType.PRODUCT_IPROTECT.getName())) {
+        } else if (pol.getCommonData().getProductId().equals(ProductType.PRODUCT_IPROTECT.getLogicName())) {
         	sumInsure = money.format(pol.getPremiumsData().getProductIProtectPremium().getSumInsured().getValue());
         }
         return emailContent.replace("%FULL_NAME%", person.getGivenName() + " " + person.getSurName())

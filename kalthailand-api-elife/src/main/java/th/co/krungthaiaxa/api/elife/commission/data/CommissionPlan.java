@@ -19,7 +19,7 @@ public class CommissionPlan extends BaseEntity {
     private String unitCode;
     /**
      * PlanCode is the combination productType and packageName (e.g. {@link ProductType#PRODUCT_IFINE}_{@link th.co.krungthaiaxa.api.elife.products.ProductIFinePackage#IFINE1}.
-     * Most of the time it's equals to {@link ProductType#getName()}.
+     * Most of the time it's equals to {@link ProductType#getLogicName()}.
      */
     @Indexed
     private String planCode;

@@ -21,19 +21,19 @@ public class ProductServiceFactory {
     }
 
     /**
-     * @param productName get from {@link ProductType#getName()}.
+     * @param productName get from {@link ProductType#getLogicName()}.
      * @return
      */
     public ProductService getProduct(String productName) {
-        if (productName.equals(ProductType.PRODUCT_10_EC.getName())) {
+        if (productName.equals(ProductType.PRODUCT_10_EC.getLogicName())) {
             return new Product10ECService();
-        } else if (productName.equals(ProductType.PRODUCT_IBEGIN.getName())) {
+        } else if (productName.equals(ProductType.PRODUCT_IBEGIN.getLogicName())) {
             return productIBegin;
-        } else if (productName.equals(ProductType.PRODUCT_IFINE.getName())) {
+        } else if (productName.equals(ProductType.PRODUCT_IFINE.getLogicName())) {
             return productIFine;
-        } else if (productName.equals(ProductType.PRODUCT_IGEN.getName())) {
+        } else if (productName.equals(ProductType.PRODUCT_IGEN.getLogicName())) {
             return productIGen;
-        } else if (productName.equals(ProductType.PRODUCT_IPROTECT.getName())) {
+        } else if (productName.equals(ProductType.PRODUCT_IPROTECT.getLogicName())) {
             return productIProtect;
         } else {
             throw new IllegalArgumentException("The Product [" + productName + "] is unknown.");

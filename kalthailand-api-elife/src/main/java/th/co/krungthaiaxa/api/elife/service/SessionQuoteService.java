@@ -37,8 +37,8 @@ public class SessionQuoteService {
     }
 
     private SessionQuoteCount countSessionQuotes(ProductType productType, LocalDateTime startDate, LocalDateTime endDate) {
-        long countForEachProduct = sessionQuoteRepository.countByProductIdAndStartDateInRange(productType.getName(), startDate, endDate);
-        return new SessionQuoteCount(productType.getName(), countForEachProduct);
+        long countForEachProduct = sessionQuoteRepository.countByProductIdAndStartDateInRange(productType.getLogicName(), startDate, endDate);
+        return new SessionQuoteCount(productType.getLogicName(), countForEachProduct);
     }
 
     //TODO not refactor yet.

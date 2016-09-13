@@ -1,6 +1,7 @@
 package th.co.krungthaiaxa.api.elife.products;
 
 import org.apache.commons.lang3.StringUtils;
+import th.co.krungthaiaxa.api.common.exeption.BadArgumentException;
 import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
 import th.co.krungthaiaxa.api.elife.exception.ElifeException;
 import th.co.krungthaiaxa.api.elife.exception.MainInsuredException;
@@ -400,6 +401,17 @@ public class ProductUtils {
         T productPackage = Enum.valueOf(packageClass, packageName);
         notNull(productPackage, QuoteCalculationException.packageNameUnknown.apply(packageName));
         return productPackage;
+    }
+
+    public static ProductType validateExistProductTypeByLogicName(String productLogicName) {
+        ProductType[] productTypes = ProductType.values();
+        for (ProductType productType : productTypes) {
+            if (productType.getLogicName().equals(productLogicName)) {
+                return productType;
+            }
+        }
+        String msg = String.format("Not found ProductType with logic name '%s'", productLogicName);
+        throw new BadArgumentException(msg);
     }
 
     public static void validatePremiumAmountInRange(Amount premiumAmount, double premiumMin, double premiumMax) {

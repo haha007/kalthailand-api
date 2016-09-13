@@ -8,12 +8,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.elife.client.SigningClient;
-import th.co.krungthaiaxa.api.elife.model.DocumentDownload;
-import th.co.krungthaiaxa.api.elife.products.ProductType;
-import th.co.krungthaiaxa.api.elife.repository.DocumentDownloadRepository;
 import th.co.krungthaiaxa.api.elife.model.Document;
+import th.co.krungthaiaxa.api.elife.model.DocumentDownload;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.enums.DocumentType;
+import th.co.krungthaiaxa.api.elife.products.ProductType;
+import th.co.krungthaiaxa.api.elife.products.ProductUtils;
+import th.co.krungthaiaxa.api.elife.repository.DocumentDownloadRepository;
 import th.co.krungthaiaxa.api.elife.repository.DocumentRepository;
 import th.co.krungthaiaxa.api.elife.repository.PolicyRepository;
 import th.co.krungthaiaxa.api.elife.utils.ThaiBahtUtil;
@@ -39,7 +40,11 @@ import static java.time.LocalDateTime.now;
 import static java.time.ZoneId.SHORT_IDS;
 import static java.time.ZoneId.of;
 import static java.time.format.DateTimeFormatter.ofPattern;
-import static th.co.krungthaiaxa.api.elife.model.enums.DocumentType.*;
+import static th.co.krungthaiaxa.api.elife.model.enums.DocumentType.APPLICATION_FORM;
+import static th.co.krungthaiaxa.api.elife.model.enums.DocumentType.APPLICATION_FORM_VALIDATED;
+import static th.co.krungthaiaxa.api.elife.model.enums.DocumentType.DA_FORM;
+import static th.co.krungthaiaxa.api.elife.model.enums.DocumentType.ERECEIPT_IMAGE;
+import static th.co.krungthaiaxa.api.elife.model.enums.DocumentType.ERECEIPT_PDF;
 import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.EVERY_MONTH;
 
 @Service
@@ -256,15 +261,20 @@ public class DocumentService {
         graphics.drawString(mobilePhone, 633, 305);
 
         //ProductName
-        graphics.drawString(policy.getCommonData().getProductName(), 188, 353);
-        logger.debug("ProductName : " + policy.getCommonData().getProductName());
+        String productLogicName = policy.getCommonData().getProductId();
+        ProductType productType = ProductUtils.validateExistProductTypeByLogicName(productLogicName);
+        String productDisplayName = productType.getDisplayName();
+        graphics.drawString(productDisplayName, 188, 353);
+        logger.debug("ProductName : " + productDisplayName);
 
         //SumInsured
         Double premium = 0.0;
-        if (policy.getCommonData().getProductId().equals(ProductType.PRODUCT_10_EC.getName())) {
+        if (policy.getCommonData().getProductId().equals(ProductType.PRODUCT_10_EC.getLogicName())) {
             premium = policy.getPremiumsData().getProduct10ECPremium().getSumInsured().getValue();
-        } else if (policy.getCommonData().getProductId().equals(ProductType.PRODUCT_IFINE.getName())) {
+        } else if (policy.getCommonData().getProductId().equals(ProductType.PRODUCT_IFINE.getLogicName())) {
             premium = policy.getPremiumsData().getProductIFinePremium().getSumInsured().getValue();
+        } else if (policy.getCommonData().getProductId().equals(ProductType.PRODUCT_IPROTECT.getLogicName())) {
+            premium = policy.getPremiumsData().getProductIProtectPremium().getSumInsured().getValue();
         }
         graphics.drawString(formatter.format(premium), 553, 353);
 
