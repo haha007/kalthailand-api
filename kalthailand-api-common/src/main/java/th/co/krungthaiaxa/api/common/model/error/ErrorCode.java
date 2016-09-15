@@ -51,6 +51,8 @@ public class ErrorCode {
     public static final Function<String, Error> POLICY_IS_PENDING_PAYMENT = msg -> new Error("0405", "The policy [" + msg + "] is waiting for payment registration", "The policy [" + msg + "] is waiting for payment registration");
     public static final Function<String, Error> POLICY_IS_NOT_PENDING_FOR_PAYMENT = msg -> new Error("0407", "The policy [" + msg + "] is not pending for payment and cannot be updated to pending for validation",
             "The policy [" + msg + "] is not pending for payment and cannot be updated to pending for validation");
+    public static final Function<String, Error> POLICY_IS_NOT_VALIDATED_FOR_PAYMENT = msg -> new Error("0407", "The policy [" + msg + "] is not validated for payment and cannot be updated to validated status",
+            "The policy [" + msg + "] is not validated for payment and cannot be updated to validated status");
     public static final Function<String, Error> ORDER_ID_NOT_PROVIDED = msg -> new Error("0408", "The order id was not provided", "The order id was not provided");
     public static final Function<String, Error> POLICY_VALIDATION_ERROR = msg -> new Error("0409", "Payment is successful but there was an error while trying to validate the policy. Error is [" + msg + "].",
             "There was an error while trying to validate the policy after validating the payment. Error is [" + msg + "].");
