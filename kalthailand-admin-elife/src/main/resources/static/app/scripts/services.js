@@ -129,8 +129,7 @@
     });
     
     app.factory('CommissionResultService', function ($http) {
-//        return new CommissionResultService($http, $sce, ProductCriteria);
-        return $http;
+        return new CommissionResultService($http);
     });
 
 })();

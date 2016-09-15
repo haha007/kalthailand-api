@@ -728,14 +728,7 @@
         	$scope.calculateButton = true;
         }
         
-        var mockData = [
-//                        {'generateDate':'2016-09-03 12:11:12', 'commisionOfMonth':'201608', 'numberOfPolicy':'10', 'pathLinkDownload':'abc.xlsx'}
-                        {'generateDate':'2016-08-03 12:11:12', 'commisionOfMonth':'201607', 'numberOfPolicy':'11', 'pathLinkDownload':'abc201607.xlsx'}
-                        ,{'generateDate':'2016-07-03 12:11:12', 'commisionOfMonth':'201606', 'numberOfPolicy':'8', 'pathLinkDownload':'abc201606.xlsx'}
-                        ,{'generateDate':'2016-06-03 12:11:12', 'commisionOfMonth':'201605', 'numberOfPolicy':'16', 'pathLinkDownload':'abc201605.xlsx'}
-                        ,{'generateDate':'2016-05-03 12:11:12', 'commisionOfMonth':'201604', 'numberOfPolicy':'9', 'pathLinkDownload':'abc201604.xlsx'}
-                        ];
-        $scope.commissionResultAll = mockData;
+        $scope.commissionResultAll = CommissionResultService.allData;
         
         
     });
