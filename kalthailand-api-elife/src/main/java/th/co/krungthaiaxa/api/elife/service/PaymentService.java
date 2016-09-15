@@ -21,4 +21,6 @@ public class PaymentService{
     public Optional<Payment> findLastestPaymentByPolicyNumberAndRegKeyNotNull(String policyNumber){
         return paymentRepository.findOneByRegKeyNotNullAndPolicyId(policyNumber,new Sort(Sort.Direction.DESC,"dueDate"));
     }
+
+
 }

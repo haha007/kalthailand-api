@@ -380,6 +380,12 @@ public class ProductUtils {
                 .orElseThrow(() -> new MainInsuredException("Insured size: " + quote.getInsureds().size()));
     }
 
+    public static Insured validateExistMainInsured(Policy policy) {
+        return policy.getInsureds().stream().filter(Insured::getMainInsuredIndicator)
+                .findFirst()
+                .orElseThrow(() -> new MainInsuredException("Insured size: " + policy.getInsureds().size()));
+    }
+
     private static boolean isValidEmailAddress(String email) {
         String ePattern = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
         java.util.regex.Pattern p = java.util.regex.Pattern.compile(ePattern);
@@ -403,6 +409,10 @@ public class ProductUtils {
         return productPackage;
     }
 
+    /**
+     * @param productLogicName this is the productId
+     * @return
+     */
     public static ProductType validateExistProductTypeByLogicName(String productLogicName) {
         ProductType[] productTypes = ProductType.values();
         for (ProductType productType : productTypes) {

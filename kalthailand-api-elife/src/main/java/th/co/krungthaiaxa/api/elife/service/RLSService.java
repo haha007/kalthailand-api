@@ -55,6 +55,7 @@ import static org.springframework.util.Assert.isTrue;
 import static org.springframework.util.Assert.notNull;
 import static th.co.krungthaiaxa.api.elife.model.enums.ChannelType.LINE;
 import static th.co.krungthaiaxa.api.elife.service.LineService.LINE_PAY_INTERNAL_ERROR;
+import static th.co.krungthaiaxa.api.elife.service.LineService.RESPONSE_CODE_SUCCESS;
 import static th.co.krungthaiaxa.api.elife.utils.ExcelUtils.appendRow;
 import static th.co.krungthaiaxa.api.elife.utils.ExcelUtils.text;
 
@@ -76,8 +77,25 @@ public class RLSService {
     private final PolicyRepository policyRepository;
     private final PolicyService policyService;
     private final PaymentService paymentService;
+
     //    private final DeductionFileRepository deductionFileRepository;
+    /**
+     * Don't put final here because we need inject mock test dependency
+     */
     private LineService lineService;
+    private final PaymentInformService paymentInformService;
+
+    @Inject
+    public RLSService(CollectionFileRepository collectionFileRepository, PaymentRepository paymentRepository, PolicyRepository policyRepository, PolicyService policyService, PaymentService paymentService, LineService lineService, PaymentInformService paymentInformService) {
+        this.collectionFileRepository = collectionFileRepository;
+        this.paymentRepository = paymentRepository;
+        this.policyRepository = policyRepository;
+        this.policyService = policyService;
+        this.paymentService = paymentService;
+//        this.deductionFileRepository = deductionFileRepository;
+        this.lineService = lineService;
+        this.paymentInformService = paymentInformService;
+    }
 
     private Function<PeriodicityCode, String> paymentMode = periodicityCode -> {
         if (periodicityCode.equals(PeriodicityCode.EVERY_YEAR)) {
@@ -90,17 +108,6 @@ public class RLSService {
             return "M";
         }
     };
-
-    @Inject
-    public RLSService(CollectionFileRepository collectionFileRepository, PaymentRepository paymentRepository, PolicyRepository policyRepository, PolicyService policyService, PaymentService paymentService, LineService lineService) {
-        this.collectionFileRepository = collectionFileRepository;
-        this.paymentRepository = paymentRepository;
-        this.policyRepository = policyRepository;
-        this.policyService = policyService;
-        this.paymentService = paymentService;
-//        this.deductionFileRepository = deductionFileRepository;
-        this.lineService = lineService;
-    }
 
     public void importCollectionFile(InputStream is) {
         CollectionFile collectionFile = readCollectionExcelFile(is);
@@ -312,16 +319,18 @@ public class RLSService {
     }
 
     void processCollectionFileLine(DeductionFile deductionFile, CollectionFileLine collectionFileLine) {
+
         String paymentId = collectionFileLine.getPaymentId();
         String policyId = collectionFileLine.getPolicyNumber();
         Double premiumAmount = collectionFileLine.getPremiumAmount();
+        Policy policy = null;
         Payment payment = null;
         String currencyCode = null;
         String paymentModeString = null;
         String resultMessage = "CollectionFileLine is not processed completely yet. " + ObjectMapperUtil.toStringMultiLine(collectionFileLine);
         String resultCode = LINE_PAY_INTERNAL_ERROR;
         try {
-            Policy policy = policyRepository.findByPolicyId(policyId);
+            policy = policyRepository.findByPolicyId(policyId);
             if (policy == null) {
                 throw new UnexpectedException("Not found policy " + policyId);
             }
@@ -352,10 +361,25 @@ public class RLSService {
                 policyService.updatePaymentWithErrorStatus(payment, premiumAmount, currencyCode, LINE, resultCode, resultMessage);
             }
         } finally {
+            if (!resultCode.equals(RESPONSE_CODE_SUCCESS)) {
+                if (policy == null || policy.getPolicyId() == null) {
+                    logger.warn("Cannot find policyId " + policyId + ", so cannot get information of insured person. Therefore we cannot send inform email to insured customer.");
+                } else {
+                    informFailPaymentsToUser(policy, payment);
+                }
+            }
+
             DeductionFileLine deductionFileLine = initDeductionFileLine(collectionFileLine, paymentModeString, resultCode, resultMessage);
             deductionFile.addLine(deductionFileLine);
             logger.debug("Finished processing collection file line with payment id [" + paymentId + "]");
         }
+    }
+
+    public void informFailPaymentsToUser(Policy policy, Payment payment) {
+        paymentInformService.sendPaymentFailEmail(policy, payment);
+//        //TODO processing fail payments
+//        //TODO fill email content & send to client
+
     }
 
     private DeductionFileLine initDeductionFileLine(CollectionFileLine collectionFileLine, String paymentMode, String errorCode, String errorMessage) {
