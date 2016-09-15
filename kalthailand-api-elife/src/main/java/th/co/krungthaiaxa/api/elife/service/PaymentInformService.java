@@ -45,10 +45,11 @@ public class PaymentInformService {
         String emailSubject = "[Elife] Payment for policy is not success: ";
         String emailContent = fillEmailContent(policy, payment);
         emailService.sendEmail(insuredEmail, emailSubject, emailContent, Collections.EMPTY_LIST);
+        LOGGER.debug("Sent informed email to customer, policyId: " + policy.getPolicyId());
     }
 
     private String fillEmailContent(Policy policy, Payment payment) {
-        String emailContent = IOUtil.loadTextFileInClassPath("/email-content/email-payment-response.html");
+        String emailContent = IOUtil.loadTextFileInClassPath("/email-content/email-payment-fail.html");
         String paymentLink = "";
         String productDisplayName = "";
         String customerName = "";

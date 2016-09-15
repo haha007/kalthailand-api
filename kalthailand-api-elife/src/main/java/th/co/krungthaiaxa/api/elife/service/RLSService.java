@@ -361,25 +361,27 @@ public class RLSService {
                 policyService.updatePaymentWithErrorStatus(payment, premiumAmount, currencyCode, LINE, resultCode, resultMessage);
             }
         } finally {
+
+            DeductionFileLine deductionFileLine = initDeductionFileLine(collectionFileLine, paymentModeString, resultCode, resultMessage);
+            deductionFile.addLine(deductionFileLine);
             if (!resultCode.equals(RESPONSE_CODE_SUCCESS)) {
                 if (policy == null || policy.getPolicyId() == null) {
                     logger.warn("Cannot find policyId " + policyId + ", so cannot get information of insured person. Therefore we cannot send inform email to insured customer.");
                 } else {
-                    informFailPaymentsToUser(policy, payment);
+                    try {
+                        informFailPaymentsToUser(policy, payment);
+                    } catch (Exception ex) {
+                        deductionFileLine.setRejectionMessage(deductionFileLine.getRejectionMessage() + ". Cannot send inform email to customer: " + ex.getMessage());
+                        logger.error(ex.getMessage(), ex);
+                    }
                 }
             }
-
-            DeductionFileLine deductionFileLine = initDeductionFileLine(collectionFileLine, paymentModeString, resultCode, resultMessage);
-            deductionFile.addLine(deductionFileLine);
             logger.debug("Finished processing collection file line with payment id [" + paymentId + "]");
         }
     }
 
     public void informFailPaymentsToUser(Policy policy, Payment payment) {
         paymentInformService.sendPaymentFailEmail(policy, payment);
-//        //TODO processing fail payments
-//        //TODO fill email content & send to client
-
     }
 
     private DeductionFileLine initDeductionFileLine(CollectionFileLine collectionFileLine, String paymentMode, String errorCode, String errorMessage) {
