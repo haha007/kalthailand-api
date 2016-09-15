@@ -56,6 +56,11 @@
                 controller: 'CommissionController',
                 activeTab: 'commission'
             })
+            .when('/commission-result', {
+                templateUrl: 'app/templates/commission-result.html',
+                controller: 'CommissionResultController',
+                activeTab: 'commission-result'
+            })
             .otherwise({
                 redirectTo: '/home'
             });

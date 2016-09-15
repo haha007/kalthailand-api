@@ -712,4 +712,31 @@
     app.controller('CommissionController', function (CommissionService, $scope, $route, $http, $localStorage) {
         $scope.service = CommissionService;
     });
+    
+    app.controller('CommissionResultController', function (CommissionResultService, $scope, $route, $http, $localStorage) {
+        $scope.service = CommissionResultService;
+        
+        var dateNow = new Date();
+        var day = dateNow.getDate();
+        
+        // Calculate Button is enable on 1-10 of month
+        if(day >= 1 && day <= 10) {
+        	// 1-10 is false to Enable button
+        	$scope.calculateButton = false;
+        } else {
+        	// 11+ is true to Disable button
+        	$scope.calculateButton = true;
+        }
+        
+        var mockData = [
+//                        {'generateDate':'2016-09-03 12:11:12', 'commisionOfMonth':'201608', 'numberOfPolicy':'10', 'pathLinkDownload':'abc.xlsx'}
+                        {'generateDate':'2016-08-03 12:11:12', 'commisionOfMonth':'201607', 'numberOfPolicy':'11', 'pathLinkDownload':'abc201607.xlsx'}
+                        ,{'generateDate':'2016-07-03 12:11:12', 'commisionOfMonth':'201606', 'numberOfPolicy':'8', 'pathLinkDownload':'abc201606.xlsx'}
+                        ,{'generateDate':'2016-06-03 12:11:12', 'commisionOfMonth':'201605', 'numberOfPolicy':'16', 'pathLinkDownload':'abc201605.xlsx'}
+                        ,{'generateDate':'2016-05-03 12:11:12', 'commisionOfMonth':'201604', 'numberOfPolicy':'9', 'pathLinkDownload':'abc201604.xlsx'}
+                        ];
+        $scope.commissionResultAll = mockData;
+        
+        
+    });
 })();
