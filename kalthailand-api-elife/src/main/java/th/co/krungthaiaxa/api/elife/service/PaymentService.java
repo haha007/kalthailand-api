@@ -12,15 +12,17 @@ import java.util.Optional;
  * @author khoi.tran on 8/29/16.
  */
 @Service
-public class PaymentService{
+public class PaymentService {
     private final PaymentRepository paymentRepository;
 
     @Inject
     public PaymentService(PaymentRepository paymentRepository) {this.paymentRepository = paymentRepository;}
 
-    public Optional<Payment> findLastestPaymentByPolicyNumberAndRegKeyNotNull(String policyNumber){
-        return paymentRepository.findOneByRegKeyNotNullAndPolicyId(policyNumber,new Sort(Sort.Direction.DESC,"dueDate"));
+    public Optional<Payment> findLastestPaymentByPolicyNumberAndRegKeyNotNull(String policyNumber) {
+        return paymentRepository.findOneByRegKeyNotNullAndPolicyId(policyNumber, new Sort(Sort.Direction.DESC, "dueDate"));
     }
 
-
+    public Payment findPaymentById(String paymentId) {
+        return paymentRepository.findOne(paymentId);
+    }
 }

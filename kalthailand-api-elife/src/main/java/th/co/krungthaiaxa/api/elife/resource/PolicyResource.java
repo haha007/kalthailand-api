@@ -413,7 +413,7 @@ public class PolicyResource {
             @ApiResponse(code = 406, message = "If the payment booking is successful and no registration key has been provided", response = Error.class),
             @ApiResponse(code = 500, message = "If there was some internal error", response = Error.class)
     })
-    @RequestMapping(value = "/policies/{policyId}/update/status/validated", produces = APPLICATION_JSON_VALUE, method = PUT)
+    @RequestMapping(value = "/policies/{policyId}/update/status/completedValidation", produces = APPLICATION_JSON_VALUE, method = PUT)
     @ResponseBody
     public ResponseEntity<byte[]> updatePolicyToValidated(
             @ApiParam(value = "The policy ID", required = true)
@@ -461,6 +461,7 @@ public class PolicyResource {
         }
 
         // Update the policy status
+        //TODO inside method, set status to VALIDATED
         policyService.updatePolicyAfterFirstPaymentValidated(policy.get());
 
         return new ResponseEntity<>(getJson(policy.get()), OK);
