@@ -2,6 +2,9 @@ package th.co.krungthaiaxa.api.common.utils;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author khoi.tran on 8/2/16.
  */
@@ -16,7 +19,7 @@ public class StringUtil {
 
     /**
      * Applies the specified mask to the card number.
-     * 
+     *
      * @param string The string in plain format
      * @return The masked card number
      */
@@ -40,10 +43,40 @@ public class StringUtil {
     /**
      * This method is usually used in writing log.
      * We usually dont' want to write email information into logs files (because of security). So this method will help you to put some mask characters.
+     *
      * @param email The original email, e.g. "myemail@axa.com"
      * @return masked email, e.g. "mye********om"
      */
     public static String maskEmail(String email) {
         return maskString(email, 3, 2);
+    }
+
+    /**
+     * @param string the input string
+     * @return split the input string by comma.
+     * The result will never be null.
+     * The result will never contain any null or empty element.
+     */
+    public static List<String> splitToNotNullStrings(String string) {
+        List<String> result = split(string, ",");
+        if (result == null) {
+            result = new ArrayList<>();
+        }
+        return result;
+    }
+
+    public static List<String> split(String string, String separator) {
+        List<String> result = null;
+        if (string != null) {
+            String[] array = StringUtils.splitByWholeSeparator(string, separator);
+            result = new ArrayList<>(array.length);
+            for (String s : array) {
+                String item = s.trim();
+                if (StringUtils.isNotBlank(item)) {
+                    result.add(item);
+                }
+            }
+        }
+        return result;
     }
 }

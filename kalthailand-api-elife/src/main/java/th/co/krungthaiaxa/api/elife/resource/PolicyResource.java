@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import th.co.krungthaiaxa.api.common.model.error.Error;
 import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
+import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
 import th.co.krungthaiaxa.api.common.utils.JsonUtil;
 import th.co.krungthaiaxa.api.elife.exception.ElifeException;
 import th.co.krungthaiaxa.api.elife.model.Document;
@@ -31,6 +32,7 @@ import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
+import th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus;
 import th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayCaptureMode;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayResponse;
@@ -39,6 +41,7 @@ import th.co.krungthaiaxa.api.elife.model.line.LinePayResponsePaymentInfo;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
 import th.co.krungthaiaxa.api.elife.service.DocumentService;
 import th.co.krungthaiaxa.api.elife.service.LineService;
+import th.co.krungthaiaxa.api.elife.service.PaymentService;
 import th.co.krungthaiaxa.api.elife.service.PolicyService;
 import th.co.krungthaiaxa.api.elife.service.QuoteService;
 import th.co.krungthaiaxa.api.elife.utils.ExcelUtils;
@@ -85,18 +88,19 @@ public class PolicyResource {
     private final LineService lineService;
     private final PolicyService policyService;
     private final QuoteService quoteService;
-
+    private final PaymentService paymentService;
     @Value("${environment.name}")
     private String environmentName;
     @Value("${kal.api.auth.header}")
     private String tokenHeader;
 
     @Inject
-    public PolicyResource(DocumentService documentService, LineService lineService, PolicyService policyService, QuoteService quoteService) {
+    public PolicyResource(DocumentService documentService, LineService lineService, PolicyService policyService, QuoteService quoteService, PaymentService paymentService) {
         this.documentService = documentService;
         this.lineService = lineService;
         this.policyService = policyService;
         this.quoteService = quoteService;
+        this.paymentService = paymentService;
     }
 
     @ApiOperation(value = "List of policies", notes = "Gets a list of policies.", response = Policy.class, responseContainer = "List")
@@ -355,7 +359,7 @@ public class PolicyResource {
             @ApiParam(value = "The policy ID", required = true)
             @PathVariable String policyId,
             @ApiParam(value = "The payment ID", required = true)
-            @RequestParam String paymentId,
+            @RequestParam String paymentId,//TODO this is for the first time, so this is the first payment in policy.
             @ApiParam(value = "The order id used to book the payment", required = true)
             @RequestParam String orderId,
             @ApiParam(value = "The transaction id to use to confirm the payment. Must be sent of status id SUCCESS", required = false)
@@ -415,11 +419,11 @@ public class PolicyResource {
     })
     @RequestMapping(value = "/policies/{policyId}/update/status/completedValidation", produces = APPLICATION_JSON_VALUE, method = PUT)
     @ResponseBody
-    public ResponseEntity<byte[]> updatePolicyToValidated(
+    public ResponseEntity<byte[]> completedValidationOnPolicy(
             @ApiParam(value = "The policy ID", required = true)
             @PathVariable String policyId,
             @ApiParam(value = "The payment ID", required = true)
-            @RequestParam String paymentId,
+            @RequestParam String oldPaymentId,
             @ApiParam(value = "The order id used to book the payment", required = true)
             @RequestParam String orderId,
             @ApiParam(value = "The transaction id to use to confirm the payment. Must be sent of status id SUCCESS", required = false)
@@ -438,31 +442,11 @@ public class PolicyResource {
         }
 
         if (!policy.get().getStatus().equals(PolicyStatus.VALIDATED)) {
-            logger.error("The policy is in status [" + policy.get().getStatus().name() + "] and cannot be updated to " + VALIDATED + " status.");
+            logger.error("The policy is in status [" + policy.get().getStatus().name() + "], it must be " + VALIDATED + " status.");
             return new ResponseEntity<>(getJson(ErrorCode.POLICY_IS_NOT_VALIDATED_FOR_PAYMENT.apply(policyId)), NOT_ACCEPTABLE);
         }
+        paymentService.retryFailedPayment(policyId, oldPaymentId, orderId, transactionId, regKey);
 
-        Optional<Payment> payment = policy.get().getPayments().stream().filter(tmp -> tmp.getPaymentId().equals(paymentId)).findFirst();
-        if (!payment.isPresent()) {
-            logger.error("Unable to find the payment with ID [" + paymentId + "] in the policy with ID [" + policyId + "]");
-            return new ResponseEntity<>(getJson(ErrorCode.POLICY_DOES_NOT_CONTAIN_A_PAYMENT_WITH_TRANSACTION_ID), NOT_ACCEPTABLE);
-        }
-
-        // If no transaction id, then in error, nothing else should be done since we don't have a status (error / success)
-        if (!transactionId.isPresent() || isEmpty(transactionId.get())) {
-            return new ResponseEntity<>(getJson(policy.get()), OK);
-        }
-
-        // Update the payment
-        if (regKey.isPresent()) {
-            policyService.updatePayment(payment.get(), orderId, transactionId.get(), (!regKey.isPresent() ? "" : regKey.get()));
-        } else {
-            policyService.updatePayment(payment.get(), orderId, transactionId.get(), "");
-        }
-
-        // Update the policy status
-        //TODO inside method, set status to VALIDATED
-        policyService.updatePolicyAfterFirstPaymentValidated(policy.get());
 
         return new ResponseEntity<>(getJson(policy.get()), OK);
     }

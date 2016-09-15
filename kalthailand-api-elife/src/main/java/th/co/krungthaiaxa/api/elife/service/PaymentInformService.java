@@ -3,11 +3,11 @@ package th.co.krungthaiaxa.api.elife.service;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.common.exeption.EmailException;
 import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
 import th.co.krungthaiaxa.api.common.utils.IOUtil;
+import th.co.krungthaiaxa.api.elife.data.GeneralSetting;
 import th.co.krungthaiaxa.api.elife.model.Amount;
 import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.model.Payment;
@@ -28,12 +28,13 @@ public class PaymentInformService {
     private final static Logger LOGGER = LoggerFactory.getLogger(PaymentInformService.class);
 
     private final EmailService emailService;
-
-    @Value("${fe.host}/${fe.payment.contextpath}")
-    private String paymentPath;
+    private final GeneralSettingService generalSettingService;
 
     @Inject
-    public PaymentInformService(EmailService emailService) {this.emailService = emailService;}
+    public PaymentInformService(EmailService emailService, GeneralSettingService generalSettingService) {
+        this.emailService = emailService;
+        this.generalSettingService = generalSettingService;
+    }
 
     public void sendPaymentFailEmail(Policy policy, Payment payment) {
         Insured mainInsured = ProductUtils.validateExistMainInsured(policy);
@@ -89,8 +90,10 @@ public class PaymentInformService {
     }
 
     private String createPaymentLink(String policyNumber, Payment payment) {
+        GeneralSetting generalSetting = generalSettingService.loadGeneralSetting();
+        String retryLink = generalSetting.getRetryPaymentSetting().getRetryLink();
         if (payment != null) {
-            return String.format("%s?policyNumber=%s&paymentId=%s", paymentPath, policyNumber, payment.getPaymentId());
+            return String.format("%s?policyNumber=%s&paymentId=%s", retryLink, policyNumber, payment.getPaymentId());
         } else {
             //We terrible sorry but cannot help user to payment again by himself: cannot generate payment link without payment and policyNumber. We need to contact and handle this case manually.
             return "";
