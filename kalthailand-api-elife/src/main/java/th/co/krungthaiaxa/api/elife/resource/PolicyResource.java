@@ -71,6 +71,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 import static th.co.krungthaiaxa.api.common.utils.JsonUtil.getJson;
 import static th.co.krungthaiaxa.api.elife.model.enums.ChannelType.LINE;
 import static th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus.PENDING_VALIDATION;
+import static th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus.VALIDATED;
 import static th.co.krungthaiaxa.api.elife.model.line.LinePayCaptureMode.FAKE_WITH_ERROR;
 import static th.co.krungthaiaxa.api.elife.model.line.LinePayCaptureMode.FAKE_WITH_SUCCESS;
 import static th.co.krungthaiaxa.api.elife.model.line.LinePayCaptureMode.REAL;
@@ -375,6 +376,70 @@ public class PolicyResource {
         if (!policy.get().getStatus().equals(PolicyStatus.PENDING_PAYMENT)) {
             logger.error("The policy is in status [" + policy.get().getStatus().name() + "] and cannot be updated to " + PENDING_VALIDATION + " status.");
             return new ResponseEntity<>(getJson(ErrorCode.POLICY_IS_NOT_PENDING_FOR_PAYMENT.apply(policyId)), NOT_ACCEPTABLE);
+        }
+
+        Optional<Payment> payment = policy.get().getPayments().stream().filter(tmp -> tmp.getPaymentId().equals(paymentId)).findFirst();
+        if (!payment.isPresent()) {
+            logger.error("Unable to find the payment with ID [" + paymentId + "] in the policy with ID [" + policyId + "]");
+            return new ResponseEntity<>(getJson(ErrorCode.POLICY_DOES_NOT_CONTAIN_A_PAYMENT_WITH_TRANSACTION_ID), NOT_ACCEPTABLE);
+        }
+
+        // If no transaction id, then in error, nothing else should be done since we don't have a status (error / success)
+        if (!transactionId.isPresent() || isEmpty(transactionId.get())) {
+            return new ResponseEntity<>(getJson(policy.get()), OK);
+        }
+
+        // Update the payment
+        if (regKey.isPresent()) {
+            policyService.updatePayment(payment.get(), orderId, transactionId.get(), (!regKey.isPresent() ? "" : regKey.get()));
+        } else {
+            policyService.updatePayment(payment.get(), orderId, transactionId.get(), "");
+        }
+
+        // Update the policy status
+        policyService.updatePolicyAfterFirstPaymentValidated(policy.get());
+
+        return new ResponseEntity<>(getJson(policy.get()), OK);
+    }
+
+    @ApiOperation(value = "Update Policy status", notes = "Updates the Policy status to VALIDATED. If " +
+            "successful, it also generates the DA form and Application form documents. Payment will be updated to " +
+            "store the registration key which will be used later on for recurrent payments. Payment will also store " +
+            "orderId and transactionId for tracking purpose.", response = Policy.class)
+    @ApiResponses({
+            @ApiResponse(code = 404, message = "If the policy doesn't exist", response = Error.class),
+            @ApiResponse(code = 406, message = "If the payment id is not found in the policy payment list", response = Error.class),
+            @ApiResponse(code = 406, message = "If the payment booking has failed and error details have not been provided", response = Error.class),
+            @ApiResponse(code = 406, message = "If the payment booking is successful and no registration key has been provided", response = Error.class),
+            @ApiResponse(code = 500, message = "If there was some internal error", response = Error.class)
+    })
+    @RequestMapping(value = "/policies/{policyId}/update/status/validated", produces = APPLICATION_JSON_VALUE, method = PUT)
+    @ResponseBody
+    public ResponseEntity<byte[]> updatePolicyToValidated(
+            @ApiParam(value = "The policy ID", required = true)
+            @PathVariable String policyId,
+            @ApiParam(value = "The payment ID", required = true)
+            @RequestParam String paymentId,
+            @ApiParam(value = "The order id used to book the payment", required = true)
+            @RequestParam String orderId,
+            @ApiParam(value = "The transaction id to use to confirm the payment. Must be sent of status id SUCCESS", required = false)
+            @RequestParam(required = false) Optional<String> transactionId,
+            @ApiParam(value = "The RegKey for Monthly Mode Payment Only", required = false)
+            @RequestParam(required = false) Optional<String> regKey) {
+        if (isEmpty(orderId)) {
+            logger.error("The order ID was not received");
+            return new ResponseEntity<>(getJson(ErrorCode.ORDER_ID_NOT_PROVIDED), NOT_ACCEPTABLE);
+        }
+
+        Optional<Policy> policy = policyService.findPolicy(policyId);
+        if (!policy.isPresent()) {
+            logger.error("Unable to find the policy with ID [" + policyId + "]");
+            return new ResponseEntity<>(getJson(ErrorCode.POLICY_DOES_NOT_EXIST), NOT_FOUND);
+        }
+
+        if (!policy.get().getStatus().equals(PolicyStatus.VALIDATED)) {
+            logger.error("The policy is in status [" + policy.get().getStatus().name() + "] and cannot be updated to " + VALIDATED + " status.");
+            return new ResponseEntity<>(getJson(ErrorCode.POLICY_IS_NOT_VALIDATED_FOR_PAYMENT.apply(policyId)), NOT_ACCEPTABLE);
         }
 
         Optional<Payment> payment = policy.get().getPayments().stream().filter(tmp -> tmp.getPaymentId().equals(paymentId)).findFirst();
