@@ -2,6 +2,7 @@ package th.co.krungthaiaxa.api.elife.resource;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.apache.commons.io.IOUtils;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import th.co.krungthaiaxa.api.common.model.error.Error;
 import th.co.krungthaiaxa.api.elife.commission.data.CommissionCalculationSession;
@@ -19,6 +22,9 @@ import th.co.krungthaiaxa.api.elife.commission.data.CommissionResult;
 import th.co.krungthaiaxa.api.elife.commission.service.CommissionCalculationSessionExportService;
 import th.co.krungthaiaxa.api.elife.commission.service.CommissionCalculationSessionService;
 import th.co.krungthaiaxa.api.elife.commission.service.CommissionPlanService;
+import th.co.krungthaiaxa.api.elife.model.Policy;
+import th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus;
+import th.co.krungthaiaxa.api.elife.products.ProductType;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
@@ -59,22 +65,31 @@ public class CommissionResource {
     public List<CommissionPlan> saveCommissionsPlans(@RequestBody List<CommissionPlan> savingCommissionPlans) {
         return commissionPlanService.putCommissions(savingCommissionPlans);
     }
-/*
-    //santi
+
+    //santi : for trigger calculation commission
     @ApiOperation(value = "Calculate commission for policies.", notes = "Calculate commission for input policies based on commission plans.", response = CommissionCalculationSession.class)
     @ApiResponses({ @ApiResponse(code = 500, message = "If there's any internal error", response = Error.class) })
     @RequestMapping(value = "/commissions/calculation", produces = APPLICATION_JSON_VALUE, method = RequestMethod.POST)
-    public CommissionResult calculateCommissionsForPolicies(@RequestBody List<String> policyNumbers) {
-        return commissionCalculationSessionService.calculateCommissionForPolicies();
+    public void calculateCommissionsForPolicies() {
+        commissionCalculationSessionService.calculateCommissionForPolicies();
     }
-*/
     
-    //santi
-    @ApiOperation(value = "get list of calculated commission transactions", notes = "get list of calculated commission transactions", response = CommissionResult.class, responseContainer = "List")
+    //santi : for get list of calculated commission
+    @ApiOperation(value = "Get list of calculated commission transactions", notes = "Get list of calculated commission transactions", response = CommissionResult.class, responseContainer = "List")
     @ApiResponses({ @ApiResponse(code = 500, message = "If there's any internal error", response = Error.class) })
     @RequestMapping(value = "/commissions/calculation/lists", produces = APPLICATION_JSON_VALUE, method = RequestMethod.GET)
-    public List<CommissionResult> calculateCommissionsForPolicies() {
+    public List<CommissionResult> getCalculateCommissionsList() {
         return commissionCalculationSessionService.getCommissionCalculationedList();
+    }
+    
+    //santi : for download commission excel file
+    @ApiOperation(value = "Commission download excel file", notes = "Commission download excel file", response = CommissionResult.class, responseContainer = "List")
+    @RequestMapping(value = "/commissions/calculation/download/{rowId}", method = GET)
+    @ResponseBody
+    public void getCommissionResultExcelFile(
+    		@ApiParam(value = "The Commission Result Row Id", required = true)
+    		@PathVariable String rowId) {
+    	
     }
 
     @ApiOperation(value = "Get Deduction file", notes = "Get a Deduction file")

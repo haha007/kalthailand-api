@@ -11,5 +11,6 @@ import th.co.krungthaiaxa.api.elife.commission.data.CommissionResult;
 public interface CommissionResultRepository extends MongoRepository<CommissionResult, String> {
 	
 	List<CommissionResult> findAllByOrderByCreatedDateTimeAsc();
+	CommissionResult findByRowId(String rowId);
 
 }
