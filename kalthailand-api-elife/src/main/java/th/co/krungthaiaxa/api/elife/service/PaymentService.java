@@ -62,7 +62,6 @@ public class PaymentService {
         payment.setEffectiveDate(DateTimeUtil.nowLocalDateInThaiZoneId());
         payment.setTransactionId(transactionId);
         payment.setOrderId(orderId);
-        payment.setStatus(PaymentStatus.NOT_PROCESSED);
 
         // If no transaction id, then in error, nothing else should be done since we don't have a status (error / success)
         if (StringUtils.isBlank(transactionId)) {
