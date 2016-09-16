@@ -712,4 +712,24 @@
     app.controller('CommissionController', function (CommissionService, $scope, $route, $http, $localStorage) {
         $scope.service = CommissionService;
     });
+    
+    app.controller('CommissionResultController', function (CommissionResultService, $scope, $route, $http, $localStorage) {
+        $scope.service = CommissionResultService;
+        
+        var dateNow = new Date();
+        var day = dateNow.getDate();
+        
+        // Calculate Button is enable on 1-10 of month
+        if(day >= 1 && day <= 10) {
+        	// 1-10 is false to Enable button
+        	$scope.calculateButton = false;
+        } else {
+        	// 11+ is true to Disable button
+        	$scope.calculateButton = true;
+        }
+        
+        $scope.commissionResultAll = CommissionResultService.allData;
+        
+        
+    });
 })();
