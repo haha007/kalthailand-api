@@ -13,7 +13,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import th.co.krungthaiaxa.api.common.exeption.BaseException;
 import th.co.krungthaiaxa.api.common.exeption.UnexpectedException;
+import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
 import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
 import th.co.krungthaiaxa.api.common.utils.LogUtil;
 import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
@@ -54,7 +56,7 @@ import static org.apache.commons.codec.digest.DigestUtils.sha256Hex;
 import static org.springframework.util.Assert.isTrue;
 import static org.springframework.util.Assert.notNull;
 import static th.co.krungthaiaxa.api.elife.model.enums.ChannelType.LINE;
-import static th.co.krungthaiaxa.api.elife.service.LineService.LINE_PAY_INTERNAL_ERROR;
+import static th.co.krungthaiaxa.api.elife.service.LineService.RESPONSE_CODE_ERROR_INTERNAL_LINEPAY;
 import static th.co.krungthaiaxa.api.elife.service.LineService.RESPONSE_CODE_SUCCESS;
 import static th.co.krungthaiaxa.api.elife.utils.ExcelUtils.appendRow;
 import static th.co.krungthaiaxa.api.elife.utils.ExcelUtils.text;
@@ -151,8 +153,6 @@ public class RLSService {
                 processCollectionFileLine(deductionFile, collectionFileLine);
             }
             collectionFile.setJobEndedDate(DateTimeUtil.nowLocalDateTimeInThaiZoneId());
-//            deductionFile = deductionFileRepository.save(collectionFile.getDeductionFile());
-//            collectionFile.setDeductionFile(deductionFile);
             collectionFileRepository.save(collectionFile);
         } catch (Exception ex) {
             logger.error("Error while process collection file:" + ObjectMapperUtil.toStringMultiLine(collectionFile));
@@ -328,7 +328,7 @@ public class RLSService {
         String currencyCode = null;
         String paymentModeString = null;
         String resultMessage = "CollectionFileLine is not processed completely yet. " + ObjectMapperUtil.toStringMultiLine(collectionFileLine);
-        String resultCode = LINE_PAY_INTERNAL_ERROR;
+        String resultCode = RESPONSE_CODE_ERROR_INTERNAL_LINEPAY;
         try {
             policy = policyRepository.findByPolicyId(policyId);
             if (policy == null) {
@@ -355,29 +355,45 @@ public class RLSService {
             policyService.updateRecurringPayment(payment, premiumAmount, currencyCode, LINE, linePayResponse, paymentId, lastRegistrationKey, premiumAmount, productId, orderId);
         } catch (Exception ex) {
             logger.error("Error when process collection line: " + ex.getMessage() + ". Collection line:\n" + ObjectMapperUtil.toStringMultiLine(collectionFileLine), ex);
-            resultCode = LINE_PAY_INTERNAL_ERROR;
+            resultCode = RESPONSE_CODE_ERROR_INTERNAL_LINEPAY;
             resultMessage = ex.getMessage();
             if (payment != null) {
                 policyService.updatePaymentWithErrorStatus(payment, premiumAmount, currencyCode, LINE, resultCode, resultMessage);
             }
         } finally {
-
             DeductionFileLine deductionFileLine = initDeductionFileLine(collectionFileLine, paymentModeString, resultCode, resultMessage);
             deductionFile.addLine(deductionFileLine);
-            if (!resultCode.equals(RESPONSE_CODE_SUCCESS)) {
+            if (!resultCode.equals(RESPONSE_CODE_SUCCESS) && !resultCode.equals(RESPONSE_CODE_ERROR_INTERNAL_LINEPAY)) {
                 if (policy == null || policy.getPolicyId() == null) {
                     logger.warn("Cannot find policyId " + policyId + ", so cannot get information of insured person. Therefore we cannot send inform email to insured customer.");
                 } else {
-                    try {
-                        informFailPaymentsToUser(policy, payment);
-                    } catch (Exception ex) {
-                        deductionFileLine.setRejectionMessage(deductionFileLine.getRejectionMessage() + ". Cannot send inform email to customer: " + ex.getMessage());
-                        logger.error(ex.getMessage(), ex);
-                    }
+                    setResultOfFailPaymentNotificationToDeductionFileLine(deductionFileLine, policy, payment);
                 }
             }
-            logger.debug("Finished processing collection file line with payment id [" + paymentId + "]");
         }
+        logger.debug("Finished processing collection file line with payment id [" + paymentId + "]");
+    }
+
+    private void setResultOfFailPaymentNotificationToDeductionFileLine(DeductionFileLine deductionFileLine, Policy policy, Payment payment) {
+        String informCustomerCode;
+        String informCustomerMessage;
+        try {
+            informFailPaymentsToUser(policy, payment);
+            informCustomerCode = "0000";
+            informCustomerMessage = "Sent inform email to customer";
+        } catch (Exception ex) {
+            if (ex instanceof BaseException) {
+                BaseException baseException = (BaseException) ex;
+                informCustomerCode = baseException.getErrorCode();
+                informCustomerMessage = baseException.getErrorMessage();
+            } else {
+                informCustomerCode = ErrorCode.ERROR_CODE_UNKNOWN_ERROR;
+                informCustomerMessage = ex.getMessage();
+            }
+            logger.error(ex.getMessage(), ex);
+        }
+        deductionFileLine.setInformCustomerCode(informCustomerCode);
+        deductionFileLine.setInformCustomerMessage(informCustomerMessage);
     }
 
     public void informFailPaymentsToUser(Policy policy, Payment payment) {

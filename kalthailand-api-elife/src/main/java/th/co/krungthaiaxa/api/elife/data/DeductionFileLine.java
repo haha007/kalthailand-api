@@ -10,6 +10,8 @@ public class DeductionFileLine {
     private LocalDateTime processDate;
     private String rejectionCode;
     private String rejectionMessage;
+    private String informCustomerCode;
+    private String informCustomerMessage;
 
     public String getPolicyNumber() {
         return policyNumber;
@@ -65,5 +67,21 @@ public class DeductionFileLine {
 
     public void setRejectionMessage(String rejectionMessage) {
         this.rejectionMessage = rejectionMessage;
+    }
+
+    public String getInformCustomerCode() {
+        return informCustomerCode;
+    }
+
+    public void setInformCustomerCode(String informCustomerCode) {
+        this.informCustomerCode = informCustomerCode;
+    }
+
+    public String getInformCustomerMessage() {
+        return informCustomerMessage;
+    }
+
+    public void setInformCustomerMessage(String informCustomerMessage) {
+        this.informCustomerMessage = informCustomerMessage;
     }
 }

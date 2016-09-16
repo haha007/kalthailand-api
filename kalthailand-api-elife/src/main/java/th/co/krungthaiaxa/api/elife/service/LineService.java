@@ -39,7 +39,7 @@ import static th.co.krungthaiaxa.api.common.utils.JsonUtil.getJson;
 @Service
 public class LineService {
     private final static Logger logger = LoggerFactory.getLogger(LineService.class);
-    public static final String LINE_PAY_INTERNAL_ERROR = "9000";
+    public static final String RESPONSE_CODE_ERROR_INTERNAL_LINEPAY = "9000";
     public static final String RESPONSE_CODE_SUCCESS = "0000";
     @Value("${line.pay.id}")
     private String linePayId;

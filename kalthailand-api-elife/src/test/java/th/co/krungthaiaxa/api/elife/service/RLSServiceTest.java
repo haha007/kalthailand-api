@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import th.co.krungthaiaxa.api.common.utils.IOUtil;
 import th.co.krungthaiaxa.api.elife.ELifeTest;
 import th.co.krungthaiaxa.api.elife.KalApiApplication;
 import th.co.krungthaiaxa.api.elife.TestUtil;
@@ -31,6 +32,7 @@ import th.co.krungthaiaxa.api.elife.repository.PolicyRepository;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -252,7 +254,7 @@ public class RLSServiceTest extends ELifeTest {
         assertThat(deductionFile.getLines().get(0).getPaymentMode()).isEqualTo("M");
         assertThat(deductionFile.getLines().get(0).getPolicyNumber()).isEqualTo(policy.getPolicyId());
         assertThat(deductionFile.getLines().get(0).getProcessDate()).isEqualToIgnoringMinutes(LocalDateTime.now());
-        assertThat(deductionFile.getLines().get(0).getRejectionCode()).isEqualTo(LineService.LINE_PAY_INTERNAL_ERROR);
+        assertThat(deductionFile.getLines().get(0).getRejectionCode()).isEqualTo(LineService.RESPONSE_CODE_ERROR_INTERNAL_LINEPAY);
 
         Payment payment = paymentRepository.findOne(collectionFileLine.getPaymentId());
         Assertions.assertThat(payment.getStatus()).isEqualTo(PaymentStatus.INCOMPLETE);
@@ -264,14 +266,14 @@ public class RLSServiceTest extends ELifeTest {
         assertThat(payment.getPaymentInformations().get(0).getCreditCardName()).isNull();
         assertThat(payment.getPaymentInformations().get(0).getDate()).isEqualTo(LocalDate.now());
         assertThat(payment.getPaymentInformations().get(0).getMethod()).isNull();
-        assertThat(payment.getPaymentInformations().get(0).getRejectionErrorCode()).isEqualTo(LineService.LINE_PAY_INTERNAL_ERROR);
+        assertThat(payment.getPaymentInformations().get(0).getRejectionErrorCode()).isEqualTo(LineService.RESPONSE_CODE_ERROR_INTERNAL_LINEPAY);
         Assert.assertNotNull(payment.getPaymentInformations().get(0).getRejectionErrorMessage());
     }
 
     @Test
     public void run_cron_job() {
-//        InputStream inputStream = IOUtil.loadInputStreamFileInClassPath("/collection-file/LFDISC6_2016-09-01.xls");
-//        rlsService.importCollectionFile(inputStream);
+        InputStream inputStream = IOUtil.loadInputStreamFileInClassPath("/collection-file/LFDISC6_2016-09-01.xls");
+        rlsService.importCollectionFile(inputStream);
         rlsService.processLatestCollectionFiles();
     }
 

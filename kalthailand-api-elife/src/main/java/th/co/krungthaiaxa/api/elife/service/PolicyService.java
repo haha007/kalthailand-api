@@ -445,7 +445,7 @@ public class PolicyService {
         if (!currencyCode.equals(payment.getAmount().getCurrencyCode())) {
             status = SuccessErrorStatus.ERROR;
             errorMessage = "Currencies are different";
-            errorCode = LineService.LINE_PAY_INTERNAL_ERROR;
+            errorCode = LineService.RESPONSE_CODE_ERROR_INTERNAL_LINEPAY;
         } else if (!isEmpty(errorCode) && !errorCode.equals("0000")) {
             status = SuccessErrorStatus.ERROR;
         } else {
