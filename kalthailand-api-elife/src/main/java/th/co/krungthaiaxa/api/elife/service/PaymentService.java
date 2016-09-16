@@ -1,5 +1,6 @@
 package th.co.krungthaiaxa.api.elife.service;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
@@ -9,6 +10,7 @@ import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
 import th.co.krungthaiaxa.api.common.utils.IOUtil;
 import th.co.krungthaiaxa.api.elife.data.GeneralSetting;
 import th.co.krungthaiaxa.api.elife.exception.LinePaymentException;
+import th.co.krungthaiaxa.api.elife.exception.PaymentNotFoundException;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayResponse;
@@ -17,8 +19,6 @@ import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
 import javax.inject.Inject;
 import java.util.Collections;
 import java.util.Optional;
-
-import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 /**
  * @author khoi.tran on 8/29/16.
@@ -49,25 +49,24 @@ public class PaymentService {
         return paymentRepository.findOne(paymentId);
     }
 
-    public Payment retryFailedPayment(String policyId, String oldPaymentId, String orderId, Optional<String> transactionId, Optional<String> regKey) {
+    public Payment retryFailedPayment(String policyId, String oldPaymentId, String orderId, String transactionId, String regKey) {
 
-        Payment oldPayment = paymentRepository.findOne(oldPaymentId);
-
+        Payment oldPayment = validateExistPayment(oldPaymentId);
         Payment payment = new Payment();
-        payment.setRegistrationKey(regKey.get());
+        payment.setRegistrationKey(regKey);
         payment.setDueDate(DateTimeUtil.nowLocalDateInThaiZoneId());
         payment.setAmount(oldPayment.getAmount());
         payment.setEffectiveDate(DateTimeUtil.nowLocalDateInThaiZoneId());
-        payment.setTransactionId(transactionId.get());
+        payment.setTransactionId(transactionId);
         payment.setOrderId(orderId);
         payment.setStatus(PaymentStatus.NOT_PROCESSED);
 
         // If no transaction id, then in error, nothing else should be done since we don't have a status (error / success)
-        if (!transactionId.isPresent() || isEmpty(transactionId.get())) {
+        if (StringUtils.isBlank(transactionId)) {
             throw new BadArgumentException("Transaction doesn't exist");
         }
 
-        policyService.updatePayment(payment, orderId, transactionId.get(), (!regKey.isPresent() ? "" : regKey.get()));
+        payment = policyService.updatePayment(payment, orderId, transactionId, StringUtils.isBlank(regKey) ? "" : regKey);
         LinePayResponse linePayResponse = null;
         LOGGER.info("Will try to confirm payment with ID [" + payment.getPaymentId() + "] and transation ID [" + payment.getTransactionId() + "] on the policy with ID [" + policyId + "]");
         try {
@@ -83,10 +82,17 @@ public class PaymentService {
                 LOGGER.warn("The retry payment also not successed yet. policyId: {}, oldPaymentId: {}, orderId: {}, transactionId: {}", policyId, oldPaymentId, orderId, transactionId);
                 //TODO should we send another email to customer to inform about the fail payment?
             }
-            policyService.updatePayment(payment, orderId, transactionId.get(), (!regKey.isPresent() ? "" : regKey.get()));
+            policyService.updatePayment(payment, orderId, transactionId, StringUtils.isBlank(regKey) ? "" : regKey);
         }
-
         sendPaymentSuccessToMarketingTeam(payment);
+        return payment;
+    }
+
+    private Payment validateExistPayment(String paymentId) {
+        Payment payment = paymentRepository.findOne(paymentId);
+        if (payment == null) {
+            throw new PaymentNotFoundException("Not found payment with Id " + paymentId);
+        }
         return payment;
     }
 

@@ -24,6 +24,7 @@ public class Payment {
     public static int REGISTRATION_KEY_PLAIN_TEXT_MAX_LENGTH = 100;
     @Id
     private String paymentId;
+    private String retryPaymentId;
     private String policyId;
     private String orderId;
     private String transactionId;
@@ -174,5 +175,13 @@ public class Payment {
     @Override
     public int hashCode() {
         return Objects.hash(paymentId, status, dueDate, effectiveDate, amount, registrationKey, paymentInformations);
+    }
+
+    public String getRetryPaymentId() {
+        return retryPaymentId;
+    }
+
+    public void setRetryPaymentId(String retryPaymentId) {
+        this.retryPaymentId = retryPaymentId;
     }
 }

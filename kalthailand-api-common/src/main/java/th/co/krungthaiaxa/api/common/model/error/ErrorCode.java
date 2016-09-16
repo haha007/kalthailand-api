@@ -23,7 +23,8 @@ public class ErrorCode {
     //Encrypt Exception (0090 -> 0091)
     public static final String ERROR_CODE_ENCRYPT = "0090";
 
-    public static final String ERROR_CODE_UNABLE_TO_CAPTURE_PAYMENT = "0503";
+
+
 
     // Watermarking
     public static final Error WATERMARK_IMAGE_INPUT_NOT_READABLE = new Error("0101", "Unable to upload your picture", "The image cannot be read as stream");
@@ -64,8 +65,12 @@ public class ErrorCode {
     // Line
     public static final Error UNABLE_TO_DECRYPT = new Error("0501", "Unable to get your user ID", "The provided text could not be decrypted");
     public static final Error UNABLE_TO_GET_LINE_BC = new Error("0502", "Unable to get line bc", "The provided mid is not valid or have no line bc data along with input mid");
+    public static final String ERROR_CODE_UNABLE_TO_CAPTURE_PAYMENT = "0503";
     public static final Function<String, Error> UNABLE_TO_CAPTURE_PAYMENT = msg -> new Error(ERROR_CODE_UNABLE_TO_CAPTURE_PAYMENT, "Unable to confirm the payment. Error is [" + msg + "]", "Unable to confirm the payment. Error is [" + msg + "]");
     public static final String ERROR_CODE_LINE_TOKEN_NOT_EXIST = "0504";
+
+    //Payment
+    public static final String ERROR_CODE_PAYMENT_NOT_FOUND = "0510";
 
     // Document
     public static final Error POLICY_DOES_NOT_CONTAIN_DOCUMENT = new Error("0601", "Unable to locate the document", "The given document id does not exist for the given policy");

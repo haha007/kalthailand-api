@@ -167,12 +167,13 @@ public class PolicyService {
         return policy;
     }
 
-    public void updatePayment(Payment payment, String orderId, String transactionId, String regKey) {
+    public Payment updatePayment(Payment payment, String orderId, String transactionId, String regKey) {
         payment.setTransactionId(transactionId);
         payment.setOrderId(orderId);
         payment.setRegistrationKey(regKey);
-        paymentRepository.save(payment);
+        Payment result = paymentRepository.save(payment);
         logger.info("Payment [" + payment.getPaymentId() + "] has been booked with transactionId [" + payment.getTransactionId() + "]");
+        return result;
     }
 
     public void updatePaymentWithErrorStatus(Payment payment, Double amount, String currencyCode, ChannelType channelType,
@@ -212,7 +213,6 @@ public class PolicyService {
         payment.addPaymentInformation(paymentInformation);
         paymentRepository.save(payment);
     }
-
 
     public void updatePayment(Payment payment, Double amount, String currencyCode, ChannelType channelType,
             LinePayResponse linePayResponse) {
