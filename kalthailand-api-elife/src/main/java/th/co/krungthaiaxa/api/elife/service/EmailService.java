@@ -237,7 +237,7 @@ public class EmailService {
 
     private String getEreceiptEmailContent(Policy policy) throws IOException {
         String emailContent = IOUtils.toString(this.getClass().getResourceAsStream("/email-content/email-ereceipt-content.txt"), Charset.forName("UTF-8"));
-        return emailContent.replace("%PRODUCT_NAME%", messageSource.getMessage("product.id." + policy.getCommonData().getProductId(), null, thLocale) + " (" + policy.getCommonData().getProductId() + ")")
+        return emailContent.replace("%PRODUCT_NAME%", messageSource.getMessage("product.id." + policy.getCommonData().getProductId(), null, thLocale) + " (" + messageSource.getMessage("product.id." + policy.getCommonData().getProductId(), null, null) + ")")
                 .replace("%FULL_NAME%", policy.getInsureds().get(0).getPerson().getGivenName() + " " + policy.getInsureds().get(0).getPerson().getSurName());
     }
 
