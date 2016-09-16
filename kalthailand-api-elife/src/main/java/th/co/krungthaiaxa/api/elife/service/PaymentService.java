@@ -66,11 +66,10 @@ public class PaymentService {
             throw new BadArgumentException("Transaction doesn't exist");
         }
 
-        payment = policyService.updatePayment(payment, orderId, transactionId, StringUtils.isBlank(regKey) ? "" : regKey);
         LinePayResponse linePayResponse = null;
-        LOGGER.info("Will try to confirm payment with ID [" + payment.getPaymentId() + "] and transation ID [" + payment.getTransactionId() + "] on the policy with ID [" + policyId + "]");
         try {
-            linePayResponse = lineService.capturePayment(payment.getTransactionId(), payment.getAmount().getValue(), payment.getAmount().getCurrencyCode());
+            LOGGER.debug("Will try to confirm payment with transation ID [" + transactionId + "] on the policy with ID [" + policyId + "]");
+            linePayResponse = lineService.capturePayment(transactionId, payment.getAmount().getValue(), payment.getAmount().getCurrencyCode());
         } catch (Exception e) {
             LOGGER.error("Unable to confirm the payment in the policy with ID [" + policyId + "]", e);
             throw new LinePaymentException("Unable to confirm the payment in the policy with ID [" + policyId + "]", e);
@@ -82,7 +81,9 @@ public class PaymentService {
                 LOGGER.warn("The retry payment also not successed yet. policyId: {}, oldPaymentId: {}, orderId: {}, transactionId: {}", policyId, oldPaymentId, orderId, transactionId);
                 //TODO should we send another email to customer to inform about the fail payment?
             }
-            policyService.updatePayment(payment, orderId, transactionId, StringUtils.isBlank(regKey) ? "" : regKey);
+            payment = policyService.updatePayment(payment, orderId, transactionId, StringUtils.isBlank(regKey) ? "" : regKey);
+            oldPayment.setRetryPaymentId(payment.getPaymentId());
+            paymentRepository.save(oldPayment);
         }
         sendPaymentSuccessToMarketingTeam(payment);
         return payment;
