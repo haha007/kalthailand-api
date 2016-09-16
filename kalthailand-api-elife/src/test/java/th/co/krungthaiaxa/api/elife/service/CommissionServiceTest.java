@@ -9,17 +9,20 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.api.elife.ELifeTest;
 import th.co.krungthaiaxa.api.elife.KalApiApplication;
 import th.co.krungthaiaxa.api.elife.commission.data.CommissionPlan;
+import th.co.krungthaiaxa.api.elife.commission.data.CommissionResult;
 import th.co.krungthaiaxa.api.elife.commission.data.CommissionTargetEntity;
 import th.co.krungthaiaxa.api.elife.commission.data.CommissionTargetEntityType;
 import th.co.krungthaiaxa.api.elife.commission.data.CommissionTargetGroup;
 import th.co.krungthaiaxa.api.elife.commission.data.CommissionTargetGroupType;
 import th.co.krungthaiaxa.api.elife.commission.data.CustomerCategory;
+import th.co.krungthaiaxa.api.elife.commission.service.CommissionCalculationSessionService;
 import th.co.krungthaiaxa.api.elife.commission.service.CommissionPlanService;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiApplication.class)
@@ -28,6 +31,8 @@ import java.util.List;
 public class CommissionServiceTest extends ELifeTest {
     @Inject
     CommissionPlanService commissionPlanService;
+    @Inject
+    CommissionCalculationSessionService commissionCalculationSessionService;
 
     @Test
     public void test_create_commission_with_good_data() {
@@ -35,6 +40,17 @@ public class CommissionServiceTest extends ELifeTest {
         commissionPlans.add(constructCommissionPlan("40001", ProductType.PRODUCT_IPROTECT, CustomerCategory.NEW, new double[][] { { 25, 15, 20, 15, 25 }, { 10, 20, 30, 40, 0 } }));
         commissionPlans.add(constructCommissionPlan("40002", ProductType.PRODUCT_IPROTECT, CustomerCategory.EXISTING, new double[][] { { 25, 15, 20, 15, 25 }, { 10, 20, 30, 40, 0 } }));
         commissionPlanService.putCommissions(commissionPlans);
+    }
+    
+    @Test
+    public void should_calculate_commission(){
+    	commissionCalculationSessionService.calculateCommissionForPolicies();
+    }
+    
+    @Test
+    public void shold_get_list_of_calculated_commission_result(){
+    	List<CommissionResult> list = commissionCalculationSessionService.getCommissionCalculationedList();
+    	assertThat(list).isInstanceOf(List.class);
     }
 
     /**

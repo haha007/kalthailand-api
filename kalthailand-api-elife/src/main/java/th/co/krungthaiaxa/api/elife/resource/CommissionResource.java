@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import th.co.krungthaiaxa.api.common.model.error.Error;
 import th.co.krungthaiaxa.api.elife.commission.data.CommissionCalculationSession;
 import th.co.krungthaiaxa.api.elife.commission.data.CommissionPlan;
+import th.co.krungthaiaxa.api.elife.commission.data.CommissionResult;
 import th.co.krungthaiaxa.api.elife.commission.service.CommissionCalculationSessionExportService;
 import th.co.krungthaiaxa.api.elife.commission.service.CommissionCalculationSessionService;
 import th.co.krungthaiaxa.api.elife.commission.service.CommissionPlanService;
@@ -58,12 +59,22 @@ public class CommissionResource {
     public List<CommissionPlan> saveCommissionsPlans(@RequestBody List<CommissionPlan> savingCommissionPlans) {
         return commissionPlanService.putCommissions(savingCommissionPlans);
     }
-
+/*
+    //santi
     @ApiOperation(value = "Calculate commission for policies.", notes = "Calculate commission for input policies based on commission plans.", response = CommissionCalculationSession.class)
     @ApiResponses({ @ApiResponse(code = 500, message = "If there's any internal error", response = Error.class) })
     @RequestMapping(value = "/commissions/calculation", produces = APPLICATION_JSON_VALUE, method = RequestMethod.POST)
-    public CommissionCalculationSession calculateCommissionsForPolicies(@RequestBody List<String> policyNumbers) {
-        return commissionCalculationSessionService.calculateCommissionForPolicies(policyNumbers);
+    public CommissionResult calculateCommissionsForPolicies(@RequestBody List<String> policyNumbers) {
+        return commissionCalculationSessionService.calculateCommissionForPolicies();
+    }
+*/
+    
+    //santi
+    @ApiOperation(value = "get list of calculated commission transactions", notes = "get list of calculated commission transactions", response = CommissionResult.class, responseContainer = "List")
+    @ApiResponses({ @ApiResponse(code = 500, message = "If there's any internal error", response = Error.class) })
+    @RequestMapping(value = "/commissions/calculation/lists", produces = APPLICATION_JSON_VALUE, method = RequestMethod.GET)
+    public List<CommissionResult> calculateCommissionsForPolicies() {
+        return commissionCalculationSessionService.getCommissionCalculationedList();
     }
 
     @ApiOperation(value = "Get Deduction file", notes = "Get a Deduction file")
