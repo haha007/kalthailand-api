@@ -52,6 +52,9 @@ public class PaymentService {
     public Payment retryFailedPayment(String policyId, String oldPaymentId, String orderId, String transactionId, String regKey) {
 
         Payment oldPayment = validateExistPayment(oldPaymentId);
+        if (StringUtils.isNotBlank(oldPayment.getRetryPaymentId())) {
+            throw new BadArgumentException(String.format("The old payment Id %s was already retried by paymentId: %s", oldPaymentId, oldPayment.getRetryPaymentId()));
+        }
         Payment payment = new Payment();
         payment.setRegistrationKey(regKey);
         payment.setDueDate(DateTimeUtil.nowLocalDateInThaiZoneId());
