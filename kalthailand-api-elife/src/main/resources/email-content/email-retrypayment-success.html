@@ -49,8 +49,10 @@
         }
 
         .header-text-2 {
-            color: #103285;
-            font-weight: bold;
+    		color: #1032BE;
+    		font-weight: bold;
+    		padding-top: 15px;
+    		padding-bottom: 15px;
         }
 
         .gray-text {
@@ -118,11 +120,22 @@
         <td>&nbsp;</td>
     </tr>
     <tr>
-        <td>The client tried to do payment again and he was successful.
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td>
+        เรียนคุณ &nbsp; %NAME%
         </td>
     </tr>
     <tr>
-        <td>&nbsp;</td>
+        <td>
+        ท่านได้ทำการชำระเบี้ยประกันสำเร็จแล้ว
+        </td>
+    </tr>
+    <tr>
+        <td>
+        ทางบริษัทได้ส่งใบเสร็จรับเงินให้ท่านในไฟล์แนบ
+        </td>
     </tr>
     <tr>
         <td>&nbsp;</td>
@@ -132,19 +145,27 @@
             <div class="gray-box">
                 <table width="100%">
                     <tr>
-                        <td colspan="2" class="header-text-2"></td>
+                        <td colspan="2" class="header-text-2">รายละเอียด</td>
                     </tr>
                     <tr>
-                        <td class="text-add">Policy Number</td>
+                        <td class="text-add">หมายเลขอ้างอิง</td>
                         <td align="right" class="header-normal">%POLICY_NUMBER%</td>
                     </tr>
                     <tr>
-                        <td class="text-add">Payment ID</td>
-                        <td align="right" class="header-normal">%PAYMENT_ID% &#37;</td>
+                        <td class="text-add">ชื่อผู้เอาประกัน</td>
+                        <td align="right" class="header-normal">%CUSTOMER_NAME%</td>
                     </tr>
                     <tr>
-                        <td class="text-add">Other ID</td>
-                        <td align="right" class="header-normal">%ORDER_ID% บาท</td>
+                        <td class="text-add">แบบประกัน</td>
+                        <td align="right" class="header-normal">%PRODUCT_NAME%</td>
+                    </tr>
+                    <tr>
+                        <td class="text-add">วันที่ชำระเบี้ย</td>
+                        <td align="right" class="header-normal">%PAYMENT_DATE% &#37;</td>
+                    </tr>
+                    <tr>
+                        <td class="text-add">เบี้ยประกัน</td>
+                        <td align="right" class="header-normal">%PAYMENT_AMOUNT% บาท</td>
                     </tr>
                 </table>
             </div>
@@ -154,77 +175,15 @@
         <td>&nbsp;</td>
     </tr>
     <tr>
-        <td class="white-text">
-            ท่านสามารถลงทะเบียน LINE Pay เพื่อชำระผ่านทาง
-        </td>
-    </tr>
-    <tr>
-        <td>&nbsp;</td>
-    </tr>
-    <tr>
-        <td class="white-text text-add">
-            ลิงค์ที่เกี่ยวข้อง
-        </td>
-    </tr>
-    <tr>
-        <td class="white-text">
-            วีธีสมัคร LINE Pay
-        </td>
-    </tr>
-    <tr>
-        <td class="white-text header-normal">
-            <a href="http://line.me/th/Pay/howto#contents01" class="header-normal">http://line.me/th/Pay/howto#contents01</a>
-        </td>
-    </tr>
-    <tr>
-        <td>&nbsp;</td>
-    </tr>
-    <tr>
-        <td class="white-text">
-            วีธีสร้างกระเป๋าเงิน Line Pay
-        </td>
-    </tr>
-    <tr>
-        <td class="white-text header-normal">
-            <a href="http://line.me/R/Pay" class="header-normal">http://line.me/R/Pay</a>
-        </td>
-    </tr>
-    <tr>
-        <td>&nbsp;</td>
-    </tr>
-    <tr>
-        <td class="white-text">
-            บริษัทฯ ขออภัยหากท่านได้ทำการชำระเบี้ยประกันเป็นที่เรียบร้อยแล้ว
-        </td>
-    </tr>
-    <tr>
-        <td>&nbsp;</td>
-    </tr>
-
-    <tr>
-        <td class="white-text">อีเมลฉบับนี้ เป็นการแจ้งข้อมูลโดยอัตโนมัติ กรุณาอย่าตอบกลับหากต้องการสอบถามข้อมูลเพิ่มเติม
-        </td>
-    </tr>
-    <tr>
-        <td class="white-text">
-            กรุณาติดต่อเจ้าหน้าที่หมายเลข 1159 ในวันและเวลาทำการ (วันจันทร์-เสาร์ เวลา 9.00 -18.00 น.)
-        </td>
-    </tr>
-    <tr>
-        <td>&nbsp;</td>
-    </tr>
-    <tr>
-        <td class="blue-box">
-            ทราบหรือไม่? การชำระเบี้ยประกันเกินระยะเวลาที่กำหนด อาจมีผลต่อสิทธิประโยชนและความคุ้มครองของกรมธรรม์
-        </td>
-    </tr>
-    <tr>
         <td>&nbsp;</td>
     </tr>
     <tr>
         <td class="white-text">
             ขอแสดงความนับถือ
         </td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
     </tr>
     <tr>
         <td class="white-text">
