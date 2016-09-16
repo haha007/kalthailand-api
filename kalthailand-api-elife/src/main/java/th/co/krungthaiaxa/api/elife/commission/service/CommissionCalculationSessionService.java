@@ -3,6 +3,9 @@ package th.co.krungthaiaxa.api.elife.commission.service;
 import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang3.tuple.Triple;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.bson.types.ObjectId;
 import org.jsoup.helper.StringUtil;
 import org.slf4j.Logger;
@@ -25,15 +28,20 @@ import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.repository.CDBRepository;
 import th.co.krungthaiaxa.api.elife.commission.repositories.CommissionResultRepository;
 import th.co.krungthaiaxa.api.elife.repository.PolicyRepository;
+import th.co.krungthaiaxa.api.elife.utils.ExcelUtils;
 
 import javax.inject.Inject;
 import javax.management.remote.TargetedNotification;
 import javax.sql.DataSource;
 
+import static java.time.LocalDateTime.now;
+import static java.time.format.DateTimeFormatter.ofPattern;
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static th.co.krungthaiaxa.api.elife.utils.ExcelUtils.text;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -151,13 +159,72 @@ public class CommissionCalculationSessionService {
     	return null;
     }
     
+    public byte[] exportToExcel(String rowId){
+    	
+    	/*CommissionResult commissionResult = commissionResultRepository.findByRowId(rowId);
+    	
+    	String now = ofPattern("yyyyMMdd_HHmmss").format(now());
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("CommissionExtract_" + now);
+        
+        ExcelUtils.appendRow(sheet,
+                text("Month"),
+                text("Policy Number"),
+                text("Policy Status"),
+                text("Plan Code"),
+                text("Agent Code"),
+                text("Customer Category"),
+                text("Previous Policy Number"),
+                text("Existing Agent Code 1"),
+                text("Existing Agent Code 1 Status"),
+                text("Existing Agent Code 2"),
+                text("Existing Agent Code 2 Status"),
+                text("First Year Premium (RLS)"),
+                text("First Year Commission (RLS)"),
+                text("FY Affiliate Commission"),
+                text("FY Distribution 1 Commission"),
+                text("FY Distribution 2 Commission"),
+                text("FY TSR Commission"),
+                text("FY Marking Commission"),
+                text("FY Company Commission"),
+                text("OV Affiliate Commission"),
+                text("OV Distribution 1 Commission"),
+                text("OV Distribution 2 Commission"),
+                text("OV TSR Commission"),
+                text("OV Marking Commission"),
+                text("OV Company Commission"),
+                text("OV ")
+                
+        		
+        		);
+        policies.stream().forEach(tmp -> createPolicyExtractExcelFileLine(sheet, tmp));
+        ExcelUtils.autoWidthAllColumns(workbook);*/
+    	
+    	return null;
+        
+    }
+    
     public List<CommissionResult> getCommissionCalculationedList(){
     	return commissionResultRepository.findAllByOrderByCreatedDateTimeAsc();
     }
+    
+    private String getRowId(LocalDateTime now){
+    	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS");
+    	return "C"+now.format(formatter);
+    }
 
-    public CommissionResult calculateCommissionForPolicies() {
+    public void calculateCommissionForPolicies() {
     	
-    	CommissionResult cResult = null;
+    	LocalDateTime nowDate = LocalDateTime.now();
+    	
+    	
+    	//save first
+    	CommissionResult commissionResult = new CommissionResult();
+    	commissionResult.setCommissionMonth(nowDate.getMonthValue()-1);
+    	commissionResult.setCreatedDateTime(nowDate);
+    	commissionResult.setRowId(getRowId(nowDate));
+    	commissionResultRepository.save(commissionResult);
+    	
     	
     	String NULL = "NULL";
     	String NEW = "NEW";
@@ -172,7 +239,7 @@ public class CommissionCalculationSessionService {
         
         List<CommissionCalculation> listCommissionCalculated = new ArrayList<>();
         
-        LocalDateTime nowDate = LocalDateTime.now();
+        
         
         if(channelIdsNoDup.size()>0&&planCodesNoDup.size()>0){
         	//String nativeSQLchannelIdsNoDup = "("+channelIdsNoDup.toString().replace(" ","").replace("[", "'").replace("]", "'").replace(",", "','")+")";
@@ -282,23 +349,17 @@ public class CommissionCalculationSessionService {
                     		//add in list
                     		listCommissionCalculated.add(c);
                 		}             		
-                	}
-                	CommissionResult commissionResult = new CommissionResult();
-                	commissionResult.setCommissionMonth(nowDate.getMonthValue()-1);
+                	}                	
                 	commissionResult.setCommissionPoliciesCount(listCommissionCalculated.size());
-                	commissionResult.setCreatedDateTime(nowDate);
                 	commissionResult.setPolicies(listCommissionCalculated);
-                	//save
-                	commissionResultRepository.save(commissionResult);
-                	//set to out parameter
-                	cResult = commissionResult;
+                	commissionResult.setUpdatedDateTime(LocalDateTime.now());
+                	//update
+                	commissionResultRepository.save(commissionResult);                	
                 }
             } catch (Exception e) {
                 logger.error("Unable to query", e);
             }
         }
-        
-        return cResult;
     }
     
     public static void main(String args[]){
