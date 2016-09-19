@@ -718,6 +718,7 @@
         
         var dateNow = new Date();
         var day = dateNow.getDate();
+        day = 1;
         
         // Calculate Button is enable on 1-10 of month
         if(day >= 1 && day <= 10) {
@@ -728,7 +729,18 @@
         	$scope.calculateButton = true;
         }
         
-        $scope.commissionResultAll = CommissionResultService.allData;
+        console.log(CommissionResultService);
+        $scope.commissionResultAll = CommissionResultService;
+        
+        $scope.callGenerateCommission = function () {
+        	CommissionResultService.generateCommission();
+        	$scope.loadNewFilter(CommissionResultService);
+        }
+        
+        $scope.loadNewFilter = function (newData){
+            $scope.commissionResultAll = newData;      
+//            $scope.$apply();
+        }
         
         
     });
