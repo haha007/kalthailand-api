@@ -740,8 +740,9 @@
         
         $scope.loadNewFilter = function (){
             $scope.commissionResultAll = CommissionResultService;      
-            $scope.calculateButton = true;
-            $scope.redNotice = 'Please wait system is processing for generate reusult ...';
+            $scope.calculateButton = false;
+            $scope.redNotice = '';
+//            $scope.redNotice = 'Please wait system is processing for generate reusult ...';
         }
         
         
