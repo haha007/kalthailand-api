@@ -1,6 +1,7 @@
 package th.co.krungthaiaxa.api.elife.service;
 
 import com.icegreen.greenmail.junit.GreenMailRule;
+import com.icegreen.greenmail.store.FolderException;
 import com.icegreen.greenmail.util.ServerSetupTest;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Assert;
@@ -56,7 +57,7 @@ public class RetryPaymentServiceTest extends ELifeTest {
     private static Policy POLICY;
 
     @Test
-    public void test01_retrypayment_success_after_the_first_fail() {
+    public void test01_retrypayment_success_after_the_first_fail() throws FolderException {
         mongoTemplate.dropCollection(CollectionFile.class);
 
         POLICY = policyFactory.createPolicyForLineWithValidated(30, "khoi.tran.ags@gmail.com");
@@ -72,6 +73,7 @@ public class RetryPaymentServiceTest extends ELifeTest {
 
         GreenMailUtil.writeReceiveMessagesToFiles(greenMail, "test/emails");
         Assert.assertTrue(greenMail.getReceivedMessages().length > 0);
+        greenMail.purgeEmailFromAllMailboxes();
 
         //Retry the fail payment:
         lineService = LineServiceMockFactory.initServiceDefault();
@@ -84,7 +86,7 @@ public class RetryPaymentServiceTest extends ELifeTest {
         String transId = RandomStringUtils.randomNumeric(20);
         String accessToken = RandomStringUtils.randomAlphanumeric(25);
         paymentService.retryFailedPayment(POLICY.getPolicyId(), paymentId, orderId, transId, newRegKey, accessToken);
+        GreenMailUtil.writeReceiveMessagesToFiles(greenMail, "test/emails");
     }
-
 
 }

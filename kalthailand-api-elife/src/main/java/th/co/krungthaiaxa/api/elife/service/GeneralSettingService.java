@@ -15,8 +15,15 @@ import java.util.List;
 @Service
 public class GeneralSettingService {
     private final GeneralSettingRepository generalSettingRepository;
-    @Value("line://ch/${line.app.id}/${payment.retry.link.contextPath}")
+    //    @Value("${line.app.id}")
+//    private String lineAppId;
+//
+//    @Value("${payment.retry.link.contextpath}")
+//    private String defaultRetryPaymentContextPath;
+//
+    @Value("line://ch/${line.app.id}/${payment.retry.link.contextpath}")
     private String defaultRetryPaymentLink;
+
     @Value("${payment.retry.tosuccessemails}")
     private String defaultRetryPaymentSuccessToEmailsString;
 
@@ -38,11 +45,16 @@ public class GeneralSettingService {
         GeneralSetting generalSetting = new GeneralSetting();
         GeneralSetting.RetryPaymentSetting retryPaymentSetting = new GeneralSetting.RetryPaymentSetting();
         retryPaymentSetting.setRetryLink(defaultRetryPaymentLink);
+//        retryPaymentSetting.setRetryLink(initDefaultRetryPaymentLink());
         List<String> paymentSuccessToEmails = StringUtil.splitToNotNullStrings(defaultRetryPaymentSuccessToEmailsString);
         retryPaymentSetting.setToSuccessEmails(paymentSuccessToEmails);
         generalSetting.setRetryPaymentSetting(retryPaymentSetting);
         generalSetting = generalSettingRepository.save(generalSetting);
         return generalSetting;
     }
+
+//    private String initDefaultRetryPaymentLink() {
+//        return String.format("line://ch/%s/%s", lineAppId, defaultRetryPaymentContextPath);
+//    }
 
 }

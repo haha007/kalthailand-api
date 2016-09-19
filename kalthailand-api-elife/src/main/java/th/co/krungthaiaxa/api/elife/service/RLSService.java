@@ -85,10 +85,10 @@ public class RLSService {
      * Don't put final here because we need inject mock test dependency
      */
     private LineService lineService;
-    private final PaymentInformService paymentInformService;
+    private final PaymentFailEmailService paymentInformService;
 
     @Inject
-    public RLSService(CollectionFileRepository collectionFileRepository, PaymentRepository paymentRepository, PolicyRepository policyRepository, PolicyService policyService, PaymentService paymentService, LineService lineService, PaymentInformService paymentInformService) {
+    public RLSService(CollectionFileRepository collectionFileRepository, PaymentRepository paymentRepository, PolicyRepository policyRepository, PolicyService policyService, PaymentService paymentService, LineService lineService, PaymentFailEmailService paymentInformService) {
         this.collectionFileRepository = collectionFileRepository;
         this.paymentRepository = paymentRepository;
         this.policyRepository = policyRepository;

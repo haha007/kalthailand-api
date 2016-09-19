@@ -26,15 +26,15 @@ import java.util.Collections;
  * @author khoi.tran on 8/29/16.
  */
 @Service
-public class PaymentInformService {
-    private final static Logger LOGGER = LoggerFactory.getLogger(PaymentInformService.class);
+public class PaymentFailEmailService {
+    private final static Logger LOGGER = LoggerFactory.getLogger(PaymentFailEmailService.class);
 
     private final EmailService emailService;
     private final GeneralSettingService generalSettingService;
     private final MessageSource messageSource;
 
     @Inject
-    public PaymentInformService(EmailService emailService, GeneralSettingService generalSettingService, MessageSource messageSource) {
+    public PaymentFailEmailService(EmailService emailService, GeneralSettingService generalSettingService, MessageSource messageSource) {
         this.emailService = emailService;
         this.generalSettingService = generalSettingService;
         this.messageSource = messageSource;

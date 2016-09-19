@@ -228,7 +228,7 @@ public class DocumentService {
      */
     public Document addEreceiptPdf(Policy policy, Payment payment, boolean firstPayment, String accessToken) {
         try {
-            byte[] ereceiptImage = createEreceiptImage(policy, payment, false);
+            byte[] ereceiptImage = createEreceiptImage(policy, payment, firstPayment);
             addEReceiptDocument(policy, payment, ereceiptImage, "image/png", ERECEIPT_IMAGE);
             byte[] decodedNonSignedPdf = createEreceiptPDF(ereceiptImage);
             byte[] encodedNonSignedPdf = Base64.getEncoder().encode(decodedNonSignedPdf);
@@ -362,7 +362,7 @@ public class DocumentService {
         if (firstPayment) {
             graphics.drawString("X", 89, 439);
         } else {
-            graphics.drawString("X", 89, 464);
+            graphics.drawString("X", 89, 465);
         }
 
         //ID-Card
