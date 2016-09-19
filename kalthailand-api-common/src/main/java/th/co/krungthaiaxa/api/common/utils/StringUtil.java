@@ -17,6 +17,23 @@ public class StringUtil {
         return sb.toString();
     }
 
+    public static String joinNotBlankStrings(String delimiter, String... strs) {
+        if (strs == null) {
+            return null;
+        }
+        if (strs.length == 0) {
+            return "";
+        }
+        StringBuilder sb = new StringBuilder(strs[0]);
+        for (int i = 1; i < strs.length; i++) {
+            String str = strs[i];
+            if (StringUtils.isNotBlank(str)) {
+                sb.append(delimiter).append(str);
+            }
+        }
+        return sb.toString();
+    }
+
     /**
      * Applies the specified mask to the card number.
      *

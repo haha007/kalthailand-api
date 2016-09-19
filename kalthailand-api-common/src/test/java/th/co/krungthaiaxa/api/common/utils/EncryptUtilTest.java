@@ -3,20 +3,11 @@ package th.co.krungthaiaxa.api.common.utils;
 import org.apache.commons.codec.binary.Base64;
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.util.Arrays;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = EncryptUtilTest.class)
-@WebAppConfiguration
-@ActiveProfiles("test")
 public class EncryptUtilTest {
     private final static Logger LOGGER = LoggerFactory.getLogger(EncryptUtilTest.class);
 

@@ -9,6 +9,7 @@ import th.co.krungthaiaxa.api.common.exeption.EmailException;
 import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
 import th.co.krungthaiaxa.api.common.utils.IOUtil;
 import th.co.krungthaiaxa.api.common.utils.LocaleUtil;
+import th.co.krungthaiaxa.api.common.utils.StringUtil;
 import th.co.krungthaiaxa.api.elife.data.GeneralSetting;
 import th.co.krungthaiaxa.api.elife.model.Amount;
 import th.co.krungthaiaxa.api.elife.model.Insured;
@@ -89,8 +90,7 @@ public class PaymentFailEmailService {
     }
 
     private String createFullName(String givenName, String middleName, String surName) {
-        String customerName = givenName + (StringUtils.isBlank(middleName) ? "" : " " + middleName) + (StringUtils.isBlank(surName) ? "" : " " + middleName);
-        return customerName;
+        return StringUtil.joinNotBlankStrings(" ", givenName, middleName, surName);
     }
 
     private String createPaymentLink(String policyNumber, Payment payment) {
