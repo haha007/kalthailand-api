@@ -83,11 +83,15 @@ public class CommissionCalculationSessionService {
     
     //santi : for get list of calculated commission
     public List<CommissionResult> getCommissionCalculationedList(){
+    	logger.debug("Start process to get commission list .....");
+    	logger.debug("Stop process to get commission list .....");
     	return commissionResultRepository.findAllByOrderByCreatedDateTimeAsc();
     }
     
     //santi : for trigger calculation commission
     public void calculateCommissionForPolicies() {
+    	
+    	logger.debug("Start process to calculate commission .....");
     	
     	LocalDateTime nowDate = LocalDateTime.now();    	
     	
@@ -228,10 +232,14 @@ public class CommissionCalculationSessionService {
         }else{
         	logger.debug("Have no commissiion configure to calculate.....");
         }
+        
+        logger.debug("Stop process to calculate commission .....");
     }
     
     //santi : for download commission excel file
     public byte[] exportToExcel(String rowId, String now){
+    	
+    	logger.debug("Start process to export commission excel .....");
     	
     	byte[] content = null;
     	
@@ -287,6 +295,8 @@ public class CommissionCalculationSessionService {
         } catch (IOException e) {
             throw new IllegalStateException("Unable to write content of excel deduction file", e);
         }
+        
+        logger.debug("Stop process to export commission excel .....");
     	
     	return content;
         
