@@ -4,11 +4,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.common.exeption.BadArgumentException;
 import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
 import th.co.krungthaiaxa.api.common.utils.IOUtil;
+import th.co.krungthaiaxa.api.common.utils.LocaleUtil;
 import th.co.krungthaiaxa.api.elife.data.GeneralSetting;
 import th.co.krungthaiaxa.api.elife.exception.LinePaymentException;
 import th.co.krungthaiaxa.api.elife.exception.PaymentNotFoundException;
@@ -17,6 +19,7 @@ import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayResponse;
+import th.co.krungthaiaxa.api.elife.products.ProductUtils;
 import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
 
 import javax.inject.Inject;
@@ -39,15 +42,17 @@ public class PaymentService {
     private LineService lineService;
     private final EmailService emailService;
     private final DocumentService documentService;
+    private final MessageSource messageSource;
 
     @Inject
-    public PaymentService(GeneralSettingService generalSettingService, PaymentRepository paymentRepository, PolicyService policyService, LineService lineService, EmailService emailService, DocumentService documentService) {
+    public PaymentService(GeneralSettingService generalSettingService, PaymentRepository paymentRepository, PolicyService policyService, LineService lineService, EmailService emailService, DocumentService documentService, MessageSource messageSource) {
         this.generalSettingService = generalSettingService;
         this.paymentRepository = paymentRepository;
         this.policyService = policyService;
         this.lineService = lineService;
         this.emailService = emailService;
         this.documentService = documentService;
+        this.messageSource = messageSource;
     }
 
     public Optional<Payment> findLastestPaymentByPolicyNumberAndRegKeyNotNull(String policyNumber) {
@@ -121,14 +126,20 @@ public class PaymentService {
         Policy policy = policyService.validateExistPolicy(payment.getPolicyId());
         Document ereceiptPdfDocument = documentService.addEreceiptPdf(policy, payment, false, accessToken);
 
+        String emailSubject = messageSource.getMessage("email.payment.retry.success.title", null, LocaleUtil.THAI_LOCALE);
+
         GeneralSetting generalSetting = generalSettingService.loadGeneralSetting();
         String emailContent = IOUtil.loadTextFileInClassPath("/email-content/email-retrypayment-success.html");
         emailContent.replaceAll("%PAYMENT_ID%", payment.getPaymentId());
         emailContent.replaceAll("%POLICY_NUMBER%", payment.getPolicyId());
         emailContent.replaceAll("%ORDER_ID%", payment.getOrderId());
         List<String> toEmails = generalSetting.getRetryPaymentSetting().getToSuccessEmails();
+        String mainInsuredEmail = ProductUtils.validateExistMainInsured(policy).getPerson().getEmail();
+        if (StringUtils.isNotBlank(mainInsuredEmail)) {
+            toEmails.add(mainInsuredEmail);
+        }
         Pair<byte[], String> ereceiptAttachment = policyService.findEreceiptAttachmentByDocumentId(policy.getPolicyId(), ereceiptPdfDocument.getId());
-        emailService.sendEmailWithAttachments(toEmails, "Success payment", emailContent, Arrays.asList(ereceiptAttachment));
+        emailService.sendEmailWithAttachments(toEmails, emailSubject, emailContent, Arrays.asList(ereceiptAttachment));
     }
 
     public LineService getLineService() {

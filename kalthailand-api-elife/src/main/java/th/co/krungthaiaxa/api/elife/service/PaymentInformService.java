@@ -3,10 +3,12 @@ package th.co.krungthaiaxa.api.elife.service;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.common.exeption.EmailException;
 import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
 import th.co.krungthaiaxa.api.common.utils.IOUtil;
+import th.co.krungthaiaxa.api.common.utils.LocaleUtil;
 import th.co.krungthaiaxa.api.elife.data.GeneralSetting;
 import th.co.krungthaiaxa.api.elife.model.Amount;
 import th.co.krungthaiaxa.api.elife.model.Insured;
@@ -29,11 +31,13 @@ public class PaymentInformService {
 
     private final EmailService emailService;
     private final GeneralSettingService generalSettingService;
+    private final MessageSource messageSource;
 
     @Inject
-    public PaymentInformService(EmailService emailService, GeneralSettingService generalSettingService) {
+    public PaymentInformService(EmailService emailService, GeneralSettingService generalSettingService, MessageSource messageSource) {
         this.emailService = emailService;
         this.generalSettingService = generalSettingService;
+        this.messageSource = messageSource;
     }
 
     public void sendPaymentFailEmail(Policy policy, Payment payment) {
@@ -43,7 +47,7 @@ public class PaymentInformService {
             throw new EmailException("Insured customer doesn't have email, so cannot send email to customer.");
         }
 
-        String emailSubject = "[Elife] Payment for policy is not success: ";
+        String emailSubject = messageSource.getMessage("email.payment.fail.title", null, LocaleUtil.THAI_LOCALE);
         String emailContent = fillEmailContent(policy, payment);
         emailService.sendEmail(insuredEmail, emailSubject, emailContent, Collections.EMPTY_LIST);
         LOGGER.debug("Sent informed email to customer, policyId: " + policy.getPolicyId());

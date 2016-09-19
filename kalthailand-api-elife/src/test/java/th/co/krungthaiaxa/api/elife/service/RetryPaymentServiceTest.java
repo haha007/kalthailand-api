@@ -4,9 +4,11 @@ import com.icegreen.greenmail.junit.GreenMailRule;
 import com.icegreen.greenmail.util.ServerSetupTest;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Assert;
+import org.junit.FixMethodOrder;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.SpringApplicationConfiguration;
@@ -28,12 +30,13 @@ import javax.inject.Inject;
 import java.io.InputStream;
 import java.util.List;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiApplication.class)
 @WebAppConfiguration
 @ActiveProfiles("test")
-public class RLSServiceWithSandboxLineServiceTest extends ELifeTest {
-    public static final Logger LOGGER = LoggerFactory.getLogger(RLSServiceWithSandboxLineServiceTest.class);
+public class RetryPaymentServiceTest extends ELifeTest {
+    public static final Logger LOGGER = LoggerFactory.getLogger(RetryPaymentServiceTest.class);
     @Inject
     private RLSService rlsService;
     private LineService lineService;
@@ -50,17 +53,19 @@ public class RLSServiceWithSandboxLineServiceTest extends ELifeTest {
     @Inject
     private PaymentService paymentService;
 
+    private static Policy POLICY;
+
     @Test
-    public void run_cron_job() {
+    public void test01_retrypayment_success_after_the_first_fail() {
         mongoTemplate.dropCollection(CollectionFile.class);
 
-        Policy policy = policyFactory.createPolicyForLineWithValidated(30, "khoi.tran.ags@gmail.com");
+        POLICY = policyFactory.createPolicyForLineWithValidated(30, "khoi.tran.ags@gmail.com");
 
         lineService = LineServiceMockFactory.initServiceWithResponseCode("4000");
         paymentService.setLineService(lineService);
         rlsService.setLineService(lineService);
 
-        InputStream inputStream = CollectionFileFactory.initCollectionExcelFile(policy.getPolicyId());
+        InputStream inputStream = CollectionFileFactory.initCollectionExcelFile(POLICY.getPolicyId());
         rlsService.importCollectionFile(inputStream);
         List<CollectionFile> collectionFileList = rlsService.processLatestCollectionFiles();
         CollectionFile collectionFile = collectionFileList.get(0);
@@ -78,7 +83,8 @@ public class RLSServiceWithSandboxLineServiceTest extends ELifeTest {
         String newRegKey = RandomStringUtils.randomNumeric(15);
         String transId = RandomStringUtils.randomNumeric(20);
         String accessToken = RandomStringUtils.randomAlphanumeric(25);
-        paymentService.retryFailedPayment(policy.getPolicyId(), paymentId, orderId, transId, newRegKey, accessToken);
+        paymentService.retryFailedPayment(POLICY.getPolicyId(), paymentId, orderId, transId, newRegKey, accessToken);
     }
+
 
 }
