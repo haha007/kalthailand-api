@@ -107,10 +107,8 @@ public class CommissionCalculationSessionService {
         List<CommissionCalculation> listCommissionCalculated = new ArrayList<>();  
         
         if(channelIdsNoDup.size()>0&&planCodesNoDup.size()>0){
-        	//String nativeSQLchannelIdsNoDup = channelIdsNoDup.toString().replace(" ","").replace("[", "'").replace("]", "'").replace(",", "','");
-        	//String nativeSQLplanCodesNoDup = planCodesNoDup.toString().replace(" ", "").replace("[", "'").replace("]", "'").replace(",", "','");
-        	String nativeSQLchannelIdsNoDup = "'a','a'";
-        	String nativeSQLplanCodesNoDup = "'a','a'";
+        	String nativeSQLchannelIdsNoDup = channelIdsNoDup.toString().replace(" ","").replace("[", "'").replace("]", "'").replace(",", "','");
+        	String nativeSQLplanCodesNoDup = planCodesNoDup.toString().replace(" ", "").replace("[", "'").replace("]", "'").replace(",", "','");
         	String sql =	"select " +
         					"ltrim(rtrim(a.pno)) as policyNo, " +
         					"ltrim(rtrim(a.pstu)) as policyStatus, " +
