@@ -1,8 +1,20 @@
 package th.co.krungthaiaxa.api.elife.commission.service;
 
-import org.apache.commons.collections.ListUtils;
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang3.tuple.Triple;
+import static th.co.krungthaiaxa.api.elife.utils.ExcelUtils.text;
+
+import java.io.IOException;
+import java.text.DecimalFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import javax.inject.Inject;
+import javax.sql.DataSource;
+
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -14,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+
 import th.co.krungthaiaxa.api.common.exeption.CommissionCalculationSessionException;
 import th.co.krungthaiaxa.api.elife.commission.data.CommissionCalculation;
 import th.co.krungthaiaxa.api.elife.commission.data.CommissionCalculationSession;
@@ -21,48 +34,26 @@ import th.co.krungthaiaxa.api.elife.commission.data.CommissionPlan;
 import th.co.krungthaiaxa.api.elife.commission.data.CommissionResult;
 import th.co.krungthaiaxa.api.elife.commission.data.CommissionTargetEntity;
 import th.co.krungthaiaxa.api.elife.commission.data.CommissionTargetGroup;
-import th.co.krungthaiaxa.api.elife.commission.data.CommissionTargetGroupType;
 import th.co.krungthaiaxa.api.elife.commission.repositories.CommissionCalculationSessionRepository;
+import th.co.krungthaiaxa.api.elife.commission.repositories.CommissionResultRepository;
 import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.repository.CDBRepository;
-import th.co.krungthaiaxa.api.elife.commission.repositories.CommissionResultRepository;
 import th.co.krungthaiaxa.api.elife.repository.PolicyRepository;
 import th.co.krungthaiaxa.api.elife.utils.ExcelUtils;
-
-import javax.inject.Inject;
-import javax.management.remote.TargetedNotification;
-import javax.sql.DataSource;
-
-import static java.time.LocalDateTime.now;
-import static java.time.format.DateTimeFormatter.ofPattern;
-import static org.apache.commons.lang3.StringUtils.isBlank;
-import static th.co.krungthaiaxa.api.elife.utils.ExcelUtils.text;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * @author khoi.tran on 9/5/16.
  */
 @Service
 public class CommissionCalculationSessionService {
+	
 	private final static Logger logger = LoggerFactory.getLogger(CDBRepository.class);
     private final CommissionPlanService commissionPlanService;
     private final CommissionCalculationSessionRepository commissionCalculationSessionRepository;
     private final CDBRepository cdbRepository;
-    private final CommissionResultRepository commissionResultRepository;
-    
-    private List<CommissionPlan> commissionPlans;
-    
+    private final CommissionResultRepository commissionResultRepository;    
+    private List<CommissionPlan> commissionPlans;    
     private final PolicyRepository policyRepository;
     
     @Autowired
@@ -70,13 +61,16 @@ public class CommissionCalculationSessionService {
     private DataSource cdbDataSource;
     
     private final String FY = "FY";
-    private final String OV = "OV";
-    
+    private final String OV = "OV";    
     private final String TARGET_ENTITY_AFF = "AFFILIATE";
     private final String TARGET_ENTITY_COM = "COMPANY";
     private final String TARGET_ENTITY_TSR = "TSR";
     private final String TARGET_ENTITY_MKR = "MKR";
-    private final String TARGET_ENTITY_DIS = "DISTRIBUTION";
+    private final String TARGET_ENTITY_DIS = "DISTRIBUTION";    
+    private final String BLANK = "";
+	private final String NEW = "NEW";
+	private final String EXISTING = "EXISTING";
+	private final String NULL = "NULL";
 
     @Inject
     public CommissionCalculationSessionService(CommissionPlanService commissionPlanService, CommissionCalculationSessionRepository commissionCalculationSessionRepository, CDBRepository cdbRepository, PolicyRepository policyRepository, CommissionResultRepository commissionResultRepository) {
@@ -96,17 +90,11 @@ public class CommissionCalculationSessionService {
     }
     
     private CommissionPlan getCommissionPlanForCalculate(String channelCode, String planCode, String customerCategory){
-    	logger.debug("On getCommissionPlanForCalculate with channelCode("+channelCode+"), planCode("+planCode+"), customerCategory("+customerCategory+").....");
-    	logger.debug("check commissionPlans null :"+(commissionPlans==null));
     	CommissionPlan commissionPlan = new CommissionPlan();
     	for(CommissionPlan c:commissionPlans){
-    		logger.debug("mongodb unitcode:"+c.getUnitCode());
-    		logger.debug("mongo plancode:"+c.getPlanCode());
-    		logger.debug("mongo cust:"+c.getCustomerCategory());
     		if(c.getUnitCode().equals(channelCode) &&
     			c.getPlanCode().equals(planCode) &&
     			c.getCustomerCategory().name().equals(customerCategory)){
-    			logger.debug("ok with c:"+c.toString());
     			commissionPlan = c;
     			break;
     		}
@@ -115,7 +103,6 @@ public class CommissionCalculationSessionService {
     }
     
     private CommissionTargetGroup getCommissionTargetGroup(String type, List<CommissionTargetGroup> ctgList){
-    	logger.debug("On getCommissionTargetGroup with type("+type+"), ctgList("+ctgList+").....");
     	CommissionTargetGroup outCtg = new CommissionTargetGroup();
     	for(CommissionTargetGroup ctg : ctgList){
     		if(ctg.getTargetGroupType().name().equals(FY)&&type.equals(FY)){
@@ -128,11 +115,8 @@ public class CommissionCalculationSessionService {
     }
     
     private CommissionTargetEntity getTargetEntities(String entityType, CommissionTargetGroup commissionTargetGroup ){
-    	logger.debug("On getTargetEntities with entityType("+entityType+"), commissionTargetGroup("+commissionTargetGroup+").....");
-    	logger.debug("check size():"+commissionTargetGroup.getTargetEntities().size());
     	CommissionTargetEntity outCtr = new CommissionTargetEntity();
     	List<CommissionTargetEntity> entityGroup = commissionTargetGroup.getTargetEntities();
-    	logger.debug("check entityGroup is null:"+(entityGroup==null));
     	for(CommissionTargetEntity cte : entityGroup){
     		if(cte.getTargetEntityType().name().equals(TARGET_ENTITY_AFF)&&entityType.equals(TARGET_ENTITY_AFF)){
     			outCtr = cte;
@@ -154,16 +138,13 @@ public class CommissionCalculationSessionService {
     	return outCtr;
     }
     
-    private String getExistingAgentCodeStatus(String agentCode){
-    	//String sql = ""
-    	return null;
-    }
-    
-    public byte[] exportToExcel(String rowId){
+    public byte[] exportToExcel(String rowId, String now){
     	
-    	/*CommissionResult commissionResult = commissionResultRepository.findByRowId(rowId);
+    	byte[] content = null;
     	
-    	String now = ofPattern("yyyyMMdd_HHmmss").format(now());
+    	CommissionResult commissionResult = commissionResultRepository.findByRowId(rowId);
+    	List<CommissionCalculation> commissionCalculated = commissionResult.getPolicies();
+
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("CommissionExtract_" + now);
         
@@ -193,15 +174,70 @@ public class CommissionCalculationSessionService {
                 text("OV TSR Commission"),
                 text("OV Marking Commission"),
                 text("OV Company Commission"),
-                text("OV ")
-                
-        		
-        		);
-        policies.stream().forEach(tmp -> createPolicyExtractExcelFileLine(sheet, tmp));
-        ExcelUtils.autoWidthAllColumns(workbook);*/
-    	
-    	return null;
+                text("FY Affiliate Rate"),
+                text("FY Distribution Rate"),
+                text("FY TSR Rate"),
+                text("FY Marketion Rate"),
+                text("FY Company Rate"),
+                text("OV Affiliate Rate"),
+                text("OV Distribution Rate"),
+                text("OV TSR Rate"),
+                text("OV Marketing Rate"),
+                text("OV Company Rate"),
+                text("Calculate Date Time"));
+        commissionCalculated.stream().forEach(tmp -> createCommissionResultExtractExcelFileLine(sheet, tmp, commissionResult));
+        ExcelUtils.autoWidthAllColumns(workbook);        
         
+        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+            workbook.write(byteArrayOutputStream);
+            content = byteArrayOutputStream.toByteArray();
+        } catch (IOException e) {
+            throw new IllegalStateException("Unable to write content of excel deduction file", e);
+        }
+    	
+    	return content;
+        
+    }
+    
+    private void createCommissionResultExtractExcelFileLine(Sheet sheet, CommissionCalculation commission, CommissionResult commissionResult) {
+    	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss.SSS");
+    	ExcelUtils.appendRow(sheet,
+                text(String.valueOf(commissionResult.getCommissionMonth())),
+                text(commission.getPolicyNo()),
+                text(commission.getPolicyStatus()),
+                text(commission.getPlanCode()),
+                text(commission.getPaymentCode()),
+                text(commission.getAgentCode()),
+                text(commission.getCustomerCategory()),
+                text(commission.getPreviousPolicyNo()),
+                text(commission.getExistingAgentCode1()),
+                text(commission.getExistingAgentCode1Status()),
+                text(commission.getExistingAgentCode2()),
+                text(commission.getExistingAgentCode2Status()),
+                text(String.valueOf(commission.getFirstYearPremium())),
+                text(String.valueOf(commission.getFirstYearCommission())),
+                text(String.valueOf(commission.getFyAffiliateCommission())),
+                text(String.valueOf(commission.getFyDistribution1Commission())),
+                text(String.valueOf(commission.getFyDistribution2Commission())),
+                text(String.valueOf(commission.getFyTsrCommission())),
+                text(String.valueOf(commission.getFyMarketingCommission())),
+                text(String.valueOf(commission.getFyCompanyCommission())),
+                text(String.valueOf(commission.getOvAffiliateCommission())),
+                text(String.valueOf(commission.getOvDistribution1Commission())),
+                text(String.valueOf(commission.getOvDistribution2Commission())),
+                text(String.valueOf(commission.getOvTsrCommission())),
+                text(String.valueOf(commission.getOvMarketingCommission())),
+                text(String.valueOf(commission.getOvCompanyCommission())),
+                text(String.valueOf(commission.getFyAffiliateRate())),
+                text(String.valueOf(commission.getFyDistributionRate())),
+                text(String.valueOf(commission.getFyMarketingRate())),
+                text(String.valueOf(commission.getFyCompanyRate())),
+                text(String.valueOf(commission.getOvAffiliateRate())),
+                text(String.valueOf(commission.getOvDistributiionRate())),
+                text(String.valueOf(commission.getOvTsrRate())),
+                text(String.valueOf(commission.getOvMarketingRate())),
+                text(String.valueOf(commission.getOvCompanyRate())),
+                text(commissionResult.getUpdatedDateTime().format(formatter)));
     }
     
     public List<CommissionResult> getCommissionCalculationedList(){
@@ -212,11 +248,46 @@ public class CommissionCalculationSessionService {
     	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS");
     	return "C"+now.format(formatter);
     }
-
+    
+    private String getExistingAgentCodeStatus(String agentCode){
+    	String status = BLANK;
+    	if(!StringUtil.isBlank(agentCode)){
+    		DecimalFormat dcm = new DecimalFormat("00000000000000");
+    		Long convertLong = Long.parseLong(agentCode);
+    		String convertString = dcm.format(convertLong);
+    		String split1, split2, split3 = "";
+    		split1 = convertString.substring(0, 6);
+    		split2 = convertString.substring(6,8);
+    		split3 = convertString.substring(8,14);
+    		Integer int1, int2, int3 = 0;
+    		int1 = Integer.parseInt(split1,10);
+    		int2 = Integer.parseInt(split2,10);
+    		int3 = Integer.parseInt(split3,10);
+    		String realAgentCode = String.valueOf(int1) + String.valueOf(int2) + String.valueOf(int3);
+        	String sql = " select " +
+        				"ltrim(rtrim(agstu)) as status " +
+        				"from [dbo].[AGKLCDTA_AGPCONT] " +
+        				"where cast(agunt as varchar) + cast(aglvl as varchar) + cast(agagc as varchar) = ? ";
+        	Object[] parameters = new Object[1];
+            parameters[0] = realAgentCode;
+            Map<String, Object> map = null;
+            JdbcTemplate jdbcTemplate = new JdbcTemplate(cdbDataSource);
+            jdbcTemplate.setQueryTimeout(600);
+            try {
+                List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, parameters);
+                if (list.size() != 0) {
+                    status = String.valueOf(list.get(0).get("status"));
+                }
+            } catch (Exception e) {
+                logger.error("Unable to query for agent code", e);
+            }
+    	}
+    	return status;
+    }
+    
     public void calculateCommissionForPolicies() {
     	
-    	LocalDateTime nowDate = LocalDateTime.now();
-    	
+    	LocalDateTime nowDate = LocalDateTime.now();    	
     	
     	//save first
     	CommissionResult commissionResult = new CommissionResult();
@@ -225,21 +296,13 @@ public class CommissionCalculationSessionService {
     	commissionResult.setRowId(getRowId(nowDate));
     	commissionResultRepository.save(commissionResult);
     	
-    	
-    	String NULL = "NULL";
-    	String NEW = "NEW";
-    	String EXISTING = "EXISTING";
-    	String DUMMY = "DUMMY";
-    	
         commissionPlans = commissionPlanService.findAll();
         List<String> channelIds = commissionPlans.stream().map(sc->sc.getUnitCode()).collect(Collectors.toList());        
         List<String> planCodes = commissionPlans.stream().map(sc->sc.getPlanCode()).collect(Collectors.toList());
         List<String> channelIdsNoDup = channelIds.stream().distinct().collect(Collectors.toList());
         List<String> planCodesNoDup = planCodes.stream().distinct().collect(Collectors.toList());
         
-        List<CommissionCalculation> listCommissionCalculated = new ArrayList<>();
-        
-        
+        List<CommissionCalculation> listCommissionCalculated = new ArrayList<>();  
         
         if(channelIdsNoDup.size()>0&&planCodesNoDup.size()>0){
         	//String nativeSQLchannelIdsNoDup = "("+channelIdsNoDup.toString().replace(" ","").replace("[", "'").replace("]", "'").replace(",", "','")+")";
@@ -260,18 +323,17 @@ public class CommissionCalculationSessionService {
         					"where " +
         					"left(ltrim(rtrim(cast(a.pagt1 as varchar))),6) in ("+nativeSQLchannelIdsNoDup+") " +
         					"and ltrim(rtrim(a.lplan)) in ("+nativeSQLplanCodesNoDup+") ";
-        	System.out.println("sql:"+sql);
             JdbcTemplate jdbcTemplate = new JdbcTemplate(cdbDataSource);
             jdbcTemplate.setQueryTimeout(600);
             try {
                 List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
-                System.out.println("list.size():"+list.size());
                 if (list.size()>0) {
                 	for(Map<String,Object> m : list){                		             		
                 		//check policy must not null
                 		Policy policy = policyRepository.findByPolicyId(String.valueOf(m.get("policyNo")));
                 		if(policy!=null){
                 			CommissionCalculation c = new CommissionCalculation();   
+                			
                 			//cdb information
                     		c.setPolicyNo(String.valueOf(m.get("policyNo")));
                     		c.setPolicyStatus(String.valueOf(m.get("policyStatus")));
@@ -280,34 +342,32 @@ public class CommissionCalculationSessionService {
                     		c.setAgentCode(String.valueOf(m.get("agentCode")));
                     		c.setFirstYearPremium(Double.valueOf(String.valueOf(m.get("firstYearPremium"))));
                     		c.setFirstYearCommission(Double.valueOf(String.valueOf(m.get("firstYearCommission"))));
+                    		
                     		//previously information
                 			Insured insured = policy.getInsureds().get(0);
                     		List<String> prevInf = insured.getInsuredPreviousInformations();
                     		if(prevInf.size()==0){
                     			c.setCustomerCategory(NEW);
-                    			c.setPreviousPolicyNo(NULL);
-                    			c.setExistingAgentCode1(NULL);
-                    			c.setExistingAgentCode1Status(DUMMY);
-                    			c.setExistingAgentCode2(NULL);
-                    			c.setExistingAgentCode2Status(DUMMY);
+                    			c.setPreviousPolicyNo(BLANK);
+                    			c.setExistingAgentCode1(BLANK);
+                    			c.setExistingAgentCode1Status(BLANK);
+                    			c.setExistingAgentCode2(BLANK);
+                    			c.setExistingAgentCode2Status(BLANK);
                     		}else{
-                    			c.setCustomerCategory((StringUtil.isBlank(prevInf.get(0))?NEW:EXISTING));
-                    			c.setPreviousPolicyNo((StringUtil.isBlank(prevInf.get(0))?NULL:prevInf.get(0)));
-                    			c.setExistingAgentCode1((StringUtil.isBlank(prevInf.get(1))?NULL:prevInf.get(1)));
-                    			c.setExistingAgentCode1Status(DUMMY);
-                    			c.setExistingAgentCode2((StringUtil.isBlank(prevInf.get(2))?NULL:prevInf.get(2)));
-                    			c.setExistingAgentCode2Status(DUMMY);
+                    			c.setCustomerCategory((prevInf.get(0).equals(NULL)?NEW:EXISTING));
+                    			c.setPreviousPolicyNo((prevInf.get(0).equals(NULL)?BLANK:prevInf.get(0)));
+                    			c.setExistingAgentCode1((prevInf.get(1).equals(NULL)?BLANK:prevInf.get(1)));
+                    			c.setExistingAgentCode1Status((c.getExistingAgentCode1().equals(BLANK)?BLANK:getExistingAgentCodeStatus(c.getExistingAgentCode1())));
+                    			c.setExistingAgentCode2((prevInf.get(2).equals(NULL)?BLANK:prevInf.get(2)));
+                    			c.setExistingAgentCode2Status((c.getExistingAgentCode2().equals(BLANK)?BLANK:getExistingAgentCodeStatus(c.getExistingAgentCode2())));
                     		}
+                    		
                     		//calculation commission
+                    		
                     		//fy
                     		CommissionPlan plan = getCommissionPlanForCalculate(c.getAgentCode().substring(0, 6),c.getPlanCode(),c.getCustomerCategory());
-                    		logger.debug("plan.toString():"+plan.toString());
-                    		logger.debug("check target group:"+plan.getTargetGroups());
-                    		logger.debug(plan.getPlanCode()+","+plan.getUnitCode()+","+plan.getCreatedDateTime()+","+plan.getCustomerCategory()+","+plan.getId()+","+plan.getUpdatedDateTime());
                     		CommissionTargetGroup fCtg = getCommissionTargetGroup(FY,plan.getTargetGroups());
                     		CommissionTargetGroup oCtg = getCommissionTargetGroup(OV,plan.getTargetGroups());
-                    		logger.debug("check fCtg null:"+(fCtg==null));
-                    		logger.debug("check oCtg null:"+(oCtg==null));
                     		c.setFyAffiliateCommission(c.getFirstYearCommission()*getTargetEntities(TARGET_ENTITY_AFF,fCtg).getPercentage());
                     		Double fDisComm = c.getFirstYearCommission()*getTargetEntities(TARGET_ENTITY_DIS,fCtg).getPercentage();
                     		if(StringUtil.isBlank(c.getExistingAgentCode2())){
@@ -319,8 +379,9 @@ public class CommissionCalculationSessionService {
                     			c.setFyDistribution2Commission(disCommSplit);
                     		}
                     		c.setFyTsrCommission(c.getFirstYearCommission()*getTargetEntities(TARGET_ENTITY_TSR,fCtg).getPercentage());
-                    		c.setFyMarkingCommission(c.getFirstYearCommission()*getTargetEntities(TARGET_ENTITY_MKR,fCtg).getPercentage());
+                    		c.setFyMarketingCommission(c.getFirstYearCommission()*getTargetEntities(TARGET_ENTITY_MKR,fCtg).getPercentage());
                     		c.setFyCompanyCommission(c.getFirstYearCommission()*getTargetEntities(TARGET_ENTITY_COM,fCtg).getPercentage());
+                    		
                     		//ov
                     		c.setOvAffiliateCommission(c.getFirstYearCommission()*getTargetEntities(TARGET_ENTITY_AFF,oCtg).getPercentage());
                     		Double oDisComm = c.getFirstYearCommission()*getTargetEntities(TARGET_ENTITY_DIS,oCtg).getPercentage();
@@ -333,19 +394,21 @@ public class CommissionCalculationSessionService {
                     			c.setOvDistribution2Commission(disCommSplit);
                     		}
                     		c.setOvTsrCommission(c.getFirstYearCommission()*getTargetEntities(TARGET_ENTITY_TSR,oCtg).getPercentage());
-                    		c.setOvMarkingCommission(c.getFirstYearCommission()*getTargetEntities(TARGET_ENTITY_MKR,oCtg).getPercentage());
+                    		c.setOvMarketingCommission(c.getFirstYearCommission()*getTargetEntities(TARGET_ENTITY_MKR,oCtg).getPercentage());
                     		c.setOvCompanyCommission(c.getFirstYearCommission()*getTargetEntities(TARGET_ENTITY_COM,oCtg).getPercentage());
-                    		//commission rage
+                    		
+                    		//commission rate
                     		c.setFyAffiliateRate(getTargetEntities(TARGET_ENTITY_AFF,fCtg).getPercentage());
                     		c.setFyDistributionRate(getTargetEntities(TARGET_ENTITY_DIS,fCtg).getPercentage());
                     		c.setFyTsrRate(getTargetEntities(TARGET_ENTITY_TSR,fCtg).getPercentage());
-                    		c.setFyMarkingRate(getTargetEntities(TARGET_ENTITY_MKR,fCtg).getPercentage());
+                    		c.setFyMarketingRate(getTargetEntities(TARGET_ENTITY_MKR,fCtg).getPercentage());
                     		c.setFyCompanyRate(getTargetEntities(TARGET_ENTITY_COM,fCtg).getPercentage());
                     		c.setOvAffiliateRate(getTargetEntities(TARGET_ENTITY_AFF,oCtg).getPercentage());
                     		c.setOvDistributiionRate(getTargetEntities(TARGET_ENTITY_DIS,oCtg).getPercentage());
                     		c.setOvTsrRate(getTargetEntities(TARGET_ENTITY_TSR,oCtg).getPercentage());
-                    		c.setOvMarkingRate(getTargetEntities(TARGET_ENTITY_MKR,oCtg).getPercentage());
+                    		c.setOvMarketingRate(getTargetEntities(TARGET_ENTITY_MKR,oCtg).getPercentage());
                     		c.setOvCompanyRate(getTargetEntities(TARGET_ENTITY_COM,oCtg).getPercentage());
+                    		
                     		//add in list
                     		listCommissionCalculated.add(c);
                 		}             		
@@ -362,57 +425,5 @@ public class CommissionCalculationSessionService {
         }
     }
     
-    public static void main(String args[]){
-    	System.out.println(LocalDate.now().getMonthValue());
-    }
-    
-    /*
-     public Optional<Triple<String, String, String>> getExistingAgentCode(String idCard, String dateOfBirth) {
-        if (isBlank(idCard) || isBlank(dateOfBirth)) {
-            return Optional.empty();
-        }
-
-        if (logger.isDebugEnabled()) {
-            logger.debug(String.format("[%1$s] .....", "getExistingAgentCode"));
-            logger.debug(String.format("idCard is %1$s", idCard));
-            logger.debug(String.format("dateOfBirth is %1$s", dateOfBirth));
-        }
-        String sql = "select top 1 pno, " +
-    			" case cast(coalesce(pagt1,0) as varchar) when '0' then 'NULL' else cast(coalesce(pagt1,0) as varchar) end as pagt1, " + 
-    			" case cast(coalesce(pagt2,0) as varchar) when '0' then 'NULL' else cast(coalesce(pagt2,0) as varchar) end as pagt2 " +
-                "from lfkludta_lfppml " +
-                "where left(coalesce(pagt1,'0'),1) not in ('2','4') " +
-                "and left(coalesce(pagt2,'0'),1) not in ('2','4') " +
-                "and pterm = 0 " +
-                "and pstu in ('1') " +
-                "and ? = " +
-                "case when ltrim(rtrim(coalesce(pownid,''))) <> '' and lpaydb <> 0 " +
-                "then ltrim(rtrim(coalesce(pownid,''))) else ltrim(rtrim(coalesce(pid,''))) end " +
-                "and ? = " +
-                "case when ltrim(rtrim(coalesce(pownid,''))) <> '' and lpaydb <> 0 " +
-                "then lpaydb else pdob end " +
-                "order by pdoi desc";
-        Object[] parameters = new Object[2];
-        parameters[0] = idCard;
-        parameters[1] = dateOfBirth;
-        Map<String, Object> map = null;
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(cdbDataSource);
-        jdbcTemplate.setQueryTimeout(600);
-        try {
-            List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, parameters);
-            if (list.size() != 0) {
-                map = list.get(0);
-            }
-        } catch (Exception e) {
-            logger.error("Unable to query for agent code", e);
-        }
-
-        if (map == null) {
-        	return Optional.of(Triple.of("NULL", "NULL", "NULL"));
-        } else {
-            return Optional.of(Triple.of((String) map.get("pno"), (String) map.get("pagt1"), (String) map.get("pagt2")));
-        }
-    }
-     * */
 
 }

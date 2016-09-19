@@ -26,23 +26,23 @@ public class CommissionCalculation{
     private Double fyDistribution1Commission;
     private Double fyDistribution2Commission;
     private Double fyTsrCommission;
-    private Double fyMarkingCommission;
+    private Double fyMarketingCommission;
     private Double fyCompanyCommission;
     private Double ovAffiliateCommission;
     private Double ovDistribution1Commission;
     private Double ovDistribution2Commission;
     private Double ovTsrCommission;
-    private Double ovMarkingCommission;
+    private Double ovMarketingCommission;
     private Double ovCompanyCommission;
     private Double fyAffiliateRate;
     private Double fyDistributionRate;
     private Double fyTsrRate;
-    private Double fyMarkingRate;
+    private Double fyMarketingRate;
     private Double fyCompanyRate;
     private Double ovAffiliateRate;
     private Double ovDistributiionRate;
     private Double ovTsrRate;
-    private Double ovMarkingRate;
+    private Double ovMarketingRate;
     private Double ovCompanyRate;
     
 	
@@ -148,11 +148,11 @@ public class CommissionCalculation{
 	public void setFyTsrCommission(Double fyTsrCommission) {
 		this.fyTsrCommission = fyTsrCommission;
 	}
-	public Double getFyMarkingCommission() {
-		return fyMarkingCommission;
+	public Double getFyMarketingCommission() {
+		return fyMarketingCommission;
 	}
-	public void setFyMarkingCommission(Double fyMarkingCommission) {
-		this.fyMarkingCommission = fyMarkingCommission;
+	public void setFyMarketingCommission(Double fyMarkingCommission) {
+		this.fyMarketingCommission = fyMarkingCommission;
 	}
 	public Double getFyCompanyCommission() {
 		return fyCompanyCommission;
@@ -184,11 +184,11 @@ public class CommissionCalculation{
 	public void setOvTsrCommission(Double ovTsrCommission) {
 		this.ovTsrCommission = ovTsrCommission;
 	}
-	public Double getOvMarkingCommission() {
-		return ovMarkingCommission;
+	public Double getOvMarketingCommission() {
+		return ovMarketingCommission;
 	}
-	public void setOvMarkingCommission(Double ovMarkingCommission) {
-		this.ovMarkingCommission = ovMarkingCommission;
+	public void setOvMarketingCommission(Double ovMarkingCommission) {
+		this.ovMarketingCommission = ovMarkingCommission;
 	}
 	public Double getOvCompanyCommission() {
 		return ovCompanyCommission;
@@ -214,11 +214,11 @@ public class CommissionCalculation{
 	public void setFyTsrRate(Double fyTsrRate) {
 		this.fyTsrRate = fyTsrRate;
 	}
-	public Double getFyMarkingRate() {
-		return fyMarkingRate;
+	public Double getFyMarketingRate() {
+		return fyMarketingRate;
 	}
-	public void setFyMarkingRate(Double fyMarkingRate) {
-		this.fyMarkingRate = fyMarkingRate;
+	public void setFyMarketingRate(Double fyMarkingRate) {
+		this.fyMarketingRate = fyMarkingRate;
 	}
 	public Double getFyCompanyRate() {
 		return fyCompanyRate;
@@ -244,11 +244,11 @@ public class CommissionCalculation{
 	public void setOvTsrRate(Double ovTsrRate) {
 		this.ovTsrRate = ovTsrRate;
 	}
-	public Double getOvMarkingRate() {
-		return ovMarkingRate;
+	public Double getOvMarketingRate() {
+		return ovMarketingRate;
 	}
-	public void setOvMarkingRate(Double ovMarkingRate) {
-		this.ovMarkingRate = ovMarkingRate;
+	public void setOvMarketingRate(Double ovMarkingRate) {
+		this.ovMarketingRate = ovMarkingRate;
 	}
 	public Double getOvCompanyRate() {
 		return ovCompanyRate;

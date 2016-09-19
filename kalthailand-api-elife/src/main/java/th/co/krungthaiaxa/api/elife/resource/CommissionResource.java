@@ -88,8 +88,29 @@ public class CommissionResource {
     @ResponseBody
     public void getCommissionResultExcelFile(
     		@ApiParam(value = "The Commission Result Row Id", required = true)
-    		@PathVariable String rowId) {
+    		@PathVariable String rowId,
+    		HttpServletResponse response) {
     	
+    	String now = ofPattern("yyyyMMdd_HHmmss").format(now());
+    	
+    	byte[] content = commissionCalculationSessionService.exportToExcel(rowId, now);
+    	
+    	response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setContentLength(content.length);
+
+        
+        String fileName = "eLife_PolicyExtract_" + now + ".xlsx";
+        // set headers for the response
+        String headerKey = "Content-Disposition";
+        String headerValue = String.format("attachment; filename=\"%s\"", fileName);
+        response.setHeader(headerKey, headerValue);
+
+        try (OutputStream outStream = response.getOutputStream()) {
+            IOUtils.write(content, outStream);
+        } catch (IOException e) {
+            logger.error("Unable to download the commission file", e);
+        }
+        
     }
 
     @ApiOperation(value = "Get Deduction file", notes = "Get a Deduction file")
