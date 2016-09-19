@@ -43,7 +43,11 @@
                     <td>{{ commissionResult.updatedDateTime ? commissionResult.updatedDateTime : 'Waiting...' }}</td>
                     <td>{{ commissionResult.commissionMonth ? commissionResult.commissionMonth : 'Waiting...'  }}</td>
                     <td>{{ commissionResult.commissionPoliciesCount ? commissionResult.commissionPoliciesCount : 'Waiting...' }}</td>
-                    <td><div ng-show="commissionResult.updatedDateTime"><a href="/api-elife/RLS/deduction/download/{{commissionResult.pathLinkDownload}}">Download</a></div></td>
+                    <td>
+                    	<div ng-show="commissionResult.updatedDateTime">
+                    		<a target="_blank" href="/api-elife/commissions/calculation/download/{{commissionResult.rowId}}">Download</a>
+                    	</div>
+                    </td>
                 </tr>
             </table>
 

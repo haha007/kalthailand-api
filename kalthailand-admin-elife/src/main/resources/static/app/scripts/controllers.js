@@ -731,16 +731,15 @@
         	$scope.redNotice = '(Commission  can only be generated before 10<sup>th</sup> day of a month)';
         }
         
-        console.log(CommissionResultService);
         $scope.commissionResultAll = CommissionResultService;
         
         $scope.callGenerateCommission = function () {
         	CommissionResultService.generateCommission();
-        	$scope.loadNewFilter(CommissionResultService);
+        	$scope.loadNewFilter();
         }
         
-        $scope.loadNewFilter = function (newData){
-            $scope.commissionResultAll = newData;      
+        $scope.loadNewFilter = function (){
+            $scope.commissionResultAll = CommissionResultService;      
             $scope.$apply();
             $scope.calculateButton = true;
             $scope.redNotice = 'Please wait system is processing for generate reusult ...';

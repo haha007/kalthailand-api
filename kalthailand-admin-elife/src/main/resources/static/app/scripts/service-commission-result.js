@@ -37,6 +37,7 @@ CommissionResultService.prototype.showErrorMessage = function (msg) {
 CommissionResultService.prototype.generateCommission = function (msg) {
     var self = this;
     // API Service
+    self.$http.post(window.location.origin + '/api-elife/commissions/calculation', {});
     self.$http.get(window.location.origin + '/api-elife/commissions/calculation/lists', {}).then(
         function (successResponse) {
             self.commissionList = successResponse.data;
