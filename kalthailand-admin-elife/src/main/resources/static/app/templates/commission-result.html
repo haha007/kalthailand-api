@@ -38,7 +38,7 @@
                     <td>Number Of Policies</td>
                     <td>Download</td>
                 </tr>
-               	<tr ng-repeat="commissionResult in commissionResultAll.commissionList">
+               	<tr ng-repeat="commissionResult in commissionResultAll.commissionList | orderBy:'-createdDateTime'">
                     <td>{{ commissionResult.createdDateTime }}</td>
                     <td>{{ commissionResult.updatedDateTime ? commissionResult.updatedDateTime : 'Waiting...' }}</td>
                     <td>{{ commissionResult.commissionMonth ? commissionResult.commissionMonth : 'Waiting...'  }}</td>
