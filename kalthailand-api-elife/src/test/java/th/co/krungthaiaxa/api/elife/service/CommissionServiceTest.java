@@ -15,13 +15,21 @@ import th.co.krungthaiaxa.api.elife.commission.data.CommissionTargetEntityType;
 import th.co.krungthaiaxa.api.elife.commission.data.CommissionTargetGroup;
 import th.co.krungthaiaxa.api.elife.commission.data.CommissionTargetGroupType;
 import th.co.krungthaiaxa.api.elife.commission.data.CustomerCategory;
+import th.co.krungthaiaxa.api.elife.commission.repositories.CommissionResultRepository;
 import th.co.krungthaiaxa.api.elife.commission.service.CommissionCalculationSessionService;
 import th.co.krungthaiaxa.api.elife.commission.service.CommissionPlanService;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
 
 import javax.inject.Inject;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.time.LocalDateTime.now;
+import static java.time.format.DateTimeFormatter.ofPattern;
+import static org.apache.commons.io.FileUtils.writeByteArrayToFile;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -33,6 +41,8 @@ public class CommissionServiceTest extends ELifeTest {
     CommissionPlanService commissionPlanService;
     @Inject
     CommissionCalculationSessionService commissionCalculationSessionService;
+    @Inject
+    CommissionResultRepository commissionResultRepository;
 
     @Test
     public void test_create_commission_with_good_data() {
@@ -42,17 +52,36 @@ public class CommissionServiceTest extends ELifeTest {
         commissionPlanService.putCommissions(commissionPlans);
     }
     
+    //santi : for start trigger to process
     @Test
     public void should_calculate_commission(){
     	commissionCalculationSessionService.calculateCommissionForPolicies();
     }
     
+    //santi : for get list of all commission result
     @Test
     public void shold_get_list_of_calculated_commission_result(){
     	List<CommissionResult> list = commissionCalculationSessionService.getCommissionCalculationedList();
     	assertThat(list).isInstanceOf(List.class);
     }
-
+    
+    //santi : for download commission excel file
+    @Test
+    public void should_get_excel_commission(){
+    	List<CommissionResult> commissionList = commissionResultRepository.findAll();
+    	if(commissionList.size()!=0){
+    		byte[] content = commissionCalculationSessionService.exportToExcel(commissionList.get(0).getRowId(), ofPattern("yyyyMMdd_HHmmss").format(now()));
+    		File excelFile = new File("target/commissionExtract.xlsx");
+            try {
+				writeByteArrayToFile(excelFile, content);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+            assertThat(excelFile.exists()).isTrue();
+    	}
+    }
+    
     /**
      * @param unitCode View more at {@link CommissionPlan#unitCode}
      * @return
