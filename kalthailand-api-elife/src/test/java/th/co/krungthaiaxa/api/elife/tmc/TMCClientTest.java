@@ -50,7 +50,7 @@ public class TMCClientTest extends ELifeTest {
         policyService.updatePolicyAfterFirstPaymentValidated(policy);
         policyService.updatePolicyAfterPolicyHasBeenValidated(policy, "999999-99-999999", "agentName", "token");
         Document document = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(DocumentType.ERECEIPT_PDF)).findFirst().get();
-        String documentContent = documentService.downloadDocument(document.getId()).getContent();
+        String documentContent = documentService.findDocumentDownload(document.getId()).getContent();
 
         // should not throw any exception
         tmcClient.sendPDFToTMC(policy, documentContent, DocumentType.ERECEIPT_PDF);

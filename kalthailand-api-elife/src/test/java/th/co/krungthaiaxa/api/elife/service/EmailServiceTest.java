@@ -260,7 +260,7 @@ public class EmailServiceTest extends ELifeTest {
         documentService.generateValidatedPolicyDocuments(policy, "token");
         Optional<Document> documentPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(ERECEIPT_PDF)).findFirst();
         assertThat(documentPdf.isPresent()).isTrue();
-        DocumentDownload documentDownload = documentService.downloadDocument(documentPdf.get().getId());
+        DocumentDownload documentDownload = documentService.findDocumentDownload(documentPdf.get().getId());
         byte[] bytes = Base64.getDecoder().decode(documentDownload.getContent());
         assertThat(new PdfReader(bytes)).isNotNull();
         emailService.sendEreceiptEmail(policy, Pair.of(bytes, "emailServiceTest-e-receipt-10ec.pdf"));
@@ -429,7 +429,7 @@ public class EmailServiceTest extends ELifeTest {
         Optional<Document> documentPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(ERECEIPT_PDF)).findFirst();
         assertThat(documentPdf.isPresent()).isTrue();
 
-        DocumentDownload documentDownload = documentService.downloadDocument(documentPdf.get().getId());
+        DocumentDownload documentDownload = documentService.findDocumentDownload(documentPdf.get().getId());
         byte[] bytes = Base64.getDecoder().decode(documentDownload.getContent());
         assertThat(new PdfReader(bytes)).isNotNull();
 
@@ -473,7 +473,7 @@ public class EmailServiceTest extends ELifeTest {
         Optional<Document> documentPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(ERECEIPT_PDF)).findFirst();
         assertThat(documentPdf.isPresent()).isTrue();
 
-        DocumentDownload documentDownload = documentService.downloadDocument(documentPdf.get().getId());
+        DocumentDownload documentDownload = documentService.findDocumentDownload(documentPdf.get().getId());
         byte[] bytes = Base64.getDecoder().decode(documentDownload.getContent());
         assertThat(new PdfReader(bytes)).isNotNull();
 

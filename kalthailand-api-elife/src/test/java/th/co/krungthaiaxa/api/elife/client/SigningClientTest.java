@@ -46,7 +46,7 @@ public class SigningClientTest extends ELifeTest {
         Policy policy = getPolicy();
         documentService.generateNotValidatedPolicyDocuments(policy);
         Optional<Document> applicationFormPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(APPLICATION_FORM)).findFirst();
-        DocumentDownload documentDownload = documentService.downloadDocument(applicationFormPdf.get().getId());
+        DocumentDownload documentDownload = documentService.findDocumentDownload(applicationFormPdf.get().getId());
         byte[] encodedSignedDocument = signingClient.getEncodedSignedPdfDocument(documentDownload.getContent().getBytes(), "token");
         assertThat(encodedSignedDocument).isNotNull();
     }

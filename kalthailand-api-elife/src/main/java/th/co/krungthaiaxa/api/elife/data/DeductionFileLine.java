@@ -6,6 +6,7 @@ public class DeductionFileLine {
     private String policyNumber;
     private String bankCode;
     private String paymentMode;
+    private String paymentId;
     private Double amount;
     private LocalDateTime processDate;
     private String rejectionCode;
@@ -83,5 +84,13 @@ public class DeductionFileLine {
 
     public void setInformCustomerMessage(String informCustomerMessage) {
         this.informCustomerMessage = informCustomerMessage;
+    }
+
+    public String getPaymentId() {
+        return paymentId;
+    }
+
+    public void setPaymentId(String paymentId) {
+        this.paymentId = paymentId;
     }
 }

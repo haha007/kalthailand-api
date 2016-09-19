@@ -125,7 +125,7 @@ public class DocumentServiceTest extends ELifeTest {
         Optional<Document> documentPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(ERECEIPT_PDF)).findFirst();
         assertThat(documentPdf.isPresent()).isTrue();
 
-        DocumentDownload documentDownload = documentService.downloadDocument(documentPdf.get().getId());
+        DocumentDownload documentDownload = documentService.findDocumentDownload(documentPdf.get().getId());
         byte[] decodedContent = Base64.getDecoder().decode(documentDownload.getContent());
         assertThat(new PdfReader(decodedContent)).isNotNull();
 

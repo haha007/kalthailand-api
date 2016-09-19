@@ -1,5 +1,6 @@
 package th.co.krungthaiaxa.api.elife.utils;
 
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import th.co.krungthaiaxa.api.common.exeption.FileNotFoundException;
@@ -16,6 +17,17 @@ public class ExcelIOUtils {
         } catch (IOException e) {
             String msg = "Cannot load file '" + classPath + "': " + e.getMessage();
             throw new FileNotFoundException(msg, e);
+        }
+    }
+
+    public static byte[] writeToBytes(Workbook workbook) {
+        try {
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            workbook.write(byteArrayOutputStream);
+            byte[] bytes = byteArrayOutputStream.toByteArray();
+            return bytes;
+        } catch (IOException e) {
+            throw new FileNotFoundException("Cannot write workbook to bytes: " + e.getMessage(), e);
         }
     }
 }

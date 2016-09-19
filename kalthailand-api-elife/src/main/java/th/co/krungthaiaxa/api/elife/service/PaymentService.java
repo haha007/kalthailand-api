@@ -1,6 +1,7 @@
 package th.co.krungthaiaxa.api.elife.service;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
@@ -11,13 +12,16 @@ import th.co.krungthaiaxa.api.common.utils.IOUtil;
 import th.co.krungthaiaxa.api.elife.data.GeneralSetting;
 import th.co.krungthaiaxa.api.elife.exception.LinePaymentException;
 import th.co.krungthaiaxa.api.elife.exception.PaymentNotFoundException;
+import th.co.krungthaiaxa.api.elife.model.Document;
 import th.co.krungthaiaxa.api.elife.model.Payment;
+import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayResponse;
 import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
 
 import javax.inject.Inject;
-import java.util.Collections;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -29,16 +33,21 @@ public class PaymentService {
     private final GeneralSettingService generalSettingService;
     private final PaymentRepository paymentRepository;
     private final PolicyService policyService;
-    private final LineService lineService;
+    /**
+     * Need getter-setter for mocking.
+     */
+    private LineService lineService;
     private final EmailService emailService;
+    private final DocumentService documentService;
 
     @Inject
-    public PaymentService(GeneralSettingService generalSettingService, PaymentRepository paymentRepository, PolicyService policyService, LineService lineService, EmailService emailService) {
+    public PaymentService(GeneralSettingService generalSettingService, PaymentRepository paymentRepository, PolicyService policyService, LineService lineService, EmailService emailService, DocumentService documentService) {
         this.generalSettingService = generalSettingService;
         this.paymentRepository = paymentRepository;
         this.policyService = policyService;
         this.lineService = lineService;
         this.emailService = emailService;
+        this.documentService = documentService;
     }
 
     public Optional<Payment> findLastestPaymentByPolicyNumberAndRegKeyNotNull(String policyNumber) {
@@ -49,13 +58,23 @@ public class PaymentService {
         return paymentRepository.findOne(paymentId);
     }
 
-    public Payment retryFailedPayment(String policyId, String oldPaymentId, String orderId, String transactionId, String regKey) {
+    /**
+     * @param policyId
+     * @param oldPaymentId
+     * @param orderId
+     * @param transactionId
+     * @param regKey        this is the new registrationKey returned by lineservice, it should be different from current latest regKey in DB.
+     * @param accessToken
+     * @return
+     */
+    public Payment retryFailedPayment(String policyId, String oldPaymentId, String orderId, String transactionId, String regKey, String accessToken) {
 
         Payment oldPayment = validateExistPayment(oldPaymentId);
         if (StringUtils.isNotBlank(oldPayment.getRetryPaymentId())) {
             throw new BadArgumentException(String.format("The old payment Id %s was already retried by paymentId: %s", oldPaymentId, oldPayment.getRetryPaymentId()));
         }
         Payment payment = new Payment();
+        payment.setPolicyId(policyId);
         payment.setRegistrationKey(regKey);
         payment.setDueDate(DateTimeUtil.nowLocalDateInThaiZoneId());
         payment.setAmount(oldPayment.getAmount());
@@ -73,7 +92,6 @@ public class PaymentService {
             LOGGER.debug("Will try to confirm payment with transation ID [" + transactionId + "] on the policy with ID [" + policyId + "]");
             linePayResponse = lineService.capturePayment(transactionId, payment.getAmount().getValue(), payment.getAmount().getCurrencyCode());
         } catch (Exception e) {
-            LOGGER.error("Unable to confirm the payment in the policy with ID [" + policyId + "]", e);
             throw new LinePaymentException("Unable to confirm the payment in the policy with ID [" + policyId + "]", e);
         } finally {
             if (linePayResponse != null && linePayResponse.getReturnCode().equals(LineService.RESPONSE_CODE_SUCCESS)) {
@@ -81,13 +99,13 @@ public class PaymentService {
             } else {
                 payment.setStatus(PaymentStatus.INCOMPLETE);
                 LOGGER.warn("The retry payment also not successed yet. policyId: {}, oldPaymentId: {}, orderId: {}, transactionId: {}", policyId, oldPaymentId, orderId, transactionId);
-                //TODO should we send another email to customer to inform about the fail payment?
+                //Don't need to resend another fail email to user. When backend return error, FE will show error page to customer.
             }
             payment = policyService.updatePayment(payment, orderId, transactionId, StringUtils.isBlank(regKey) ? "" : regKey);
             oldPayment.setRetryPaymentId(payment.getPaymentId());
             paymentRepository.save(oldPayment);
         }
-        sendPaymentSuccessToMarketingTeam(payment);
+        sendPaymentSuccessToMarketingTeam(payment, accessToken);
         return payment;
     }
 
@@ -99,15 +117,25 @@ public class PaymentService {
         return payment;
     }
 
-    private void sendPaymentSuccessToMarketingTeam(Payment payment) {
+    private void sendPaymentSuccessToMarketingTeam(Payment payment, String accessToken) {
+        Policy policy = policyService.validateExistPolicy(payment.getPolicyId());
+        Document ereceiptPdfDocument = documentService.addEreceiptPdf(policy, payment, false, accessToken);
+
         GeneralSetting generalSetting = generalSettingService.loadGeneralSetting();
         String emailContent = IOUtil.loadTextFileInClassPath("/email-content/email-retrypayment-success.html");
         emailContent.replaceAll("%PAYMENT_ID%", payment.getPaymentId());
         emailContent.replaceAll("%POLICY_NUMBER%", payment.getPolicyId());
         emailContent.replaceAll("%ORDER_ID%", payment.getOrderId());
-        for (String successEmails : generalSetting.getRetryPaymentSetting().getToSuccessEmails()) {
-            emailService.sendEmail(successEmails, "Success payment", emailContent, Collections.EMPTY_LIST);
-        }
+        List<String> toEmails = generalSetting.getRetryPaymentSetting().getToSuccessEmails();
+        Pair<byte[], String> ereceiptAttachment = policyService.findEreceiptAttachmentByDocumentId(policy.getPolicyId(), ereceiptPdfDocument.getId());
+        emailService.sendEmailWithAttachments(toEmails, "Success payment", emailContent, Arrays.asList(ereceiptAttachment));
     }
 
+    public LineService getLineService() {
+        return lineService;
+    }
+
+    public void setLineService(LineService lineService) {
+        this.lineService = lineService;
+    }
 }

@@ -72,7 +72,7 @@ public class RLSServiceTest extends ELifeTest {
 
     @Before
     public void setup() throws IOException {
-        lineService = LineServiceMockFactory.createDefault();
+        lineService = LineServiceMockFactory.initServiceDefault();
         rlsService.setLineService(lineService);
     }
 

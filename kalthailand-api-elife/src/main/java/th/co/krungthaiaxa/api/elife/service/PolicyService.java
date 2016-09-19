@@ -13,6 +13,7 @@ import th.co.krungthaiaxa.api.common.utils.EncryptUtil;
 import th.co.krungthaiaxa.api.elife.client.CDBClient;
 import th.co.krungthaiaxa.api.elife.data.PolicyNumber;
 import th.co.krungthaiaxa.api.elife.exception.ElifeException;
+import th.co.krungthaiaxa.api.elife.exception.PolicyNotFoundException;
 import th.co.krungthaiaxa.api.elife.exception.PolicyValidationException;
 import th.co.krungthaiaxa.api.elife.model.Document;
 import th.co.krungthaiaxa.api.elife.model.DocumentDownload;
@@ -128,6 +129,14 @@ public class PolicyService {
     public Optional<Policy> findPolicy(String policyId) {
         Policy policy = policyRepository.findByPolicyId(policyId);
         return policy != null ? Optional.of(policy) : Optional.empty();
+    }
+
+    public Policy validateExistPolicy(String policyId) {
+        Policy policy = policyRepository.findByPolicyId(policyId);
+        if (policy == null) {
+            throw new PolicyNotFoundException("Not found policy " + policyId);
+        }
+        return policy;
     }
 
     public Policy createPolicy(Quote quote) {
@@ -318,7 +327,7 @@ public class PolicyService {
         }
 
         // Send Application Form to TMC
-        DocumentDownload applicationFormDocument = documentService.downloadDocument(applicationFormPdf.get().getId());
+        DocumentDownload applicationFormDocument = documentService.findDocumentDownload(applicationFormPdf.get().getId());
         try {
             tmcClient.sendPDFToTMC(policy, applicationFormDocument.getContent(), APPLICATION_FORM);
         } catch (ElifeException e) {
@@ -327,7 +336,7 @@ public class PolicyService {
 
         // Send DA Form to TMC (DA form may not exist)
         if (daFormPdf.isPresent()) {
-            DocumentDownload daFormDocument = documentService.downloadDocument(daFormPdf.get().getId());
+            DocumentDownload daFormDocument = documentService.findDocumentDownload(daFormPdf.get().getId());
             try {
                 tmcClient.sendPDFToTMC(policy, daFormDocument.getContent(), DA_FORM);
             } catch (ElifeException e) {
@@ -337,8 +346,8 @@ public class PolicyService {
     }
 
     public Policy updatePolicyAfterPolicyHasBeenValidated(Policy policy, String agentCode, String agentName, String token) {
-        if (!policy.getStatus().equals(PENDING_VALIDATION)) {
-            throw new ElifeException("Can't validate policy [" + policy.getPolicyId() + "], it is not pending for validation.");
+        if (!PENDING_VALIDATION.equals(policy.getStatus())) {
+            throw new ElifeException("Can't validate policy [" + policy.getPolicyId() + "], it is not pending for validation, it's " + policy.getStatus());
         }
 
         // This has to be set asap since it is used to generate document
@@ -372,7 +381,7 @@ public class PolicyService {
         logger.info(String.format("Policy [%1$s] has been updated as Validated.", policy.getPolicyId()));
 
         // Send Email
-        DocumentDownload documentDownload = documentService.downloadDocument(documentPdf.get().getId());
+        DocumentDownload documentDownload = documentService.findDocumentDownload(documentPdf.get().getId());
         try {
             emailService.sendEreceiptEmail(policy, Pair.of(Base64.getDecoder().decode(documentDownload.getContent()), "e-receipt_" + policy.getPolicyId() + ".pdf"));
         } catch (IOException | MessagingException e) {
@@ -406,13 +415,18 @@ public class PolicyService {
         }
 
         // Send Validated Application Form to TMC
-        DocumentDownload applicationFormValidatedDocument = documentService.downloadDocument(applicationFormValidatedPdf.get().getId());
+        DocumentDownload applicationFormValidatedDocument = documentService.findDocumentDownload(applicationFormValidatedPdf.get().getId());
         try {
             tmcClient.sendPDFToTMC(policy, applicationFormValidatedDocument.getContent(), APPLICATION_FORM);
         } catch (ElifeException e) {
             logger.error("Unable to send validated application Form to TMC on policy [" + policy.getPolicyId() + "].", e);
         }
         return policy;
+    }
+
+    public Pair<byte[], String> findEreceiptAttachmentByDocumentId(String policyId, String documentId) {
+        DocumentDownload documentDownload = documentService.findDocumentDownload(documentId);
+        return Pair.of(Base64.getDecoder().decode(documentDownload.getContent()), "e-receipt_" + policyId + ".pdf");
     }
 
     public void sendNotificationsWhenUserNotRespondingToCalls(Policy policy) throws IOException, MessagingException {

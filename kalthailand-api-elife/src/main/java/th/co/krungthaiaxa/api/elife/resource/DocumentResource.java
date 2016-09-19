@@ -91,7 +91,7 @@ public class DocumentResource {
             return new ResponseEntity<>(JsonUtil.getJson(ErrorCode.POLICY_DOES_NOT_CONTAIN_DOCUMENT), NOT_ACCEPTABLE);
         }
 
-        DocumentDownload documentDownload = documentService.downloadDocument(documentId);
+        DocumentDownload documentDownload = documentService.findDocumentDownload(documentId);
         if (documentDownload == null) {
             logger.error("Unable to download the document with ID [" + documentId + "]");
             return new ResponseEntity<>(JsonUtil.getJson(ErrorCode.UNABLE_TO_DOWNLOAD_DOCUMENT), INTERNAL_SERVER_ERROR);

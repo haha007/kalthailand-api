@@ -266,7 +266,7 @@ public class PolicyResource {
             return;
         }
 
-        DocumentDownload documentDownload = documentService.downloadDocument(document.get().getId());
+        DocumentDownload documentDownload = documentService.findDocumentDownload(document.get().getId());
         byte[] documentContent = Base64.getDecoder().decode(documentDownload.getContent());
 
         response.setContentType("application/pdf");
@@ -427,7 +427,8 @@ public class PolicyResource {
             @ApiParam(value = "The transaction id to use to confirm the payment. Must be sent of status id SUCCESS", required = false)
             @RequestParam(required = false) String transactionId,
             @ApiParam(value = "The RegKey for Monthly Mode Payment Only", required = false)
-            @RequestParam(required = false) String regKey) {
+            @RequestParam(required = false) String regKey,
+            HttpServletRequest httpServletRequest) {
         if (isEmpty(orderId)) {
             logger.error("The order ID was not received");
             return new ResponseEntity<>(getJson(ErrorCode.ORDER_ID_NOT_PROVIDED), NOT_ACCEPTABLE);
@@ -443,7 +444,8 @@ public class PolicyResource {
             logger.error("The policy is in status [" + policy.get().getStatus().name() + "], it must be " + VALIDATED + " status.");
             return new ResponseEntity<>(getJson(ErrorCode.POLICY_IS_NOT_VALIDATED_FOR_PAYMENT.apply(policyId)), NOT_ACCEPTABLE);
         }
-        paymentService.retryFailedPayment(policyId, oldPaymentId, orderId, transactionId, regKey);
+        String accessToken = httpServletRequest.getHeader(tokenHeader);
+        paymentService.retryFailedPayment(policyId, oldPaymentId, orderId, transactionId, regKey, accessToken);
 
         return new ResponseEntity<>(getJson(policy.get()), OK);
     }
@@ -538,7 +540,8 @@ public class PolicyResource {
         policyService.updateRegistrationForAllNotProcessedPayment(policy.get(), linePayResponse.getInfo().getRegKey());
 
         try {
-            policyService.updatePolicyAfterPolicyHasBeenValidated(policy.get(), agentCode, agentName, httpServletRequest.getHeader(tokenHeader));
+            String accessToken = httpServletRequest.getHeader(tokenHeader);
+            policyService.updatePolicyAfterPolicyHasBeenValidated(policy.get(), agentCode, agentName, accessToken);
         } catch (ElifeException e) {
             logger.error("Payment is successful but there was an error whil trying to update policy status.", e);
             return new ResponseEntity<>(getJson(ErrorCode.POLICY_VALIDATION_ERROR.apply(e.getMessage())), INTERNAL_SERVER_ERROR);

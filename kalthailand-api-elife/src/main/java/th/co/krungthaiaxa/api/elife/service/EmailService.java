@@ -16,6 +16,7 @@ import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
 import th.co.krungthaiaxa.api.elife.products.iprotect.IProtectEmailService;
 import th.co.krungthaiaxa.api.elife.utils.EmailSender;
+import th.co.krungthaiaxa.api.elife.utils.EmailUtil;
 
 import javax.inject.Inject;
 import javax.mail.MessagingException;
@@ -56,6 +57,16 @@ public class EmailService {
         this.saleIllustration10ECService = saleIllustration10ECService;
         this.saleIllustrationiFineService = saleIllustrationiFineService;
         this.iProtectEmailService = iProtectEmailService;
+    }
+
+    public void sendEmailWithAttachments(String toEmail, String emailSubject, String emailContent, List<Pair<byte[], String>> attachments) {
+        sendEmail(toEmail, emailSubject, emailContent, EmailUtil.getDefaultImagePairs(), attachments);
+    }
+
+    public void sendEmailWithAttachments(List<String> toEmails, String emailSubject, String emailContent, List<Pair<byte[], String>> attachments) {
+        for (String toEmail : toEmails) {
+            sendEmail(toEmail, emailSubject, emailContent, EmailUtil.getDefaultImagePairs(), attachments);
+        }
     }
 
     public void sendEmail(String toEmail, String emailSubject, String emailContent, List<Pair<byte[], String>> imagesPairs) {
@@ -190,7 +201,7 @@ public class EmailService {
         } else if (pol.getCommonData().getProductId().equals(ProductType.PRODUCT_IGEN.getLogicName())) {
             sumInsure = money.format(pol.getPremiumsData().getProductIGenPremium().getSumInsured().getValue());
         } else if (pol.getCommonData().getProductId().equals(ProductType.PRODUCT_IPROTECT.getLogicName())) {
-        	sumInsure = money.format(pol.getPremiumsData().getProductIProtectPremium().getSumInsured().getValue());
+            sumInsure = money.format(pol.getPremiumsData().getProductIProtectPremium().getSumInsured().getValue());
         }
         return emailContent.replace("%FULL_NAME%", person.getGivenName() + " " + person.getSurName())
                 .replace("%POLICY_ID%", pol.getPolicyId())
@@ -245,7 +256,7 @@ public class EmailService {
         return "https://line.me/R/ch/" + lineId + "/elife/th/";
     }
 
-    public void sendQuoteIProtect(Quote quote){
+    public void sendQuoteIProtect(Quote quote) {
         iProtectEmailService.sendQuoteIProtect(quote);
     }
 }

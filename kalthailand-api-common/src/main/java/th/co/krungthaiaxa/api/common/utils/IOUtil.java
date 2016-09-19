@@ -8,6 +8,7 @@ import th.co.krungthaiaxa.api.common.exeption.FileIOException;
 import th.co.krungthaiaxa.api.common.exeption.FileNotFoundException;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
@@ -35,17 +36,41 @@ public class IOUtil {
 
     public static File createParentFolderIfNecessary(String filePath) {
         File destinationFile = new File(filePath);
-
         String parentPath = destinationFile.getParent();
-        File parentFolder = new File(parentPath);
+        return createFolderIfNecessary(parentPath);
+    }
+
+    public static File createFolderIfNecessary(String filePath) {
+        File folder = new File(filePath);
         try {
-            if (!parentFolder.exists()) {
-                FileUtils.forceMkdir(parentFolder);
+            if (!folder.exists()) {
+                FileUtils.forceMkdir(folder);
             }
         } catch (IOException e) {
-            throw new FileIOException(String.format("Cannot create folder '%s'", parentFolder.getAbsolutePath()), e);
+            throw new FileIOException(String.format("Cannot create folder '%s'", folder.getAbsolutePath()), e);
         }
-        return parentFolder;
+        return folder;
+    }
+
+    public static File createFile(String filePath) {
+        File destinationFile = new File(filePath);
+        createParentFolderIfNecessary(filePath);
+        if (!destinationFile.exists()) {
+            try {
+                destinationFile.createNewFile();
+            } catch (IOException e) {
+                throw new FileIOException(String.format("Cannot create file '%s': %s", destinationFile.getAbsolutePath(), e.getMessage()), e);
+            }
+        }
+        return destinationFile;
+    }
+
+    public static InputStream getInputStream(File file) {
+        try {
+            return new FileInputStream(file);
+        } catch (java.io.FileNotFoundException e) {
+            throw new FileIOException(String.format("Cannot get input stream from file '%s': %s", file.getAbsoluteFile(), e.getMessage()), e);
+        }
     }
 
     /**
@@ -65,5 +90,14 @@ public class IOUtil {
 
     public static InputStream loadInputStreamFileInClassPath(String path) {
         return IOUtil.class.getResourceAsStream(path);
+    }
+
+    public static void writeInputStream(File file, InputStream inputStream) {
+        try {
+            FileUtils.writeByteArrayToFile(file, IOUtils.toByteArray(inputStream));
+        } catch (IOException e) {
+            throw new FileIOException(String.format("Cannot write data to file '%s'", file.getAbsolutePath()));
+        }
+
     }
 }

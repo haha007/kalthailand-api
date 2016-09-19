@@ -7,15 +7,20 @@ import com.itextpdf.text.pdf.PdfWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import th.co.krungthaiaxa.api.common.exeption.UnexpectedException;
 import th.co.krungthaiaxa.api.elife.client.SigningClient;
+import th.co.krungthaiaxa.api.elife.exception.EreceiptDocumentException;
 import th.co.krungthaiaxa.api.elife.model.Document;
 import th.co.krungthaiaxa.api.elife.model.DocumentDownload;
+import th.co.krungthaiaxa.api.elife.model.DocumentReferenceType;
+import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.enums.DocumentType;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
 import th.co.krungthaiaxa.api.elife.products.ProductUtils;
 import th.co.krungthaiaxa.api.elife.repository.DocumentDownloadRepository;
 import th.co.krungthaiaxa.api.elife.repository.DocumentRepository;
+import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
 import th.co.krungthaiaxa.api.elife.repository.PolicyRepository;
 import th.co.krungthaiaxa.api.elife.utils.ThaiBahtUtil;
 
@@ -59,23 +64,38 @@ public class DocumentService {
     private final ApplicationFormService applicationFormService;
     private final DAFormService daFormService;
     private final SigningClient signingClient;
+    private final PaymentRepository paymentRepository;
 
     @Inject
     public DocumentService(DocumentRepository documentRepository,
             DocumentDownloadRepository documentDownloadRepository,
             PolicyRepository policyRepository,
             ApplicationFormService applicationFormService,
-            DAFormService daFormService, SigningClient signingClient) {
+            DAFormService daFormService, SigningClient signingClient, PaymentRepository paymentRepository) {
         this.documentRepository = documentRepository;
         this.documentDownloadRepository = documentDownloadRepository;
         this.policyRepository = policyRepository;
         this.applicationFormService = applicationFormService;
         this.daFormService = daFormService;
         this.signingClient = signingClient;
+        this.paymentRepository = paymentRepository;
     }
 
-    public DocumentDownload downloadDocument(String documentId) {
+    public DocumentDownload findDocumentDownload(String documentId) {
         return documentDownloadRepository.findByDocumentId(documentId);
+    }
+
+    public Document addEReceiptDocument(Policy policy, Payment payment, byte[] decodedContent, String mimeType, DocumentType documentType) {
+        Document document = addDocument(policy, decodedContent, mimeType, documentType, DocumentReferenceType.PAYMENT, payment.getPaymentId());
+        if (documentType == DocumentType.ERECEIPT_IMAGE) {
+            payment.setReceiptImageDocument(document);
+        } else if (documentType == DocumentType.ERECEIPT_PDF) {
+            payment.setReceiptPdfDocument(document);
+        } else {
+            throw new UnexpectedException("There's something really wrong here. You can only call this method if your documentType is either " + DocumentType.ERECEIPT_IMAGE + " or " + DocumentType.ERECEIPT_PDF);
+        }
+        paymentRepository.save(payment);
+        return document;
     }
 
     /**
@@ -88,12 +108,18 @@ public class DocumentService {
      * @return
      */
     public Document addDocument(Policy policy, byte[] decodedContent, String mimeType, DocumentType documentType) {
+        return addDocument(policy, decodedContent, mimeType, documentType, null, null);
+    }
+
+    public Document addDocument(Policy policy, byte[] decodedContent, String mimeType, DocumentType documentType, DocumentReferenceType documentReferenceType, String referenceId) {
         LocalDateTime now = now(of(SHORT_IDS.get("VST")));
 
         Document document = new Document();
         document.setCreationDate(now);
         document.setPolicyId(policy.getPolicyId());
         document.setTypeName(documentType);
+        document.setReferenceType(documentReferenceType);
+        document.setReferenceId(referenceId);
         document = documentRepository.save(document);
 
         DocumentDownload documentDownload = new DocumentDownload();
@@ -157,19 +183,20 @@ public class DocumentService {
         }
 
         // Generate Ereceipt as Image
+        Payment firstPayment = policy.getPayments().get(0);
         byte[] ereceiptImage = null;
         Optional<Document> documentImage = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(ERECEIPT_IMAGE)).findFirst();
         if (!documentImage.isPresent()) {
             try {
-                ereceiptImage = createEreceipt(policy);
-                addDocument(policy, ereceiptImage, "image/png", ERECEIPT_IMAGE);
+                ereceiptImage = createEreceiptImage(policy, firstPayment, true);
+                addEReceiptDocument(policy, firstPayment, ereceiptImage, "image/png", ERECEIPT_IMAGE);
                 logger.info("Ereceipt image has been added to Policy.");
             } catch (Exception e) {
                 logger.error("Image Ereceipt for Policy [" + policy.getPolicyId() + "] has not been generated.", e);
             }
         } else {
             logger.info("ereceipt image already exists.");
-            ereceiptImage = Base64.getDecoder().decode(downloadDocument(documentImage.get().getId()).getContent().getBytes());
+            ereceiptImage = Base64.getDecoder().decode(findDocumentDownload(documentImage.get().getId()).getContent().getBytes());
         }
 
         // Generate Ereceipt as PDF
@@ -180,7 +207,7 @@ public class DocumentService {
                 byte[] encodedNonSignedPdf = Base64.getEncoder().encode(decodedNonSignedPdf);
                 byte[] encodedSignedPdf = signingClient.getEncodedSignedPdfDocument(encodedNonSignedPdf, token);
                 byte[] decodedSignedPdf = Base64.getDecoder().decode(encodedSignedPdf);
-                addDocument(policy, decodedSignedPdf, "application/pdf", ERECEIPT_PDF);
+                addEReceiptDocument(policy, firstPayment, decodedSignedPdf, "application/pdf", ERECEIPT_PDF);
                 logger.info("Ereceipt pdf has been added to Policy.");
             } catch (Exception e) {
                 logger.error("PDF Ereceipt for Policy [" + policy.getPolicyId() + "] has not been generated.", e);
@@ -191,7 +218,30 @@ public class DocumentService {
         logger.info("Extra documents for policy [" + policy.getPolicyId() + "] have been created.");
     }
 
-    private byte[] createEreceiptPDF(byte[] eReceiptImage) throws DocumentException, IOException {
+    /**
+     * @param policy
+     * @param payment
+     * @param firstPayment
+     * @param accessToken  it will be used for sign document
+     * @return
+     * @throws EreceiptDocumentException if there's something wrong while creating ereceipt pdf.
+     */
+    public Document addEreceiptPdf(Policy policy, Payment payment, boolean firstPayment, String accessToken) {
+        try {
+            byte[] ereceiptImage = createEreceiptImage(policy, payment, false);
+            addEReceiptDocument(policy, payment, ereceiptImage, "image/png", ERECEIPT_IMAGE);
+            byte[] decodedNonSignedPdf = createEreceiptPDF(ereceiptImage);
+            byte[] encodedNonSignedPdf = Base64.getEncoder().encode(decodedNonSignedPdf);
+            byte[] encodedSignedPdf = signingClient.getEncodedSignedPdfDocument(encodedNonSignedPdf, accessToken);
+            byte[] decodedSignedPdf = Base64.getDecoder().decode(encodedSignedPdf);
+            return addEReceiptDocument(policy, payment, decodedSignedPdf, "application/pdf", ERECEIPT_PDF);
+        } catch (IOException | DocumentException e) {
+            String msg = String.format("Error creating ereceipt pdf for policyId: %s, paymentId: %s, firstPayment: %s", policy.getPolicyId(), payment.getPaymentId(), firstPayment);
+            throw new EreceiptDocumentException(msg);
+        }
+    }
+
+    public byte[] createEreceiptPDF(byte[] eReceiptImage) throws DocumentException, IOException {
         ByteArrayOutputStream content = new ByteArrayOutputStream();
         com.itextpdf.text.Document document = new com.itextpdf.text.Document(A4.rotate());
         PdfWriter writer = PdfWriter.getInstance(document, content);
@@ -214,7 +264,7 @@ public class DocumentService {
         return tdate.format(ofPattern("dd/MM/yyyy"));
     }
 
-    private byte[] createEreceipt(Policy policy) throws IOException {
+    public byte[] createEreceiptImage(Policy policy, Payment payment, boolean firstPayment) throws IOException {
         logger.info("[createEReceipt] quoteId : " + policy.getQuoteId());
         logger.info("[createEReceipt] policyNumber : " + policy.getPolicyId());
         InputStream inputStream = getClass().getClassLoader().getResourceAsStream("ereceipt/" + ERECEIPT_TEMPLATE_FILE_NAME);
@@ -250,9 +300,9 @@ public class DocumentService {
         logger.debug("Name Insure : " + policy.getInsureds().get(0).getPerson().getGivenName() + " " + policy.getInsureds().get(0).getPerson().getSurName());
 
         //payment date
-        if (policy.getPayments().get(0).getEffectiveDate() != null) {
-            graphics.drawString(getThaiDate(policy.getPayments().get(0).getEffectiveDate()), 980, 365);
-            logger.debug("Payment Date : " + policy.getPayments().get(0).getEffectiveDate());
+        if (payment.getEffectiveDate() != null) {
+            graphics.drawString(getThaiDate(payment.getEffectiveDate()), 980, 365);
+            logger.debug("Payment Date : " + payment.getEffectiveDate());
         }
 
         //Mobile Phone
@@ -309,7 +359,11 @@ public class DocumentService {
             logger.error("Invalid PaymentMode");
         }
         //Memo
-        graphics.drawString("X", 89, 439);
+        if (firstPayment) {
+            graphics.drawString("X", 89, 439);
+        } else {
+            graphics.drawString("X", 89, 464);
+        }
 
         //ID-Card
         char[] numberIds = policy.getInsureds().get(0).getPerson().getRegistrations().get(0).getId().toCharArray();

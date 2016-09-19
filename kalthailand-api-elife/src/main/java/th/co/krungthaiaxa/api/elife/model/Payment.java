@@ -4,7 +4,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.jsoup.helper.StringUtil;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import th.co.krungthaiaxa.api.common.utils.EncryptUtil;
 import th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus;
 
@@ -13,12 +13,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+//import org.springframework.data.mongodb.core.mapping.Document;
+
 /**
  * If a payment session is fail for any reason, the status will be {@link PaymentStatus#INCOMPLETE} or {@link PaymentStatus#OVERPAID}.
  * Then if payment is processed in the next time, it will create another payment object.
  */
 @ApiModel(description = "Data concerning the payment")
-@Document(collection = "payment")
+@org.springframework.data.mongodb.core.mapping.Document(collection = "payment")
 public class Payment {
 
     public static int REGISTRATION_KEY_PLAIN_TEXT_MAX_LENGTH = 100;
@@ -33,7 +35,12 @@ public class Payment {
     private LocalDate dueDate;
     private LocalDate effectiveDate;
     private Amount amount;
+
     private List<PaymentInformation> paymentInformations = new ArrayList<>();
+    @DBRef
+    private Document receiptImageDocument;
+    @DBRef
+    private Document receiptPdfDocument;
 
     // Used by Jackson
     public Payment() {
@@ -183,5 +190,21 @@ public class Payment {
 
     public void setRetryPaymentId(String retryPaymentId) {
         this.retryPaymentId = retryPaymentId;
+    }
+
+    public Document getReceiptImageDocument() {
+        return receiptImageDocument;
+    }
+
+    public void setReceiptImageDocument(Document receiptImageDocument) {
+        this.receiptImageDocument = receiptImageDocument;
+    }
+
+    public Document getReceiptPdfDocument() {
+        return receiptPdfDocument;
+    }
+
+    public void setReceiptPdfDocument(Document receiptPdfDocument) {
+        this.receiptPdfDocument = receiptPdfDocument;
     }
 }

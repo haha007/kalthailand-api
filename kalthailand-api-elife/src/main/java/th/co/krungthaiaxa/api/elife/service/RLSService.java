@@ -64,14 +64,14 @@ import static th.co.krungthaiaxa.api.elife.utils.ExcelUtils.text;
 @Service
 public class RLSService {
     private final static Logger logger = LoggerFactory.getLogger(RLSService.class);
-    private final static String COLLECTION_FILE_SHEET_NAME = "LFDISC6";
+    public final static String COLLECTION_FILE_SHEET_NAME = "LFDISC6";
     private final static Integer COLLECTION_FILE_NUMBER_OF_COLUMNS = 6;
-    private final static String COLLECTION_FILE_COLUMN_NAME_1 = "M92DOC6";
-    private final static String COLLECTION_FILE_COLUMN_NAME_2 = "M92BANK6";
-    private final static String COLLECTION_FILE_COLUMN_NAME_3 = "M92BKCD6";
-    private final static String COLLECTION_FILE_COLUMN_NAME_4 = "M92PNO6";
-    private final static String COLLECTION_FILE_COLUMN_NAME_5 = "M92PMOD6";
-    private final static String COLLECTION_FILE_COLUMN_NAME_6 = "M92PRM6";
+    public final static String COLLECTION_FILE_COLUMN_NAME_1 = "M92DOC6";
+    public final static String COLLECTION_FILE_COLUMN_NAME_2 = "M92BANK6";
+    public final static String COLLECTION_FILE_COLUMN_NAME_3 = "M92BKCD6";
+    public final static String COLLECTION_FILE_COLUMN_NAME_4 = "M92PNO6";
+    public final static String COLLECTION_FILE_COLUMN_NAME_5 = "M92PMOD6";
+    public final static String COLLECTION_FILE_COLUMN_NAME_6 = "M92PRM6";
     public static final String ERROR_NO_REGISTRATION_KEY_FOUND = "No registration key found to process the payment. Payment is not successful";
 
     private final CollectionFileRepository collectionFileRepository;
@@ -403,6 +403,7 @@ public class RLSService {
     private DeductionFileLine initDeductionFileLine(CollectionFileLine collectionFileLine, String paymentMode, String errorCode, String errorMessage) {
 
         DeductionFileLine deductionFileLine = new DeductionFileLine();
+        deductionFileLine.setPaymentId(collectionFileLine.getPaymentId());
         deductionFileLine.setAmount(collectionFileLine.getPremiumAmount());
         deductionFileLine.setBankCode(collectionFileLine.getBankCode());
         deductionFileLine.setPaymentMode(paymentMode);

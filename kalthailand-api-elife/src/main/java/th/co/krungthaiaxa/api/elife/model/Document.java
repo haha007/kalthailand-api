@@ -20,6 +20,14 @@ public class Document implements Serializable {
     private String policyId;
     private DocumentType typeName;
     private LocalDateTime creationDate;
+    /**
+     * The object which relates to this document.
+     * That object can be a payment, a policy, or a quote... (view more in {@link DocumentReferenceType}.
+     * For example:
+     * With a document with type {@link DocumentType#ERECEIPT_IMAGE}, it's related to a {@link DocumentReferenceType#PAYMENT} because each payment must have an ERECEIPT_IMAGE
+     */
+    private String referenceId;
+    private DocumentReferenceType referenceType;
 
     @ApiModelProperty(value = "Identifier of the document")
     public String getId() {
@@ -65,11 +73,29 @@ public class Document implements Serializable {
         return Objects.equals(id, document.id) &&
                 Objects.equals(policyId, document.policyId) &&
                 Objects.equals(typeName, document.typeName) &&
+                Objects.equals(referenceId, document.referenceId) &&
+                Objects.equals(referenceType, document.referenceType) &&
                 Objects.equals(creationDate, document.creationDate);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(id, policyId, typeName, creationDate);
+    }
+
+    public String getReferenceId() {
+        return referenceId;
+    }
+
+    public void setReferenceId(String referenceId) {
+        this.referenceId = referenceId;
+    }
+
+    public DocumentReferenceType getReferenceType() {
+        return referenceType;
+    }
+
+    public void setReferenceType(DocumentReferenceType referenceType) {
+        this.referenceType = referenceType;
     }
 }
