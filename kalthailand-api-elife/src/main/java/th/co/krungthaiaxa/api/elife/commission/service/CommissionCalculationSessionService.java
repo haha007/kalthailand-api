@@ -107,8 +107,10 @@ public class CommissionCalculationSessionService {
         List<CommissionCalculation> listCommissionCalculated = new ArrayList<>();  
         
         if(channelIdsNoDup.size()>0&&planCodesNoDup.size()>0){
-        	String nativeSQLchannelIdsNoDup = "("+channelIdsNoDup.toString().replace(" ","").replace("[", "'").replace("]", "'").replace(",", "','")+")";
-        	String nativeSQLplanCodesNoDup = "("+planCodesNoDup.toString().replace(" ", "").replace("[", "'").replace("]", "'").replace(",", "','")+")";
+        	//String nativeSQLchannelIdsNoDup = channelIdsNoDup.toString().replace(" ","").replace("[", "'").replace("]", "'").replace(",", "','");
+        	//String nativeSQLplanCodesNoDup = planCodesNoDup.toString().replace(" ", "").replace("[", "'").replace("]", "'").replace(",", "','");
+        	String nativeSQLchannelIdsNoDup = "'a','a'";
+        	String nativeSQLplanCodesNoDup = "'a','a'";
         	String sql =	"select " +
         					"ltrim(rtrim(a.pno)) as policyNo, " +
         					"ltrim(rtrim(a.pstu)) as policyStatus, " +
@@ -123,7 +125,8 @@ public class CommissionCalculationSessionService {
         					"where " +
         					"left(ltrim(rtrim(cast(a.pagt1 as varchar))),6) in ("+nativeSQLchannelIdsNoDup+") " +
         					"and ltrim(rtrim(a.lplan)) in ("+nativeSQLplanCodesNoDup+") ";
-            JdbcTemplate jdbcTemplate = new JdbcTemplate(cdbDataSource);
+            logger.debug("sql:"+sql);
+        	JdbcTemplate jdbcTemplate = new JdbcTemplate(cdbDataSource);
             jdbcTemplate.setQueryTimeout(600);
             try {
                 List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
@@ -218,10 +221,14 @@ public class CommissionCalculationSessionService {
                 	commissionResult.setUpdatedDateTime(LocalDateTime.now());
                 	//update
                 	commissionResultRepository.save(commissionResult);                	
+                }else{
+                	commissionResultRepository.delete(commissionResult);
                 }
             } catch (Exception e) {
                 logger.error("Unable to query", e);
             }
+        }else{
+        	logger.debug("Have no commissiion configure to calculate.....");
         }
     }
     
