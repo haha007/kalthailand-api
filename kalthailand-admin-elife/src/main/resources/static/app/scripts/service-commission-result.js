@@ -39,6 +39,7 @@ CommissionResultService.prototype.generateCommission = function (msg) {
     // API Service
     self.$http.post(window.location.origin + '/api-elife/commissions/calculation', {}).then(
     	function (successResponse) {
+    		
     		// Load after generate
     		self.$http.get(window.location.origin + '/api-elife/commissions/calculation/lists', {}).then(
 		        function (successResponse) {
@@ -54,6 +55,7 @@ CommissionResultService.prototype.generateCommission = function (msg) {
     		self.showErrorMessage(errorResponse.data);
     	}
     );
+    
     // Load first after click
     self.$http.get(window.location.origin + '/api-elife/commissions/calculation/lists', {}).then(
         function (successResponse) {

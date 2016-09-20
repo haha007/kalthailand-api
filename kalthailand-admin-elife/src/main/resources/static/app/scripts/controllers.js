@@ -734,6 +734,8 @@
         $scope.commissionResultAll = CommissionResultService;
         
         $scope.callGenerateCommission = function () {
+        	var obj = {'createdDateTime': 'Waiting...' };
+        	$scope.commissionResultAll.commissionList.splice(0, 0, obj);
         	CommissionResultService.generateCommission();
         	$scope.loadNewFilter();
         }
