@@ -379,7 +379,7 @@ public class RLSService {
         String informCustomerMessage;
         try {
             informFailPaymentsToUser(policy, payment);
-            informCustomerCode = "0000";
+            informCustomerCode = PaymentFailEmailService.RESPONSE_CODE_EMAIL_SENT_SUCCESS;
             informCustomerMessage = "Sent inform email to customer";
         } catch (Exception ex) {
             if (ex instanceof BaseException) {

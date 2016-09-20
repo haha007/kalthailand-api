@@ -29,6 +29,7 @@ import java.util.Collections;
 @Service
 public class PaymentFailEmailService {
     private final static Logger LOGGER = LoggerFactory.getLogger(PaymentFailEmailService.class);
+    public static final String RESPONSE_CODE_EMAIL_SENT_SUCCESS = "0000";
 
     private final EmailService emailService;
     private final GeneralSettingService generalSettingService;

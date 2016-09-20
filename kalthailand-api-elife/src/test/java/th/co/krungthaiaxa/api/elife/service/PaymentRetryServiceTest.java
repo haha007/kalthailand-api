@@ -20,24 +20,27 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.api.elife.ELifeTest;
 import th.co.krungthaiaxa.api.elife.KalApiApplication;
 import th.co.krungthaiaxa.api.elife.data.CollectionFile;
+import th.co.krungthaiaxa.api.elife.data.DeductionFileLine;
 import th.co.krungthaiaxa.api.elife.factory.CollectionFileFactory;
 import th.co.krungthaiaxa.api.elife.factory.PolicyFactory;
 import th.co.krungthaiaxa.api.elife.factory.QuoteFactory;
 import th.co.krungthaiaxa.api.elife.mock.LineServiceMockFactory;
+import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.utils.GreenMailUtil;
 
 import javax.inject.Inject;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Optional;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiApplication.class)
 @WebAppConfiguration
 @ActiveProfiles("test")
-public class RetryPaymentServiceTest extends ELifeTest {
-    public static final Logger LOGGER = LoggerFactory.getLogger(RetryPaymentServiceTest.class);
+public class PaymentRetryServiceTest extends ELifeTest {
+    public static final Logger LOGGER = LoggerFactory.getLogger(PaymentRetryServiceTest.class);
     @Inject
     private RLSService rlsService;
     private LineService lineService;
@@ -61,8 +64,8 @@ public class RetryPaymentServiceTest extends ELifeTest {
         mongoTemplate.dropCollection(CollectionFile.class);
 
         POLICY = policyFactory.createPolicyForLineWithValidated(30, "khoi.tran.ags@gmail.com");
-
-        lineService = LineServiceMockFactory.initServiceWithResponseCode("4000");
+        String lineResponseCode = "4000";
+        lineService = LineServiceMockFactory.initServiceWithResponseCode(lineResponseCode);
         paymentService.setLineService(lineService);
         rlsService.setLineService(lineService);
 
@@ -72,6 +75,10 @@ public class RetryPaymentServiceTest extends ELifeTest {
         CollectionFile collectionFile = collectionFileList.get(0);
 
         GreenMailUtil.writeReceiveMessagesToFiles(greenMail, "test/emails");
+        //Assert
+        DeductionFileLine deductionFileLine = getDeductionFileLineByPolicyNumber(collectionFile, POLICY.getPolicyId());
+        Assert.assertEquals(lineResponseCode, deductionFileLine.getRejectionCode());
+        Assert.assertEquals(PaymentFailEmailService.RESPONSE_CODE_EMAIL_SENT_SUCCESS, deductionFileLine.getInformCustomerCode());
         Assert.assertTrue(greenMail.getReceivedMessages().length > 0);
         greenMail.purgeEmailFromAllMailboxes();
 
@@ -80,13 +87,25 @@ public class RetryPaymentServiceTest extends ELifeTest {
         paymentService.setLineService(lineService);
         rlsService.setLineService(lineService);
 
-        String paymentId = collectionFile.getDeductionFile().getLines().get(0).getPaymentId();
+        String oldPaymentId = collectionFile.getDeductionFile().getLines().get(0).getPaymentId();
         String orderId = RandomStringUtils.randomNumeric(10);
         String newRegKey = RandomStringUtils.randomNumeric(15);
         String transId = RandomStringUtils.randomNumeric(20);
         String accessToken = RandomStringUtils.randomAlphanumeric(25);
-        paymentService.retryFailedPayment(POLICY.getPolicyId(), paymentId, orderId, transId, newRegKey, accessToken);
+        Payment payment = paymentService.retryFailedPayment(POLICY.getPolicyId(), oldPaymentId, orderId, transId, newRegKey, accessToken);
+
         GreenMailUtil.writeReceiveMessagesToFiles(greenMail, "test/emails");
+        //Assert
+        Assert.assertEquals(orderId, payment.getOrderId());
+        Assert.assertEquals(transId, payment.getTransactionId());
+        Assert.assertEquals(newRegKey, payment.getRegistrationKey());
+        Assert.assertNotEquals(oldPaymentId, payment.getPaymentId());
+        Payment oldPayment = paymentService.findPaymentById(oldPaymentId);
+        Assert.assertEquals(oldPayment.getRetryPaymentId(), payment.getPaymentId());
     }
 
+    private DeductionFileLine getDeductionFileLineByPolicyNumber(CollectionFile collectionFile, String policyNumber) {
+        Optional<DeductionFileLine> deductionFileLineOptional = collectionFile.getDeductionFile().getLines().stream().filter(deductionFileLine -> deductionFileLine.getPolicyNumber().equals(policyNumber)).findAny();
+        return deductionFileLineOptional.get();
+    }
 }
