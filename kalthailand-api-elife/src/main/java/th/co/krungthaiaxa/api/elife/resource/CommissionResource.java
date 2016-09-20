@@ -99,7 +99,7 @@ public class CommissionResource {
         response.setContentLength(content.length);
 
         
-        String fileName = "eLife_PolicyExtract_" + now + ".xlsx";
+        String fileName = "eLife_CommissionExtract_" + now + ".xlsx";
         // set headers for the response
         String headerKey = "Content-Disposition";
         String headerValue = String.format("attachment; filename=\"%s\"", fileName);
