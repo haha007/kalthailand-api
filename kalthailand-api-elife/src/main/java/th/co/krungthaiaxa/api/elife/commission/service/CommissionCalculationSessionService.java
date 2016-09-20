@@ -147,15 +147,15 @@ public class CommissionCalculationSessionService {
                     			c.setCustomerCategory((prevInf.get(0).equals(NULL)?NEW:EXISTING));
                     			c.setPreviousPolicyNo((prevInf.get(0).equals(NULL)?BLANK:prevInf.get(0)));
                     			c.setExistingAgentCode1((prevInf.get(1).equals(NULL)?BLANK:prevInf.get(1)));
-                    			c.setExistingAgentCode1Status((c.getExistingAgentCode1().equals(BLANK)?BLANK:getExistingAgentCodeStatus(c.getExistingAgentCode1())));
+                    			c.setExistingAgentCode1Status((c.getExistingAgentCode1().equals(BLANK)?BLANK:getExistingAgentCodeStatus(getProperAgentCodeNumber(c.getExistingAgentCode1(),14))));
                     			c.setExistingAgentCode2((prevInf.get(2).equals(NULL)?BLANK:prevInf.get(2)));
-                    			c.setExistingAgentCode2Status((c.getExistingAgentCode2().equals(BLANK)?BLANK:getExistingAgentCodeStatus(c.getExistingAgentCode2())));
+                    			c.setExistingAgentCode2Status((c.getExistingAgentCode2().equals(BLANK)?BLANK:getExistingAgentCodeStatus(getProperAgentCodeNumber(c.getExistingAgentCode2(),14))));
                     		}
                     		
                     		//calculation commission
                     		
                     		//fy
-                    		CommissionPlan plan = getCommissionPlanForCalculate(getProperAgentCodeNumber(c.getAgentCode()),c.getPlanCode(),c.getCustomerCategory());
+                    		CommissionPlan plan = getCommissionPlanForCalculate(getProperAgentCodeNumber(c.getAgentCode(),6),c.getPlanCode(),c.getCustomerCategory());
                     		CommissionTargetGroup fCtg = getCommissionTargetGroup(FY,plan.getTargetGroups());
                     		CommissionTargetGroup oCtg = getCommissionTargetGroup(OV,plan.getTargetGroups());
                     		c.setFyAffiliateCommission((c.getFirstYearCommission()*getTargetEntities(TARGET_ENTITY_AFF,fCtg).getPercentage())/100);
@@ -288,9 +288,9 @@ public class CommissionCalculationSessionService {
         
     }
     
-    private String getProperAgentCodeNumber(String agentCode){
+    private String getProperAgentCodeNumber(String agentCode, int cutPosition){
     	String newAgentCode = "00000000000000" + agentCode;
-    	return newAgentCode.substring(newAgentCode.length()-14,newAgentCode.length()).substring(0, 6);
+    	return newAgentCode.substring(newAgentCode.length()-14,newAgentCode.length()).substring(0, cutPosition);
     }
     
     private String generateSql(List<String> channelIdsNoDup, List<String> planCodesNoDup){
@@ -356,25 +356,15 @@ public class CommissionCalculationSessionService {
     
     private String getExistingAgentCodeStatus(String agentCode){
     	String status = BLANK;
-    	if(!StringUtil.isBlank(agentCode)){
-    		DecimalFormat dcm = new DecimalFormat("00000000000000");
-    		Long convertLong = Long.parseLong(agentCode);
-    		String convertString = dcm.format(convertLong);
-    		String split1, split2, split3 = "";
-    		split1 = convertString.substring(0, 6);
-    		split2 = convertString.substring(6,8);
-    		split3 = convertString.substring(8,14);
-    		Integer int1, int2, int3 = 0;
-    		int1 = Integer.parseInt(split1,10);
-    		int2 = Integer.parseInt(split2,10);
-    		int3 = Integer.parseInt(split3,10);
-    		String realAgentCode = String.valueOf(int1) + String.valueOf(int2) + String.valueOf(int3);
+    	if(!StringUtil.isBlank(agentCode)){    		
         	String sql = " select " +
         				"ltrim(rtrim(agstu)) as status " +
         				"from [dbo].[AGKLCDTA_AGPCONT] " +
-        				"where cast(agunt as varchar) + cast(aglvl as varchar) + cast(agagc as varchar) = ? ";
+        				"where right('000000' + cast(agunt as varchar),6) + right('00' + cast(aglvl as varchar),2) + right('000000' + cast(agagc as varchar),6) = ? ";
+        	System.out.println("sql:"+sql);
+        	System.out.println("realAgentCode:"+agentCode);
         	Object[] parameters = new Object[1];
-            parameters[0] = realAgentCode;
+            parameters[0] = agentCode;
             Map<String, Object> map = null;
             JdbcTemplate jdbcTemplate = new JdbcTemplate(cdbDataSource);
             jdbcTemplate.setQueryTimeout(600);
