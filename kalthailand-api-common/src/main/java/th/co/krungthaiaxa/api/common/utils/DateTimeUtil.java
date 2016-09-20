@@ -17,15 +17,25 @@ import static java.time.format.DateTimeFormatter.ofPattern;
  */
 public class DateTimeUtil {
     public static final String PATTERN_FILEPATH = "yyyyMMdd";
+    public static final String PATTERN_THAI_DATE = "dd/MM/yyyy";
+    public static final String PATTERN_THAI_DATE_TIME = "dd/MM/yyyy hh:mm:ss";
 
-    public static String formatThaiDate(LocalDate localDate) {
+    public static String formatBuddhistThaiDate(LocalDate localDate) {
         ThaiBuddhistDate tdate = ThaiBuddhistDate.from(localDate);
-        return tdate.format(ofPattern("dd/MM/yyyy"));
+        return tdate.format(ofPattern(PATTERN_THAI_DATE));
     }
 
-    public static String formatThaiDateTime(LocalDateTime localDateTime) {
+    public static String formatThaiDate(LocalDate localDate) {
+        return localDate.format(ofPattern(PATTERN_THAI_DATE));
+    }
+
+    public static String formatThaiDateTime(LocalDateTime localDate) {
+        return localDate.format(ofPattern(PATTERN_THAI_DATE_TIME));
+    }
+
+    public static String formatBuddhistThaiDateTime(LocalDateTime localDateTime) {
         ThaiBuddhistDate tdate = ThaiBuddhistDate.from(localDateTime);
-        return tdate.format(ofPattern("dd/MM/yyyy"));
+        return tdate.format(ofPattern(PATTERN_THAI_DATE_TIME));
     }
 
     public static ZoneId getThaiZoneId() {
