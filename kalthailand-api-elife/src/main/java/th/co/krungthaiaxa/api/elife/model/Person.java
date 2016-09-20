@@ -2,6 +2,7 @@ package th.co.krungthaiaxa.api.elife.model;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import th.co.krungthaiaxa.api.common.utils.StringUtil;
 import th.co.krungthaiaxa.api.elife.model.enums.GenderCode;
 import th.co.krungthaiaxa.api.elife.model.enums.MaritalStatus;
 
@@ -26,6 +27,10 @@ public class Person extends Party implements Serializable {
     private GeographicalAddress currentAddress;
     private GeographicalAddress deliveryAddress;
     private GeographicalAddress registrationAddress;
+
+    public String getFullName() {
+        return StringUtil.joinNotBlankStrings(" ", givenName, middleName, surName);
+    }
 
     @ApiModelProperty(value = "The person's line mid (if any)")
     public String getLineId() {

@@ -15,6 +15,7 @@ import th.co.krungthaiaxa.api.elife.data.GeneralSetting;
 import th.co.krungthaiaxa.api.elife.exception.LinePaymentException;
 import th.co.krungthaiaxa.api.elife.exception.PaymentNotFoundException;
 import th.co.krungthaiaxa.api.elife.model.Document;
+import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus;
@@ -124,15 +125,22 @@ public class PaymentService {
 
     private void sendPaymentSuccessToMarketingTeam(Payment payment, String accessToken) {
         Policy policy = policyService.validateExistPolicy(payment.getPolicyId());
+        Insured mainInsured = ProductUtils.validateExistMainInsured(policy);
+
         Document ereceiptPdfDocument = documentService.addEreceiptPdf(policy, payment, false, accessToken);
 
         String emailSubject = messageSource.getMessage("email.payment.retry.success.title", null, LocaleUtil.THAI_LOCALE);
+        String emailContent = IOUtil.loadTextFileInClassPath("/email-content/email-retrypayment-success.html");
 
         GeneralSetting generalSetting = generalSettingService.loadGeneralSetting();
-        String emailContent = IOUtil.loadTextFileInClassPath("/email-content/email-retrypayment-success.html");
-        emailContent.replaceAll("%PAYMENT_ID%", payment.getPaymentId());
-        emailContent.replaceAll("%POLICY_NUMBER%", payment.getPolicyId());
-        emailContent.replaceAll("%ORDER_ID%", payment.getOrderId());
+        String productDisplayName = ProductUtils.validateExistProductTypeByLogicName(policy.getCommonData().getProductId()).getDisplayName();
+        emailContent = emailContent
+                .replaceAll("%PAYMENT_ID%", payment.getPaymentId())
+                .replaceAll("%POLICY_NUMBER%", payment.getPolicyId())
+                .replaceAll("%CUSTOMER_NAME%", mainInsured.getPerson().getFullName())
+                .replaceAll("%PAYMENT_DATE%", DateTimeUtil.formatThaiDate(payment.getEffectiveDate()))
+                .replaceAll("%PAYMENT_AMOUNT%", String.valueOf(payment.getAmount().getValue()))
+                .replaceAll("%PRODUCT_NAME%", productDisplayName);
         List<String> toEmails = generalSetting.getRetryPaymentSetting().getToSuccessEmails();
         String mainInsuredEmail = ProductUtils.validateExistMainInsured(policy).getPerson().getEmail();
         if (StringUtils.isNotBlank(mainInsuredEmail)) {

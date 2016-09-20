@@ -9,7 +9,6 @@ import th.co.krungthaiaxa.api.common.exeption.EmailException;
 import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
 import th.co.krungthaiaxa.api.common.utils.IOUtil;
 import th.co.krungthaiaxa.api.common.utils.LocaleUtil;
-import th.co.krungthaiaxa.api.common.utils.StringUtil;
 import th.co.krungthaiaxa.api.elife.data.GeneralSetting;
 import th.co.krungthaiaxa.api.elife.model.Amount;
 import th.co.krungthaiaxa.api.elife.model.Insured;
@@ -70,7 +69,7 @@ public class PaymentFailEmailService {
             productDisplayName = productType.getDisplayName();
             Insured mainInsured = ProductUtils.validateExistMainInsured(policy);
             Person insuredPerson = mainInsured.getPerson();
-            customerName = createFullName(insuredPerson.getGivenName(), insuredPerson.getMiddleName(), insuredPerson.getSurName());
+            customerName = insuredPerson.getFullName();
             if (payment != null) {
                 LocalDate dueDate = payment.getDueDate();
                 dueDateString = DateTimeUtil.formatThaiDate(dueDate);
@@ -90,9 +89,7 @@ public class PaymentFailEmailService {
         return emailContent;
     }
 
-    private String createFullName(String givenName, String middleName, String surName) {
-        return StringUtil.joinNotBlankStrings(" ", givenName, middleName, surName);
-    }
+
 
     private String createPaymentLink(String policyNumber, Payment payment) {
         GeneralSetting generalSetting = generalSettingService.loadGeneralSetting();
