@@ -57,14 +57,14 @@ CommissionResultService.prototype.generateCommission = function (msg) {
     );
     
     // Load first after click
-    self.$http.get(window.location.origin + '/api-elife/commissions/calculation/lists', {}).then(
-        function (successResponse) {
-            self.commissionList = successResponse.data;
-            self.showInfoMessage("Loaded commission lists");
-        },
-        function (errorResponse) {
-            self.showErrorMessage(errorResponse.data);
-        }
-    );
+//    self.$http.get(window.location.origin + '/api-elife/commissions/calculation/lists', {}).then(
+//        function (successResponse) {
+//            self.commissionList = successResponse.data;
+//            self.showInfoMessage("Loaded commission lists");
+//        },
+//        function (errorResponse) {
+//            self.showErrorMessage(errorResponse.data);
+//        }
+//    );
     
 };
