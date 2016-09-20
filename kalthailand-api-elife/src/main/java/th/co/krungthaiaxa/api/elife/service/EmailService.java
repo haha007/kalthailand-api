@@ -69,6 +69,12 @@ public class EmailService {
         }
     }
 
+    public void sendEmails(List<String> toEmails, String emailSubject, String emailContent, List<Pair<byte[], String>> imagesPairs, List<Pair<byte[], String>> attachments) {
+        for (String toEmail : toEmails) {
+            sendEmail(toEmail, emailSubject, emailContent, imagesPairs, attachments);
+        }
+    }
+
     public void sendEmail(String toEmail, String emailSubject, String emailContent, List<Pair<byte[], String>> imagesPairs) {
         sendEmail(toEmail, emailSubject, emailContent, imagesPairs, Collections.EMPTY_LIST);
     }

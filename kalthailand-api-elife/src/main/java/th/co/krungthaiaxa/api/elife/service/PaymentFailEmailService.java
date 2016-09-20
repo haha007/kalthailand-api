@@ -17,6 +17,7 @@ import th.co.krungthaiaxa.api.elife.model.Person;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
 import th.co.krungthaiaxa.api.elife.products.ProductUtils;
+import th.co.krungthaiaxa.api.elife.utils.EmailUtil;
 
 import javax.inject.Inject;
 import java.time.LocalDate;
@@ -50,7 +51,8 @@ public class PaymentFailEmailService {
 
         String emailSubject = messageSource.getMessage("email.payment.fail.title", null, LocaleUtil.THAI_LOCALE);
         String emailContent = fillEmailContent(policy, payment);
-        emailService.sendEmail(insuredEmail, emailSubject, emailContent, Collections.EMPTY_LIST);
+        emailService.sendEmail(insuredEmail, emailSubject, emailContent, EmailUtil.initImagePairs("logo"), Collections.EMPTY_LIST);
+//        emailService.sendEmail(insuredEmail, emailSubject, emailContent, Collections.EMPTY_LIST);
         LOGGER.debug("Sent informed email to customer, policyId: " + policy.getPolicyId());
     }
 
@@ -88,8 +90,6 @@ public class PaymentFailEmailService {
         }
         return emailContent;
     }
-
-
 
     private String createPaymentLink(String policyNumber, Payment payment) {
         GeneralSetting generalSetting = generalSettingService.loadGeneralSetting();

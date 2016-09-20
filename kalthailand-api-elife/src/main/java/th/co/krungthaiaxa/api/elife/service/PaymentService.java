@@ -22,6 +22,7 @@ import th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayResponse;
 import th.co.krungthaiaxa.api.elife.products.ProductUtils;
 import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
+import th.co.krungthaiaxa.api.elife.utils.EmailUtil;
 
 import javax.inject.Inject;
 import java.util.Arrays;
@@ -147,7 +148,8 @@ public class PaymentService {
             toEmails.add(mainInsuredEmail);
         }
         Pair<byte[], String> ereceiptAttachment = policyService.findEreceiptAttachmentByDocumentId(policy.getPolicyId(), ereceiptPdfDocument.getId());
-        emailService.sendEmailWithAttachments(toEmails, emailSubject, emailContent, Arrays.asList(ereceiptAttachment));
+        emailService.sendEmails(toEmails, emailSubject, emailContent, EmailUtil.initImagePairs("logo"), Arrays.asList(ereceiptAttachment));
+//        emailService.sendEmailWithAttachments(toEmails, emailSubject, emailContent, Arrays.asList(ereceiptAttachment));
     }
 
     public LineService getLineService() {

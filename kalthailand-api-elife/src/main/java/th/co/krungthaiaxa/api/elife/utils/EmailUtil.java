@@ -18,4 +18,12 @@ public class EmailUtil {
         imagesMap.put("<imgY>", "/images/email/youtube-logo.png");
         return th.co.krungthaiaxa.api.common.utils.EmailUtil.createBase64ImagePairs(imagesMap);
     }
+
+    public static List<Pair<byte[], String>> initImagePairs(String... imageNames) {
+        Map<String, String> imagesMap = new HashMap<>();
+        for (String imageName : imageNames) {
+            imagesMap.put("<image" + imageName + ">", "/images/email/" + imageName + ".png");
+        }
+        return th.co.krungthaiaxa.api.common.utils.EmailUtil.createBase64ImagePairs(imagesMap);
+    }
 }
