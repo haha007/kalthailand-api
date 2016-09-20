@@ -58,9 +58,10 @@ public class PaymentRetryServiceTest extends ELifeTest {
     private PaymentService paymentService;
 
     private static Policy POLICY;
+    private static CollectionFile COLLECTION_FILE;
 
     @Test
-    public void test01_retrypayment_success_after_the_first_fail() throws FolderException {
+    public void test01_payment_fail_should_has_result_in_collection() throws FolderException {
         mongoTemplate.dropCollection(CollectionFile.class);
 
         POLICY = policyFactory.createPolicyForLineWithValidated(30, "khoi.tran.ags@gmail.com");
@@ -70,20 +71,26 @@ public class PaymentRetryServiceTest extends ELifeTest {
         InputStream inputStream = CollectionFileFactory.initCollectionExcelFile(POLICY.getPolicyId());
         rlsService.importCollectionFile(inputStream);
         List<CollectionFile> collectionFileList = rlsService.processLatestCollectionFiles();
-        CollectionFile collectionFile = collectionFileList.get(0);
+        COLLECTION_FILE = collectionFileList.get(0);
 
         GreenMailUtil.writeReceiveMessagesToFiles(greenMail, "test/emails");
         //Assert
-        DeductionFileLine deductionFileLine = getDeductionFileLineByPolicyNumber(collectionFile, POLICY.getPolicyId());
+        DeductionFileLine deductionFileLine = getDeductionFileLineByPolicyNumber(COLLECTION_FILE, POLICY.getPolicyId());
         Assert.assertEquals(lineResponseCode, deductionFileLine.getRejectionCode());
         Assert.assertEquals(PaymentFailEmailService.RESPONSE_CODE_EMAIL_SENT_SUCCESS, deductionFileLine.getInformCustomerCode());
         Assert.assertTrue(greenMail.getReceivedMessages().length > 0);
         greenMail.purgeEmailFromAllMailboxes();
+    }
 
+    @Test
+    public void test02_retry_payment_success_after_the_first_fail() throws FolderException {
+        if (POLICY == null || COLLECTION_FILE == null) {
+            test01_payment_fail_should_has_result_in_collection();
+        }
         //Retry the fail payment:
         setupLineServiceWithResponseCode(LineService.RESPONSE_CODE_SUCCESS);
 
-        String oldPaymentId = collectionFile.getDeductionFile().getLines().get(0).getPaymentId();
+        String oldPaymentId = COLLECTION_FILE.getDeductionFile().getLines().get(0).getPaymentId();
         String orderId = RandomStringUtils.randomNumeric(10);
         String newRegKey = RandomStringUtils.randomNumeric(15);
         String transId = RandomStringUtils.randomNumeric(20);
