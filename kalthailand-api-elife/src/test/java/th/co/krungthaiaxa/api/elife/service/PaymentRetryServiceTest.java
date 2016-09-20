@@ -75,12 +75,14 @@ public class PaymentRetryServiceTest extends ELifeTest {
         COLLECTION_FILE = collectionFileList.get(0);
 
         GreenMailUtil.writeReceiveMessagesToFiles(greenMail, "test/emails");
+        Assert.assertTrue(greenMail.getReceivedMessages().length > 0);
+        greenMail.purgeEmailFromAllMailboxes();
+
         //Assert
         DeductionFileLine deductionFileLine = getDeductionFileLineByPolicyNumber(COLLECTION_FILE, POLICY.getPolicyId());
         Assert.assertEquals(lineResponseCode, deductionFileLine.getRejectionCode());
         Assert.assertEquals(PaymentFailEmailService.RESPONSE_CODE_EMAIL_SENT_SUCCESS, deductionFileLine.getInformCustomerCode());
-        Assert.assertTrue(greenMail.getReceivedMessages().length > 0);
-        greenMail.purgeEmailFromAllMailboxes();
+
     }
 
     @Test
@@ -99,6 +101,8 @@ public class PaymentRetryServiceTest extends ELifeTest {
         Payment payment = paymentService.retryFailedPayment(POLICY.getPolicyId(), oldPaymentId, orderId, transId, newRegKey, accessToken);
 
         GreenMailUtil.writeReceiveMessagesToFiles(greenMail, "test/emails");
+        Assert.assertTrue(greenMail.getReceivedMessages().length > 0);
+
         //Assert
         Assert.assertEquals(orderId, payment.getOrderId());
         Assert.assertEquals(transId, payment.getTransactionId());
@@ -106,7 +110,6 @@ public class PaymentRetryServiceTest extends ELifeTest {
         Assert.assertNotEquals(oldPaymentId, payment.getPaymentId());
         Payment oldPayment = paymentService.findPaymentById(oldPaymentId);
         Assert.assertEquals(oldPayment.getRetryPaymentId(), payment.getPaymentId());
-        Assert.assertTrue(greenMail.getReceivedMessages().length > 0);
     }
 
     private void setupLineServiceWithResponseCode(String lineResponseCode) {
