@@ -65,9 +65,7 @@ public class PaymentRetryServiceTest extends ELifeTest {
 
         POLICY = policyFactory.createPolicyForLineWithValidated(30, "khoi.tran.ags@gmail.com");
         String lineResponseCode = "4000";
-        lineService = LineServiceMockFactory.initServiceWithResponseCode(lineResponseCode);
-        paymentService.setLineService(lineService);
-        rlsService.setLineService(lineService);
+        setupLineServiceWithResponseCode(lineResponseCode);
 
         InputStream inputStream = CollectionFileFactory.initCollectionExcelFile(POLICY.getPolicyId());
         rlsService.importCollectionFile(inputStream);
@@ -83,9 +81,7 @@ public class PaymentRetryServiceTest extends ELifeTest {
         greenMail.purgeEmailFromAllMailboxes();
 
         //Retry the fail payment:
-        lineService = LineServiceMockFactory.initServiceDefault();
-        paymentService.setLineService(lineService);
-        rlsService.setLineService(lineService);
+        setupLineServiceWithResponseCode(LineService.RESPONSE_CODE_SUCCESS);
 
         String oldPaymentId = collectionFile.getDeductionFile().getLines().get(0).getPaymentId();
         String orderId = RandomStringUtils.randomNumeric(10);
@@ -102,6 +98,13 @@ public class PaymentRetryServiceTest extends ELifeTest {
         Assert.assertNotEquals(oldPaymentId, payment.getPaymentId());
         Payment oldPayment = paymentService.findPaymentById(oldPaymentId);
         Assert.assertEquals(oldPayment.getRetryPaymentId(), payment.getPaymentId());
+        Assert.assertTrue(greenMail.getReceivedMessages().length > 0);
+    }
+
+    private void setupLineServiceWithResponseCode(String lineResponseCode) {
+        lineService = LineServiceMockFactory.initServiceWithResponseCode(lineResponseCode);
+        paymentService.setLineService(lineService);
+        rlsService.setLineService(lineService);
     }
 
     private DeductionFileLine getDeductionFileLineByPolicyNumber(CollectionFile collectionFile, String policyNumber) {

@@ -11,7 +11,6 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import th.co.krungthaiaxa.api.common.utils.IOUtil;
 import th.co.krungthaiaxa.api.elife.ELifeTest;
 import th.co.krungthaiaxa.api.elife.KalApiApplication;
 import th.co.krungthaiaxa.api.elife.TestUtil;
@@ -32,7 +31,6 @@ import th.co.krungthaiaxa.api.elife.repository.PolicyRepository;
 
 import javax.inject.Inject;
 import java.io.IOException;
-import java.io.InputStream;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -270,12 +268,13 @@ public class RLSServiceTest extends ELifeTest {
         Assert.assertNotNull(payment.getPaymentInformations().get(0).getRejectionErrorMessage());
     }
 
-    @Test
-    public void run_cron_job() {
-        InputStream inputStream = IOUtil.loadInputStreamFileInClassPath("/collection-file/LFDISC6_2016-09-01.xls");
-        rlsService.importCollectionFile(inputStream);
-        rlsService.processLatestCollectionFiles();
-    }
+//    Don't need to run it here, it will be tested in {@link PaymentRetryServiceTest}
+//    @Test
+//    public void run_cron_job() {
+//        InputStream inputStream = IOUtil.loadInputStreamFileInClassPath("/collection-file/LFDISC6_2016-09-01.xls");
+//        rlsService.importCollectionFile(inputStream);
+//        rlsService.processLatestCollectionFiles();
+//    }
 
     /*
         @Test
