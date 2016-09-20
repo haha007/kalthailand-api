@@ -263,7 +263,7 @@ public class PolicyServiceTest extends ELifeTest {
         policyService.updatePolicyAfterFirstPaymentValidated(policy);
         policyService.updatePolicyAfterPolicyHasBeenValidated(policy, "999999-99-999999", "agentName", "token");
 
-        Policy policyAfterUpdate = policyService.findPolicy(policy.getPolicyId()).get();
+        Policy policyAfterUpdate = policyService.findPolicyByPolicyNumber(policy.getPolicyId()).get();
         Assertions.assertThat(policyAfterUpdate.getStatus()).isEqualTo(PolicyStatus.VALIDATED);
         Assertions.assertThat(policy.getDocuments()).hasSize(5);
 

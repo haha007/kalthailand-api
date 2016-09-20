@@ -57,7 +57,7 @@ public class DocumentResource {
     public ResponseEntity<byte[]> documentsOfPolicy(
             @ApiParam(value = "The policy ID", required = true)
             @PathVariable String policyId) {
-        Optional<Policy> policy = policyService.findPolicy(policyId);
+        Optional<Policy> policy = policyService.findPolicyByPolicyNumber(policyId);
         if (!policy.isPresent()) {
             logger.error("Unable to find the policy with ID [" + policyId + "]");
             return new ResponseEntity<>(JsonUtil.getJson(ErrorCode.POLICY_DOES_NOT_EXIST), NOT_FOUND);
@@ -79,7 +79,7 @@ public class DocumentResource {
             @PathVariable String policyId,
             @ApiParam(value = "The document ID", required = true)
             @PathVariable String documentId) {
-        Optional<Policy> policy = policyService.findPolicy(policyId);
+        Optional<Policy> policy = policyService.findPolicyByPolicyNumber(policyId);
         if (!policy.isPresent()) {
             logger.error("Unable to find the policy with ID [" + policyId + "]");
             return new ResponseEntity<>(JsonUtil.getJson(ErrorCode.POLICY_DOES_NOT_EXIST), NOT_FOUND);
@@ -113,7 +113,7 @@ public class DocumentResource {
             @PathVariable String policyId,
             @ApiParam(value = "The content of the image to watermark, but base 64 encoded.", required = true)
             @RequestBody String base64Image) {
-        Optional<Policy> policy = policyService.findPolicy(policyId);
+        Optional<Policy> policy = policyService.findPolicyByPolicyNumber(policyId);
         if (!policy.isPresent()) {
             logger.error("Unable to find the policy with ID [" + policyId + "]");
             return new ResponseEntity<>(JsonUtil.getJson(ErrorCode.POLICY_DOES_NOT_EXIST), NOT_FOUND);

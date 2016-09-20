@@ -262,7 +262,7 @@ public class RLSService {
     void addPaymentId(CollectionFileLine collectionFileLine) {
         String policyId = collectionFileLine.getPolicyNumber();
         isTrue(StringUtils.isNotBlank(policyId), "policyNumber must be notempty: " + ObjectMapperUtil.toStringMultiLine(collectionFileLine));
-        Optional<Policy> policy = policyService.findPolicy(policyId);
+        Optional<Policy> policy = policyService.findPolicyByPolicyNumber(policyId);
         isTrue(policy.isPresent(), "Unable to find a policy [" + collectionFileLine.getPolicyNumber() + "]");
         isTrue(policy.get().getStatus().equals(PolicyStatus.VALIDATED), "The policy [" +
                 collectionFileLine.getPolicyNumber() + "] has not been validated and payments can't go through without validation");

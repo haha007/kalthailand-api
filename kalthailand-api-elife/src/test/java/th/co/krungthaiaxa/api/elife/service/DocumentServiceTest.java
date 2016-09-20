@@ -54,7 +54,7 @@ public class DocumentServiceTest extends ELifeTest {
         assertThat(policy.getDocuments()).hasSize(0);
         Document document1 = documentService.addDocument(policy, Base64.getEncoder().encode("something".getBytes()), "image/jpg", ERECEIPT_IMAGE);
         Document document2 = documentService.addDocument(policy, Base64.getEncoder().encode("something".getBytes()), "image/jpg", ERECEIPT_PDF);
-        Optional<Policy> savedPolicy = policyService.findPolicy(policy.getPolicyId());
+        Optional<Policy> savedPolicy = policyService.findPolicyByPolicyNumber(policy.getPolicyId());
         assertThat(savedPolicy.get().getDocuments()).containsExactly(document1, document2);
     }
 

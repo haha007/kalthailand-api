@@ -206,12 +206,12 @@ public class PolicyResource {
     @ApiResponses({
             @ApiResponse(code = 404, message = "If the policy is not found", response = Error.class)
     })
-    @RequestMapping(value = "/policies/{policyId}", produces = APPLICATION_JSON_VALUE, method = GET)
+    @RequestMapping(value = "/policies/{policyNumber}", produces = APPLICATION_JSON_VALUE, method = GET)
     @ResponseBody
     public ResponseEntity<byte[]> getPolicy(
-            @ApiParam(value = "The policy ID", required = true)
-            @PathVariable String policyId) {
-        Optional<Policy> policy = policyService.findPolicy(policyId);
+            @ApiParam(value = "The policy number", required = true)
+            @PathVariable String policyNumber) {
+        Optional<Policy> policy = policyService.findPolicyByPolicyNumber(policyNumber);
         if (!policy.isPresent()) {
             return new ResponseEntity<>(getJson(ErrorCode.POLICY_DOES_NOT_EXIST), NOT_FOUND);
         } else {
@@ -231,7 +231,7 @@ public class PolicyResource {
             @PathVariable String policyId,
             @ApiParam(value = "The reminder ID. 1: reminder when user is not responding. 2: when phone number is wrong", required = true)
             @PathVariable Integer reminderId) {
-        Optional<Policy> policy = policyService.findPolicy(policyId);
+        Optional<Policy> policy = policyService.findPolicyByPolicyNumber(policyId);
         if (!policy.isPresent()) {
             return new ResponseEntity<>(getJson(ErrorCode.POLICY_DOES_NOT_EXIST), NOT_FOUND);
         }
@@ -256,7 +256,7 @@ public class PolicyResource {
     @RequestMapping(value = "/policies/{policyId}/document/{documentType}/download", produces = APPLICATION_JSON_VALUE, method = GET)
     @ResponseBody
     public void downloadDocument(@PathVariable String policyId, @PathVariable String documentType, HttpServletResponse response) {
-        Optional<Policy> policy = policyService.findPolicy(policyId);
+        Optional<Policy> policy = policyService.findPolicyByPolicyNumber(policyId);
         if (!policy.isPresent()) {
             return;
         }
@@ -332,7 +332,7 @@ public class PolicyResource {
     public ResponseEntity<byte[]> getPolicyPayments(
             @ApiParam(value = "The policy ID", required = true)
             @PathVariable String policyId) {
-        Optional<Policy> policy = policyService.findPolicy(policyId);
+        Optional<Policy> policy = policyService.findPolicyByPolicyNumber(policyId);
         if (!policy.isPresent()) {
             logger.error("Unable to find the policy with ID [" + policyId + "]");
             return new ResponseEntity<>(getJson(ErrorCode.POLICY_DOES_NOT_EXIST), NOT_FOUND);
@@ -369,7 +369,7 @@ public class PolicyResource {
             return new ResponseEntity<>(getJson(ErrorCode.ORDER_ID_NOT_PROVIDED), NOT_ACCEPTABLE);
         }
 
-        Optional<Policy> policy = policyService.findPolicy(policyId);
+        Optional<Policy> policy = policyService.findPolicyByPolicyNumber(policyId);
         if (!policy.isPresent()) {
             logger.error("Unable to find the policy with ID [" + policyId + "]");
             return new ResponseEntity<>(getJson(ErrorCode.POLICY_DOES_NOT_EXIST), NOT_FOUND);
@@ -434,7 +434,7 @@ public class PolicyResource {
             return new ResponseEntity<>(getJson(ErrorCode.ORDER_ID_NOT_PROVIDED), NOT_ACCEPTABLE);
         }
 
-        Optional<Policy> policy = policyService.findPolicy(policyId);
+        Optional<Policy> policy = policyService.findPolicyByPolicyNumber(policyId);
         if (!policy.isPresent()) {
             logger.error("Unable to find the policy with ID [" + policyId + "]");
             return new ResponseEntity<>(getJson(ErrorCode.POLICY_DOES_NOT_EXIST), NOT_FOUND);
@@ -484,7 +484,7 @@ public class PolicyResource {
             return new ResponseEntity<>(getJson(ErrorCode.REAL_CAPTURE_API_HAS_TO_BE_USED), NOT_ACCEPTABLE);
         }
 
-        Optional<Policy> policy = policyService.findPolicy(policyId);
+        Optional<Policy> policy = policyService.findPolicyByPolicyNumber(policyId);
         if (!policy.isPresent()) {
             logger.error("Unable to find the policy with ID [" + policyId + "]");
             return new ResponseEntity<>(getJson(ErrorCode.POLICY_DOES_NOT_EXIST), NOT_FOUND);

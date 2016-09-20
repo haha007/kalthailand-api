@@ -46,6 +46,7 @@ public class PaymentRetryServiceTest extends ELifeTest {
     private LineService lineService;
     @Inject
     private MongoTemplate mongoTemplate;
+
     @Rule
     public final GreenMailRule greenMail = new GreenMailRule(ServerSetupTest.SMTP_IMAP);
 

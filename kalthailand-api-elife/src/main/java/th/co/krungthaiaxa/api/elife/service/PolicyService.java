@@ -126,15 +126,15 @@ public class PolicyService {
         return policyCriteriaRepository.findPolicies(policyId, productType, status, nonEmptyAgentCode, startDate, endDate);
     }
 
-    public Optional<Policy> findPolicy(String policyId) {
-        Policy policy = policyRepository.findByPolicyId(policyId);
+    public Optional<Policy> findPolicyByPolicyNumber(String policyNumber) {
+        Policy policy = policyRepository.findByPolicyId(policyNumber);
         return policy != null ? Optional.of(policy) : Optional.empty();
     }
 
-    public Policy validateExistPolicy(String policyId) {
-        Policy policy = policyRepository.findByPolicyId(policyId);
+    public Policy validateExistPolicy(String policyNumber) {
+        Policy policy = policyRepository.findByPolicyId(policyNumber);
         if (policy == null) {
-            throw new PolicyNotFoundException("Not found policy " + policyId);
+            throw new PolicyNotFoundException("Not found policy " + policyNumber);
         }
         return policy;
     }

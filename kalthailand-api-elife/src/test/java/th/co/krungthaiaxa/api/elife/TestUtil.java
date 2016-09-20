@@ -196,7 +196,7 @@ public class TestUtil {
         quote.getInsureds().get(0).getPerson().setGivenName("วุฒิชัย");
         quote.getInsureds().get(0).getPerson().setHomePhoneNumber(new PhoneNumber());
         quote.getInsureds().get(0).getPerson().setMaritalStatus(MARRIED);
-        quote.getInsureds().get(0).getPerson().setMiddleName("Else");
+        quote.getInsureds().get(0).getPerson().setMiddleName("");
         quote.getInsureds().get(0).getPerson().setMobilePhoneNumber(phoneNumber);
         quote.getInsureds().get(0).getPerson().setSurName("ศรีสุข");
         quote.getInsureds().get(0).getPerson().setTitle("MR");
