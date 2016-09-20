@@ -110,28 +110,13 @@ public class CommissionCalculationSessionService {
         
         List<CommissionCalculation> listCommissionCalculated = new ArrayList<>();  
         
-        if(channelIdsNoDup.size()>0&&planCodesNoDup.size()>0){
-        	String nativeSQLchannelIdsNoDup = channelIdsNoDup.toString().replace(" ","").replace("[", "'").replace("]", "'").replace(",", "','");
-        	String nativeSQLplanCodesNoDup = planCodesNoDup.toString().replace(" ", "").replace("[", "'").replace("]", "'").replace(",", "','");
-        	String sql =	"select " +
-        					"ltrim(rtrim(a.pno)) as policyNo, " +
-        					"ltrim(rtrim(a.pstu)) as policyStatus, " +
-        					"ltrim(rtrim(a.lplan)) as planCode, " +
-        					"ltrim(rtrim(a.pmode)) as paymentCode, "+
-        					"ltrim(rtrim(a.pagt1)) as agentCode, " +
-        					"ltrim(rtrim(b.g3bsp1)) as firstYearPremium, " +
-        					"ltrim(rtrim(b.g3bsc1)) as firstYearCommission " +
-        					"from [dbo].[LFKLUDTA_LFPPML] a " +
-        					"inner join [dbo].[LFKLUDTA_LFPPMSWK] b " +
-        					"on a.pno = b.g3pno " +
-        					"where " +
-        					"left(ltrim(rtrim(cast(a.pagt1 as varchar))),6) in ("+nativeSQLchannelIdsNoDup+") " +
-        					"and ltrim(rtrim(a.lplan)) in ("+nativeSQLplanCodesNoDup+") ";
-            logger.debug("sql:"+sql);
+        if(channelIdsNoDup.size()>0&&planCodesNoDup.size()>0){        	
         	JdbcTemplate jdbcTemplate = new JdbcTemplate(cdbDataSource);
             jdbcTemplate.setQueryTimeout(600);
             try {
-                List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
+                List<Map<String, Object>> list = jdbcTemplate.queryForList(
+                		generateSql(channelIdsNoDup, planCodesNoDup), 
+                		generateParameters(channelIdsNoDup, planCodesNoDup));
                 if (list.size()>0) {
                 	for(Map<String,Object> m : list){                		             		
                 		//check policy must not null
@@ -254,6 +239,7 @@ public class CommissionCalculationSessionService {
                 text("Policy Number"),
                 text("Policy Status"),
                 text("Plan Code"),
+                text("Payment Code"),
                 text("Agent Code"),
                 text("Customer Category"),
                 text("Previous Policy Number"),
@@ -267,13 +253,13 @@ public class CommissionCalculationSessionService {
                 text("FY Distribution 1 Commission"),
                 text("FY Distribution 2 Commission"),
                 text("FY TSR Commission"),
-                text("FY Marking Commission"),
+                text("FY Marketing Commission"),
                 text("FY Company Commission"),
                 text("OV Affiliate Commission"),
                 text("OV Distribution 1 Commission"),
                 text("OV Distribution 2 Commission"),
                 text("OV TSR Commission"),
-                text("OV Marking Commission"),
+                text("OV Marketing Commission"),
                 text("OV Company Commission"),
                 text("FY Affiliate Rate"),
                 text("FY Distribution Rate"),
@@ -300,6 +286,45 @@ public class CommissionCalculationSessionService {
     	
     	return content;
         
+    }
+    
+    private String generateSql(List<String> channelIdsNoDup, List<String> planCodesNoDup){
+    	String sql =	"select " +
+						"ltrim(rtrim(a.pno)) as policyNo, " +
+						"ltrim(rtrim(a.pstu)) as policyStatus, " +
+						"ltrim(rtrim(a.lplan)) as planCode, " +
+						"ltrim(rtrim(a.pmode)) as paymentCode, "+
+						"ltrim(rtrim(a.pagt1)) as agentCode, " +
+						"b.g3bsp1 as firstYearPremium, " +
+						"b.g3bsc1 as firstYearCommission " +
+						"from [dbo].[LFKLUDTA_LFPPML] a " +
+						"inner join [dbo].[LFKLUDTA_LFPPMSWK] b " +
+						"on a.pno = b.g3pno " +
+						"where " +
+						"left(ltrim(rtrim(cast(a.pagt1 as varchar))),6) in (";
+    	for(String channelId : channelIdsNoDup){
+    		sql += "?,";
+    	}
+    	sql = sql.substring(0,sql.length()-1);
+    	sql += ") and ltrim(rtrim(a.lplan)) in (";
+    	for(String planCode : planCodesNoDup){
+    		sql += "?,";
+    	}
+    	sql = sql.substring(0,sql.length()-1);
+    	sql += ")";
+    	return sql;
+    }
+    
+    private Object[] generateParameters(List<String> channelIdsNoDup, List<String> planCodesNoDup){
+    	Object[] parameters = new Object[channelIdsNoDup.size()+planCodesNoDup.size()];
+    	int indx = 0;
+    	for(String channelId : channelIdsNoDup){
+    		parameters[indx++] = channelId;
+    	}
+    	for(String planCode : planCodesNoDup){
+    		parameters[indx++] = planCode;
+    	}
+    	return parameters;
     }
 
     public CommissionCalculationSession validateExistCalculationSession(ObjectId calculationSessionId) {
@@ -426,6 +451,7 @@ public class CommissionCalculationSessionService {
                 text(String.valueOf(commission.getOvCompanyCommission())),
                 text(String.valueOf(commission.getFyAffiliateRate())),
                 text(String.valueOf(commission.getFyDistributionRate())),
+                text(String.valueOf(commission.getFyTsrRate())),
                 text(String.valueOf(commission.getFyMarketingRate())),
                 text(String.valueOf(commission.getFyCompanyRate())),
                 text(String.valueOf(commission.getOvAffiliateRate())),
