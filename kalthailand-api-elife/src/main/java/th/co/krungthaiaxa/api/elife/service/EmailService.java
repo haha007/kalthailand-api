@@ -26,8 +26,10 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import static org.apache.commons.io.IOUtils.toByteArray;
 
@@ -64,13 +66,12 @@ public class EmailService {
     }
 
     public void sendEmailWithAttachments(List<String> toEmails, String emailSubject, String emailContent, List<Pair<byte[], String>> attachments) {
-        for (String toEmail : toEmails) {
-            sendEmail(toEmail, emailSubject, emailContent, EmailUtil.getDefaultImagePairs(), attachments);
-        }
+        sendEmails(toEmails, emailSubject, emailContent, EmailUtil.getDefaultImagePairs(), attachments);
     }
 
     public void sendEmails(List<String> toEmails, String emailSubject, String emailContent, List<Pair<byte[], String>> imagesPairs, List<Pair<byte[], String>> attachments) {
-        for (String toEmail : toEmails) {
+        Set<String> toEmailSet = new HashSet<>(toEmails);
+        for (String toEmail : toEmailSet) {
             sendEmail(toEmail, emailSubject, emailContent, imagesPairs, attachments);
         }
     }
