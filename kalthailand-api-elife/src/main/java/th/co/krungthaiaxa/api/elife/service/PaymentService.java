@@ -77,8 +77,8 @@ public class PaymentService {
     public Payment retryFailedPayment(String policyId, String oldPaymentId, String orderId, String transactionId, String regKey, String accessToken) {
 
         Payment oldPayment = validateExistPayment(oldPaymentId);
-        if (StringUtils.isNotBlank(oldPayment.getRetryPaymentId())) {
-            throw new BadArgumentException(String.format("The old payment Id %s was already retried by paymentId: %s", oldPaymentId, oldPayment.getRetryPaymentId()));
+        if (StringUtils.isNotBlank(oldPayment.getRetryPaymentId()) && PaymentStatus.COMPLETED.equals(oldPayment.getStatus())) {
+            throw new BadArgumentException(String.format("The old payment Id %s was already retried successfully before by paymentId: %s", oldPaymentId, oldPayment.getRetryPaymentId()));
         }
         Payment payment = new Payment();
         payment.setPolicyId(policyId);
