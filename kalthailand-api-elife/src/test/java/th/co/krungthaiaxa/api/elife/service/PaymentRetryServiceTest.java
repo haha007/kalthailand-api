@@ -1,9 +1,12 @@
 package th.co.krungthaiaxa.api.elife.service;
 
+import com.icegreen.greenmail.junit.GreenMailRule;
 import com.icegreen.greenmail.store.FolderException;
+import com.icegreen.greenmail.util.ServerSetupTest;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
@@ -24,6 +27,7 @@ import th.co.krungthaiaxa.api.elife.factory.QuoteFactory;
 import th.co.krungthaiaxa.api.elife.mock.LineServiceMockFactory;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.Policy;
+import th.co.krungthaiaxa.api.elife.utils.GreenMailUtil;
 
 import javax.inject.Inject;
 import java.io.InputStream;
@@ -43,8 +47,8 @@ public class PaymentRetryServiceTest extends ELifeTest {
     @Inject
     private MongoTemplate mongoTemplate;
 
-//    @Rule
-//    public final GreenMailRule greenMail = new GreenMailRule(ServerSetupTest.SMTP_IMAP);
+    @Rule
+    public final GreenMailRule greenMail = new GreenMailRule(ServerSetupTest.SMTP_IMAP);
 
     @Inject
     private QuoteFactory quoteFactory;
@@ -70,9 +74,9 @@ public class PaymentRetryServiceTest extends ELifeTest {
         List<CollectionFile> collectionFileList = rlsService.processLatestCollectionFiles();
         COLLECTION_FILE = collectionFileList.get(0);
 
-//        GreenMailUtil.writeReceiveMessagesToFiles(greenMail, "test/emails");
-//        Assert.assertTrue(greenMail.getReceivedMessages().length > 0);
-//        greenMail.purgeEmailFromAllMailboxes();
+        GreenMailUtil.writeReceiveMessagesToFiles(greenMail, "test/emails");
+        Assert.assertTrue(greenMail.getReceivedMessages().length > 0);
+        greenMail.purgeEmailFromAllMailboxes();
 
         //Assert
         DeductionFileLine deductionFileLine = getDeductionFileLineByPolicyNumber(COLLECTION_FILE, POLICY.getPolicyId());
@@ -96,8 +100,8 @@ public class PaymentRetryServiceTest extends ELifeTest {
         String accessToken = RandomStringUtils.randomAlphanumeric(25);
         Payment payment = paymentService.retryFailedPayment(POLICY.getPolicyId(), oldPaymentId, orderId, transId, newRegKey, accessToken);
 
-//        GreenMailUtil.writeReceiveMessagesToFiles(greenMail, "test/emails");
-//        Assert.assertTrue(greenMail.getReceivedMessages().length > 0);
+        GreenMailUtil.writeReceiveMessagesToFiles(greenMail, "test/emails");
+        Assert.assertTrue(greenMail.getReceivedMessages().length > 0);
 
         //Assert
         Assert.assertEquals(orderId, payment.getOrderId());
