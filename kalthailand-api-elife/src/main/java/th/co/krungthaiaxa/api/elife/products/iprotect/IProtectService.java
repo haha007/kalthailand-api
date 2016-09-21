@@ -228,10 +228,11 @@ public class IProtectService implements ProductService {
     private AmountLimits calculateAmountLimits(IProtectPackage iProtectPackage, double premiumRate, double occupationRate, PeriodicityCode periodicityCode) {
         double occupationRateForMaxium = 0.0;
         double discountRateForSumInsuredMax = getDiscountRate(iProtectPackage, SUM_INSURED_MAX);
+        double discountRateForSumInsuredMin = getDiscountRate(iProtectPackage, SUM_INSURED_MIN);
         double discountRateMin = 0.0;
 
         Amount maxPremiumByPeriodicityAmount = ProductUtils.getPremiumFromSumInsured(SUM_INSURED_MAX, premiumRate, occupationRateForMaxium, discountRateForSumInsuredMax, periodicityCode);
-        Amount minPremiumByPeriodicityAmount = ProductUtils.getPremiumFromSumInsured(SUM_INSURED_MIN, premiumRate, occupationRateForMaxium, discountRateForSumInsuredMax, periodicityCode);
+        Amount minPremiumByPeriodicityAmount = ProductUtils.getPremiumFromSumInsured(SUM_INSURED_MIN, premiumRate, occupationRateForMaxium, discountRateForSumInsuredMin, periodicityCode);
         //From premium: calculate the sumInsuredMinium
 //        double minPremiumByPeriodicity = ProductUtils.convertPeriodicity(PREMIUM_PER_MONTH_MIN.getValue(), PeriodicityCode.EVERY_MONTH, periodicityCode);
 //        Amount minSumInsured = ProductUtils.getSumInsuredFromPremium(PREMIUM_PER_MONTH_MIN, premiumRate, occupationRateForMaxium, discountRateMin, PeriodicityCode.EVERY_MONTH);
