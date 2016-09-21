@@ -420,8 +420,8 @@ public class PolicyResource {
     public ResponseEntity<byte[]> completedValidationOnPolicy(
             @ApiParam(value = "The policy ID", required = true)
             @PathVariable String policyId,
-            @ApiParam(value = "The payment ID", required = true)
-            @RequestParam String oldPaymentId,
+            @ApiParam(name = "paymentId", value = "The payment ID", required = true)
+            @RequestParam("paymentId") String paymentId,
             @ApiParam(value = "The order id used to book the payment", required = true)
             @RequestParam String orderId,
             @ApiParam(value = "The transaction id to use to confirm the payment. Must be sent of status id SUCCESS", required = false)
@@ -445,7 +445,7 @@ public class PolicyResource {
             return new ResponseEntity<>(getJson(ErrorCode.POLICY_IS_NOT_VALIDATED_FOR_PAYMENT.apply(policyId)), NOT_ACCEPTABLE);
         }
         String accessToken = httpServletRequest.getHeader(tokenHeader);
-        paymentService.retryFailedPayment(policyId, oldPaymentId, orderId, transactionId, regKey, accessToken);
+        paymentService.retryFailedPayment(policyId, paymentId, orderId, transactionId, regKey, accessToken);
 
         return new ResponseEntity<>(getJson(policy.get()), OK);
     }
