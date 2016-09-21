@@ -50,10 +50,10 @@ public class IProtectService implements ProductService {
     //    public final static Integer DURATION_PAYMENT_IN_YEAR = null;//Depend on the iProtectPackage (5, 10 or 85 years)
 
     public final static String PRODUCT_CURRENCY = ProductUtils.CURRENCY_THB;
-    //    public static final Amount SUM_INSURED_MIN;//Calculated from PREMIMUM_PER_MONTH_MIN
+    public static final Amount SUM_INSURED_MIN = amount(200000);//Calculated from PREMIMUM_PER_MONTH_MIN
     public static final Amount SUM_INSURED_MAX = amount(1500000.0);//1.5M
     //    public static final Amount PREMIUM_MAX_PER_MONTH //Calculated from SUM_INSURED_MAX
-    public static final Amount PREMIUM_PER_MONTH_MIN = amount(1000.0);//Minimum Premium/month, Cell 'fill in information'!C39
+//    public static final Amount PREMIUM_PER_MONTH_MIN = amount(1000.0);//Minimum Premium/month, Cell 'fill in information'!C39
     public static final int INSURED_MAX_AGE = 55;
 
     public static final int INSURED_MIN_AGE = 20;
@@ -228,15 +228,20 @@ public class IProtectService implements ProductService {
     private AmountLimits calculateAmountLimits(IProtectPackage iProtectPackage, double premiumRate, double occupationRate, PeriodicityCode periodicityCode) {
         double occupationRateForMaxium = 0.0;
         double discountRateForSumInsuredMax = getDiscountRate(iProtectPackage, SUM_INSURED_MAX);
+        double discountRateForSumInsuredMin = getDiscountRate(iProtectPackage, SUM_INSURED_MIN);
         double discountRateMin = 0.0;
 
         Amount maxPremiumByPeriodicityAmount = ProductUtils.getPremiumFromSumInsured(SUM_INSURED_MAX, premiumRate, occupationRateForMaxium, discountRateForSumInsuredMax, periodicityCode);
-        double minPremiumByPeriodicity = ProductUtils.convertPeriodicity(PREMIUM_PER_MONTH_MIN.getValue(), PeriodicityCode.EVERY_MONTH, periodicityCode);
-        Amount minSumInsured = ProductUtils.getSumInsuredFromPremium(PREMIUM_PER_MONTH_MIN, premiumRate, occupationRateForMaxium, discountRateMin, PeriodicityCode.EVERY_MONTH);
+        Amount minPremiumByPeriodicityAmount = ProductUtils.getPremiumFromSumInsured(SUM_INSURED_MIN, premiumRate, occupationRateForMaxium, discountRateForSumInsuredMin, periodicityCode);
+        //From premium: calculate the sumInsuredMinium
+//        double minPremiumByPeriodicity = ProductUtils.convertPeriodicity(PREMIUM_PER_MONTH_MIN.getValue(), PeriodicityCode.EVERY_MONTH, periodicityCode);
+//        Amount minSumInsured = ProductUtils.getSumInsuredFromPremium(PREMIUM_PER_MONTH_MIN, premiumRate, occupationRateForMaxium, discountRateMin, PeriodicityCode.EVERY_MONTH);
+        Amount minSumInsured = SUM_INSURED_MIN;
         Amount maxSumInsured = SUM_INSURED_MAX;
 
         AmountLimits amountLimits = new AmountLimits();
-        amountLimits.setMinPremium(amount(minPremiumByPeriodicity));
+        amountLimits.setMinPremium(minPremiumByPeriodicityAmount);
+//        amountLimits.setMinPremium(amount(minPremiumByPeriodicity));
         amountLimits.setMaxPremium(maxPremiumByPeriodicityAmount);
         amountLimits.setMinSumInsured(minSumInsured);
         amountLimits.setMaxSumInsured(maxSumInsured);
@@ -253,7 +258,7 @@ public class IProtectService implements ProductService {
         ProductUtils.validatePremiumAmountInRange(premiumAmount, amountLimits.getMinPremium().getValue(), amountLimits.getMaxPremium().getValue());
     }
 
-    //TODO I don't remove this method because this code can be used in the future.
+    //TODO I don't remove this method because this code can be used in the future. OK, if you hate it, just remove if you want =)
     private void calculateYearlyPremium(Quote quote, Insured mainInsured) {
 //        ProductIProtectPremium productIProtectPremium = quote.getPremiumsData().getProductIProtectPremium();
 //        List<IProtectMomentCalculation> yearlyCalculations = productIProtectPremium.getYearlyCalculations();
@@ -339,7 +344,8 @@ public class IProtectService implements ProductService {
         commonData.setMaxAge(INSURED_MAX_AGE);
         commonData.setMinAge(INSURED_MIN_AGE);
 
-        commonData.setMinPremium(PREMIUM_PER_MONTH_MIN);
+//        commonData.setMinPremium(PREMIUM_PER_MONTH_MIN);
+        commonData.setMinSumInsured(SUM_INSURED_MIN);
         commonData.setMaxSumInsured(SUM_INSURED_MAX);
         //They are calculated when calculate quote
 //        commonData.setMaxPremium(amountTHB(PREMIUM_MAX_PER_MONTH));
