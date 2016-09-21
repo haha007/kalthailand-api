@@ -116,6 +116,10 @@ public class ExcelUtils {
     public static CellContent text(String value) {
         return new Text(value);
     }
+    
+    public static CellContent text(Double value){
+    	return new DoubleCell(value);
+    }
 
     public static CellContent text(Boolean value) {
         return value == null ? new Text(Boolean.FALSE.toString()) : new Text(value.toString());
@@ -189,6 +193,22 @@ public class ExcelUtils {
         @Override
         public void populateCell(Cell cell) {
         }
+    }
+    
+    private static class DoubleCell implements CellContent {
+    	private final double value;
+    	
+    	public DoubleCell(Number value){
+    		this.value = value.doubleValue();
+    	}
+    	
+    	@Override
+    	public void populateCell(Cell cell){
+    		cell.setCellValue(value);
+            CellStyle style = cell.getRow().getSheet().getWorkbook().createCellStyle();
+            style.setDataFormat(cell.getRow().getSheet().getWorkbook().createDataFormat().getFormat("#0.0000"));
+            cell.setCellStyle(style);
+    	}
     }
 
     private static class IntegerCell implements CellContent {

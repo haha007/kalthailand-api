@@ -71,6 +71,7 @@ public class CommissionCalculationSessionService {
 	private final String NEW = "NEW";
 	private final String EXISTING = "EXISTING";
 	private final String NULL = "NULL";
+	private final DecimalFormat DCF = new DecimalFormat("#0.0000");
 
     @Inject
     public CommissionCalculationSessionService(CommissionPlanService commissionPlanService, CommissionCalculationSessionRepository commissionCalculationSessionRepository, CDBRepository cdbRepository, PolicyRepository policyRepository, CommissionResultRepository commissionResultRepository) {
@@ -97,7 +98,7 @@ public class CommissionCalculationSessionService {
     	
     	//save first
     	CommissionResult commissionResult = new CommissionResult();
-    	commissionResult.setCommissionMonth(nowDate.getMonthValue()-1);
+    	commissionResult.setCommissionMonth(String.valueOf(nowDate.getYear())+String.valueOf((new DecimalFormat("00")).format((nowDate.getMonthValue()-1))));
     	commissionResult.setCreatedDateTime(nowDate);
     	commissionResult.setRowId(getRowId(nowDate));
     	commissionResultRepository.save(commissionResult);
@@ -130,8 +131,8 @@ public class CommissionCalculationSessionService {
                     		c.setPlanCode(String.valueOf(m.get("planCode")));
                     		c.setPaymentCode(String.valueOf(m.get("paymentCode")));
                     		c.setAgentCode(String.valueOf(m.get("agentCode")));
-                    		c.setFirstYearPremium(Double.valueOf(String.valueOf(m.get("firstYearPremium"))));
-                    		c.setFirstYearCommission(Double.valueOf(String.valueOf(m.get("firstYearCommission"))));
+                    		c.setFirstYearPremium(convertFormat(Double.valueOf(String.valueOf(m.get("firstYearPremium")))));
+                    		c.setFirstYearCommission(convertFormat(Double.valueOf(String.valueOf(m.get("firstYearCommission")))));
                     		
                     		//previously information
                 			Insured insured = policy.getInsureds().get(0);
@@ -158,46 +159,46 @@ public class CommissionCalculationSessionService {
                     		CommissionPlan plan = getCommissionPlanForCalculate(getProperAgentCodeNumber(c.getAgentCode(),6),c.getPlanCode(),c.getCustomerCategory());
                     		CommissionTargetGroup fCtg = getCommissionTargetGroup(FY,plan.getTargetGroups());
                     		CommissionTargetGroup oCtg = getCommissionTargetGroup(OV,plan.getTargetGroups());
-                    		c.setFyAffiliateCommission((c.getFirstYearCommission()*getTargetEntities(TARGET_ENTITY_AFF,fCtg).getPercentage())/100);
+                    		c.setFyAffiliateCommission(convertFormat((c.getFirstYearCommission()*getTargetEntities(TARGET_ENTITY_AFF,fCtg).getPercentage())/100));
                     		Double fDisComm = (c.getFirstYearCommission()*getTargetEntities(TARGET_ENTITY_DIS,fCtg).getPercentage())/100;
                     		if(StringUtil.isBlank(c.getExistingAgentCode2())){
-                    			c.setFyDistribution1Commission(fDisComm);
+                    			c.setFyDistribution1Commission(convertFormat(fDisComm));
                     			c.setFyDistribution2Commission(0.0);
                     		}else{
                     			Double disCommSplit = fDisComm / 2;
-                    			c.setFyDistribution1Commission(disCommSplit);
-                    			c.setFyDistribution2Commission(disCommSplit);
+                    			c.setFyDistribution1Commission(convertFormat(disCommSplit));
+                    			c.setFyDistribution2Commission(convertFormat(disCommSplit));
                     		}
-                    		c.setFyTsrCommission((c.getFirstYearCommission()*getTargetEntities(TARGET_ENTITY_TSR,fCtg).getPercentage())/100);
-                    		c.setFyMarketingCommission((c.getFirstYearCommission()*getTargetEntities(TARGET_ENTITY_MKR,fCtg).getPercentage())/100);
-                    		c.setFyCompanyCommission((c.getFirstYearCommission()*getTargetEntities(TARGET_ENTITY_COM,fCtg).getPercentage())/100);
+                    		c.setFyTsrCommission(convertFormat((c.getFirstYearCommission()*getTargetEntities(TARGET_ENTITY_TSR,fCtg).getPercentage())/100));
+                    		c.setFyMarketingCommission(convertFormat((c.getFirstYearCommission()*getTargetEntities(TARGET_ENTITY_MKR,fCtg).getPercentage())/100));
+                    		c.setFyCompanyCommission(convertFormat((c.getFirstYearCommission()*getTargetEntities(TARGET_ENTITY_COM,fCtg).getPercentage())/100));
                     		
                     		//ov
-                    		c.setOvAffiliateCommission((c.getFirstYearCommission()*getTargetEntities(TARGET_ENTITY_AFF,oCtg).getPercentage())/100);
+                    		c.setOvAffiliateCommission(convertFormat((c.getFirstYearCommission()*getTargetEntities(TARGET_ENTITY_AFF,oCtg).getPercentage())/100));
                     		Double oDisComm = (c.getFirstYearCommission()*getTargetEntities(TARGET_ENTITY_DIS,oCtg).getPercentage())/100;
                     		if(StringUtil.isBlank(c.getExistingAgentCode2())){
-                    			c.setOvDistribution1Commission(oDisComm);
+                    			c.setOvDistribution1Commission(convertFormat(oDisComm));
                     			c.setOvDistribution2Commission(0.0);
                     		}else{
                     			Double disCommSplit = oDisComm / 2;
-                    			c.setOvDistribution1Commission(disCommSplit);
-                    			c.setOvDistribution2Commission(disCommSplit);
+                    			c.setOvDistribution1Commission(convertFormat(disCommSplit));
+                    			c.setOvDistribution2Commission(convertFormat(disCommSplit));
                     		}
-                    		c.setOvTsrCommission((c.getFirstYearCommission()*getTargetEntities(TARGET_ENTITY_TSR,oCtg).getPercentage())/100);
-                    		c.setOvMarketingCommission((c.getFirstYearCommission()*getTargetEntities(TARGET_ENTITY_MKR,oCtg).getPercentage())/100);
-                    		c.setOvCompanyCommission((c.getFirstYearCommission()*getTargetEntities(TARGET_ENTITY_COM,oCtg).getPercentage())/100);
+                    		c.setOvTsrCommission(convertFormat((c.getFirstYearCommission()*getTargetEntities(TARGET_ENTITY_TSR,oCtg).getPercentage())/100));
+                    		c.setOvMarketingCommission(convertFormat((c.getFirstYearCommission()*getTargetEntities(TARGET_ENTITY_MKR,oCtg).getPercentage())/100));
+                    		c.setOvCompanyCommission(convertFormat((c.getFirstYearCommission()*getTargetEntities(TARGET_ENTITY_COM,oCtg).getPercentage())/100));
                     		
                     		//commission rate
-                    		c.setFyAffiliateRate(getTargetEntities(TARGET_ENTITY_AFF,fCtg).getPercentage());
-                    		c.setFyDistributionRate(getTargetEntities(TARGET_ENTITY_DIS,fCtg).getPercentage());
-                    		c.setFyTsrRate(getTargetEntities(TARGET_ENTITY_TSR,fCtg).getPercentage());
-                    		c.setFyMarketingRate(getTargetEntities(TARGET_ENTITY_MKR,fCtg).getPercentage());
-                    		c.setFyCompanyRate(getTargetEntities(TARGET_ENTITY_COM,fCtg).getPercentage());
-                    		c.setOvAffiliateRate(getTargetEntities(TARGET_ENTITY_AFF,oCtg).getPercentage());
-                    		c.setOvDistributiionRate(getTargetEntities(TARGET_ENTITY_DIS,oCtg).getPercentage());
-                    		c.setOvTsrRate(getTargetEntities(TARGET_ENTITY_TSR,oCtg).getPercentage());
-                    		c.setOvMarketingRate(getTargetEntities(TARGET_ENTITY_MKR,oCtg).getPercentage());
-                    		c.setOvCompanyRate(getTargetEntities(TARGET_ENTITY_COM,oCtg).getPercentage());
+                    		c.setFyAffiliateRate(convertFormat(getTargetEntities(TARGET_ENTITY_AFF,fCtg).getPercentage()));
+                    		c.setFyDistributionRate(convertFormat(getTargetEntities(TARGET_ENTITY_DIS,fCtg).getPercentage()));
+                    		c.setFyTsrRate(convertFormat(getTargetEntities(TARGET_ENTITY_TSR,fCtg).getPercentage()));
+                    		c.setFyMarketingRate(convertFormat(getTargetEntities(TARGET_ENTITY_MKR,fCtg).getPercentage()));
+                    		c.setFyCompanyRate(convertFormat(getTargetEntities(TARGET_ENTITY_COM,fCtg).getPercentage()));
+                    		c.setOvAffiliateRate(convertFormat(getTargetEntities(TARGET_ENTITY_AFF,oCtg).getPercentage()));
+                    		c.setOvDistributiionRate(convertFormat(getTargetEntities(TARGET_ENTITY_DIS,oCtg).getPercentage()));
+                    		c.setOvTsrRate(convertFormat(getTargetEntities(TARGET_ENTITY_TSR,oCtg).getPercentage()));
+                    		c.setOvMarketingRate(convertFormat(getTargetEntities(TARGET_ENTITY_MKR,oCtg).getPercentage()));
+                    		c.setOvCompanyRate(convertFormat(getTargetEntities(TARGET_ENTITY_COM,oCtg).getPercentage()));
                     		
                     		//add in list
                     		listCommissionCalculated.add(c);
@@ -286,6 +287,11 @@ public class CommissionCalculationSessionService {
     	
     	return content;
         
+    }
+    
+    private Double convertFormat(Double value){
+    	String formatted = DCF.format(value);
+    	return Double.parseDouble(formatted);
     }
     
     private String getProperAgentCodeNumber(String agentCode, int cutPosition){
@@ -431,30 +437,30 @@ public class CommissionCalculationSessionService {
                 text(commission.getExistingAgentCode1Status()),
                 text(commission.getExistingAgentCode2()),
                 text(commission.getExistingAgentCode2Status()),
-                text(String.valueOf(commission.getFirstYearPremium())),
-                text(String.valueOf(commission.getFirstYearCommission())),
-                text(String.valueOf(commission.getFyAffiliateCommission())),
-                text(String.valueOf(commission.getFyDistribution1Commission())),
-                text(String.valueOf(commission.getFyDistribution2Commission())),
-                text(String.valueOf(commission.getFyTsrCommission())),
-                text(String.valueOf(commission.getFyMarketingCommission())),
-                text(String.valueOf(commission.getFyCompanyCommission())),
-                text(String.valueOf(commission.getOvAffiliateCommission())),
-                text(String.valueOf(commission.getOvDistribution1Commission())),
-                text(String.valueOf(commission.getOvDistribution2Commission())),
-                text(String.valueOf(commission.getOvTsrCommission())),
-                text(String.valueOf(commission.getOvMarketingCommission())),
-                text(String.valueOf(commission.getOvCompanyCommission())),
-                text(String.valueOf(commission.getFyAffiliateRate())),
-                text(String.valueOf(commission.getFyDistributionRate())),
-                text(String.valueOf(commission.getFyTsrRate())),
-                text(String.valueOf(commission.getFyMarketingRate())),
-                text(String.valueOf(commission.getFyCompanyRate())),
-                text(String.valueOf(commission.getOvAffiliateRate())),
-                text(String.valueOf(commission.getOvDistributiionRate())),
-                text(String.valueOf(commission.getOvTsrRate())),
-                text(String.valueOf(commission.getOvMarketingRate())),
-                text(String.valueOf(commission.getOvCompanyRate())),
+                text(commission.getFirstYearPremium()),
+                text(commission.getFirstYearCommission()),
+                text(commission.getFyAffiliateCommission()),
+                text(commission.getFyDistribution1Commission()),
+                text(commission.getFyDistribution2Commission()),
+                text(commission.getFyTsrCommission()),
+                text(commission.getFyMarketingCommission()),
+                text(commission.getFyCompanyCommission()),
+                text(commission.getOvAffiliateCommission()),
+                text(commission.getOvDistribution1Commission()),
+                text(commission.getOvDistribution2Commission()),
+                text(commission.getOvTsrCommission()),
+                text(commission.getOvMarketingCommission()),
+                text(commission.getOvCompanyCommission()),
+                text(commission.getFyAffiliateRate()),
+                text(commission.getFyDistributionRate()),
+                text(commission.getFyTsrRate()),
+                text(commission.getFyMarketingRate()),
+                text(commission.getFyCompanyRate()),
+                text(commission.getOvAffiliateRate()),
+                text(commission.getOvDistributiionRate()),
+                text(commission.getOvTsrRate()),
+                text(commission.getOvMarketingRate()),
+                text(commission.getOvCompanyRate()),
                 text(commissionResult.getUpdatedDateTime().format(formatter)));
     }
   

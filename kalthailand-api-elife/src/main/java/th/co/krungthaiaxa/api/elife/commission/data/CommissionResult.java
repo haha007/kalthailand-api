@@ -11,7 +11,7 @@ import th.co.krungthaiaxa.api.common.data.BaseEntity;
 public class CommissionResult extends BaseEntity {
 	
 	private String rowId;
-	private Integer commissionMonth;
+	private String commissionMonth;
 	private List<CommissionCalculation> policies;
 	private Integer commissionPoliciesCount;
 	
@@ -22,10 +22,10 @@ public class CommissionResult extends BaseEntity {
 	public void setRowId(String rowId) {
 		this.rowId = rowId;
 	}
-	public Integer getCommissionMonth() {
+	public String getCommissionMonth() {
 		return commissionMonth;
 	}
-	public void setCommissionMonth(Integer commissionMonth) {
+	public void setCommissionMonth(String commissionMonth) {
 		this.commissionMonth = commissionMonth;
 	}
 	public List<CommissionCalculation> getPolicies() {
