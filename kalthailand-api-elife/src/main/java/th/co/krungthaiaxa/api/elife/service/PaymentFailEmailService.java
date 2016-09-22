@@ -18,6 +18,7 @@ import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
 import th.co.krungthaiaxa.api.elife.products.ProductUtils;
 import th.co.krungthaiaxa.api.elife.utils.EmailUtil;
+import th.co.krungthaiaxa.api.elife.utils.PersonUtil;
 
 import javax.inject.Inject;
 import java.time.LocalDate;
@@ -71,7 +72,7 @@ public class PaymentFailEmailService {
             productDisplayName = productType.getDisplayName();
             Insured mainInsured = ProductUtils.validateExistMainInsured(policy);
             Person insuredPerson = mainInsured.getPerson();
-            customerName = insuredPerson.getFullName();
+            customerName = PersonUtil.getFullName(insuredPerson);
             if (payment != null) {
                 LocalDate dueDate = payment.getDueDate();
                 dueDateString = DateTimeUtil.formatThaiDate(dueDate);

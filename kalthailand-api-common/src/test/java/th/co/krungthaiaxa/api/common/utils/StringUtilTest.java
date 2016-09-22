@@ -13,4 +13,17 @@ public class StringUtilTest {
         String fullString = StringUtil.joinNotBlankStrings("1", strings);
         Assert.assertEquals("Aaa1Bbb1Ccc", fullString);
     }
+
+    @Test
+    public void join_string_with_empty_values() {
+        String[] strings = new String[] { null, null };
+        String fullString = StringUtil.joinNotBlankStrings("1", strings);
+        Assert.assertEquals("", fullString);
+    }
+
+    @Test
+    public void join_string_with_null() {
+        String fullString = StringUtil.joinNotBlankStrings("1", null);
+        Assert.assertNull(fullString);
+    }
 }
