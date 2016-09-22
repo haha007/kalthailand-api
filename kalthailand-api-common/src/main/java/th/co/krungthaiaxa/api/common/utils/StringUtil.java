@@ -24,11 +24,14 @@ public class StringUtil {
         if (strs.length == 0) {
             return "";
         }
-        StringBuilder sb = new StringBuilder(strs[0]);
-        for (int i = 1; i < strs.length; i++) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < strs.length; i++) {
             String str = strs[i];
             if (StringUtils.isNotBlank(str)) {
-                sb.append(delimiter).append(str);
+                if (sb.length() > 0) {
+                    sb.append(delimiter);
+                }
+                sb.append(str);
             }
         }
         return sb.toString();
