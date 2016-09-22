@@ -23,6 +23,7 @@ import th.co.krungthaiaxa.api.elife.model.line.LinePayResponse;
 import th.co.krungthaiaxa.api.elife.products.ProductUtils;
 import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
 import th.co.krungthaiaxa.api.elife.utils.EmailUtil;
+import th.co.krungthaiaxa.api.elife.utils.PersonUtil;
 
 import javax.inject.Inject;
 import java.util.Arrays;
@@ -141,7 +142,7 @@ public class PaymentService {
         emailContent = emailContent
                 .replaceAll("%PAYMENT_ID%", payment.getPaymentId())
                 .replaceAll("%POLICY_NUMBER%", payment.getPolicyId())
-                .replaceAll("%CUSTOMER_NAME%", mainInsured.getPerson().getFullName())
+                .replaceAll("%CUSTOMER_NAME%", PersonUtil.getFullName(mainInsured.getPerson()))
                 .replaceAll("%PAYMENT_DATE%", DateTimeUtil.formatThaiDate(payment.getEffectiveDate()))
                 .replaceAll("%PAYMENT_AMOUNT%", String.valueOf(payment.getAmount().getValue()))
                 .replaceAll("%PRODUCT_NAME%", productDisplayName);

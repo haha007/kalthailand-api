@@ -23,6 +23,7 @@ import th.co.krungthaiaxa.api.elife.repository.DocumentDownloadRepository;
 import th.co.krungthaiaxa.api.elife.repository.DocumentRepository;
 import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
 import th.co.krungthaiaxa.api.elife.repository.PolicyRepository;
+import th.co.krungthaiaxa.api.elife.utils.PersonUtil;
 import th.co.krungthaiaxa.api.elife.utils.ThaiBahtUtil;
 
 import javax.imageio.ImageIO;
@@ -308,8 +309,8 @@ public class DocumentService {
 
         //Name
         Person mainInsuredPerson = ProductUtils.validateExistMainInsured(policy).getPerson();
-        String mainInsuredName = mainInsuredPerson.getFirstAndLastName();
-        graphics.drawString(mainInsuredPerson.getFirstAndLastName(), 227, 305);
+        String mainInsuredName = PersonUtil.getFirstNameAndLastName(mainInsuredPerson);
+        graphics.drawString(mainInsuredName, 227, 305);
         logger.debug("Name Insure : " + mainInsuredName);
 
         //payment date

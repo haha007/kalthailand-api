@@ -9,7 +9,6 @@ import th.co.krungthaiaxa.api.elife.model.enums.MaritalStatus;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
-
 @ApiModel(description = "Data concerning specific properties to a Person")
 public class Person extends Party implements Serializable {
     private String lineId;
@@ -28,9 +27,7 @@ public class Person extends Party implements Serializable {
     private GeographicalAddress deliveryAddress;
     private GeographicalAddress registrationAddress;
 
-    public String getFullName() {
-        return StringUtil.joinNotBlankStrings(" ", givenName, middleName, surName);
-    }
+
 
     public String getFirstAndLastName() {
         return StringUtil.joinNotBlankStrings(" ", givenName, surName);
