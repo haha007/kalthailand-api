@@ -19,6 +19,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
 import th.co.krungthaiaxa.api.elife.ELifeTest;
 import th.co.krungthaiaxa.api.elife.KalApiApplication;
 import th.co.krungthaiaxa.api.elife.model.Amount;
@@ -31,14 +32,21 @@ import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
 
 import javax.inject.Inject;
-import javax.mail.*;
+import javax.mail.BodyPart;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Multipart;
+import javax.mail.Part;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeUtility;
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.text.DecimalFormat;
-import java.time.LocalDate;
 import java.util.Base64;
 import java.util.Locale;
 import java.util.Optional;
@@ -46,7 +54,10 @@ import java.util.Optional;
 import static com.icegreen.greenmail.util.GreenMailUtil.getBody;
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
-import static th.co.krungthaiaxa.api.elife.TestUtil.*;
+import static th.co.krungthaiaxa.api.elife.TestUtil.beneficiary;
+import static th.co.krungthaiaxa.api.elife.TestUtil.policy;
+import static th.co.krungthaiaxa.api.elife.TestUtil.productQuotation;
+import static th.co.krungthaiaxa.api.elife.TestUtil.quote;
 import static th.co.krungthaiaxa.api.elife.model.enums.ChannelType.LINE;
 import static th.co.krungthaiaxa.api.elife.model.enums.DocumentType.ERECEIPT_PDF;
 import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.EVERY_MONTH;
@@ -113,12 +124,11 @@ public class EmailServiceTest extends ELifeTest {
         quote.getPremiumsData().getProductIProtectPremium().setDeathBenefit(am);
         quote.getPremiumsData().getProductIProtectPremium().setSumInsured(am);
         quote.getPremiumsData().getProductIProtectPremium().setYearlyTaxDeduction(am);
-        quote.getPremiumsData().getProductIProtectPremium().setTotalTaxDeduction(am); 
+        quote.getPremiumsData().getProductIProtectPremium().setTotalTaxDeduction(am);
         Periodicity periodicity = new Periodicity();
         periodicity.setCode(PeriodicityCode.EVERY_MONTH);
         quote.getPremiumsData().getFinancialScheduler().setPeriodicity(periodicity);
-        
-        
+
         emailService.sendQuoteIProtect(quote);
         assertThat(greenMail.getReceivedMessages()).hasSize(1);
         MimeMessage email = greenMail.getReceivedMessages()[0];
@@ -137,12 +147,11 @@ public class EmailServiceTest extends ELifeTest {
         quote.getPremiumsData().getProductIProtectPremium().setDeathBenefit(am);
         quote.getPremiumsData().getProductIProtectPremium().setSumInsured(am);
         quote.getPremiumsData().getProductIProtectPremium().setYearlyTaxDeduction(am);
-        quote.getPremiumsData().getProductIProtectPremium().setTotalTaxDeduction(am); 
+        quote.getPremiumsData().getProductIProtectPremium().setTotalTaxDeduction(am);
         Periodicity periodicity = new Periodicity();
         periodicity.setCode(PeriodicityCode.EVERY_YEAR);
         quote.getPremiumsData().getFinancialScheduler().setPeriodicity(periodicity);
-        
-        
+
         emailService.sendQuoteIProtect(quote);
         assertThat(greenMail.getReceivedMessages()).hasSize(1);
         MimeMessage email = greenMail.getReceivedMessages()[0];
@@ -423,7 +432,7 @@ public class EmailServiceTest extends ELifeTest {
         quote = quoteService.updateQuote(quote, "token");
         Policy policy = policyService.createPolicy(quote);
         policy(policy);
-        policy.getPayments().get(0).setEffectiveDate(LocalDate.now());
+        policy.getPayments().get(0).setEffectiveDate(DateTimeUtil.nowLocalDateTimeInThaiZoneId());
 
         documentService.generateValidatedPolicyDocuments(policy, "token");
         Optional<Document> documentPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(ERECEIPT_PDF)).findFirst();
@@ -467,7 +476,7 @@ public class EmailServiceTest extends ELifeTest {
         quote = quoteService.updateQuote(quote, "token");
         Policy policy = policyService.createPolicy(quote);
         policy(policy);
-        policy.getPayments().get(0).setEffectiveDate(LocalDate.now());
+        policy.getPayments().get(0).setEffectiveDate(DateTimeUtil.nowLocalDateTimeInThaiZoneId());
 
         documentService.generateValidatedPolicyDocuments(policy, "token");
         Optional<Document> documentPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(ERECEIPT_PDF)).findFirst();
@@ -511,6 +520,5 @@ public class EmailServiceTest extends ELifeTest {
         int last = bufferedInputStream.read(bytes);
         return new String(bytes, 0, last);
     }
-
 
 }

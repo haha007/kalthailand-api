@@ -9,6 +9,7 @@ import th.co.krungthaiaxa.api.common.utils.EncryptUtil;
 import th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -34,9 +35,9 @@ public class Payment {
     private PaymentStatus status;
     private LocalDate dueDate;
     /**
-     * This field only have value after checking with LineService successfully!
+     * This field only have value after checking with LineService and get response (can fail or not)!
      */
-    private LocalDate effectiveDate;
+    private LocalDateTime effectiveDate;
     private Amount amount;
 
     private List<PaymentInformation> paymentInformations = new ArrayList<>();
@@ -140,11 +141,11 @@ public class Payment {
     }
 
     @ApiModelProperty(value = "The payment effective date. null if payment has not been done yet.")
-    public LocalDate getEffectiveDate() {
+    public LocalDateTime getEffectiveDate() {
         return effectiveDate;
     }
 
-    public void setEffectiveDate(LocalDate effectiveDate) {
+    public void setEffectiveDate(LocalDateTime effectiveDate) {
         this.effectiveDate = effectiveDate;
     }
 

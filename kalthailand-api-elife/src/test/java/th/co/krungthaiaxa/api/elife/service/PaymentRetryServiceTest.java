@@ -27,6 +27,7 @@ import th.co.krungthaiaxa.api.elife.factory.PolicyFactory;
 import th.co.krungthaiaxa.api.elife.factory.QuoteFactory;
 import th.co.krungthaiaxa.api.elife.mock.LineServiceMockFactory;
 import th.co.krungthaiaxa.api.elife.model.Payment;
+import th.co.krungthaiaxa.api.elife.model.PaymentInformation;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.utils.GreenMailUtil;
 
@@ -122,6 +123,11 @@ public class PaymentRetryServiceTest extends ELifeTest {
         Assert.assertNotEquals(oldPaymentId, retryPayment.getPaymentId());
         Payment oldPayment = paymentService.findPaymentById(oldPaymentId);
         Assert.assertEquals(oldPayment.getRetryPaymentId(), retryPayment.getPaymentId());
+
+        Assert.assertTrue(retryPayment.getPaymentInformations().size() > 0);
+        for (PaymentInformation paymentInformation : retryPayment.getPaymentInformations()) {
+            Assert.assertNotNull(paymentInformation);
+        }
         return new RetryPaymentResult(oldPayment, retryPayment);
     }
 

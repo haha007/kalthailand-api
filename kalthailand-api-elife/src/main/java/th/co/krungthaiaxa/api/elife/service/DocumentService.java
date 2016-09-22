@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.common.exeption.UnexpectedException;
+import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
 import th.co.krungthaiaxa.api.elife.client.SigningClient;
 import th.co.krungthaiaxa.api.elife.exception.EreceiptDocumentException;
 import th.co.krungthaiaxa.api.elife.model.Document;
@@ -38,7 +39,6 @@ import java.text.DecimalFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.chrono.ThaiBuddhistDate;
 import java.util.Base64;
 import java.util.Optional;
 
@@ -46,7 +46,6 @@ import static com.itextpdf.text.PageSize.A4;
 import static java.time.LocalDateTime.now;
 import static java.time.ZoneId.SHORT_IDS;
 import static java.time.ZoneId.of;
-import static java.time.format.DateTimeFormatter.ofPattern;
 import static th.co.krungthaiaxa.api.elife.model.enums.DocumentType.APPLICATION_FORM;
 import static th.co.krungthaiaxa.api.elife.model.enums.DocumentType.APPLICATION_FORM_VALIDATED;
 import static th.co.krungthaiaxa.api.elife.model.enums.DocumentType.DA_FORM;
@@ -265,8 +264,11 @@ public class DocumentService {
     }
 
     private String getThaiDate(LocalDate localDate) {
-        ThaiBuddhistDate tdate = ThaiBuddhistDate.from(localDate);
-        return tdate.format(ofPattern("dd/MM/yyyy"));
+        return DateTimeUtil.formatBuddhistThaiDate(localDate);
+    }
+
+    private String getThaiDate(LocalDateTime localDate) {
+        return DateTimeUtil.formatBuddhistThaiDate(localDate);
     }
 
     /**

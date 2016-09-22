@@ -353,7 +353,10 @@ public class RLSService {
             LinePayRecurringResponse linePayResponse = lineService.preApproved(lastRegistrationKey, premiumAmount, currencyCode, productId, orderId);
             resultCode = linePayResponse.getReturnCode();
             resultMessage = linePayResponse.getReturnMessage();
-            policyService.updateRecurringPayment(payment, premiumAmount, currencyCode, LINE, linePayResponse, paymentId, lastRegistrationKey, premiumAmount, productId, orderId);
+
+            payment.getAmount().setValue(premiumAmount);
+            payment.setOrderId(orderId);
+            paymentService.updateByLinePayResponse(payment, linePayResponse);
         } catch (Exception ex) {
             logger.error("Error when process collection line: " + ex.getMessage() + ". Collection line:\n" + ObjectMapperUtil.toStringMultiLine(collectionFileLine), ex);
             resultCode = RESPONSE_CODE_ERROR_INTERNAL_LINEPAY;

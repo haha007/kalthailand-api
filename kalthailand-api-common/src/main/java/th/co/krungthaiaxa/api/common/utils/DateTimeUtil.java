@@ -38,6 +38,11 @@ public class DateTimeUtil {
         return tdate.format(ofPattern(PATTERN_THAI_DATE_TIME));
     }
 
+    public static String formatBuddhistThaiDate(LocalDateTime localDateTime) {
+        ThaiBuddhistDate tdate = ThaiBuddhistDate.from(localDateTime);
+        return tdate.format(ofPattern(PATTERN_THAI_DATE));
+    }
+
     public static ZoneId getThaiZoneId() {
         return ZoneId.of(ZoneId.SHORT_IDS.get("VST"));
     }

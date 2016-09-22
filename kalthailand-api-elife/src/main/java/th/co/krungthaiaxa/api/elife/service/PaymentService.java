@@ -11,6 +11,7 @@ import th.co.krungthaiaxa.api.common.exeption.BadArgumentException;
 import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
 import th.co.krungthaiaxa.api.common.utils.IOUtil;
 import th.co.krungthaiaxa.api.common.utils.LocaleUtil;
+import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
 import th.co.krungthaiaxa.api.elife.data.GeneralSetting;
 import th.co.krungthaiaxa.api.elife.exception.LinePaymentException;
 import th.co.krungthaiaxa.api.elife.exception.PaymentHasNewerCompletedException;
@@ -18,8 +19,11 @@ import th.co.krungthaiaxa.api.elife.exception.PaymentNotFoundException;
 import th.co.krungthaiaxa.api.elife.model.Document;
 import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.model.Payment;
+import th.co.krungthaiaxa.api.elife.model.PaymentInformation;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus;
+import th.co.krungthaiaxa.api.elife.model.enums.SuccessErrorStatus;
+import th.co.krungthaiaxa.api.elife.model.line.BaseLineResponse;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayResponse;
 import th.co.krungthaiaxa.api.elife.products.ProductUtils;
 import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
@@ -27,10 +31,13 @@ import th.co.krungthaiaxa.api.elife.utils.EmailUtil;
 import th.co.krungthaiaxa.api.elife.utils.PersonUtil;
 
 import javax.inject.Inject;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+
+import static th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus.COMPLETED;
+import static th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus.INCOMPLETE;
 
 /**
  * @author khoi.tran on 8/29/16.
@@ -70,7 +77,14 @@ public class PaymentService {
 
     public void validateNotExistNewerPayment(Payment oldPayment) {
         Payment newerCompletedPayment;
-        LocalDate oldEffectiveDate = oldPayment.getEffectiveDate();
+        if (oldPayment.getRetryPaymentId() != null) {
+            Payment retryPayment = validateExistPayment(oldPayment.getRetryPaymentId());
+            if (PaymentStatus.COMPLETED.equals(retryPayment.getStatus())) {
+                throw new PaymentHasNewerCompletedException(retryPayment, String.format("There's a newer payment which was completed: old payment Id: %s. Newer completed paymentId: %s", oldPayment.getPaymentId(), retryPayment.getPaymentId()));
+            }
+        }
+
+        LocalDateTime oldEffectiveDate = oldPayment.getEffectiveDate();
         if (oldEffectiveDate != null) {
             newerCompletedPayment = paymentRepository.findOneByNewerEffectiveDate(oldEffectiveDate, PaymentStatus.COMPLETED);
         } else {
@@ -95,18 +109,12 @@ public class PaymentService {
 
         Payment oldPayment = validateExistPayment(oldPaymentId);
         validateNotExistNewerPayment(oldPayment);
-//        if (StringUtils.isNotBlank(oldPayment.getRetryPaymentId())) {
-//            Payment retryPayment = paymentRepository.findOne(oldPayment.getRetryPaymentId());
-//            if (PaymentStatus.COMPLETED.equals(retryPayment.getStatus())) {
-//                throw new BadArgumentException(String.format("The old payment Id %s was already retried successfully before by paymentId: %s", oldPaymentId, oldPayment.getRetryPaymentId()));
-//            }
-//        }
         Payment payment = new Payment();
         payment.setPolicyId(policyId);
         payment.setRegistrationKey(regKey);
         payment.setDueDate(DateTimeUtil.nowLocalDateInThaiZoneId());
         payment.setAmount(oldPayment.getAmount());
-        payment.setEffectiveDate(DateTimeUtil.nowLocalDateInThaiZoneId());
+        payment.setEffectiveDate(DateTimeUtil.nowLocalDateTimeInThaiZoneId());
         payment.setTransactionId(transactionId);
         payment.setOrderId(orderId);
 
@@ -129,12 +137,37 @@ public class PaymentService {
                 LOGGER.warn("The retry payment also not successed yet. policyId: {}, oldPaymentId: {}, orderId: {}, transactionId: {}", policyId, oldPaymentId, orderId, transactionId);
                 //Don't need to resend another fail email to user. When backend return error, FE will show error page to customer.
             }
+            //TODO payment with response
             payment = policyService.updatePayment(payment, orderId, transactionId, StringUtils.isBlank(regKey) ? "" : regKey);
+            payment = updateByLinePayResponse(payment, linePayResponse);
             oldPayment.setRetryPaymentId(payment.getPaymentId());
             paymentRepository.save(oldPayment);
         }
         sendRetryPaymentSuccessToMarketingTeam(payment, accessToken);
         return payment;
+    }
+
+    /**
+     * @param payment
+     * @param linePayResponse
+     * @return
+     */
+    public Payment updateByLinePayResponse(Payment payment, BaseLineResponse linePayResponse) {
+
+        PaymentInformation paymentInformation = new PaymentInformation();
+        paymentInformation.setRejectionErrorCode(linePayResponse.getReturnCode());
+        paymentInformation.setRejectionErrorMessage(linePayResponse.getReturnMessage());
+        if (linePayResponse.getReturnCode().equals(LineService.RESPONSE_CODE_SUCCESS)) {
+            String msg = "Success payment " + ObjectMapperUtil.toString(payment) + ". Response: " + ObjectMapperUtil.toString(linePayResponse);
+            paymentInformation.setStatus(SuccessErrorStatus.SUCCESS);
+            paymentInformation.setMethod(msg);
+            payment.setStatus(COMPLETED);
+        } else {
+            payment.setStatus(INCOMPLETE);
+        }
+        payment.setEffectiveDate(DateTimeUtil.nowLocalDateTimeInThaiZoneId());
+        payment.addPaymentInformation(paymentInformation);
+        return paymentRepository.save(payment);
     }
 
     private Payment validateExistPayment(String paymentId) {
@@ -166,7 +199,7 @@ public class PaymentService {
                 .replaceAll("%PAYMENT_ID%", payment.getPaymentId())
                 .replaceAll("%POLICY_NUMBER%", payment.getPolicyId())
                 .replaceAll("%CUSTOMER_NAME%", PersonUtil.getFullName(mainInsured.getPerson()))
-                .replaceAll("%PAYMENT_DATE%", DateTimeUtil.formatThaiDate(payment.getEffectiveDate()))
+                .replaceAll("%PAYMENT_DATE%", DateTimeUtil.formatThaiDateTime(payment.getEffectiveDate()))
                 .replaceAll("%PAYMENT_AMOUNT%", String.valueOf(payment.getAmount().getValue()))
                 .replaceAll("%PRODUCT_NAME%", productDisplayName);
         List<String> toEmails = generalSetting.getRetryPaymentSetting().getToSuccessEmails();

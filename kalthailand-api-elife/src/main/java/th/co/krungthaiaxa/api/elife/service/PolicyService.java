@@ -10,7 +10,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
-import th.co.krungthaiaxa.api.common.utils.EncryptUtil;
 import th.co.krungthaiaxa.api.elife.client.CDBClient;
 import th.co.krungthaiaxa.api.elife.data.PolicyNumber;
 import th.co.krungthaiaxa.api.elife.exception.ElifeException;
@@ -27,7 +26,6 @@ import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
 import th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus;
 import th.co.krungthaiaxa.api.elife.model.enums.RegistrationTypeName;
 import th.co.krungthaiaxa.api.elife.model.enums.SuccessErrorStatus;
-import th.co.krungthaiaxa.api.elife.model.line.LinePayRecurringResponse;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayResponse;
 import th.co.krungthaiaxa.api.elife.products.ProductService;
 import th.co.krungthaiaxa.api.elife.products.ProductServiceFactory;
@@ -45,6 +43,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
@@ -193,35 +192,6 @@ public class PolicyService {
                 null,
                 null,
                 null);
-    }
-
-    public void updateRecurringPayment(
-            Payment payment,
-            Double amount,
-            String currencyCode,
-            ChannelType channelType,
-            LinePayRecurringResponse linePayResponse,
-            String paymentId,
-            String regKey,
-            Double amt,
-            String productId,
-            String orderId) {
-
-        PaymentInformation paymentInformation = new PaymentInformation();
-        paymentInformation.setRejectionErrorCode(linePayResponse.getReturnCode());
-        paymentInformation.setRejectionErrorMessage(linePayResponse.getReturnMessage());
-        if (linePayResponse.getReturnCode().equals(LineService.RESPONSE_CODE_SUCCESS)) {
-            String msg = "transactionDate:" + linePayResponse.getInfo().getTransactionDate() + " ,transactionId:" + linePayResponse.getInfo().getTransactionId() + " ,paymentId=" + paymentId + " ,regKey=" + EncryptUtil.encrypt(regKey) + " ,amt=" + amt + " ,productId=" + productId
-                    + " ,orderId=" + orderId;
-            paymentInformation.setStatus(SuccessErrorStatus.SUCCESS);
-            paymentInformation.setMethod(msg);
-            payment.setStatus(COMPLETED);
-        } else {
-            payment.setStatus(INCOMPLETE);
-        }
-        payment.setEffectiveDate(DateTimeUtil.nowLocalDateInThaiZoneId());
-        payment.addPaymentInformation(paymentInformation);
-        paymentRepository.save(payment);
     }
 
     public void updatePayment(Payment payment, Double amount, String currencyCode, ChannelType channelType,
@@ -472,6 +442,8 @@ public class PolicyService {
             payment.setRegistrationKey(registrationKey);
         }
         LocalDate nowInThai = DateTimeUtil.nowLocalDateInThaiZoneId();
+        LocalDateTime nowDateTimeInThai = DateTimeUtil.nowLocalDateTimeInThaiZoneId();
+
         PaymentInformation paymentInformation = new PaymentInformation();
         paymentInformation.setAmount(amount(value, currencyCode));
         paymentInformation.setChannel(channelType);
@@ -495,7 +467,7 @@ public class PolicyService {
         } else if (totalSuccesfulPayments > payment.getAmount().getValue()) {
             payment.setStatus(OVERPAID);
         }
-        payment.setEffectiveDate(nowInThai);
+        payment.setEffectiveDate(nowDateTimeInThai);
         paymentRepository.save(payment);
         logger.info("Payment [" + payment.getPaymentId() + "] has been updated");
     }

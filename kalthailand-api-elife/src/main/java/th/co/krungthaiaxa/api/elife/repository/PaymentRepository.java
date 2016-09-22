@@ -8,6 +8,7 @@ import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,7 +37,7 @@ public interface PaymentRepository extends MongoRepository<Payment, String> {
     List<Payment> findByRegKeyNotEmpty(Sort sort);
 
     @Query(value = "{'$and': [{'effectiveDate':{'$gt': ?0}}, {'status': ?1}]}")
-    Payment findOneByNewerEffectiveDate(LocalDate effectiveDate, PaymentStatus status);
+    Payment findOneByNewerEffectiveDate(LocalDateTime effectiveDate, PaymentStatus status);
 
     @Query(value = "{'$and': [{'_id':{'$gt': ?0}}, {'status': ?1}]}")
     Payment findOneByNewerId(String paymentId, PaymentStatus completed);
