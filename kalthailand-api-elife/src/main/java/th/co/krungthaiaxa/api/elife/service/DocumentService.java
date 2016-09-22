@@ -58,6 +58,9 @@ public class DocumentService {
     private final static Logger logger = LoggerFactory.getLogger(DocumentService.class);
     private final static String ERECEIPT_MERGED_FILE_NAME = "ereceipts_merged.png";
     private final static String ERECEIPT_TEMPLATE_FILE_NAME = "AGENT-WHITE-FINAL.jpg";
+    private final static int LINE_POS_REF2 = 576;//px
+    private static final int LINE_POS_PERSON_REGID = 495;//px
+    private final static double CELL_WIDTH = 28.0;
 
     private final DocumentRepository documentRepository;
     private final DocumentDownloadRepository documentDownloadRepository;
@@ -377,20 +380,8 @@ public class DocumentService {
         }
 
         //ID-Card
-        char[] personRegistrationIdChars = policy.getInsureds().get(0).getPerson().getRegistrations().get(0).getId().toCharArray();
-        graphics.drawString(String.valueOf(personRegistrationIdChars[0]), 896, 495);
-        graphics.drawString(String.valueOf(personRegistrationIdChars[1]), 924, 495);
-        graphics.drawString(String.valueOf(personRegistrationIdChars[2]), 951, 495);
-        graphics.drawString(String.valueOf(personRegistrationIdChars[3]), 979, 495);
-        graphics.drawString(String.valueOf(personRegistrationIdChars[4]), 1007, 495);
-        graphics.drawString(String.valueOf(personRegistrationIdChars[5]), 1035, 495);
-        graphics.drawString(String.valueOf(personRegistrationIdChars[6]), 1061, 495);
-        graphics.drawString(String.valueOf(personRegistrationIdChars[7]), 1089, 495);
-        graphics.drawString(String.valueOf(personRegistrationIdChars[8]), 1119, 495);
-        graphics.drawString(String.valueOf(personRegistrationIdChars[9]), 1145, 495);
-        graphics.drawString(String.valueOf(personRegistrationIdChars[10]), 1173, 495);
-        graphics.drawString(String.valueOf(personRegistrationIdChars[11]), 1201, 495);
-        graphics.drawString(String.valueOf(personRegistrationIdChars[12]), 1230, 495);
+        char[] personRegistrationIdChars = mainInsuredPerson.getRegistrations().get(0).getId().toCharArray();
+        drawPersonRegistrationId(graphics, personRegistrationIdChars);
 
         //REF2
         drawRef2Prefix(graphics,
@@ -455,17 +446,24 @@ public class DocumentService {
         return bytes;
     }
 
+    private void drawCharsInLine(Graphics graphics, int startCharPos, int linePos, Double charWidth, int maxChar, char... chars) {
+        int length = Math.min(chars.length, maxChar);
+        for (int i = 0; i < length; i++) {
+            char ichar = chars[i];
+            graphics.drawString(String.valueOf(ichar), startCharPos + (int) Math.round(charWidth * i), linePos);
+        }
+    }
+
+    private void drawPersonRegistrationId(Graphics graphics, char... chars) {
+        drawCharsInLine(graphics, 892, LINE_POS_PERSON_REGID, CELL_WIDTH, 13, chars);
+    }
+
     /**
      * @param graphics
      * @param prefixChars 7 chars
      */
     private void drawRef2Prefix(Graphics graphics, char... prefixChars) {
-        int beginCharPos = 973;
-        int cellWidth = 28;//28px
-        for (int i = 0; i < prefixChars.length; i++) {
-            char prefixChar = prefixChars[i];
-            graphics.drawString(String.valueOf(prefixChar), beginCharPos + (cellWidth * i), 576);
-        }
+        drawCharsInLine(graphics, 973, LINE_POS_REF2, CELL_WIDTH, 7, prefixChars);
     }
 
     /**
@@ -473,7 +471,7 @@ public class DocumentService {
      * @param suffixChars 2 chars. For new business, it should be 01, for renewal, it should be 02.
      */
     private void drawRef2Suffix(Graphics graphics, char... suffixChars) {
-        graphics.drawString(String.valueOf(suffixChars[0]), 1196, 576);
-        graphics.drawString(String.valueOf(suffixChars[1]), 1224, 576);
+        drawCharsInLine(graphics, 1197, LINE_POS_REF2, CELL_WIDTH, 2, suffixChars);
     }
+
 }
