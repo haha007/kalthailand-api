@@ -219,7 +219,7 @@ public class PolicyService {
         } else {
             payment.setStatus(INCOMPLETE);
         }
-        payment.setEffectiveDate(LocalDate.now());
+        payment.setEffectiveDate(DateTimeUtil.nowLocalDateInThaiZoneId());
         payment.addPaymentInformation(paymentInformation);
         paymentRepository.save(payment);
     }
