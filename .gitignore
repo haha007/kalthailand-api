@@ -12,3 +12,4 @@ kalthailand-api-elife/regKey*.csv
 *.log
 kalthailand-api-elife/logs/*.*
 kalthailand-api-elife/test
+kalthailand-admin-elife/bin/
