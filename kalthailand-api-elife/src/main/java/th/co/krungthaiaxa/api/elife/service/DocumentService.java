@@ -339,7 +339,8 @@ public class DocumentService {
         graphics.drawString(formatter.format(premium), 553, 353);
 
         //PolicyNo
-        char[] policyNumberChars = policy.getPolicyId().toCharArray();
+        String policyNumber = policy.getPolicyId();
+        char[] policyNumberChars = policyNumber.toCharArray();
         graphics.drawString(String.valueOf(policyNumberChars[0]), 950, 433);
         graphics.drawString(String.valueOf(policyNumberChars[1]), 977, 433);
         graphics.drawString(String.valueOf(policyNumberChars[2]), 1004, 433);
@@ -390,16 +391,23 @@ public class DocumentService {
         graphics.drawString(String.valueOf(personRegistrationIdChars[10]), 1173, 495);
         graphics.drawString(String.valueOf(personRegistrationIdChars[11]), 1201, 495);
         graphics.drawString(String.valueOf(personRegistrationIdChars[12]), 1230, 495);
+
         //REF2
-        graphics.drawString("M", 974, 576);
-        graphics.drawString(String.valueOf(policyNumberChars[2]), 1002, 576);
-        graphics.drawString(String.valueOf(policyNumberChars[4]), 1030, 576);
-        graphics.drawString(String.valueOf(policyNumberChars[5]), 1057, 576);
-        graphics.drawString(String.valueOf(policyNumberChars[6]), 1087, 576);
-        graphics.drawString(String.valueOf(policyNumberChars[7]), 1113, 576);
-        graphics.drawString(String.valueOf(policyNumberChars[8]), 1140, 576);
-        graphics.drawString(String.valueOf(policyNumberChars[9]), 1196, 576);
-        graphics.drawString(String.valueOf(policyNumberChars[10]), 1224, 576);
+        drawRef2Prefix(graphics,
+                'M',
+                policyNumberChars[2],
+                policyNumberChars[4],
+                policyNumberChars[5],
+                policyNumberChars[6],
+                policyNumberChars[7],
+                policyNumberChars[8]
+        );
+        char[] ref2SuffixChars = new char[] { policyNumberChars[9], policyNumberChars[10] };
+        if (!firstPayment) {
+            ref2SuffixChars = "02".toCharArray();
+        }
+        drawRef2Suffix(graphics, ref2SuffixChars);
+
         //CreditCard
         graphics.drawString("X", 89, 596);
         //Number Premiums
@@ -445,5 +453,27 @@ public class DocumentService {
         }
 
         return bytes;
+    }
+
+    /**
+     * @param graphics
+     * @param prefixChars 7 chars
+     */
+    private void drawRef2Prefix(Graphics graphics, char... prefixChars) {
+        int beginCharPos = 973;
+        int cellWidth = 28;//28px
+        for (int i = 0; i < prefixChars.length; i++) {
+            char prefixChar = prefixChars[i];
+            graphics.drawString(String.valueOf(prefixChar), beginCharPos + (cellWidth * i), 576);
+        }
+    }
+
+    /**
+     * @param graphics
+     * @param suffixChars 2 chars. For new business, it should be 01, for renewal, it should be 02.
+     */
+    private void drawRef2Suffix(Graphics graphics, char... suffixChars) {
+        graphics.drawString(String.valueOf(suffixChars[0]), 1196, 576);
+        graphics.drawString(String.valueOf(suffixChars[1]), 1224, 576);
     }
 }
