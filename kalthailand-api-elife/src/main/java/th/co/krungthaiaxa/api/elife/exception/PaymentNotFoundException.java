@@ -13,7 +13,4 @@ public class PaymentNotFoundException extends BaseException {
         super(ERROR_CODE, message);
     }
 
-    public PaymentNotFoundException(String message, Throwable throwable) {
-        super(ERROR_CODE, message, throwable);
-    }
 }

@@ -70,12 +70,12 @@ public class ErrorCode {
 
     //Payment
     public static final String ERROR_CODE_PAYMENT_NOT_FOUND = "0510";
+    public static final String ERROR_CODE_PAYMENT_HAS_NEWER_COMPLETED = "0511";
 
     // Document
     public static final Error POLICY_DOES_NOT_CONTAIN_DOCUMENT = new Error("0601", "Unable to locate the document", "The given document id does not exist for the given policy");
     public static final Error UNABLE_TO_DOWNLOAD_DOCUMENT = new Error("0602", "Unable to download the document", "Processing for create e-receipt fail");
     public static final String ERROR_CODE_DOCUMENT_ERECEIPT = "0610";
-
 
     // Email
     public static final String ERROR_CODE_EMAIL_SENDER = "0701";

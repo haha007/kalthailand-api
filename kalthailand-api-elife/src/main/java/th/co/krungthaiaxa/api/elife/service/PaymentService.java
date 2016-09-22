@@ -13,6 +13,7 @@ import th.co.krungthaiaxa.api.common.utils.IOUtil;
 import th.co.krungthaiaxa.api.common.utils.LocaleUtil;
 import th.co.krungthaiaxa.api.elife.data.GeneralSetting;
 import th.co.krungthaiaxa.api.elife.exception.LinePaymentException;
+import th.co.krungthaiaxa.api.elife.exception.PaymentHasNewerCompletedException;
 import th.co.krungthaiaxa.api.elife.exception.PaymentNotFoundException;
 import th.co.krungthaiaxa.api.elife.model.Document;
 import th.co.krungthaiaxa.api.elife.model.Insured;
@@ -25,6 +26,7 @@ import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
 import th.co.krungthaiaxa.api.elife.utils.EmailUtil;
 
 import javax.inject.Inject;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -65,6 +67,20 @@ public class PaymentService {
         return paymentRepository.findOne(paymentId);
     }
 
+    public void validateNotExistNewerPayment(Payment oldPayment) {
+        Payment newerCompletedPayment;
+        LocalDate oldEffectiveDate = oldPayment.getEffectiveDate();
+        if (oldEffectiveDate != null) {
+            newerCompletedPayment = paymentRepository.findOneByNewerEffectiveDate(oldEffectiveDate, PaymentStatus.COMPLETED);
+        } else {
+            LOGGER.warn("Something wrong: The old payment must be processed, so it must have effective date. But we cannot find effectiveDate of this paymentId: " + oldPayment.getPaymentId());
+            newerCompletedPayment = paymentRepository.findOneByNewerId(oldPayment.getPaymentId(), PaymentStatus.COMPLETED);
+        }
+        if (newerCompletedPayment != null) {
+            throw new PaymentHasNewerCompletedException(newerCompletedPayment, String.format("There's a newer payment which was completed: old payment Id: %s. Newer completed paymentId: %s", oldPayment.getPaymentId(), newerCompletedPayment.getPaymentId()));
+        }
+    }
+
     /**
      * @param policyId
      * @param oldPaymentId
@@ -77,12 +93,13 @@ public class PaymentService {
     public Payment retryFailedPayment(String policyId, String oldPaymentId, String orderId, String transactionId, String regKey, String accessToken) {
 
         Payment oldPayment = validateExistPayment(oldPaymentId);
-        if (StringUtils.isNotBlank(oldPayment.getRetryPaymentId())) {
-            Payment retryPayment = paymentRepository.findOne(oldPayment.getRetryPaymentId());
-            if (PaymentStatus.COMPLETED.equals(retryPayment.getStatus())) {
-                throw new BadArgumentException(String.format("The old payment Id %s was already retried successfully before by paymentId: %s", oldPaymentId, oldPayment.getRetryPaymentId()));
-            }
-        }
+        validateNotExistNewerPayment(oldPayment);
+//        if (StringUtils.isNotBlank(oldPayment.getRetryPaymentId())) {
+//            Payment retryPayment = paymentRepository.findOne(oldPayment.getRetryPaymentId());
+//            if (PaymentStatus.COMPLETED.equals(retryPayment.getStatus())) {
+//                throw new BadArgumentException(String.format("The old payment Id %s was already retried successfully before by paymentId: %s", oldPaymentId, oldPayment.getRetryPaymentId()));
+//            }
+//        }
         Payment payment = new Payment();
         payment.setPolicyId(policyId);
         payment.setRegistrationKey(regKey);
@@ -115,7 +132,7 @@ public class PaymentService {
             oldPayment.setRetryPaymentId(payment.getPaymentId());
             paymentRepository.save(oldPayment);
         }
-        sendPaymentSuccessToMarketingTeam(payment, accessToken);
+        sendRetryPaymentSuccessToMarketingTeam(payment, accessToken);
         return payment;
     }
 
@@ -127,7 +144,13 @@ public class PaymentService {
         return payment;
     }
 
-    private void sendPaymentSuccessToMarketingTeam(Payment payment, String accessToken) {
+    /**
+     * This code is used only for retry, not for the first payment.
+     *
+     * @param payment
+     * @param accessToken
+     */
+    private void sendRetryPaymentSuccessToMarketingTeam(Payment payment, String accessToken) {
         Policy policy = policyService.validateExistPolicy(payment.getPolicyId());
         Insured mainInsured = ProductUtils.validateExistMainInsured(policy);
 
@@ -152,7 +175,6 @@ public class PaymentService {
         }
         Pair<byte[], String> ereceiptAttachment = policyService.findEreceiptAttachmentByDocumentId(policy.getPolicyId(), ereceiptPdfDocument.getId());
         emailService.sendEmails(toEmails, emailSubject, emailContent, EmailUtil.initImagePairs("logo"), Arrays.asList(ereceiptAttachment));
-//        emailService.sendEmailWithAttachments(toEmails, emailSubject, emailContent, Arrays.asList(ereceiptAttachment));
     }
 
     public LineService getLineService() {

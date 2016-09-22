@@ -34,4 +34,10 @@ public interface PaymentRepository extends MongoRepository<Payment, String> {
 
     @Query(value = "{'$and': [{'registrationKey':{'$ne': null}}, {'registrationKey':{'$ne': ''}}]}")
     List<Payment> findByRegKeyNotEmpty(Sort sort);
+
+    @Query(value = "{'$and': [{'effectiveDate':{'$gt': ?0}}, {'status': ?1}]}")
+    Payment findOneByNewerEffectiveDate(LocalDate effectiveDate, PaymentStatus status);
+
+    @Query(value = "{'$and': [{'_id':{'$gt': ?0}}, {'status': ?1}]}")
+    Payment findOneByNewerId(String paymentId, PaymentStatus completed);
 }

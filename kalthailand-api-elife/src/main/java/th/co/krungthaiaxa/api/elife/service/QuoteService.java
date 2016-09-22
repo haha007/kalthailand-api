@@ -28,9 +28,6 @@ import javax.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import static java.time.LocalDateTime.now;
-import static java.time.ZoneId.SHORT_IDS;
-import static java.time.ZoneId.of;
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 
 @Service
@@ -134,7 +131,7 @@ public class QuoteService {
             }
         }
 
-        quote.setLastUpdateDateTime(now(of(SHORT_IDS.get("VST"))));
+        quote.setLastUpdateDateTime(DateTimeUtil.nowLocalDateTimeInThaiZoneId());
         logger.info("Quote with id [" + quote.getId() + "] and quoteId [" + quote.getQuoteId() + "] has been successfully updated");
         return quoteRepository.save(quote);
     }
