@@ -14,6 +14,7 @@ import th.co.krungthaiaxa.api.elife.model.Document;
 import th.co.krungthaiaxa.api.elife.model.DocumentDownload;
 import th.co.krungthaiaxa.api.elife.model.DocumentReferenceType;
 import th.co.krungthaiaxa.api.elife.model.Payment;
+import th.co.krungthaiaxa.api.elife.model.Person;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.enums.DocumentType;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
@@ -264,6 +265,13 @@ public class DocumentService {
         return tdate.format(ofPattern("dd/MM/yyyy"));
     }
 
+    /**
+     * @param policy
+     * @param payment
+     * @param firstPayment is it the new business (true) or renewal (false)
+     * @return
+     * @throws IOException
+     */
     public byte[] createEreceiptImage(Policy policy, Payment payment, boolean firstPayment) throws IOException {
         logger.info("[createEReceipt] quoteId : " + policy.getQuoteId());
         logger.info("[createEReceipt] policyNumber : " + policy.getPolicyId());
@@ -296,8 +304,10 @@ public class DocumentService {
         }
 
         //Name
-        graphics.drawString(policy.getInsureds().get(0).getPerson().getGivenName() + " " + policy.getInsureds().get(0).getPerson().getSurName(), 227, 305);
-        logger.debug("Name Insure : " + policy.getInsureds().get(0).getPerson().getGivenName() + " " + policy.getInsureds().get(0).getPerson().getSurName());
+        Person mainInsuredPerson = ProductUtils.validateExistMainInsured(policy).getPerson();
+        String mainInsuredName = mainInsuredPerson.getFirstAndLastName();
+        graphics.drawString(mainInsuredPerson.getFirstAndLastName(), 227, 305);
+        logger.debug("Name Insure : " + mainInsuredName);
 
         //payment date
         if (payment.getEffectiveDate() != null) {
@@ -329,17 +339,17 @@ public class DocumentService {
         graphics.drawString(formatter.format(premium), 553, 353);
 
         //PolicyNo
-        char[] numberPNO = policy.getPolicyId().toCharArray();
-        graphics.drawString(String.valueOf(numberPNO[0]), 950, 433);
-        graphics.drawString(String.valueOf(numberPNO[1]), 977, 433);
-        graphics.drawString(String.valueOf(numberPNO[2]), 1004, 433);
-        graphics.drawString(String.valueOf(numberPNO[4]), 1060, 433);
-        graphics.drawString(String.valueOf(numberPNO[5]), 1088, 433);
-        graphics.drawString(String.valueOf(numberPNO[6]), 1114, 433);
-        graphics.drawString(String.valueOf(numberPNO[7]), 1143, 433);
-        graphics.drawString(String.valueOf(numberPNO[8]), 1170, 433);
-        graphics.drawString(String.valueOf(numberPNO[9]), 1197, 433);
-        graphics.drawString(String.valueOf(numberPNO[10]), 1225, 433);
+        char[] policyNumberChars = policy.getPolicyId().toCharArray();
+        graphics.drawString(String.valueOf(policyNumberChars[0]), 950, 433);
+        graphics.drawString(String.valueOf(policyNumberChars[1]), 977, 433);
+        graphics.drawString(String.valueOf(policyNumberChars[2]), 1004, 433);
+        graphics.drawString(String.valueOf(policyNumberChars[4]), 1060, 433);
+        graphics.drawString(String.valueOf(policyNumberChars[5]), 1088, 433);
+        graphics.drawString(String.valueOf(policyNumberChars[6]), 1114, 433);
+        graphics.drawString(String.valueOf(policyNumberChars[7]), 1143, 433);
+        graphics.drawString(String.valueOf(policyNumberChars[8]), 1170, 433);
+        graphics.drawString(String.valueOf(policyNumberChars[9]), 1197, 433);
+        graphics.drawString(String.valueOf(policyNumberChars[10]), 1225, 433);
 
         //PaymentMode
         switch (policy.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode()) {
@@ -366,30 +376,30 @@ public class DocumentService {
         }
 
         //ID-Card
-        char[] numberIds = policy.getInsureds().get(0).getPerson().getRegistrations().get(0).getId().toCharArray();
-        graphics.drawString(String.valueOf(numberIds[0]), 896, 495);
-        graphics.drawString(String.valueOf(numberIds[1]), 924, 495);
-        graphics.drawString(String.valueOf(numberIds[2]), 951, 495);
-        graphics.drawString(String.valueOf(numberIds[3]), 979, 495);
-        graphics.drawString(String.valueOf(numberIds[4]), 1007, 495);
-        graphics.drawString(String.valueOf(numberIds[5]), 1035, 495);
-        graphics.drawString(String.valueOf(numberIds[6]), 1061, 495);
-        graphics.drawString(String.valueOf(numberIds[7]), 1089, 495);
-        graphics.drawString(String.valueOf(numberIds[8]), 1119, 495);
-        graphics.drawString(String.valueOf(numberIds[9]), 1145, 495);
-        graphics.drawString(String.valueOf(numberIds[10]), 1173, 495);
-        graphics.drawString(String.valueOf(numberIds[11]), 1201, 495);
-        graphics.drawString(String.valueOf(numberIds[12]), 1230, 495);
+        char[] personRegistrationIdChars = policy.getInsureds().get(0).getPerson().getRegistrations().get(0).getId().toCharArray();
+        graphics.drawString(String.valueOf(personRegistrationIdChars[0]), 896, 495);
+        graphics.drawString(String.valueOf(personRegistrationIdChars[1]), 924, 495);
+        graphics.drawString(String.valueOf(personRegistrationIdChars[2]), 951, 495);
+        graphics.drawString(String.valueOf(personRegistrationIdChars[3]), 979, 495);
+        graphics.drawString(String.valueOf(personRegistrationIdChars[4]), 1007, 495);
+        graphics.drawString(String.valueOf(personRegistrationIdChars[5]), 1035, 495);
+        graphics.drawString(String.valueOf(personRegistrationIdChars[6]), 1061, 495);
+        graphics.drawString(String.valueOf(personRegistrationIdChars[7]), 1089, 495);
+        graphics.drawString(String.valueOf(personRegistrationIdChars[8]), 1119, 495);
+        graphics.drawString(String.valueOf(personRegistrationIdChars[9]), 1145, 495);
+        graphics.drawString(String.valueOf(personRegistrationIdChars[10]), 1173, 495);
+        graphics.drawString(String.valueOf(personRegistrationIdChars[11]), 1201, 495);
+        graphics.drawString(String.valueOf(personRegistrationIdChars[12]), 1230, 495);
         //REF2
         graphics.drawString("M", 974, 576);
-        graphics.drawString(String.valueOf(numberPNO[2]), 1002, 576);
-        graphics.drawString(String.valueOf(numberPNO[4]), 1030, 576);
-        graphics.drawString(String.valueOf(numberPNO[5]), 1057, 576);
-        graphics.drawString(String.valueOf(numberPNO[6]), 1087, 576);
-        graphics.drawString(String.valueOf(numberPNO[7]), 1113, 576);
-        graphics.drawString(String.valueOf(numberPNO[8]), 1140, 576);
-        graphics.drawString(String.valueOf(numberPNO[9]), 1196, 576);
-        graphics.drawString(String.valueOf(numberPNO[10]), 1224, 576);
+        graphics.drawString(String.valueOf(policyNumberChars[2]), 1002, 576);
+        graphics.drawString(String.valueOf(policyNumberChars[4]), 1030, 576);
+        graphics.drawString(String.valueOf(policyNumberChars[5]), 1057, 576);
+        graphics.drawString(String.valueOf(policyNumberChars[6]), 1087, 576);
+        graphics.drawString(String.valueOf(policyNumberChars[7]), 1113, 576);
+        graphics.drawString(String.valueOf(policyNumberChars[8]), 1140, 576);
+        graphics.drawString(String.valueOf(policyNumberChars[9]), 1196, 576);
+        graphics.drawString(String.valueOf(policyNumberChars[10]), 1224, 576);
         //CreditCard
         graphics.drawString("X", 89, 596);
         //Number Premiums

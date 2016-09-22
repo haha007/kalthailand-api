@@ -32,6 +32,10 @@ public class Person extends Party implements Serializable {
         return StringUtil.joinNotBlankStrings(" ", givenName, middleName, surName);
     }
 
+    public String getFirstAndLastName() {
+        return StringUtil.joinNotBlankStrings(" ", givenName, surName);
+    }
+
     @ApiModelProperty(value = "The person's line mid (if any)")
     public String getLineId() {
         return lineId;
