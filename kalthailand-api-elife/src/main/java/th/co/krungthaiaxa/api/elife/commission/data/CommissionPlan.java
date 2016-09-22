@@ -1,21 +1,17 @@
 package th.co.krungthaiaxa.api.elife.commission.data;
 
-import org.bson.types.ObjectId;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+import th.co.krungthaiaxa.api.common.data.BaseEntity;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**
  * @author khoi.tran on 8/30/16.
  */
 @Document(collection = "commissionPlan")
-public class CommissionPlan {
-    @Id
-    private ObjectId id;
+public class CommissionPlan extends BaseEntity {
     @Indexed
     /**
      * This can be any string. For example 40002, 20001...
@@ -30,17 +26,6 @@ public class CommissionPlan {
     @Indexed
     private CustomerCategory customerCategory;
     private List<CommissionTargetGroup> targetGroups;
-
-    private LocalDateTime createdDateTime;
-    private LocalDateTime updatedDateTime;
-
-    public ObjectId getId() {
-        return id;
-    }
-
-    public void setId(ObjectId id) {
-        this.id = id;
-    }
 
     public String getUnitCode() {
         return unitCode;
@@ -72,21 +57,5 @@ public class CommissionPlan {
 
     public void setTargetGroups(List<CommissionTargetGroup> targetGroups) {
         this.targetGroups = targetGroups;
-    }
-
-    public LocalDateTime getCreatedDateTime() {
-        return createdDateTime;
-    }
-
-    public void setCreatedDateTime(LocalDateTime createdDateTime) {
-        this.createdDateTime = createdDateTime;
-    }
-
-    public LocalDateTime getUpdatedDateTime() {
-        return updatedDateTime;
-    }
-
-    public void setUpdatedDateTime(LocalDateTime updatedDateTime) {
-        this.updatedDateTime = updatedDateTime;
     }
 }

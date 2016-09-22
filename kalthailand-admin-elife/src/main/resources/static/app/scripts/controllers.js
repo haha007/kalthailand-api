@@ -712,4 +712,41 @@
     app.controller('CommissionController', function (CommissionService, $scope, $route, $http, $localStorage) {
         $scope.service = CommissionService;
     });
+    
+    app.controller('CommissionResultController', function (CommissionResultService, $scope, $route, $http, $localStorage) {
+        $scope.service = CommissionResultService;
+        
+        var dateNow = new Date();
+        var day = dateNow.getDate();
+        day = 1;
+        
+        // Calculate Button is enable on 1-10 of month
+        if(day >= 1 && day <= 10) {
+        	// 1-10 is false to Enable button
+        	$scope.calculateButton = false;
+        	$scope.redNotice = '';
+        } else {
+        	// 11+ is true to Disable button
+        	$scope.calculateButton = true;
+        	$scope.redNotice = '(Commission  can only be generated before 10<sup>th</sup> day of a month)';
+        }
+        
+        $scope.commissionResultAll = CommissionResultService;
+        
+        $scope.callGenerateCommission = function () {
+        	var obj = {'createdDateTime': 'Waiting...' };
+        	$scope.commissionResultAll.commissionList.splice(0, 0, obj);
+        	CommissionResultService.generateCommission();
+        	$scope.loadNewFilter();
+        }
+        
+        $scope.loadNewFilter = function (){
+            $scope.commissionResultAll = CommissionResultService;      
+            $scope.calculateButton = false;
+            $scope.redNotice = '';
+//            $scope.redNotice = 'Please wait system is processing for generate reusult ...';
+        }
+        
+        
+    });
 })();
