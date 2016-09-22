@@ -33,6 +33,9 @@ public class Payment {
     private String registrationKey;
     private PaymentStatus status;
     private LocalDate dueDate;
+    /**
+     * This field only have value after checking with LineService successfully!
+     */
     private LocalDate effectiveDate;
     private Amount amount;
 

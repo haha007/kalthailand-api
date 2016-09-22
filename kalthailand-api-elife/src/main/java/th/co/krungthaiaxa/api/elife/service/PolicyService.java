@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
 import th.co.krungthaiaxa.api.common.utils.EncryptUtil;
 import th.co.krungthaiaxa.api.elife.client.CDBClient;
 import th.co.krungthaiaxa.api.elife.data.PolicyNumber;
@@ -44,7 +45,6 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
@@ -219,6 +219,7 @@ public class PolicyService {
         } else {
             payment.setStatus(INCOMPLETE);
         }
+        payment.setEffectiveDate(LocalDate.now());
         payment.addPaymentInformation(paymentInformation);
         paymentRepository.save(payment);
     }
@@ -470,12 +471,12 @@ public class PolicyService {
         if (!isBlank(registrationKey) && !registrationKey.equals(payment.getRegistrationKey())) {
             payment.setRegistrationKey(registrationKey);
         }
-
+        LocalDate nowInThai = DateTimeUtil.nowLocalDateInThaiZoneId();
         PaymentInformation paymentInformation = new PaymentInformation();
         paymentInformation.setAmount(amount(value, currencyCode));
         paymentInformation.setChannel(channelType);
         paymentInformation.setCreditCardName(creditCardName);
-        paymentInformation.setDate(LocalDate.now(ZoneId.of(ZoneId.SHORT_IDS.get("VST"))));
+        paymentInformation.setDate(nowInThai);
         paymentInformation.setMethod(paymentMethod);
         paymentInformation.setRejectionErrorCode(errorCode);
         paymentInformation.setRejectionErrorMessage(errorMessage);
@@ -491,12 +492,10 @@ public class PolicyService {
             payment.setStatus(INCOMPLETE);
         } else if (Objects.equals(totalSuccesfulPayments, payment.getAmount().getValue())) {
             payment.setStatus(COMPLETED);
-            payment.setEffectiveDate(paymentInformation.getDate());
         } else if (totalSuccesfulPayments > payment.getAmount().getValue()) {
             payment.setStatus(OVERPAID);
-            payment.setEffectiveDate(paymentInformation.getDate());
         }
-
+        payment.setEffectiveDate(nowInThai);
         paymentRepository.save(payment);
         logger.info("Payment [" + payment.getPaymentId() + "] has been updated");
     }

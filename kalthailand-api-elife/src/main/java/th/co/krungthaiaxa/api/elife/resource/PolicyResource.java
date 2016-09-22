@@ -90,7 +90,7 @@ public class PolicyResource {
     @Value("${environment.name}")
     private String environmentName;
     @Value("${kal.api.auth.header}")
-    private String tokenHeader;
+    private String accessTokenHeader;
 
     @Inject
     public PolicyResource(DocumentService documentService, LineService lineService, PolicyService policyService, QuoteService quoteService, PaymentService paymentService) {
@@ -444,7 +444,7 @@ public class PolicyResource {
             logger.error("The policy is in status [" + policy.get().getStatus().name() + "], it must be " + VALIDATED + " status.");
             return new ResponseEntity<>(getJson(ErrorCode.POLICY_IS_NOT_VALIDATED_FOR_PAYMENT.apply(policyId)), NOT_ACCEPTABLE);
         }
-        String accessToken = httpServletRequest.getHeader(tokenHeader);
+        String accessToken = httpServletRequest.getHeader(accessTokenHeader);
         paymentService.retryFailedPayment(policyId, paymentId, orderId, transactionId, regKey, accessToken);
 
         return new ResponseEntity<>(getJson(policy.get()), OK);
@@ -540,7 +540,7 @@ public class PolicyResource {
         policyService.updateRegistrationForAllNotProcessedPayment(policy.get(), linePayResponse.getInfo().getRegKey());
 
         try {
-            String accessToken = httpServletRequest.getHeader(tokenHeader);
+            String accessToken = httpServletRequest.getHeader(accessTokenHeader);
             policyService.updatePolicyAfterPolicyHasBeenValidated(policy.get(), agentCode, agentName, accessToken);
         } catch (ElifeException e) {
             logger.error("Payment is successful but there was an error whil trying to update policy status.", e);

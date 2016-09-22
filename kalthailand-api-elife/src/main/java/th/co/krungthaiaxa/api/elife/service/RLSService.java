@@ -287,10 +287,11 @@ public class RLSService {
         // But for the payment to go through, we need to find the registration key that was used previously
         String lastRegistrationKey = findLastRegistrationKey(policyId);
 
+        //Create the predefined payment. The user has not really payed yet. That's why it doesn't have effective date.
         Payment newPayment = new Payment(policy.get().getPolicyId(),
                 collectionFileLine.getPremiumAmount(),
                 policy.get().getCommonData().getProductCurrency(),
-                LocalDate.now(of(SHORT_IDS.get("VST"))));
+                DateTimeUtil.nowLocalDateInThaiZoneId());
         if (StringUtils.isBlank(lastRegistrationKey)) {
             logger.info("Unable to find a schedule payment for policy [" + policy.get().getPolicyId() + "] and a " +
                     "previously used registration key, will create one payment from scratch, but payment will fail " +

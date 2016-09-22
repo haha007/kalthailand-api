@@ -88,7 +88,7 @@ public class PaymentService {
      * @param transactionId
      * @param regKey        this is the new registrationKey returned by lineservice, it should be different from current latest regKey in DB.
      * @param accessToken
-     * @return
+     * @return the new retry payment
      */
     public Payment retryFailedPayment(String policyId, String oldPaymentId, String orderId, String transactionId, String regKey, String accessToken) {
 
