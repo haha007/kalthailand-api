@@ -30,6 +30,7 @@ import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.PaymentInformation;
 import th.co.krungthaiaxa.api.elife.model.PaymentNewerCompletedResult;
 import th.co.krungthaiaxa.api.elife.model.Policy;
+import th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus;
 import th.co.krungthaiaxa.api.elife.utils.GreenMailUtil;
 
 import javax.inject.Inject;
@@ -123,8 +124,11 @@ public class PaymentRetryServiceTest extends ELifeTest {
         }
         PaymentNewerCompletedResult paymentNewerCompletedResult = paymentService.findNewerCompletedPayment(PAYMENT_ID_01_FAIL);
         Payment failPayment = paymentNewerCompletedResult.getPayment();
+        Payment newerCompletedPayment = paymentNewerCompletedResult.getNewerCompletedPayment();
         Assert.assertEquals(PAYMENT_ID_01_FAIL, failPayment.getPaymentId());
-        Assert.assertEquals(PAYMENT_02_RETRY, paymentNewerCompletedResult.getNewerCompletedPayment());
+        Assert.assertEquals(PaymentStatus.INCOMPLETE, failPayment.getStatus());
+        Assert.assertEquals(PAYMENT_02_RETRY, newerCompletedPayment);
+        Assert.assertEquals(PaymentStatus.COMPLETED, newerCompletedPayment.getStatus());
     }
 
     @Test(expected = PaymentHasNewerCompletedException.class)
