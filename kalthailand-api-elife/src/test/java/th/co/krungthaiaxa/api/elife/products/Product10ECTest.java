@@ -13,6 +13,7 @@ import th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -1368,8 +1369,8 @@ public class Product10ECTest {
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         Policy policy = new Policy();
         TestUtil.product10ECService().createPolicyFromQuote(policy, quote);
-        LocalDate startDate = policy.getInsureds().get(0).getStartDate();
-        List<LocalDate> allowedDates = new ArrayList<>();
+        LocalDateTime startDate = policy.getInsureds().get(0).getStartDate().atStartOfDay();
+        List<LocalDateTime> allowedDates = new ArrayList<>();
         IntStream.range(0, 6).forEach(value -> allowedDates.add(startDate.plusMonths(value * 12)));
 
         assertThat(policy.getPayments()).hasSize(6);
@@ -1390,8 +1391,8 @@ public class Product10ECTest {
 
         Policy policy = new Policy();
         TestUtil.product10ECService().createPolicyFromQuote(policy, quote);
-        LocalDate startDate = policy.getInsureds().get(0).getStartDate();
-        List<LocalDate> allowedDates = new ArrayList<>();
+        LocalDateTime startDate = policy.getInsureds().get(0).getStartDate().atStartOfDay();
+        List<LocalDateTime> allowedDates = new ArrayList<>();
         IntStream.range(0, 12).forEach(value -> allowedDates.add(startDate.plusMonths(value * 6)));
 
         assertThat(policy.getPayments()).hasSize(12);
@@ -1412,8 +1413,8 @@ public class Product10ECTest {
 
         Policy policy = new Policy();
         TestUtil.product10ECService().createPolicyFromQuote(policy, quote);
-        LocalDate startDate = policy.getInsureds().get(0).getStartDate();
-        List<LocalDate> allowedDates = new ArrayList<>();
+        LocalDateTime startDate = policy.getInsureds().get(0).getStartDate().atStartOfDay();
+        List<LocalDateTime> allowedDates = new ArrayList<>();
         IntStream.range(0, 24).forEach(value -> allowedDates.add(startDate.plusMonths(value * 3)));
 
         assertThat(policy.getPayments()).hasSize(24);
@@ -1434,8 +1435,8 @@ public class Product10ECTest {
 
         Policy policy = new Policy();
         TestUtil.product10ECService().createPolicyFromQuote(policy, quote);
-        LocalDate startDate = policy.getInsureds().get(0).getStartDate();
-        List<LocalDate> allowedDates = new ArrayList<>();
+        LocalDateTime startDate = policy.getInsureds().get(0).getStartDate().atStartOfDay();
+        List<LocalDateTime> allowedDates = new ArrayList<>();
         IntStream.range(0, 72).forEach(value -> allowedDates.add(startDate.plusMonths(value)));
 
         assertThat(policy.getPayments()).hasSize(72);
