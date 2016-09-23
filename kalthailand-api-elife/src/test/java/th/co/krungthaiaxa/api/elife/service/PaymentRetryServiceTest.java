@@ -117,6 +117,7 @@ public class PaymentRetryServiceTest extends ELifeTest {
         String transId = RandomStringUtils.randomNumeric(20);
         String accessToken = RandomStringUtils.randomAlphanumeric(25);
         Payment retryPayment = paymentService.retryFailedPayment(policy.getPolicyId(), oldPaymentId, orderId, transId, newRegKey, accessToken);
+
         Assert.assertEquals(orderId, retryPayment.getOrderId());
         Assert.assertEquals(transId, retryPayment.getTransactionId());
         Assert.assertEquals(newRegKey, retryPayment.getRegistrationKey());

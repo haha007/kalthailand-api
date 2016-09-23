@@ -21,7 +21,6 @@ import th.co.krungthaiaxa.api.elife.utils.EmailUtil;
 import th.co.krungthaiaxa.api.elife.utils.PersonUtil;
 
 import javax.inject.Inject;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 
@@ -54,7 +53,6 @@ public class PaymentFailEmailService {
         String emailSubject = messageSource.getMessage("email.payment.fail.title", null, LocaleUtil.THAI_LOCALE);
         String emailContent = fillEmailContent(policy, payment);
         emailService.sendEmail(insuredEmail, emailSubject, emailContent, EmailUtil.initImagePairs("logo"), Collections.EMPTY_LIST);
-//        emailService.sendEmail(insuredEmail, emailSubject, emailContent, Collections.EMPTY_LIST);
         LOGGER.debug("Sent informed email to customer, policyId: " + policy.getPolicyId());
     }
 
