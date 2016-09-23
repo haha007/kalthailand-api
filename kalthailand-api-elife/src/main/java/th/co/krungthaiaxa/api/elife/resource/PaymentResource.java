@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import th.co.krungthaiaxa.api.common.model.error.Error;
 import th.co.krungthaiaxa.api.elife.model.Payment;
+import th.co.krungthaiaxa.api.elife.model.PaymentNewerCompletedResult;
 import th.co.krungthaiaxa.api.elife.service.PaymentService;
 
 import javax.inject.Inject;
@@ -44,6 +45,17 @@ public class PaymentResource {
     public Payment getPayment(@ApiParam(value = "The payment ID", required = true)
     @PathVariable String paymentId) {
         return paymentService.findPaymentById(paymentId);
+    }
+
+    @ApiOperation(value = "Find whether is there any newer completed payment or not.", notes = "Find whether is there any newer completed payment or not. If there's newer completed payment, you may don't need to process the payment again.", response = PaymentNewerCompletedResult.class)
+    @RequestMapping(value = "/payments/{paymentId}/newer-completed", produces = APPLICATION_JSON_VALUE, method = GET)
+    @ResponseBody
+    @ApiResponses({
+            @ApiResponse(code = 500, message = "If there's an unexpected error", response = Error.class)
+    })
+    public PaymentNewerCompletedResult checkNewerCompletedPaymentSinceInputPayment(@ApiParam(value = "The payment ID", required = true)
+    @PathVariable String paymentId) {
+        return paymentService.findNewerCompletedPayment(paymentId);
     }
 
 }

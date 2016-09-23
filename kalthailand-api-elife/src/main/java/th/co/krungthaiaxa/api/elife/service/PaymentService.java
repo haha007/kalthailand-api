@@ -20,6 +20,7 @@ import th.co.krungthaiaxa.api.elife.model.Document;
 import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.PaymentInformation;
+import th.co.krungthaiaxa.api.elife.model.PaymentNewerCompletedResult;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus;
 import th.co.krungthaiaxa.api.elife.model.enums.SuccessErrorStatus;
@@ -75,12 +76,16 @@ public class PaymentService {
         return paymentRepository.findOne(paymentId);
     }
 
-    public void validateNotExistNewerPayment(Payment oldPayment) {
+    public PaymentNewerCompletedResult findNewerCompletedPayment(String oldPaymentId) {
+        PaymentNewerCompletedResult result = new PaymentNewerCompletedResult();
+        Payment oldPayment = validateExistPayment(oldPaymentId);
+        result.setPayment(oldPayment);
         Payment newerCompletedPayment;
         if (oldPayment.getRetryPaymentId() != null) {
             Payment retryPayment = validateExistPayment(oldPayment.getRetryPaymentId());
             if (PaymentStatus.COMPLETED.equals(retryPayment.getStatus())) {
-                throw new PaymentHasNewerCompletedException(retryPayment, String.format("There's a newer payment which was completed: old payment Id: %s. Newer completed paymentId: %s", oldPayment.getPaymentId(), retryPayment.getPaymentId()));
+                result.setNewerCompletedPayment(retryPayment);
+                return result;
             }
         }
 
@@ -91,9 +96,18 @@ public class PaymentService {
             LOGGER.warn("Something wrong: The old payment must be processed, so it must have effective date. But we cannot find effectiveDate of this paymentId: " + oldPayment.getPaymentId());
             newerCompletedPayment = paymentRepository.findOneByNewerId(oldPayment.getPaymentId(), PaymentStatus.COMPLETED);
         }
+        result.setNewerCompletedPayment(newerCompletedPayment);
+        return result;
+    }
+
+    public Payment validateNotExistNewerPayment(String paymentId) {
+        PaymentNewerCompletedResult paymentNewerCompletedResult = findNewerCompletedPayment(paymentId);
+        Payment oldPayment = paymentNewerCompletedResult.getPayment();
+        Payment newerCompletedPayment = paymentNewerCompletedResult.getNewerCompletedPayment();
         if (newerCompletedPayment != null) {
             throw new PaymentHasNewerCompletedException(newerCompletedPayment, String.format("There's a newer payment which was completed: old payment Id: %s. Newer completed paymentId: %s", oldPayment.getPaymentId(), newerCompletedPayment.getPaymentId()));
         }
+        return oldPayment;
     }
 
     /**
@@ -106,9 +120,7 @@ public class PaymentService {
      * @return the new retry payment
      */
     public Payment retryFailedPayment(String policyId, String oldPaymentId, String orderId, String transactionId, String regKey, String accessToken) {
-
-        Payment oldPayment = validateExistPayment(oldPaymentId);
-        validateNotExistNewerPayment(oldPayment);
+        Payment oldPayment = validateNotExistNewerPayment(oldPaymentId);
         Payment payment = new Payment();
         payment.setPolicyId(policyId);
         payment.setRegistrationKey(regKey);
