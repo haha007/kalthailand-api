@@ -28,6 +28,7 @@ import th.co.krungthaiaxa.api.elife.factory.QuoteFactory;
 import th.co.krungthaiaxa.api.elife.mock.LineServiceMockFactory;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.PaymentInformation;
+import th.co.krungthaiaxa.api.elife.model.PaymentNewerCompletedResult;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.utils.GreenMailUtil;
 
@@ -62,7 +63,8 @@ public class PaymentRetryServiceTest extends ELifeTest {
 
     private static Policy POLICY;
     private static CollectionFile COLLECTION_FILE;
-    private static Payment RETRY_PAYMENT;
+    private static String PAYMENT_ID_01_FAIL;
+    private static Payment PAYMENT_02_RETRY;
 
     @Test
     public void test01_payment_fail_should_has_result_in_collection() throws FolderException {
@@ -76,6 +78,7 @@ public class PaymentRetryServiceTest extends ELifeTest {
         rlsService.importCollectionFile(inputStream);
         List<CollectionFile> collectionFileList = rlsService.processLatestCollectionFiles();
         COLLECTION_FILE = collectionFileList.get(0);
+        PAYMENT_ID_01_FAIL = getPaymentIdFromFirstLineOfCollectionFile(COLLECTION_FILE);
 
         GreenMailUtil.writeReceiveMessagesToFiles(greenMail, "test/emails");
         Assert.assertTrue(greenMail.getReceivedMessages().length > 0);
@@ -89,29 +92,55 @@ public class PaymentRetryServiceTest extends ELifeTest {
     }
 
     @Test
-    public void test02_retry_payment_success_after_the_first_fail() throws FolderException {
+    public void test02_validate_no_newer_retrypayment() throws FolderException {
+        if (PAYMENT_ID_01_FAIL == null) {
+            test01_payment_fail_should_has_result_in_collection();
+        }
+        PaymentNewerCompletedResult paymentNewerCompletedResult = paymentService.findNewerCompletedPayment(PAYMENT_ID_01_FAIL);
+        Payment failPayment = paymentNewerCompletedResult.getPayment();
+        Assert.assertEquals(PAYMENT_ID_01_FAIL, failPayment.getPaymentId());
+        Assert.assertNull(paymentNewerCompletedResult.getNewerCompletedPayment());
+    }
+
+    @Test
+    public void test03_retry_payment_success_after_the_first_fail() throws FolderException {
         if (POLICY == null || COLLECTION_FILE == null) {
             test01_payment_fail_should_has_result_in_collection();
         }
         //Retry the fail payment:
         setupLineServiceWithResponseCode(LineService.RESPONSE_CODE_SUCCESS);
         RetryPaymentResult retryPaymentResult = retryFailedPaymentInCollection(COLLECTION_FILE, POLICY);
-        RETRY_PAYMENT = retryPaymentResult.retryPayment;
+        PAYMENT_02_RETRY = retryPaymentResult.retryPayment;
 
         GreenMailUtil.writeReceiveMessagesToFiles(greenMail, "test/emails");
         Assert.assertTrue(greenMail.getReceivedMessages().length > 0);
     }
 
+    @Test
+    public void test04_validate_has_newer_completed_payment_after_retrying_payment_success() throws FolderException {
+        if (PAYMENT_02_RETRY == null) {
+            test03_retry_payment_success_after_the_first_fail();
+        }
+        PaymentNewerCompletedResult paymentNewerCompletedResult = paymentService.findNewerCompletedPayment(PAYMENT_ID_01_FAIL);
+        Payment failPayment = paymentNewerCompletedResult.getPayment();
+        Assert.assertEquals(PAYMENT_ID_01_FAIL, failPayment.getPaymentId());
+        Assert.assertEquals(PAYMENT_02_RETRY, paymentNewerCompletedResult.getNewerCompletedPayment());
+    }
+
     @Test(expected = PaymentHasNewerCompletedException.class)
-    public void test03_retry_payment_again_the_second_time() throws FolderException {
-        if (RETRY_PAYMENT == null) {
-            test02_retry_payment_success_after_the_first_fail();
+    public void test05_retry_payment_again_must_be_fail_because_we_retried_success_before() throws FolderException {
+        if (PAYMENT_02_RETRY == null) {
+            test03_retry_payment_success_after_the_first_fail();
         }
         retryFailedPaymentInCollection(COLLECTION_FILE, POLICY);
     }
 
+    private String getPaymentIdFromFirstLineOfCollectionFile(CollectionFile collectionFile) {
+        return collectionFile.getDeductionFile().getLines().get(0).getPaymentId();
+    }
+
     private RetryPaymentResult retryFailedPaymentInCollection(CollectionFile collectionFile, Policy policy) {
-        String oldPaymentId = collectionFile.getDeductionFile().getLines().get(0).getPaymentId();
+        String oldPaymentId = getPaymentIdFromFirstLineOfCollectionFile(collectionFile);
         String orderId = RandomStringUtils.randomNumeric(10);
         String newRegKey = RandomStringUtils.randomNumeric(15);
         String transId = RandomStringUtils.randomNumeric(20);
