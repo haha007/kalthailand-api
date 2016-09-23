@@ -39,7 +39,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -48,7 +47,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
-import static java.time.LocalDate.now;
 import static java.time.ZoneId.SHORT_IDS;
 import static java.time.ZoneId.of;
 import static java.time.format.DateTimeFormatter.ofPattern;
@@ -270,9 +268,9 @@ public class RLSService {
                 "Policy [" + collectionFileLine.getPolicyNumber() + "] is not a monthly payment policy");
 
         // 28 is the maximum nb of days between a scheduled payment and collection file first cycle start date
-        LocalDate now = now();
-        LocalDate todayMinus28Days = now.minusDays(28);
-        LocalDate tomorrow = now.plusDays(1);
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime todayMinus28Days = now.minusDays(28);
+        LocalDateTime tomorrow = now.plusDays(1);
 
         // There should be a scheduled payment for which due date is within the last 28 days
         Optional<Payment> notCompletedPaymentInThisMonth = paymentRepository.findOneByPolicyIdAndDueDateRangeAndInStatus(policyId, todayMinus28Days, tomorrow, PaymentStatus.NOT_PROCESSED);
@@ -291,7 +289,7 @@ public class RLSService {
         Payment newPayment = new Payment(policy.get().getPolicyId(),
                 collectionFileLine.getPremiumAmount(),
                 policy.get().getCommonData().getProductCurrency(),
-                DateTimeUtil.nowLocalDateInThaiZoneId());
+                DateTimeUtil.nowLocalDateTimeInThaiZoneId());
         if (StringUtils.isBlank(lastRegistrationKey)) {
             logger.info("Unable to find a schedule payment for policy [" + policy.get().getPolicyId() + "] and a " +
                     "previously used registration key, will create one payment from scratch, but payment will fail " +

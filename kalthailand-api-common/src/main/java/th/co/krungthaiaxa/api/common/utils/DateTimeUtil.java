@@ -29,6 +29,10 @@ public class DateTimeUtil {
         return localDate.format(ofPattern(PATTERN_THAI_DATE));
     }
 
+    public static String formatThaiDate(LocalDateTime localDate) {
+        return localDate.format(ofPattern(PATTERN_THAI_DATE));
+    }
+
     public static String formatThaiDateTime(LocalDateTime localDate) {
         return localDate.format(ofPattern(PATTERN_THAI_DATE_TIME));
     }

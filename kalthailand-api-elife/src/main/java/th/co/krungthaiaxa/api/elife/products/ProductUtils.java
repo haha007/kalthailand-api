@@ -21,6 +21,7 @@ import th.co.krungthaiaxa.api.elife.model.Registration;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -132,6 +133,7 @@ public class ProductUtils {
 
     public static void addPayments(Policy policy, int durationPaymentInYears) {
         LocalDate startDate = policy.getInsureds().get(0).getStartDate();
+        LocalDateTime startDateTime = startDate.atStartOfDay();
 
         PeriodicityCode periodicityCode = policy.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode();
         Double amountValue = policy.getPremiumsData().getFinancialScheduler().getModalAmount().getValue();
@@ -141,7 +143,7 @@ public class ProductUtils {
         IntStream.range(0, nbOfPayments).forEach(i -> policy.addPayment(new Payment(policy.getPolicyId(),
                 amountValue,
                 amountCurrency,
-                startDate.plusMonths(i * periodicityCode.getNbOfMonths()))
+                startDateTime.plusMonths(i * periodicityCode.getNbOfMonths()))
         ));
     }
 

@@ -8,7 +8,6 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import th.co.krungthaiaxa.api.common.utils.EncryptUtil;
 import th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +32,7 @@ public class Payment {
     private String transactionId;
     private String registrationKey;
     private PaymentStatus status;
-    private LocalDate dueDate;
+    private LocalDateTime dueDate;
     /**
      * This field only have value after checking with LineService and get response (can fail or not)!
      */
@@ -50,7 +49,7 @@ public class Payment {
     public Payment() {
     }
 
-    public Payment(String policyId, Double value, String currencyCode, LocalDate dueDate) {
+    public Payment(String policyId, Double value, String currencyCode, LocalDateTime dueDate) {
         this.policyId = policyId;
         this.status = PaymentStatus.NOT_PROCESSED;
         this.dueDate = dueDate;
@@ -132,11 +131,11 @@ public class Payment {
     }
 
     @ApiModelProperty(required = true, value = "The payment due date. Can be in future.")
-    public LocalDate getDueDate() {
+    public LocalDateTime getDueDate() {
         return dueDate;
     }
 
-    public void setDueDate(LocalDate dueDate) {
+    public void setDueDate(LocalDateTime dueDate) {
         this.dueDate = dueDate;
     }
 

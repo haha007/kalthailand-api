@@ -112,7 +112,7 @@ public class PaymentService {
         Payment payment = new Payment();
         payment.setPolicyId(policyId);
         payment.setRegistrationKey(regKey);
-        payment.setDueDate(DateTimeUtil.nowLocalDateInThaiZoneId());
+        payment.setDueDate(DateTimeUtil.nowLocalDateTimeInThaiZoneId());
         payment.setAmount(oldPayment.getAmount());
         payment.setEffectiveDate(DateTimeUtil.nowLocalDateTimeInThaiZoneId());
         payment.setTransactionId(transactionId);

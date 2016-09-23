@@ -213,7 +213,7 @@ public class RLSServiceTest extends ELifeTest {
     @Test
     public void should_add_a_payment_for_the_policy_when_payment_due_date_is_older_than_28_days() {
         Policy policy = getValidatedPolicy(EVERY_MONTH);
-        policy.getPayments().stream().forEach(payment -> payment.setDueDate(LocalDate.now().minusDays(30)));
+        policy.getPayments().stream().forEach(payment -> payment.setDueDate(LocalDateTime.now().minusDays(30)));
         paymentRepository.save(policy.getPayments());
         CollectionFileLine collectionFileLine = collectionFileLine(policy, 100.0);
         rlsService.addPaymentId(collectionFileLine);

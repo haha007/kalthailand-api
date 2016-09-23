@@ -15,7 +15,7 @@ import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
 
 import javax.inject.Inject;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -37,7 +37,7 @@ public class PaymentServiceTest {
     @Test
     public void can_query_by_policyId_and_regKeyNotNull() {
         String testingPolicyId = "000-000000A";
-        LocalDate payment2DueDate = LocalDate.now();
+        LocalDateTime payment2DueDate = LocalDateTime.now();
         List<Payment> payments = new ArrayList<>();
         payments.add(createSamplePayment(testingPolicyId, "regKey1", payment2DueDate.minusDays(1)));
         payments.add(createSamplePayment(testingPolicyId, "regKey2", payment2DueDate));
@@ -50,7 +50,7 @@ public class PaymentServiceTest {
         Assert.assertEquals("regKey2", paymentOptional.get().getRegistrationKey());
     }
 
-    private Payment createSamplePayment(String policyId, String regKey, LocalDate dueDate) {
+    private Payment createSamplePayment(String policyId, String regKey, LocalDateTime dueDate) {
         Payment payment = new Payment();
         payment.setPolicyId(policyId);
         payment.setRegistrationKey(regKey);

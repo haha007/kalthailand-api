@@ -22,7 +22,7 @@ import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,8 +40,8 @@ public class PaymentRepositoryTest {
     public void can_query_by_policyId_and_status_and_dueDate() {
         String policyId = "507-4876896";
         PaymentStatus paymentStatus = PaymentStatus.NOT_PROCESSED;
-        LocalDate searchToDueDate = LocalDate.now();
-        LocalDate searchFromDueDate = searchToDueDate.minusMonths(3);
+        LocalDateTime searchToDueDate = LocalDateTime.now();
+        LocalDateTime searchFromDueDate = searchToDueDate.minusMonths(3);
         Optional<Payment> paymentOptional = paymentRepository.findOneByPolicyIdAndDueDateRangeAndInStatus(policyId, searchFromDueDate, searchToDueDate, paymentStatus);
         if (paymentOptional.isPresent()) {
             Payment payment = paymentOptional.get();

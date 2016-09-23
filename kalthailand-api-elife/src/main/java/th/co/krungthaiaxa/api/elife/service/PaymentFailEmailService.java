@@ -22,6 +22,7 @@ import th.co.krungthaiaxa.api.elife.utils.PersonUtil;
 
 import javax.inject.Inject;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collections;
 
 /**
@@ -74,7 +75,7 @@ public class PaymentFailEmailService {
             Person insuredPerson = mainInsured.getPerson();
             customerName = PersonUtil.getFullName(insuredPerson);
             if (payment != null) {
-                LocalDate dueDate = payment.getDueDate();
+                LocalDateTime dueDate = payment.getDueDate();
                 dueDateString = DateTimeUtil.formatThaiDate(dueDate);
                 Amount amount = payment.getAmount();
                 paymentAmount = "" + amount.getValue();

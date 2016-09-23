@@ -23,7 +23,7 @@ public interface PaymentRepository extends MongoRepository<Payment, String> {
             + "     ,{'status': ?3}"
             + " ]"
             + "}")
-    Optional<Payment> findOneByPolicyIdAndDueDateRangeAndInStatus(String policyNumber, LocalDate searchFromDueDate, LocalDate searchToDueDate, PaymentStatus paymentStatus);
+    Optional<Payment> findOneByPolicyIdAndDueDateRangeAndInStatus(String policyNumber, LocalDateTime searchFromDueDate, LocalDateTime searchToDueDate, PaymentStatus paymentStatus);
 
     @Query(value = "{"
             + " '$and':["
