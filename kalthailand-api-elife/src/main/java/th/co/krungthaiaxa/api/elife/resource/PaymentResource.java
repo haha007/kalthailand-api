@@ -55,7 +55,7 @@ public class PaymentResource {
     })
     public PaymentNewerCompletedResult checkNewerCompletedPaymentSinceInputPayment(@ApiParam(value = "The payment ID", required = true)
     @PathVariable String paymentId) {
-        return paymentService.findNewerCompletedPayment(paymentId);
+        return paymentService.findNewerCompletedPaymentInSamePolicy(paymentId);
     }
 
 }

@@ -76,7 +76,19 @@ public class PaymentService {
         return paymentRepository.findOne(paymentId);
     }
 
-    public PaymentNewerCompletedResult findNewerCompletedPayment(String oldPaymentId) {
+    /**
+     * Find closest newer payment which was competed.
+     * For example:
+     * payment 1: INCOMPLETED
+     * payment 2: COMPLETED
+     * payment 3: COMPLETED
+     * <p>
+     * result findNewerCompletedPayment(payment1) is payment2, not payment3
+     *
+     * @param oldPaymentId
+     * @return
+     */
+    public PaymentNewerCompletedResult findNewerCompletedPaymentInSamePolicy(String oldPaymentId) {
         PaymentNewerCompletedResult result = new PaymentNewerCompletedResult();
         Payment oldPayment = validateExistPayment(oldPaymentId);
         result.setPayment(oldPayment);
@@ -91,17 +103,17 @@ public class PaymentService {
 
         LocalDateTime oldEffectiveDate = oldPayment.getEffectiveDate();
         if (oldEffectiveDate != null) {
-            newerCompletedPayment = paymentRepository.findOneByNewerEffectiveDate(oldEffectiveDate, PaymentStatus.COMPLETED);
+            newerCompletedPayment = paymentRepository.findOneByPolicyAndNewerEffectiveDate(oldPayment.getPolicyId(), oldEffectiveDate, PaymentStatus.COMPLETED);
         } else {
             LOGGER.warn("Something wrong: The old payment must be processed, so it must have effective date. But we cannot find effectiveDate of this paymentId: " + oldPayment.getPaymentId());
-            newerCompletedPayment = paymentRepository.findOneByNewerId(oldPayment.getPaymentId(), PaymentStatus.COMPLETED);
+            newerCompletedPayment = paymentRepository.findOneByPolicyAndNewerId(oldPayment.getPaymentId(), oldPayment.getPaymentId(), PaymentStatus.COMPLETED);
         }
         result.setNewerCompletedPayment(newerCompletedPayment);
         return result;
     }
 
     public Payment validateNotExistNewerPayment(String paymentId) {
-        PaymentNewerCompletedResult paymentNewerCompletedResult = findNewerCompletedPayment(paymentId);
+        PaymentNewerCompletedResult paymentNewerCompletedResult = findNewerCompletedPaymentInSamePolicy(paymentId);
         Payment oldPayment = paymentNewerCompletedResult.getPayment();
         Payment newerCompletedPayment = paymentNewerCompletedResult.getNewerCompletedPayment();
         if (newerCompletedPayment != null) {
@@ -182,7 +194,7 @@ public class PaymentService {
         return paymentRepository.save(payment);
     }
 
-    private Payment validateExistPayment(String paymentId) {
+    public Payment validateExistPayment(String paymentId) {
         Payment payment = paymentRepository.findOne(paymentId);
         if (payment == null) {
             throw new PaymentNotFoundException("Not found payment with Id " + paymentId);

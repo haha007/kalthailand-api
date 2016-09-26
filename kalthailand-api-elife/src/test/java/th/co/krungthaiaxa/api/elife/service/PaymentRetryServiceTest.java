@@ -3,7 +3,6 @@ package th.co.krungthaiaxa.api.elife.service;
 import com.icegreen.greenmail.junit.GreenMailRule;
 import com.icegreen.greenmail.store.FolderException;
 import com.icegreen.greenmail.util.ServerSetupTest;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
 import org.junit.Rule;
@@ -17,12 +16,14 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
 import th.co.krungthaiaxa.api.elife.ELifeTest;
 import th.co.krungthaiaxa.api.elife.KalApiApplication;
 import th.co.krungthaiaxa.api.elife.data.CollectionFile;
 import th.co.krungthaiaxa.api.elife.data.DeductionFileLine;
 import th.co.krungthaiaxa.api.elife.exception.PaymentHasNewerCompletedException;
 import th.co.krungthaiaxa.api.elife.factory.CollectionFileFactory;
+import th.co.krungthaiaxa.api.elife.factory.PaymentFactory;
 import th.co.krungthaiaxa.api.elife.factory.PolicyFactory;
 import th.co.krungthaiaxa.api.elife.factory.QuoteFactory;
 import th.co.krungthaiaxa.api.elife.mock.LineServiceMockFactory;
@@ -31,6 +32,7 @@ import th.co.krungthaiaxa.api.elife.model.PaymentInformation;
 import th.co.krungthaiaxa.api.elife.model.PaymentNewerCompletedResult;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus;
+import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
 import th.co.krungthaiaxa.api.elife.utils.GreenMailUtil;
 
 import javax.inject.Inject;
@@ -62,6 +64,9 @@ public class PaymentRetryServiceTest extends ELifeTest {
     @Inject
     private PaymentService paymentService;
 
+    @Inject
+    private PaymentRepository paymentRepository;
+
     private static Policy POLICY;
     private static CollectionFile COLLECTION_FILE;
     private static String PAYMENT_ID_01_FAIL;
@@ -69,27 +74,45 @@ public class PaymentRetryServiceTest extends ELifeTest {
 
     @Test
     public void test01_payment_fail_should_has_result_in_collection() throws FolderException {
+        PolicyWithFirstFailPayment policyWithFirstFailPayment = testCreatePolicyAndTheFirstFailPayment();
+        POLICY = policyWithFirstFailPayment.policy;
+        COLLECTION_FILE = policyWithFirstFailPayment.collectionFile;
+        PAYMENT_ID_01_FAIL = policyWithFirstFailPayment.paymentId;
+    }
+
+    private PolicyWithFirstFailPayment testCreatePolicyAndTheFirstFailPayment() throws FolderException {
+        PolicyWithFirstFailPayment result = new PolicyWithFirstFailPayment();
         mongoTemplate.dropCollection(CollectionFile.class);
 
-        POLICY = policyFactory.createPolicyForLineWithValidated(30, "khoi.tran.ags@gmail.com");
+        Policy policy = policyFactory.createPolicyForLineWithValidated(30, "khoi.tran.ags@gmail.com");
         String lineResponseCode = "4000";
         setupLineServiceWithResponseCode(lineResponseCode);
 
-        InputStream inputStream = CollectionFileFactory.initCollectionExcelFile(POLICY.getPolicyId());
+        InputStream inputStream = CollectionFileFactory.initCollectionExcelFile(policy.getPolicyId());
         rlsService.importCollectionFile(inputStream);
         List<CollectionFile> collectionFileList = rlsService.processLatestCollectionFiles();
-        COLLECTION_FILE = collectionFileList.get(0);
-        PAYMENT_ID_01_FAIL = getPaymentIdFromFirstLineOfCollectionFile(COLLECTION_FILE);
+        CollectionFile collectionFile = collectionFileList.get(0);
+        String paymentId01Fail = getPaymentIdFromFirstLineOfCollectionFile(collectionFile);
 
         GreenMailUtil.writeReceiveMessagesToFiles(greenMail, "test/emails");
         Assert.assertTrue(greenMail.getReceivedMessages().length > 0);
         greenMail.purgeEmailFromAllMailboxes();
 
         //Assert
-        DeductionFileLine deductionFileLine = getDeductionFileLineByPolicyNumber(COLLECTION_FILE, POLICY.getPolicyId());
+        DeductionFileLine deductionFileLine = getDeductionFileLineByPolicyNumber(collectionFile, policy.getPolicyId());
         Assert.assertEquals(lineResponseCode, deductionFileLine.getRejectionCode());
         Assert.assertEquals(PaymentFailEmailService.RESPONSE_CODE_EMAIL_SENT_SUCCESS, deductionFileLine.getInformCustomerCode());
 
+        result.collectionFile = collectionFile;
+        result.paymentId = paymentId01Fail;
+        result.policy = policy;
+        return result;
+    }
+
+    private static class PolicyWithFirstFailPayment {
+        private Policy policy;
+        private CollectionFile collectionFile;
+        private String paymentId;
     }
 
     @Test
@@ -97,7 +120,7 @@ public class PaymentRetryServiceTest extends ELifeTest {
         if (PAYMENT_ID_01_FAIL == null) {
             test01_payment_fail_should_has_result_in_collection();
         }
-        PaymentNewerCompletedResult paymentNewerCompletedResult = paymentService.findNewerCompletedPayment(PAYMENT_ID_01_FAIL);
+        PaymentNewerCompletedResult paymentNewerCompletedResult = paymentService.findNewerCompletedPaymentInSamePolicy(PAYMENT_ID_01_FAIL);
         Payment failPayment = paymentNewerCompletedResult.getPayment();
         Assert.assertEquals(PAYMENT_ID_01_FAIL, failPayment.getPaymentId());
         Assert.assertNull(paymentNewerCompletedResult.getNewerCompletedPayment());
@@ -122,13 +145,18 @@ public class PaymentRetryServiceTest extends ELifeTest {
         if (PAYMENT_02_RETRY == null) {
             test03_retry_payment_success_after_the_first_fail();
         }
-        PaymentNewerCompletedResult paymentNewerCompletedResult = paymentService.findNewerCompletedPayment(PAYMENT_ID_01_FAIL);
+        assertHasNewerCompletedPayment(PAYMENT_ID_01_FAIL);
+    }
+
+    private PaymentNewerCompletedResult assertHasNewerCompletedPayment(String paymentId) {
+        PaymentNewerCompletedResult paymentNewerCompletedResult = paymentService.findNewerCompletedPaymentInSamePolicy(paymentId);
         Payment failPayment = paymentNewerCompletedResult.getPayment();
         Payment newerCompletedPayment = paymentNewerCompletedResult.getNewerCompletedPayment();
-        Assert.assertEquals(PAYMENT_ID_01_FAIL, failPayment.getPaymentId());
-        Assert.assertEquals(PaymentStatus.INCOMPLETE, failPayment.getStatus());
-        Assert.assertEquals(PAYMENT_02_RETRY, newerCompletedPayment);
+        Assert.assertEquals(paymentId, failPayment.getPaymentId());
+        Assert.assertNotNull(paymentNewerCompletedResult.getNewerCompletedPayment());
+        Assert.assertNotEquals(paymentId, newerCompletedPayment.getPaymentId());
         Assert.assertEquals(PaymentStatus.COMPLETED, newerCompletedPayment.getStatus());
+        return paymentNewerCompletedResult;
     }
 
     @Test(expected = PaymentHasNewerCompletedException.class)
@@ -139,16 +167,47 @@ public class PaymentRetryServiceTest extends ELifeTest {
         retryFailedPaymentInCollection(COLLECTION_FILE, POLICY);
     }
 
+    @Test
+    public void test_B_01_newpayment_without_retry() throws FolderException {
+        PolicyWithFirstFailPayment policyWithFirstFailPayment = testCreatePolicyAndTheFirstFailPayment();
+        String paymentId01Fail = policyWithFirstFailPayment.paymentId;
+
+        LOGGER.debug("Payment01: " + paymentId01Fail);
+        Payment payment02 = saveCompletedStatusForNextPayment(paymentId01Fail);
+        LOGGER.debug("Payment02: " + payment02.getPaymentId());
+        PaymentNewerCompletedResult paymentNewerCompletedResult = assertHasNewerCompletedPayment(paymentId01Fail);
+        Assert.assertEquals(payment02.getPaymentId(), paymentNewerCompletedResult.getNewerCompletedPayment().getPaymentId());
+
+        Payment payment03 = saveCompletedStatusForNextPayment(payment02.getPaymentId());
+        LOGGER.debug("Payment03: " + payment03.getPaymentId());
+        paymentNewerCompletedResult = assertHasNewerCompletedPayment(paymentId01Fail);
+        Assert.assertEquals(payment02.getPaymentId(), paymentNewerCompletedResult.getNewerCompletedPayment().getPaymentId());
+
+        paymentNewerCompletedResult = assertHasNewerCompletedPayment(payment02.getPaymentId());
+        Assert.assertEquals(payment03.getPaymentId(), paymentNewerCompletedResult.getNewerCompletedPayment().getPaymentId());
+
+    }
+
+    private Payment saveCompletedStatusForNextPayment(String paymentId) {
+        Payment payment = paymentService.validateExistPayment(paymentId);
+        Payment newerPayment = paymentRepository.findOneByPolicyAndNewerDueDate(payment.getPolicyId(), payment.getDueDate());
+        Assert.assertNotNull(newerPayment);//It should have newer payment because the PAYMENT_ID_01_FAIL is only the first payment.
+        newerPayment.setEffectiveDate(DateTimeUtil.nowLocalDateTimeInThaiZoneId());
+        newerPayment.setStatus(PaymentStatus.COMPLETED);
+        PaymentFactory.generateRandomValuesForPayment(payment);
+        return paymentRepository.save(newerPayment);
+    }
+
     private String getPaymentIdFromFirstLineOfCollectionFile(CollectionFile collectionFile) {
         return collectionFile.getDeductionFile().getLines().get(0).getPaymentId();
     }
 
     private RetryPaymentResult retryFailedPaymentInCollection(CollectionFile collectionFile, Policy policy) {
         String oldPaymentId = getPaymentIdFromFirstLineOfCollectionFile(collectionFile);
-        String orderId = RandomStringUtils.randomNumeric(10);
-        String newRegKey = RandomStringUtils.randomNumeric(15);
-        String transId = RandomStringUtils.randomNumeric(20);
-        String accessToken = RandomStringUtils.randomAlphanumeric(25);
+        String orderId = PaymentFactory.generateOrderId();
+        String newRegKey = PaymentFactory.generateRegKeyId();
+        String transId = PaymentFactory.generateTransactionId();
+        String accessToken = PaymentFactory.generateAccessToken();
         Payment retryPayment = paymentService.retryFailedPayment(policy.getPolicyId(), oldPaymentId, orderId, transId, newRegKey, accessToken);
 
         Assert.assertEquals(orderId, retryPayment.getOrderId());

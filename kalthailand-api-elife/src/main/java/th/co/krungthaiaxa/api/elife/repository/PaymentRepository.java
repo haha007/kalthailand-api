@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -36,9 +35,12 @@ public interface PaymentRepository extends MongoRepository<Payment, String> {
     @Query(value = "{'$and': [{'registrationKey':{'$ne': null}}, {'registrationKey':{'$ne': ''}}]}")
     List<Payment> findByRegKeyNotEmpty(Sort sort);
 
-    @Query(value = "{'$and': [{'effectiveDate':{'$gt': ?0}}, {'status': ?1}]}")
-    Payment findOneByNewerEffectiveDate(LocalDateTime effectiveDate, PaymentStatus status);
+    @Query(value = "{'$and': [{'policyId':?0}, {'effectiveDate':{'$gt': ?1}}, {'status': ?2}]}")
+    Payment findOneByPolicyAndNewerEffectiveDate(String policyId, LocalDateTime effectiveDate, PaymentStatus status);
 
-    @Query(value = "{'$and': [{'_id':{'$gt': ?0}}, {'status': ?1}]}")
-    Payment findOneByNewerId(String paymentId, PaymentStatus completed);
+    @Query(value = "{'$and': [{'policyId':?0}, {'_id':{'$gt': ?1}}, {'status': ?2}]}")
+    Payment findOneByPolicyAndNewerId(String policyId, String paymentId, PaymentStatus status);
+
+    @Query(value = "{'$and': [{'policyId':?0}, {'dueDate':{'$gt': ?1}}]}")
+    Payment findOneByPolicyAndNewerDueDate(String policyId, LocalDateTime dueDate);
 }
