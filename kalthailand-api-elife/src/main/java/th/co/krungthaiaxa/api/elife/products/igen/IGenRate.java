@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.List;
 
 @Document(collection = "productIGenRate")
-public class ProductIGenRate {
+public class IGenRate {
     @Id
     private String id;
     @Indexed

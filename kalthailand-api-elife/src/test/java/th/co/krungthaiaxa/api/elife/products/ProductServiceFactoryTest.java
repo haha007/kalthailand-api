@@ -9,7 +9,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.api.elife.KalApiApplication;
 import th.co.krungthaiaxa.api.elife.model.Item;
-import th.co.krungthaiaxa.api.elife.products.igen.ProductIGenService;
+import th.co.krungthaiaxa.api.elife.products.igen.IGenService;
 
 import javax.inject.Inject;
 import java.util.Arrays;
@@ -56,7 +56,7 @@ public class ProductServiceFactoryTest {
     @Test
     public void should_return_iGen_product() {
         ProductService productService = productServiceFactory.getProduct(ProductType.PRODUCT_IGEN.getLogicName());
-        assertThat(productService).isInstanceOf(ProductIGenService.class);
+        assertThat(productService).isInstanceOf(IGenService.class);
     }
 
     @Test

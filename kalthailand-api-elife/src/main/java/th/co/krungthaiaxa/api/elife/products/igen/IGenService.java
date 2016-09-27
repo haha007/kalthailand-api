@@ -38,7 +38,7 @@ import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.notNull;
 import static th.co.krungthaiaxa.api.elife.products.ProductUtils.amountTHB;
 
 @Component
-public class ProductIGenService implements ProductService {
+public class IGenService implements ProductService {
     public final static int DURATION_COVERAGE_IN_YEAR = 10;
     public final static int DURATION_PAYMENT_IN_YEAR = 6;
     public final static String PRODUCT_IGEN_NAME = ProductType.PRODUCT_IGEN.getLogicDisplayName();
@@ -98,7 +98,7 @@ public class ProductIGenService implements ProductService {
         quote.getPremiumsData().getFinancialScheduler().setEndDate(startDate.plusYears(DURATION_PAYMENT_IN_YEAR));
 
         // get rates from mongoDB
-        ProductIGenRate productIGenRate = productIGenRateRepository.findByGender(insured.getPerson().getGenderCode().name());
+        IGenRate productIGenRate = productIGenRateRepository.findByGender(insured.getPerson().getGenderCode().name());
         Double rate = productIGenRate.getRate().get(insured.getAgeAtSubscription() - MIN_AGE);
 
         PremiumsData premiumsData = quote.getPremiumsData();
@@ -210,7 +210,7 @@ public class ProductIGenService implements ProductService {
         }
 
         // get rates from mongoDB
-        ProductIGenRate productIGenRate = productIGenRateRepository.findByGender(productQuotation.getGenderCode().name());
+        IGenRate productIGenRate = productIGenRateRepository.findByGender(productQuotation.getGenderCode().name());
         Double interestRate = productIGenRate.getRate().get(ProductUtils.getAge(productQuotation.getDateOfBirth()) - MIN_AGE);
         Double factor = ProductUtils.modalFactor.apply(productQuotation.getPeriodicityCode());
         productAmounts.setMaxPremium(amountTHB(SUM_INSURED_MAX * factor * interestRate / 1000));

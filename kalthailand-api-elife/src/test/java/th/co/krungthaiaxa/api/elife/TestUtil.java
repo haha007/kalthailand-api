@@ -34,7 +34,7 @@ import th.co.krungthaiaxa.api.elife.products.ProductAmounts;
 import th.co.krungthaiaxa.api.elife.products.ProductIBeginService;
 import th.co.krungthaiaxa.api.elife.products.ProductIFinePackage;
 import th.co.krungthaiaxa.api.elife.products.ProductIFineService;
-import th.co.krungthaiaxa.api.elife.products.igen.ProductIGenService;
+import th.co.krungthaiaxa.api.elife.products.igen.IGenService;
 import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
 import th.co.krungthaiaxa.api.elife.products.ProductService;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
@@ -252,8 +252,8 @@ public class TestUtil {
         return new ProductIFineService();
     }
 
-    public static ProductIGenService productIGenService() {
-        return new ProductIGenService();
+    public static IGenService productIGenService() {
+        return new IGenService();
     }
 
     public static CoverageBeneficiary beneficiary(Double benefitPercent) {
