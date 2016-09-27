@@ -31,7 +31,7 @@ import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 import th.co.krungthaiaxa.api.elife.products.ProductIFinePackage;
 import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
-import th.co.krungthaiaxa.api.elife.products.iprotect.data.IProtectPackage;
+import th.co.krungthaiaxa.api.elife.data.IProtectPackage;
 
 import javax.inject.Inject;
 import java.io.File;

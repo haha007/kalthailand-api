@@ -5,7 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import th.co.krungthaiaxa.api.elife.model.Amount;
 import th.co.krungthaiaxa.api.elife.model.enums.GenderCode;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
-import th.co.krungthaiaxa.api.elife.products.iprotect.data.IProtectPackage;
+import th.co.krungthaiaxa.api.elife.data.IProtectPackage;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;

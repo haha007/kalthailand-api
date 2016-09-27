@@ -2,8 +2,8 @@ package th.co.krungthaiaxa.api.elife.products.iprotect;
 
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.elife.model.enums.GenderCode;
-import th.co.krungthaiaxa.api.elife.products.iprotect.data.IProtectPackage;
-import th.co.krungthaiaxa.api.elife.products.iprotect.data.IProtectRate;
+import th.co.krungthaiaxa.api.elife.data.IProtectPackage;
+import th.co.krungthaiaxa.api.elife.data.IProtectRate;
 import th.co.krungthaiaxa.api.elife.repository.ProductIProtectRateRepository;
 
 import javax.inject.Inject;

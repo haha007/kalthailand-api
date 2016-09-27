@@ -16,6 +16,7 @@ import th.co.krungthaiaxa.api.elife.model.Amount;
 import th.co.krungthaiaxa.api.elife.model.DatedAmount;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.Quote;
+import th.co.krungthaiaxa.api.elife.products.igen.ProductIGenService;
 
 import javax.inject.Inject;
 import java.time.LocalDate;
@@ -38,8 +39,8 @@ import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.EVERY_HAL
 import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.EVERY_MONTH;
 import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.EVERY_QUARTER;
 import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.EVERY_YEAR;
-import static th.co.krungthaiaxa.api.elife.products.ProductIGenService.DURATION_COVERAGE_IN_YEAR;
-import static th.co.krungthaiaxa.api.elife.products.ProductIGenService.DURATION_PAYMENT_IN_YEAR;
+import static th.co.krungthaiaxa.api.elife.products.igen.ProductIGenService.DURATION_COVERAGE_IN_YEAR;
+import static th.co.krungthaiaxa.api.elife.products.igen.ProductIGenService.DURATION_PAYMENT_IN_YEAR;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiApplication.class)

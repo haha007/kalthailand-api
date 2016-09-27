@@ -1,4 +1,4 @@
-package th.co.krungthaiaxa.api.elife.products.iprotect.data;
+package th.co.krungthaiaxa.api.elife.data;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;

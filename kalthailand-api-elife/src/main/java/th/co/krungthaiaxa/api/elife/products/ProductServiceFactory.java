@@ -1,6 +1,7 @@
 package th.co.krungthaiaxa.api.elife.products;
 
 import org.springframework.stereotype.Component;
+import th.co.krungthaiaxa.api.elife.products.igen.ProductIGenService;
 import th.co.krungthaiaxa.api.elife.products.iprotect.IProtectService;
 
 import javax.inject.Inject;

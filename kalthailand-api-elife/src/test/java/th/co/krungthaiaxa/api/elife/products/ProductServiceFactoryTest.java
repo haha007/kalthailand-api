@@ -9,6 +9,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.api.elife.KalApiApplication;
 import th.co.krungthaiaxa.api.elife.model.Item;
+import th.co.krungthaiaxa.api.elife.products.igen.ProductIGenService;
 
 import javax.inject.Inject;
 import java.util.Arrays;
