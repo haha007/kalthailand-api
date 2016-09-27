@@ -1,0 +1,219 @@
+<html>
+    <head>
+        <meta charset="TIS-620">
+        <title></title>
+        <style type="text/css">
+            body{
+				padding:10px;
+			}
+            .header{
+                color: #0D1366;
+                font-weight:bold;
+                font-size:1.5em;
+            }
+            .value{
+                color: #0081CB;
+            }
+            .btn{
+                diplay:block;
+                background-color: #0D1366;
+                color: white;
+                padding:15px;
+                text-decoration:none;
+                border-radius:5px;
+                margin:5px;
+            }
+			.bd-text{
+				margin-top:20px;
+			}
+			.bd-header{
+				color:#0E2F7B;
+				font-weight:bold;
+			}
+			.tb-value{
+				color:#0092CB;
+				text-align:right;
+			}
+			.tb-field{
+			}
+			table tr td{
+				padding-top:10px;
+			}
+			.gray-text{
+				color:#818181;
+			}
+        </style>
+    </head>
+    <body>
+        <table align="center">
+            <picture>
+                <div style="margin-top:50px;text-align:center;">
+                    <img src="cid:imageElife">
+                </div>
+            </picture>
+            <br/><br/>
+        </table>
+		<div class="bd-text">
+			ขอบคุณที่ให้ความสนใจในแผนประกันของเรา
+		</div>
+		<p class="bd-text">
+			กรุงไทย-แอกซ่า ประกันชีวิต ยินดีนำเสนอแบบแผนประกันตามรายละเอียดที่คุณเลือก ในวันที่ %1$s
+		</div>
+		<div>&nbsp;</div>
+		<div class="bd-text">
+			เพื่อแบบแผนประกันที่ตรงตามความต้องการของคุณ กรุณาตรวจสอบรายละเอียดอีกครั้ง และทำความเข้าใจในรายละเอียดก่อนดำเนินการ
+		</div>
+		<div>&nbsp;</div>
+		<div class="bd-text">
+			เพื่อสมัครรับความคุ้มครองตามแบบแผนประกันภัยนี้
+กรุณากรอกใบยื่นขอประกันภัยเพื่อดำเนินการต่อ ที่นี่:
+<a href=%2$s >คลิก</a>
+		</div>
+		<div class="bd-text">
+			หากมีข้อสงสัยใดๆ สามารถติดต่อศูนย์บริการลูกค้าได้ที่ 1159
+		</div>
+		<div class="bd-text">
+			ขอแสดงความนับถือ
+			<br/>
+            กรุงไทย-แอกซ่า ประกันชีวิต
+		</div>
+		<hr/>
+		<table width="100%">
+			<tr>
+				<td colspan="2" class="bd-header">เบี้ยประกัน</td>
+			</tr>
+			<tr>
+				<td class="tb-field">งวดชำระ%3$s</td>
+				<td class="tb-value" valign="top">%4$s บาท</td>
+			</tr>
+		</table>
+		<hr/>
+		<table width="100%">
+			<tr>
+				<td colspan="2" class="bd-header">รายละเอียดของผลประโยชน์</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2" class="bd-header">ผลประโยชน์เงินจ่ายคืนประจำปี</td>
+			</tr><tr>
+				<td colspan="2" class="bd-header">และเงินครบกำหนดสัญญา</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+				</td>
+			</tr>
+			<tr>
+				<td class="tb-field">กรณีรับครั้งเดียวโดยสะสมไว้กับ</td>
+				<td class="tb-value" valign="top">ขั้นต่ำ %5$s บาท</td>
+			</tr>
+			<tr>
+				<td class="tb-field">บริษัทฯ ด้วยอัตราดอกเบี้ยขั้นต่ำ</td>
+				<td class="tb-value" valign="top"></td>
+			</tr>
+			<tr>
+				<td class="tb-field">2% ต่อปี รับรวม</td>
+				<td class="tb-value" valign="top"></td>
+			</tr>		
+			<tr>
+				<td class="tb-field">กรณีเลือกรับทุกปี รับรวม</td>
+				<td class="tb-value" valign="top">%6$s บาท</td>
+			</tr>
+		</table>
+		<hr/>
+		<table width="100%">
+			<tr>
+				<td colspan="2" class="bd-header">ผลประโยชน์กรณีเสียชีวิต</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+				</td>
+			</tr>
+			<tr>
+				<td class="tb-field">ปีที่ 1-3</td>
+				<td class="tb-value" valign="top">%7$s บาท</td>
+			</tr>
+			<tr>
+				<td class="tb-field">ปีที่ 4</td>
+				<td class="tb-value" valign="top">%8$s บาท</td>
+			</tr>
+			<tr>
+				<td class="tb-field">ปีที่ 5</td>
+				<td class="tb-value" valign="top">%9$s บาท</td>
+			</tr>
+			<tr>
+				<td class="tb-field">ปีที่ 6-10</td>
+				<td class="tb-value" valign="top">%10$s บาท</td>
+			</tr>
+		</table>
+		<hr/>
+		<table width="100%">
+			<tr>
+				<td colspan="2" class="bd-header">ผลประโยชน์การลดหย่อนภาษี</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2" class="gray-text" >ลดหย่อนภาษีที่อัตราสูงสุด</td>
+			</tr>
+			<tr>
+				<td colspan="2" class="gray-text" >ที่ชำระ %11$s% ต่อปี</td>
+			</tr>
+			<tr>
+				<td class="tb-field">ท่านจะได้รับประโยชน์จาก</td>
+				<td class="tb-value" valign="top">%12$s บาท</td>
+			</tr>
+			<tr>
+				<td class="tb-field">การลดหย่อนภาษี ปีละ</td>
+				<td class="tb-value" valign="top"></td>
+			</tr>
+			<tr>
+				<td class="tb-field">รวมผลประโยชน์ทางภาษีจาก</td>
+				<td class="tb-value" valign="top">%13$s บาท</td>
+			</tr>
+			<tr>
+				<td class="tb-field">การชำระเยี้ยประกันภัย</td>
+				<td class="tb-value" valign="top"></td>
+			</tr>
+			<tr>
+				<td class="tb-field">ตลอดสัญญา เป็นเงิน</td>
+				<td class="tb-value" valign="top"></td>
+			</tr>
+		</table>
+		<hr/>
+		<table width="100%">
+			<tr>
+				<td colspan="2" class="bd-header">* โปรดศึกษารายละเอียดของความคุ้มครองและข้อยกเว้นต่าง ๆ เพิ่มเติมในเอกสารประกอบการขาย หรือกรมธรรม์ประกันภัยของบริษัทฯ</td>
+			</tr>
+			<tr>
+				<td colspan="2" class="bd-header">** สำหรับค่าเบี้ยประกันส่วนที่เป็นเบี้ยประกันชีวิต สามารถนำไปใช้ลดหย่อนภาษีเงินได้บุคคลธรรมดาตามอัตราที่กฏหมายกำหนด</td>
+			</tr>
+		</table>
+		<hr/>
+		<div style="text-align:center;margin-top:50px;margin-bottom:50px;">
+              		<table align="center" border="0">
+                        	<tr>
+                            		<td colspan="3" align="center">
+                                		<a href=%14$s style="width:400px;" class="btn btn-top" >ดูแบบประกันอื่นๆ</a>
+                            		</td>
+                        	</tr>
+                        	<tr>
+                            		<td colspan="3" ><div style="height:40px;" ></div></td>
+                        	</tr>
+                        	<tr>
+                            		<td align="left">
+                                		<a href=%15$s style="width:195px;" class="btn" >สั่งซื้อ</a>
+                            		</td>
+                            		<td></td>
+                            		<td align="right">
+                                		<a href=%16$s style="width:195px;" class="btn" >คำนวณใหม่</a>
+                            		</td>
+                        	</tr>
+			</table>
+                </div>
+    </body>
+</html>
