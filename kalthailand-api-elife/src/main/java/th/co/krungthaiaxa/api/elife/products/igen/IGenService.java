@@ -56,7 +56,7 @@ public class IGenService implements ProductService {
      * This is the number of years of premiums == duration the customer have to pay premiums.
      */
     public static final Integer INSURED_PAYMENT_IN_YEAR = 6;
-    public static final Integer TAX_DEDUCTION_PER_YEAR_MAX = null;//Not sure yet
+    public static final Double TAX_DEDUCTION_PER_YEAR_MAX = 100000.0;//Not sure yet
 
     public static final String PRODUCT_CURRENCY = ProductUtils.CURRENCY_THB;
     public static final Amount SUM_INSURED_MIN = amount(100000.0);//Calculated from PREMIMUM_PER_MONTH_MIN
@@ -146,12 +146,9 @@ public class IGenService implements ProductService {
         double premiumRate = validateExistPremiumRate(packageName, mainInsuredAge, mainInsuredGenderCode).getPremiumRate();
         calculateSumInsuredAndPremiumAmounts(premiumsData, productQuotation, packageName, premiumRate, occupationRate, periodicityCode);
 
-        Amount premium = getPremium(quote);
-        Amount totalPaymentInAYear = ProductUtils.getPaymentInAYear(premium, periodicityCode);
-        double taxDeductionPerYear = Math.min(((double) mainInsured.getDeclaredTaxPercentAtSubscription() / 100) * totalPaymentInAYear.getValue(), TAX_DEDUCTION_PER_YEAR_MAX);//Calculate Sheet (SA) * taxPercent
-        productIGenPremium.setYearlyTaxDeduction(amount(taxDeductionPerYear));
-        double totalTaxDeduction = taxDeductionPerYear * quote.getCommonData().getNbOfYearsOfPremium();
-        productIGenPremium.setTotalTaxDeduction(amount(totalTaxDeduction));
+        //TODO copy to iProtect
+        calculateTax(quote, productIGenPremium, periodicityCode, mainInsured);
+
         //TODO set yearly deathBenefits
 //        productIGenPremium.setDeathBenefit(productIGenPremium.getSumInsured());
 
@@ -160,7 +157,7 @@ public class IGenService implements ProductService {
         validateLimitsForInputAmounts(quote, amountLimits);
 
         //TODO copy to iProtect
-//        calculateDividendOptionId(productIGenPremium, productQuotation);
+        calculateDividendOptionId(quote, productQuotation);
 //        productIGenPremium.setEndOfContractBenefit();
 
         //In this product, we don't need to calculate yearlyPremium.
@@ -173,20 +170,27 @@ public class IGenService implements ProductService {
         }
     }
 
+    private void calculateTax(Quote quote, ProductIGenPremium productIGenPremium, PeriodicityCode periodicityCode, Insured mainInsured) {
+        double taxDeductionPerYear = ProductUtils.calculateTaxDeductionPerYear(TAX_DEDUCTION_PER_YEAR_MAX, getPremium(quote), periodicityCode, mainInsured.getDeclaredTaxPercentAtSubscription());
+        productIGenPremium.setYearlyTaxDeduction(amount(taxDeductionPerYear));
+        double totalTaxDeduction = taxDeductionPerYear * quote.getCommonData().getNbOfYearsOfPremium();
+        productIGenPremium.setTotalTaxDeduction(amount(totalTaxDeduction));
+    }
     //TODO UnitTest for many options.
 
     /**
      * You must set coverage years before calling this method.
      *
      * @param quote
-     * @param productIGenPremium
      * @param productQuotation
      */
-    private void calculateDividendOptionId(Quote quote, ProductIGenPremium productIGenPremium, ProductQuotation productQuotation) {
+    private void calculateDividendOptionId(Quote quote, ProductQuotation productQuotation) {
+        ProductIGenPremium productIGenPremium = quote.getPremiumsData().getProductIGenPremium();
         String dividendOptionId = productQuotation.getDividendOptionId();
         productIGenPremium.setDividendOptionId(dividendOptionId);
         int coverageYears = quote.getCommonData().getNbOfYearsOfCoverage();
         Amount sumInsuredValue = productIGenPremium.getSumInsured();
+
         //TODO depend on dividendOption
         Amount plainAnnualCashBackInNormalYear = sumInsuredValue.multiply(DIVIDEND_RATE_IN_NORMAL_YEAR);
         Amount plainAnnualCashBackInLastYear = sumInsuredValue.multiply(DIVIDEND_RATE_IN_LAST_YEAR);
@@ -196,22 +200,23 @@ public class IGenService implements ProductService {
         if (ProductDividendOption.END_OF_CONTRACT_PAY_BACK.getId().equals(dividendOptionId)) {
             dividendInterestRate = DIVIDEND_INTEREST_RATE;
         }
+        Amount amountPreviousYear = new Amount(0.0, PRODUCT_CURRENCY);
         for (int i = 0; i < coverageYears; i++) {
             int year = i + 1;
-            Amount amount;
+            Amount rootAmount;
             if (i < coverageYears - 1) {//Normal year
-                amount = plainAnnualCashBackInNormalYear.multiply(year);
+                rootAmount = plainAnnualCashBackInNormalYear;
             } else {
-                int secondLastYear = i;
-                amount = plainAnnualCashBackInLastYear.plus(plainAnnualCashBackInNormalYear.multiply(secondLastYear).getValue());
+                rootAmount = plainAnnualCashBackInLastYear;
             }
+            Amount amount = rootAmount.plus(amountPreviousYear.multiply(1 + dividendInterestRate).getValue());
             DateTimeAmount dateTimeAmount = new DateTimeAmount();
             dateTimeAmount.setDateTime(now.plusYears(year));
             dateTimeAmount.setAmount(amount);
             yearlyCashBacks.add(dateTimeAmount);
+            amountPreviousYear = dateTimeAmount.getAmount();
         }
-        productIGenPremium.setYearlyCashBacks(yearlyCashBacks);
-
+        productIGenPremium.setYearlyCashBacksForEndOfContract(yearlyCashBacks);
     }
 
     public static Amount getPremium(Quote quote) {

@@ -21,7 +21,8 @@ public class ProductIGenPremium implements Serializable {
     @NotNull
     @ApiModelProperty(value = "Total sum insured by the product before discount. This is calculated by backend API if an amount is provided in financialScheduler. If this value is provided, then it's the financialScheduler amount that is calculated")
     private Amount sumInsuredBeforeDiscount = null;
-    private List<DateTimeAmount> yearlyCashBacks = new ArrayList<>();
+    private List<DateTimeAmount> yearlyCashBacksForEndOfContract = new ArrayList<>();
+    private List<DateTimeAmount> yearlyCashBacksForAnnual = new ArrayList<>();
     @Valid
     @NotNull
     @ApiModelProperty(value = "The money which beneficiaries will receive at the end of contract. This is the final value (after discount) and is calculated by backend API if an amount is provided in financialScheduler. If this value is provided, then it's the financialScheduler amount that is calculated")
@@ -65,12 +66,12 @@ public class ProductIGenPremium implements Serializable {
     }
 
     @ApiModelProperty(value = "Yearly cash backs if cash option is chosen. This is calculated by backend API and cannot be set by client.")
-    public List<DateTimeAmount> getYearlyCashBacks() {
-        return yearlyCashBacks;
+    public List<DateTimeAmount> getYearlyCashBacksForEndOfContract() {
+        return yearlyCashBacksForEndOfContract;
     }
 
-    public void setYearlyCashBacks(List<DateTimeAmount> yearlyCashBacks) {
-        this.yearlyCashBacks = yearlyCashBacks;
+    public void setYearlyCashBacksForEndOfContract(List<DateTimeAmount> yearlyCashBacksForEndOfContract) {
+        this.yearlyCashBacksForEndOfContract = yearlyCashBacksForEndOfContract;
     }
 
     @ApiModelProperty(value = "Tax deduction per year.")
@@ -94,7 +95,7 @@ public class ProductIGenPremium implements Serializable {
                 Objects.equals(dividendOptionId, that.dividendOptionId) &&
                 Objects.equals(totalTaxDeduction, that.totalTaxDeduction) &&
                 Objects.equals(yearlyTaxDeduction, that.yearlyTaxDeduction) &&
-                Objects.equals(yearlyCashBacks, that.yearlyCashBacks) &&
+                Objects.equals(yearlyCashBacksForEndOfContract, that.yearlyCashBacksForEndOfContract) &&
                 Objects.equals(yearlyDeathBenefits, that.yearlyDeathBenefits);
     }
 
@@ -106,7 +107,7 @@ public class ProductIGenPremium implements Serializable {
                 dividendOptionId,
                 totalTaxDeduction,
                 yearlyTaxDeduction,
-                yearlyCashBacks,
+                yearlyCashBacksForEndOfContract,
                 yearlyDeathBenefits);
     }
 
@@ -148,5 +149,13 @@ public class ProductIGenPremium implements Serializable {
 
     public void setYearlyDeathBenefits(List<DateTimeAmount> yearlyDeathBenefits) {
         this.yearlyDeathBenefits = yearlyDeathBenefits;
+    }
+
+    public List<DateTimeAmount> getYearlyCashBacksForAnnual() {
+        return yearlyCashBacksForAnnual;
+    }
+
+    public void setYearlyCashBacksForAnnual(List<DateTimeAmount> yearlyCashBacksForAnnual) {
+        this.yearlyCashBacksForAnnual = yearlyCashBacksForAnnual;
     }
 }
