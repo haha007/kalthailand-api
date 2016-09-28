@@ -34,9 +34,17 @@ public class IGenPdfRenderService extends AbstractProductPdfRenderService {
 		Integer tbCols = 2;
         PdfPTable table1 = new PdfPTable(tbCols);
         
+        String productWording = "แบบประกัน" + 
+        messageSource.getMessage("product.id."+quote.getCommonData().getProductId(), null, thLocale) +
+        " (" + messageSource.getMessage("product.id."+quote.getCommonData().getProductId(), null, null) +")";
+        
+        String dueWording = "งวดชำระ" +
+        messageSource.getMessage("payment.mode."+quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().toString(), null, thLocale);
+        
+        table1.addCell(addData(productWording, getFontHeaderStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
         table1.addCell(addData("เบี้ยประกัน", getFontHeaderStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table1.addCell(addData("งวดชำระDUMMY", getFontNormalStyle(), null, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table1.addCell(addData(toCurrency(0.0) + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT, null));
+        table1.addCell(addData(dueWording, getFontNormalStyle(), null, TB_HORIZONTAL_ALIGN_LEFT, null));
+        table1.addCell(addData(toCurrency(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()) + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT, null));
         table1.addCell(addLine(false, tbCols));
         table1.addCell(addData("รายละเอียดของผลประโยชน์", getFontHeaderStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
         table1.addCell(addLine(false, tbCols));
@@ -44,12 +52,12 @@ public class IGenPdfRenderService extends AbstractProductPdfRenderService {
         table1.addCell(addData("และเงินครบกำหนดสัญญา", getFontHeaderStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
         table1.addCell(addLine(false, tbCols));
         table1.addCell(addData("กรณีรับครั้งเดียวโดยสะสมไว้กับ", getFontNormalStyle(), null, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table1.addCell(addData("ขั้นต่ำ " + toCurrency(0.0) + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT, null));
+        table1.addCell(addData("ขั้นต่ำ " + toCurrency(quote.getPremiumsData().getProductIGenPremium().getEndOfContractBenefit().getValue()) + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT, null));
         table1.addCell(addData("บริษัทฯ ด้วยอัตราดอกเบี้ยขั้นต่ำ", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
         table1.addCell(addData("2% ต่อปี รับรวม", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
         table1.addCell(addLine(false, tbCols));
         table1.addCell(addData("กรณีเลือกรับทุกปี รับรวม", getFontNormalStyle(), null, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table1.addCell(addData(toCurrency(0.0) + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT, null));
+        table1.addCell(addData(toCurrency(quote.getPremiumsData().getProductIGenPremium()) + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT, null));
         table1.addCell(addLine(false, tbCols));
         table1.addCell(addData("ผลประโยชน์กรณีเสียชีวิต", getFontHeaderStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
         table1.addCell(addLine(false, tbCols));

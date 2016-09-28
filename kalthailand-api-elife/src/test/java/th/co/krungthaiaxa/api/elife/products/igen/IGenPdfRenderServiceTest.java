@@ -30,7 +30,9 @@ import th.co.krungthaiaxa.api.elife.KalApiApplication;
 import th.co.krungthaiaxa.api.elife.model.Amount;
 import th.co.krungthaiaxa.api.elife.model.Periodicity;
 import th.co.krungthaiaxa.api.elife.model.Quote;
+import th.co.krungthaiaxa.api.elife.model.enums.GenderCode;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
+import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
 import th.co.krungthaiaxa.api.elife.service.QuoteService;
 import th.co.krungthaiaxa.api.elife.service.SaleIllustrationiFineService;
@@ -48,7 +50,8 @@ public class IGenPdfRenderServiceTest {
 	
 	@Test
     public void should_generate_sale_illustration_pdf_file() throws DocumentException, IOException {
-		Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation());
+		ProductQuotation productQuotation = productQuotation(ProductType.PRODUCT_IGEN, 30, PeriodicityCode.EVERY_MONTH, 10000.0, true, 5, GenderCode.MALE);
+		Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation);
         quote(quote, beneficiary(100.0));
 
         Pair<byte[], String> pair = iGenPdfRenderService.generateSaleIllustrationPDF(quote);
