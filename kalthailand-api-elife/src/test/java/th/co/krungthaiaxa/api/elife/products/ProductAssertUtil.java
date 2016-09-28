@@ -6,6 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
 import th.co.krungthaiaxa.api.elife.model.CommonData;
+import th.co.krungthaiaxa.api.elife.model.ProductIGenPremium;
+import th.co.krungthaiaxa.api.elife.model.Quote;
 
 /**
  * @author khoi.tran on 9/28/16.
@@ -58,5 +60,12 @@ public class ProductAssertUtil {
         Assert.assertNotNull(commonData.getMaxAge());
 
         Assert.assertNotNull(commonData.getProductCurrency());
+    }
+
+    public static void assertQuoteWithPremiumAmountAndTaxAndEndContractBenefit(Quote quote, ProductIGenPremium productIGenPremium, double premiumValue, double totalTaxDeduction, double endContractBenefit) {
+        double EXACT_NUMBER = 0.1;
+        Assert.assertEquals(premiumValue, quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue(), EXACT_NUMBER);
+        Assert.assertEquals(totalTaxDeduction, productIGenPremium.getTotalTaxDeduction().getValue(), EXACT_NUMBER);
+        Assert.assertEquals(endContractBenefit, productIGenPremium.getEndOfContractBenefit().getValue(), EXACT_NUMBER);
     }
 }

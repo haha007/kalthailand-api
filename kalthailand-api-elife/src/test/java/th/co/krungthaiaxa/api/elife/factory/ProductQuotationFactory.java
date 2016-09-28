@@ -2,6 +2,7 @@ package th.co.krungthaiaxa.api.elife.factory;
 
 import org.springframework.stereotype.Component;
 import th.co.krungthaiaxa.api.elife.model.Amount;
+import th.co.krungthaiaxa.api.elife.model.ProductDividendOption;
 import th.co.krungthaiaxa.api.elife.model.enums.GenderCode;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
@@ -15,7 +16,8 @@ import static th.co.krungthaiaxa.api.elife.products.ProductUtils.amountTHB;
  */
 @Component
 public class ProductQuotationFactory {
-    public static ProductQuotation initQuotation(ProductType productType, String packageName, Integer age, PeriodicityCode periodicityCode, Double amountValue, Boolean isSumInsured, Integer taxRate, GenderCode genderCode, Integer occupationTypeId) {
+    public static ProductQuotation initQuotation(ProductType productType, String packageName, Integer age, PeriodicityCode periodicityCode, Double amountValue, Boolean isSumInsured, Integer taxRate, GenderCode genderCode, Integer occupationTypeId,
+            ProductDividendOption productDividendOption) {
         Amount amount = amountTHB(amountValue);
 
         ProductQuotation productQuotation = new ProductQuotation();
@@ -28,6 +30,9 @@ public class ProductQuotationFactory {
         productQuotation.setPeriodicityCode(periodicityCode);
         productQuotation.setOccupationId(occupationTypeId);
         productQuotation.setPackageName(packageName);
+        if (productDividendOption != null) {
+            productQuotation.setDividendOptionId(productDividendOption.getId());
+        }
         if (isSumInsured != null && isSumInsured) {
             productQuotation.setSumInsuredAmount(amount);
         } else {
@@ -37,7 +42,7 @@ public class ProductQuotationFactory {
     }
 
     public static ProductQuotation initIProtect(Integer age, PeriodicityCode periodicityCode, Double amountValue, Boolean isSumInsured, Integer taxRate, GenderCode genderCode) {
-        return initQuotation(ProductType.PRODUCT_IGEN, null, age, periodicityCode, amountValue, isSumInsured, taxRate, genderCode, 1);
+        return initQuotation(ProductType.PRODUCT_IGEN, null, age, periodicityCode, amountValue, isSumInsured, taxRate, genderCode, 1, null);
     }
 
     /**
@@ -50,8 +55,8 @@ public class ProductQuotationFactory {
      * @param taxRate
      * @return
      */
-    public static ProductQuotation initIGen(Integer age, PeriodicityCode periodicityCode, Double amountValue, Boolean isSumInsured, Integer taxRate) {
+    public static ProductQuotation initIGen(Integer age, PeriodicityCode periodicityCode, Double amountValue, Boolean isSumInsured, Integer taxRate, ProductDividendOption productDividendOption) {
         //This product always required occupation to stored in DB, but don't need it for calculation.
-        return initQuotation(ProductType.PRODUCT_IGEN, null, age, periodicityCode, amountValue, isSumInsured, taxRate, null, null);
+        return initQuotation(ProductType.PRODUCT_IGEN, null, age, periodicityCode, amountValue, isSumInsured, taxRate, null, null, productDividendOption);
     }
 }

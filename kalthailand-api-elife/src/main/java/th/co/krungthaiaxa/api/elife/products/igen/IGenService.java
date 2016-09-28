@@ -68,9 +68,6 @@ public class IGenService implements ProductService {
     public static final int INSURED_MIN_AGE = 20;
     public static final int INSURED_MAX_AGE = 70;
 
-    //All calculation of this product doesn't related to Occupation
-    public static final boolean REQUIRED_OCCUPATION_FOR_CALCULATION = false;
-
     public static final Double DIVIDEND_RATE_IN_NORMAL_YEAR = 0.02;//2% this number can be different for other product, and also can be change?
     public static final Double DIVIDEND_RATE_IN_LAST_YEAR = 1.8;
     /**
@@ -81,6 +78,11 @@ public class IGenService implements ProductService {
      * Dividend interest rate when apply 'annual cash back' option.
      */
     public static final Double DIVIDEND_INTEREST_RATE_FOR_ANNUAL = 0.0;//0%
+
+    //All calculation of this product doesn't related to Occupation
+    public static final boolean REQUIRED_OCCUPATION_FOR_CALCULATION = false;
+    private static final boolean REQUIRED_PACKAGE_NAME = false;
+    private static final boolean REQUIRED_GENDER_CODE_FOR_CALCULATION = false;
 
     @Inject
     private OccupationTypeRepository occupationTypeRepository;
@@ -129,10 +131,7 @@ public class IGenService implements ProductService {
         mainInsured.setAgeAtSubscription(mainInsuredAge);
         mainInsured.getPerson().setGenderCode(mainInsuredGenderCode);
 
-        OccupationType occupationType = validateExistOccupationId(productQuotation.getOccupationId());
-        mainInsured.setProfessionId(occupationType.getOccId());
-        mainInsured.setProfessionName(occupationType.getOccTextTh());
-        double occupationRate = getOccupationRate(occupationType);
+        double occupationRate = setOccupation(quote, productQuotation, mainInsured);
 
         mainInsured.setDeclaredTaxPercentAtSubscription(productQuotation.getDeclaredTaxPercentAtSubscription());
         ProductUtils.checkInsuredAgeInRange(mainInsured, INSURED_MIN_AGE, INSURED_MAX_AGE);
@@ -171,6 +170,35 @@ public class IGenService implements ProductService {
             Coverage coverage = new Coverage();
             coverage.setName(PRODUCT_TYPE.getLogicName());
             quote.addCoverage(coverage);
+        }
+    }
+
+    private OccupationType validateExistOccupationId(Integer occupationId) {
+        OccupationType occupationType = occupationTypeRepository.findByOccId(occupationId);
+        notNull(occupationType, QuoteCalculationException.occupationNotExistException.apply(occupationId));
+        return occupationType;
+    }
+
+    private double setOccupation(Quote quote, ProductQuotation productQuotation, Insured mainInsured) {
+        double occupationRate;
+        if (REQUIRED_OCCUPATION_FOR_CALCULATION) {
+            OccupationType occupationType = validateExistOccupationId(productQuotation.getOccupationId());
+            mainInsured.setProfessionId(occupationType.getOccId());
+            mainInsured.setProfessionName(occupationType.getOccTextTh());
+            getOccupationRate(occupationType);
+            occupationRate = getOccupationRate(occupationType);
+        } else {
+            occupationRate = 0.0;
+        }
+        return occupationRate;
+    }
+
+    private double validateExistOccupationRateIfNecessary(ProductQuotation productQuotation) {
+        if (REQUIRED_OCCUPATION_FOR_CALCULATION) {
+            OccupationType occupationType = validateExistOccupationId(productQuotation.getOccupationId());
+            return getOccupationRate(occupationType);
+        } else {
+            return 0.0;
         }
     }
 
@@ -301,21 +329,6 @@ public class IGenService implements ProductService {
         } else {
             ProductIGenPremium.setSumInsured(ProductIGenPremium.getSumInsuredBeforeDiscount());
             premiumsData.getFinancialScheduler().setModalAmount(premiumsData.getFinancialScheduler().getModalAmountBeforeDiscount());
-        }
-    }
-
-    private OccupationType validateExistOccupationId(Integer occupationId) {
-        OccupationType occupationType = occupationTypeRepository.findByOccId(occupationId);
-        notNull(occupationType, QuoteCalculationException.occupationNotExistException.apply(occupationId));
-        return occupationType;
-    }
-
-    private double validateExistOccupationRateIfNecessary(ProductQuotation productQuotation) {
-        if (REQUIRED_OCCUPATION_FOR_CALCULATION) {
-            OccupationType occupationType = validateExistOccupationId(productQuotation.getOccupationId());
-            return getOccupationRate(occupationType);
-        } else {
-            return 0.0;
         }
     }
 
@@ -498,11 +511,15 @@ public class IGenService implements ProductService {
         if (productQuotation.getDateOfBirth() == null) {
             return false;
         }
-        if (productQuotation.getGenderCode() == null) {
-            return false;
+        if (REQUIRED_GENDER_CODE_FOR_CALCULATION) {
+            if (productQuotation.getGenderCode() == null) {
+                return false;
+            }
         }
-        if (StringUtils.isBlank(productQuotation.getPackageName())) {
-            return false;
+        if (REQUIRED_PACKAGE_NAME) {
+            if (StringUtils.isBlank(productQuotation.getPackageName())) {
+                return false;
+            }
         }
         if (AmountUtil.isBlank(productQuotation.getSumInsuredAmount()) && AmountUtil.isBlank(productQuotation.getPremiumAmount())) {
             return false;
