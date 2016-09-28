@@ -324,6 +324,18 @@ public class ProductUtils {
         return ((Long) ChronoUnit.YEARS.between(birthDate, LocalDate.now())).intValue();
     }
 
+    public static double calculateTaxDeductionPerYear(double maxTotalTaxDeductionPerYear, Amount premium, PeriodicityCode periodicityCode, int declaredTaxPercentage) {
+        Amount totalPaymentInAYear = ProductUtils.getPaymentInAYear(premium, periodicityCode);
+        return Math.min(((double) declaredTaxPercentage / 100) * totalPaymentInAYear.getValue(), maxTotalTaxDeductionPerYear);
+    }
+
+    /**
+     * @param quote
+     * @param currencyCode
+     * @return
+     * @deprecated use {@link #calculateTaxDeductionPerYear(double, Amount, PeriodicityCode, int)}
+     */
+    @Deprecated
     public static Amount calculateTaxReturnFor10ECOrIGen(Quote quote, String currencyCode) {
         // (min(100000, (premium * tax rate / 100 * numberOfPayments)
         Double premium = quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue();

@@ -51,7 +51,7 @@ public class IProtectService implements ProductService {
      * This is the number of years of premiums == duration the customer have to pay premiums.
      */
     public final static Integer INSURED_PAYMENT_IN_YEAR = null;//Depend on the iProtectPackage (5, 10 or 85 years)
-    public static final Integer TAX_DEDUCTION_PER_YEAR_MAX = 100000;
+    public static final Double TAX_DEDUCTION_PER_YEAR_MAX = 100000.0;
 
     public static final String PRODUCT_CURRENCY = ProductUtils.CURRENCY_THB;
     public static final Amount SUM_INSURED_MIN = amount(200000.0);//200K
