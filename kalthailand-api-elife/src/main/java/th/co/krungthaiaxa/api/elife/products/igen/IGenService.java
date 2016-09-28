@@ -19,7 +19,6 @@ import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.model.Periodicity;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.PremiumsData;
-import th.co.krungthaiaxa.api.elife.model.ProductDividendOption;
 import th.co.krungthaiaxa.api.elife.model.ProductIGenPremium;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.enums.GenderCode;
@@ -72,16 +71,20 @@ public class IGenService implements ProductService {
 
     public static final Double DIVIDEND_RATE_IN_NORMAL_YEAR = 0.02;//2% this number can be different for other product, and also can be change?
     public static final Double DIVIDEND_RATE_IN_LAST_YEAR = 1.8;
-    public static final Double DIVIDEND_INTEREST_RATE = 0.02;//2%
+    /**
+     * Dividend interest rate when apply 'cash back at the end of contract' option.
+     */
+    public static final Double DIVIDEND_INTEREST_RATE_FOR_END_OF_CONTRACT = 0.02;//2%
+    /**
+     * Dividend interest rate when apply 'annual cash back' option.
+     */
+    public static final Double DIVIDEND_INTEREST_RATE_FOR_ANNUAL = 0.0;//0%
 
     @Inject
     private OccupationTypeRepository occupationTypeRepository;
 
     @Inject
     private ProductPremiumRateService productPremiumRateService;
-
-//    @Inject
-//    private IGenDiscountRateService iGenDiscountRateService;
 
     @Inject
     private BeanValidator beanValidator;
@@ -191,15 +194,18 @@ public class IGenService implements ProductService {
         int coverageYears = quote.getCommonData().getNbOfYearsOfCoverage();
         Amount sumInsuredValue = productIGenPremium.getSumInsured();
 
-        //TODO depend on dividendOption
+        OffsetDateTime now = OffsetDateTime.now();
+        List<DateTimeAmount> yearlyCashBackForEndOfContract = calculateYearlyCashBack(sumInsuredValue, coverageYears, now, DIVIDEND_INTEREST_RATE_FOR_END_OF_CONTRACT);
+        List<DateTimeAmount> yearlyCashBackForAnnual = calculateYearlyCashBack(sumInsuredValue, coverageYears, now, DIVIDEND_INTEREST_RATE_FOR_ANNUAL);
+        productIGenPremium.setYearlyCashBacksForEndOfContract(yearlyCashBackForEndOfContract);
+        productIGenPremium.setYearlyCashBacksForAnnual(yearlyCashBackForAnnual);
+    }
+
+    private List<DateTimeAmount> calculateYearlyCashBack(Amount sumInsuredValue, int coverageYears, OffsetDateTime now, double dividendInterestRate) {
         Amount plainAnnualCashBackInNormalYear = sumInsuredValue.multiply(DIVIDEND_RATE_IN_NORMAL_YEAR);
         Amount plainAnnualCashBackInLastYear = sumInsuredValue.multiply(DIVIDEND_RATE_IN_LAST_YEAR);
+
         List<DateTimeAmount> yearlyCashBacks = new ArrayList<>();
-        OffsetDateTime now = OffsetDateTime.now();
-        double dividendInterestRate = 0.0;
-        if (ProductDividendOption.END_OF_CONTRACT_PAY_BACK.getId().equals(dividendOptionId)) {
-            dividendInterestRate = DIVIDEND_INTEREST_RATE;
-        }
         Amount amountPreviousYear = new Amount(0.0, PRODUCT_CURRENCY);
         for (int i = 0; i < coverageYears; i++) {
             int year = i + 1;
@@ -216,7 +222,7 @@ public class IGenService implements ProductService {
             yearlyCashBacks.add(dateTimeAmount);
             amountPreviousYear = dateTimeAmount.getAmount();
         }
-        productIGenPremium.setYearlyCashBacksForEndOfContract(yearlyCashBacks);
+        return yearlyCashBacks;
     }
 
     public static Amount getPremium(Quote quote) {

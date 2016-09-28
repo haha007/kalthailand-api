@@ -96,6 +96,7 @@ public class ProductIGenPremium implements Serializable {
                 Objects.equals(totalTaxDeduction, that.totalTaxDeduction) &&
                 Objects.equals(yearlyTaxDeduction, that.yearlyTaxDeduction) &&
                 Objects.equals(yearlyCashBacksForEndOfContract, that.yearlyCashBacksForEndOfContract) &&
+                Objects.equals(yearlyCashBacksForAnnual, that.yearlyCashBacksForAnnual) &&
                 Objects.equals(yearlyDeathBenefits, that.yearlyDeathBenefits);
     }
 
@@ -108,6 +109,7 @@ public class ProductIGenPremium implements Serializable {
                 totalTaxDeduction,
                 yearlyTaxDeduction,
                 yearlyCashBacksForEndOfContract,
+                yearlyCashBacksForAnnual,
                 yearlyDeathBenefits);
     }
 
