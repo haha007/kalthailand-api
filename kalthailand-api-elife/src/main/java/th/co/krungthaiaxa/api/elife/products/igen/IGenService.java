@@ -69,7 +69,7 @@ public class IGenService implements ProductService {
     public static final int INSURED_MAX_AGE = 70;
 
     //All calculation of this product doesn't related to Occupation
-    public static final boolean NEED_OCCUPATION = true;
+    public static final boolean REQUIRED_OCCUPATION_FOR_CALCULATION = false;
 
     public static final Double DIVIDEND_RATE_IN_NORMAL_YEAR = 0.02;//2% this number can be different for other product, and also can be change?
     public static final Double DIVIDEND_RATE_IN_LAST_YEAR = 1.8;
@@ -311,14 +311,12 @@ public class IGenService implements ProductService {
     }
 
     private double validateExistOccupationRateIfNecessary(ProductQuotation productQuotation) {
-        double occupationRate;
-        if (NEED_OCCUPATION) {
+        if (REQUIRED_OCCUPATION_FOR_CALCULATION) {
             OccupationType occupationType = validateExistOccupationId(productQuotation.getOccupationId());
-            occupationRate = getOccupationRate(occupationType);
+            return getOccupationRate(occupationType);
         } else {
-            occupationRate = 0.0;
+            return 0.0;
         }
-        return occupationRate;
     }
 
     private AmountLimits calculateAmountLimits(String packageName, double premiumRate, double occupationRate, PeriodicityCode periodicityCode) {
@@ -512,8 +510,10 @@ public class IGenService implements ProductService {
         if (productQuotation.getPeriodicityCode() == null) {
             return false;
         }
-
-        if (NEED_OCCUPATION) {
+        if (productQuotation.getDeclaredTaxPercentAtSubscription() == null) {
+            return false;
+        }
+        if (REQUIRED_OCCUPATION_FOR_CALCULATION) {
             if (productQuotation.getOccupationId() == null) {
                 return false;
             }
@@ -534,8 +534,10 @@ public class IGenService implements ProductService {
             productIGenPremium.setSumInsuredBeforeDiscount(null);
             productIGenPremium.setSumInsured(null);
             productIGenPremium.setYearlyDeathBenefits(Collections.EMPTY_LIST);
-            productIGenPremium.setTotalTaxDeduction(null);
+            productIGenPremium.setYearlyCashBacksForAnnual(Collections.EMPTY_LIST);
+            productIGenPremium.setYearlyCashBacksForEndOfContract(Collections.EMPTY_LIST);
             productIGenPremium.setYearlyTaxDeduction(null);
+            productIGenPremium.setTotalTaxDeduction(null);
             productIGenPremium.setEndOfContractBenefit(null);
         }
         if (coverage.isPresent()) {

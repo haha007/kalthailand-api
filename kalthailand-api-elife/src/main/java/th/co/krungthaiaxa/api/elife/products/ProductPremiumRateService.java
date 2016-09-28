@@ -16,19 +16,19 @@ public class ProductPremiumRateService {
     public ProductPremiumRateService(ProductPremiumRateRepository productIProtectRateRepository) {this.productIProtectRateRepository = productIProtectRateRepository;}
 
     public Optional<ProductPremiumRate> findPremiumRateByProductId(String productId) {
-        return productIProtectRateRepository.findByProductId(productId);
+        return productIProtectRateRepository.findOneByProductId(productId);
     }
 
     public Optional<ProductPremiumRate> findPremiumRateByProductIdAndPackageName(String productId, String packageName) {
-        return productIProtectRateRepository.findByProductIdAndPackageName(productId, packageName);
+        return productIProtectRateRepository.findOneByProductIdAndPackageName(productId, packageName);
     }
 
     public Optional<ProductPremiumRate> findPremiumRateByProductIdAndAgeAndGender(String productId, GenderCode genderCode, int age) {
-        return productIProtectRateRepository.findByProductIdAndGenderAndAge(productId, genderCode, age);
+        return productIProtectRateRepository.findOneByProductIdAndGenderAndAge(productId, genderCode, age);
     }
 
     public Optional<ProductPremiumRate> findPremiumRateByProductIdAndPackageNameAndAgeAndGender(String productId, String packageName, GenderCode genderCode, int age) {
-        return productIProtectRateRepository.findByProductIdAndPackageNameAndGenderAndAge(productId, packageName, genderCode, age);
+        return productIProtectRateRepository.findOneByProductIdAndPackageNameAndGenderAndAge(productId, packageName, genderCode, age);
     }
 
 }

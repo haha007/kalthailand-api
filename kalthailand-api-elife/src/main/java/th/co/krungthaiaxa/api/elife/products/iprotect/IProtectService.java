@@ -63,7 +63,7 @@ public class IProtectService implements ProductService {
     public static final int INSURED_MAX_AGE = 55;
 
     //All calculation of this product doesn't related to Occupation
-    public static final boolean NEED_OCCUPATION = true;
+    public static final boolean REQUIRED_OCCUPATION_FOR_CALCULATION = false;
 
     @Inject
     private OccupationTypeRepository occupationTypeRepository;
@@ -112,13 +112,10 @@ public class IProtectService implements ProductService {
         mainInsured.setAgeAtSubscription(mainInsuredAge);
         mainInsured.getPerson().setGenderCode(mainInsuredGenderCode);
 
-        double occupationRate = 0.0;
-        if (NEED_OCCUPATION) {//In some product, it's optional
-            OccupationType occupationType = validateExistOccupationId(productQuotation.getOccupationId());
-            mainInsured.setProfessionId(occupationType.getOccId());
-            mainInsured.setProfessionName(occupationType.getOccTextTh());
-            occupationRate = getOccupationRate(occupationType);
-        }
+        OccupationType occupationType = validateExistOccupationId(productQuotation.getOccupationId());
+        mainInsured.setProfessionId(occupationType.getOccId());
+        mainInsured.setProfessionName(occupationType.getOccTextTh());
+        double occupationRate = getOccupationRate(occupationType);
 
         mainInsured.setDeclaredTaxPercentAtSubscription(productQuotation.getDeclaredTaxPercentAtSubscription());
         ProductUtils.checkInsuredAgeInRange(mainInsured, INSURED_MIN_AGE, INSURED_MAX_AGE);
@@ -218,14 +215,12 @@ public class IProtectService implements ProductService {
     }
 
     private double validateExistOccupationRateIfNecessary(ProductQuotation productQuotation) {
-        double occupationRate;
-        if (NEED_OCCUPATION) {
+        if (REQUIRED_OCCUPATION_FOR_CALCULATION) {
             OccupationType occupationType = validateExistOccupationId(productQuotation.getOccupationId());
-            occupationRate = getOccupationRate(occupationType);
+            return getOccupationRate(occupationType);
         } else {
-            occupationRate = 0.0;
+            return 0.0;
         }
-        return occupationRate;
     }
 
     private AmountLimits calculateAmountLimits(IProtectPackage iProtectPackage, double premiumRate, double occupationRate, PeriodicityCode periodicityCode) {
@@ -424,8 +419,10 @@ public class IProtectService implements ProductService {
         if (productQuotation.getPeriodicityCode() == null) {
             return false;
         }
-
-        if (NEED_OCCUPATION) {
+        if (productQuotation.getDeclaredTaxPercentAtSubscription() == null) {
+            return false;
+        }
+        if (REQUIRED_OCCUPATION_FOR_CALCULATION) {
             if (productQuotation.getOccupationId() == null) {
                 return false;
             }
