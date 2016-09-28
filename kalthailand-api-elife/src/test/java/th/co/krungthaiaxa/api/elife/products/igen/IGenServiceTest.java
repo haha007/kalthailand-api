@@ -71,23 +71,23 @@ public class IGenServiceTest extends ELifeTest {
 
     @Test
     public void create_quote_success_with_dividend_annual_payback() {
-        ProductQuotation productQuotation = ProductQuotationFactory.initIGen(33, PeriodicityCode.EVERY_MONTH, 1000000.0, true, 35, ProductDividendOption.ANNUAL_PAY_BACK_CASH);
+        ProductQuotation productQuotation = ProductQuotationFactory.initIGen(33, PeriodicityCode.EVERY_YEAR, 1000000.0, true, 35, ProductDividendOption.ANNUAL_PAY_BACK_CASH);
         Quote quote = quoteService.createQuote(QuoteFactory.generateSession(), ChannelType.LINE, productQuotation);
-        ProductAssertUtil.assertQuoteWithPremiumAmountAndTaxAndEndContractBenefit(quote, getSpecificPremiumData(quote), 308000.0, 210000.0, 1980000.0);
+        ProductAssertUtil.assertQuoteWithPremiumAmountAndTaxAndEndContractBenefit(quote, getSpecificPremiumData(quote), 308000.0, null, 1980000.0);
     }
 
     @Test
     public void create_quote_success_with_dividend_annual_nextpremium() {
-        ProductQuotation productQuotation = ProductQuotationFactory.initIGen(33, PeriodicityCode.EVERY_MONTH, 1000000.0, true, 35, ProductDividendOption.ANNUAL_PAY_BACK_NEXT_PREMIUM);
+        ProductQuotation productQuotation = ProductQuotationFactory.initIGen(33, PeriodicityCode.EVERY_YEAR, 1000000.0, true, 35, ProductDividendOption.ANNUAL_PAY_BACK_NEXT_PREMIUM);
         Quote quote = quoteService.createQuote(QuoteFactory.generateSession(), ChannelType.LINE, productQuotation);
         ProductAssertUtil.assertQuoteWithPremiumAmountAndTaxAndEndContractBenefit(quote, getSpecificPremiumData(quote), 308000.0, 210000.0, 1980000.0);
     }
 
     @Test
     public void create_quote_success_with_dividend_end_of_contract() {
-        ProductQuotation productQuotation = ProductQuotationFactory.initIGen(33, PeriodicityCode.EVERY_MONTH, 1000000.0, true, 35, ProductDividendOption.END_OF_CONTRACT_PAY_BACK);
+        ProductQuotation productQuotation = ProductQuotationFactory.initIGen(33, PeriodicityCode.EVERY_YEAR, 1000000.0, true, 35, ProductDividendOption.END_OF_CONTRACT_PAY_BACK);
         Quote quote = quoteService.createQuote(QuoteFactory.generateSession(), ChannelType.LINE, productQuotation);
-        ProductAssertUtil.assertQuoteWithPremiumAmountAndTaxAndEndContractBenefit(quote, getSpecificPremiumData(quote), 308000.0, 210000.0, 1998994.0);
+        ProductAssertUtil.assertQuoteWithPremiumAmountAndTaxAndEndContractBenefit(quote, getSpecificPremiumData(quote), 308000.0, null, 1998994.42);
     }
 
     private ProductIGenPremium getSpecificPremiumData(Quote quote) {

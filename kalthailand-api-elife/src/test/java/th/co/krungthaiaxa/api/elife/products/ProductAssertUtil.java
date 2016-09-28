@@ -46,6 +46,7 @@ public class ProductAssertUtil {
     }
 
     public static void assertCommonDataAfterQuoteCalculationWithFullDetail(CommonData commonData) {
+        LOGGER.debug("\n" + ObjectMapperUtil.toJson(new ObjectMapper(), commonData));
         Assert.assertNotNull(commonData.getProductId());
 
         Assert.assertNotNull(commonData.getMaxSumInsured());
@@ -62,10 +63,17 @@ public class ProductAssertUtil {
         Assert.assertNotNull(commonData.getProductCurrency());
     }
 
-    public static void assertQuoteWithPremiumAmountAndTaxAndEndContractBenefit(Quote quote, ProductIGenPremium productIGenPremium, double premiumValue, double totalTaxDeduction, double endContractBenefit) {
-        double EXACT_NUMBER = 0.1;
-        Assert.assertEquals(premiumValue, quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue(), EXACT_NUMBER);
-        Assert.assertEquals(totalTaxDeduction, productIGenPremium.getTotalTaxDeduction().getValue(), EXACT_NUMBER);
-        Assert.assertEquals(endContractBenefit, productIGenPremium.getEndOfContractBenefit().getValue(), EXACT_NUMBER);
+    public static void assertQuoteWithPremiumAmountAndTaxAndEndContractBenefit(Quote quote, ProductIGenPremium productIGenPremium, Double expectPremiumValue, Double expectTotalTaxDeduction, Double expectEndContractBenefit) {
+        LOGGER.debug("\n" + ObjectMapperUtil.toJson(new ObjectMapper(), quote));
+        double EXACT_NUMBER = 0.01;
+        if (expectPremiumValue != null) {
+            Assert.assertEquals(expectPremiumValue, quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue(), EXACT_NUMBER);
+        }
+        if (expectTotalTaxDeduction != null) {
+            Assert.assertEquals(expectTotalTaxDeduction, productIGenPremium.getTotalTaxDeduction().getValue(), EXACT_NUMBER);
+        }
+        if (expectEndContractBenefit != null) {
+            Assert.assertEquals(expectEndContractBenefit, productIGenPremium.getEndOfContractBenefit().getValue(), EXACT_NUMBER);
+        }
     }
 }
