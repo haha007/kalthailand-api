@@ -1,11 +1,14 @@
 package th.co.krungthaiaxa.api.elife.products.igen;
 
+import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static th.co.krungthaiaxa.api.elife.TestUtil.beneficiary;
 import static th.co.krungthaiaxa.api.elife.TestUtil.productQuotation;
 import static th.co.krungthaiaxa.api.elife.TestUtil.quote;
 import static th.co.krungthaiaxa.api.elife.model.enums.ChannelType.LINE;
+import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.EVERY_MONTH;
 import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.EVERY_YEAR;
+import static th.co.krungthaiaxa.api.elife.products.ProductType.PRODUCT_IFINE;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,6 +33,7 @@ import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
 import th.co.krungthaiaxa.api.elife.service.QuoteService;
+import th.co.krungthaiaxa.api.elife.service.SaleIllustrationiFineService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiApplication.class)
@@ -44,24 +48,14 @@ public class IGenSaleIllustrationServiceTest {
 	
 	@Test
     public void should_generate_sale_illustration_pdf_file() throws DocumentException, IOException {
-		Quote quote = quoteService.createQuote("xxx", LINE, productQuotation(ProductType.PRODUCT_IPROTECT, 55, EVERY_YEAR, 100000.0));
+		Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation());
         quote(quote, beneficiary(100.0));
-        quote = quoteService.updateQuote(quote, "token");
-        Amount am = new Amount(1000.0, "THB");
-        quote.getPremiumsData().getFinancialScheduler().setModalAmount(am);
-        quote.getPremiumsData().getProductIProtectPremium().setDeathBenefit(am);
-        quote.getPremiumsData().getProductIProtectPremium().setSumInsured(am);
-        quote.getPremiumsData().getProductIProtectPremium().setYearlyTaxDeduction(am);
-        quote.getPremiumsData().getProductIProtectPremium().setTotalTaxDeduction(am); 
-        Periodicity periodicity = new Periodicity();
-        periodicity.setCode(PeriodicityCode.EVERY_MONTH);
-        quote.getPremiumsData().getFinancialScheduler().setPeriodicity(periodicity);
-        quote.getPremiumsData().getProductIProtectPremium().setSumInsured(am);
 
         Pair<byte[], String> pair = iGenSaleIllustrationService.generatePDF(quote);
         assertThat(pair.getLeft()).isNotEmpty();
         assertThat(pair.getRight()).isNotEmpty();
         FileUtils.writeByteArrayToFile(new File("target/" + pair.getRight()), pair.getLeft());
     }
+
 
 }
