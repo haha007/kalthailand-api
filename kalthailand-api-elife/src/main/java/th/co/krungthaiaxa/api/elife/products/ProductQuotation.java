@@ -2,10 +2,10 @@ package th.co.krungthaiaxa.api.elife.products;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import th.co.krungthaiaxa.api.elife.data.IProtectPackage;
 import th.co.krungthaiaxa.api.elife.model.Amount;
 import th.co.krungthaiaxa.api.elife.model.enums.GenderCode;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
-import th.co.krungthaiaxa.api.elife.data.IProtectPackage;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
@@ -36,6 +36,7 @@ public class ProductQuotation {
      */
     private String packageName;
     private Integer declaredTaxPercentAtSubscription;
+    private String dividendOptionId;
 
     @ApiModelProperty(value = "The product type")
     public ProductType getProductType() {
@@ -125,5 +126,13 @@ public class ProductQuotation {
 
     public void setDeclaredTaxPercentAtSubscription(Integer declaredTaxPercentAtSubscription) {
         this.declaredTaxPercentAtSubscription = declaredTaxPercentAtSubscription;
+    }
+
+    public String getDividendOptionId() {
+        return dividendOptionId;
+    }
+
+    public void setDividendOptionId(String dividendOptionId) {
+        this.dividendOptionId = dividendOptionId;
     }
 }

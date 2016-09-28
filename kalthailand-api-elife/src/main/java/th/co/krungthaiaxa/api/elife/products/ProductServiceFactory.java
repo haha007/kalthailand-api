@@ -14,11 +14,11 @@ public class ProductServiceFactory {
     private final IProtectService productIProtect;
 
     @Inject
-    public ProductServiceFactory(ProductIBeginService productIBegin, ProductIFineService productIFine, IGenService productIGen, IProtectService productIProtect) {
+    public ProductServiceFactory(ProductIBeginService productIBegin, ProductIFineService productIFine, IGenService iGenService, IProtectService iProtectService) {
         this.productIBegin = productIBegin;
         this.productIFine = productIFine;
-        this.productIGen = productIGen;
-        this.productIProtect = productIProtect;
+        this.productIGen = iGenService;
+        this.productIProtect = iProtectService;
     }
 
     /**
