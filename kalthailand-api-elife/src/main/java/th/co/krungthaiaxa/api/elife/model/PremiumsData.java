@@ -16,6 +16,7 @@ public class PremiumsData implements Serializable {
     private Product10ECPremium product10ECPremium;
     private ProductIBeginPremium productIBeginPremium;
     private ProductIFinePremium productIFinePremium;
+
     private ProductIGenPremium productIGenPremium;
     private ProductIProtectPremium productIProtectPremium;
 

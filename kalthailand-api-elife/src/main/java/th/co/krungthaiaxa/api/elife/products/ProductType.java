@@ -2,6 +2,10 @@ package th.co.krungthaiaxa.api.elife.products;
 
 import th.co.krungthaiaxa.api.elife.model.CommonData;
 
+/**
+ * FIXME
+ * Note: now the code from FE call to BE using both enum (PRODUCT_IFINE) value and logicName (iFine), so don't change any of them.
+ */
 public enum ProductType {
     PRODUCT_10_EC("10EC", "10EC", "Product 10 EC"),
     PRODUCT_IBEGIN("iBegin", "iBegin", "Product iBegin"),
@@ -9,8 +13,8 @@ public enum ProductType {
     PRODUCT_IGEN("iGen", "iGen", "iGen"),
     PRODUCT_IPROTECT("iProtect", "iProtect S", "Product iProtect");
     /**
+     * It's same as productId.
      * This is the logic name, never change its content!
-     * TODO rename the fieldName to 'logicName', don't make it confused with default 'name' property of enum!
      */
     private String logicName;
     private String displayName;

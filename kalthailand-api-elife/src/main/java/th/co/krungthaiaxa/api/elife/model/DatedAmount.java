@@ -7,6 +7,10 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
 
+/**
+ * @deprecated should use DateTimeAmount
+ */
+@Deprecated
 @ApiModel(description = "An amount at a specific date with its currency")
 public class DatedAmount implements Serializable, Comparable<DatedAmount> {
     private Double value;

@@ -34,3 +34,9 @@ The artifact "javax.mail" in group "com.sun.mail" package is provided by JavaEE 
 
 You can check the information of current API in this link:
 http://localhost:8080/api-elife/project-info
+
+=========================
+iGen product:
+--------------
+initiate data:
+productPremiumRate

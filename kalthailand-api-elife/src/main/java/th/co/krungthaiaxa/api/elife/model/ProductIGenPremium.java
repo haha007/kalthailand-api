@@ -2,8 +2,9 @@ package th.co.krungthaiaxa.api.elife.model;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import th.co.krungthaiaxa.api.elife.model.enums.DividendOption;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,19 +13,40 @@ import java.util.Objects;
 @ApiModel(description = "iGen Life Insurance specific Premiums Data")
 public class ProductIGenPremium implements Serializable {
     private Boolean sumInsuredOption;
+    @Valid
+    @ApiModelProperty(value = "True if the user has chosen to pay on a total Sum Insured base. False otherwise (premium choice). This is set by backend API if an amount is provided in financialScheduler.")
+    @NotNull
     private Amount sumInsured;
-    private List<DatedAmount> yearlyCashBacks = new ArrayList<>();
-    private List<DatedAmount> endOfContractBenefitsMinimum = new ArrayList<>();
-    private List<DatedAmount> endOfContractBenefitsAverage = new ArrayList<>();
-    private List<DatedAmount> endOfContractBenefitsMaximum = new ArrayList<>();
-    private List<DatedAmount> yearlyCashBacksAverageDividende = new ArrayList<>();
-    private List<DatedAmount> yearlyCashBacksMaximumDividende = new ArrayList<>();
-    private List<DatedAmount> yearlyCashBacksAverageBenefit = new ArrayList<>();
-    private List<DatedAmount> yearlyCashBacksMaximumBenefit = new ArrayList<>();
-    private Amount yearlyTaxDeduction;
-    private DividendOption dividendOption;
+    @Valid
+    @NotNull
+    @ApiModelProperty(value = "Total sum insured by the product before discount. This is calculated by backend API if an amount is provided in financialScheduler. If this value is provided, then it's the financialScheduler amount that is calculated")
+    private Amount sumInsuredBeforeDiscount = null;
+    private List<DateTimeAmount> yearlyCashBacks = new ArrayList<>();
+    @Valid
+    @NotNull
+    @ApiModelProperty(value = "The money which beneficiaries will receive at the end of contract. This is the final value (after discount) and is calculated by backend API if an amount is provided in financialScheduler. If this value is provided, then it's the financialScheduler amount that is calculated")
+    private Amount endOfContractBenefit;
 
-    @ApiModelProperty(value = "True if the user has chosen to pay on a total Sum Insured base. False otherwise (premium choice). This is set by back end API if an amount is provided in financialScheduler.")
+    @Valid
+    @NotNull
+    @ApiModelProperty(value = "The money which beneficiaries will receive when insured person is dead. This is the final value (after discount) and is calculated by backend API if an amount is provided in financialScheduler. If this value is provided, then it's the financialScheduler amount that is calculated")
+    private List<DateTimeAmount> yearlyDeathBenefits = new ArrayList<>();
+    @Valid
+    @NotNull
+    @ApiModelProperty(value = "Tax deduction per year.")
+    private Amount yearlyTaxDeduction = null;
+    @Valid
+    @NotNull
+    @ApiModelProperty(value = "Total tax deduction after all of premium years.")
+    private Amount totalTaxDeduction = null;
+
+    /**
+     * View more in {@link ProductDividendOption}.
+     */
+    @ApiModelProperty(value = "Dividend option. Dividend is either given yearly in cash, or used for next premium or all of it at the end of the product duration.")
+    private String dividendOptionId;
+
+    @ApiModelProperty(value = "True if the user has chosen to pay on a total Sum Insured base. False otherwise (premium choice). This is set by backend API if an amount is provided in financialScheduler.")
     public Boolean getSumInsuredOption() {
         return sumInsuredOption;
     }
@@ -33,7 +55,7 @@ public class ProductIGenPremium implements Serializable {
         this.sumInsuredOption = sumInsuredOption;
     }
 
-    @ApiModelProperty(value = "Total sum insured by the product. This is calculated by back end API if an amount is provided in financialScheduler. If this value is provided, then it's the financialScheduler amount that is calculated")
+    @ApiModelProperty(value = "Total sum insured by the product. This is calculated by backend API if an amount is provided in financialScheduler. If this value is provided, then it's the financialScheduler amount that is calculated")
     public Amount getSumInsured() {
         return sumInsured;
     }
@@ -42,76 +64,13 @@ public class ProductIGenPremium implements Serializable {
         this.sumInsured = sumInsured;
     }
 
-    @ApiModelProperty(value = "Yearly cash backs if cash option is chosen. This is calculated by back end API and cannot be set by client.")
-    public List<DatedAmount> getYearlyCashBacks() {
+    @ApiModelProperty(value = "Yearly cash backs if cash option is chosen. This is calculated by backend API and cannot be set by client.")
+    public List<DateTimeAmount> getYearlyCashBacks() {
         return yearlyCashBacks;
     }
 
-    public void setYearlyCashBacks(List<DatedAmount> yearlyCashBacks) {
+    public void setYearlyCashBacks(List<DateTimeAmount> yearlyCashBacks) {
         this.yearlyCashBacks = yearlyCashBacks;
-    }
-
-    @ApiModelProperty(value = "Yearly minimum returns. This is calculated by back end API and cannot be set by client.")
-    public List<DatedAmount> getEndOfContractBenefitsMinimum() {
-        return endOfContractBenefitsMinimum;
-    }
-
-    public void setEndOfContractBenefitsMinimum(List<DatedAmount> endOfContractBenefitsMinimum) {
-        this.endOfContractBenefitsMinimum = endOfContractBenefitsMinimum;
-    }
-
-    @ApiModelProperty(value = "Yearly average returns. This is calculated by back end API and cannot be set by client.")
-    public List<DatedAmount> getEndOfContractBenefitsAverage() {
-        return endOfContractBenefitsAverage;
-    }
-
-    public void setEndOfContractBenefitsAverage(List<DatedAmount> endOfContractBenefitsAverage) {
-        this.endOfContractBenefitsAverage = endOfContractBenefitsAverage;
-    }
-
-    @ApiModelProperty(value = "Yearly maximum returns. This is calculated by back end API and cannot be set by client.")
-    public List<DatedAmount> getEndOfContractBenefitsMaximum() {
-        return endOfContractBenefitsMaximum;
-    }
-
-    public void setEndOfContractBenefitsMaximum(List<DatedAmount> endOfContractBenefitsMaximum) {
-        this.endOfContractBenefitsMaximum = endOfContractBenefitsMaximum;
-    }
-
-    @ApiModelProperty(value = "Yearly average extra dividend. This is calculated by back end API and cannot be set by client.")
-    public List<DatedAmount> getYearlyCashBacksAverageDividende() {
-        return yearlyCashBacksAverageDividende;
-    }
-
-    public void setYearlyCashBacksAverageDividende(List<DatedAmount> yearlyCashBacksAverageDividende) {
-        this.yearlyCashBacksAverageDividende = yearlyCashBacksAverageDividende;
-    }
-
-    @ApiModelProperty(value = "Yearly maximum extra dividend. This is calculated by back end API and cannot be set by client.")
-    public List<DatedAmount> getYearlyCashBacksMaximumDividende() {
-        return yearlyCashBacksMaximumDividende;
-    }
-
-    public void setYearlyCashBacksMaximumDividende(List<DatedAmount> yearlyCashBacksMaximumDividende) {
-        this.yearlyCashBacksMaximumDividende = yearlyCashBacksMaximumDividende;
-    }
-
-    @ApiModelProperty(value = "Yearly average benefit. This is calculated by back end API and cannot be set by client.")
-    public List<DatedAmount> getYearlyCashBacksAverageBenefit() {
-        return yearlyCashBacksAverageBenefit;
-    }
-
-    public void setYearlyCashBacksAverageBenefit(List<DatedAmount> yearlyCashBacksAverageBenefit) {
-        this.yearlyCashBacksAverageBenefit = yearlyCashBacksAverageBenefit;
-    }
-
-    @ApiModelProperty(value = "Yearly maximum benefit. This is calculated by back end API and cannot be set by client.")
-    public List<DatedAmount> getYearlyCashBacksMaximumBenefit() {
-        return yearlyCashBacksMaximumBenefit;
-    }
-
-    public void setYearlyCashBacksMaximumBenefit(List<DatedAmount> yearlyCashBacksMaximumBenefit) {
-        this.yearlyCashBacksMaximumBenefit = yearlyCashBacksMaximumBenefit;
     }
 
     @ApiModelProperty(value = "Tax deduction per year.")
@@ -123,35 +82,71 @@ public class ProductIGenPremium implements Serializable {
         this.yearlyTaxDeduction = yearlyTaxDeduction;
     }
 
-    @ApiModelProperty(value = "Dividend option. Dividend is either given yearly in cash, or used for next premium or all of it at the end of the product duration.")
-    public DividendOption getDividendOption() {
-        return dividendOption;
-    }
-
-    public void setDividendOption(DividendOption dividendOption) {
-        this.dividendOption = dividendOption;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ProductIGenPremium that = (ProductIGenPremium) o;
         return Objects.equals(sumInsured, that.sumInsured) &&
-                Objects.equals(yearlyCashBacks, that.yearlyCashBacks) &&
-                Objects.equals(endOfContractBenefitsMinimum, that.endOfContractBenefitsMinimum) &&
-                Objects.equals(endOfContractBenefitsAverage, that.endOfContractBenefitsAverage) &&
-                Objects.equals(endOfContractBenefitsMaximum, that.endOfContractBenefitsMaximum) &&
-                Objects.equals(yearlyCashBacksAverageDividende, that.yearlyCashBacksAverageDividende) &&
-                Objects.equals(yearlyCashBacksMaximumDividende, that.yearlyCashBacksMaximumDividende) &&
-                Objects.equals(yearlyCashBacksAverageBenefit, that.yearlyCashBacksAverageBenefit) &&
-                Objects.equals(yearlyCashBacksMaximumBenefit, that.yearlyCashBacksMaximumBenefit) &&
+                Objects.equals(sumInsuredBeforeDiscount, that.sumInsuredBeforeDiscount) &&
+                Objects.equals(sumInsuredOption, that.sumInsuredOption) &&
+                Objects.equals(endOfContractBenefit, that.endOfContractBenefit) &&
+                Objects.equals(dividendOptionId, that.dividendOptionId) &&
+                Objects.equals(totalTaxDeduction, that.totalTaxDeduction) &&
                 Objects.equals(yearlyTaxDeduction, that.yearlyTaxDeduction) &&
-                dividendOption == that.dividendOption;
+                Objects.equals(yearlyCashBacks, that.yearlyCashBacks) &&
+                Objects.equals(yearlyDeathBenefits, that.yearlyDeathBenefits);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(sumInsured, yearlyCashBacks, endOfContractBenefitsMinimum, endOfContractBenefitsAverage, endOfContractBenefitsMaximum, yearlyCashBacksAverageDividende, yearlyCashBacksMaximumDividende, yearlyCashBacksAverageBenefit, yearlyCashBacksMaximumBenefit, yearlyTaxDeduction, dividendOption);
+        return Objects.hash(
+                sumInsured, sumInsuredBeforeDiscount, sumInsuredOption,
+                endOfContractBenefit,
+                dividendOptionId,
+                totalTaxDeduction,
+                yearlyTaxDeduction,
+                yearlyCashBacks,
+                yearlyDeathBenefits);
+    }
+
+    public Amount getTotalTaxDeduction() {
+        return totalTaxDeduction;
+    }
+
+    public void setTotalTaxDeduction(Amount totalTaxDeduction) {
+        this.totalTaxDeduction = totalTaxDeduction;
+    }
+
+    public Amount getSumInsuredBeforeDiscount() {
+        return sumInsuredBeforeDiscount;
+    }
+
+    public void setSumInsuredBeforeDiscount(Amount sumInsuredBeforeDiscount) {
+        this.sumInsuredBeforeDiscount = sumInsuredBeforeDiscount;
+    }
+
+    public String getDividendOptionId() {
+        return dividendOptionId;
+    }
+
+    public void setDividendOptionId(String dividendOptionId) {
+        this.dividendOptionId = dividendOptionId;
+    }
+
+    public Amount getEndOfContractBenefit() {
+        return endOfContractBenefit;
+    }
+
+    public void setEndOfContractBenefit(Amount endOfContractBenefit) {
+        this.endOfContractBenefit = endOfContractBenefit;
+    }
+
+    public List<DateTimeAmount> getYearlyDeathBenefits() {
+        return yearlyDeathBenefits;
+    }
+
+    public void setYearlyDeathBenefits(List<DateTimeAmount> yearlyDeathBenefits) {
+        this.yearlyDeathBenefits = yearlyDeathBenefits;
     }
 }

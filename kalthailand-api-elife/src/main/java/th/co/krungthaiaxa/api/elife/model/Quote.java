@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -22,6 +23,8 @@ public class Quote implements Serializable {
     private String quoteId;
     private String policyId;
     private CommonData commonData;
+
+    @Field("premiumData")
     private PremiumsData premiumsData;
     private List<Insured> insureds = new ArrayList<>();
     private List<Coverage> coverages = new ArrayList<>();

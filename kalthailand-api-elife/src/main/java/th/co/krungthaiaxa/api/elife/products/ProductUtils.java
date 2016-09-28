@@ -8,6 +8,7 @@ import th.co.krungthaiaxa.api.elife.exception.MainInsuredException;
 import th.co.krungthaiaxa.api.elife.exception.PolicyValidationException;
 import th.co.krungthaiaxa.api.elife.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.api.elife.model.Amount;
+import th.co.krungthaiaxa.api.elife.model.CommonData;
 import th.co.krungthaiaxa.api.elife.model.Coverage;
 import th.co.krungthaiaxa.api.elife.model.CoverageBeneficiary;
 import th.co.krungthaiaxa.api.elife.model.DatedAmount;
@@ -75,7 +76,7 @@ public class ProductUtils {
 
     /**
      * This is not always the total money the customer must pay in a year.
-     * 1) If the customer pay by year, then this is the total money must be paid in a year.
+     * 1) If the customer pay by year, then this is the total money must be paid in a year. (view method {@link #getPaymentInAYear(Amount, PeriodicityCode)}
      * 2) If the customer pay by month, then the total money must be paid is premium(monthly) * 12 (different from annualPremium).
      * The annualPremium in this case will be premium(monthly) / modalFactor (0.09)
      *
@@ -86,6 +87,17 @@ public class ProductUtils {
     public static Amount getAnnualPremium(Amount premium, PeriodicityCode periodicityCode) {
         double value = convertPeriodicity(premium.getValue(), periodicityCode, PeriodicityCode.EVERY_YEAR);
         return new Amount(value, premium.getCurrencyCode());
+    }
+
+    /**
+     * This method is different from {@link #getAnnualPremium(Amount, PeriodicityCode)}. Please view more detail comment in that method.
+     *
+     * @param premium
+     * @param periodicityCode
+     * @return
+     */
+    public static Amount getPaymentInAYear(Amount premium, PeriodicityCode periodicityCode) {
+        return premium.multiply(PeriodicityCode.EVERY_YEAR.getNbOfMonths() / periodicityCode.getNbOfMonths());
     }
 
     /**
@@ -440,5 +452,12 @@ public class ProductUtils {
         }
         isTrue(sumInsured.getValue() <= sumInsuredMax, QuoteCalculationException.sumInsuredTooHighException.apply("Maximum: " + sumInsuredMax + ", actual value: " + sumInsured));
         isTrue(sumInsured.getValue() >= sumInsuredMin, QuoteCalculationException.sumInsuredTooLowException.apply("Minimum: " + sumInsuredMin + ", actual value: " + sumInsured));
+    }
+
+    public static void copyCommonDataToProductAmount(CommonData commonData, ProductAmounts destination) {
+        destination.setMaxSumInsured(commonData.getMaxSumInsured());
+        destination.setMinSumInsured(commonData.getMinSumInsured());
+        destination.setMinPremium(commonData.getMinPremium());
+        destination.setMaxPremium(commonData.getMaxPremium());
     }
 }

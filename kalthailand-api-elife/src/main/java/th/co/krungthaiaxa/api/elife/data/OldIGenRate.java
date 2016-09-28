@@ -1,4 +1,4 @@
-package th.co.krungthaiaxa.api.elife.products.igen;
+package th.co.krungthaiaxa.api.elife.data;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.List;
 
 @Document(collection = "productIGenRate")
-public class IGenRate {
+public class OldIGenRate {
     @Id
     private String id;
     @Indexed

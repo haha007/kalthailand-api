@@ -9,7 +9,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 @ApiModel(description = "An amount with its currency")
-public class Amount implements Serializable {
+public class Amount implements Serializable, Cloneable {
     @NotNull
     private Double value;
     @NotBlank
@@ -24,6 +24,10 @@ public class Amount implements Serializable {
     public Amount(Double value, String currencyCode) {
         this.value = value;
         this.currencyCode = currencyCode;
+    }
+
+    public Amount plus(double factor) {
+        return new Amount(this.value + factor, this.currencyCode);
     }
 
     public Amount multiply(double factor) {
@@ -60,6 +64,11 @@ public class Amount implements Serializable {
     }
 
     @Override
+    public Amount clone() {
+        return new Amount(value, currencyCode);
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -77,4 +86,5 @@ public class Amount implements Serializable {
     public String toString() {
         return value + " " + currencyCode;
     }
+
 }
