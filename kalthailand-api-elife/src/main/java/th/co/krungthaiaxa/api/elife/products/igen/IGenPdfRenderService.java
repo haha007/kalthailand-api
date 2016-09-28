@@ -6,6 +6,7 @@ import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
 
+import com.google.common.util.concurrent.CycleDetectingLockFactory.Policy;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.PageSize;
@@ -13,13 +14,17 @@ import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import th.co.krungthaiaxa.api.elife.model.Quote;
-import th.co.krungthaiaxa.api.elife.products.AbstractProductSaleIllustrationService;
+import th.co.krungthaiaxa.api.elife.products.AbstractProductPdfRenderService;
 
 @Service
-public class IGenSaleIllustrationService extends AbstractProductSaleIllustrationService{
+public class IGenPdfRenderService extends AbstractProductPdfRenderService {
+	
+	/*
+	 * must be implement for sale illustration pdf file generated
+	 * */
 
 	@Override
-	public Pair<byte[], String> generatePDF(Quote quote) throws DocumentException, IOException {
+	public Pair<byte[], String> generateSaleIllustrationPDF(Quote quote) throws DocumentException, IOException {
 		
 		if (LOGGER.isDebugEnabled()) {
             LOGGER.debug(String.format("[%1$s] .....", "generatePDF for iGen"));
@@ -74,9 +79,6 @@ public class IGenSaleIllustrationService extends AbstractProductSaleIllustration
         table1.addCell(addData("* โปรดศึกษารายละเอียดของความคุ้มครองและข้อยกเว้นต่างๆ เพิ่มเติมในเอกสารประกอบการขาย หรือกรมธรรม์ประกันภัยของบริษัทฯ", getFontNormalBlueStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
         table1.addCell(addData("** สำหรับค่าเบี้ยประกันส่วนที่เป็นเบี้ยประกันชีวิต สามารถนำไปใช้ลดหย่อนภาษีเงินได้บุคคลธรรมดาตามอัตราที่กฏหมายกำหนด", getFontNormalBlueStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
         
-        
-        
-        
         ByteArrayOutputStream content = new ByteArrayOutputStream();
         Document document = new Document(PageSize.A4, 20, 20, 20, 20);
         PdfWriter.getInstance(document, content);
@@ -85,8 +87,49 @@ public class IGenSaleIllustrationService extends AbstractProductSaleIllustration
         document.close();
         content.close();
         return Pair.of(content.toByteArray(), getPDFName(quote));
+        
 	}
+	
+	/*
+	 * must be implement for e receipt pdf file generated
+	 * */
 
-    
+	@Override
+	public Pair<byte[], String> generateEreceiptPDF(Policy policy) throws DocumentException, IOException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	/*
+	 * must be implement for da form pdf file generated
+	 * */
+
+	@Override
+	public Pair<byte[], String> generateDaFormPDF(Policy policy) throws DocumentException, IOException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	/*
+	 * must be implement for application form not validate pdf file generate
+	 * */
+
+	@Override
+	public Pair<byte[], String> generateApplicationFormNotValidatedPDF(Policy policy)
+			throws DocumentException, IOException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	/*
+	 * must be implement for application form validate pdf file generate
+	 * */
+
+	@Override
+	public Pair<byte[], String> generateApplicationFormValidatedPDF(Policy policy)
+			throws DocumentException, IOException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

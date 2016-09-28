@@ -15,6 +15,7 @@ import com.itextpdf.text.DocumentException;
 
 import th.co.krungthaiaxa.api.common.utils.IOUtil;
 import th.co.krungthaiaxa.api.elife.model.Insured;
+import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.products.AbstractProductEmailService;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
@@ -29,7 +30,7 @@ public class IGenEmailService extends AbstractProductEmailService {
 	public final String quoteEmailPath = "/email-content/email-quote-"+productId+"-content.txt";
     
     @Inject
-    private IGenSaleIllustrationService saleIllustrationGenerator;  
+    private IGenPdfRenderService iGenPdfRenderService;  
     
     /*
      * must be implement for product id
@@ -51,7 +52,7 @@ public class IGenEmailService extends AbstractProductEmailService {
     
     @Override
     protected Pair<byte[], String> getSaleIllustrationPdf(Quote quote) throws DocumentException, IOException{
-    	return saleIllustrationGenerator.generatePDF(quote);
+    	return iGenPdfRenderService.generateSaleIllustrationPDF(quote);
     }
     
     @Override
@@ -76,6 +77,46 @@ public class IGenEmailService extends AbstractProductEmailService {
                 .replace("%14$s", "'" + getLineURL() + "'")
                 .replace("%15$s", "'" + getLineURL() + "fatca-questions/" + quote.getQuoteId() + "'")
                 .replace("%16$s", "'" + getLineURL() + "quote-product/line-" + productId + "'");
+	}
+    
+    /*
+     * must be implement for e receipt email 
+     * */
+
+	@Override
+	public void sendEreceiptEmail(Policy policy) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	/*
+     * must be implement for policy booked email 
+     * */
+
+	@Override
+	public void sendPolicyBookedEmail(Policy policy) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	/*
+     * must be implement for wrong phone number email 
+     * */
+
+	@Override
+	public void sendWrongPhoneNumberEmail(Policy policy) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	/*
+     * must be implement for user not response email 
+     * */
+
+	@Override
+	public void sendUserNotResponseEmail(Policy policy) {
+		// TODO Auto-generated method stub
+		
 	}
  
 }

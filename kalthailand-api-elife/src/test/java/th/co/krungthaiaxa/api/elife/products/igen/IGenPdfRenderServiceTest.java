@@ -39,19 +39,19 @@ import th.co.krungthaiaxa.api.elife.service.SaleIllustrationiFineService;
 @SpringApplicationConfiguration(classes = KalApiApplication.class)
 @WebAppConfiguration
 @ActiveProfiles("test")
-public class IGenSaleIllustrationServiceTest {
+public class IGenPdfRenderServiceTest {
 	
 	@Inject
     private QuoteService quoteService;
 	@Inject
-	private IGenSaleIllustrationService iGenSaleIllustrationService;
+	private IGenPdfRenderService iGenPdfRenderService;
 	
 	@Test
     public void should_generate_sale_illustration_pdf_file() throws DocumentException, IOException {
 		Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation());
         quote(quote, beneficiary(100.0));
 
-        Pair<byte[], String> pair = iGenSaleIllustrationService.generatePDF(quote);
+        Pair<byte[], String> pair = iGenPdfRenderService.generateSaleIllustrationPDF(quote);
         assertThat(pair.getLeft()).isNotEmpty();
         assertThat(pair.getRight()).isNotEmpty();
         FileUtils.writeByteArrayToFile(new File("target/" + pair.getRight()), pair.getLeft());

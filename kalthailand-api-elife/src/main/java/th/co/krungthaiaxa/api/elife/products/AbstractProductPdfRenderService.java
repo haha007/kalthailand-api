@@ -10,24 +10,33 @@ import java.util.Locale;
 
 import javax.inject.Inject;
 
+import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
+import org.springframework.stereotype.Component;
 
 import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.Image;
+import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Phrase;
 import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
 
 import th.co.krungthaiaxa.api.elife.model.Quote;
 
-public abstract class AbstractProductSaleIllustrationService implements InterfaceProductSaleIllustrationService {
+@Component
+public abstract class AbstractProductPdfRenderService implements InterfaceProductPdfRenderService {
 	
-	protected final static Logger LOGGER = LoggerFactory.getLogger(AbstractProductSaleIllustrationService.class);
+	protected final static Logger LOGGER = LoggerFactory.getLogger(AbstractProductPdfRenderService.class);
 	
 	protected static final BaseColor BORDER_COLOR = new BaseColor(218, 218, 218);
 	protected static final String _fontNormal = "/saleillustration/PSL094.TTF";
