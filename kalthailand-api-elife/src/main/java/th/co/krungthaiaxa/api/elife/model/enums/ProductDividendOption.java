@@ -1,4 +1,4 @@
-package th.co.krungthaiaxa.api.elife.model;
+package th.co.krungthaiaxa.api.elife.model.enums;
 
 /**
  * @author khoi.tran on 9/27/16.

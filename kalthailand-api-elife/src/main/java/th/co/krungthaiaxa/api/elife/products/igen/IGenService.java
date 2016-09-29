@@ -20,11 +20,11 @@ import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.model.Periodicity;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.PremiumsData;
-import th.co.krungthaiaxa.api.elife.model.ProductDividendOption;
 import th.co.krungthaiaxa.api.elife.model.ProductIGenPremium;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.enums.GenderCode;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
+import th.co.krungthaiaxa.api.elife.model.enums.ProductDividendOption;
 import th.co.krungthaiaxa.api.elife.products.ProductAmounts;
 import th.co.krungthaiaxa.api.elife.products.ProductPremiumRateService;
 import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
@@ -38,7 +38,6 @@ import javax.inject.Inject;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -102,14 +101,10 @@ public class IGenService implements ProductService {
         if (productQuotation == null) {
             return;
         }
-        Optional<Coverage> hasCoverage = quote.getCoverages()
-                .stream()
-                .filter(coverage -> coverage.getName() != null)
-                .filter(coverage -> coverage.getName().equalsIgnoreCase(PRODUCT_TYPE.getLogicName()))
-                .findFirst();
 
         if (!checkProductQuotationEnoughDataToCalculate(productQuotation)) {
-            resetCalculatedStuff(quote, hasCoverage);
+            //TODO actually, I think we should throw exception here. Don't return reset quote.
+            resetCalculatedStuff(quote);
             return;
         }
         //Get data from productQuotation
@@ -121,7 +116,7 @@ public class IGenService implements ProductService {
 
         //Get data from quote
         CommonData commonData = quote.getCommonData();
-//        commonData.setPackageName(iProtectPackage.name());
+        commonData.setPackageName(productQuotation.getPackageName());//TODO copy to iProtect
         PremiumsData premiumsData = quote.getPremiumsData();
         ProductIGenPremium productIGenPremium = premiumsData.getProductIGenPremium();
         Insured mainInsured = ProductUtils.validateExistMainInsured(quote);
@@ -156,7 +151,7 @@ public class IGenService implements ProductService {
         //TODO copy to iProtect
         calculateTax(quote, productIGenPremium, periodicityCode, mainInsured);
 
-        calculateDeathBenefits(now, productIGenPremium, coverageYears, getPremium(quote), periodicityCode);
+        calculateDeathBenefits(now, productIGenPremium, paymentYears, coverageYears, ProductUtils.getPremiumAmount(quote), periodicityCode);
 //        productIGenPremium.setDeathBenefit(productIGenPremium.getSumInsured());
 
         AmountLimits amountLimits = calculateAmountLimits(packageName, premiumRate, occupationRate, periodicityCode);
@@ -166,14 +161,8 @@ public class IGenService implements ProductService {
         //TODO copy to iProtect
         calculateYearlyCashback(now, quote, productQuotation);
 
-        //In this product, we don't need to calculate yearlyPremium.
-        //calculateYearlyPremium(quote, mainInsured);
-
-        if (!hasCoverage.isPresent()) {
-            Coverage coverage = new Coverage();
-            coverage.setName(PRODUCT_TYPE.getLogicName());
-            quote.addCoverage(coverage);
-        }
+        //TODO copy to iProtect
+        ProductUtils.addCoverageIfNotExist(quote, PRODUCT_TYPE);
     }
 
     private OccupationType validateExistOccupationId(Integer occupationId) {
@@ -209,14 +198,14 @@ public class IGenService implements ProductService {
      * @param premium
      * @param periodicityCode periodicity (MONTH, YEAR...) of premium payment.
      */
-    private void calculateDeathBenefits(Instant now, ProductIGenPremium productIGenPremium, int coverageYears, Amount premium, PeriodicityCode periodicityCode) {
+    private void calculateDeathBenefits(Instant now, ProductIGenPremium productIGenPremium, int paymentYears, int coverageYears, Amount premium, PeriodicityCode periodicityCode) {
         Amount sumInsured = productIGenPremium.getSumInsured();
         Amount premiumInYear = ProductUtils.getPaymentInAYear(premium, periodicityCode);
         List<DateTimeAmount> yearlyDeathBenefits = new ArrayList<>();
         for (int i = 0; i < coverageYears; i++) {
             int year = i + 1;
             DateTimeAmount yearlyDeathBenefit = new DateTimeAmount();
-            Amount accumulatedPremiumAmount = premiumInYear.multiply(year);
+            Amount accumulatedPremiumAmount = premiumInYear.multiply(Math.min(year, paymentYears));
             Amount deathBenefit = AmountUtil.max(sumInsured, accumulatedPremiumAmount);
             yearlyDeathBenefit.setAmount(deathBenefit);
             yearlyDeathBenefit.setDateTime(DateTimeUtil.plusYears(now, year));
@@ -226,7 +215,7 @@ public class IGenService implements ProductService {
     }
 
     private void calculateTax(Quote quote, ProductIGenPremium productIGenPremium, PeriodicityCode periodicityCode, Insured mainInsured) {
-        double taxDeductionPerYear = ProductUtils.calculateTaxDeductionPerYear(TAX_DEDUCTION_PER_YEAR_MAX, getPremium(quote), periodicityCode, mainInsured.getDeclaredTaxPercentAtSubscription());
+        double taxDeductionPerYear = ProductUtils.calculateTaxDeductionPerYear(TAX_DEDUCTION_PER_YEAR_MAX, ProductUtils.getPremiumAmount(quote), periodicityCode, mainInsured.getDeclaredTaxPercentAtSubscription());
         productIGenPremium.setYearlyTaxDeduction(amount(taxDeductionPerYear));
         double totalTaxDeduction = taxDeductionPerYear * quote.getCommonData().getNbOfYearsOfPremium();
         productIGenPremium.setTotalTaxDeduction(amount(totalTaxDeduction));
@@ -282,10 +271,6 @@ public class IGenService implements ProductService {
             amountPreviousYear = dateTimeAmount.getAmount();
         }
         return yearlyCashBacks;
-    }
-
-    public static Amount getPremium(Quote quote) {
-        return quote.getPremiumsData().getFinancialScheduler().getModalAmount();
     }
 
     private void calculateSumInsuredAndPremiumAmounts(PremiumsData premiumsData, ProductQuotation productQuotation, String packageName, double premiumRate, double occupationRate, PeriodicityCode periodicityCode) {
@@ -365,32 +350,6 @@ public class IGenService implements ProductService {
         Amount premiumAmount = quote.getPremiumsData().getFinancialScheduler().getModalAmount();
         ProductUtils.validateSumInsuredAmountInRange(sumInsuredAmount, amountLimits.getMinSumInsured().getValue(), amountLimits.getMaxSumInsured().getValue());
         ProductUtils.validatePremiumAmountInRange(premiumAmount, amountLimits.getMinPremium().getValue(), amountLimits.getMaxPremium().getValue());
-    }
-
-    //TODO I don't remove this method because this code can be used in the future. OK, if you hate it, just remove if you want =)
-    private void calculateYearlyPremium(Quote quote, Insured mainInsured) {
-//        ProductIGenPremium ProductIGenPremium = quote.getPremiumsData().getProductIGenPremium();
-//        List<IProtectMomentCalculation> yearlyCalculations = ProductIGenPremium.getYearlyCalculations();
-//        int totalYearsOfCoverage = quote.getCommonData().getNbOfYearsOfCoverage();
-//        int totalYearsOfPremiums = quote.getCommonData().getNbOfYearsOfPremium();
-//        LocalDate startDate = mainInsured.getStartDate();
-//
-//        Amount sumInsured = quote.getPremiumsData().getProductIGenPremium().getSumInsured();
-//        Amount premium = quote.getPremiumsData().getFinancialScheduler().getModalAmount();
-//        PeriodicityCode periodicityCode = quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode();
-//        Amount yearlyPremium = premium.multiply(periodicityCode.getNbOfMonths());
-
-//        for (int yearIndex = 1; yearIndex <= totalYearsOfCoverage; yearIndex++) {
-//            IProtectMomentCalculation iProtectMomentCalculation = new IProtectMomentCalculation();
-//            Instant instant = DateTimeUtil.toInstant(startDate.plusYears(yearIndex));
-//            iProtectMomentCalculation.setInstant(instant);
-//            iProtectMomentCalculation.setDeathBenefit(sumInsured);
-//            int yearsOfPremium = (yearIndex <= totalYearsOfPremiums) ? yearIndex : totalYearsOfPremiums;
-//            iProtectMomentCalculation.setTotalPremiums(yearlyPremium.multiply(yearsOfPremium));
-//
-//            iProtectMomentCalculation.setSurrender();
-//            yearlyCalculations.add(iProtectMomentCalculation);
-//        }
     }
 
     @Override
@@ -548,21 +507,20 @@ public class IGenService implements ProductService {
         return iProtectRateOptional.orElseThrow(() -> QuoteCalculationException.premiumRateNotFoundException.apply(String.format("productId: %s, age: %s, gender: %s", productId, insuredAge, insuredGenderCode)));
     }
 
-    private static void resetCalculatedStuff(Quote quote, Optional<Coverage> coverage) {
+    private static void resetCalculatedStuff(Quote quote) {
         ProductIGenPremium productIGenPremium = quote.getPremiumsData().getProductIGenPremium();
         if (productIGenPremium != null) {
             productIGenPremium.setSumInsuredBeforeDiscount(null);
             productIGenPremium.setSumInsured(null);
-            productIGenPremium.setYearlyDeathBenefits(Collections.EMPTY_LIST);
-            productIGenPremium.setYearlyCashBacksForAnnual(Collections.EMPTY_LIST);
-            productIGenPremium.setYearlyCashBacksForEndOfContract(Collections.EMPTY_LIST);
+            //Don't use Collections.EMPTY_LIST here because it cannot be appended.
+            productIGenPremium.setYearlyDeathBenefits(new ArrayList<>());
+            productIGenPremium.setYearlyCashBacksForAnnual(new ArrayList<>());
+            productIGenPremium.setYearlyCashBacksForEndOfContract(new ArrayList<>());
             productIGenPremium.setYearlyTaxDeduction(null);
             productIGenPremium.setTotalTaxDeduction(null);
             productIGenPremium.setEndOfContractBenefit(null);
         }
-        if (coverage.isPresent()) {
-            quote.getCoverages().remove(coverage.get());
-        }
+        quote.getCoverages().clear();
     }
 
     public static void checkMainInsuredIProtectSpecific(Insured insured) {
@@ -571,9 +529,6 @@ public class IGenService implements ProductService {
 
     private static void checkProductType(CommonData commonData) {
         isEqual(commonData.getProductId(), PRODUCT_TYPE.getLogicName(), PolicyValidationException.productIProtectExpected);
-
-        //Don't need to check equals because the displayName can be changed
-//        isTrue(StringUtils.isNotBlank(commonData.getProductName()), PolicyValidationException.productIProtectExpected);
     }
 
     private Amount exchangeToProductCurrency(Amount amount) {

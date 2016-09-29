@@ -4,7 +4,6 @@ import org.jsoup.helper.StringUtil;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,7 +65,7 @@ public class EncryptRegistrationIdsAndKeysServiceTest {
      * @throws NoSuchFieldException
      * @throws IllegalAccessException
      */
-    @Test
+//    @Test //I turn off this unit test because it scan all DB and very time consuming. Besides, we need to run it only one time in reality. And we don't need to run it anymore. So it's not really useful.
     public void data_in_db_must_be_encrypted() throws NoSuchFieldException, IllegalAccessException {
 
         encryptRegistrationIdsAndKeysService.encryptRegistrationIdAndRegistrationKey();

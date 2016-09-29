@@ -2,6 +2,7 @@ package th.co.krungthaiaxa.api.elife.model;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import th.co.krungthaiaxa.api.elife.model.enums.ProductDividendOption;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -12,20 +13,26 @@ import java.util.Objects;
 
 @ApiModel(description = "iGen Life Insurance specific Premiums Data")
 public class ProductIGenPremium implements Serializable {
+    @ApiModelProperty(value = "True if the user has chosen to pay on a total Sum Insured base. False otherwise (premium choice). This is set by backend API if an amount is provided in financialScheduler.")
     private Boolean sumInsuredOption;
     @Valid
-    @ApiModelProperty(value = "True if the user has chosen to pay on a total Sum Insured base. False otherwise (premium choice). This is set by backend API if an amount is provided in financialScheduler.")
     @NotNull
+    @ApiModelProperty(value = "Total sum insured by the product. This is calculated by backend API if an amount is provided in financialScheduler. If this value is provided, then it's the financialScheduler amount that is calculated")
     private Amount sumInsured;
     @Valid
     @NotNull
     @ApiModelProperty(value = "Total sum insured by the product before discount. This is calculated by backend API if an amount is provided in financialScheduler. If this value is provided, then it's the financialScheduler amount that is calculated")
     private Amount sumInsuredBeforeDiscount = null;
+    @ApiModelProperty(value = "Yearly cash backs if dividendOption is END_OF_CONTRACT_PAY_BACK. This is calculated by backend API and cannot be set by client.")
     private List<DateTimeAmount> yearlyCashBacksForEndOfContract = new ArrayList<>();
+    @ApiModelProperty(value = "Yearly cash backs if dividendOption is ANNUAL_PAY_BACK_CASH or ANNUAL_PAY_BACK_NEXT_PREMIUM. This is calculated by backend API and cannot be set by client.")
     private List<DateTimeAmount> yearlyCashBacksForAnnual = new ArrayList<>();
     @Valid
     @NotNull
-    @ApiModelProperty(value = "The money which beneficiaries will receive at the end of contract. This is the final value (after discount) and is calculated by backend API if an amount is provided in financialScheduler. If this value is provided, then it's the financialScheduler amount that is calculated")
+    @ApiModelProperty(value = "The money which beneficiaries will receive at the end of contract. This is the final value (after discount) and is calculated by backend API if an amount is provided in financialScheduler."
+            + " If dividendOption is END_OF_CONTRACT_PAY_BACK, then this value equals to the last element of yearlyCashBacksForEndOfContract."
+            + " If dividendOption is ANNUAL_PAY_BACK_CASH or ANNUAL_PAY_BACK_NEXT_PREMIUM, then this value equals to the last element of yearlyCashBacksForAnnual."
+    )
     private Amount endOfContractBenefit;
 
     @Valid
@@ -44,10 +51,11 @@ public class ProductIGenPremium implements Serializable {
     /**
      * View more in {@link ProductDividendOption}.
      */
-    @ApiModelProperty(value = "Dividend option. Dividend is either given yearly in cash, or used for next premium or all of it at the end of the product duration.")
+    @ApiModelProperty(value = "END_OF_CONTRACT_PAY_BACK (1): dividend is given at the end of contract."
+            + "ANNUAL_PAY_BACK_CASH(2): dividend is given yearly in cash."
+            + "ANNUAL_PAY_BACK_NEXT_PREMIUM(3): dividend is given for next premium.")
     private String dividendOptionId;
 
-    @ApiModelProperty(value = "True if the user has chosen to pay on a total Sum Insured base. False otherwise (premium choice). This is set by backend API if an amount is provided in financialScheduler.")
     public Boolean getSumInsuredOption() {
         return sumInsuredOption;
     }
@@ -56,7 +64,6 @@ public class ProductIGenPremium implements Serializable {
         this.sumInsuredOption = sumInsuredOption;
     }
 
-    @ApiModelProperty(value = "Total sum insured by the product. This is calculated by backend API if an amount is provided in financialScheduler. If this value is provided, then it's the financialScheduler amount that is calculated")
     public Amount getSumInsured() {
         return sumInsured;
     }
@@ -65,7 +72,6 @@ public class ProductIGenPremium implements Serializable {
         this.sumInsured = sumInsured;
     }
 
-    @ApiModelProperty(value = "Yearly cash backs if cash option is chosen. This is calculated by backend API and cannot be set by client.")
     public List<DateTimeAmount> getYearlyCashBacksForEndOfContract() {
         return yearlyCashBacksForEndOfContract;
     }
@@ -74,7 +80,6 @@ public class ProductIGenPremium implements Serializable {
         this.yearlyCashBacksForEndOfContract = yearlyCashBacksForEndOfContract;
     }
 
-    @ApiModelProperty(value = "Tax deduction per year.")
     public Amount getYearlyTaxDeduction() {
         return yearlyTaxDeduction;
     }

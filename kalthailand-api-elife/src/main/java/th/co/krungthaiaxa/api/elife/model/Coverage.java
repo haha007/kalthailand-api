@@ -13,6 +13,9 @@ import java.util.Objects;
 public class Coverage implements Serializable {
     @Id
     private String id;
+
+    @ApiModelProperty(value = "Now it's same as productId (productLogicName)")
+    @Deprecated
     private String name;
     private List<CoverageBeneficiary> beneficiaries = new ArrayList<>();
 

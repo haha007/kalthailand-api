@@ -387,6 +387,32 @@ public class ProductUtils {
         return amount;
     }
 
+    public static Optional<Coverage> findCoverageSatisfyProductId(Quote quote, ProductType productType) {
+        Optional<Coverage> hasCoverage = quote.getCoverages()
+                .stream()
+                .filter(coverage -> coverage.getName() != null)
+                .filter(coverage -> coverage.getName().equalsIgnoreCase(productType.getLogicName()))
+                .findFirst();
+        return hasCoverage;
+    }
+
+    public static Amount getPremiumAmount(Quote quote) {
+        return quote.getPremiumsData().getFinancialScheduler().getModalAmount();
+    }
+
+    public static Coverage addCoverageIfNotExist(Quote quote, ProductType productType) {
+        Optional<Coverage> hasCoverage = findCoverageSatisfyProductId(quote, productType);
+        Coverage coverage;
+        if (!hasCoverage.isPresent()) {
+            coverage = new Coverage();
+            coverage.setName(productType.getLogicName());
+            quote.addCoverage(coverage);
+        } else {
+            coverage = hasCoverage.get();
+        }
+        return coverage;
+    }
+
     public static void checkDatedAmounts(List<DatedAmount> datedAmounts, LocalDate startDate, Integer durationCoverageInYears) {
         List<LocalDate> allowedDates = new ArrayList<>();
         IntStream.range(0, durationCoverageInYears).forEach(value -> allowedDates.add(startDate.plusYears(value + 1)));

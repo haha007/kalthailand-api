@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
 import th.co.krungthaiaxa.api.elife.model.Amount;
 import th.co.krungthaiaxa.api.elife.model.CommonData;
+import th.co.krungthaiaxa.api.elife.model.DateTimeAmount;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.PremiumsData;
@@ -48,9 +49,9 @@ public class ProductAssertUtil {
         Assert.assertNotNull(productAmounts.getMaxSumInsured());
         Assert.assertNotNull(productAmounts.getMinSumInsured());
 
+        //We may consider remove this.
         CommonData commonData = productAmounts.getCommonData();
         Assert.assertNotNull(commonData.getProductId());
-
         Assert.assertNotNull(commonData.getMaxSumInsured());
         Assert.assertNotNull(commonData.getMinSumInsured());
     }
@@ -58,42 +59,42 @@ public class ProductAssertUtil {
     public static void assertAmountLimits(ProductAmounts productAmounts, Double expectedMinSumInsured, Double expectedMaxSumInsured, Double expectedMinPremium, Double expectedMaxPremium) {
         LOGGER.debug("\nProductAmounts: " + ObjectMapperUtil.toJson(new ObjectMapper(), productAmounts));
         if (expectedMinSumInsured != null) {
-            Assert.assertEquals(expectedMinSumInsured, productAmounts.getMinSumInsured());
+            Assert.assertEquals(expectedMinSumInsured, productAmounts.getMinSumInsured().getValue());
         }
         if (expectedMaxSumInsured != null) {
-            Assert.assertEquals(expectedMaxSumInsured, productAmounts.getMaxSumInsured());
+            Assert.assertEquals(expectedMaxSumInsured, productAmounts.getMaxSumInsured().getValue());
         }
         if (expectedMinPremium != null) {
-            Assert.assertEquals(expectedMinPremium, productAmounts.getMinPremium());
+            Assert.assertEquals(expectedMinPremium, productAmounts.getMinPremium().getValue());
         }
         if (expectedMaxPremium != null) {
-            Assert.assertEquals(expectedMaxPremium, productAmounts.getMaxPremium());
+            Assert.assertEquals(expectedMaxPremium, productAmounts.getMaxPremium().getValue());
         }
     }
 
     public static void assertAmountLimits(CommonData commonData, Double expectedMinSumInsured, Double expectedMaxSumInsured, Double expectedMinPremium, Double expectedMaxPremium) {
         if (expectedMinSumInsured != null) {
-            Assert.assertEquals(expectedMinSumInsured, commonData.getMinSumInsured());
+            Assert.assertEquals(expectedMinSumInsured, commonData.getMinSumInsured().getValue());
         }
         if (expectedMaxSumInsured != null) {
-            Assert.assertEquals(expectedMaxSumInsured, commonData.getMaxSumInsured());
+            Assert.assertEquals(expectedMaxSumInsured, commonData.getMaxSumInsured().getValue());
         }
         if (expectedMinPremium != null) {
-            Assert.assertEquals(expectedMinPremium, commonData.getMinPremium());
+            Assert.assertEquals(expectedMinPremium, commonData.getMinPremium().getValue());
         }
         if (expectedMaxPremium != null) {
-            Assert.assertEquals(expectedMaxPremium, commonData.getMaxPremium());
+            Assert.assertEquals(expectedMaxPremium, commonData.getMaxPremium().getValue());
         }
     }
 
-    public static void assertPremiumDataAfterQuoteCalculationWithFullDetail(PremiumsData premiumsData) {
+    public static void assertPremiumDataEnoughDataAfterQuoteCalculation(PremiumsData premiumsData) {
         LOGGER.debug("\nPremiumsData: " + ObjectMapperUtil.toJson(new ObjectMapper(), premiumsData));
         assertAmountNotNull(premiumsData.getFinancialScheduler().getModalAmount());
         Assert.assertNotNull(premiumsData.getFinancialScheduler().getEndDate());
         Assert.assertNotNull(premiumsData.getFinancialScheduler().getPeriodicity());
     }
 
-    public static void assertCommonDataAfterQuoteCalculationWithFullDetail(CommonData commonData) {
+    public static void assertCommonDataEnoughDataAfterQuoteCalculation(CommonData commonData) {
         LOGGER.debug("\nCommonData: " + ObjectMapperUtil.toJson(new ObjectMapper(), commonData));
         Assert.assertNotNull(commonData.getProductId());
 
@@ -122,8 +123,8 @@ public class ProductAssertUtil {
      * @param expectEndContractBenefit
      */
     public static void assertQuoteWithPremiumAmountAndTaxAndEndContractBenefit(Quote quote, ProductIGenPremium productIGenPremium, Double expectPremiumValue, Double expectTotalTaxDeduction, Double expectEndContractBenefit) {
-        assertPremiumDataAfterQuoteCalculationWithFullDetail(quote.getPremiumsData());
-        assertCommonDataAfterQuoteCalculationWithFullDetail(quote.getCommonData());
+        assertPremiumDataEnoughDataAfterQuoteCalculation(quote.getPremiumsData());
+        assertCommonDataEnoughDataAfterQuoteCalculation(quote.getCommonData());
 
         LOGGER.debug("\nQuote: " + ObjectMapperUtil.toJson(new ObjectMapper(), quote));
 
@@ -174,6 +175,15 @@ public class ProductAssertUtil {
                 Assert.assertEquals(1, Period.between(previousDueDate.toLocalDate(), payment.getDueDate().toLocalDate()).getYears());
             }
             previousDueDate = payment.getDueDate();
+        }
+    }
+
+    public static void assertDateTimeAmount(List<DateTimeAmount> dateTimeAmounts, double... amounts) {
+        Assert.assertEquals(dateTimeAmounts.size(), amounts.length);
+        int i = 0;
+        for (DateTimeAmount dateTimeAmount : dateTimeAmounts) {
+            Assert.assertEquals(amounts[i], dateTimeAmount.getAmount().getValue(), DOUBLE_COMPARE_EXACT_VALUE);
+            i++;
         }
     }
 }
