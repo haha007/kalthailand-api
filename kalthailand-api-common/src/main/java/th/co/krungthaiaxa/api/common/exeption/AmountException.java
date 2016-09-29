@@ -2,17 +2,17 @@ package th.co.krungthaiaxa.api.common.exeption;
 
 import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
 
-public class EmailException extends BaseException {
+public class AmountException extends BaseException {
     private static final long serialVersionUID = -8279292782665815881L;
 
-    private static final String ERROR_CODE = ErrorCode.ERROR_CODE_EMAIL_SENDER;
+    private static final String ERROR_CODE = ErrorCode.ERROR_CODE_AMOUNT;
 
-    public EmailException(String message) {
+    public AmountException(String message) {
         super(ERROR_CODE, message);
     }
 
 
-    public EmailException(String message, Throwable throwable) {
+    public AmountException(String message, Throwable throwable) {
         super(ERROR_CODE, message, throwable);
     }
 

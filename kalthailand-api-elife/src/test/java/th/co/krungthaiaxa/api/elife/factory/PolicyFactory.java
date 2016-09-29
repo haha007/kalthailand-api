@@ -30,7 +30,7 @@ public class PolicyFactory {
     public final GreenMailRule greenMail = new GreenMailRule(ServerSetupTest.SMTP_IMAP);
 
     public Policy createPolicyForLineWithPendingValidation(int age, String email) {
-        Quote quote = quoteFactory.createDefaultiProtectQuoteForLine(age, email);
+        Quote quote = quoteFactory.createDefaultIProtectQuoteForLine(age, email);
         return policyService.createPolicy(quote);
     }
 

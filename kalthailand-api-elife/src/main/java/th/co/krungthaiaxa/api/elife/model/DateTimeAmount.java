@@ -2,6 +2,7 @@ package th.co.krungthaiaxa.api.elife.model;
 
 import io.swagger.annotations.ApiModel;
 
+import java.time.Instant;
 import java.time.OffsetDateTime;
 
 /**
@@ -11,14 +12,14 @@ import java.time.OffsetDateTime;
  */
 @ApiModel(description = "An amount at a specific date with its currency")
 public class DateTimeAmount {
-    private OffsetDateTime dateTime;
+    private Instant dateTime;
     private Amount amount;
 
-    public OffsetDateTime getDateTime() {
+    public Instant getDateTime() {
         return dateTime;
     }
 
-    public void setDateTime(OffsetDateTime dateTime) {
+    public void setDateTime(Instant dateTime) {
         this.dateTime = dateTime;
     }
 

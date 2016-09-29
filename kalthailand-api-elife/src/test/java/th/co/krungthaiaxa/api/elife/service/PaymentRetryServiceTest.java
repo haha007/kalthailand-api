@@ -26,6 +26,7 @@ import th.co.krungthaiaxa.api.elife.factory.CollectionFileFactory;
 import th.co.krungthaiaxa.api.elife.factory.PaymentFactory;
 import th.co.krungthaiaxa.api.elife.factory.PolicyFactory;
 import th.co.krungthaiaxa.api.elife.factory.QuoteFactory;
+import th.co.krungthaiaxa.api.elife.factory.RequestFactory;
 import th.co.krungthaiaxa.api.elife.mock.LineServiceMockFactory;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.PaymentInformation;
@@ -88,7 +89,7 @@ public class PaymentRetryServiceTest extends ELifeTest {
         String lineResponseCode = "4000";
         setupLineServiceWithResponseCode(lineResponseCode);
 
-        InputStream inputStream = CollectionFileFactory.initCollectionExcelFile(policy.getPolicyId());
+        InputStream inputStream = CollectionFileFactory.constructCollectionExcelFile(policy.getPolicyId());
         rlsService.importCollectionFile(inputStream);
         List<CollectionFile> collectionFileList = rlsService.processLatestCollectionFiles();
         CollectionFile collectionFile = collectionFileList.get(0);
@@ -207,7 +208,7 @@ public class PaymentRetryServiceTest extends ELifeTest {
         String orderId = PaymentFactory.generateOrderId();
         String newRegKey = PaymentFactory.generateRegKeyId();
         String transId = PaymentFactory.generateTransactionId();
-        String accessToken = PaymentFactory.generateAccessToken();
+        String accessToken = RequestFactory.generateAccessToken();
         Payment retryPayment = paymentService.retryFailedPayment(policy.getPolicyId(), oldPaymentId, orderId, transId, newRegKey, accessToken);
 
         Assert.assertEquals(orderId, retryPayment.getOrderId());

@@ -28,7 +28,7 @@ public class CollectionFileFactory {
      * @param policyNumbers
      * @return the inputstream of Excel file which contains policyNumbers need to be processed.
      */
-    public static InputStream initCollectionExcelFile(String... policyNumbers) {
+    public static InputStream constructCollectionExcelFile(String... policyNumbers) {
         HSSFWorkbook workbook = new HSSFWorkbook();
         Sheet sheet = workbook.createSheet(RLSService.COLLECTION_FILE_SHEET_NAME);
         ExcelUtils.appendRow(

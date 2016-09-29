@@ -326,7 +326,8 @@ public class ProductUtils {
 
     public static double calculateTaxDeductionPerYear(double maxTotalTaxDeductionPerYear, Amount premium, PeriodicityCode periodicityCode, int declaredTaxPercentage) {
         Amount totalPaymentInAYear = ProductUtils.getPaymentInAYear(premium, periodicityCode);
-        return Math.min(((double) declaredTaxPercentage / 100) * totalPaymentInAYear.getValue(), maxTotalTaxDeductionPerYear);
+        double amountForTaxCalculation = Math.min(totalPaymentInAYear.getValue(), maxTotalTaxDeductionPerYear);
+        return ((double) declaredTaxPercentage / 100) * amountForTaxCalculation;
     }
 
     /**

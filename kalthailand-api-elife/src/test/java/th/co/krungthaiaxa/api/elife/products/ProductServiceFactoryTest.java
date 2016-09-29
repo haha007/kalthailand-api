@@ -24,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @ActiveProfiles("test")
 public class ProductServiceFactoryTest {
     @Inject
-    private ProductFactory productFactory;
+    private ProductItemFactory productFactory;
 
     @Inject
     private ProductServiceFactory productServiceFactory;

@@ -4,6 +4,7 @@ import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
+import th.co.krungthaiaxa.api.common.utils.ListUtil;
 import th.co.krungthaiaxa.api.common.validator.BeanValidator;
 import th.co.krungthaiaxa.api.elife.data.OccupationType;
 import th.co.krungthaiaxa.api.elife.data.ProductPremiumRate;
@@ -34,8 +35,8 @@ import th.co.krungthaiaxa.api.elife.repository.OccupationTypeRepository;
 import th.co.krungthaiaxa.api.elife.utils.AmountUtil;
 
 import javax.inject.Inject;
+import java.time.Instant;
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -67,12 +68,21 @@ public class IGenService implements ProductService {
     public static final int INSURED_MIN_AGE = 20;
     public static final int INSURED_MAX_AGE = 70;
 
-    //All calculation of this product doesn't related to Occupation
-    public static final boolean NEED_OCCUPATION = true;
-
     public static final Double DIVIDEND_RATE_IN_NORMAL_YEAR = 0.02;//2% this number can be different for other product, and also can be change?
     public static final Double DIVIDEND_RATE_IN_LAST_YEAR = 1.8;
-    public static final Double DIVIDEND_INTEREST_RATE = 0.02;//2%
+    /**
+     * Dividend interest rate when apply 'cash back at the end of contract' option.
+     */
+    public static final Double DIVIDEND_INTEREST_RATE_FOR_END_OF_CONTRACT = 0.02;//2%
+    /**
+     * Dividend interest rate when apply 'annual cash back' option.
+     */
+    public static final Double DIVIDEND_INTEREST_RATE_FOR_ANNUAL = 0.0;//0%
+
+    //All calculation of this product doesn't related to Occupation
+    public static final boolean REQUIRED_OCCUPATION_FOR_CALCULATION = false;
+    private static final boolean REQUIRED_PACKAGE_NAME = false;
+    private static final boolean REQUIRED_GENDER_CODE_FOR_CALCULATION = false;
 
     @Inject
     private OccupationTypeRepository occupationTypeRepository;
@@ -80,14 +90,12 @@ public class IGenService implements ProductService {
     @Inject
     private ProductPremiumRateService productPremiumRateService;
 
-//    @Inject
-//    private IGenDiscountRateService iGenDiscountRateService;
-
     @Inject
     private BeanValidator beanValidator;
 
     @Override
     public void calculateQuote(Quote quote, ProductQuotation productQuotation) {
+        Instant now = Instant.now();
         if (productQuotation == null) {
             return;
         }
@@ -123,11 +131,7 @@ public class IGenService implements ProductService {
         mainInsured.setAgeAtSubscription(mainInsuredAge);
         mainInsured.getPerson().setGenderCode(mainInsuredGenderCode);
 
-        double occupationRate = 0.0;
-        OccupationType occupationType = validateExistOccupationId(productQuotation.getOccupationId());
-        mainInsured.setProfessionId(occupationType.getOccId());
-        mainInsured.setProfessionName(occupationType.getOccTextTh());
-        occupationRate = getOccupationRate(occupationType);
+        double occupationRate = setOccupation(quote, productQuotation, mainInsured);
 
         mainInsured.setDeclaredTaxPercentAtSubscription(productQuotation.getDeclaredTaxPercentAtSubscription());
         ProductUtils.checkInsuredAgeInRange(mainInsured, INSURED_MIN_AGE, INSURED_MAX_AGE);
@@ -149,7 +153,7 @@ public class IGenService implements ProductService {
         //TODO copy to iProtect
         calculateTax(quote, productIGenPremium, periodicityCode, mainInsured);
 
-        //TODO set yearly deathBenefits
+        calculateDeathBenefits(now, productIGenPremium, coverageYears, getPremium(quote), periodicityCode);
 //        productIGenPremium.setDeathBenefit(productIGenPremium.getSumInsured());
 
         AmountLimits amountLimits = calculateAmountLimits(packageName, premiumRate, occupationRate, periodicityCode);
@@ -157,8 +161,7 @@ public class IGenService implements ProductService {
         validateLimitsForInputAmounts(quote, amountLimits);
 
         //TODO copy to iProtect
-        calculateDividendOptionId(quote, productQuotation);
-//        productIGenPremium.setEndOfContractBenefit();
+        calculateYearlyCashback(now, quote, productQuotation);
 
         //In this product, we don't need to calculate yearlyPremium.
         //calculateYearlyPremium(quote, mainInsured);
@@ -168,6 +171,55 @@ public class IGenService implements ProductService {
             coverage.setName(PRODUCT_TYPE.getLogicName());
             quote.addCoverage(coverage);
         }
+    }
+
+    private OccupationType validateExistOccupationId(Integer occupationId) {
+        OccupationType occupationType = occupationTypeRepository.findByOccId(occupationId);
+        notNull(occupationType, QuoteCalculationException.occupationNotExistException.apply(occupationId));
+        return occupationType;
+    }
+
+    private double setOccupation(Quote quote, ProductQuotation productQuotation, Insured mainInsured) {
+        double occupationRate;
+        if (REQUIRED_OCCUPATION_FOR_CALCULATION) {
+            OccupationType occupationType = validateExistOccupationId(productQuotation.getOccupationId());
+            mainInsured.setProfessionId(occupationType.getOccId());
+            mainInsured.setProfessionName(occupationType.getOccTextTh());
+            getOccupationRate(occupationType);
+            occupationRate = getOccupationRate(occupationType);
+        } else {
+            occupationRate = 0.0;
+        }
+        return occupationRate;
+    }
+
+    private double validateExistOccupationRateIfNecessary(ProductQuotation productQuotation) {
+        if (REQUIRED_OCCUPATION_FOR_CALCULATION) {
+            OccupationType occupationType = validateExistOccupationId(productQuotation.getOccupationId());
+            return getOccupationRate(occupationType);
+        } else {
+            return 0.0;
+        }
+    }
+
+    /**
+     * @param premium
+     * @param periodicityCode periodicity (MONTH, YEAR...) of premium payment.
+     */
+    private void calculateDeathBenefits(Instant now, ProductIGenPremium productIGenPremium, int coverageYears, Amount premium, PeriodicityCode periodicityCode) {
+        Amount sumInsured = productIGenPremium.getSumInsured();
+        Amount premiumInYear = ProductUtils.getPaymentInAYear(premium, periodicityCode);
+        List<DateTimeAmount> yearlyDeathBenefits = new ArrayList<>();
+        for (int i = 0; i < coverageYears; i++) {
+            int year = i + 1;
+            DateTimeAmount yearlyDeathBenefit = new DateTimeAmount();
+            Amount accumulatedPremiumAmount = premiumInYear.multiply(year);
+            Amount deathBenefit = AmountUtil.max(sumInsured, accumulatedPremiumAmount);
+            yearlyDeathBenefit.setAmount(deathBenefit);
+            yearlyDeathBenefit.setDateTime(DateTimeUtil.plusYears(now, year));
+            yearlyDeathBenefits.add(yearlyDeathBenefit);
+        }
+        productIGenPremium.setYearlyDeathBenefits(yearlyDeathBenefits);
     }
 
     private void calculateTax(Quote quote, ProductIGenPremium productIGenPremium, PeriodicityCode periodicityCode, Insured mainInsured) {
@@ -184,22 +236,32 @@ public class IGenService implements ProductService {
      * @param quote
      * @param productQuotation
      */
-    private void calculateDividendOptionId(Quote quote, ProductQuotation productQuotation) {
+    private void calculateYearlyCashback(Instant now, Quote quote, ProductQuotation productQuotation) {
         ProductIGenPremium productIGenPremium = quote.getPremiumsData().getProductIGenPremium();
         String dividendOptionId = productQuotation.getDividendOptionId();
         productIGenPremium.setDividendOptionId(dividendOptionId);
         int coverageYears = quote.getCommonData().getNbOfYearsOfCoverage();
         Amount sumInsuredValue = productIGenPremium.getSumInsured();
 
-        //TODO depend on dividendOption
+        List<DateTimeAmount> yearlyCashBackForEndOfContract = calculateYearlyCashBack(sumInsuredValue, coverageYears, now, DIVIDEND_INTEREST_RATE_FOR_END_OF_CONTRACT);
+        List<DateTimeAmount> yearlyCashBackForAnnual = calculateYearlyCashBack(sumInsuredValue, coverageYears, now, DIVIDEND_INTEREST_RATE_FOR_ANNUAL);
+        productIGenPremium.setYearlyCashBacksForEndOfContract(yearlyCashBackForEndOfContract);
+        productIGenPremium.setYearlyCashBacksForAnnual(yearlyCashBackForAnnual);
+
+        Amount endOfContractBenefit;
+        if (ProductDividendOption.END_OF_CONTRACT_PAY_BACK.getId().equals(dividendOptionId)) {
+            endOfContractBenefit = ListUtil.getLastItem(yearlyCashBackForEndOfContract).getAmount();
+        } else {
+            endOfContractBenefit = ListUtil.getLastItem(yearlyCashBackForAnnual).getAmount();
+        }
+        productIGenPremium.setEndOfContractBenefit(endOfContractBenefit);
+    }
+
+    private List<DateTimeAmount> calculateYearlyCashBack(Amount sumInsuredValue, int coverageYears, Instant now, double dividendInterestRate) {
         Amount plainAnnualCashBackInNormalYear = sumInsuredValue.multiply(DIVIDEND_RATE_IN_NORMAL_YEAR);
         Amount plainAnnualCashBackInLastYear = sumInsuredValue.multiply(DIVIDEND_RATE_IN_LAST_YEAR);
+
         List<DateTimeAmount> yearlyCashBacks = new ArrayList<>();
-        OffsetDateTime now = OffsetDateTime.now();
-        double dividendInterestRate = 0.0;
-        if (ProductDividendOption.END_OF_CONTRACT_PAY_BACK.getId().equals(dividendOptionId)) {
-            dividendInterestRate = DIVIDEND_INTEREST_RATE;
-        }
         Amount amountPreviousYear = new Amount(0.0, PRODUCT_CURRENCY);
         for (int i = 0; i < coverageYears; i++) {
             int year = i + 1;
@@ -211,12 +273,12 @@ public class IGenService implements ProductService {
             }
             Amount amount = rootAmount.plus(amountPreviousYear.multiply(1 + dividendInterestRate).getValue());
             DateTimeAmount dateTimeAmount = new DateTimeAmount();
-            dateTimeAmount.setDateTime(now.plusYears(year));
+            dateTimeAmount.setDateTime(DateTimeUtil.plusYears(now, year));
             dateTimeAmount.setAmount(amount);
             yearlyCashBacks.add(dateTimeAmount);
             amountPreviousYear = dateTimeAmount.getAmount();
         }
-        productIGenPremium.setYearlyCashBacksForEndOfContract(yearlyCashBacks);
+        return yearlyCashBacks;
     }
 
     public static Amount getPremium(Quote quote) {
@@ -268,23 +330,6 @@ public class IGenService implements ProductService {
             ProductIGenPremium.setSumInsured(ProductIGenPremium.getSumInsuredBeforeDiscount());
             premiumsData.getFinancialScheduler().setModalAmount(premiumsData.getFinancialScheduler().getModalAmountBeforeDiscount());
         }
-    }
-
-    private OccupationType validateExistOccupationId(Integer occupationId) {
-        OccupationType occupationType = occupationTypeRepository.findByOccId(occupationId);
-        notNull(occupationType, QuoteCalculationException.occupationNotExistException.apply(occupationId));
-        return occupationType;
-    }
-
-    private double validateExistOccupationRateIfNecessary(ProductQuotation productQuotation) {
-        double occupationRate;
-        if (NEED_OCCUPATION) {
-            OccupationType occupationType = validateExistOccupationId(productQuotation.getOccupationId());
-            occupationRate = getOccupationRate(occupationType);
-        } else {
-            occupationRate = 0.0;
-        }
-        return occupationRate;
     }
 
     private AmountLimits calculateAmountLimits(String packageName, double premiumRate, double occupationRate, PeriodicityCode periodicityCode) {
@@ -466,11 +511,15 @@ public class IGenService implements ProductService {
         if (productQuotation.getDateOfBirth() == null) {
             return false;
         }
-        if (productQuotation.getGenderCode() == null) {
-            return false;
+        if (REQUIRED_GENDER_CODE_FOR_CALCULATION) {
+            if (productQuotation.getGenderCode() == null) {
+                return false;
+            }
         }
-        if (StringUtils.isBlank(productQuotation.getPackageName())) {
-            return false;
+        if (REQUIRED_PACKAGE_NAME) {
+            if (StringUtils.isBlank(productQuotation.getPackageName())) {
+                return false;
+            }
         }
         if (AmountUtil.isBlank(productQuotation.getSumInsuredAmount()) && AmountUtil.isBlank(productQuotation.getPremiumAmount())) {
             return false;
@@ -478,8 +527,10 @@ public class IGenService implements ProductService {
         if (productQuotation.getPeriodicityCode() == null) {
             return false;
         }
-
-        if (NEED_OCCUPATION) {
+        if (productQuotation.getDeclaredTaxPercentAtSubscription() == null) {
+            return false;
+        }
+        if (REQUIRED_OCCUPATION_FOR_CALCULATION) {
             if (productQuotation.getOccupationId() == null) {
                 return false;
             }
@@ -500,8 +551,10 @@ public class IGenService implements ProductService {
             productIGenPremium.setSumInsuredBeforeDiscount(null);
             productIGenPremium.setSumInsured(null);
             productIGenPremium.setYearlyDeathBenefits(Collections.EMPTY_LIST);
-            productIGenPremium.setTotalTaxDeduction(null);
+            productIGenPremium.setYearlyCashBacksForAnnual(Collections.EMPTY_LIST);
+            productIGenPremium.setYearlyCashBacksForEndOfContract(Collections.EMPTY_LIST);
             productIGenPremium.setYearlyTaxDeduction(null);
+            productIGenPremium.setTotalTaxDeduction(null);
             productIGenPremium.setEndOfContractBenefit(null);
         }
         if (coverage.isPresent()) {

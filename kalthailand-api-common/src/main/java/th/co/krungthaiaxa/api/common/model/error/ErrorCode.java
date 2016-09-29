@@ -20,6 +20,11 @@ public class ErrorCode {
     //Jasper Exception (0040 -> 0049)
     public static final String ERROR_CODE_JASPER = "0040";
 
+    /**
+     * Amount Exception
+     */
+    public static final String ERROR_CODE_AMOUNT = "0080";
+
     //Encrypt Exception (0090 -> 0091)
     public static final String ERROR_CODE_ENCRYPT = "0090";
 

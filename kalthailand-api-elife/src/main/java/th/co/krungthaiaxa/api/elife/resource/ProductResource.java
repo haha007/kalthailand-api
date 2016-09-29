@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import th.co.krungthaiaxa.api.elife.model.Item;
 import th.co.krungthaiaxa.api.elife.products.ProductAmounts;
-import th.co.krungthaiaxa.api.elife.products.ProductFactory;
+import th.co.krungthaiaxa.api.elife.products.ProductItemFactory;
 import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
 import th.co.krungthaiaxa.api.elife.products.ProductService;
 import th.co.krungthaiaxa.api.elife.products.ProductServiceFactory;
@@ -26,10 +26,10 @@ import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 @Api(value = "Products")
 public class ProductResource {
     private final ProductServiceFactory productServiceFactory;
-    private final ProductFactory productFactory;
+    private final ProductItemFactory productFactory;
 
     @Inject
-    public ProductResource(ProductServiceFactory productServiceFactory, ProductFactory productFactory) {
+    public ProductResource(ProductServiceFactory productServiceFactory, ProductItemFactory productFactory) {
         this.productServiceFactory = productServiceFactory;
         this.productFactory = productFactory;
     }

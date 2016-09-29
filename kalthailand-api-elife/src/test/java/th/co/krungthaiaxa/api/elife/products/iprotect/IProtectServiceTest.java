@@ -15,9 +15,9 @@ import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
 import th.co.krungthaiaxa.api.elife.ELifeTest;
 import th.co.krungthaiaxa.api.elife.KalApiApplication;
 import th.co.krungthaiaxa.api.elife.TestUtil;
+import th.co.krungthaiaxa.api.elife.data.IProtectPackage;
 import th.co.krungthaiaxa.api.elife.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.api.elife.model.Amount;
-import th.co.krungthaiaxa.api.elife.model.CommonData;
 import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.ProductIProtectPremium;
@@ -27,9 +27,9 @@ import th.co.krungthaiaxa.api.elife.model.enums.GenderCode;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 import th.co.krungthaiaxa.api.elife.products.ProductAmounts;
 import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
+import th.co.krungthaiaxa.api.elife.products.ProductAssertUtil;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
 import th.co.krungthaiaxa.api.elife.products.ProductUtils;
-import th.co.krungthaiaxa.api.elife.data.IProtectPackage;
 import th.co.krungthaiaxa.api.elife.service.PolicyService;
 import th.co.krungthaiaxa.api.elife.service.QuoteService;
 
@@ -118,24 +118,13 @@ public class IProtectServiceTest extends ELifeTest {
         productQuotation.setOccupationId(1);
         productQuotation.setPeriodicityCode(PeriodicityCode.EVERY_YEAR);
         ProductAmounts productAmounts = productService.calculateProductAmounts(productQuotation);
-        LOGGER.debug(ObjectMapperUtil.toStringMultiLine(productAmounts));
-
-        Assert.assertNotNull(productAmounts.getMaxSumInsured());
-        Assert.assertNotNull(productAmounts.getMinPremium());
-        Assert.assertNotNull(productAmounts.getMinSumInsured());
-        Assert.assertNotNull(productAmounts.getMaxPremium());
-
-        CommonData commonData = productAmounts.getCommonData();
-        Assert.assertNotNull(commonData.getMaxSumInsured());
-        Assert.assertNotNull(commonData.getMinPremium());
-        Assert.assertNotNull(commonData.getMinSumInsured());
-        Assert.assertNotNull(commonData.getMaxPremium());
+        ProductAssertUtil.assertProductAmountsWithFullDetail(productAmounts);
     }
 
     @Test
     public void test_createQuote_with_max_and_min_input_amounts() {
         //These testing numbers are calculated by Excel file from Business team. So the result from our program should match the number of business team.
-        ProductQuotation productQuotation = createDefaultProductQuotation();
+        ProductQuotation productQuotation = initDefaultProductQuotation();
         ProductAmounts productAmounts = productService.calculateProductAmounts(productQuotation);
         LOGGER.debug("ProductAmounts:\n" + ObjectMapperUtil.toStringMultiLine(productAmounts.getCommonData()));
         testCreateQuotePremiumToSumInsured(Math.ceil(productAmounts.getCommonData().getMinPremium().getValue()), null);
@@ -248,14 +237,14 @@ public class IProtectServiceTest extends ELifeTest {
     }
 
     private Quote createQuote(boolean isInputSumInsured, double inputAmountValue) {
-        ProductQuotation productQuotation = createDefaultProductQuotation(isInputSumInsured, inputAmountValue);
+        ProductQuotation productQuotation = initDefaultProductQuotation(isInputSumInsured, inputAmountValue);
         LOGGER.debug("ProductQuotation:\n" + ObjectMapperUtil.toStringMultiLine(productQuotation));
         Quote quote = quoteService.createQuote(randomNumeric(20), ChannelType.LINE, productQuotation);
         LOGGER.debug(ObjectMapperUtil.toStringMultiLine(quote));
         return quote;
     }
 
-    private ProductQuotation createDefaultProductQuotation() {
+    private ProductQuotation initDefaultProductQuotation() {
         int age = 32;
         PeriodicityCode periodicityCode = PeriodicityCode.EVERY_MONTH;
         int taxPercentage = 35;
@@ -270,8 +259,8 @@ public class IProtectServiceTest extends ELifeTest {
                 GenderCode.MALE);
     }
 
-    private ProductQuotation createDefaultProductQuotation(boolean isInputSumInsured, double inputAmountValue) {
-        ProductQuotation productQuotation = createDefaultProductQuotation();
+    private ProductQuotation initDefaultProductQuotation(boolean isInputSumInsured, double inputAmountValue) {
+        ProductQuotation productQuotation = initDefaultProductQuotation();
         Amount inputAmount = ProductUtils.amountTHB(inputAmountValue);
         if (isInputSumInsured) {
             productQuotation.setSumInsuredAmount(inputAmount);

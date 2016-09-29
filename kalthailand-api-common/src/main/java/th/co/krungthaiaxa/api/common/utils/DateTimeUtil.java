@@ -80,4 +80,10 @@ public class DateTimeUtil {
     public static String formatNowForFilePath() {
         return formatLocalDate(LocalDate.now(), PATTERN_FILEPATH);
     }
+
+    public static Instant plusYears(Instant instant, int year) {
+        LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+        localDateTime = localDateTime.plusYears(year);
+        return localDateTime.atZone(ZoneId.systemDefault()).toInstant();
+    }
 }
