@@ -35,8 +35,8 @@ import th.co.krungthaiaxa.api.elife.repository.OccupationTypeRepository;
 import th.co.krungthaiaxa.api.elife.utils.AmountUtil;
 
 import javax.inject.Inject;
+import java.time.Instant;
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -95,7 +95,7 @@ public class IGenService implements ProductService {
 
     @Override
     public void calculateQuote(Quote quote, ProductQuotation productQuotation) {
-        OffsetDateTime now = OffsetDateTime.now();
+        Instant now = Instant.now();
         if (productQuotation == null) {
             return;
         }
@@ -206,7 +206,7 @@ public class IGenService implements ProductService {
      * @param premium
      * @param periodicityCode periodicity (MONTH, YEAR...) of premium payment.
      */
-    private void calculateDeathBenefits(OffsetDateTime now, ProductIGenPremium productIGenPremium, int coverageYears, Amount premium, PeriodicityCode periodicityCode) {
+    private void calculateDeathBenefits(Instant now, ProductIGenPremium productIGenPremium, int coverageYears, Amount premium, PeriodicityCode periodicityCode) {
         Amount sumInsured = productIGenPremium.getSumInsured();
         Amount premiumInYear = ProductUtils.getPaymentInAYear(premium, periodicityCode);
         List<DateTimeAmount> yearlyDeathBenefits = new ArrayList<>();
@@ -216,7 +216,7 @@ public class IGenService implements ProductService {
             Amount accumulatedPremiumAmount = premiumInYear.multiply(year);
             Amount deathBenefit = AmountUtil.max(sumInsured, accumulatedPremiumAmount);
             yearlyDeathBenefit.setAmount(deathBenefit);
-            yearlyDeathBenefit.setDateTime(now.plusYears(year));
+            yearlyDeathBenefit.setDateTime(DateTimeUtil.plusYears(now, year));
             yearlyDeathBenefits.add(yearlyDeathBenefit);
         }
         productIGenPremium.setYearlyDeathBenefits(yearlyDeathBenefits);
@@ -236,7 +236,7 @@ public class IGenService implements ProductService {
      * @param quote
      * @param productQuotation
      */
-    private void calculateYearlyCashback(OffsetDateTime now, Quote quote, ProductQuotation productQuotation) {
+    private void calculateYearlyCashback(Instant now, Quote quote, ProductQuotation productQuotation) {
         ProductIGenPremium productIGenPremium = quote.getPremiumsData().getProductIGenPremium();
         String dividendOptionId = productQuotation.getDividendOptionId();
         productIGenPremium.setDividendOptionId(dividendOptionId);
@@ -257,7 +257,7 @@ public class IGenService implements ProductService {
         productIGenPremium.setEndOfContractBenefit(endOfContractBenefit);
     }
 
-    private List<DateTimeAmount> calculateYearlyCashBack(Amount sumInsuredValue, int coverageYears, OffsetDateTime now, double dividendInterestRate) {
+    private List<DateTimeAmount> calculateYearlyCashBack(Amount sumInsuredValue, int coverageYears, Instant now, double dividendInterestRate) {
         Amount plainAnnualCashBackInNormalYear = sumInsuredValue.multiply(DIVIDEND_RATE_IN_NORMAL_YEAR);
         Amount plainAnnualCashBackInLastYear = sumInsuredValue.multiply(DIVIDEND_RATE_IN_LAST_YEAR);
 
@@ -273,7 +273,7 @@ public class IGenService implements ProductService {
             }
             Amount amount = rootAmount.plus(amountPreviousYear.multiply(1 + dividendInterestRate).getValue());
             DateTimeAmount dateTimeAmount = new DateTimeAmount();
-            dateTimeAmount.setDateTime(now.plusYears(year));
+            dateTimeAmount.setDateTime(DateTimeUtil.plusYears(now, year));
             dateTimeAmount.setAmount(amount);
             yearlyCashBacks.add(dateTimeAmount);
             amountPreviousYear = dateTimeAmount.getAmount();

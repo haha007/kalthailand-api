@@ -2,7 +2,6 @@ package th.co.krungthaiaxa.api.elife.factory;
 
 import com.icegreen.greenmail.junit.GreenMailRule;
 import com.icegreen.greenmail.util.ServerSetupTest;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Rule;
 import org.springframework.stereotype.Component;
 import th.co.krungthaiaxa.api.elife.TestUtil;
@@ -33,10 +32,6 @@ public class QuoteFactory {
     @Rule
     public final GreenMailRule greenMail = new GreenMailRule(ServerSetupTest.SMTP_IMAP);
 
-    public static String generateSession() {
-        return "SESSION_" + RandomStringUtils.randomAlphanumeric(20);
-    }
-
     public Quote createDefaultQuoteForLine(int age, String email) {
         Quote quote = quoteService.createQuote(randomNumeric(20), ChannelType.LINE, TestUtil.productQuotation(age, PeriodicityCode.EVERY_MONTH));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
@@ -45,7 +40,7 @@ public class QuoteFactory {
         return quote;
     }
 
-    public Quote createDefaultiProtectQuoteForLine(int age, String email) {
+    public Quote createDefaultIProtectQuoteForLine(int age, String email) {
         PeriodicityCode periodicityCode = PeriodicityCode.EVERY_MONTH;
         int taxPercentage = 35;
 

@@ -6,10 +6,7 @@ import org.junit.Rule;
 import org.springframework.stereotype.Component;
 import th.co.krungthaiaxa.api.elife.model.Person;
 import th.co.krungthaiaxa.api.elife.model.Quote;
-import th.co.krungthaiaxa.api.elife.service.PolicyService;
-import th.co.krungthaiaxa.api.elife.service.QuoteService;
 
-import javax.inject.Inject;
 import java.time.LocalDate;
 
 /**
@@ -17,14 +14,6 @@ import java.time.LocalDate;
  */
 @Component
 public class PersonFactory {
-    @Inject
-    private QuoteFactory quoteFactory;
-    @Inject
-    private QuoteService quoteService;
-
-    @Inject
-    private PolicyService policyService;
-
     @Rule
     public final GreenMailRule greenMail = new GreenMailRule(ServerSetupTest.SMTP_IMAP);
 

@@ -34,10 +34,11 @@ import th.co.krungthaiaxa.api.elife.products.ProductAmounts;
 import th.co.krungthaiaxa.api.elife.products.ProductIBeginService;
 import th.co.krungthaiaxa.api.elife.products.ProductIFinePackage;
 import th.co.krungthaiaxa.api.elife.products.ProductIFineService;
-import th.co.krungthaiaxa.api.elife.products.igen.IGenService;
 import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
 import th.co.krungthaiaxa.api.elife.products.ProductService;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
+import th.co.krungthaiaxa.api.elife.products.igen.IGenService;
+import th.co.krungthaiaxa.api.elife.utils.BeneficiaryUtils;
 
 import java.io.IOException;
 import java.util.List;
@@ -212,9 +213,7 @@ public class TestUtil {
         }
 
         if (beneficiaries != null) {
-            for (CoverageBeneficiary beneficiary : beneficiaries) {
-                quote.getCoverages().get(0).addBeneficiary(beneficiary);
-            }
+            BeneficiaryUtils.addBeneficiariesToFirstCoverage(quote, beneficiaries);
         }
     }
 
@@ -256,11 +255,15 @@ public class TestUtil {
         return new IGenService();
     }
 
+    //TODO use BeneficiaryFactory
+    @Deprecated
     public static CoverageBeneficiary beneficiary(Double benefitPercent) {
         return beneficiary(benefitPercent, "3101202780273");
 //        return beneficiary(benefitPercent, "3120300153833");
     }
 
+    //TODO use BeneficiaryFactory
+    @Deprecated
     public static CoverageBeneficiary beneficiary(Double benefitPercent, String registrationId) {
         Person person = new Person();
         person.setGenderCode(GenderCode.FEMALE);
@@ -298,6 +301,17 @@ public class TestUtil {
         return insured(ageAtSubscription, mainInsured, "3841200364454", 5, GenderCode.FEMALE);
     }
 
+    /**
+     * TODO Replaced by {@link th.co.krungthaiaxa.api.elife.factory.InsuredFactory}
+     *
+     * @param ageAtSubscription
+     * @param mainInsured
+     * @param registrationId
+     * @param taxRate
+     * @param genderCode
+     * @return
+     */
+    @Deprecated
     public static Insured insured(int ageAtSubscription, boolean mainInsured, String registrationId, Integer taxRate, GenderCode genderCode) {
         Fatca fatca = new Fatca();
         fatca.setBornInUSA(FALSE);

@@ -16,7 +16,7 @@ import static th.co.krungthaiaxa.api.elife.products.ProductUtils.amountTHB;
  */
 @Component
 public class ProductQuotationFactory {
-    public static ProductQuotation initQuotation(ProductType productType, String packageName, Integer age, PeriodicityCode periodicityCode, Double amountValue, Boolean isSumInsured, Integer taxRate, GenderCode genderCode, Integer occupationTypeId,
+    public static ProductQuotation constructQuotation(ProductType productType, String packageName, Integer age, PeriodicityCode periodicityCode, Double amountValue, Boolean isSumInsured, Integer taxRate, GenderCode genderCode, Integer occupationTypeId,
             ProductDividendOption productDividendOption) {
         Amount amount = amountTHB(amountValue);
 
@@ -41,8 +41,8 @@ public class ProductQuotationFactory {
         return productQuotation;
     }
 
-    public static ProductQuotation initIProtect(Integer age, PeriodicityCode periodicityCode, Double amountValue, Boolean isSumInsured, Integer taxRate, GenderCode genderCode) {
-        return initQuotation(ProductType.PRODUCT_IGEN, null, age, periodicityCode, amountValue, isSumInsured, taxRate, genderCode, 1, null);
+    public static ProductQuotation constructIProtect(Integer age, PeriodicityCode periodicityCode, Double amountValue, Boolean isSumInsured, Integer taxRate, GenderCode genderCode) {
+        return constructQuotation(ProductType.PRODUCT_IGEN, null, age, periodicityCode, amountValue, isSumInsured, taxRate, genderCode, 1, null);
     }
 
     /**
@@ -55,8 +55,8 @@ public class ProductQuotationFactory {
      * @param taxRate
      * @return
      */
-    public static ProductQuotation initIGen(Integer age, PeriodicityCode periodicityCode, Double amountValue, Boolean isSumInsured, Integer taxRate, ProductDividendOption productDividendOption) {
+    public static ProductQuotation constructIGen(Integer age, PeriodicityCode periodicityCode, Double amountValue, Boolean isSumInsured, Integer taxRate, ProductDividendOption productDividendOption) {
         //This product always required occupation to stored in DB, but don't need it for calculation.
-        return initQuotation(ProductType.PRODUCT_IGEN, null, age, periodicityCode, amountValue, isSumInsured, taxRate, null, null, productDividendOption);
+        return constructQuotation(ProductType.PRODUCT_IGEN, null, age, periodicityCode, amountValue, isSumInsured, taxRate, null, null, productDividendOption);
     }
 }

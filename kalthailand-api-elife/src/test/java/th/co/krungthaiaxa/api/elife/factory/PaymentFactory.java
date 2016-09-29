@@ -16,18 +16,15 @@ public class PaymentFactory {
     }
 
     public static String generateOrderId() {
-        return "ORDER_" + RandomStringUtils.randomNumeric(10);
+        return "MOCKORDER_" + System.currentTimeMillis();
     }
 
     public static String generateRegKeyId() {
-        return "REGKEY_" + RandomStringUtils.randomAlphanumeric(15);
+        return "MOCKREGKEY_" + RandomStringUtils.randomAlphanumeric(15);
     }
 
     public static String generateTransactionId() {
-        return "TRANS_" + RandomStringUtils.randomAlphanumeric(20);
+        return "MOCKTRANS_" + System.currentTimeMillis();
     }
 
-    public static String generateAccessToken() {
-        return "ACCESSTOKEN_" + RandomStringUtils.randomAlphanumeric(25);
-    }
 }
