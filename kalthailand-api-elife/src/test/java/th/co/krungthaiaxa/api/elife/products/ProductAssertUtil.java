@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
 import th.co.krungthaiaxa.api.elife.model.Amount;
 import th.co.krungthaiaxa.api.elife.model.CommonData;
+import th.co.krungthaiaxa.api.elife.model.PremiumsData;
 import th.co.krungthaiaxa.api.elife.model.ProductIGenPremium;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 
@@ -78,6 +79,13 @@ public class ProductAssertUtil {
         }
     }
 
+    public static void assertPremiumDataAfterQuoteCalculationWithFullDetail(PremiumsData premiumsData) {
+        LOGGER.debug("\nPremiumsData: " + ObjectMapperUtil.toJson(new ObjectMapper(), premiumsData));
+        assertAmountNotNull(premiumsData.getFinancialScheduler().getModalAmount());
+        Assert.assertNotNull(premiumsData.getFinancialScheduler().getEndDate());
+        Assert.assertNotNull(premiumsData.getFinancialScheduler().getPeriodicity());
+    }
+
     public static void assertCommonDataAfterQuoteCalculationWithFullDetail(CommonData commonData) {
         LOGGER.debug("\nCommonData: " + ObjectMapperUtil.toJson(new ObjectMapper(), commonData));
         Assert.assertNotNull(commonData.getProductId());
@@ -97,6 +105,7 @@ public class ProductAssertUtil {
     }
 
     /**
+     * Validate quote after calculation
      * If you don't want to validate any expected value, please input null to that value.
      *
      * @param quote
@@ -106,6 +115,9 @@ public class ProductAssertUtil {
      * @param expectEndContractBenefit
      */
     public static void assertQuoteWithPremiumAmountAndTaxAndEndContractBenefit(Quote quote, ProductIGenPremium productIGenPremium, Double expectPremiumValue, Double expectTotalTaxDeduction, Double expectEndContractBenefit) {
+        assertPremiumDataAfterQuoteCalculationWithFullDetail(quote.getPremiumsData());
+        assertCommonDataAfterQuoteCalculationWithFullDetail(quote.getCommonData());
+
         LOGGER.debug("\nQuote: " + ObjectMapperUtil.toJson(new ObjectMapper(), quote));
 
         Amount actualPremium = quote.getPremiumsData().getFinancialScheduler().getModalAmount();
@@ -124,7 +136,6 @@ public class ProductAssertUtil {
         if (expectEndContractBenefit != null) {
             Assert.assertEquals(expectEndContractBenefit, actualEndOfContractBenefit.getValue(), DOUBLE_COMPARE_EXACT_VALUE);
         }
-        assertCommonDataAfterQuoteCalculationWithFullDetail(quote.getCommonData());
     }
 
     public static void assertAmountNotNull(Amount amount) {

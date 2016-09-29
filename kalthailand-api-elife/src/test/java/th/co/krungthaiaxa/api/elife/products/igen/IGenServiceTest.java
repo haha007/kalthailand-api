@@ -76,31 +76,28 @@ public class IGenServiceTest extends ELifeTest {
     @Test
     public void create_quote_success_with_dividend_annual_payback() {
         ProductQuotation productQuotation = ProductQuotationFactory.constructIGen(33, PeriodicityCode.EVERY_YEAR, 1000000.0, true, 35, ProductDividendOption.ANNUAL_PAY_BACK_CASH);
-        String sessionQuote = RequestFactory.generateSession();
-        Quote quote = quoteService.createQuote(sessionQuote, ChannelType.LINE, productQuotation);
-        Optional<Quote> quoteOptional = quoteService.findByQuoteId(quote.getQuoteId(), sessionQuote, ChannelType.LINE);
-        quote = quoteOptional.get();
+        Quote quote = createAndFindQuote(productQuotation);
         ProductAssertUtil.assertQuoteWithPremiumAmountAndTaxAndEndContractBenefit(quote, getSpecificPremiumData(quote), 308000.0, 210000.0, 1980000.0);
     }
 
     @Test
     public void create_quote_success_with_dividend_annual_nextpremium() {
         ProductQuotation productQuotation = ProductQuotationFactory.constructIGen(33, PeriodicityCode.EVERY_YEAR, 1000000.0, true, 35, ProductDividendOption.ANNUAL_PAY_BACK_NEXT_PREMIUM);
-        Quote quote = quoteService.createQuote(RequestFactory.generateSession(), ChannelType.LINE, productQuotation);
+        Quote quote = createAndFindQuote(productQuotation);
         ProductAssertUtil.assertQuoteWithPremiumAmountAndTaxAndEndContractBenefit(quote, getSpecificPremiumData(quote), 308000.0, 210000.0, 1980000.0);
     }
 
     @Test
     public void create_quote_success_with_dividend_end_of_contract() {
         ProductQuotation productQuotation = ProductQuotationFactory.constructIGen(33, PeriodicityCode.EVERY_YEAR, 1000000.0, true, 35, ProductDividendOption.END_OF_CONTRACT_PAY_BACK);
-        Quote quote = quoteService.createQuote(RequestFactory.generateSession(), ChannelType.LINE, productQuotation);
+        Quote quote = createAndFindQuote(productQuotation);
         ProductAssertUtil.assertQuoteWithPremiumAmountAndTaxAndEndContractBenefit(quote, getSpecificPremiumData(quote), 308000.0, 210000.0, 1998994.42);
     }
 
     @Test
     public void update_quote_success_without_changing_any_thing() {
         ProductQuotation productQuotation = constructDefaultIGen();
-        Quote quote = quoteService.createQuote(RequestFactory.generateSession(), ChannelType.LINE, productQuotation);
+        Quote quote = createAndFindQuote(productQuotation);
         quote = quoteService.updateQuote(quote, RequestFactory.generateAccessToken());
         assertDefaultCalculationResultForIGen(quote);
     }
@@ -108,10 +105,16 @@ public class IGenServiceTest extends ELifeTest {
     @Test
     public void update_quote_success_with_new_beneficiaries() {
         ProductQuotation productQuotation = constructDefaultIGen();
-        Quote quote = quoteService.createQuote(RequestFactory.generateSession(), ChannelType.LINE, productQuotation);
+        Quote quote = createAndFindQuote(productQuotation);
         InsuredFactory.setDefaultValuesToMainInsuredAnd2Beneficiaries(quote);
         quote = quoteService.updateQuote(quote, RequestFactory.generateAccessToken());
         assertDefaultCalculationResultForIGen(quote);
+    }
+
+    private Quote createAndFindQuote(ProductQuotation productQuotation) {
+        String sessionQuote = RequestFactory.generateSession();
+        Quote quote = quoteService.createQuote(sessionQuote, ChannelType.LINE, productQuotation);
+        return quoteService.findByQuoteId(quote.getQuoteId(), sessionQuote, ChannelType.LINE).get();
     }
 
     private ProductIGenPremium getSpecificPremiumData(Quote quote) {
