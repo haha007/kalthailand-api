@@ -156,7 +156,7 @@ public class IGenService implements ProductService {
         //TODO copy to iProtect
         calculateTax(quote, productIGenPremium, periodicityCode, mainInsured);
 
-        calculateDeathBenefits(now, productIGenPremium, coverageYears, getPremium(quote), periodicityCode);
+        calculateDeathBenefits(now, productIGenPremium, paymentYears, coverageYears, getPremium(quote), periodicityCode);
 //        productIGenPremium.setDeathBenefit(productIGenPremium.getSumInsured());
 
         AmountLimits amountLimits = calculateAmountLimits(packageName, premiumRate, occupationRate, periodicityCode);
@@ -209,14 +209,14 @@ public class IGenService implements ProductService {
      * @param premium
      * @param periodicityCode periodicity (MONTH, YEAR...) of premium payment.
      */
-    private void calculateDeathBenefits(Instant now, ProductIGenPremium productIGenPremium, int coverageYears, Amount premium, PeriodicityCode periodicityCode) {
+    private void calculateDeathBenefits(Instant now, ProductIGenPremium productIGenPremium, int paymentYears, int coverageYears, Amount premium, PeriodicityCode periodicityCode) {
         Amount sumInsured = productIGenPremium.getSumInsured();
         Amount premiumInYear = ProductUtils.getPaymentInAYear(premium, periodicityCode);
         List<DateTimeAmount> yearlyDeathBenefits = new ArrayList<>();
         for (int i = 0; i < coverageYears; i++) {
             int year = i + 1;
             DateTimeAmount yearlyDeathBenefit = new DateTimeAmount();
-            Amount accumulatedPremiumAmount = premiumInYear.multiply(year);
+            Amount accumulatedPremiumAmount = premiumInYear.multiply(Math.min(year, paymentYears));
             Amount deathBenefit = AmountUtil.max(sumInsured, accumulatedPremiumAmount);
             yearlyDeathBenefit.setAmount(deathBenefit);
             yearlyDeathBenefit.setDateTime(DateTimeUtil.plusYears(now, year));

@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
 import th.co.krungthaiaxa.api.elife.model.Amount;
 import th.co.krungthaiaxa.api.elife.model.CommonData;
+import th.co.krungthaiaxa.api.elife.model.DateTimeAmount;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.PremiumsData;
@@ -174,6 +175,15 @@ public class ProductAssertUtil {
                 Assert.assertEquals(1, Period.between(previousDueDate.toLocalDate(), payment.getDueDate().toLocalDate()).getYears());
             }
             previousDueDate = payment.getDueDate();
+        }
+    }
+
+    public static void assertDateTimeAmount(List<DateTimeAmount> dateTimeAmounts, double... amounts) {
+        Assert.assertEquals(dateTimeAmounts.size(), amounts.length);
+        int i = 0;
+        for (DateTimeAmount dateTimeAmount : dateTimeAmounts) {
+            Assert.assertEquals(amounts[i], dateTimeAmount.getAmount().getValue(), DOUBLE_COMPARE_EXACT_VALUE);
+            i++;
         }
     }
 }

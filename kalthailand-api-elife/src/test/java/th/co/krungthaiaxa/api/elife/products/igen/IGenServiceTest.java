@@ -138,7 +138,7 @@ public class IGenServiceTest extends ELifeTest {
     }
 
     /**
-     * The input here must match with result from {@link #assertDefaultCalculationResultForIGen(Quote)}
+     * The input here must match with result from {@link #assertDefaultCalculationResultForIGen(Quote)} && {@link #assertDefaultCalculationYearlyPaybackForIGen(Quote)}
      *
      * @return
      */
@@ -153,5 +153,51 @@ public class IGenServiceTest extends ELifeTest {
      */
     private void assertDefaultCalculationResultForIGen(Quote quote) {
         ProductAssertUtil.assertQuoteWithPremiumAmountAndTaxAndEndContractBenefit(quote, getSpecificPremiumData(quote), 308000.0, 210000.0, 1998994.42);
+        assertDefaultCalculationYearlyPaybackForIGen(quote);
+    }
+
+    /**
+     * The result here must match with the input from {@link #constructDefaultIGen()}
+     *
+     * @param quote
+     */
+    private void assertDefaultCalculationYearlyPaybackForIGen(Quote quote) {
+        ProductIGenPremium productIGenPremium = quote.getPremiumsData().getProductIGenPremium();
+        ProductAssertUtil.assertDateTimeAmount(productIGenPremium.getYearlyCashBacksForAnnual(),
+                20000.0
+                , 40000.0
+                , 60000.0
+                , 80000.0
+                , 100000.0
+                , 120000.0
+                , 140000.0
+                , 160000.0
+                , 180000.0
+                , 1980000.0
+        );
+        ProductAssertUtil.assertDateTimeAmount(productIGenPremium.getYearlyCashBacksForEndOfContract(),
+                20000.0000
+                , 40400.0000
+                , 61208.0000
+                , 82432.1600
+                , 104080.8032
+                , 126162.4193
+                , 148685.6676
+                , 171659.3810
+                , 195092.5686
+                , 1998994.4200
+        );
+        ProductAssertUtil.assertDateTimeAmount(productIGenPremium.getYearlyDeathBenefits(),
+                1000000.0
+                , 1000000.0
+                , 1000000.0
+                , 1232000.0
+                , 1540000.00
+                , 1848000.00
+                , 1848000.00
+                , 1848000.00
+                , 1848000.00
+                , 1848000.00
+        );
     }
 }
