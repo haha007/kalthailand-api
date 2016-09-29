@@ -106,8 +106,8 @@ public class ProductResourceTest extends ELifeTest {
         ResponseEntity<String> response = template.exchange(uri, HttpMethod.POST, new HttpEntity<>(productQuotation), String.class);
         String responseBody = response.getBody();
         Quote quote = ObjectMapperUtil.toObject(JsonUtil.mapper, responseBody, Quote.class);
-        ProductAssertUtil.assertCommonDataAfterQuoteCalculationWithFullDetail(quote.getCommonData());
-        ProductAssertUtil.assertPremiumDataAfterQuoteCalculationWithFullDetail(quote.getPremiumsData());
+        ProductAssertUtil.assertCommonDataEnoughDataAfterQuoteCalculation(quote.getCommonData());
+        ProductAssertUtil.assertPremiumDataEnoughDataAfterQuoteCalculation(quote.getPremiumsData());
         LOGGER.debug(responseBody);
     }
 }

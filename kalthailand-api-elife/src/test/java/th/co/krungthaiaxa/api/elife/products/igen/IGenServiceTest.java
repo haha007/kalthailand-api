@@ -72,9 +72,7 @@ public class IGenServiceTest extends ELifeTest {
         ProductQuotation productQuotation = constructDefaultIGen();
         ProductAmounts productAmounts = productService.calculateProductAmounts(productQuotation);
         ProductAssertUtil.assertProductAmountsWithFullDetail(productAmounts);
-//        ProductAssertUtil.assertAmountLimits(productAmounts, 100000.0, 150000000.0, );
-        //        ProductAssertUtil.assertAmountLimits(productAmounts, 100000.0, 150000000.0, );
-
+        ProductAssertUtil.assertAmountLimits(productAmounts, 100000.0, 1500000.0, 30800.0, 462000.0);
     }
 
     @Test
@@ -103,7 +101,7 @@ public class IGenServiceTest extends ELifeTest {
         ProductQuotation productQuotation = constructDefaultIGen();
         Quote quote = createAndFindQuote(productQuotation);
         quote = quoteService.updateQuote(quote, RequestFactory.generateAccessToken());
-        assertDefaultCalculationResultForIGen(quote);
+        assertDefaultCalculationNumbersAreCorrect(quote);
     }
 
     @Test
@@ -112,7 +110,7 @@ public class IGenServiceTest extends ELifeTest {
         Quote quote = createAndFindQuote(productQuotation);
         InsuredFactory.setDefaultValuesToMainInsuredAnd2Beneficiaries(quote);
         quote = quoteService.updateQuote(quote, RequestFactory.generateAccessToken());
-        assertDefaultCalculationResultForIGen(quote);
+        assertDefaultCalculationNumbersAreCorrect(quote);
     }
 
     @Test
@@ -121,7 +119,7 @@ public class IGenServiceTest extends ELifeTest {
         Quote quote = createAndFindQuote(productQuotation);
         InsuredFactory.setDefaultValuesToMainInsuredAnd2Beneficiaries(quote);
         quote = quoteService.updateQuote(quote, RequestFactory.generateAccessToken());
-        assertDefaultCalculationResultForIGen(quote);
+        assertDefaultCalculationNumbersAreCorrect(quote);
 
         Policy policy = policyService.createPolicy(quote);
         ProductAssertUtil.assertPolicyAfterCreatingFromQuote(policy);
@@ -138,7 +136,7 @@ public class IGenServiceTest extends ELifeTest {
     }
 
     /**
-     * The input here must match with result from {@link #assertDefaultCalculationResultForIGen(Quote)} && {@link #assertDefaultCalculationYearlyPaybackForIGen(Quote)}
+     * The input here must match with result from {@link #assertDefaultCalculationNumbersAreCorrect(Quote)} && {@link #assertDefaultCalculationYearlyPaybackForIGen(Quote)}
      *
      * @return
      */
@@ -151,8 +149,9 @@ public class IGenServiceTest extends ELifeTest {
      *
      * @param quote
      */
-    private void assertDefaultCalculationResultForIGen(Quote quote) {
+    private void assertDefaultCalculationNumbersAreCorrect(Quote quote) {
         ProductAssertUtil.assertQuoteWithPremiumAmountAndTaxAndEndContractBenefit(quote, getSpecificPremiumData(quote), 308000.0, 210000.0, 1998994.42);
+        ProductAssertUtil.assertAmountLimits(quote.getCommonData(), 100000.0, 1500000.0, 30800.0, 462000.0);
         assertDefaultCalculationYearlyPaybackForIGen(quote);
     }
 
