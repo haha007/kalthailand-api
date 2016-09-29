@@ -16,6 +16,7 @@ import static th.co.krungthaiaxa.api.elife.products.ProductUtils.amountTHB;
  */
 @Component
 public class ProductQuotationFactory {
+
     public static ProductQuotation constructQuotation(ProductType productType, String packageName, Integer age, PeriodicityCode periodicityCode, Double amountValue, Boolean isSumInsured, Integer taxRate, GenderCode genderCode, Integer occupationTypeId,
             ProductDividendOption productDividendOption) {
         Amount amount = amountTHB(amountValue);
@@ -57,6 +58,15 @@ public class ProductQuotationFactory {
      */
     public static ProductQuotation constructIGen(Integer age, PeriodicityCode periodicityCode, Double amountValue, Boolean isSumInsured, Integer taxRate, ProductDividendOption productDividendOption) {
         //This product always required occupation to stored in DB, but don't need it for calculation.
-        return constructQuotation(ProductType.PRODUCT_IGEN, null, age, periodicityCode, amountValue, isSumInsured, taxRate, null, null, productDividendOption);
+        return constructQuotation(ProductType.PRODUCT_IGEN, null, age, periodicityCode, amountValue, isSumInsured, taxRate, GenderCode.MALE, 1, productDividendOption);
+    }
+
+    /**
+     * You should use this for only integration test, we don't actually care about the calculation result of this input.
+     *
+     * @return
+     */
+    public static ProductQuotation constructIGenDefault() {
+        return ProductQuotationFactory.constructIGen(33, PeriodicityCode.EVERY_YEAR, 1000000.0, true, 35, ProductDividendOption.END_OF_CONTRACT_PAY_BACK);
     }
 }

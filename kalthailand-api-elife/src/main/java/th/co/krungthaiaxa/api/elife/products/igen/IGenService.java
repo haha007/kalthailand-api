@@ -80,9 +80,12 @@ public class IGenService implements ProductService {
     public static final Double DIVIDEND_INTEREST_RATE_FOR_ANNUAL = 0.0;//0%
 
     //All calculation of this product doesn't related to Occupation
-    public static final boolean REQUIRED_OCCUPATION_FOR_CALCULATION = false;
-    private static final boolean REQUIRED_PACKAGE_NAME = false;
-    private static final boolean REQUIRED_GENDER_CODE_FOR_CALCULATION = false;
+
+    private static final boolean REQUIRED_OCCUPATION_FOR_STORING = true;
+    private static final boolean REQUIRED_OCCUPATION_FOR_CALCULATION = false;
+    private static final boolean REQUIRED_PACKAGE_NAME_FOR_CALCULATION = false;
+    private static final boolean REQUIRED_GENDER_FOR_CALCULATION = false;
+    private static final boolean REQUIRED_GENDER_FOR_STORING = true;
 
     @Inject
     private OccupationTypeRepository occupationTypeRepository;
@@ -181,7 +184,7 @@ public class IGenService implements ProductService {
 
     private double setOccupation(Quote quote, ProductQuotation productQuotation, Insured mainInsured) {
         double occupationRate;
-        if (REQUIRED_OCCUPATION_FOR_CALCULATION) {
+        if (REQUIRED_OCCUPATION_FOR_STORING || REQUIRED_OCCUPATION_FOR_CALCULATION) {
             OccupationType occupationType = validateExistOccupationId(productQuotation.getOccupationId());
             mainInsured.setProfessionId(occupationType.getOccId());
             mainInsured.setProfessionName(occupationType.getOccTextTh());
@@ -194,7 +197,7 @@ public class IGenService implements ProductService {
     }
 
     private double validateExistOccupationRateIfNecessary(ProductQuotation productQuotation) {
-        if (REQUIRED_OCCUPATION_FOR_CALCULATION) {
+        if (REQUIRED_OCCUPATION_FOR_STORING || REQUIRED_OCCUPATION_FOR_CALCULATION) {
             OccupationType occupationType = validateExistOccupationId(productQuotation.getOccupationId());
             return getOccupationRate(occupationType);
         } else {
@@ -511,13 +514,18 @@ public class IGenService implements ProductService {
         if (productQuotation.getDateOfBirth() == null) {
             return false;
         }
-        if (REQUIRED_GENDER_CODE_FOR_CALCULATION) {
+        if (REQUIRED_GENDER_FOR_STORING || REQUIRED_GENDER_FOR_CALCULATION) {
             if (productQuotation.getGenderCode() == null) {
                 return false;
             }
         }
-        if (REQUIRED_PACKAGE_NAME) {
+        if (REQUIRED_PACKAGE_NAME_FOR_CALCULATION) {
             if (StringUtils.isBlank(productQuotation.getPackageName())) {
+                return false;
+            }
+        }
+        if (REQUIRED_OCCUPATION_FOR_STORING || REQUIRED_OCCUPATION_FOR_CALCULATION) {
+            if (productQuotation.getOccupationId() == null) {
                 return false;
             }
         }
@@ -529,11 +537,6 @@ public class IGenService implements ProductService {
         }
         if (productQuotation.getDeclaredTaxPercentAtSubscription() == null) {
             return false;
-        }
-        if (REQUIRED_OCCUPATION_FOR_CALCULATION) {
-            if (productQuotation.getOccupationId() == null) {
-                return false;
-            }
         }
         return true;
     }

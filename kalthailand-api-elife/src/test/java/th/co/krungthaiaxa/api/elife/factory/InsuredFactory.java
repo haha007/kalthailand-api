@@ -54,10 +54,12 @@ public class InsuredFactory {
     public static void setDefaultValuesToMainInsured(Quote quote) {
         setMainInsured(quote, "santi.lik@krungthai-axa.co.th", RegistrationFactory.DEFAULT_MAIN_INSURED, "0841139301");
     }
+
     public static void setDefaultValuesToMainInsuredAnd2Beneficiaries(Quote quote) {
         setDefaultValuesToMainInsured(quote);
         BeneficiaryUtils.addBeneficiariesToFirstCoverage(quote, BeneficiaryFactory.constructDefault2Beneficiaries());
     }
+
     /**
      * You should call this method only after quoteCalculation ({@link th.co.krungthaiaxa.api.elife.service.QuoteService#createQuote(String, ChannelType, ProductQuotation)}
      *
@@ -110,6 +112,7 @@ public class InsuredFactory {
         healthStatus.setDeniedOrCounterOffer(FALSE);
         healthStatus.setHeightInCm(175);
         healthStatus.setHospitalizedInLast6Months(FALSE);
+        healthStatus.setWeightChangeInLast6Months(FALSE);
         healthStatus.setWeightInKg(68);
         return healthStatus;
     }

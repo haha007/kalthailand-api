@@ -2,8 +2,8 @@ package th.co.krungthaiaxa.api.elife.model;
 
 import io.swagger.annotations.ApiModel;
 
+import java.io.Serializable;
 import java.time.Instant;
-import java.time.OffsetDateTime;
 
 /**
  * @author khoi.tran on 9/28/16.
@@ -11,7 +11,7 @@ import java.time.OffsetDateTime;
  *         That's why this class use OffsetDateTime.
  */
 @ApiModel(description = "An amount at a specific date with its currency")
-public class DateTimeAmount {
+public class DateTimeAmount implements Serializable {
     private Instant dateTime;
     private Amount amount;
 

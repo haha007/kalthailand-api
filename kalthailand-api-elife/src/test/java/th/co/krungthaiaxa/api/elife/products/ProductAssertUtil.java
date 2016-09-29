@@ -7,8 +7,16 @@ import org.slf4j.LoggerFactory;
 import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
 import th.co.krungthaiaxa.api.elife.model.Amount;
 import th.co.krungthaiaxa.api.elife.model.CommonData;
+import th.co.krungthaiaxa.api.elife.model.Payment;
+import th.co.krungthaiaxa.api.elife.model.Policy;
+import th.co.krungthaiaxa.api.elife.model.PremiumsData;
 import th.co.krungthaiaxa.api.elife.model.ProductIGenPremium;
 import th.co.krungthaiaxa.api.elife.model.Quote;
+import th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus;
+
+import java.time.LocalDateTime;
+import java.time.Period;
+import java.util.List;
 
 /**
  * @author khoi.tran on 9/28/16.
@@ -78,6 +86,13 @@ public class ProductAssertUtil {
         }
     }
 
+    public static void assertPremiumDataAfterQuoteCalculationWithFullDetail(PremiumsData premiumsData) {
+        LOGGER.debug("\nPremiumsData: " + ObjectMapperUtil.toJson(new ObjectMapper(), premiumsData));
+        assertAmountNotNull(premiumsData.getFinancialScheduler().getModalAmount());
+        Assert.assertNotNull(premiumsData.getFinancialScheduler().getEndDate());
+        Assert.assertNotNull(premiumsData.getFinancialScheduler().getPeriodicity());
+    }
+
     public static void assertCommonDataAfterQuoteCalculationWithFullDetail(CommonData commonData) {
         LOGGER.debug("\nCommonData: " + ObjectMapperUtil.toJson(new ObjectMapper(), commonData));
         Assert.assertNotNull(commonData.getProductId());
@@ -97,6 +112,7 @@ public class ProductAssertUtil {
     }
 
     /**
+     * Validate quote after calculation
      * If you don't want to validate any expected value, please input null to that value.
      *
      * @param quote
@@ -106,6 +122,9 @@ public class ProductAssertUtil {
      * @param expectEndContractBenefit
      */
     public static void assertQuoteWithPremiumAmountAndTaxAndEndContractBenefit(Quote quote, ProductIGenPremium productIGenPremium, Double expectPremiumValue, Double expectTotalTaxDeduction, Double expectEndContractBenefit) {
+        assertPremiumDataAfterQuoteCalculationWithFullDetail(quote.getPremiumsData());
+        assertCommonDataAfterQuoteCalculationWithFullDetail(quote.getCommonData());
+
         LOGGER.debug("\nQuote: " + ObjectMapperUtil.toJson(new ObjectMapper(), quote));
 
         Amount actualPremium = quote.getPremiumsData().getFinancialScheduler().getModalAmount();
@@ -124,12 +143,37 @@ public class ProductAssertUtil {
         if (expectEndContractBenefit != null) {
             Assert.assertEquals(expectEndContractBenefit, actualEndOfContractBenefit.getValue(), DOUBLE_COMPARE_EXACT_VALUE);
         }
-        assertCommonDataAfterQuoteCalculationWithFullDetail(quote.getCommonData());
     }
 
     public static void assertAmountNotNull(Amount amount) {
         Assert.assertNotNull(amount);
         Assert.assertNotNull(amount.getValue());
         Assert.assertNotNull(amount.getCurrencyCode());
+    }
+
+    public static void assertPolicyAfterCreatingFromQuote(Policy policy) {
+        Assert.assertNotNull(policy.getId());
+        Assert.assertNotNull(policy.getPolicyId());
+        assertPaymentsWithNoPayment(policy);
+    }
+
+    private static void assertPaymentsWithNoPayment(Policy policy) {
+        List<Payment> payments = policy.getPayments();
+        Assert.assertEquals((int) policy.getCommonData().getNbOfYearsOfPremium(), payments.size());
+        LocalDateTime previousDueDate = null;
+        for (Payment payment : payments) {
+            Assert.assertEquals(policy.getPolicyId(), payment.getPolicyId());
+            assertAmountNotNull(payment.getAmount());
+            Assert.assertEquals(PaymentStatus.NOT_PROCESSED, payment.getStatus());
+            Assert.assertNull(payment.getRegistrationKey());
+            Assert.assertNull(payment.getEffectiveDate());
+            Assert.assertNull(payment.getReceiptImageDocument());
+            Assert.assertNull(payment.getReceiptPdfDocument());
+            Assert.assertNull(payment.getOrderId());
+            if (previousDueDate != null) {
+                Assert.assertEquals(1, Period.between(previousDueDate.toLocalDate(), payment.getDueDate().toLocalDate()).getYears());
+            }
+            previousDueDate = payment.getDueDate();
+        }
     }
 }
