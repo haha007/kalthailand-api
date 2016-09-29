@@ -15,6 +15,7 @@ import th.co.krungthaiaxa.api.elife.data.ProductPremiumRate;
 import th.co.krungthaiaxa.api.elife.factory.InsuredFactory;
 import th.co.krungthaiaxa.api.elife.factory.ProductQuotationFactory;
 import th.co.krungthaiaxa.api.elife.factory.RequestFactory;
+import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.ProductDividendOption;
 import th.co.krungthaiaxa.api.elife.model.ProductIGenPremium;
 import th.co.krungthaiaxa.api.elife.model.Quote;
@@ -25,6 +26,7 @@ import th.co.krungthaiaxa.api.elife.products.ProductAssertUtil;
 import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
 import th.co.krungthaiaxa.api.elife.repository.ProductPremiumRateRepository;
+import th.co.krungthaiaxa.api.elife.service.PolicyService;
 import th.co.krungthaiaxa.api.elife.service.QuoteService;
 
 import java.util.Optional;
@@ -41,6 +43,8 @@ public class IGenServiceTest extends ELifeTest {
     private IGenService productService;
     @Autowired
     private QuoteService quoteService;
+    @Autowired
+    private PolicyService policyService;
 
     @Autowired
     private ProductPremiumRateRepository productPremiumRateRepository;
@@ -109,6 +113,18 @@ public class IGenServiceTest extends ELifeTest {
         InsuredFactory.setDefaultValuesToMainInsuredAnd2Beneficiaries(quote);
         quote = quoteService.updateQuote(quote, RequestFactory.generateAccessToken());
         assertDefaultCalculationResultForIGen(quote);
+    }
+
+    @Test
+    public void create_policy_success_with_new_beneficiaries() {
+        ProductQuotation productQuotation = constructDefaultIGen();
+        Quote quote = createAndFindQuote(productQuotation);
+        InsuredFactory.setDefaultValuesToMainInsuredAnd2Beneficiaries(quote);
+        quote = quoteService.updateQuote(quote, RequestFactory.generateAccessToken());
+        assertDefaultCalculationResultForIGen(quote);
+
+        Policy policy = policyService.createPolicy(quote);
+        ProductAssertUtil.assertPolicyAfterCreatingFromQuote(policy);
     }
 
     private Quote createAndFindQuote(ProductQuotation productQuotation) {
