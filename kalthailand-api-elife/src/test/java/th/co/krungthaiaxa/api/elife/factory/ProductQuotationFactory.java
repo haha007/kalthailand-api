@@ -2,7 +2,7 @@ package th.co.krungthaiaxa.api.elife.factory;
 
 import org.springframework.stereotype.Component;
 import th.co.krungthaiaxa.api.elife.model.Amount;
-import th.co.krungthaiaxa.api.elife.model.ProductDividendOption;
+import th.co.krungthaiaxa.api.elife.model.enums.ProductDividendOption;
 import th.co.krungthaiaxa.api.elife.model.enums.GenderCode;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 import th.co.krungthaiaxa.api.elife.products.ProductQuotation;

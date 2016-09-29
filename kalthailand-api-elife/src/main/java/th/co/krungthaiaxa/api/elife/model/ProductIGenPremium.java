@@ -2,6 +2,7 @@ package th.co.krungthaiaxa.api.elife.model;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import th.co.krungthaiaxa.api.elife.model.enums.ProductDividendOption;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
