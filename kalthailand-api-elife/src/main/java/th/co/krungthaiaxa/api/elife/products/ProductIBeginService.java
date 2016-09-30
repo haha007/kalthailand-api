@@ -1,7 +1,15 @@
 package th.co.krungthaiaxa.api.elife.products;
 
 import org.springframework.stereotype.Component;
-import th.co.krungthaiaxa.api.elife.model.*;
+import th.co.krungthaiaxa.api.elife.model.CommonData;
+import th.co.krungthaiaxa.api.elife.model.Coverage;
+import th.co.krungthaiaxa.api.elife.model.FinancialScheduler;
+import th.co.krungthaiaxa.api.elife.model.Insured;
+import th.co.krungthaiaxa.api.elife.model.Periodicity;
+import th.co.krungthaiaxa.api.elife.model.Policy;
+import th.co.krungthaiaxa.api.elife.model.PremiumsData;
+import th.co.krungthaiaxa.api.elife.model.ProductIBeginPremium;
+import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.enums.GenderCode;
 import th.co.krungthaiaxa.api.elife.repository.ProductIBeginRateRepository;
 
@@ -36,7 +44,7 @@ public class ProductIBeginService implements ProductService {
         if (productQuotation == null) {
             return;
         }
-        
+
         Optional<Coverage> hasIBeginCoverage = quote.getCoverages()
                 .stream()
                 .filter(coverage -> coverage.getName() != null)
@@ -99,7 +107,7 @@ public class ProductIBeginService implements ProductService {
     }
 
     @Override
-    public CommonData initCommonData() {
+    public CommonData initCommonData(ProductQuotation productQuotation) {
         CommonData commonData = new CommonData();
         commonData.setMaxAge(MAX_AGE);
         commonData.setMaxPremium(amountTHB(PREMIUM_MAX));

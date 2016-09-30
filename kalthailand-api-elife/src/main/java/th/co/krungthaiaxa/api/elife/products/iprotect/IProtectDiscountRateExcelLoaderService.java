@@ -35,6 +35,7 @@ public class IProtectDiscountRateExcelLoaderService {
         return iProtectDiscountRates;
     }
 
+
     private List<IProtectDiscountRate> loadPredefinedRatesFromExcel(IProtectPackage iprotectPackage) {
         List<IProtectDiscountRate> result = new ArrayList<>();
         String sheetName = loadSheetNameForDiscountRate(iprotectPackage);

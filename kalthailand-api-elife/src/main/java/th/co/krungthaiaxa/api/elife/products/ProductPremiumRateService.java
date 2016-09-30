@@ -15,6 +15,10 @@ public class ProductPremiumRateService {
     @Autowired
     public ProductPremiumRateService(ProductPremiumRateRepository productIProtectRateRepository) {this.productIProtectRateRepository = productIProtectRateRepository;}
 
+//    public Optional<ProductPremiumRate> findPremiumRateByProductSpecId(ProductSpecId productSpecId) {
+//
+//    }
+
     public Optional<ProductPremiumRate> findPremiumRateByProductId(String productId) {
         return productIProtectRateRepository.findOneByProductId(productId);
     }

@@ -16,8 +16,8 @@ public class IProtectRateService {
     @Inject
     public IProtectRateService(ProductIProtectRateRepository productIProtectRateRepository) {this.productIProtectRateRepository = productIProtectRateRepository;}
 
-    public Optional<IProtectRate> findIProtectRates(IProtectPackage iprotectPackage, int age, GenderCode genderCode) {
-        return productIProtectRateRepository.findByPackageNameAndGenderAndAge(iprotectPackage, genderCode, age);
+    public Optional<IProtectRate> findIProtectRates(String packageName, int age, GenderCode genderCode) {
+        return productIProtectRateRepository.findByPackageNameAndGenderAndAge(packageName, genderCode, age);
     }
 
 

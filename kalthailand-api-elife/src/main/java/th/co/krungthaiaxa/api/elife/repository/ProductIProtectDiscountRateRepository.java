@@ -13,8 +13,8 @@ import java.util.List;
 public interface ProductIProtectDiscountRateRepository extends MongoRepository<IProtectDiscountRate, String> {
 
     @Query("{'packageName': ?0, 'sumInsured': {'$lte': ?1}}")
-    List<IProtectDiscountRate> findByPackageNameAndSumInsuredLessThan(IProtectPackage packageName, double sumInsured, Pageable pageable);
+    List<IProtectDiscountRate> findByPackageNameAndSumInsuredLessThan(String packageName, double sumInsured, Pageable pageable);
 
     @Query("{'packageName': ?0}")
-    List<IProtectDiscountRate> findByPackageName(IProtectPackage iProtectPackage, Pageable pageRequest);
+    List<IProtectDiscountRate> findByPackageName(String packageName, Pageable pageRequest);
 }

@@ -86,7 +86,7 @@ public class QuoteService {
         quote.setCreationDateTime(now);
         quote.setLastUpdateDateTime(now);
         quote.setQuoteId(randomNumeric(20));
-        quote.setCommonData(productService.initCommonData());
+        quote.setCommonData(productService.initCommonData(productQuotation));
         quote.setPremiumsData(productService.initPremiumData());
         quote.addInsured(mainInsured);
 

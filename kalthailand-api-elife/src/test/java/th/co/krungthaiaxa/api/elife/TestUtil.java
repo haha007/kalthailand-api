@@ -232,7 +232,7 @@ public class TestUtil {
         emptyInsured.setType(InsuredType.Insured);
 
         Quote quote = new Quote();
-        quote.setCommonData(productService.initCommonData());
+        quote.setCommonData(productService.initCommonData(null));
         quote.setPremiumsData(productService.initPremiumData());
         quote.addInsured(emptyInsured);
 
