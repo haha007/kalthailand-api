@@ -139,10 +139,8 @@ public class IGenService implements ProductService {
         commonData.setNbOfYearsOfPremium(paymentYears);
         commonData.setNbOfYearsOfCoverage(coverageYears);
 
-        LocalDate startDate = DateTimeUtil.nowLocalDateInThaiZoneId();
-        mainInsured.setStartDate(startDate);
-        mainInsured.setEndDate(startDate.plusYears(coverageYears));
-        premiumsData.getFinancialScheduler().setEndDate(startDate.plusYears(paymentYears));
+        //TODO copy to iProtect
+        calculateDateRange(quote, mainInsured, coverageYears, paymentYears);
 
         //Calculate Premiums input amount (use either PremiumAmount or SumInsuredAmount)
         double premiumRate = validateExistPremiumRate(packageName, mainInsuredAge, mainInsuredGenderCode).getPremiumRate();
@@ -163,6 +161,13 @@ public class IGenService implements ProductService {
 
         //TODO copy to iProtect
         ProductUtils.addCoverageIfNotExist(quote, PRODUCT_TYPE);
+    }
+
+    private void calculateDateRange(Quote quote, Insured mainInsured, int coverageYears, int paymentYears) {
+        LocalDate startDate = DateTimeUtil.nowLocalDateInThaiZoneId();
+        mainInsured.setStartDate(startDate);
+        mainInsured.setEndDate(startDate.plusYears(coverageYears));
+        quote.getPremiumsData().getFinancialScheduler().setEndDate(startDate.plusYears(paymentYears));
     }
 
     private OccupationType validateExistOccupationId(Integer occupationId) {
