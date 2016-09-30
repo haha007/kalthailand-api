@@ -13,7 +13,7 @@ import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
 import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
-import th.co.krungthaiaxa.api.elife.KalApiApplication;
+import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
 import th.co.krungthaiaxa.api.elife.data.SessionQuote;
 import th.co.krungthaiaxa.api.elife.repository.SessionQuoteRepository;
 
@@ -27,7 +27,7 @@ import static th.co.krungthaiaxa.api.elife.TestUtil.*;
 import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.EVERY_MONTH;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = KalApiApplication.class)
+@SpringApplicationConfiguration(classes = KalApiElifeApplication.class)
 @WebAppConfiguration
 @ActiveProfiles("test")
 public class QuoteServiceTest extends ELifeTest {

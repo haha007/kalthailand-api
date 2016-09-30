@@ -14,12 +14,29 @@ import static com.google.common.collect.Lists.newArrayList;
 import static org.apache.poi.ss.usermodel.Cell.CELL_TYPE_FORMULA;
 
 public class ExcelUtils {
-    public static double getDouble(Row row, int cellIndex) {
-        return row.getCell(cellIndex, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL).getNumericCellValue();
+    public static Double getNumber(Row row, int cellIndex) {
+        Cell cell = row.getCell(cellIndex, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
+        if (cell != null) {
+            return cell.getNumericCellValue();
+        } else {
+            return null;
+        }
     }
 
-    public static int getInteger(Row row, int cellIndex) {
-        return (int) getDouble(row, cellIndex);
+    public static Integer getInteger(Row row, int cellIndex) {
+        Double number = getNumber(row, cellIndex);
+        return number == null ? null : (int) (double) number;
+    }
+
+    /**
+     * If cell is empty, null pointer exception will be thrown.
+     *
+     * @param row
+     * @param cellIndex
+     * @return
+     */
+    public static int getInt(Row row, int cellIndex) {
+        return (int) (double) getNumber(row, cellIndex);
     }
 
     public static String getCellValueAsString(Cell cell) {
@@ -116,9 +133,9 @@ public class ExcelUtils {
     public static CellContent text(String value) {
         return new Text(value);
     }
-    
-    public static CellContent text(Double value){
-    	return new DoubleCell(value);
+
+    public static CellContent text(Double value) {
+        return new DoubleCell(value);
     }
 
     public static CellContent text(Boolean value) {
@@ -194,21 +211,21 @@ public class ExcelUtils {
         public void populateCell(Cell cell) {
         }
     }
-    
+
     private static class DoubleCell implements CellContent {
-    	private final double value;
-    	
-    	public DoubleCell(Number value){
-    		this.value = value.doubleValue();
-    	}
-    	
-    	@Override
-    	public void populateCell(Cell cell){
-    		cell.setCellValue(value);
+        private final double value;
+
+        public DoubleCell(Number value) {
+            this.value = value.doubleValue();
+        }
+
+        @Override
+        public void populateCell(Cell cell) {
+            cell.setCellValue(value);
             CellStyle style = cell.getRow().getSheet().getWorkbook().createCellStyle();
             style.setDataFormat(cell.getRow().getSheet().getWorkbook().createDataFormat().getFormat("#0.0000"));
             cell.setCellStyle(style);
-    	}
+        }
     }
 
     private static class IntegerCell implements CellContent {

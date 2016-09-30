@@ -28,7 +28,7 @@ import th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
 import th.co.krungthaiaxa.api.elife.service.QuoteService;
-import th.co.krungthaiaxa.api.elife.KalApiApplication;
+import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
 import th.co.krungthaiaxa.api.common.model.error.Error;
 import th.co.krungthaiaxa.api.elife.repository.PolicyRepository;
 
@@ -46,7 +46,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = KalApiApplication.class)
+@SpringApplicationConfiguration(classes = KalApiElifeApplication.class)
 @WebAppConfiguration
 @ActiveProfiles("test")
 @IntegrationTest({"server.port=0"})

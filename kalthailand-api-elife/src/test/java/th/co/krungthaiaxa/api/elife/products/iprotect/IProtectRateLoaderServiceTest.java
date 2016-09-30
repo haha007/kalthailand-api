@@ -10,7 +10,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
-import th.co.krungthaiaxa.api.elife.KalApiApplication;
+import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
 import th.co.krungthaiaxa.api.elife.data.IProtectDiscountRate;
 import th.co.krungthaiaxa.api.elife.data.IProtectPackage;
 import th.co.krungthaiaxa.api.elife.data.IProtectRate;
@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = KalApiApplication.class)
+@SpringApplicationConfiguration(classes = KalApiElifeApplication.class)
 @WebAppConfiguration
 @ActiveProfiles("test")
 public class IProtectRateLoaderServiceTest {
@@ -39,19 +39,19 @@ public class IProtectRateLoaderServiceTest {
     @Inject
     IProtectDiscountRateService iProtectDiscountRateService;
 
-    @Test
-    public void save_premium_rates_from_excel_to_db() {
-        List<IProtectRate> iprotectRates = iProtectRateLoaderService.saveIProtectRatesFromExcelToDB();
-
-        LOGGER.trace(ObjectMapperUtil.toStringMultiLineForEachElement(iprotectRates));
-
-        Assert.assertTrue(!iprotectRates.isEmpty());
-        for (IProtectRate iprotectRate : iprotectRates) {
-            Assert.assertTrue(iprotectRate.getAge() >= 0);
-            Assert.assertTrue(iprotectRate.getPremiumRate() > 0);
-            Assert.assertTrue(iprotectRate.getGender() != null);
-        }
-    }
+//    @Test
+//    public void save_premium_rates_from_excel_to_db() {
+//        List<IProtectRate> iprotectRates = iProtectRateLoaderService.saveIProtectRatesFromExcelToDB();
+//
+//        LOGGER.trace(ObjectMapperUtil.toStringMultiLineForEachElement(iprotectRates));
+//
+//        Assert.assertTrue(!iprotectRates.isEmpty());
+//        for (IProtectRate iprotectRate : iprotectRates) {
+//            Assert.assertTrue(iprotectRate.getAge() >= 0);
+//            Assert.assertTrue(iprotectRate.getPremiumRate() > 0);
+//            Assert.assertTrue(iprotectRate.getGender() != null);
+//        }
+//    }
 
     @Test
     public void load_premium_rates_from_db() {

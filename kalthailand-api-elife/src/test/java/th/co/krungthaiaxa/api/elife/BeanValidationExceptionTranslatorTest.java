@@ -19,7 +19,7 @@ import th.co.krungthaiaxa.api.elife.exception.PolicyValidationException;
 import javax.inject.Inject;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = KalApiApplication.class)
+@SpringApplicationConfiguration(classes = KalApiElifeApplication.class)
 @WebAppConfiguration
 @ActiveProfiles("test")
 public class BeanValidationExceptionTranslatorTest {

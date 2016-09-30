@@ -47,9 +47,9 @@ public class IProtectDiscountRateExcelLoaderService {
                 irow++;
                 continue;//Ignore the header row
             }
-            double sumInsured = ExcelUtils.getInteger(row, 0);
+            double sumInsured = ExcelUtils.getInt(row, 0);
             int columnForIProtectPackage = getColumnIndex(iprotectPackage);
-            double discountRate = ExcelUtils.getDouble(row, columnForIProtectPackage);
+            double discountRate = ExcelUtils.getNumber(row, columnForIProtectPackage);
 
             IProtectDiscountRate iProtectDiscountRate = new IProtectDiscountRate();
             iProtectDiscountRate.setPackageName(iprotectPackage);

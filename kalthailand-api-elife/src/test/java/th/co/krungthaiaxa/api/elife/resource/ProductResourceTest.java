@@ -21,7 +21,7 @@ import th.co.krungthaiaxa.api.common.exeption.UnexpectedException;
 import th.co.krungthaiaxa.api.common.utils.JsonUtil;
 import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
 import th.co.krungthaiaxa.api.elife.ELifeTest;
-import th.co.krungthaiaxa.api.elife.KalApiApplication;
+import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
 import th.co.krungthaiaxa.api.elife.TestUtil;
 import th.co.krungthaiaxa.api.elife.factory.ProductQuotationFactory;
 import th.co.krungthaiaxa.api.elife.factory.RequestFactory;
@@ -41,7 +41,7 @@ import static org.springframework.http.HttpStatus.OK;
 import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.EVERY_MONTH;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = KalApiApplication.class)
+@SpringApplicationConfiguration(classes = KalApiElifeApplication.class)
 @WebAppConfiguration
 @ActiveProfiles("test")
 @IntegrationTest({ "server.port=0" })

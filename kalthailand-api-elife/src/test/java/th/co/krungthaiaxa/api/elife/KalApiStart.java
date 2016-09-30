@@ -9,6 +9,6 @@ import org.springframework.test.context.ActiveProfiles;
 public class KalApiStart {
 
     public static void main(String[] args) {
-        SpringApplication.run(KalApiApplication.class, args);
+        SpringApplication.run(KalApiElifeApplication.class, args);
     }
 }

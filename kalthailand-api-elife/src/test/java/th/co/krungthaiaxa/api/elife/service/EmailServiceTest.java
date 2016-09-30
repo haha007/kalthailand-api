@@ -21,7 +21,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
 import th.co.krungthaiaxa.api.elife.ELifeTest;
-import th.co.krungthaiaxa.api.elife.KalApiApplication;
+import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
 import th.co.krungthaiaxa.api.elife.model.Amount;
 import th.co.krungthaiaxa.api.elife.model.Document;
 import th.co.krungthaiaxa.api.elife.model.DocumentDownload;
@@ -65,7 +65,7 @@ import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.EVERY_YEA
 import static th.co.krungthaiaxa.api.elife.products.ProductType.PRODUCT_IFINE;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = KalApiApplication.class)
+@SpringApplicationConfiguration(classes = KalApiElifeApplication.class)
 @WebAppConfiguration
 @ActiveProfiles("test")
 public class EmailServiceTest extends ELifeTest {
