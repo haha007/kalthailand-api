@@ -192,13 +192,13 @@ public class IGenService extends AbstractProductService implements ProductServic
      * @return
      */
     @Override
-    protected ProductIGenPremium getPremiumDetail(PremiumsData premiumsData) {
-        return premiumsData.getProductIGenPremium();
+    protected ProductPremiumDetailBasic getPremiumDetail(PremiumsData premiumsData) {
+        return premiumsData.getPremiumDetail();
     }
 
     @Override
     protected void setConstructPremiumDetail(PremiumsData premiumsData) {
-        premiumsData.setProductIGenPremium(new ProductIGenPremium());
+        premiumsData.setPremiumDetail(new ProductIGenPremium());
     }
 
     /**

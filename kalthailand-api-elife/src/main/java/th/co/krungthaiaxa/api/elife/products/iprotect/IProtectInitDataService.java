@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.elife.data.IProtectPackage;
 import th.co.krungthaiaxa.api.elife.data.ProductPremiumRate;
+import th.co.krungthaiaxa.api.elife.products.ProductType;
 import th.co.krungthaiaxa.api.elife.repository.ProductPremiumRateRepository;
 
 import java.util.List;
@@ -27,10 +28,11 @@ public class IProtectInitDataService {
     }
 
     private void initPremiumRate() {
+        String productLogicName = ProductType.PRODUCT_IPROTECT.getLogicName();
         for (IProtectPackage iProtectPackage : IProtectPackage.values()) {
-            List<ProductPremiumRate> productPremiumRatesInExcel = iProtectRateExcelLoaderService.excelToProductPremiumRates(iProtectPackage);
-            List<ProductPremiumRate> productPremiumRatesInDB = productPremiumRateRepository.findByProductIdAndPackageName(productPremiumRatesInExcel.get(0).getProductId(), productPremiumRatesInExcel.get(0).getPackageName());
+            List<ProductPremiumRate> productPremiumRatesInDB = productPremiumRateRepository.findByProductIdAndPackageName(productLogicName, iProtectPackage.name());
             if (productPremiumRatesInDB.isEmpty()) {
+                List<ProductPremiumRate> productPremiumRatesInExcel = iProtectRateExcelLoaderService.excelToIProtectProductPremiumRates(iProtectPackage);
                 productPremiumRateRepository.save(productPremiumRatesInExcel);
             }
         }

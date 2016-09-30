@@ -30,18 +30,7 @@ public class IProtectRateExcelLoaderService {
     @Inject
     public IProtectRateExcelLoaderService(ProductIProtectRateRepository productIProtectRateRepository) {this.productIProtectRateRepository = productIProtectRateRepository;}
 
-//    public List<IProtectRate> saveIProtectRatesFromExcelToDB() {
-//        List<IProtectRate> existingRates = productIProtectRateRepository.findAll();
-//        if (!existingRates.isEmpty()) {
-//            return existingRates;
-//        }
-//        List<IProtectRate> iprotectRates = excelToProductPremiumRates();
-//        productIProtectRateRepository.save(iprotectRates);
-//        return iprotectRates;
-//    }
-//
-//
-    public List<ProductPremiumRate> excelToProductPremiumRates(IProtectPackage iProtectPackage) {
+    public List<ProductPremiumRate> excelToIProtectProductPremiumRates(IProtectPackage iProtectPackage) {
         return excelToProductPremiumRates(FILE_PATH_PREDEFINED_RATE, ProductType.PRODUCT_IPROTECT.getLogicName(), iProtectPackage.name());
     }
 

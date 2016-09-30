@@ -16,11 +16,11 @@ import th.co.krungthaiaxa.api.elife.factory.InsuredFactory;
 import th.co.krungthaiaxa.api.elife.factory.ProductQuotationFactory;
 import th.co.krungthaiaxa.api.elife.factory.RequestFactory;
 import th.co.krungthaiaxa.api.elife.model.Policy;
-import th.co.krungthaiaxa.api.elife.model.enums.ProductDividendOption;
 import th.co.krungthaiaxa.api.elife.model.ProductIGenPremium;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
+import th.co.krungthaiaxa.api.elife.model.enums.ProductDividendOption;
 import th.co.krungthaiaxa.api.elife.products.ProductAmounts;
 import th.co.krungthaiaxa.api.elife.products.ProductAssertUtil;
 import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
@@ -132,7 +132,7 @@ public class IGenServiceTest extends ELifeTest {
     }
 
     private ProductIGenPremium getSpecificPremiumData(Quote quote) {
-        return quote.getPremiumsData().getProductIGenPremium();
+        return (ProductIGenPremium) quote.getPremiumsData().getPremiumDetail();
     }
 
     /**
@@ -161,8 +161,8 @@ public class IGenServiceTest extends ELifeTest {
      * @param quote
      */
     private void assertDefaultCalculationYearlyPaybackForIGen(Quote quote) {
-        ProductIGenPremium productIGenPremium = quote.getPremiumsData().getProductIGenPremium();
-        ProductAssertUtil.assertDateTimeAmount(productIGenPremium.getYearlyCashBacksForAnnual(),
+        ProductIGenPremium premiumDetail = getSpecificPremiumData(quote);
+        ProductAssertUtil.assertDateTimeAmount(premiumDetail.getYearlyCashBacksForAnnual(),
                 20000.0
                 , 40000.0
                 , 60000.0
@@ -174,7 +174,7 @@ public class IGenServiceTest extends ELifeTest {
                 , 180000.0
                 , 1980000.0
         );
-        ProductAssertUtil.assertDateTimeAmount(productIGenPremium.getYearlyCashBacksForEndOfContract(),
+        ProductAssertUtil.assertDateTimeAmount(premiumDetail.getYearlyCashBacksForEndOfContract(),
                 20000.0000
                 , 40400.0000
                 , 61208.0000
@@ -186,7 +186,7 @@ public class IGenServiceTest extends ELifeTest {
                 , 195092.5686
                 , 1998994.4200
         );
-        ProductAssertUtil.assertDateTimeAmount(productIGenPremium.getYearlyDeathBenefits(),
+        ProductAssertUtil.assertDateTimeAmount(premiumDetail.getYearlyDeathBenefits(),
                 1000000.0
                 , 1000000.0
                 , 1000000.0

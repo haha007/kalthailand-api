@@ -1,5 +1,6 @@
 package th.co.krungthaiaxa.api.elife.model;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.validation.Valid;
@@ -10,6 +11,7 @@ import java.util.List;
 /**
  * @author khoi.tran on 9/30/16.
  */
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class ProductPremiumDetailBasic {
     @ApiModelProperty(value = "True if the user has chosen to pay on a total Sum Insured base. False otherwise (premium choice). This is set by backend API if an amount is provided in financialScheduler.")
     private Boolean sumInsuredOption;

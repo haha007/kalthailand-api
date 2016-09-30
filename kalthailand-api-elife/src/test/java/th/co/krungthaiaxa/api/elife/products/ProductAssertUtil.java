@@ -11,7 +11,7 @@ import th.co.krungthaiaxa.api.elife.model.DateTimeAmount;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.PremiumsData;
-import th.co.krungthaiaxa.api.elife.model.ProductIGenPremium;
+import th.co.krungthaiaxa.api.elife.model.ProductPremiumDetailBasic;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus;
 
@@ -117,20 +117,20 @@ public class ProductAssertUtil {
      * If you don't want to validate any expected value, please input null to that value.
      *
      * @param quote
-     * @param productIGenPremium
+     * @param premiumDetail
      * @param expectPremiumValue
      * @param expectTotalTaxDeduction
      * @param expectEndContractBenefit
      */
-    public static void assertQuoteWithPremiumAmountAndTaxAndEndContractBenefit(Quote quote, ProductIGenPremium productIGenPremium, Double expectPremiumValue, Double expectTotalTaxDeduction, Double expectEndContractBenefit) {
+    public static void assertQuoteWithPremiumAmountAndTaxAndEndContractBenefit(Quote quote, ProductPremiumDetailBasic premiumDetail, Double expectPremiumValue, Double expectTotalTaxDeduction, Double expectEndContractBenefit) {
         assertPremiumDataEnoughDataAfterQuoteCalculation(quote.getPremiumsData());
         assertCommonDataEnoughDataAfterQuoteCalculation(quote.getCommonData());
 
         LOGGER.debug("\nQuote: " + ObjectMapperUtil.toJson(new ObjectMapper(), quote));
 
         Amount actualPremium = quote.getPremiumsData().getFinancialScheduler().getModalAmount();
-        Amount actualTotalTaxDeduction = productIGenPremium.getTotalTaxDeduction();
-        Amount actualEndOfContractBenefit = productIGenPremium.getEndOfContractBenefit();
+        Amount actualTotalTaxDeduction = premiumDetail.getTotalTaxDeduction();
+        Amount actualEndOfContractBenefit = premiumDetail.getEndOfContractBenefit();
         assertAmountNotNull(actualPremium);
         assertAmountNotNull(actualTotalTaxDeduction);
         assertAmountNotNull(actualEndOfContractBenefit);
