@@ -40,8 +40,14 @@ import th.co.krungthaiaxa.api.elife.products.ProductType;
 import th.co.krungthaiaxa.api.elife.products.igen.IGenService;
 import th.co.krungthaiaxa.api.elife.utils.BeneficiaryUtils;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
+
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeUtility;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
@@ -403,5 +409,13 @@ public class TestUtil {
         linePayResponse.setInfo(info);
 
         return linePayResponse;
+    }
+    
+    public static String decodeSimpleBody(String encodedBody) throws MessagingException, IOException {
+        InputStream inputStream = MimeUtility.decode(new ByteArrayInputStream(encodedBody.getBytes("UTF-8")), "quoted-printable");
+        BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
+        byte[] bytes = new byte[encodedBody.length()];
+        int last = bufferedInputStream.read(bytes);
+        return new String(bytes, 0, last);
     }
 }

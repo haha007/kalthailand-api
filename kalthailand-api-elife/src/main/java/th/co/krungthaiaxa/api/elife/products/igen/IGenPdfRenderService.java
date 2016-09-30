@@ -27,16 +27,6 @@ import java.util.stream.Stream;
 @Service
 public class IGenPdfRenderService extends AbstractProductPdfRenderService {
 	
-	public static void main(String args[]){
-		List<String> list = new ArrayList<>();
-		list.add("a");
-		list.add("b");
-		list.add("c");
-		list.add("o");
-		System.out.println(list.stream().reduce((first, second) -> second).get());
-	}
-
-	
 	/*
 	 * must be implement for sale illustration pdf file generated
 	 * */
@@ -56,11 +46,10 @@ public class IGenPdfRenderService extends AbstractProductPdfRenderService {
         ProductIGenPremium premium = quote.getPremiumsData().getProductIGenPremium();
         
         String productWording = "แบบประกัน" + 
-        messageSource.getMessage("product.id."+quote.getCommonData().getProductId(), null, thLocale) +
-        " (" + messageSource.getMessage("product.id."+quote.getCommonData().getProductId(), null, null) +")";
+        		getProductWordInProps(quote,true) + 
+        		" (" + getProductWordInProps(quote,false) +")";
         
-        String dueWording = "งวดชำระ" +
-        messageSource.getMessage("payment.mode."+quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().toString(), null, thLocale);
+        String dueWording = "งวดชำระ" + toThaiPaymentMode(quote.getPremiumsData().getFinancialScheduler().getPeriodicity());
         
         Integer taxDeclared = (insured.getDeclaredTaxPercentAtSubscription()==null?0:insured.getDeclaredTaxPercentAtSubscription());
         

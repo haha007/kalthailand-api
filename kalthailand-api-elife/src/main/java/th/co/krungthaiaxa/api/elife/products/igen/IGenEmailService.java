@@ -16,6 +16,7 @@ import com.itextpdf.text.DocumentException;
 import th.co.krungthaiaxa.api.common.utils.IOUtil;
 import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.model.Policy;
+import th.co.krungthaiaxa.api.elife.model.ProductIGenPremium;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.products.AbstractProductEmailService;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
@@ -46,7 +47,7 @@ public class IGenEmailService extends AbstractProductEmailService {
      * */
     
     @Override
-    protected List<Pair<byte[], String>> getAttachedImage(){
+    protected List<Pair<byte[], String>> getQuoteAttachedImage(){
     	return EmailUtil.getDefaultImagePairs();
     }
     
@@ -57,23 +58,23 @@ public class IGenEmailService extends AbstractProductEmailService {
     
     @Override
 	public String getQuoteEmailContent(Quote quote) {
-		String dcFormat = "#,##0.00";
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        DecimalFormat dcf = new DecimalFormat(dcFormat);
         String emailContent = IOUtil.loadTextFileInClassPath(quoteEmailPath);
-        return emailContent.replace("%1$s", "dummy")
+        Insured insured = quote.getInsureds().stream().reduce((first, second) -> second).get();
+        ProductIGenPremium premium = quote.getPremiumsData().getProductIGenPremium();
+        Integer taxDeclared = (insured.getDeclaredTaxPercentAtSubscription()==null?0:insured.getDeclaredTaxPercentAtSubscription());
+        return emailContent.replace("%1$s", toThaiYear(quote.getCreationDateTime()))
                 .replace("%2$s", "'" + getLineURL() + "fatca-questions/" + quote.getQuoteId() + "'")
-                .replace("%3$s", "dummy")
-                .replace("%4$s", dcf.format(0.0))
-                .replace("%5$s", dcf.format(0.0))
-                .replace("%6$s", dcf.format(0.0))
-                .replace("%7$s", dcf.format(0.0))
-                .replace("%8$s", dcf.format(0.0))
-                .replace("%9$s", dcf.format(0.0))
-                .replace("%10$s", dcf.format(0.0))
-                .replace("%11$s", "20")
-                .replace("%12$s", dcf.format(0.0))
-                .replace("%13$s", dcf.format(0.0))               
+                .replace("%3$s", toThaiPaymentMode(quote.getPremiumsData().getFinancialScheduler().getPeriodicity()))
+                .replace("%4$s", toCurrency(getVal(quote.getPremiumsData().getFinancialScheduler().getModalAmount())))
+                .replace("%5$s", toCurrency(premium.getYearlyCashBacksForEndOfContract().stream().reduce((first, second) -> second).get().getAmount().getValue()))
+                .replace("%6$s", toCurrency(premium.getYearlyCashBacksForAnnual().stream().reduce((first, second) -> second).get().getAmount().getValue()))
+                .replace("%7$s", toCurrency(getVal(premium.getYearlyDeathBenefits().get(0).getAmount())))
+                .replace("%8$s", toCurrency(getVal(premium.getYearlyDeathBenefits().get(3).getAmount())))
+                .replace("%9$s", toCurrency(getVal(premium.getYearlyDeathBenefits().get(4).getAmount())))
+                .replace("%10$s", toCurrency(getVal(premium.getYearlyDeathBenefits().get(5).getAmount())))
+                .replace("%11$s", String.valueOf(taxDeclared))
+                .replace("%12$s", toCurrency(premium.getYearlyTaxDeduction().getValue()))
+                .replace("%13$s", toCurrency(premium.getTotalTaxDeduction().getValue()))               
                 .replace("%14$s", "'" + getLineURL() + "'")
                 .replace("%15$s", "'" + getLineURL() + "fatca-questions/" + quote.getQuoteId() + "'")
                 .replace("%16$s", "'" + getLineURL() + "quote-product/line-" + productId + "'");

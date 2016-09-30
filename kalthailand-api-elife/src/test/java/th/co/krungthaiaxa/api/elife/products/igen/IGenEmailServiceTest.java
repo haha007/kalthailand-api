@@ -1,7 +1,11 @@
 package th.co.krungthaiaxa.api.elife.products.igen;
 
 import static com.icegreen.greenmail.util.GreenMailUtil.getBody;
+import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
+import static th.co.krungthaiaxa.api.elife.TestUtil.productQuotation;
+import static th.co.krungthaiaxa.api.elife.model.enums.ChannelType.LINE;
+import static th.co.krungthaiaxa.api.elife.TestUtil.*;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -19,11 +23,14 @@ import javax.mail.internet.MimeUtility;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -31,11 +38,18 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.icegreen.greenmail.junit.GreenMailRule;
 import com.icegreen.greenmail.util.ServerSetupTest;
+import com.itextpdf.text.pdf.PdfReader;
 
 import th.co.krungthaiaxa.api.elife.KalApiApplication;
 import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.model.Person;
 import th.co.krungthaiaxa.api.elife.model.Quote;
+import th.co.krungthaiaxa.api.elife.model.enums.GenderCode;
+import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
+import th.co.krungthaiaxa.api.elife.products.AbstractProductEmailService;
+import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
+import th.co.krungthaiaxa.api.elife.products.ProductType;
+import th.co.krungthaiaxa.api.elife.service.QuoteService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiApplication.class)
@@ -43,9 +57,11 @@ import th.co.krungthaiaxa.api.elife.model.Quote;
 @ActiveProfiles("test")
 public class IGenEmailServiceTest {
 	
+	protected final static Logger LOGGER = LoggerFactory.getLogger(IGenEmailServiceTest.class);	
 	@Rule
-    public final GreenMailRule greenMail = new GreenMailRule(ServerSetupTest.SMTP_IMAP);
-	
+    public final GreenMailRule greenMail = new GreenMailRule(ServerSetupTest.SMTP_IMAP);	
+	@Inject
+    private QuoteService quoteService;	
 	@Inject
 	private IGenEmailService iGenEmailService;
 	
@@ -61,40 +77,12 @@ public class IGenEmailServiceTest {
 	
 	@Test
 	public void should_send_quote_email() throws MessagingException, IOException{
-		Quote quote = new Quote();
-		Insured insured = new Insured();
-		Person person = new Person();
-		person.setEmail("santi.lik@krungthai-axa.co.th");
-		insured.setPerson(person);
-		insured.setMainInsuredIndicator(true);
-		quote.addInsured(insured);
-		
-		iGenEmailService.sendQuoteEmail(quote);
-		
+		ProductQuotation productQuotation = productQuotation(ProductType.PRODUCT_IGEN, 30, PeriodicityCode.EVERY_MONTH, 1000000.0, true, 5, GenderCode.MALE);
+		Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation);
+		quote.getInsureds().get(0).getPerson().setEmail("dummy@krungthai-axa.co.th");		
+		iGenEmailService.sendQuoteEmail(quote);		
 		MimeMessage email = greenMail.getReceivedMessages()[0];
-		String bodyAsString = decodeSimpleBody(getBody(email));
-		System.out.println("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
-		System.out.println(bodyAsString);
-		System.out.println("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
-		
-		Multipart multipart = (Multipart) email.getContent();
-        for (int i = 0; i < multipart.getCount(); i++) {
-            BodyPart bodyPart = multipart.getBodyPart(i);
-            if (!Part.ATTACHMENT.equalsIgnoreCase(bodyPart.getDisposition()) &&
-                    !StringUtils.isNotBlank(bodyPart.getFileName())) {
-                //null file value
-            } else {
-                assertThat(null != bodyPart.getFileName() && !bodyPart.getFileName().equals(""));
-            }
-        }
+		assertThat(decodeSimpleBody(getBody(email))).isNotNull();
 	}
-	
-	private static String decodeSimpleBody(String encodedBody) throws MessagingException, IOException {
-        InputStream inputStream = MimeUtility.decode(new ByteArrayInputStream(encodedBody.getBytes("UTF-8")), "quoted-printable");
-        BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
-        byte[] bytes = new byte[encodedBody.length()];
-        int last = bufferedInputStream.read(bytes);
-        return new String(bytes, 0, last);
-    }
 
 }

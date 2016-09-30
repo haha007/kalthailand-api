@@ -31,6 +31,7 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
+import th.co.krungthaiaxa.api.elife.model.Periodicity;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 
 @Component
@@ -57,12 +58,24 @@ public abstract class AbstractProductPdfRenderService implements InterfaceProduc
 	protected final String UNDERSCORE = "_";
 	
     @Inject
-    protected MessageSource messageSource;
-    protected Locale thLocale = new Locale("th","");
+    private MessageSource messageSource;
+    private Locale thLocale = new Locale("th","");
     
     /*
      * custom value specific
      * */
+    
+    protected String getProductWordInProps(Quote quote, Boolean thai){
+    	if(thai){
+    		return messageSource.getMessage("product.id."+quote.getCommonData().getProductId(), null, thLocale);
+    	}else{
+    		return messageSource.getMessage("product.id."+quote.getCommonData().getProductId(), null, null);
+    	}
+    }
+    
+    protected String toThaiPaymentMode(Periodicity due){
+    	return messageSource.getMessage("payment.mode." + due.getCode().toString(), null, thLocale);
+    }
     
     protected String toCurrency(Double d){
         return (new DecimalFormat(MONEY_DECIMAL_FORMAT)).format(d);

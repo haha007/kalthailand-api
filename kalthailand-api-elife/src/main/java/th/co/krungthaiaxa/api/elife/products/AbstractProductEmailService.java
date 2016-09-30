@@ -1,6 +1,9 @@
 package th.co.krungthaiaxa.api.elife.products;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -16,7 +19,9 @@ import org.springframework.stereotype.Component;
 
 import com.itextpdf.text.DocumentException;
 
+import th.co.krungthaiaxa.api.elife.model.Amount;
 import th.co.krungthaiaxa.api.elife.model.Insured;
+import th.co.krungthaiaxa.api.elife.model.Periodicity;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.utils.EmailSender;
 
@@ -34,11 +39,34 @@ public abstract class AbstractProductEmailService implements InterfaceProductEma
     @Value("${line.app.id}")
     protected String lineId;
     @Inject
-    protected MessageSource messageSource;
-    protected Locale thLocale = new Locale("th","");  
+    private MessageSource messageSource;
+    private Locale thLocale = new Locale("th",""); 
+    private final String dcFormat = "#,##0.00";
+    private DecimalFormat dcf = new DecimalFormat(dcFormat);
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    
+    /*
+     * all mini function need in email
+     * */
     
     protected String getLineURL() {
     	return "https://line.me/R/ch/" + lineId + "/elife/th/";
+    }
+    
+    protected String toCurrency(Double value){
+    	return dcf.format(value);
+    }
+    
+    protected String toThaiYear(LocalDateTime time){
+    	return time.plusYears(543).format(formatter);
+    }
+    
+    protected String toThaiPaymentMode(Periodicity due){
+    	return messageSource.getMessage("payment.mode." + due.getCode().toString(), null, thLocale);
+    }
+    
+    protected Double getVal(Amount amount){
+    	return amount.getValue();
     }
     
     /*
@@ -48,7 +76,7 @@ public abstract class AbstractProductEmailService implements InterfaceProductEma
     @Override
 	public void sendQuoteEmail(Quote quote) {
 		LOGGER.info("Sending quote "+getProductId()+" email...");
-        List<Pair<byte[], String>> base64ImgFileNames = getAttachedImage(); 
+        List<Pair<byte[], String>> base64ImgFileNames = getQuoteAttachedImage(); 
         List<Pair<byte[], String>> attachments = new ArrayList();
         try {
 			attachments.add(getSaleIllustrationPdf(quote));
@@ -62,9 +90,17 @@ public abstract class AbstractProductEmailService implements InterfaceProductEma
         LOGGER.info("Quote "+getProductId()+" email sent!");
 	}
     
+    /*
+     * abstract for unique product id
+     * */
+    
     protected abstract String getProductId();
     
-    protected abstract List<Pair<byte[], String>> getAttachedImage();
+    /*
+     * abstract for quote email
+     * */
+    
+    protected abstract List<Pair<byte[], String>> getQuoteAttachedImage();
     
     protected abstract Pair<byte[], String> getSaleIllustrationPdf(Quote quote) throws DocumentException, IOException;
     
