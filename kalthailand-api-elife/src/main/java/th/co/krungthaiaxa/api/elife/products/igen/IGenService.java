@@ -21,6 +21,7 @@ import th.co.krungthaiaxa.api.elife.model.Periodicity;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.PremiumsData;
 import th.co.krungthaiaxa.api.elife.model.ProductIGenPremium;
+import th.co.krungthaiaxa.api.elife.model.ProductSpec;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.enums.GenderCode;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
@@ -49,34 +50,36 @@ import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.notNull;
 @Service
 public class IGenService implements ProductService {
 
-    public static final ProductType PRODUCT_TYPE = ProductType.PRODUCT_IGEN;
-    public static final Integer INSURED_COVERAGE_AGE_MAX = null;//No max age for coverage.
-    public static final Integer INSURED_COVERAGE_IN_YEAR = 10;
-    /**
-     * This is the number of years of premiums == duration the customer have to pay premiums.
-     */
-    public static final Integer INSURED_PAYMENT_IN_YEAR = 6;
-    public static final Double TAX_DEDUCTION_PER_YEAR_MAX = 100000.0;//Not sure yet
-
-    public static final String PRODUCT_CURRENCY = ProductUtils.CURRENCY_THB;
-    public static final Amount SUM_INSURED_MIN = amount(100000.0);//Calculated from PREMIMUM_PER_MONTH_MIN
-    public static final Amount SUM_INSURED_MAX = amount(1500000.0);//1.5M
-    public static final Amount PREMIUM_MIN_PER_MONTH = null;//Calculated from SUM_INSURED_MIN
-    public static final Amount PREMIUM_MAX_PER_MONTH = null;//Calculated from SUM_INSURED_MAX
-
-    public static final int INSURED_MIN_AGE = 20;
-    public static final int INSURED_MAX_AGE = 70;
-
-    public static final Double DIVIDEND_RATE_IN_NORMAL_YEAR = 0.02;//2% this number can be different for other product, and also can be change?
-    public static final Double DIVIDEND_RATE_IN_LAST_YEAR = 1.8;
-    /**
-     * Dividend interest rate when apply 'cash back at the end of contract' option.
-     */
-    public static final Double DIVIDEND_INTEREST_RATE_FOR_END_OF_CONTRACT = 0.02;//2%
-    /**
-     * Dividend interest rate when apply 'annual cash back' option.
-     */
-    public static final Double DIVIDEND_INTEREST_RATE_FOR_ANNUAL = 0.0;//0%
+    private final ProductSpec PRODUCT_SPEC = getProductSpec(ProductType.PRODUCT_IGEN.getLogicName(), null);
+//
+//    public static final ProductType PRODUCT_TYPE = ProductType.PRODUCT_IGEN;
+//    public static final Integer INSURED_COVERAGE_AGE_MAX = null;//No max age for coverage.
+//    public static final Integer INSURED_COVERAGE_IN_YEAR = 10;
+//    /**
+//     * This is the number of years of premiums == duration the customer have to pay premiums.
+//     */
+//    public static final Integer INSURED_PAYMENT_IN_YEAR = 6;
+//    public static final Double TAX_DEDUCTION_PER_YEAR_MAX = 100000.0;//Not sure yet
+//
+//    public static final String PRODUCT_CURRENCY = ProductUtils.CURRENCY_THB;
+//    public static final Amount SUM_INSURED_MIN = amount(100000.0);//Calculated from PREMIMUM_PER_MONTH_MIN
+//    public static final Amount SUM_INSURED_MAX = amount(1500000.0);//1.5M
+//    public static final Amount PREMIUM_MIN_PER_MONTH = null;//Calculated from SUM_INSURED_MIN
+//    public static final Amount PREMIUM_MAX_PER_MONTH = null;//Calculated from SUM_INSURED_MAX
+//
+//    public static final int INSURED_MIN_AGE = 20;
+//    public static final int INSURED_MAX_AGE = 70;
+//
+//    public static final Double DIVIDEND_RATE_IN_NORMAL_YEAR = 0.02;//2% this number can be different for other product, and also can be change?
+//    public static final Double DIVIDEND_RATE_IN_LAST_YEAR = 1.8;
+//    /**
+//     * Dividend interest rate when apply 'cash back at the end of contract' option.
+//     */
+//    public static final Double DIVIDEND_INTEREST_RATE_FOR_END_OF_CONTRACT = 0.02;//2%
+//    /**
+//     * Dividend interest rate when apply 'annual cash back' option.
+//     */
+//    public static final Double DIVIDEND_INTEREST_RATE_FOR_ANNUAL = 0.0;//0%
 
     //All calculation of this product doesn't related to Occupation
 
@@ -95,8 +98,33 @@ public class IGenService implements ProductService {
     @Inject
     private BeanValidator beanValidator;
 
+    //TODO Improvement: This can be loaded from DB
+    public ProductSpec getProductSpec(String productLogicName, String packageName) {
+        ProductSpec productSpec = new ProductSpec();
+        productSpec.setDividendInterestRateForAnnual(0.0);
+        productSpec.setDividendInterestRateForEndOfContract(0.02);//2%
+        productSpec.setDividendRateInLastYear(1.8);//180%
+        productSpec.setDividendRateInNormalYear(0.02);//2%
+        productSpec.setInsuredAgeMax(70);
+        productSpec.setInsuredAgeMin(20);
+        productSpec.setInsuredCoverageAgeMax(null);
+        productSpec.setInsuredCoverageYears(10);
+        productSpec.setInsuredPaymentYears(6);
+        productSpec.setPackageName(packageName);
+        productSpec.setPremiumMax(null);
+        productSpec.setPremiumMin(null);
+        productSpec.setPremiumLimitsPeriodicityCode(PeriodicityCode.EVERY_MONTH);
+        productSpec.setProductCurrency(ProductUtils.CURRENCY_THB);
+        productSpec.setProductLogicName(productLogicName);
+        productSpec.setSumInsuredMax(amount(1500000.0));
+        productSpec.setSumInsuredMin(amount(100000.0));
+        productSpec.setTaxDeductionPerYearMax(100000.0);
+        return productSpec;
+    }
+
     @Override
     public void calculateQuote(Quote quote, ProductQuotation productQuotation) {
+        ProductSpec productSpec = PRODUCT_SPEC;
         Instant now = Instant.now();
         if (productQuotation == null) {
             return;
@@ -132,10 +160,10 @@ public class IGenService implements ProductService {
         double occupationRate = setOccupation(quote, productQuotation, mainInsured);
 
         mainInsured.setDeclaredTaxPercentAtSubscription(productQuotation.getDeclaredTaxPercentAtSubscription());
-        ProductUtils.checkInsuredAgeInRange(mainInsured, INSURED_MIN_AGE, INSURED_MAX_AGE);
+        ProductUtils.checkInsuredAgeInRange(mainInsured, productSpec.getInsuredAgeMin(), productSpec.getInsuredAgeMax());
 
-        int paymentYears = INSURED_PAYMENT_IN_YEAR;//iProtectPackage.getPaymentYears();
-        int coverageYears = INSURED_COVERAGE_IN_YEAR;//INSURED_COVERAGE_AGE_MAX - mainInsuredAge;
+        int paymentYears = productSpec.getInsuredPaymentYears();//iProtectPackage.getPaymentYears();
+        int coverageYears = productSpec.getInsuredCoverageYears();//INSURED_COVERAGE_AGE_MAX - mainInsuredAge;
         commonData.setNbOfYearsOfPremium(paymentYears);
         commonData.setNbOfYearsOfCoverage(coverageYears);
 
@@ -160,7 +188,7 @@ public class IGenService implements ProductService {
         calculateYearlyCashback(now, quote, productQuotation);
 
         //TODO copy to iProtect
-        ProductUtils.addCoverageIfNotExist(quote, PRODUCT_TYPE);
+        ProductUtils.addCoverageIfNotExist(quote, productSpec.getProductLogicName());
     }
 
     private void calculateDateRange(Quote quote, Insured mainInsured, int coverageYears, int paymentYears) {
@@ -220,7 +248,7 @@ public class IGenService implements ProductService {
     }
 
     private void calculateTax(Quote quote, ProductIGenPremium productIGenPremium, PeriodicityCode periodicityCode, Insured mainInsured) {
-        double taxDeductionPerYear = ProductUtils.calculateTaxDeductionPerYear(TAX_DEDUCTION_PER_YEAR_MAX, ProductUtils.getPremiumAmount(quote), periodicityCode, mainInsured.getDeclaredTaxPercentAtSubscription());
+        double taxDeductionPerYear = ProductUtils.calculateTaxDeductionPerYear(PRODUCT_SPEC.getTaxDeductionPerYearMax(), ProductUtils.getPremiumAmount(quote), periodicityCode, mainInsured.getDeclaredTaxPercentAtSubscription());
         productIGenPremium.setYearlyTaxDeduction(amount(taxDeductionPerYear));
         double totalTaxDeduction = taxDeductionPerYear * quote.getCommonData().getNbOfYearsOfPremium();
         productIGenPremium.setTotalTaxDeduction(amount(totalTaxDeduction));
@@ -240,8 +268,8 @@ public class IGenService implements ProductService {
         int coverageYears = quote.getCommonData().getNbOfYearsOfCoverage();
         Amount sumInsuredValue = productIGenPremium.getSumInsured();
 
-        List<DateTimeAmount> yearlyCashBackForEndOfContract = calculateYearlyCashBack(sumInsuredValue, coverageYears, now, DIVIDEND_INTEREST_RATE_FOR_END_OF_CONTRACT);
-        List<DateTimeAmount> yearlyCashBackForAnnual = calculateYearlyCashBack(sumInsuredValue, coverageYears, now, DIVIDEND_INTEREST_RATE_FOR_ANNUAL);
+        List<DateTimeAmount> yearlyCashBackForEndOfContract = calculateYearlyCashBack(sumInsuredValue, coverageYears, now, PRODUCT_SPEC.getDividendInterestRateForEndOfContract());
+        List<DateTimeAmount> yearlyCashBackForAnnual = calculateYearlyCashBack(sumInsuredValue, coverageYears, now, PRODUCT_SPEC.getDividendInterestRateForAnnual());
         productIGenPremium.setYearlyCashBacksForEndOfContract(yearlyCashBackForEndOfContract);
         productIGenPremium.setYearlyCashBacksForAnnual(yearlyCashBackForAnnual);
 
@@ -255,11 +283,11 @@ public class IGenService implements ProductService {
     }
 
     private List<DateTimeAmount> calculateYearlyCashBack(Amount sumInsuredValue, int coverageYears, Instant now, double dividendInterestRate) {
-        Amount plainAnnualCashBackInNormalYear = sumInsuredValue.multiply(DIVIDEND_RATE_IN_NORMAL_YEAR);
-        Amount plainAnnualCashBackInLastYear = sumInsuredValue.multiply(DIVIDEND_RATE_IN_LAST_YEAR);
+        Amount plainAnnualCashBackInNormalYear = sumInsuredValue.multiply(PRODUCT_SPEC.getDividendRateInNormalYear());
+        Amount plainAnnualCashBackInLastYear = sumInsuredValue.multiply(PRODUCT_SPEC.getDividendRateInLastYear());
 
         List<DateTimeAmount> yearlyCashBacks = new ArrayList<>();
-        Amount amountPreviousYear = new Amount(0.0, PRODUCT_CURRENCY);
+        Amount amountPreviousYear = new Amount(0.0, PRODUCT_SPEC.getProductCurrency());
         for (int i = 0; i < coverageYears; i++) {
             int year = i + 1;
             Amount rootAmount;
@@ -327,16 +355,16 @@ public class IGenService implements ProductService {
 
     private AmountLimits calculateAmountLimits(String packageName, double premiumRate, double occupationRate, PeriodicityCode periodicityCode) {
         double occupationRateForMaxium = 0.0;
-        double discountRateForSumInsuredMax = getDiscountRate(packageName, SUM_INSURED_MAX);
-        double discountRateForSumInsuredMin = getDiscountRate(packageName, SUM_INSURED_MIN);
+        double discountRateForSumInsuredMax = getDiscountRate(packageName, PRODUCT_SPEC.getSumInsuredMax());
+        double discountRateForSumInsuredMin = getDiscountRate(packageName, PRODUCT_SPEC.getSumInsuredMin());
 
-        Amount maxPremiumByPeriodicityAmount = ProductUtils.getPremiumFromSumInsured(SUM_INSURED_MAX, premiumRate, occupationRateForMaxium, discountRateForSumInsuredMax, periodicityCode);
-        Amount minPremiumByPeriodicityAmount = ProductUtils.getPremiumFromSumInsured(SUM_INSURED_MIN, premiumRate, occupationRateForMaxium, discountRateForSumInsuredMin, periodicityCode);
+        Amount maxPremiumByPeriodicityAmount = ProductUtils.getPremiumFromSumInsured(PRODUCT_SPEC.getSumInsuredMax(), premiumRate, occupationRateForMaxium, discountRateForSumInsuredMax, periodicityCode);
+        Amount minPremiumByPeriodicityAmount = ProductUtils.getPremiumFromSumInsured(PRODUCT_SPEC.getSumInsuredMin(), premiumRate, occupationRateForMaxium, discountRateForSumInsuredMin, periodicityCode);
         //From premium: calculate the sumInsuredMinium
 //        double minPremiumByPeriodicity = ProductUtils.convertPeriodicity(PREMIUM_MIN_PER_MONTH.getValue(), PeriodicityCode.EVERY_MONTH, periodicityCode);
 //        Amount minSumInsured = ProductUtils.getSumInsuredFromPremium(PREMIUM_MIN_PER_MONTH, premiumRate, occupationRateForMaxium, discountRateMin, PeriodicityCode.EVERY_MONTH);
-        Amount minSumInsured = SUM_INSURED_MIN;
-        Amount maxSumInsured = SUM_INSURED_MAX;
+        Amount minSumInsured = PRODUCT_SPEC.getSumInsuredMin();
+        Amount maxSumInsured = PRODUCT_SPEC.getSumInsuredMax();
 
         AmountLimits amountLimits = new AmountLimits();
         amountLimits.setMinPremium(minPremiumByPeriodicityAmount);
@@ -366,7 +394,7 @@ public class IGenService implements ProductService {
         Insured insured = ProductUtils.validateMainInsured(quote);
 
         // check main insured stuff
-        ProductUtils.checkInsuredAgeInRange(insured, INSURED_MIN_AGE, INSURED_MAX_AGE);
+        ProductUtils.checkInsuredAgeInRange(insured, PRODUCT_SPEC.getInsuredAgeMin(), PRODUCT_SPEC.getInsuredAgeMax());
         ProductUtils.checkMainInsured(insured);
         checkMainInsuredIProtectSpecific(insured);
 
@@ -410,19 +438,19 @@ public class IGenService implements ProductService {
     @Override
     public CommonData initCommonData() {
         CommonData commonData = new CommonData();
-        commonData.setProductId(PRODUCT_TYPE.getLogicName());
-        commonData.setProductCurrency(PRODUCT_CURRENCY);
+        commonData.setProductId(PRODUCT_SPEC.getProductLogicName());
+        commonData.setProductCurrency(PRODUCT_SPEC.getProductCurrency());
 
-        commonData.setMaxAge(INSURED_MAX_AGE);
-        commonData.setMinAge(INSURED_MIN_AGE);
+        commonData.setMaxAge(PRODUCT_SPEC.getInsuredAgeMax());
+        commonData.setMinAge(PRODUCT_SPEC.getInsuredAgeMin());
 
-        commonData.setMinSumInsured(SUM_INSURED_MIN);
-        commonData.setMaxSumInsured(SUM_INSURED_MAX);
-        commonData.setMinPremium(PREMIUM_MIN_PER_MONTH);
-        commonData.setMaxPremium(PREMIUM_MAX_PER_MONTH);
+        commonData.setMinSumInsured(PRODUCT_SPEC.getSumInsuredMin());
+        commonData.setMaxSumInsured(PRODUCT_SPEC.getSumInsuredMax());
+        commonData.setMinPremium(PRODUCT_SPEC.getPremiumMin());
+        commonData.setMaxPremium(PRODUCT_SPEC.getPremiumMax());
 
-        commonData.setNbOfYearsOfCoverage(INSURED_COVERAGE_IN_YEAR);
-        commonData.setNbOfYearsOfPremium(INSURED_PAYMENT_IN_YEAR);
+        commonData.setNbOfYearsOfCoverage(PRODUCT_SPEC.getInsuredCoverageYears());
+        commonData.setNbOfYearsOfPremium(PRODUCT_SPEC.getInsuredPaymentYears());
         return commonData;
     }
 
@@ -452,7 +480,7 @@ public class IGenService implements ProductService {
     private CommonData initCommonData(String packageName) {
         CommonData commonData = initCommonData();
         commonData.setPackageName(packageName);
-        commonData.setNbOfYearsOfPremium(INSURED_PAYMENT_IN_YEAR);
+        commonData.setNbOfYearsOfPremium(PRODUCT_SPEC.getInsuredPaymentYears());
         return commonData;
     }
 
@@ -507,7 +535,7 @@ public class IGenService implements ProductService {
 
     //TODO different for each products, some need packageType, some doesn't need.
     private ProductPremiumRate validateExistPremiumRate(String productPackageLogicName, int insuredAge, GenderCode insuredGenderCode) {
-        String productId = PRODUCT_TYPE.getLogicName();
+        String productId = PRODUCT_SPEC.getProductLogicName();
         Optional<ProductPremiumRate> iProtectRateOptional = productPremiumRateService.findPremiumRateByProductId(productId);
         return iProtectRateOptional.orElseThrow(() -> QuoteCalculationException.premiumRateNotFoundException.apply(String.format("productId: %s, age: %s, gender: %s", productId, insuredAge, insuredGenderCode)));
     }
@@ -528,16 +556,16 @@ public class IGenService implements ProductService {
         quote.getCoverages().clear();
     }
 
-    public static void checkMainInsuredIProtectSpecific(Insured insured) {
+    public void checkMainInsuredIProtectSpecific(Insured insured) {
         notNull(insured.getDeclaredTaxPercentAtSubscription(), PolicyValidationException.mainInsuredWithNoDeclaredTax);
     }
 
-    private static void checkProductType(CommonData commonData) {
-        isEqual(commonData.getProductId(), PRODUCT_TYPE.getLogicName(), PolicyValidationException.productIProtectExpected);
+    private void checkProductType(CommonData commonData) {
+        isEqual(commonData.getProductId(), PRODUCT_SPEC.getProductLogicName(), PolicyValidationException.productIProtectExpected);
     }
 
     private Amount exchangeToProductCurrency(Amount amount) {
-        return ProductUtils.exchangeCurrency(amount, PRODUCT_CURRENCY);
+        return ProductUtils.exchangeCurrency(amount, PRODUCT_SPEC.getProductCurrency());
     }
 
     private double getDiscountRate(String packageName, Amount sumInsuredAmount) {
@@ -549,8 +577,8 @@ public class IGenService implements ProductService {
         return 0.0;
     }
 
-    private static Amount amount(double amountValue) {
-        return ProductUtils.amount(amountValue, PRODUCT_CURRENCY);
+    private Amount amount(double amountValue) {
+        return ProductUtils.amount(amountValue, PRODUCT_SPEC.getProductCurrency());
     }
 
 }
