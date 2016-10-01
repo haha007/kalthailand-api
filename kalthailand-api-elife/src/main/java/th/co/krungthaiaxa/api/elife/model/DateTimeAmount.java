@@ -2,6 +2,8 @@ package th.co.krungthaiaxa.api.elife.model;
 
 import io.swagger.annotations.ApiModel;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.Instant;
 
@@ -12,7 +14,10 @@ import java.time.Instant;
  */
 @ApiModel(description = "An amount at a specific date with its currency")
 public class DateTimeAmount implements Serializable {
+    @NotNull
     private Instant dateTime;
+    @Valid
+    @NotNull
     private Amount amount;
 
     public Instant getDateTime() {

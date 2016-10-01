@@ -3,7 +3,9 @@ package th.co.krungthaiaxa.api.elife.products;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import th.co.krungthaiaxa.api.common.model.cache.PermanentMemoryCache;
 import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
+import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
 import th.co.krungthaiaxa.api.common.validator.BeanValidator;
 import th.co.krungthaiaxa.api.elife.data.OccupationType;
 import th.co.krungthaiaxa.api.elife.data.ProductPremiumRate;
@@ -18,7 +20,7 @@ import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.model.Periodicity;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.PremiumsData;
-import th.co.krungthaiaxa.api.elife.model.ProductPremiumDetailBasic;
+import th.co.krungthaiaxa.api.elife.model.PremiumDetail;
 import th.co.krungthaiaxa.api.elife.model.ProductSpec;
 import th.co.krungthaiaxa.api.elife.model.ProductSpecId;
 import th.co.krungthaiaxa.api.elife.model.Quote;
@@ -39,7 +41,7 @@ import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.notNull;
  * @author khoi.tran on 9/30/16.
  */
 public abstract class AbstractProductService implements ProductService {
-
+    private final PermanentMemoryCache<ProductSpecId, ProductSpec> productSpecCache = new PermanentMemoryCache<>();
     @Autowired
     private BeanValidator beanValidator;
 
@@ -52,9 +54,13 @@ public abstract class AbstractProductService implements ProductService {
     abstract protected ProductSpec getProductSpec(ProductSpecId productSpecId);
 
     protected ProductSpec getProductSpec(ProductQuotation productQuotation) {
-        //TODO can apply cache here.
         ProductSpecId productSpecId = new ProductSpecId(productQuotation.getProductType().getLogicName(), productQuotation.getPackageName());
-        return getProductSpec(productSpecId);
+        ProductSpec productSpec = productSpecCache.get(productSpecId);
+        if (productSpec == null) {
+            return getProductSpec(productSpecId);
+        } else {
+            return productSpec;
+        }
     }
 
     @Override
@@ -80,7 +86,7 @@ public abstract class AbstractProductService implements ProductService {
         CommonData commonData = quote.getCommonData();
         commonData.setPackageName(productQuotation.getPackageName());
         PremiumsData premiumsData = quote.getPremiumsData();
-        ProductPremiumDetailBasic productPremiumDetailBasic = getPremiumDetail(premiumsData);
+        PremiumDetail premiumDetail = getPremiumDetail(premiumsData);
         Insured mainInsured = ProductUtils.validateExistMainInsured(quote);
 
         // Copy data from ProductQuotation to Quote
@@ -97,7 +103,14 @@ public abstract class AbstractProductService implements ProductService {
         ProductUtils.checkInsuredAgeInRange(mainInsured, productSpec.getInsuredAgeMin(), productSpec.getInsuredAgeMax());
 
         int paymentYears = productSpec.getInsuredPaymentYears();
-        int coverageYears = productSpec.getInsuredCoverageAgeMax() - mainInsuredAge;
+        int coverageYears;
+        if (productSpec.getInsuredCoverageYears() != null) {
+            coverageYears = productSpec.getInsuredCoverageYears();
+        } else if (productSpec.getInsuredCoverageAgeMax() != null) {
+            coverageYears = productSpec.getInsuredCoverageAgeMax() - mainInsuredAge;
+        } else {
+            throw new QuoteCalculationException("ProductSpec error: It must have either insuredCoverageYears or insuredCoverageAgeMax: " + ObjectMapperUtil.toStringMultiLine(productSpec));
+        }
         commonData.setNbOfYearsOfPremium(paymentYears);
         commonData.setNbOfYearsOfCoverage(coverageYears);
 
@@ -107,9 +120,9 @@ public abstract class AbstractProductService implements ProductService {
         double premiumRate = validateExistPremiumRate(productSpec, mainInsuredAge, mainInsuredGenderCode).getPremiumRate();
         calculateSumInsuredAndPremiumAmounts(productSpec, premiumsData, productQuotation, premiumRate, occupationRate, periodicityCode);
 
-        calculateTax(productSpec, quote, productPremiumDetailBasic, periodicityCode, mainInsured);
+        calculateTax(productSpec, quote, premiumDetail, periodicityCode, mainInsured);
 
-        calculateDeathBenefits(now, productPremiumDetailBasic, paymentYears, coverageYears, ProductUtils.getPremiumAmount(quote), periodicityCode);
+        calculateDeathBenefits(now, premiumDetail, paymentYears, coverageYears, ProductUtils.getPremiumAmount(quote), periodicityCode);
 
         AmountLimits amountLimits = calculateAmountLimits(productSpec, premiumRate, occupationRate, periodicityCode);
         amountLimits.copyToCommonData(commonData);
@@ -118,9 +131,9 @@ public abstract class AbstractProductService implements ProductService {
         ProductUtils.addCoverageIfNotExist(quote, productSpec.getProductLogicName());
     }
 
-    abstract protected ProductPremiumDetailBasic getPremiumDetail(PremiumsData premiumsData);
+    abstract protected PremiumDetail getPremiumDetail(PremiumsData premiumsData);
 
-    abstract protected void calculateDeathBenefits(Instant now, ProductPremiumDetailBasic productPremiumDetailBasic, int paymentYears, int coverageYears, Amount premiumAmount, PeriodicityCode periodicityCode);
+    abstract protected void calculateDeathBenefits(Instant now, PremiumDetail premiumDetail, int paymentYears, int coverageYears, Amount premiumAmount, PeriodicityCode periodicityCode);
 
     protected double setOccupation(Quote quote, ProductQuotation productQuotation, Insured mainInsured) {
         double occupationRate;
@@ -146,13 +159,30 @@ public abstract class AbstractProductService implements ProductService {
     //TODO migrate data of iProtect to new data structure. Write the initiate code.
     protected ProductPremiumRate validateExistPremiumRate(ProductSpec productSpec, int insuredAge, GenderCode insuredGenderCode) {
         String productId = productSpec.getProductLogicName();
-        Optional<ProductPremiumRate> iProtectRateOptional;
+        Optional<ProductPremiumRate> productPremiumRateOptional;
+
         if (StringUtils.isNotBlank(productSpec.getPackageName())) {
-            iProtectRateOptional = productPremiumRateService.findPremiumRateByProductIdAndPackageNameAndAgeAndGender(productSpec.getProductLogicName(), productSpec.getPackageName(), insuredGenderCode, insuredAge);
+            if (productSpec.isSamePremiumRateAllAges() && productSpec.isSamePremiumRateAllGender()) {
+                productPremiumRateOptional = productPremiumRateService.findPremiumRateByProductIdAndPackageName(productSpec.getProductLogicName(), productSpec.getPackageName());
+            } else if (productSpec.isSamePremiumRateAllAges()) {
+                productPremiumRateOptional = productPremiumRateService.findPremiumRateByProductIdAndPackageNameAndGender(productSpec.getProductLogicName(), productSpec.getPackageName(), insuredGenderCode);
+            } else if (productSpec.isSamePremiumRateAllGender()) {
+                productPremiumRateOptional = productPremiumRateService.findPremiumRateByProductIdAndPackageNameAndAge(productSpec.getProductLogicName(), productSpec.getPackageName(), insuredAge);
+            } else {
+                productPremiumRateOptional = productPremiumRateService.findPremiumRateByProductIdAndPackageNameAndGenderAndAge(productSpec.getProductLogicName(), productSpec.getPackageName(), insuredGenderCode, insuredAge);
+            }
         } else {
-            iProtectRateOptional = productPremiumRateService.findPremiumRateByProductIdAndAgeAndGender(productSpec.getProductLogicName(), insuredGenderCode, insuredAge);
+            if (productSpec.isSamePremiumRateAllAges() && productSpec.isSamePremiumRateAllGender()) {
+                productPremiumRateOptional = productPremiumRateService.findPremiumRateByProductId(productSpec.getProductLogicName());
+            } else if (productSpec.isSamePremiumRateAllAges()) {
+                productPremiumRateOptional = productPremiumRateService.findPremiumRateByProductIdAndGender(productSpec.getProductLogicName(), insuredGenderCode);
+            } else if (productSpec.isSamePremiumRateAllGender()) {
+                productPremiumRateOptional = productPremiumRateService.findPremiumRateByProductIdAndAge(productSpec.getProductLogicName(), insuredAge);
+            } else {
+                productPremiumRateOptional = productPremiumRateService.findPremiumRateByProductIdAndGenderAndAge(productSpec.getProductLogicName(), insuredGenderCode, insuredAge);
+            }
         }
-        return iProtectRateOptional.orElseThrow(() -> QuoteCalculationException.premiumRateNotFoundException.apply(String.format("productId: %s, age: %s, gender: %s", productId, insuredAge, insuredGenderCode)));
+        return productPremiumRateOptional.orElseThrow(() -> QuoteCalculationException.premiumRateNotFoundException.apply(String.format("productId: %s, age: %s, gender: %s", productId, insuredAge, insuredGenderCode)));
     }
 
     protected void calculateSumInsuredAndPremiumAmounts(ProductSpec productSpec, PremiumsData premiumsData, ProductQuotation productQuotation, double premiumRate, double occupationRate, PeriodicityCode periodicityCode) {
@@ -161,7 +191,7 @@ public abstract class AbstractProductService implements ProductService {
     }
 
     protected void calculateBeforeDiscountForSumInsuredAndPremiumAmounts(ProductSpec productSpec, PremiumsData premiumsData, ProductQuotation productQuotation, double premiumRate, double occupationRate, PeriodicityCode periodicityCode) {
-        ProductPremiumDetailBasic premiumDetail = getPremiumDetail(premiumsData);
+        PremiumDetail premiumDetail = getPremiumDetail(premiumsData);
 
         if (productQuotation.getSumInsuredAmount() != null && productQuotation.getSumInsuredAmount().getValue() != null) {
             Amount sumInsured = exchangeToProductCurrency(productSpec, productQuotation.getSumInsuredAmount());
@@ -183,7 +213,7 @@ public abstract class AbstractProductService implements ProductService {
     }
 
     protected void calculateDiscountForSumInsuredAndPremiumAmounts(ProductSpec productSpec, PremiumsData premiumsData, double premiumRate, double occupationRate, PeriodicityCode periodicityCode) {
-        ProductPremiumDetailBasic premiumDetail = getPremiumDetail(premiumsData);
+        PremiumDetail premiumDetail = getPremiumDetail(premiumsData);
 
         Amount sumInsuredBeforeDiscount = premiumDetail.getSumInsuredBeforeDiscount();
         double discountRate = getDiscountRate(productSpec, sumInsuredBeforeDiscount);
@@ -210,11 +240,11 @@ public abstract class AbstractProductService implements ProductService {
         return ProductUtils.amount(amountValue, productSpec.getProductCurrency());
     }
 
-    protected void calculateTax(ProductSpec productSpec, Quote quote, ProductPremiumDetailBasic productPremiumDetailBasic, PeriodicityCode periodicityCode, Insured mainInsured) {
+    protected void calculateTax(ProductSpec productSpec, Quote quote, PremiumDetail premiumDetail, PeriodicityCode periodicityCode, Insured mainInsured) {
         double taxDeductionPerYear = ProductUtils.calculateTaxDeductionPerYear(productSpec.getTaxDeductionPerYearMax(), ProductUtils.getPremiumAmount(quote), periodicityCode, mainInsured.getDeclaredTaxPercentAtSubscription());
-        productPremiumDetailBasic.setYearlyTaxDeduction(amount(productSpec, taxDeductionPerYear));
+        premiumDetail.setYearlyTaxDeduction(amount(productSpec, taxDeductionPerYear));
         double totalTaxDeduction = taxDeductionPerYear * quote.getCommonData().getNbOfYearsOfPremium();
-        productPremiumDetailBasic.setTotalTaxDeduction(amount(productSpec, totalTaxDeduction));
+        premiumDetail.setTotalTaxDeduction(amount(productSpec, totalTaxDeduction));
     }
 
     abstract protected double getDiscountRate(ProductSpec productSpec, Amount sumInsuredAmount);
@@ -248,7 +278,7 @@ public abstract class AbstractProductService implements ProductService {
      * Input amount can be either sumInsured or premium
      */
     protected void validateLimitsForInputAmounts(Quote quote, AmountLimits amountLimits) {
-        Amount sumInsuredAmount = quote.getPremiumsData().getProductIProtectPremium().getSumInsured();
+        Amount sumInsuredAmount = getPremiumDetail(quote.getPremiumsData()).getSumInsured();
         Amount premiumAmount = quote.getPremiumsData().getFinancialScheduler().getModalAmount();
         ProductUtils.validateSumInsuredAmountInRange(sumInsuredAmount, amountLimits.getMinSumInsured().getValue(), amountLimits.getMaxSumInsured().getValue());
         ProductUtils.validatePremiumAmountInRange(premiumAmount, amountLimits.getMinPremium().getValue(), amountLimits.getMaxPremium().getValue());
@@ -259,7 +289,7 @@ public abstract class AbstractProductService implements ProductService {
         ProductSpec productSpec = getProductSpec(new ProductSpecId(quote.getCommonData().getProductId(), quote.getCommonData().getPackageName()));
         // check for mandatory data
 
-        checkProductType(productSpec, quote.getCommonData());
+        validateProductType(productSpec, quote.getCommonData());
         //TODO refactor following code!
         Insured insured = ProductUtils.validateMainInsured(quote);
 
@@ -279,7 +309,7 @@ public abstract class AbstractProductService implements ProductService {
         Coverage coverage = quote.getCoverages().get(0);
 
         ProductUtils.checkBeneficiaries(insured, coverage.getBeneficiaries());
-        checkIProtectPremiumsData(quote.getPremiumsData());
+        validatePremiumsData(quote.getPremiumsData());
 
         // Copy from quote to Policy
         policy.setQuoteId(quote.getQuoteId());
@@ -292,14 +322,14 @@ public abstract class AbstractProductService implements ProductService {
         ProductUtils.addPayments(policy, quote.getCommonData().getNbOfYearsOfPremium());
     }
 
-    protected void checkProductType(ProductSpec productSpec, CommonData commonData) {
+    protected void validateProductType(ProductSpec productSpec, CommonData commonData) {
         isEqual(commonData.getProductId(), productSpec.getProductLogicName(), PolicyValidationException.productIProtectExpected);
     }
 
-    private void checkIProtectPremiumsData(PremiumsData premiumsData) {
+    private void validatePremiumsData(PremiumsData premiumsData) {
         notNull(premiumsData, PolicyValidationException.premiumnsDataNone);
-        ProductPremiumDetailBasic productPremiumDetailBasic = getPremiumDetail(premiumsData);
-        beanValidator.validate(productPremiumDetailBasic, PolicyValidationException.class);
+        PremiumDetail premiumDetail = getPremiumDetail(premiumsData);
+        beanValidator.validate(premiumDetail, PolicyValidationException.class);
     }
 
     @Override

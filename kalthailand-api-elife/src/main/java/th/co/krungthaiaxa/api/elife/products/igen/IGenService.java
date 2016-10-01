@@ -7,9 +7,9 @@ import th.co.krungthaiaxa.api.common.utils.ListUtil;
 import th.co.krungthaiaxa.api.elife.data.OccupationType;
 import th.co.krungthaiaxa.api.elife.model.Amount;
 import th.co.krungthaiaxa.api.elife.model.DateTimeAmount;
+import th.co.krungthaiaxa.api.elife.model.PremiumDetail;
 import th.co.krungthaiaxa.api.elife.model.PremiumsData;
 import th.co.krungthaiaxa.api.elife.model.ProductIGenPremium;
-import th.co.krungthaiaxa.api.elife.model.ProductPremiumDetailBasic;
 import th.co.krungthaiaxa.api.elife.model.ProductSpec;
 import th.co.krungthaiaxa.api.elife.model.ProductSpecId;
 import th.co.krungthaiaxa.api.elife.model.Quote;
@@ -91,6 +91,8 @@ public class IGenService extends AbstractProductService implements ProductServic
         productSpec.setPremiumLimitsPeriodicityCode(PeriodicityCode.EVERY_MONTH);
         productSpec.setProductCurrency(currency);
         productSpec.setProductLogicName(productSpecId.getProductLogicName());
+        productSpec.setSamePremiumRateAllAges(true);
+        productSpec.setSamePremiumRateAllGender(true);
         productSpec.setSumInsuredMax(Amount.amount(1500000.0, currency));
         productSpec.setSumInsuredMin(Amount.amount(100000.0, currency));
         productSpec.setTaxDeductionPerYearMax(100000.0);
@@ -119,8 +121,8 @@ public class IGenService extends AbstractProductService implements ProductServic
      * @param periodicityCode periodicity (MONTH, YEAR...) of premium payment.
      */
     @Override
-    protected void calculateDeathBenefits(Instant now, ProductPremiumDetailBasic productPremiumDetailBasic, int paymentYears, int coverageYears, Amount premium, PeriodicityCode periodicityCode) {
-        Amount sumInsured = productPremiumDetailBasic.getSumInsured();
+    protected void calculateDeathBenefits(Instant now, PremiumDetail premiumDetail, int paymentYears, int coverageYears, Amount premium, PeriodicityCode periodicityCode) {
+        Amount sumInsured = premiumDetail.getSumInsured();
         Amount premiumInYear = ProductUtils.getPaymentInAYear(premium, periodicityCode);
         List<DateTimeAmount> yearlyDeathBenefits = new ArrayList<>();
         for (int i = 0; i < coverageYears; i++) {
@@ -132,7 +134,7 @@ public class IGenService extends AbstractProductService implements ProductServic
             yearlyDeathBenefit.setDateTime(DateTimeUtil.plusYears(now, year));
             yearlyDeathBenefits.add(yearlyDeathBenefit);
         }
-        productPremiumDetailBasic.setYearlyDeathBenefits(yearlyDeathBenefits);
+        premiumDetail.setYearlyDeathBenefits(yearlyDeathBenefits);
     }
 
     /**
@@ -142,7 +144,7 @@ public class IGenService extends AbstractProductService implements ProductServic
      * @param productQuotation
      */
     protected void calculateYearlyCashback(ProductSpec productSpec, Instant now, Quote quote, ProductQuotation productQuotation) {
-        ProductIGenPremium productIGenPremium = quote.getPremiumsData().getProductIGenPremium();
+        ProductIGenPremium productIGenPremium = getPremiumDetail(quote.getPremiumsData());
         String dividendOptionId = productQuotation.getDividendOptionId();
         productIGenPremium.setDividendOptionId(dividendOptionId);
         int coverageYears = quote.getCommonData().getNbOfYearsOfCoverage();
@@ -192,8 +194,8 @@ public class IGenService extends AbstractProductService implements ProductServic
      * @return
      */
     @Override
-    protected ProductPremiumDetailBasic getPremiumDetail(PremiumsData premiumsData) {
-        return premiumsData.getPremiumDetail();
+    protected ProductIGenPremium getPremiumDetail(PremiumsData premiumsData) {
+        return (ProductIGenPremium) premiumsData.getPremiumDetail();
     }
 
     @Override
@@ -239,7 +241,7 @@ public class IGenService extends AbstractProductService implements ProductServic
 
     @Override
     protected void resetCalculatedStuff(Quote quote) {
-        ProductIGenPremium productIGenPremium = quote.getPremiumsData().getProductIGenPremium();
+        ProductIGenPremium productIGenPremium = getPremiumDetail(quote.getPremiumsData());
         if (productIGenPremium != null) {
             productIGenPremium.setSumInsuredBeforeDiscount(null);
             productIGenPremium.setSumInsured(null);

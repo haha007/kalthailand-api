@@ -42,6 +42,8 @@ public class ProductSpec {
      * ...
      */
     private PeriodicityCode premiumLimitsPeriodicityCode;
+    private boolean samePremiumRateAllAges;
+    private boolean samePremiumRateAllGender;
 
     //TODO refactor: should load from DB.
     /**
@@ -194,5 +196,21 @@ public class ProductSpec {
 
     public void setPremiumLimitsPeriodicityCode(PeriodicityCode premiumLimitsPeriodicityCode) {
         this.premiumLimitsPeriodicityCode = premiumLimitsPeriodicityCode;
+    }
+
+    public boolean isSamePremiumRateAllAges() {
+        return samePremiumRateAllAges;
+    }
+
+    public void setSamePremiumRateAllAges(boolean samePremiumRateAllAges) {
+        this.samePremiumRateAllAges = samePremiumRateAllAges;
+    }
+
+    public boolean isSamePremiumRateAllGender() {
+        return samePremiumRateAllGender;
+    }
+
+    public void setSamePremiumRateAllGender(boolean samePremiumRateAllGender) {
+        this.samePremiumRateAllGender = samePremiumRateAllGender;
     }
 }

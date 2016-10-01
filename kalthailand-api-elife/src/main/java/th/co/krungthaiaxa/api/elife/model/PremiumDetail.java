@@ -12,7 +12,8 @@ import java.util.List;
  * @author khoi.tran on 9/30/16.
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-public class ProductPremiumDetailBasic {
+public class PremiumDetail {
+    @NotNull
     @ApiModelProperty(value = "True if the user has chosen to pay on a total Sum Insured base. False otherwise (premium choice). This is set by backend API if an amount is provided in financialScheduler.")
     private Boolean sumInsuredOption;
     @Valid
@@ -31,15 +32,11 @@ public class ProductPremiumDetailBasic {
     @NotNull
     @ApiModelProperty(value = "Total tax deduction after all of premium years.")
     private Amount totalTaxDeduction = null;
-    @Valid
-    @NotNull
     @ApiModelProperty(value = "The money which beneficiaries will receive at the end of contract. This is the final value (after discount) and is calculated by backend API if an amount is provided in financialScheduler."
             + " If dividendOption is END_OF_CONTRACT_PAY_BACK, then this value equals to the last element of yearlyCashBacksForEndOfContract."
             + " If dividendOption is ANNUAL_PAY_BACK_CASH or ANNUAL_PAY_BACK_NEXT_PREMIUM, then this value equals to the last element of yearlyCashBacksForAnnual."
     )
     private Amount endOfContractBenefit;
-    @Valid
-    @NotNull
     @ApiModelProperty(value = "The money which beneficiaries will receive when insured person is dead. "
             + "If death benefit is the same for every year, this field will have value. If death benefit is different for each year, those values will be set in yearlyDeathBenefits"
             + "This is the final value (after discount) and is calculated by back end API if an amount is provided in financialScheduler. If this value is provided, then it's the "
@@ -47,7 +44,6 @@ public class ProductPremiumDetailBasic {
     private Amount deathBenefit = null;
 
     @Valid
-    @NotNull
     @ApiModelProperty(value = "The money which beneficiaries will receive when insured person is dead. This is the final value (after discount) and is calculated by backend API if an amount is provided in financialScheduler. If this value is provided, then it's the financialScheduler amount that is calculated")
     private List<DateTimeAmount> yearlyDeathBenefits = new ArrayList<>();
 

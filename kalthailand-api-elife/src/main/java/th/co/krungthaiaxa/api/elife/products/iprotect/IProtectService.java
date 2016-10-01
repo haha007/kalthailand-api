@@ -9,9 +9,9 @@ import th.co.krungthaiaxa.api.elife.data.IProtectPackage;
 import th.co.krungthaiaxa.api.elife.data.OccupationType;
 import th.co.krungthaiaxa.api.elife.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.api.elife.model.Amount;
+import th.co.krungthaiaxa.api.elife.model.PremiumDetail;
 import th.co.krungthaiaxa.api.elife.model.PremiumsData;
 import th.co.krungthaiaxa.api.elife.model.ProductIProtectPremium;
-import th.co.krungthaiaxa.api.elife.model.ProductPremiumDetailBasic;
 import th.co.krungthaiaxa.api.elife.model.ProductSpec;
 import th.co.krungthaiaxa.api.elife.model.ProductSpecId;
 import th.co.krungthaiaxa.api.elife.model.Quote;
@@ -82,14 +82,16 @@ public class IProtectService extends AbstractProductService implements ProductSe
         productSpec.setInsuredAgeMax(55);
         productSpec.setInsuredAgeMin(20);
         productSpec.setInsuredCoverageAgeMax(85);
-        productSpec.setInsuredCoverageYears(insuredPaymentYears);
-        productSpec.setInsuredPaymentYears(null);
+        productSpec.setInsuredCoverageYears(null);
+        productSpec.setInsuredPaymentYears(insuredPaymentYears);
         productSpec.setPackageName(packageName);
         productSpec.setPremiumMax(null);
         productSpec.setPremiumMin(null);
         productSpec.setPremiumLimitsPeriodicityCode(PeriodicityCode.EVERY_MONTH);
         productSpec.setProductCurrency(currency);
         productSpec.setProductLogicName(productLogicName);
+        productSpec.setSamePremiumRateAllAges(false);
+        productSpec.setSamePremiumRateAllGender(false);
         productSpec.setSumInsuredMax(Amount.amount(1500000.0, currency));
         productSpec.setSumInsuredMin(Amount.amount(200000.0, currency));
         productSpec.setTaxDeductionPerYearMax(100000.0);
@@ -166,8 +168,8 @@ public class IProtectService extends AbstractProductService implements ProductSe
         return premiumsData.getProductIProtectPremium();
     }
 
-    protected void calculateDeathBenefits(Instant now, ProductPremiumDetailBasic productPremiumDetailBasic, int paymentYears, int coverageYears, Amount premium, PeriodicityCode periodicityCode) {
-        productPremiumDetailBasic.setDeathBenefit(productPremiumDetailBasic.getSumInsured());
+    protected void calculateDeathBenefits(Instant now, PremiumDetail premiumDetail, int paymentYears, int coverageYears, Amount premium, PeriodicityCode periodicityCode) {
+        premiumDetail.setDeathBenefit(premiumDetail.getSumInsured());
     }
 
     /**
@@ -211,7 +213,7 @@ public class IProtectService extends AbstractProductService implements ProductSe
 
     @Override
     protected void resetCalculatedStuff(Quote quote) {
-        ProductIProtectPremium productIProtectPremium = quote.getPremiumsData().getProductIProtectPremium();
+        ProductIProtectPremium productIProtectPremium = getPremiumDetail(quote.getPremiumsData());
         if (productIProtectPremium != null) {
             productIProtectPremium.setSumInsuredBeforeDiscount(null);
             productIProtectPremium.setSumInsured(null);

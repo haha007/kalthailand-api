@@ -7,7 +7,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import java.io.Serializable;
 
 @ApiModel(description = "IProtect Life Insurance specific Premiums Data")
-public class ProductIProtectPremium extends ProductPremiumDetailBasic implements Serializable {
+public class ProductIProtectPremium extends PremiumDetail implements Serializable {
 
     @Override
     public boolean equals(Object o) {

@@ -20,7 +20,7 @@ public class PremiumsData implements Serializable {
     private ProductIGenPremium productIGenPremium;
     private ProductIProtectPremium productIProtectPremium;
 
-    private ProductPremiumDetailBasic premiumDetail;
+    private PremiumDetail premiumDetail;
 
     @ApiModelProperty(value = "The definition of how the premiums must be paid")
     public FinancialScheduler getFinancialScheduler() {
@@ -92,11 +92,11 @@ public class PremiumsData implements Serializable {
         this.productIProtectPremium = productIProtectPremium;
     }
 
-    public ProductPremiumDetailBasic getPremiumDetail() {
+    public PremiumDetail getPremiumDetail() {
         return premiumDetail;
     }
 
-    public void setPremiumDetail(ProductPremiumDetailBasic premiumDetail) {
+    public void setPremiumDetail(PremiumDetail premiumDetail) {
         this.premiumDetail = premiumDetail;
     }
 }

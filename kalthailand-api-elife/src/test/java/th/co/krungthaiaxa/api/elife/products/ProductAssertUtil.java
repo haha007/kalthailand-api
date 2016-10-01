@@ -11,7 +11,7 @@ import th.co.krungthaiaxa.api.elife.model.DateTimeAmount;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.PremiumsData;
-import th.co.krungthaiaxa.api.elife.model.ProductPremiumDetailBasic;
+import th.co.krungthaiaxa.api.elife.model.PremiumDetail;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus;
 
@@ -122,7 +122,7 @@ public class ProductAssertUtil {
      * @param expectTotalTaxDeduction
      * @param expectEndContractBenefit
      */
-    public static void assertQuoteWithPremiumAmountAndTaxAndEndContractBenefit(Quote quote, ProductPremiumDetailBasic premiumDetail, Double expectPremiumValue, Double expectTotalTaxDeduction, Double expectEndContractBenefit) {
+    public static void assertQuoteWithPremiumAmountAndTaxAndEndContractBenefit(Quote quote, PremiumDetail premiumDetail, Double expectPremiumValue, Double expectTotalTaxDeduction, Double expectEndContractBenefit) {
         assertPremiumDataEnoughDataAfterQuoteCalculation(quote.getPremiumsData());
         assertCommonDataEnoughDataAfterQuoteCalculation(quote.getCommonData());
 

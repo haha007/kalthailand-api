@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @ApiModel(description = "iGen Life Insurance specific Premiums Data")
-public class ProductIGenPremium extends ProductPremiumDetailBasic implements Serializable {
+public class ProductIGenPremium extends PremiumDetail implements Serializable {
 
     @ApiModelProperty(value = "Yearly cash backs if dividendOption is END_OF_CONTRACT_PAY_BACK. This is calculated by backend API and cannot be set by client.")
     private List<DateTimeAmount> yearlyCashBacksForEndOfContract = new ArrayList<>();
