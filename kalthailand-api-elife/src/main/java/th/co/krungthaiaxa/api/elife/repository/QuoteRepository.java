@@ -1,7 +1,7 @@
 package th.co.krungthaiaxa.api.elife.repository;
 
+import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
-import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 
@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
-public interface QuoteRepository extends PagingAndSortingRepository<Quote, String> {
+public interface QuoteRepository extends MongoRepository<Quote, String> {
 
     @Query(value = "{"
             + "'$and':["
@@ -19,4 +19,5 @@ public interface QuoteRepository extends PagingAndSortingRepository<Quote, Strin
             + "}", fields = "['_id']")
     List<Quote> findObjectIdsByProductIdAndStartDateInRange(String productName, LocalDateTime startTimeBeginAt, LocalDateTime startTimeEndAt);
 
+    Quote findByQuoteId(String quoteId);
 }

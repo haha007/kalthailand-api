@@ -1,14 +1,18 @@
 package th.co.krungthaiaxa.api.elife.products.igen;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
 import th.co.krungthaiaxa.api.elife.ELifeTest;
 import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
 import th.co.krungthaiaxa.api.elife.data.ProductPremiumRate;
@@ -37,6 +41,8 @@ import java.util.Optional;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @ActiveProfiles("test")
 public class IGenServiceTest extends ELifeTest {
+    public static final Logger LOGGER = LoggerFactory.getLogger(IGenServiceTest.class);
+
     public static final ProductType PRODUCT_TYPE = ProductType.PRODUCT_IGEN;
 
     @Autowired
@@ -198,5 +204,15 @@ public class IGenServiceTest extends ELifeTest {
                 , 1848000.00
                 , 1848000.00
         );
+    }
+
+    @Test
+    public void tmp_test_load_quote_after_change_className() {
+        Quote quote = quoteService.findByQuoteId("80039680895592906068");//57ef3645d4c6573ffdfcbb3f
+        LOGGER.debug("\n" + ObjectMapperUtil.toJson(new ObjectMapper(), quote));
+//        ProductQuotation productQuotation = constructDefaultIGen();
+//        Quote quote = createAndFindQuote(productQuotation);
+//        quote = quoteService.updateQuote(quote, RequestFactory.generateAccessToken());
+//        assertDefaultCalculationNumbersAreCorrect(quote);
     }
 }
