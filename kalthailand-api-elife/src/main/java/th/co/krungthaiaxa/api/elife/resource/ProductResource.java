@@ -40,7 +40,7 @@ public class ProductResource {
     public ProductAmounts getProductAmounts(
             @ApiParam(value = "The product details for which to get the min and max amounts")
             @Valid @RequestBody ProductQuotation productQuotation) {
-        ProductService productService = productServiceFactory.getProduct(productQuotation.getProductType().getLogicName());
+        ProductService productService = productServiceFactory.getProductService(productQuotation.getProductType().getLogicName());
         return productService.calculateProductAmounts(productQuotation);
     }
 

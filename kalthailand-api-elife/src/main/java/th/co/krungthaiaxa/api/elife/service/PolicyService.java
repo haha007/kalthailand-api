@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
@@ -49,12 +50,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.isTrue;
 import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.notNull;
 import static th.co.krungthaiaxa.api.elife.model.enums.DocumentType.APPLICATION_FORM;
 import static th.co.krungthaiaxa.api.elife.model.enums.DocumentType.APPLICATION_FORM_VALIDATED;
@@ -138,25 +137,30 @@ public class PolicyService {
         return policy;
     }
 
+    private PolicyNumber validateExistNextAvailablePoliyNumber() {
+        Sort sort = new Sort(Sort.Direction.ASC, "policyId");
+        Pageable pageable = new PageRequest(0, 1, sort);
+        Page<PolicyNumber> policyNumbers = policyNumberRepository.findByPolicyNull(pageable);
+        if (!policyNumbers.iterator().hasNext()) {
+            throw PolicyValidationException.noPolicyNumberAvailable;
+        }
+        return policyNumbers.iterator().next();
+    }
+
     public Policy createPolicy(Quote quote) {
         notNull(quote, PolicyValidationException.emptyQuote);
         notNull(quote.getId(), PolicyValidationException.noneExistingQuote);
         notNull(quoteRepository.findOne(quote.getId()), PolicyValidationException.noneExistingQuote);
 
-        Stream<PolicyNumber> availablePolicyNumbers = policyNumberRepository.findByPolicyNull();
-        notNull(availablePolicyNumbers, PolicyValidationException.noPolicyNumberAccessible);
-
-        //TODO Refactor to improve performance
-        Optional<PolicyNumber> policyNumber = availablePolicyNumbers.sorted((p1, p2) -> p1.getPolicyId().compareTo(p2.getPolicyId())).findFirst();
-        isTrue(policyNumber.isPresent(), PolicyValidationException.noPolicyNumberAvailable);
+        PolicyNumber policyNumber = validateExistNextAvailablePoliyNumber();
 
         Policy policy = policyRepository.findByQuoteId(quote.getId());
         if (policy == null) {
             logger.info("Creating Policy from quote [" + quote.getQuoteId() + "]");
             policy = new Policy();
-            policy.setPolicyId(policyNumber.get().getPolicyId());
+            policy.setPolicyId(policyNumber.getPolicyId());
 
-            ProductService productService = productServiceFactory.getProduct(quote.getCommonData().getProductId());
+            ProductService productService = productServiceFactory.getProductService(quote.getCommonData().getProductId());
             productService.createPolicyFromQuote(policy, quote);
 
             policy.getPayments().stream().forEach(paymentRepository::save);
@@ -165,8 +169,8 @@ public class PolicyService {
             policy.setCreationDateTime(now);
             policy.setLastUpdateDateTime(now);
             policy = policyRepository.save(policy);
-            policyNumber.get().setPolicy(policy);
-            policyNumberRepository.save(policyNumber.get());
+            policyNumber.setPolicy(policy);
+            policyNumberRepository.save(policyNumber);
             quote.setPolicyId(policy.getPolicyId());
             quoteRepository.save(quote);
             logger.info("Policy has been created with id [" + policy.getPolicyId() + "] from quote [" + quote.getQuoteId() + "]");

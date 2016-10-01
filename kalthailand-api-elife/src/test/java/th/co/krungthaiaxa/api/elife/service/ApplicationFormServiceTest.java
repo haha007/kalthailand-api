@@ -14,6 +14,8 @@ import th.co.krungthaiaxa.api.common.utils.IOUtil;
 import th.co.krungthaiaxa.api.elife.ELifeTest;
 import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
 import th.co.krungthaiaxa.api.elife.TestUtil;
+import th.co.krungthaiaxa.api.elife.data.IProtectPackage;
+import th.co.krungthaiaxa.api.elife.factory.BeneficiaryFactory;
 import th.co.krungthaiaxa.api.elife.model.CoverageBeneficiary;
 import th.co.krungthaiaxa.api.elife.model.GeographicalAddress;
 import th.co.krungthaiaxa.api.elife.model.Periodicity;
@@ -31,7 +33,6 @@ import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 import th.co.krungthaiaxa.api.elife.products.ProductIFinePackage;
 import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
-import th.co.krungthaiaxa.api.elife.data.IProtectPackage;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -39,7 +40,6 @@ import java.io.File;
 import static org.apache.commons.io.FileUtils.writeByteArrayToFile;
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
-import static th.co.krungthaiaxa.api.elife.TestUtil.beneficiary;
 import static th.co.krungthaiaxa.api.elife.TestUtil.productQuotation;
 import static th.co.krungthaiaxa.api.elife.TestUtil.quote;
 import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.EVERY_YEAR;
@@ -358,7 +358,7 @@ public class ApplicationFormServiceTest extends ELifeTest {
     private Policy getPolicyiProtect() {
         Quote quote = quoteService.createQuote(randomNumeric(20), ChannelType.LINE,
                 createDefaultProductQuotation());
-        quote(quote, beneficiary(100.0));
+        quote(quote, BeneficiaryFactory.constructDefaultBeneficiary());
         quote = quoteService.updateQuote(quote, "token");
 
         return policyService.createPolicy(quote);
@@ -381,7 +381,7 @@ public class ApplicationFormServiceTest extends ELifeTest {
 
     private Policy getPolicyiFine() {
         Quote quote = quoteService.createQuote("xxx", ChannelType.LINE, productQuotation(ProductType.PRODUCT_IFINE, 55, EVERY_YEAR, 100000.0));
-        quote(quote, beneficiary(100.0));
+        quote(quote, BeneficiaryFactory.constructDefaultBeneficiary());
         quote = quoteService.updateQuote(quote, "token");
 
         return policyService.createPolicy(quote);
@@ -389,7 +389,7 @@ public class ApplicationFormServiceTest extends ELifeTest {
 
     private Policy getPolicy10EC() {
         Quote quote = quoteService.createQuote(randomNumeric(20), ChannelType.LINE, productQuotation());
-        quote(quote, beneficiary(100.0));
+        quote(quote, BeneficiaryFactory.constructDefaultBeneficiary());
         quote = quoteService.updateQuote(quote, "token");
 
         return policyService.createPolicy(quote);
