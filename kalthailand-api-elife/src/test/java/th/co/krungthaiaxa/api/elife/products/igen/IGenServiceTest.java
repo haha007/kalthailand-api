@@ -206,7 +206,7 @@ public class IGenServiceTest extends ELifeTest {
         );
     }
 
-    @Test
+    //    @Test
     public void tmp_test_load_quote_after_change_className() {
         Quote quote = quoteService.findByQuoteId("80039680895592906068");//57ef3645d4c6573ffdfcbb3f
         LOGGER.debug("\n" + ObjectMapperUtil.toJson(new ObjectMapper(), quote));

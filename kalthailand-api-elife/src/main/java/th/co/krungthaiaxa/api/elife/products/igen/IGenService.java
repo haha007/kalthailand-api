@@ -1,6 +1,5 @@
 package th.co.krungthaiaxa.api.elife.products.igen;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
 import th.co.krungthaiaxa.api.common.utils.ListUtil;
@@ -173,9 +172,6 @@ public class IGenService extends AbstractProductService implements ProductServic
             return false;
         }
         if (productQuotation.getGenderCode() == null) {
-            return false;
-        }
-        if (StringUtils.isBlank(productQuotation.getPackageName())) {
             return false;
         }
         if (productQuotation.getOccupationId() == null) {
