@@ -6,9 +6,11 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import th.co.krungthaiaxa.api.elife.model.enums.GenderCode;
 
 /**
+ * @deprecated use {@link ProductPremiumRate}.
  * This class is different from {@link IProtectRate}.
  * This is the data related to specific customer, while {@link IProtectRate} is pre-defined data of product.
  */
+@Deprecated
 @Document(collection = "productIProtectRate")
 public class IProtectRate {
     @Id

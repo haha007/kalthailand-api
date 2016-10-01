@@ -29,46 +29,6 @@ import java.util.List;
 
 @Service
 public class IGenService extends AbstractProductService implements ProductService {
-
-//    private final ProductSpec PRODUCT_SPEC = getProductSpec(ProductType.PRODUCT_IGEN.getLogicName(), null);
-//
-//    public static final ProductType PRODUCT_TYPE = ProductType.PRODUCT_IGEN;
-//    public static final Integer INSURED_COVERAGE_AGE_MAX = null;//No max age for coverage.
-//    public static final Integer INSURED_COVERAGE_IN_YEAR = 10;
-//    /**
-//     * This is the number of years of premiums == duration the customer have to pay premiums.
-//     */
-//    public static final Integer INSURED_PAYMENT_IN_YEAR = 6;
-//    public static final Double TAX_DEDUCTION_PER_YEAR_MAX = 100000.0;//Not sure yet
-//
-//    public static final String PRODUCT_CURRENCY = ProductUtils.CURRENCY_THB;
-//    public static final Amount SUM_INSURED_MIN = amount(100000.0);//Calculated from PREMIMUM_PER_MONTH_MIN
-//    public static final Amount SUM_INSURED_MAX = amount(1500000.0);//1.5M
-//    public static final Amount PREMIUM_MIN_PER_MONTH = null;//Calculated from SUM_INSURED_MIN
-//    public static final Amount PREMIUM_MAX_PER_MONTH = null;//Calculated from SUM_INSURED_MAX
-//
-//    public static final int INSURED_MIN_AGE = 20;
-//    public static final int INSURED_MAX_AGE = 70;
-//
-//    public static final Double DIVIDEND_RATE_IN_NORMAL_YEAR = 0.02;//2% this number can be different for other product, and also can be change?
-//    public static final Double DIVIDEND_RATE_IN_LAST_YEAR = 1.8;
-//    /**
-//     * Dividend interest rate when apply 'cash back at the end of contract' option.
-//     */
-//    public static final Double DIVIDEND_INTEREST_RATE_FOR_END_OF_CONTRACT = 0.02;//2%
-//    /**
-//     * Dividend interest rate when apply 'annual cash back' option.
-//     */
-//    public static final Double DIVIDEND_INTEREST_RATE_FOR_ANNUAL = 0.0;//0%
-
-    //All calculation of this product doesn't related to Occupation
-
-    private static final boolean REQUIRED_OCCUPATION_FOR_STORING = true;
-    private static final boolean REQUIRED_OCCUPATION_FOR_CALCULATION = false;
-    private static final boolean REQUIRED_PACKAGE_NAME_FOR_CALCULATION = false;
-    private static final boolean REQUIRED_GENDER_FOR_CALCULATION = false;
-    private static final boolean REQUIRED_GENDER_FOR_STORING = true;
-
     @Inject
     private OccupationTypeRepository occupationTypeRepository;
 
@@ -144,16 +104,16 @@ public class IGenService extends AbstractProductService implements ProductServic
      * @param productQuotation
      */
     protected void calculateYearlyCashback(ProductSpec productSpec, Instant now, Quote quote, ProductQuotation productQuotation) {
-        ProductIGenPremium productIGenPremium = getPremiumDetail(quote.getPremiumsData());
+        PremiumDetail premiumDetail = getPremiumDetail(quote.getPremiumsData());
         String dividendOptionId = productQuotation.getDividendOptionId();
-        productIGenPremium.setDividendOptionId(dividendOptionId);
+        premiumDetail.setDividendOptionId(dividendOptionId);
         int coverageYears = quote.getCommonData().getNbOfYearsOfCoverage();
-        Amount sumInsuredValue = productIGenPremium.getSumInsured();
+        Amount sumInsuredValue = premiumDetail.getSumInsured();
 
         List<DateTimeAmount> yearlyCashBackForEndOfContract = calculateYearlyCashBack(productSpec, sumInsuredValue, coverageYears, now, productSpec.getDividendInterestRateForEndOfContract());
         List<DateTimeAmount> yearlyCashBackForAnnual = calculateYearlyCashBack(productSpec, sumInsuredValue, coverageYears, now, productSpec.getDividendInterestRateForAnnual());
-        productIGenPremium.setYearlyCashBacksForEndOfContract(yearlyCashBackForEndOfContract);
-        productIGenPremium.setYearlyCashBacksForAnnual(yearlyCashBackForAnnual);
+        premiumDetail.setYearlyCashBacksForEndOfContract(yearlyCashBackForEndOfContract);
+        premiumDetail.setYearlyCashBacksForAnnual(yearlyCashBackForAnnual);
 
         Amount endOfContractBenefit;
         if (ProductDividendOption.END_OF_CONTRACT_PAY_BACK.getId().equals(dividendOptionId)) {
@@ -161,7 +121,7 @@ public class IGenService extends AbstractProductService implements ProductServic
         } else {
             endOfContractBenefit = ListUtil.getLastItem(yearlyCashBackForAnnual).getAmount();
         }
-        productIGenPremium.setEndOfContractBenefit(endOfContractBenefit);
+        premiumDetail.setEndOfContractBenefit(endOfContractBenefit);
     }
 
     private List<DateTimeAmount> calculateYearlyCashBack(ProductSpec productSpec, Amount sumInsuredValue, int coverageYears, Instant now, double dividendInterestRate) {
@@ -194,8 +154,8 @@ public class IGenService extends AbstractProductService implements ProductServic
      * @return
      */
     @Override
-    protected ProductIGenPremium getPremiumDetail(PremiumsData premiumsData) {
-        return (ProductIGenPremium) premiumsData.getPremiumDetail();
+    protected PremiumDetail getPremiumDetail(PremiumsData premiumsData) {
+        return premiumsData.getPremiumDetail();
     }
 
     @Override
@@ -212,20 +172,14 @@ public class IGenService extends AbstractProductService implements ProductServic
         if (productQuotation.getDateOfBirth() == null) {
             return false;
         }
-        if (REQUIRED_GENDER_FOR_STORING || REQUIRED_GENDER_FOR_CALCULATION) {
-            if (productQuotation.getGenderCode() == null) {
-                return false;
-            }
+        if (productQuotation.getGenderCode() == null) {
+            return false;
         }
-        if (REQUIRED_PACKAGE_NAME_FOR_CALCULATION) {
-            if (StringUtils.isBlank(productQuotation.getPackageName())) {
-                return false;
-            }
+        if (StringUtils.isBlank(productQuotation.getPackageName())) {
+            return false;
         }
-        if (REQUIRED_OCCUPATION_FOR_STORING || REQUIRED_OCCUPATION_FOR_CALCULATION) {
-            if (productQuotation.getOccupationId() == null) {
-                return false;
-            }
+        if (productQuotation.getOccupationId() == null) {
+            return false;
         }
         if (AmountUtil.isBlank(productQuotation.getSumInsuredAmount()) && AmountUtil.isBlank(productQuotation.getPremiumAmount())) {
             return false;
@@ -241,17 +195,17 @@ public class IGenService extends AbstractProductService implements ProductServic
 
     @Override
     protected void resetCalculatedStuff(Quote quote) {
-        ProductIGenPremium productIGenPremium = getPremiumDetail(quote.getPremiumsData());
-        if (productIGenPremium != null) {
-            productIGenPremium.setSumInsuredBeforeDiscount(null);
-            productIGenPremium.setSumInsured(null);
+        PremiumDetail premiumDetail = getPremiumDetail(quote.getPremiumsData());
+        if (premiumDetail != null) {
+            premiumDetail.setSumInsuredBeforeDiscount(null);
+            premiumDetail.setSumInsured(null);
             //Don't use Collections.EMPTY_LIST here because it cannot be appended.
-            productIGenPremium.setYearlyDeathBenefits(new ArrayList<>());
-            productIGenPremium.setYearlyCashBacksForAnnual(new ArrayList<>());
-            productIGenPremium.setYearlyCashBacksForEndOfContract(new ArrayList<>());
-            productIGenPremium.setYearlyTaxDeduction(null);
-            productIGenPremium.setTotalTaxDeduction(null);
-            productIGenPremium.setEndOfContractBenefit(null);
+            premiumDetail.setYearlyDeathBenefits(new ArrayList<>());
+            premiumDetail.setYearlyCashBacksForAnnual(new ArrayList<>());
+            premiumDetail.setYearlyCashBacksForEndOfContract(new ArrayList<>());
+            premiumDetail.setYearlyTaxDeduction(null);
+            premiumDetail.setTotalTaxDeduction(null);
+            premiumDetail.setEndOfContractBenefit(null);
         }
         quote.getCoverages().clear();
     }

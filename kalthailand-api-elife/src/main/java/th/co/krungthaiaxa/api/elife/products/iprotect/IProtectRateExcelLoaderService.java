@@ -10,11 +10,9 @@ import th.co.krungthaiaxa.api.elife.data.IProtectPackage;
 import th.co.krungthaiaxa.api.elife.data.ProductPremiumRate;
 import th.co.krungthaiaxa.api.elife.model.enums.GenderCode;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
-import th.co.krungthaiaxa.api.elife.repository.ProductIProtectRateRepository;
 import th.co.krungthaiaxa.api.elife.utils.ExcelIOUtils;
 import th.co.krungthaiaxa.api.elife.utils.ExcelUtils;
 
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -24,11 +22,6 @@ public class IProtectRateExcelLoaderService {
     public static final Logger LOGGER = LoggerFactory.getLogger(IProtectRateExcelLoaderService.class);
 
     private static final String FILE_PATH_PREDEFINED_RATE = "/products/iprotect/iProtect.xlsx";
-
-    private final ProductIProtectRateRepository productIProtectRateRepository;
-
-    @Inject
-    public IProtectRateExcelLoaderService(ProductIProtectRateRepository productIProtectRateRepository) {this.productIProtectRateRepository = productIProtectRateRepository;}
 
     public List<ProductPremiumRate> excelToIProtectProductPremiumRates(IProtectPackage iProtectPackage) {
         return excelToProductPremiumRates(FILE_PATH_PREDEFINED_RATE, ProductType.PRODUCT_IPROTECT.getLogicName(), iProtectPackage.name());

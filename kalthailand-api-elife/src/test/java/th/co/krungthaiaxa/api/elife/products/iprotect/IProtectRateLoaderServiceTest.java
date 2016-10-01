@@ -13,13 +13,10 @@ import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
 import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
 import th.co.krungthaiaxa.api.elife.data.IProtectDiscountRate;
 import th.co.krungthaiaxa.api.elife.data.IProtectPackage;
-import th.co.krungthaiaxa.api.elife.data.IProtectRate;
-import th.co.krungthaiaxa.api.elife.model.enums.GenderCode;
 
 import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiElifeApplication.class)
@@ -29,9 +26,6 @@ public class IProtectRateLoaderServiceTest {
     public static final Logger LOGGER = LoggerFactory.getLogger(IProtectRateLoaderServiceTest.class);
     @Inject
     IProtectRateExcelLoaderService iProtectRateLoaderService;
-
-    @Inject
-    IProtectRateService iProtectRateService;
 
     @Inject
     IProtectDiscountRateExcelLoaderService iProtectDiscountRateExcelLoaderService;
@@ -52,15 +46,15 @@ public class IProtectRateLoaderServiceTest {
 //            Assert.assertTrue(iprotectRate.getGender() != null);
 //        }
 //    }
-
-    @Test
-    public void load_premium_rates_from_db() {
-        Optional<IProtectRate> iprotectRate = iProtectRateService.findIProtectRates(IProtectPackage.IPROTECT10.name(), 35, GenderCode.MALE);
-
-        LOGGER.debug(ObjectMapperUtil.toStringMultiLine(iprotectRate));
-
-        Assert.assertNotNull(iprotectRate);
-    }
+//
+//    @Test
+//    public void load_premium_rates_from_db() {
+//        Optional<IProtectRate> iprotectRate = iProtectRateService.findIProtectRates(IProtectPackage.IPROTECT10.name(), 35, GenderCode.MALE);
+//
+//        LOGGER.debug(ObjectMapperUtil.toStringMultiLine(iprotectRate));
+//
+//        Assert.assertNotNull(iprotectRate);
+//    }
 
     @Test
     public void save_discount_rate_from_excel_to_db() {

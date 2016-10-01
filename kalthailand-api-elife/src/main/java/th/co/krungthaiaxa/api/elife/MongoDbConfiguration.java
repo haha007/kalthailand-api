@@ -17,6 +17,7 @@ import java.util.List;
 /**
  * @deprecated the main purpose of this class is remove "_class" inside Mongo data.
  * But if we remove that, we cannot apply polimorphism with entities (when entities use abstract).
+ * That's why I disable @Configuration for now.
  */
 @Deprecated
 //@Configuration
