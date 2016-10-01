@@ -10,11 +10,13 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.api.elife.ELifeTest;
 import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
+import th.co.krungthaiaxa.api.elife.factory.ProductQuotationFactory;
+import th.co.krungthaiaxa.api.elife.factory.QuoteFactory;
 import th.co.krungthaiaxa.api.elife.model.Amount;
 import th.co.krungthaiaxa.api.elife.model.Periodicity;
 import th.co.krungthaiaxa.api.elife.model.Quote;
+import th.co.krungthaiaxa.api.elife.model.enums.GenderCode;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
-import th.co.krungthaiaxa.api.elife.products.ProductType;
 import th.co.krungthaiaxa.api.elife.products.iprotect.IProtectSaleIllustrationService;
 
 import javax.inject.Inject;
@@ -22,7 +24,9 @@ import java.io.File;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
-import static th.co.krungthaiaxa.api.elife.TestUtil.*;
+import static th.co.krungthaiaxa.api.elife.TestUtil.beneficiary;
+import static th.co.krungthaiaxa.api.elife.TestUtil.productQuotation;
+import static th.co.krungthaiaxa.api.elife.TestUtil.quote;
 import static th.co.krungthaiaxa.api.elife.model.enums.ChannelType.LINE;
 import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.EVERY_MONTH;
 import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.EVERY_YEAR;
@@ -43,11 +47,14 @@ public class SaleIllustrationServiceTest extends ELifeTest {
     @Inject
     private QuoteService quoteService;
 
+    @Inject
+    private QuoteFactory quoteFactory;
     private final String base64 = "";
-    
+
+    //TODO recheck logic here
     @Test
-    public void should_generate_sale_illustration_iprotect_monthly_pdf_file()throws  Exception {
-    	Quote quote = quoteService.createQuote("xxx", LINE, productQuotation(ProductType.PRODUCT_IPROTECT, 55, EVERY_YEAR, 100000.0));
+    public void should_generate_sale_illustration_iprotect_monthly_pdf_file() throws Exception {
+        Quote quote = quoteService.createQuote("xxx", LINE, ProductQuotationFactory.constructIProtect(55, PeriodicityCode.EVERY_MONTH, 10000.0, false, 35, GenderCode.MALE));
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateQuote(quote, "token");
         Amount am = new Amount(1000.0, "THB");
@@ -55,7 +62,7 @@ public class SaleIllustrationServiceTest extends ELifeTest {
         quote.getPremiumsData().getProductIProtectPremium().setDeathBenefit(am);
         quote.getPremiumsData().getProductIProtectPremium().setSumInsured(am);
         quote.getPremiumsData().getProductIProtectPremium().setYearlyTaxDeduction(am);
-        quote.getPremiumsData().getProductIProtectPremium().setTotalTaxDeduction(am); 
+        quote.getPremiumsData().getProductIProtectPremium().setTotalTaxDeduction(am);
         Periodicity periodicity = new Periodicity();
         periodicity.setCode(PeriodicityCode.EVERY_MONTH);
         quote.getPremiumsData().getFinancialScheduler().setPeriodicity(periodicity);
@@ -66,10 +73,10 @@ public class SaleIllustrationServiceTest extends ELifeTest {
         assertThat(pair.getRight()).isNotEmpty();
         FileUtils.writeByteArrayToFile(new File("target/" + pair.getRight()), pair.getLeft());
     }
-    
+
     @Test
-    public void should_generate_sale_illustration_iprotect_yearly_pdf_file()throws  Exception {
-    	Quote quote = quoteService.createQuote("xxx", LINE, productQuotation(ProductType.PRODUCT_IPROTECT, 55, EVERY_YEAR, 100000.0));
+    public void should_generate_sale_illustration_iprotect_yearly_pdf_file() throws Exception {
+        Quote quote = quoteService.createQuote("xxx", LINE, ProductQuotationFactory.constructIProtect(55, PeriodicityCode.EVERY_YEAR, 100000.0, false, 35, GenderCode.MALE));
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateQuote(quote, "token");
         Amount am = new Amount(1000.0, "THB");
@@ -77,7 +84,7 @@ public class SaleIllustrationServiceTest extends ELifeTest {
         quote.getPremiumsData().getProductIProtectPremium().setDeathBenefit(am);
         quote.getPremiumsData().getProductIProtectPremium().setSumInsured(am);
         quote.getPremiumsData().getProductIProtectPremium().setYearlyTaxDeduction(am);
-        quote.getPremiumsData().getProductIProtectPremium().setTotalTaxDeduction(am); 
+        quote.getPremiumsData().getProductIProtectPremium().setTotalTaxDeduction(am);
         Periodicity periodicity = new Periodicity();
         periodicity.setCode(PeriodicityCode.EVERY_YEAR);
         quote.getPremiumsData().getFinancialScheduler().setPeriodicity(periodicity);
@@ -90,7 +97,7 @@ public class SaleIllustrationServiceTest extends ELifeTest {
     }
 
     @Test
-    public void should_generate_sale_illustration_10ec_pdf_file()throws  Exception {
+    public void should_generate_sale_illustration_10ec_pdf_file() throws Exception {
         Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation());
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateQuote(quote, "token");
@@ -102,7 +109,7 @@ public class SaleIllustrationServiceTest extends ELifeTest {
     }
 
     @Test
-    public void should_generate_sale_illustration_ifine_pdf_file()throws  Exception{
+    public void should_generate_sale_illustration_ifine_pdf_file() throws Exception {
         Quote quote = quoteService.createQuote("xxx", LINE, productQuotation(PRODUCT_IFINE, 55, EVERY_YEAR, 100000.0));
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateQuote(quote, "token");
@@ -114,7 +121,7 @@ public class SaleIllustrationServiceTest extends ELifeTest {
     }
 
     @Test
-    public void should_generate_sale_illustration_ifine_with_autopay_from_line_pay_wording_pdf_file()throws  Exception{
+    public void should_generate_sale_illustration_ifine_with_autopay_from_line_pay_wording_pdf_file() throws Exception {
         Quote quote = quoteService.createQuote("xxx", LINE, productQuotation(PRODUCT_IFINE, 50, EVERY_MONTH, 10000.0));
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateQuote(quote, "token");

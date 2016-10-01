@@ -13,6 +13,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.MessageSource;
@@ -22,13 +23,17 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
 import th.co.krungthaiaxa.api.elife.ELifeTest;
 import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
+import th.co.krungthaiaxa.api.elife.factory.ProductQuotationFactory;
+import th.co.krungthaiaxa.api.elife.factory.QuoteFactory;
 import th.co.krungthaiaxa.api.elife.model.Amount;
 import th.co.krungthaiaxa.api.elife.model.Document;
 import th.co.krungthaiaxa.api.elife.model.DocumentDownload;
 import th.co.krungthaiaxa.api.elife.model.Periodicity;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.Quote;
+import th.co.krungthaiaxa.api.elife.model.enums.GenderCode;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
+import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
 
 import javax.inject.Inject;
@@ -94,6 +99,9 @@ public class EmailServiceTest extends ELifeTest {
 
     @Inject
     private MessageSource messageSource;
+
+    @Autowired
+    private QuoteFactory quoteFactory;
     private Locale thLocale = new Locale("th", "");
 
     @Before
@@ -114,21 +122,7 @@ public class EmailServiceTest extends ELifeTest {
 
     @Test
     public void should_send_quote_iprotect_email_monthly_with_proper_from_address() throws Exception {
-        Quote quote = quoteService.createQuote("xxx", LINE, productQuotation(ProductType.PRODUCT_IPROTECT, 55, EVERY_YEAR, 100000.0));
-        quote(quote, beneficiary(100.0));
-        quote = quoteService.updateQuote(quote, "token");
-        //quote.getInsureds().get(0).getPerson().setEmail("chr_biz@hotmail.com");
-        quote.getInsureds().get(0).getPerson().setEmail("santi.lik@krungthai-axa.co.th");
-        Amount am = new Amount(1000.0, "THB");
-        quote.getPremiumsData().getFinancialScheduler().setModalAmount(am);
-        quote.getPremiumsData().getProductIProtectPremium().setDeathBenefit(am);
-        quote.getPremiumsData().getProductIProtectPremium().setSumInsured(am);
-        quote.getPremiumsData().getProductIProtectPremium().setYearlyTaxDeduction(am);
-        quote.getPremiumsData().getProductIProtectPremium().setTotalTaxDeduction(am);
-        Periodicity periodicity = new Periodicity();
-        periodicity.setCode(PeriodicityCode.EVERY_MONTH);
-        quote.getPremiumsData().getFinancialScheduler().setPeriodicity(periodicity);
-
+        Quote quote = quoteFactory.createDefaultIProtectQuoteForLine(55, "santi.lik@krungthai-axa.co.th");
         emailService.sendQuoteIProtect(quote);
         assertThat(greenMail.getReceivedMessages()).hasSize(1);
         MimeMessage email = greenMail.getReceivedMessages()[0];
@@ -137,7 +131,8 @@ public class EmailServiceTest extends ELifeTest {
 
     @Test
     public void should_send_quote_iprotect_email_yearly_with_proper_from_address() throws Exception {
-        Quote quote = quoteService.createQuote("xxx", LINE, productQuotation(ProductType.PRODUCT_IPROTECT, 55, EVERY_YEAR, 100000.0));
+        ProductQuotation productQuotation = ProductQuotationFactory.constructIProtect(55, PeriodicityCode.EVERY_YEAR, 100000.0, false, 35, GenderCode.MALE);
+        Quote quote = quoteService.createQuote("xxx", LINE, productQuotation);
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateQuote(quote, "token");
         //quote.getInsureds().get(0).getPerson().setEmail("chr_biz@hotmail.com");
