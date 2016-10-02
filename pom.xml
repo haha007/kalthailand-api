@@ -109,6 +109,12 @@
             <version>1.5.5</version>
         </dependency>
 
+        <!--AOP -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
+
         <!-- provided stuff -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -121,7 +127,7 @@
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
             <version>3.4.1</version>
-            <scope>test</scope>
+            <!--<scope>test</scope>-->
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

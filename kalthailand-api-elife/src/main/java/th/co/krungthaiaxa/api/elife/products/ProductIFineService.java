@@ -10,8 +10,8 @@ import th.co.krungthaiaxa.api.elife.model.FinancialScheduler;
 import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.model.Periodicity;
 import th.co.krungthaiaxa.api.elife.model.Policy;
-import th.co.krungthaiaxa.api.elife.model.PremiumsData;
-import th.co.krungthaiaxa.api.elife.model.ProductIFinePremium;
+import th.co.krungthaiaxa.api.elife.model.product.PremiumsData;
+import th.co.krungthaiaxa.api.elife.model.product.ProductIFinePremium;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.repository.OccupationTypeRepository;
 import th.co.krungthaiaxa.api.elife.repository.ProductIFineRateRepository;
@@ -148,7 +148,7 @@ public class ProductIFineService implements ProductService {
     @Override
     public void createPolicyFromQuote(Policy policy, Quote quote) {
         // check for mandatory data
-        checkCommonData(initCommonData());
+        checkCommonData(quote.getCommonData());
         ProductUtils.validateMainInsured(quote);
 
         // There is only one insured at this point
@@ -183,7 +183,7 @@ public class ProductIFineService implements ProductService {
     }
 
     @Override
-    public CommonData initCommonData() {
+    public CommonData initCommonData(ProductQuotation productQuotation) {
         CommonData commonData = new CommonData();
         commonData.setProductId(ProductType.PRODUCT_IFINE.getLogicName());
         commonData.setProductCurrency(CURRENCY);
@@ -202,7 +202,7 @@ public class ProductIFineService implements ProductService {
     @Override
     public ProductAmounts calculateProductAmounts(ProductQuotation productQuotation) {
         ProductAmounts productAmounts = new ProductAmounts();
-        productAmounts.setCommonData(initCommonData());
+        productAmounts.setCommonData(initCommonData(productQuotation));
         productAmounts.setMaxPremium(amountTHB(PREMIUM_MAX));
         productAmounts.setMaxSumInsured(amountTHB(SUM_INSURED_MAX));
         productAmounts.setMinPremium(amountTHB(PREMIUM_MIN));

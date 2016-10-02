@@ -387,11 +387,11 @@ public class ProductUtils {
         return amount;
     }
 
-    public static Optional<Coverage> findCoverageSatisfyProductId(Quote quote, ProductType productType) {
+    public static Optional<Coverage> findCoverageSatisfyProductId(Quote quote, String productLogicName) {
         Optional<Coverage> hasCoverage = quote.getCoverages()
                 .stream()
                 .filter(coverage -> coverage.getName() != null)
-                .filter(coverage -> coverage.getName().equalsIgnoreCase(productType.getLogicName()))
+                .filter(coverage -> coverage.getName().equalsIgnoreCase(productLogicName))
                 .findFirst();
         return hasCoverage;
     }
@@ -400,12 +400,12 @@ public class ProductUtils {
         return quote.getPremiumsData().getFinancialScheduler().getModalAmount();
     }
 
-    public static Coverage addCoverageIfNotExist(Quote quote, ProductType productType) {
-        Optional<Coverage> hasCoverage = findCoverageSatisfyProductId(quote, productType);
+    public static Coverage addCoverageIfNotExist(Quote quote, String productLogicName) {
+        Optional<Coverage> hasCoverage = findCoverageSatisfyProductId(quote, productLogicName);
         Coverage coverage;
         if (!hasCoverage.isPresent()) {
             coverage = new Coverage();
-            coverage.setName(productType.getLogicName());
+            coverage.setName(productLogicName);
             quote.addCoverage(coverage);
         } else {
             coverage = hasCoverage.get();

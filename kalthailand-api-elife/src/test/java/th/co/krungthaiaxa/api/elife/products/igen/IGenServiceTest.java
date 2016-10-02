@@ -1,26 +1,30 @@
 package th.co.krungthaiaxa.api.elife.products.igen;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
 import th.co.krungthaiaxa.api.elife.ELifeTest;
-import th.co.krungthaiaxa.api.elife.KalApiApplication;
+import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
 import th.co.krungthaiaxa.api.elife.data.ProductPremiumRate;
 import th.co.krungthaiaxa.api.elife.factory.InsuredFactory;
 import th.co.krungthaiaxa.api.elife.factory.ProductQuotationFactory;
 import th.co.krungthaiaxa.api.elife.factory.RequestFactory;
 import th.co.krungthaiaxa.api.elife.model.Policy;
-import th.co.krungthaiaxa.api.elife.model.enums.ProductDividendOption;
-import th.co.krungthaiaxa.api.elife.model.ProductIGenPremium;
+import th.co.krungthaiaxa.api.elife.model.product.ProductIGenPremium;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
+import th.co.krungthaiaxa.api.elife.model.enums.ProductDividendOption;
 import th.co.krungthaiaxa.api.elife.products.ProductAmounts;
 import th.co.krungthaiaxa.api.elife.products.ProductAssertUtil;
 import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
@@ -32,11 +36,13 @@ import th.co.krungthaiaxa.api.elife.service.QuoteService;
 import java.util.Optional;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = KalApiApplication.class)
+@SpringApplicationConfiguration(classes = KalApiElifeApplication.class)
 @WebAppConfiguration
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @ActiveProfiles("test")
 public class IGenServiceTest extends ELifeTest {
+    public static final Logger LOGGER = LoggerFactory.getLogger(IGenServiceTest.class);
+
     public static final ProductType PRODUCT_TYPE = ProductType.PRODUCT_IGEN;
 
     @Autowired
@@ -132,7 +138,7 @@ public class IGenServiceTest extends ELifeTest {
     }
 
     private ProductIGenPremium getSpecificPremiumData(Quote quote) {
-        return quote.getPremiumsData().getProductIGenPremium();
+        return (ProductIGenPremium) quote.getPremiumsData().getPremiumDetail();
     }
 
     /**
@@ -161,8 +167,8 @@ public class IGenServiceTest extends ELifeTest {
      * @param quote
      */
     private void assertDefaultCalculationYearlyPaybackForIGen(Quote quote) {
-        ProductIGenPremium productIGenPremium = quote.getPremiumsData().getProductIGenPremium();
-        ProductAssertUtil.assertDateTimeAmount(productIGenPremium.getYearlyCashBacksForAnnual(),
+        ProductIGenPremium premiumDetail = getSpecificPremiumData(quote);
+        ProductAssertUtil.assertDateTimeAmount(premiumDetail.getYearlyCashBacksForAnnual(),
                 20000.0
                 , 40000.0
                 , 60000.0
@@ -174,7 +180,7 @@ public class IGenServiceTest extends ELifeTest {
                 , 180000.0
                 , 1980000.0
         );
-        ProductAssertUtil.assertDateTimeAmount(productIGenPremium.getYearlyCashBacksForEndOfContract(),
+        ProductAssertUtil.assertDateTimeAmount(premiumDetail.getYearlyCashBacksForEndOfContract(),
                 20000.0000
                 , 40400.0000
                 , 61208.0000
@@ -186,7 +192,7 @@ public class IGenServiceTest extends ELifeTest {
                 , 195092.5686
                 , 1998994.4200
         );
-        ProductAssertUtil.assertDateTimeAmount(productIGenPremium.getYearlyDeathBenefits(),
+        ProductAssertUtil.assertDateTimeAmount(premiumDetail.getYearlyDeathBenefits(),
                 1000000.0
                 , 1000000.0
                 , 1000000.0
@@ -198,5 +204,15 @@ public class IGenServiceTest extends ELifeTest {
                 , 1848000.00
                 , 1848000.00
         );
+    }
+
+    //    @Test
+    public void tmp_test_load_quote_after_change_className() {
+        Quote quote = quoteService.findByQuoteId("80039680895592906068");//57ef3645d4c6573ffdfcbb3f
+        LOGGER.debug("\n" + ObjectMapperUtil.toJson(new ObjectMapper(), quote));
+//        ProductQuotation productQuotation = constructDefaultIGen();
+//        Quote quote = createAndFindQuote(productQuotation);
+//        quote = quoteService.updateQuote(quote, RequestFactory.generateAccessToken());
+//        assertDefaultCalculationNumbersAreCorrect(quote);
     }
 }

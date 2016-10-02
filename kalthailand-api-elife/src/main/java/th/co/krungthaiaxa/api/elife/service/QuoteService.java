@@ -67,7 +67,7 @@ public class QuoteService {
     }
 
     public Quote createQuote(String sessionId, ChannelType channelType, ProductQuotation productQuotation) {
-        ProductService productService = productServiceFactory.getProduct(productQuotation.getProductType().getLogicName());
+        ProductService productService = productServiceFactory.getProductService(productQuotation.getProductType().getLogicName());
 
         Person person = new Person();
         if (ChannelType.LINE.equals(channelType)) {
@@ -86,7 +86,7 @@ public class QuoteService {
         quote.setCreationDateTime(now);
         quote.setLastUpdateDateTime(now);
         quote.setQuoteId(randomNumeric(20));
-        quote.setCommonData(productService.initCommonData());
+        quote.setCommonData(productService.initCommonData(productQuotation));
         quote.setPremiumsData(productService.initPremiumData());
         quote.addInsured(mainInsured);
 
@@ -134,6 +134,16 @@ public class QuoteService {
         quote.setLastUpdateDateTime(DateTimeUtil.nowLocalDateTimeInThaiZoneId());
         logger.info("Quote with id [" + quote.getId() + "] and quoteId [" + quote.getQuoteId() + "] has been successfully updated");
         return quoteRepository.save(quote);
+    }
+
+    /**
+     * Note: this method find by quoteId (quoteNumber), not by Id.
+     *
+     * @param quoteId
+     * @return
+     */
+    public Quote findByQuoteId(String quoteId) {
+        return quoteRepository.findByQuoteId(quoteId);
     }
 
     public Optional<Quote> findByQuoteId(String quoteId, String sessionId, ChannelType channelType) {

@@ -31,7 +31,7 @@ public class QuoteCalculationException extends ElifeException {
     public static Function<String, QuoteCalculationException> packageNameUnknown = message -> new QuoteCalculationException("The package name is unknown: " + message);
     public static Function<String, QuoteCalculationException> discountRateNotFound = message -> new QuoteCalculationException("Cannot find discount rate: " + message + ".");
 
-    private QuoteCalculationException(String message) {
+    public QuoteCalculationException(String message) {
         super(message);
     }
 }

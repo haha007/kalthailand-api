@@ -11,8 +11,8 @@ import th.co.krungthaiaxa.api.elife.model.FinancialScheduler;
 import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.model.Periodicity;
 import th.co.krungthaiaxa.api.elife.model.Policy;
-import th.co.krungthaiaxa.api.elife.model.PremiumsData;
-import th.co.krungthaiaxa.api.elife.model.Product10ECPremium;
+import th.co.krungthaiaxa.api.elife.model.product.PremiumsData;
+import th.co.krungthaiaxa.api.elife.model.product.Product10ECPremium;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 
 import java.time.LocalDate;
@@ -185,7 +185,7 @@ public class Product10ECService implements ProductService {
     @Override
     public void createPolicyFromQuote(Policy policy, Quote quote) {
         // check for mandatory data
-        checkCommonData(initCommonData());
+        checkCommonData(quote.getCommonData());
         ProductUtils.validateMainInsured(quote);
 
         // There is only one insured at this point
@@ -221,7 +221,7 @@ public class Product10ECService implements ProductService {
     }
 
     @Override
-    public CommonData initCommonData() {
+    public CommonData initCommonData(ProductQuotation productQuotation) {
         CommonData commonData = new CommonData();
         commonData.setMaxAge(MAX_AGE);
         commonData.setMaxPremium(amount(PREMIUM_MAX, PRODUCT_10_EC_CURRENCY));
@@ -240,7 +240,7 @@ public class Product10ECService implements ProductService {
     @Override
     public ProductAmounts calculateProductAmounts(ProductQuotation productQuotation) {
         ProductAmounts productAmounts = new ProductAmounts();
-        productAmounts.setCommonData(initCommonData());
+        productAmounts.setCommonData(initCommonData(productQuotation));
         if (productQuotation.getDateOfBirth() == null || productQuotation.getPeriodicityCode() == null) {
             return productAmounts;
         }

@@ -1,7 +1,8 @@
-package th.co.krungthaiaxa.api.elife.model;
+package th.co.krungthaiaxa.api.elife.model.product;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import th.co.krungthaiaxa.api.elife.model.FinancialScheduler;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -19,6 +20,8 @@ public class PremiumsData implements Serializable {
 
     private ProductIGenPremium productIGenPremium;
     private ProductIProtectPremium productIProtectPremium;
+
+    private PremiumDetail premiumDetail;
 
     @ApiModelProperty(value = "The definition of how the premiums must be paid")
     public FinancialScheduler getFinancialScheduler() {
@@ -88,5 +91,13 @@ public class PremiumsData implements Serializable {
 
     public void setProductIProtectPremium(ProductIProtectPremium productIProtectPremium) {
         this.productIProtectPremium = productIProtectPremium;
+    }
+
+    public PremiumDetail getPremiumDetail() {
+        return premiumDetail;
+    }
+
+    public void setPremiumDetail(PremiumDetail premiumDetail) {
+        this.premiumDetail = premiumDetail;
     }
 }

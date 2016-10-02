@@ -4,15 +4,9 @@ import org.jsoup.helper.StringUtil;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
-import th.co.krungthaiaxa.api.elife.KalApiApplication;
 import th.co.krungthaiaxa.api.elife.model.Coverage;
 import th.co.krungthaiaxa.api.elife.model.CoverageBeneficiary;
 import th.co.krungthaiaxa.api.elife.model.Insured;
@@ -26,10 +20,10 @@ import javax.inject.Inject;
 import java.lang.reflect.Field;
 import java.util.List;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = KalApiApplication.class)
-@WebAppConfiguration
-@ActiveProfiles("test")
+//@RunWith(SpringJUnit4ClassRunner.class)
+//@SpringApplicationConfiguration(classes = KalApiElifeApplication.class)
+//@WebAppConfiguration
+//@ActiveProfiles("test")
 public class EncryptRegistrationIdsAndKeysServiceTest {
 
     public static final Logger logger = LoggerFactory.getLogger(EncryptRegistrationIdsAndKeysServiceTest.class);

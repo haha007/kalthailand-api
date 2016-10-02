@@ -3,9 +3,8 @@ package th.co.krungthaiaxa.api.elife.products.iprotect;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import th.co.krungthaiaxa.api.elife.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.api.elife.data.IProtectDiscountRate;
-import th.co.krungthaiaxa.api.elife.data.IProtectPackage;
+import th.co.krungthaiaxa.api.elife.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.api.elife.repository.ProductIProtectDiscountRateRepository;
 
 import javax.inject.Inject;
@@ -19,22 +18,22 @@ public class IProtectDiscountRateService {
     @Inject
     public IProtectDiscountRateService(ProductIProtectDiscountRateRepository productIProtectDiscountRateRepository) {this.productIProtectDiscountRateRepository = productIProtectDiscountRateRepository;}
 
-    public Optional<IProtectDiscountRate> findIProtectDiscountRate(IProtectPackage iprotectPackage, double sumInsured) {
+    public Optional<IProtectDiscountRate> findIProtectDiscountRate(String packageName, double sumInsured) {
         Sort sort = new Sort(Sort.Direction.DESC, "sumInsured");
         PageRequest pageRequest = new PageRequest(0, 1, sort);
-        List<IProtectDiscountRate> list = productIProtectDiscountRateRepository.findByPackageNameAndSumInsuredLessThan(iprotectPackage, sumInsured, pageRequest);
+        List<IProtectDiscountRate> list = productIProtectDiscountRateRepository.findByPackageNameAndSumInsuredLessThan(packageName, sumInsured, pageRequest);
         return toOptionalOfFirstElement(list);
     }
 
-    public IProtectDiscountRate validateExistHighestDiscountRate(IProtectPackage iProtectPackage) {
-        Optional<IProtectDiscountRate> iProtectDiscountRateOptional = findExistHighestDiscountRate(iProtectPackage);
+    public IProtectDiscountRate validateExistHighestDiscountRate(String packageName) {
+        Optional<IProtectDiscountRate> iProtectDiscountRateOptional = findExistHighestDiscountRate(packageName);
         return iProtectDiscountRateOptional.orElseThrow(() -> QuoteCalculationException.discountRateNotFound.apply("Not found highest discount rate!"));
     }
 
-    public Optional<IProtectDiscountRate> findExistHighestDiscountRate(IProtectPackage iProtectPackage) {
+    public Optional<IProtectDiscountRate> findExistHighestDiscountRate(String packageName) {
         Sort sort = new Sort(Sort.Direction.DESC, "discountRate");
         PageRequest pageRequest = new PageRequest(0, 1, sort);
-        List<IProtectDiscountRate> list = productIProtectDiscountRateRepository.findByPackageName(iProtectPackage, pageRequest);
+        List<IProtectDiscountRate> list = productIProtectDiscountRateRepository.findByPackageName(packageName, pageRequest);
         return toOptionalOfFirstElement(list);
     }
 

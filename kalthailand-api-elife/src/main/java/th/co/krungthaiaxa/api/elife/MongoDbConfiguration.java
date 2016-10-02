@@ -6,7 +6,6 @@ import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.config.AbstractMongoConfiguration;
 import org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper;
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
@@ -15,7 +14,13 @@ import org.springframework.data.mongodb.core.convert.MongoTypeMapper;
 import java.util.Arrays;
 import java.util.List;
 
-@Configuration
+/**
+ * @deprecated the main purpose of this class is remove "_class" inside Mongo data.
+ * But if we remove that, we cannot apply polimorphism with entities (when entities use abstract).
+ * That's why I disable @Configuration for now.
+ */
+@Deprecated
+//@Configuration
 class MongoDbConfiguration extends AbstractMongoConfiguration {
 
     @Value("${spring.data.mongodb.username}")

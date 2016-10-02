@@ -25,7 +25,7 @@ public class ProductServiceFactory {
      * @param productName get from {@link ProductType#getLogicName()}.
      * @return
      */
-    public ProductService getProduct(String productName) {
+    public ProductService getProductService(String productName) {
         if (productName.equals(ProductType.PRODUCT_10_EC.getLogicName())) {
             return new Product10ECService();
         } else if (productName.equals(ProductType.PRODUCT_IBEGIN.getLogicName())) {

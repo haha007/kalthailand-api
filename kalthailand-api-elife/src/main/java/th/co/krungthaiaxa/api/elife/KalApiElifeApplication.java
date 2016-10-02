@@ -5,6 +5,7 @@ import com.google.common.base.Predicates;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -15,7 +16,9 @@ import springfox.documentation.service.ApiInfo;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
+import th.co.krungthaiaxa.api.elife.service.initdata.InitDataService;
 
+import javax.inject.Inject;
 import java.time.LocalDate;
 import java.util.Date;
 
@@ -23,9 +26,19 @@ import java.util.Date;
 @EnableSwagger2
 @EnableScheduling
 @ComponentScan({ "th.co.krungthaiaxa.api.elife", "th.co.krungthaiaxa.api.common" })
-public class KalApiApplication {
+public class KalApiElifeApplication {
+
     public static void main(String[] args) {
-        SpringApplication.run(KalApiApplication.class, args);
+        ConfigurableApplicationContext context = SpringApplication.run(KalApiElifeApplication.class, args);
+    }
+
+    @Inject
+    InitDataService initDataService;
+
+    @Bean
+    public InitDataService initDataServiceRunning() {
+        initDataService.createInitDataIfNecessary();
+        return initDataService;
     }
 
     @Value("${tmc.webservice.url}")
