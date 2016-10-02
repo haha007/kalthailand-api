@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus;
+import th.co.krungthaiaxa.api.elife.model.product.PremiumsData;
 
 import java.io.Serializable;
 import java.time.Instant;

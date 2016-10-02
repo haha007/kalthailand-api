@@ -1,7 +1,8 @@
-package th.co.krungthaiaxa.api.elife.model;
+package th.co.krungthaiaxa.api.elife.model.product;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import th.co.krungthaiaxa.api.elife.model.FinancialScheduler;
 
 import java.io.Serializable;
 import java.util.Objects;

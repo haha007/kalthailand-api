@@ -1,17 +1,13 @@
-package th.co.krungthaiaxa.api.elife.model;
+package th.co.krungthaiaxa.api.elife.model.product;
 
 import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import th.co.krungthaiaxa.api.elife.model.enums.ProductDividendOption;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
-@ApiModel(description = "iGen Life Insurance specific Premiums Data")
-public class ProductIGenPremium extends PremiumDetail implements Serializable {
+@ApiModel(description = "IProtect Life Insurance specific Premiums Data")
+public class ProductIProtectPremium extends PremiumDetail implements Serializable {
 
     @Override
     public boolean equals(Object o) {

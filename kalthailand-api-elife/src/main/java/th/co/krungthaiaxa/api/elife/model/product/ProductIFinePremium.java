@@ -1,7 +1,8 @@
-package th.co.krungthaiaxa.api.elife.model;
+package th.co.krungthaiaxa.api.elife.model.product;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import th.co.krungthaiaxa.api.elife.model.Amount;
 import th.co.krungthaiaxa.api.elife.products.ProductIFinePackage;
 
 import java.io.Serializable;

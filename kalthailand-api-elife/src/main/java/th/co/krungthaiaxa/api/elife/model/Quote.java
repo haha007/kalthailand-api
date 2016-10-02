@@ -6,6 +6,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
+import th.co.krungthaiaxa.api.elife.model.product.PremiumsData;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;

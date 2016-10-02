@@ -8,7 +8,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
 import th.co.krungthaiaxa.api.elife.TestUtil;
-import th.co.krungthaiaxa.api.elife.model.ProductIFinePremium;
+import th.co.krungthaiaxa.api.elife.model.product.ProductIFinePremium;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.enums.GenderCode;
 

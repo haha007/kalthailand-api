@@ -1,7 +1,9 @@
-package th.co.krungthaiaxa.api.elife.model;
+package th.co.krungthaiaxa.api.elife.model.product;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.swagger.annotations.ApiModelProperty;
+import th.co.krungthaiaxa.api.elife.model.Amount;
+import th.co.krungthaiaxa.api.elife.model.DateTimeAmount;
 import th.co.krungthaiaxa.api.elife.model.enums.ProductDividendOption;
 
 import javax.validation.Valid;

@@ -1,4 +1,4 @@
-package th.co.krungthaiaxa.api.elife.model;
+package th.co.krungthaiaxa.api.elife.model.product;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;

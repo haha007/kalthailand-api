@@ -22,7 +22,7 @@ import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import th.co.krungthaiaxa.api.elife.model.Insured;
-import th.co.krungthaiaxa.api.elife.model.ProductIProtectPremium;
+import th.co.krungthaiaxa.api.elife.model.product.ProductIProtectPremium;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 

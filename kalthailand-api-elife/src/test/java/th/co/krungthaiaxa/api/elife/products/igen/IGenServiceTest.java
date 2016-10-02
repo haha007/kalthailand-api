@@ -20,7 +20,7 @@ import th.co.krungthaiaxa.api.elife.factory.InsuredFactory;
 import th.co.krungthaiaxa.api.elife.factory.ProductQuotationFactory;
 import th.co.krungthaiaxa.api.elife.factory.RequestFactory;
 import th.co.krungthaiaxa.api.elife.model.Policy;
-import th.co.krungthaiaxa.api.elife.model.ProductIGenPremium;
+import th.co.krungthaiaxa.api.elife.model.product.ProductIGenPremium;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;

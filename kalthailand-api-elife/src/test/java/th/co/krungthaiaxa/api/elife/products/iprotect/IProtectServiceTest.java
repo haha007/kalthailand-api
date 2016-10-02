@@ -20,7 +20,7 @@ import th.co.krungthaiaxa.api.elife.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.api.elife.model.Amount;
 import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.model.Policy;
-import th.co.krungthaiaxa.api.elife.model.ProductIProtectPremium;
+import th.co.krungthaiaxa.api.elife.model.product.ProductIProtectPremium;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
 import th.co.krungthaiaxa.api.elife.model.enums.GenderCode;

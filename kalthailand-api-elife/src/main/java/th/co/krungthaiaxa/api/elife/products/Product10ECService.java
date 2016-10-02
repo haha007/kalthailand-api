@@ -11,8 +11,8 @@ import th.co.krungthaiaxa.api.elife.model.FinancialScheduler;
 import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.model.Periodicity;
 import th.co.krungthaiaxa.api.elife.model.Policy;
-import th.co.krungthaiaxa.api.elife.model.PremiumsData;
-import th.co.krungthaiaxa.api.elife.model.Product10ECPremium;
+import th.co.krungthaiaxa.api.elife.model.product.PremiumsData;
+import th.co.krungthaiaxa.api.elife.model.product.Product10ECPremium;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 
 import java.time.LocalDate;

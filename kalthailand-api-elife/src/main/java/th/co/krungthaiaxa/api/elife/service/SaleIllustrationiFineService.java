@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.elife.model.Quote;
-import th.co.krungthaiaxa.api.elife.model.ProductIFinePremium;
+import th.co.krungthaiaxa.api.elife.model.product.ProductIFinePremium;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 
 import javax.inject.Inject;

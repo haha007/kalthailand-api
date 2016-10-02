@@ -2,7 +2,7 @@ package th.co.krungthaiaxa.api.elife.products;
 
 import th.co.krungthaiaxa.api.elife.model.CommonData;
 import th.co.krungthaiaxa.api.elife.model.Policy;
-import th.co.krungthaiaxa.api.elife.model.PremiumsData;
+import th.co.krungthaiaxa.api.elife.model.product.PremiumsData;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 
 public interface ProductService {
