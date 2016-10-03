@@ -3,6 +3,7 @@ package th.co.krungthaiaxa.api.elife.products.igen;
 import com.icegreen.greenmail.junit.GreenMailRule;
 import com.icegreen.greenmail.util.ServerSetupTest;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -24,10 +25,9 @@ import javax.inject.Inject;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.IOException;
-
-import static com.icegreen.greenmail.util.GreenMailUtil.getBody;
-import static org.assertj.core.api.Assertions.assertThat;
-import static th.co.krungthaiaxa.api.elife.TestUtil.decodeSimpleBody;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiElifeApplication.class)
@@ -69,9 +69,22 @@ public class ProductEmailServiceTest {
 
     private void test_send_quote_email(QuoteFactory.QuoteResult quoteResult) throws IOException, MessagingException {
         Quote quote = quoteResult.getQuote();
+        Date date = new Date();
         productEmailService.sendQuoteEmail(quote.getQuoteId(), quoteResult.getSessionId(), quoteResult.getChannelType(), null);
         GreenMailUtil.writeReceiveMessagesToFiles(greenMail, "testresult/emails");
-        MimeMessage email = greenMail.getReceivedMessages()[0];
-        assertThat(decodeSimpleBody(getBody(email))).isNotNull();
+        assertSentEmail(greenMail);
+    }
+
+    private void assertSentEmail(GreenMailRule greenMail) {
+        List<MimeMessage> emails = Arrays.asList(greenMail.getReceivedMessages());
+        Assert.assertTrue(emails.size() > 0);
+//        List<MimeMessage> sentEmailsAfterDate = emails.stream().filter(email -> {
+//            try {
+//                return email.getSentDate().after(date) || email.getSentDate().equals(date);
+//            } catch (MessagingException e) {
+//                return false;
+//            }
+//        }).collect(Collectors.toList());
+//        Assert.assertTrue(sentEmailsAfterDate.size() > 0);
     }
 }

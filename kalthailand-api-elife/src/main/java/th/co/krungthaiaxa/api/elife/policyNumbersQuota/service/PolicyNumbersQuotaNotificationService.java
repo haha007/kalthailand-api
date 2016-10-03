@@ -115,7 +115,7 @@ public class PolicyNumbersQuotaNotificationService {
     }
 
     private String populateEmailContent(PolicyNumbersQuotaCheckerService.PolicyNumbersQuotaCheckerResult policyNumbersQuotaCheckerResult) {
-        String emailContent = IOUtil.loadTextFileInClassPath("/email-content/email-policy-numbers-over-quota.txt");
+        String emailContent = IOUtil.loadTextFileInClassPath("/email-content/email-policy-numbers-over-quota.html");
         emailContent = emailContent.replace("%TOTAL_POLICY_NUMBERS%", "" + policyNumbersQuotaCheckerResult.getTotalPolicyNumbers());
         long usedPolicyNumbers = policyNumbersQuotaCheckerResult.getTotalPolicyNumbers() - policyNumbersQuotaCheckerResult.getAvailablePolicyNumbers();
         emailContent = emailContent.replace("%USED_POLICY_NUMBERS%", "" + usedPolicyNumbers);

@@ -27,7 +27,6 @@ import java.util.Locale;
  */
 public abstract class AbstractQuoteEmailService {
     private final static Logger logger = LoggerFactory.getLogger(AbstractQuoteEmailService.class);
-    //    public static final String EMAIL_PATH = "/email-content/email-quote-iprotect-content.txt";
     @Value("${email.name}")
     private String fromEmail;
 
@@ -71,7 +70,7 @@ public abstract class AbstractQuoteEmailService {
 
     protected String getEmailTemplatePath(Quote quote) {
         String productId = quote.getCommonData().getProductId();
-        return String.format("/products/%s/quote-email-template.html", productId);
+        return String.format("/products/%s/email-quote.html", productId);
     }
 
     protected String toCurrency(Double value) {

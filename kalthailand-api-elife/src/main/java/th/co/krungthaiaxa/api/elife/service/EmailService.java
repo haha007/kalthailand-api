@@ -160,7 +160,7 @@ public class EmailService {
 
     private String getQuote10ECEmailContent(Quote quote) {
         String decimalFormat = "#,##0.00";
-        String emailContent = IOUtil.loadTextFileInClassPath("/email-content/email-quote-10ec-content.txt");
+        String emailContent = IOUtil.loadTextFileInClassPath("/products/10ec/email-quote.html");
         return emailContent.replace("%1$s", quote.getCommonData().getNbOfYearsOfCoverage().toString())
                 .replace("%2$s", quote.getCommonData().getNbOfYearsOfPremium().toString())
                 .replace("%3$s", quote.getInsureds().get(0).getAgeAtSubscription().toString())
@@ -180,7 +180,7 @@ public class EmailService {
     }
 
     private String getUserNotResponseContent(Policy pol) throws IOException {
-        String emailContent = IOUtils.toString(this.getClass().getResourceAsStream("/email-content/email-user-not-response.txt"), Charset.forName("UTF-8"));
+        String emailContent = IOUtils.toString(this.getClass().getResourceAsStream("/email-content/email-user-not-response.html"), Charset.forName("UTF-8"));
         Person person = pol.getInsureds().get(0).getPerson();
         return emailContent.replace("%FULL_NAME%", person.getGivenName() + " " + person.getSurName())
                 .replace("%POLICY_ID%", pol.getPolicyId());
@@ -191,7 +191,7 @@ public class EmailService {
     }
 
     private String getPhoneNumberIsWrongContent(Policy pol) throws IOException {
-        String emailContent = IOUtils.toString(this.getClass().getResourceAsStream("/email-content/email-phone-wrong-number.txt"), Charset.forName("UTF-8"));
+        String emailContent = IOUtils.toString(this.getClass().getResourceAsStream("/email-content/email-phone-wrong-number.html"), Charset.forName("UTF-8"));
         Person person = pol.getInsureds().get(0).getPerson();
         return emailContent.replace("%FULL_NAME%", person.getGivenName() + " " + person.getSurName())
                 .replace("%POLICY_ID%", pol.getPolicyId());
@@ -202,7 +202,7 @@ public class EmailService {
     }
 
     private String getBookedEmailContent(Policy pol) throws IOException {
-        String emailContent = IOUtils.toString(this.getClass().getResourceAsStream("/email-content/email-booked-policy.txt"), Charset.forName("UTF-8"));
+        String emailContent = IOUtils.toString(this.getClass().getResourceAsStream("/email-content/email-booked-policy.html"), Charset.forName("UTF-8"));
         Person person = pol.getInsureds().get(0).getPerson();
         DecimalFormat money = new DecimalFormat("#,##0");
         String sumInsure = "";
@@ -226,7 +226,7 @@ public class EmailService {
 
     private String getQuoteiFineEmailContent(Quote quote) {
         String decimalFormat = "#,##0.00";
-        String emailContent = IOUtil.loadTextFileInClassPath("/email-content/email-quote-ifine-content.txt");
+        String emailContent = IOUtil.loadTextFileInClassPath("/products/ifine/email-quote.html");
         ProductIFinePremium p = quote.getPremiumsData().getProductIFinePremium();
         return emailContent.replace("%2$s", DateTimeUtil.formatBuddhistThaiDate(quote.getInsureds().get(0).getStartDate()))
                 .replace("%3$s", "'" + getLineURL() + "fatca-questions/" + quote.getQuoteId() + "'")
@@ -259,7 +259,7 @@ public class EmailService {
     }
 
     private String getEreceiptEmailContent(Policy policy) throws IOException {
-        String emailContent = IOUtils.toString(this.getClass().getResourceAsStream("/email-content/email-ereceipt-content.txt"), Charset.forName("UTF-8"));
+        String emailContent = IOUtils.toString(this.getClass().getResourceAsStream("/email-content/email-ereceipt-content.html"), Charset.forName("UTF-8"));
         return emailContent.replace("%PRODUCT_NAME%", messageSource.getMessage("product.id." + policy.getCommonData().getProductId(), null, thLocale) + " (" + messageSource.getMessage("product.id." + policy.getCommonData().getProductId(), null, null) + ")")
                 .replace("%FULL_NAME%", policy.getInsureds().get(0).getPerson().getGivenName() + " " + policy.getInsureds().get(0).getPerson().getSurName());
     }

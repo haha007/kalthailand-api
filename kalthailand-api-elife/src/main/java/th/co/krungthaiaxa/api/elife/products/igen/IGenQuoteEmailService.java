@@ -48,6 +48,7 @@ public class IGenQuoteEmailService extends AbstractQuoteEmailService {
 //    @Override
 //    public void sendEreceiptEmail(Policy policy) {
 //        // TODO Auto-generated method stub
+//            TODO The email template is the same for all products, so no need to put it here.
 //
 //    }
 //
@@ -57,7 +58,7 @@ public class IGenQuoteEmailService extends AbstractQuoteEmailService {
 //
 //    @Override
 //    public void sendPolicyBookedEmail(Policy policy) {
-//        // TODO Auto-generated method stub
+//        // TODO Auto-generated method stub:  TODO The email template is the same for all products, so no need to put it here.
 //
 //    }
 //
