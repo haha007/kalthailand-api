@@ -295,6 +295,7 @@ public class ApplicationFormService {
         BaseFont font = getBaseFont();
 
         if (pol.getCommonData().getProductId().equals(ProductType.PRODUCT_10_EC.getLogicName())) {
+            //TODO Should be changed because we don't use 10EC anymore.
             writeText(pdfContentByte, font, MARK, 348, 814, MEDIUM_SIZE);
             writeText(pdfContentByte, font, MARK, 350, 780, MEDIUM_SIZE);
             //Premium
@@ -318,6 +319,11 @@ public class ApplicationFormService {
             writeText(pdfContentByte, font, MARK, 350, 780, MEDIUM_SIZE);
             //premium
             writeText(pdfContentByte, font, MONEY_FORMAT.format(pol.getPremiumsData().getProductIProtectPremium().getSumInsured().getValue()), 430, 780, MEDIUM_SIZE);
+        } else if (pol.getCommonData().getProductId().equals(ProductType.PRODUCT_IGEN.getLogicName())) {
+            writeText(pdfContentByte, font, MARK, 348, 814, MEDIUM_SIZE);
+            writeText(pdfContentByte, font, MARK, 350, 762, MEDIUM_SIZE);
+            //premium
+            writeText(pdfContentByte, font, MONEY_FORMAT.format(pol.getPremiumsData().getPremiumDetail().getSumInsured().getValue()), 430, 762, MEDIUM_SIZE);
         }
 
         //coverage period
@@ -325,23 +331,23 @@ public class ApplicationFormService {
         //premium period
         writeText(pdfContentByte, font, String.valueOf(pol.getCommonData().getNbOfYearsOfPremium()), 256, 604, MEDIUM_SIZE);
 
-        if (pol.getCommonData().getProductId().equals(ProductType.PRODUCT_10_EC.getLogicName())) {
+        String productId = pol.getCommonData().getProductId();
+        //TODO how about iGen?
+        if (productId.equals(ProductType.PRODUCT_10_EC.getLogicName())) {
             //dividend option
-            if (pol.getCommonData().getProductId().equals(ProductType.PRODUCT_10_EC.getLogicName())) {
-                if (pol.getPremiumsData().getProduct10ECPremium().getDividendOption().equals(YEARLY_CASH)) {
-                    //divident option 1
-                    writeText(pdfContentByte, font, MARK, 32, 560, MEDIUM_SIZE);
-                    //divident option 1.1
-                    writeText(pdfContentByte, font, MARK, 70, 560, MEDIUM_SIZE);
-                } else if (pol.getPremiumsData().getProduct10ECPremium().getDividendOption().equals(YEARLY_FOR_NEXT_PREMIUM)) {
-                    //divident option 1
-                    writeText(pdfContentByte, font, MARK, 32, 560, MEDIUM_SIZE);
-                    //divident option 1.2
-                    writeText(pdfContentByte, font, MARK, 70, 544, MEDIUM_SIZE);
-                } else if (pol.getPremiumsData().getProduct10ECPremium().getDividendOption().equals(IN_FINE)) {
-                    //divident option 2
-                    writeText(pdfContentByte, font, MARK, 32, 528, MEDIUM_SIZE);
-                }
+            if (pol.getPremiumsData().getProduct10ECPremium().getDividendOption().equals(YEARLY_CASH)) {
+                //divident option 1
+                writeText(pdfContentByte, font, MARK, 32, 560, MEDIUM_SIZE);
+                //divident option 1.1
+                writeText(pdfContentByte, font, MARK, 70, 560, MEDIUM_SIZE);
+            } else if (pol.getPremiumsData().getProduct10ECPremium().getDividendOption().equals(YEARLY_FOR_NEXT_PREMIUM)) {
+                //divident option 1
+                writeText(pdfContentByte, font, MARK, 32, 560, MEDIUM_SIZE);
+                //divident option 1.2
+                writeText(pdfContentByte, font, MARK, 70, 544, MEDIUM_SIZE);
+            } else if (pol.getPremiumsData().getProduct10ECPremium().getDividendOption().equals(IN_FINE)) {
+                //divident option 2
+                writeText(pdfContentByte, font, MARK, 32, 528, MEDIUM_SIZE);
             }
 
         }
