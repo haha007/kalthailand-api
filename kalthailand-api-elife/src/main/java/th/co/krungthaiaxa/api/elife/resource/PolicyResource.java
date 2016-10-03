@@ -309,7 +309,7 @@ public class PolicyResource {
 
         Optional<Quote> tmp = quoteService.findByQuoteId(quote.getQuoteId(), sessionId, channelType);
         if (!tmp.isPresent()) {
-            return new ResponseEntity<>(getJson(ErrorCode.QUOTE_DOES_NOT_EXIST_OR_ACCESS_DENIED), NOT_FOUND);
+            return new ResponseEntity<>(getJson(ErrorCode.QUOTE_DOES_NOT_EXIST), NOT_FOUND);
         }
 
         Policy policy;

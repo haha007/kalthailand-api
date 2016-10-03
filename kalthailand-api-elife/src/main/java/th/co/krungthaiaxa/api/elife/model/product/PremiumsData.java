@@ -2,10 +2,11 @@ package th.co.krungthaiaxa.api.elife.model.product;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import th.co.krungthaiaxa.api.elife.model.FinancialScheduler;
 
 import java.io.Serializable;
-import java.util.Objects;
 
 /**
  * This is the premium data which will be applied for all products.
@@ -18,7 +19,6 @@ public class PremiumsData implements Serializable {
     private ProductIBeginPremium productIBeginPremium;
     private ProductIFinePremium productIFinePremium;
 
-    private ProductIGenPremium productIGenPremium;
     private ProductIProtectPremium productIProtectPremium;
 
     private PremiumDetail premiumDetail;
@@ -59,32 +59,6 @@ public class PremiumsData implements Serializable {
         this.productIFinePremium = productIFinePremium;
     }
 
-    @ApiModelProperty(value = "iGen specific Premiums Data")
-    public ProductIGenPremium getProductIGenPremium() {
-        return productIGenPremium;
-    }
-
-    public void setProductIGenPremium(ProductIGenPremium productIGenPremium) {
-        this.productIGenPremium = productIGenPremium;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        PremiumsData that = (PremiumsData) o;
-        return Objects.equals(financialScheduler, that.financialScheduler) &&
-                Objects.equals(product10ECPremium, that.product10ECPremium) &&
-                Objects.equals(productIBeginPremium, that.productIBeginPremium) &&
-                Objects.equals(productIFinePremium, that.productIFinePremium) &&
-                Objects.equals(productIGenPremium, that.productIGenPremium);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(financialScheduler, product10ECPremium, productIBeginPremium, productIFinePremium, productIGenPremium);
-    }
-
     public ProductIProtectPremium getProductIProtectPremium() {
         return productIProtectPremium;
     }
@@ -99,5 +73,15 @@ public class PremiumsData implements Serializable {
 
     public void setPremiumDetail(PremiumDetail premiumDetail) {
         this.premiumDetail = premiumDetail;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return EqualsBuilder.reflectionEquals(this, o);
+    }
+
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
     }
 }

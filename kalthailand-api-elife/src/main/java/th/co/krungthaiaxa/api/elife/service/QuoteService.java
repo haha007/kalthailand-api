@@ -8,6 +8,7 @@ import th.co.krungthaiaxa.api.elife.client.BlackListClient;
 import th.co.krungthaiaxa.api.elife.data.OccupationType;
 import th.co.krungthaiaxa.api.elife.data.SessionQuote;
 import th.co.krungthaiaxa.api.elife.exception.ElifeException;
+import th.co.krungthaiaxa.api.elife.exception.QuoteNotExistException;
 import th.co.krungthaiaxa.api.elife.model.Fatca;
 import th.co.krungthaiaxa.api.elife.model.HealthStatus;
 import th.co.krungthaiaxa.api.elife.model.Insured;
@@ -141,7 +142,9 @@ public class QuoteService {
      *
      * @param quoteId
      * @return
+     * @deprecated there may be many quotes with the same quoteId, so you should use {@link #findByQuoteId(String, String, ChannelType)} instead.
      */
+    @Deprecated
     public Quote findByQuoteId(String quoteId) {
         return quoteRepository.findByQuoteId(quoteId);
     }
@@ -149,11 +152,20 @@ public class QuoteService {
     public Optional<Quote> findByQuoteId(String quoteId, String sessionId, ChannelType channelType) {
         SessionQuote sessionQuote = sessionQuoteRepository.findBySessionIdAndChannelType(sessionId, channelType);
         if (sessionQuote == null || sessionQuote.getQuotes() == null) {
-            logger.error("There is no quote with id [" + quoteId + "] for the session id [" + sessionId + "]");
+            logger.warn("There is no quote with id [" + quoteId + "] for the session id [" + sessionId + "] because sessionQuote doesn't exist.");
             return Optional.empty();
         }
         return sessionQuote.getQuotes().stream()
                 .filter(quote -> quote.getQuoteId().equals(quoteId))
                 .findFirst();
+    }
+
+    public Quote validateExistQuote(String quoteId, String sessionId, ChannelType channelType) {
+        Optional<Quote> quote = findByQuoteId(quoteId, sessionId, channelType);
+        if (!quote.isPresent()) {
+            throw new QuoteNotExistException(String.format("Cannot found quote: quoteId: %s, sessionId: %s, channelType: %s", quoteId, sessionId, channelType));
+        } else {
+            return quote.get();
+        }
     }
 }

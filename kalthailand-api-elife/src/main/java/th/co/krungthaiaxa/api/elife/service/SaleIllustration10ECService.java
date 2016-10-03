@@ -1,18 +1,22 @@
 package th.co.krungthaiaxa.api.elife.service;
 
-import com.itextpdf.text.*;
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
-import com.itextpdf.text.pdf.PdfWriter;
-import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
-import th.co.krungthaiaxa.api.elife.model.Quote;
+import th.co.krungthaiaxa.api.common.utils.PdfIOUtil;
 import th.co.krungthaiaxa.api.elife.model.DatedAmount;
+import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 
 import javax.inject.Inject;
@@ -52,9 +56,9 @@ public class SaleIllustration10ECService {
     private static final String NEW_LINE = System.getProperty("line.separator");
     @Inject
     private MessageSource messageSource;
-    private Locale thLocale = new Locale("th","");
+    private Locale thLocale = new Locale("th", "");
 
-    public Pair<byte[], String> generatePDF(Quote quote, String imgBase64) throws DocumentException, IOException {
+    public Pair<byte[], String> generatePDF(Quote quote, String imgBase64) {
         byte[] graphContent = Base64.getDecoder().decode(imgBase64.getBytes());
 
         if (logger.isDebugEnabled()) {
@@ -66,10 +70,10 @@ public class SaleIllustration10ECService {
         Integer tbCols = 2;
         PdfPTable table1 = new PdfPTable(tbCols);
         table1.addCell(addData("เบี้ยประกัน", getFontHeaderStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table1.addCell(addData("งวดชำระ" + messageSource.getMessage("payment.mode."+quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().toString(), null, thLocale), getFontNormalStyle(), null, TB_HORIZONTAL_ALIGN_LEFT, null));
+        table1.addCell(addData("งวดชำระ" + messageSource.getMessage("payment.mode." + quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().toString(), null, thLocale), getFontNormalStyle(), null, TB_HORIZONTAL_ALIGN_LEFT, null));
         String MONEY_DECIMAL_FORMAT = "#,##0.00";
         table1.addCell(addData((new DecimalFormat(MONEY_DECIMAL_FORMAT)).format(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()) + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT, null));
-        if(quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().equals(PeriodicityCode.EVERY_MONTH)){
+        if (quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().equals(PeriodicityCode.EVERY_MONTH)) {
             table1.addCell(addData("ชำระเบี้ยรายเดือนผ่านทางบัญชี LINE Pay", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
         }
         table1.addCell(addLine(true, tbCols));
@@ -82,10 +86,14 @@ public class SaleIllustration10ECService {
         table1.addCell(addData((new DecimalFormat(MONEY_DECIMAL_FORMAT)).format(quote.getPremiumsData().getProduct10ECPremium().getEndOfContractBenefitsMinimum().get(9).getValue()) + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT, null));
         table1.addCell(addLine(false, tbCols));
         table1.addCell(addData("รวมรับผลประโยชน์ระดับกลาง" + NEW_LINE + "(รวมเงินปันผล*ระดับกลาง)", getFontNormalStyle(), null, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table1.addCell(addData((new DecimalFormat(MONEY_DECIMAL_FORMAT)).format(quote.getPremiumsData().getProduct10ECPremium().getEndOfContractBenefitsAverage().get(9).getValue()+quote.getPremiumsData().getProduct10ECPremium().getYearlyCashBacksAverageBenefit().get(9).getValue()) + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT, null));
+        table1.addCell(
+                addData((new DecimalFormat(MONEY_DECIMAL_FORMAT)).format(quote.getPremiumsData().getProduct10ECPremium().getEndOfContractBenefitsAverage().get(9).getValue() + quote.getPremiumsData().getProduct10ECPremium().getYearlyCashBacksAverageBenefit().get(9).getValue())
+                        + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT, null));
         table1.addCell(addLine(false, tbCols));
         table1.addCell(addData("รวมรับผลประโยชน์ระดับสูง" + NEW_LINE + "(รวมเงินปันผล*ระดับสูง)", getFontNormalStyle(), null, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table1.addCell(addData((new DecimalFormat(MONEY_DECIMAL_FORMAT)).format(quote.getPremiumsData().getProduct10ECPremium().getEndOfContractBenefitsMaximum().get(9).getValue()+quote.getPremiumsData().getProduct10ECPremium().getYearlyCashBacksMaximumBenefit().get(9).getValue()) + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT, null));
+        table1.addCell(
+                addData((new DecimalFormat(MONEY_DECIMAL_FORMAT)).format(quote.getPremiumsData().getProduct10ECPremium().getEndOfContractBenefitsMaximum().get(9).getValue() + quote.getPremiumsData().getProduct10ECPremium().getYearlyCashBacksMaximumBenefit().get(9).getValue())
+                        + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT, null));
         table1.addCell(addLine(false, tbCols));
         table1.addCell(addData("กรณีเลือกขอรับคืนทุกปี รวมตลอดสัญญา", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
         table1.addCell(addLine(false, tbCols));
@@ -154,20 +162,15 @@ public class SaleIllustration10ECService {
         table2.addCell(addData(TAB + "ท่านจะได้รับผลประโยชน์จาก" + NEW_LINE + TAB + "การลดหย่อนภาษี ปีละ", getFontNormalStyle(), tbCols - 1, TB_HORIZONTAL_ALIGN_LEFT, null));
         table2.addCell(addData((new DecimalFormat(MONEY_DECIMAL_FORMAT)).format(quote.getPremiumsData().getProduct10ECPremium().getYearlyTaxDeduction().getValue()) + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT, TB_VERTICAL_ALIGN_TOP));
         table2.addCell(addData(TAB + "รวมผลประโยชน์ทางภาษีจาก" + NEW_LINE + TAB + "การชำระเบี้ยประกันภัย" + NEW_LINE + TAB + "ตลอดสัญญา เป็นเงิน", getFontNormalStyle(), tbCols - 1, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table2.addCell(addData((new DecimalFormat(MONEY_DECIMAL_FORMAT)).format(quote.getPremiumsData().getProduct10ECPremium().getYearlyTaxDeduction().getValue() * quote.getCommonData().getNbOfYearsOfPremium()) + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT, TB_VERTICAL_ALIGN_TOP));
+        table2.addCell(addData((new DecimalFormat(MONEY_DECIMAL_FORMAT)).format(quote.getPremiumsData().getProduct10ECPremium().getYearlyTaxDeduction().getValue() * quote.getCommonData().getNbOfYearsOfPremium()) + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT,
+                TB_VERTICAL_ALIGN_TOP));
         table2.addCell(addLine(true, tbCols));
         table2.addCell(addData("* หมายเหตุ", getFontNormalGrayStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table2.addCell(addData("จำนวนเงินปันผลที่แสดงเป็นเพียงตัวเลขประมาณการเงินปันผลในอนาคตเท่านั้น บริษัทฯ ไม่สามารถรับประกันว่าท่านจะได้รับเงินปันผลตามประมาณการนี้ในอนาคต ท่านควรพิจารณาตัวเลขประมาณการเงินปันผลและสมมุติฐานโดยละเอียดโดยวิเคราะห์ถึงผลประกอบการในอนาคตและความคาดหวังในผลิตภัณฑ์นี้ด้วยตัวท่านเอง", getFontNormalGrayStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
+        table2.addCell(
+                addData("จำนวนเงินปันผลที่แสดงเป็นเพียงตัวเลขประมาณการเงินปันผลในอนาคตเท่านั้น บริษัทฯ ไม่สามารถรับประกันว่าท่านจะได้รับเงินปันผลตามประมาณการนี้ในอนาคต ท่านควรพิจารณาตัวเลขประมาณการเงินปันผลและสมมุติฐานโดยละเอียดโดยวิเคราะห์ถึงผลประกอบการในอนาคตและความคาดหวังในผลิตภัณฑ์นี้ด้วยตัวท่านเอง",
+                        getFontNormalGrayStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
 
-        ByteArrayOutputStream content = new ByteArrayOutputStream();
-        Document document = new Document(PageSize.A4, 20, 20, 20, 20);
-        PdfWriter.getInstance(document, content);
-        document.open();
-        document.add(table1);
-        document.add(table2);
-        document.close();
-        content.close();
-        return Pair.of(content.toByteArray(), "proposal_" + quote.getQuoteId() + "_" + getDate() + ".pdf");
+        return Pair.of(PdfIOUtil.writeToBytes(table2), "proposal_" + quote.getQuoteId() + "_" + getDate() + ".pdf");
     }
 
     private Double getMinimumRefundEveryYear(Quote quote) {
@@ -308,7 +311,7 @@ public class SaleIllustration10ECService {
         return fontExtraSmallGray;
     }
 
-    private byte[] getResourceAsByteArray(String imgPath){
+    private byte[] getResourceAsByteArray(String imgPath) {
         byte[] outPut = new byte[0];
         try {
             outPut = toByteArray(this.getClass().getResourceAsStream(imgPath));
@@ -317,6 +320,5 @@ public class SaleIllustration10ECService {
         }
         return outPut;
     }
-
 
 }

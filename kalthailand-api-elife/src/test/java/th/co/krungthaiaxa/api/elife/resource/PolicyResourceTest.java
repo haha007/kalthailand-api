@@ -79,7 +79,7 @@ public class PolicyResourceTest extends ELifeTest {
 
         Error error = TestUtil.getErrorFromJSon(response.getBody());
         assertThat(response.getStatusCode().value()).isEqualTo(NOT_FOUND.value());
-        assertThat(error.getCode()).isEqualTo(ErrorCode.QUOTE_DOES_NOT_EXIST_OR_ACCESS_DENIED.getCode());
+        assertThat(error.getCode()).isEqualTo(ErrorCode.QUOTE_DOES_NOT_EXIST.getCode());
     }
 
     @Test

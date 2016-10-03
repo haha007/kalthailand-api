@@ -1,19 +1,23 @@
 package th.co.krungthaiaxa.api.elife.service;
 
-import com.itextpdf.text.*;
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
-import com.itextpdf.text.pdf.PdfWriter;
-import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
+import th.co.krungthaiaxa.api.common.utils.PdfIOUtil;
 import th.co.krungthaiaxa.api.elife.model.Quote;
-import th.co.krungthaiaxa.api.elife.model.product.ProductIFinePremium;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
+import th.co.krungthaiaxa.api.elife.model.product.ProductIFinePremium;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -52,10 +56,10 @@ public class SaleIllustrationiFineService {
     private static final String NEW_LINE = System.getProperty("line.separator");
     @Inject
     private MessageSource messageSource;
-    private Locale thLocale = new Locale("th","");
+    private Locale thLocale = new Locale("th", "");
     private String MONEY_DECIMAL_FORMAT = "#,##0.00";
 
-    public Pair<byte[], String> generatePDF(Quote quote) throws DocumentException, IOException {
+    public Pair<byte[], String> generatePDF(Quote quote) {
 
         if (logger.isDebugEnabled()) {
             logger.debug(String.format("[%1$s] .....", "generatePDF"));
@@ -65,140 +69,132 @@ public class SaleIllustrationiFineService {
         ProductIFinePremium p = quote.getPremiumsData().getProductIFinePremium();
 
         Integer tbCols = 2;
-        PdfPTable table1 = new PdfPTable(tbCols);
-        table1.addCell(addData("เบี้ยประกัน", getFontHeaderStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table1.addCell(addData("งวดชำระ" + messageSource.getMessage("payment.mode."+quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().toString(), null, thLocale), getFontNormalStyle(), null, TB_HORIZONTAL_ALIGN_LEFT, null));
+        PdfPTable pdfPTable = new PdfPTable(tbCols);
+        pdfPTable.addCell(addData("เบี้ยประกัน", getFontHeaderStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
+        pdfPTable.addCell(addData("งวดชำระ" + messageSource.getMessage("payment.mode." + quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().toString(), null, thLocale), getFontNormalStyle(), null, TB_HORIZONTAL_ALIGN_LEFT, null));
         String MONEY_DECIMAL_FORMAT = "#,##0.00";
-        table1.addCell(addData((new DecimalFormat(MONEY_DECIMAL_FORMAT)).format(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()) + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT, null));
-        if(quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().equals(PeriodicityCode.EVERY_MONTH)){
-            table1.addCell(addData("ชำระเบี้ยรายเดือนผ่านทางบัญชี LINE Pay", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
+        pdfPTable.addCell(addData((new DecimalFormat(MONEY_DECIMAL_FORMAT)).format(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()) + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT, null));
+        if (quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().equals(PeriodicityCode.EVERY_MONTH)) {
+            pdfPTable.addCell(addData("ชำระเบี้ยรายเดือนผ่านทางบัญชี LINE Pay", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
         }
-        table1.addCell(addLine(true, tbCols));
-        table1.addCell(addData("รายละเอียดของผลประโยชน์", getFontHeaderStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table1.addCell(addLine(false, tbCols));
-        table1.addCell(addImage(getResourceAsByteArray(IMG_BENEFIT_1), BENEFIT_IMG_SIZE, tbCols, TB_HORIZONTAL_ALIGN_CENTER));
-        table1.addCell(addData("คุ้มครองการเสียชีวิตทุกกรณี *", getFontHeaderStyle(), tbCols, TB_HORIZONTAL_ALIGN_CENTER, null));
-        table1.addCell(addData("สูงสุด " + toCurrency(p.getSumInsured().getValue()) + " บาท", getFontNormalGrayStyle(), tbCols, TB_HORIZONTAL_ALIGN_CENTER, null));
-        table1.addCell(addData("ด้วยการพิจารณารับประกันภัยแบบยืดหยุ่น", getFontNormalGrayStyle(), tbCols, TB_HORIZONTAL_ALIGN_CENTER, null));
-        table1.addCell(addData("ตอบคำถามสุขภาพเพียง 3 ข้อ", getFontNormalGrayStyle(), tbCols, TB_HORIZONTAL_ALIGN_CENTER, null));
-        table1.addCell(addLine(false, tbCols));
-        table1.addCell(addImage(getResourceAsByteArray(IMG_BENEFIT_2), BENEFIT_IMG_SIZE, tbCols, TB_HORIZONTAL_ALIGN_CENTER));
-        table1.addCell(addData("คุ้มครองกรณีเสียชีวิตจากอุบัติเหตุ", getFontHeaderStyle(), tbCols, TB_HORIZONTAL_ALIGN_CENTER, null));
-        table1.addCell(addData("เพิ่มเติมจากผลประโยชน์กรณีเสียชีวิต *", getFontNormalDeepGrayStyle(), tbCols, TB_HORIZONTAL_ALIGN_CENTER, null));
-        table1.addCell(addData("และรับสิทธิประโยชน์ 2 เท่า จากอุบัติเหตุที่ระบุตามเงื่อนไข *", getFontNormalGrayStyle(), tbCols, TB_HORIZONTAL_ALIGN_CENTER, null));
-        table1.addCell(addData(toCurrency(p.getDeathByAccidentInPublicTransport().getValue()) + " บาท", getFontNormalGrayStyle(), tbCols, TB_HORIZONTAL_ALIGN_CENTER, null));
-        table1.addCell(addLine(false, tbCols));
-        table1.addCell(addImage(getResourceAsByteArray(IMG_BENEFIT_3), BENEFIT_IMG_SIZE, tbCols, TB_HORIZONTAL_ALIGN_CENTER));
-        table1.addCell(addData("คุ้มครองกรณี", getFontHeaderStyle(), tbCols, TB_HORIZONTAL_ALIGN_CENTER, null));
-        table1.addCell(addData("สูญเสียอวัยวะจากอุบัติเหตุ", getFontHeaderStyle(), tbCols, TB_HORIZONTAL_ALIGN_CENTER, null));
-        table1.addCell(addData("สูงสุด 100% ของจำนวนเงินเอาประกันภัยต่อปีกรมธรรม์", getFontNormalDeepGrayStyle(), tbCols, TB_HORIZONTAL_ALIGN_CENTER, null));
-        table1.addCell(addData("ตามที่ระบุตารางรายละเอียดผลประโยชน์", getFontNormalGrayStyle(), tbCols, TB_HORIZONTAL_ALIGN_CENTER, null));
-        table1.addCell(addLine(false, tbCols));
-        table1.addCell(addImage(getResourceAsByteArray(IMG_BENEFIT_4), BENEFIT_IMG_SIZE, tbCols, TB_HORIZONTAL_ALIGN_CENTER));
-        table1.addCell(addData("ค่ารักษาพยาบาล", getFontHeaderStyle(), tbCols, TB_HORIZONTAL_ALIGN_CENTER, null));
-        table1.addCell(addData("เนื่องจากอุบัติเหตุต่อครั้ง", getFontHeaderStyle(), tbCols, TB_HORIZONTAL_ALIGN_CENTER, null));
-        table1.addCell(addData("ตามที่เกิดขึ้นจริง โดยไม่เกินจำนวนที่กำหนดไว้", getFontNormalDeepGrayStyle(), tbCols, TB_HORIZONTAL_ALIGN_CENTER, null));
-        table1.addCell(addData(toCurrency(p.getMedicalCareCost().getValue()) + " บาท", getFontNormalGrayStyle(), tbCols, TB_HORIZONTAL_ALIGN_CENTER, null));
-        table1.addCell(addLine(false, tbCols));
-        table1.addCell(addImage(getResourceAsByteArray(IMG_BENEFIT_5), BENEFIT_IMG_SIZE, tbCols, TB_HORIZONTAL_ALIGN_CENTER));
-        table1.addCell(addData("ผลประโยชน์ชดเชยรายวัน", getFontHeaderStyle(), tbCols, TB_HORIZONTAL_ALIGN_CENTER, null));
-        table1.addCell(addData("เนื่องจากอุบัติเหตุ", getFontHeaderStyle(), tbCols, TB_HORIZONTAL_ALIGN_CENTER, null));
-        table1.addCell(addData("กรณีรักษาตัวเป็นผู้ป่วยใน", getFontNormalDeepGrayStyle(), tbCols, TB_HORIZONTAL_ALIGN_CENTER, null));
-        table1.addCell(addData(toCurrency(p.getHospitalizationSumInsured().getValue()) + " บาท", getFontNormalGrayStyle(), tbCols, TB_HORIZONTAL_ALIGN_CENTER, null));
-        table1.addCell(addData("สูงสุดไม่เกิน 365 วัน ต่อปีกรมธรรม์", getFontNormalGrayStyle(), tbCols, TB_HORIZONTAL_ALIGN_CENTER, null));
-        table1.addCell(addLine(false, tbCols));
-        table1.addCell(addData("ผลประโยชน์กรณีเสียชีวิต", getFontHeaderStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table1.addCell(addLine(false, tbCols));
-        table1.addCell(addData("จากทุกสาเหตุ", getFontNormalStyle(), null, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table1.addCell(addData(toCurrency(p.getSumInsured().getValue()) + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT, null));
-        table1.addCell(addLine(false, tbCols));
-        table1.addCell(addData("เนื่องจากอุบัติเหตุ", getFontNormalStyle(), null, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table1.addCell(addData(toCurrency(p.getAccidentSumInsured().getValue()) + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT, null));
-        table1.addCell(addData("(เพิ่มเติมจากทุกสาเหตุ)", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table1.addCell(addLine(false, tbCols));
-        table1.addCell(addData("เนื่องจากอุบัติเหตุสาธารณะ *", getFontNormalStyle(), null, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table1.addCell(addData(toCurrency(p.getDeathByAccidentInPublicTransport().getValue()) + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT, null));
-        table1.addCell(addData("(เพิ่มเติมจากทุกสาเหตุ)", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table1.addCell(addLine(false, tbCols));
-        table1.addCell(addData("ความคุ้มครองกรณีสูยเสียอวัยวะ", getFontHeaderStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table1.addCell(addData("จากอุบัติเหตุ", getFontHeaderStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table1.addCell(addLine(false, tbCols));
-        table1.addCell(addData("สูญเสียมือหรือเท้า 1 ข้างหรือมากกว่า", getFontNormalStyle(), null, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table1.addCell(addData(toCurrency(p.getLossOfHandOrLeg().getValue()) + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT, null));
-        table1.addCell(addLine(false, tbCols));
-        table1.addCell(addData("สูญเสียสายตา 1 ข้างหรือมากกว่า", getFontNormalStyle(), null, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table1.addCell(addData(toCurrency(p.getLossOfSight().getValue()) + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT, null));
-        table1.addCell(addLine(false, tbCols));
-        table1.addCell(addData("สูญเสียการได้ยิน", getFontNormalStyle(), null, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table1.addCell(addData(toCurrency(p.getLossOfHearingMin().getValue()) + " - " + toCurrency(p.getLossOfHearingMax().getValue()) + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT, null));
-        table1.addCell(addLine(false, tbCols));
-        table1.addCell(addData("สูญเสียการพูด", getFontNormalStyle(), null, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table1.addCell(addData(toCurrency(p.getLossOfSpeech().getValue()) + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT, null));
-        table1.addCell(addLine(false, tbCols));
-        table1.addCell(addData("สูญเสียกระจกตาทั้งสองข้าง", getFontNormalStyle(), null, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table1.addCell(addData(toCurrency(p.getLossOfCorneaForBothEyes().getValue()) + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT, null));
-        table1.addCell(addLine(false, tbCols));
-        table1.addCell(addData("สูญเสียนิ้วมือหรือนิ้วเท้า", getFontNormalStyle(), null, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table1.addCell(addData(toCurrency(p.getLossOfFingersMin().getValue()) + " - " + toCurrency(p.getLossOfFingersMax().getValue()) + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT, null));
-        table1.addCell(addData("(ขึ้นอยู่กับจำนวนข้อที่สูญเสีย)", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table1.addCell(addLine(false, tbCols));
-        table1.addCell(addData("กระดูกขาหรือสะบ้า แตกหักและรักษาไม่หาย", getFontNormalStyle(), null, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table1.addCell(addData(toCurrency(p.getNoneCurableBoneFracture().getValue()) + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT, null));
-        table1.addCell(addLine(false, tbCols));
-        table1.addCell(addData("ขาหดสั้นลงอย่างน้อย 5 เซนติเมตร", getFontNormalStyle(), null, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table1.addCell(addData(toCurrency(p.getLegsShortenBy5cm().getValue()) + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT, null));
-        table1.addCell(addLine(false, tbCols));
-        table1.addCell(addData("บาดแผลไฟไหม้ฉกรรจ์", getFontNormalStyle(), null, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table1.addCell(addData(toCurrency(p.getBurnInjuryMin().getValue()) + " - " + toCurrency(p.getBurnInjuryMax().getValue()) + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT, null));
-        table1.addCell(addData("(เสียหายตั้งแต่ 2% ขึ้นไปของผิวหนังทั้งหมด)", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table1.addCell(addLine(false, tbCols));
-        table1.addCell(addData("ค่ารักษาพยาบาลเนื่องจากอุบัติเหตุ", getFontHeaderStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table1.addCell(addLine(false, tbCols));
-        table1.addCell(addData("ตามที่เกิดขึ้นจริง แต่ไม่เกินครั้งละ", getFontNormalStyle(), null, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table1.addCell(addData(toCurrency(p.getMedicalCareCost().getValue()) + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT, null));
-        table1.addCell(addLine(false, tbCols));
-        table1.addCell(addData("ผลประโยชน์ชดเชยรายวัน", getFontHeaderStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table1.addCell(addLine(false, tbCols));
-        table1.addCell(addData("กรณีเข้ารักษาตัวในโรงพยาบาล", getFontNormalStyle(), null, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table1.addCell(addData(toCurrency(p.getHospitalizationSumInsured().getValue()) + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT, null));
-        table1.addCell(addData("(จำนวนวันสูงสุดไม่เกิน 365 วัน)", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table1.addCell(addLine(true, tbCols));
-        table1.addCell(addLine(false, tbCols));
-        table1.addCell(addData("* หมายเหตุ:", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table1.addCell(addLine(false, tbCols));
-        table1.addCell(addData("ข้อยกเว้นที่สำคัญ:", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table1.addCell(addData("1) การฆ่าตัวตาย หรือทำร้ายตัวเอง", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table1.addCell(addData("2) ขณะที่มีการล่าสัตว์ แข่งรถ แข่งเรือ แข่งม้า เล่นหรือแข่งสกีทุกชนิด เล่น/แข่งสเก็ต ชกมวย โดดร่ม ขึ้น/ลง/โดยสารในบอลลูน เครื่องร่อน บันจี้จั๊มพ์ ปีนหรือไต่เขาที่ต้องใช้เครื่องมือช่วย ดำน้ำที่ต้องใช้ถังอากาศและเครื่องช่วยหายใจใต้น้ำ", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table1.addCell(addData("3) ขึ้นหรือลงหรือโดยสาร อยู่ในอากาศยานที่มิได้จดทะเบียนเพื่อบรรทุกผู้โดยสาร", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table1.addCell(addLine(false, tbCols));
-        table1.addCell(addData("คุ้มครอง 2 เท่า กรณีเสียชีวิตจากอุบัติเหตุ", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table1.addCell(addData("1) อุบัติเหตุที่เกิดขึ้นจากยานพาหนะสาธารณะทางบก", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table1.addCell(addData("2) ขณะที่อยู่ในลิฟท์", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table1.addCell(addData("3) การเสียชีวิตที่เกิดขึ้น เนื่องจากไฟไหม้โรงมหรศพ โรงแรม หรืออาคารสาธารณะ", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table1.addCell(addLine(false, tbCols));
-        table1.addCell(addData("อุบัติเหตุสาธารณะ ได้แก่", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table1.addCell(addData("1) ผู้เอาประกันภัยโดยสารในฐานะผู้โดยสารในยานพาหนะสาธารณะที่ขับเคลื่อนด้วยเครื่องจักรกล ซึ่งผู้ทำการขนส่งสาธารณะเป็นผู้รับจ้างทำการขนส่งบนเส้นทางขนส่งทางบกที่ได้กำหนดไว้ หรือ", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table1.addCell(addData("2) ขณะที่ผู้เอาประกันภัยอยู่ในลิฟท์ (ยกเว้นลิฟท์ที่ใช้ในเหมืองแร่หรือสถานที่ก่อสร้าง) หรือ", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table1.addCell(addData("3) เกิดขึ้นเนื่องจากไฟไหม้โรงมหรสพ โรงแรม หรืออาคารสาธารณะอื่นใด ซึ่งผู้เอาประกันภัยอยู่ ณ สถานที่นั้น ในขณะที่เริ่มไฟไหม้", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table1.addCell(addLine(false, tbCols));
-        table1.addCell(addData(TAB + "- โปรดศึกษา อ่าน และทำความเข้าใจรายละเอียดเพิ่มเติมในเอกสารประกอบการขายของบริษัทฯ", getFontNormalGrayStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table1.addCell(addData(TAB + "- อายุขณะขอเอาประกันภัย 20 - 59 ปี", getFontNormalGrayStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
-        table1.addCell(addData(TAB + "- จำนวนเงินเอาประกันภัยขั้นต่ำ 100,000 บาท", getFontNormalGrayStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
+        pdfPTable.addCell(addLine(true, tbCols));
+        pdfPTable.addCell(addData("รายละเอียดของผลประโยชน์", getFontHeaderStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
+        pdfPTable.addCell(addLine(false, tbCols));
+        pdfPTable.addCell(addImage(getResourceAsByteArray(IMG_BENEFIT_1), BENEFIT_IMG_SIZE, tbCols, TB_HORIZONTAL_ALIGN_CENTER));
+        pdfPTable.addCell(addData("คุ้มครองการเสียชีวิตทุกกรณี *", getFontHeaderStyle(), tbCols, TB_HORIZONTAL_ALIGN_CENTER, null));
+        pdfPTable.addCell(addData("สูงสุด " + toCurrency(p.getSumInsured().getValue()) + " บาท", getFontNormalGrayStyle(), tbCols, TB_HORIZONTAL_ALIGN_CENTER, null));
+        pdfPTable.addCell(addData("ด้วยการพิจารณารับประกันภัยแบบยืดหยุ่น", getFontNormalGrayStyle(), tbCols, TB_HORIZONTAL_ALIGN_CENTER, null));
+        pdfPTable.addCell(addData("ตอบคำถามสุขภาพเพียง 3 ข้อ", getFontNormalGrayStyle(), tbCols, TB_HORIZONTAL_ALIGN_CENTER, null));
+        pdfPTable.addCell(addLine(false, tbCols));
+        pdfPTable.addCell(addImage(getResourceAsByteArray(IMG_BENEFIT_2), BENEFIT_IMG_SIZE, tbCols, TB_HORIZONTAL_ALIGN_CENTER));
+        pdfPTable.addCell(addData("คุ้มครองกรณีเสียชีวิตจากอุบัติเหตุ", getFontHeaderStyle(), tbCols, TB_HORIZONTAL_ALIGN_CENTER, null));
+        pdfPTable.addCell(addData("เพิ่มเติมจากผลประโยชน์กรณีเสียชีวิต *", getFontNormalDeepGrayStyle(), tbCols, TB_HORIZONTAL_ALIGN_CENTER, null));
+        pdfPTable.addCell(addData("และรับสิทธิประโยชน์ 2 เท่า จากอุบัติเหตุที่ระบุตามเงื่อนไข *", getFontNormalGrayStyle(), tbCols, TB_HORIZONTAL_ALIGN_CENTER, null));
+        pdfPTable.addCell(addData(toCurrency(p.getDeathByAccidentInPublicTransport().getValue()) + " บาท", getFontNormalGrayStyle(), tbCols, TB_HORIZONTAL_ALIGN_CENTER, null));
+        pdfPTable.addCell(addLine(false, tbCols));
+        pdfPTable.addCell(addImage(getResourceAsByteArray(IMG_BENEFIT_3), BENEFIT_IMG_SIZE, tbCols, TB_HORIZONTAL_ALIGN_CENTER));
+        pdfPTable.addCell(addData("คุ้มครองกรณี", getFontHeaderStyle(), tbCols, TB_HORIZONTAL_ALIGN_CENTER, null));
+        pdfPTable.addCell(addData("สูญเสียอวัยวะจากอุบัติเหตุ", getFontHeaderStyle(), tbCols, TB_HORIZONTAL_ALIGN_CENTER, null));
+        pdfPTable.addCell(addData("สูงสุด 100% ของจำนวนเงินเอาประกันภัยต่อปีกรมธรรม์", getFontNormalDeepGrayStyle(), tbCols, TB_HORIZONTAL_ALIGN_CENTER, null));
+        pdfPTable.addCell(addData("ตามที่ระบุตารางรายละเอียดผลประโยชน์", getFontNormalGrayStyle(), tbCols, TB_HORIZONTAL_ALIGN_CENTER, null));
+        pdfPTable.addCell(addLine(false, tbCols));
+        pdfPTable.addCell(addImage(getResourceAsByteArray(IMG_BENEFIT_4), BENEFIT_IMG_SIZE, tbCols, TB_HORIZONTAL_ALIGN_CENTER));
+        pdfPTable.addCell(addData("ค่ารักษาพยาบาล", getFontHeaderStyle(), tbCols, TB_HORIZONTAL_ALIGN_CENTER, null));
+        pdfPTable.addCell(addData("เนื่องจากอุบัติเหตุต่อครั้ง", getFontHeaderStyle(), tbCols, TB_HORIZONTAL_ALIGN_CENTER, null));
+        pdfPTable.addCell(addData("ตามที่เกิดขึ้นจริง โดยไม่เกินจำนวนที่กำหนดไว้", getFontNormalDeepGrayStyle(), tbCols, TB_HORIZONTAL_ALIGN_CENTER, null));
+        pdfPTable.addCell(addData(toCurrency(p.getMedicalCareCost().getValue()) + " บาท", getFontNormalGrayStyle(), tbCols, TB_HORIZONTAL_ALIGN_CENTER, null));
+        pdfPTable.addCell(addLine(false, tbCols));
+        pdfPTable.addCell(addImage(getResourceAsByteArray(IMG_BENEFIT_5), BENEFIT_IMG_SIZE, tbCols, TB_HORIZONTAL_ALIGN_CENTER));
+        pdfPTable.addCell(addData("ผลประโยชน์ชดเชยรายวัน", getFontHeaderStyle(), tbCols, TB_HORIZONTAL_ALIGN_CENTER, null));
+        pdfPTable.addCell(addData("เนื่องจากอุบัติเหตุ", getFontHeaderStyle(), tbCols, TB_HORIZONTAL_ALIGN_CENTER, null));
+        pdfPTable.addCell(addData("กรณีรักษาตัวเป็นผู้ป่วยใน", getFontNormalDeepGrayStyle(), tbCols, TB_HORIZONTAL_ALIGN_CENTER, null));
+        pdfPTable.addCell(addData(toCurrency(p.getHospitalizationSumInsured().getValue()) + " บาท", getFontNormalGrayStyle(), tbCols, TB_HORIZONTAL_ALIGN_CENTER, null));
+        pdfPTable.addCell(addData("สูงสุดไม่เกิน 365 วัน ต่อปีกรมธรรม์", getFontNormalGrayStyle(), tbCols, TB_HORIZONTAL_ALIGN_CENTER, null));
+        pdfPTable.addCell(addLine(false, tbCols));
+        pdfPTable.addCell(addData("ผลประโยชน์กรณีเสียชีวิต", getFontHeaderStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
+        pdfPTable.addCell(addLine(false, tbCols));
+        pdfPTable.addCell(addData("จากทุกสาเหตุ", getFontNormalStyle(), null, TB_HORIZONTAL_ALIGN_LEFT, null));
+        pdfPTable.addCell(addData(toCurrency(p.getSumInsured().getValue()) + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT, null));
+        pdfPTable.addCell(addLine(false, tbCols));
+        pdfPTable.addCell(addData("เนื่องจากอุบัติเหตุ", getFontNormalStyle(), null, TB_HORIZONTAL_ALIGN_LEFT, null));
+        pdfPTable.addCell(addData(toCurrency(p.getAccidentSumInsured().getValue()) + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT, null));
+        pdfPTable.addCell(addData("(เพิ่มเติมจากทุกสาเหตุ)", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
+        pdfPTable.addCell(addLine(false, tbCols));
+        pdfPTable.addCell(addData("เนื่องจากอุบัติเหตุสาธารณะ *", getFontNormalStyle(), null, TB_HORIZONTAL_ALIGN_LEFT, null));
+        pdfPTable.addCell(addData(toCurrency(p.getDeathByAccidentInPublicTransport().getValue()) + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT, null));
+        pdfPTable.addCell(addData("(เพิ่มเติมจากทุกสาเหตุ)", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
+        pdfPTable.addCell(addLine(false, tbCols));
+        pdfPTable.addCell(addData("ความคุ้มครองกรณีสูยเสียอวัยวะ", getFontHeaderStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
+        pdfPTable.addCell(addData("จากอุบัติเหตุ", getFontHeaderStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
+        pdfPTable.addCell(addLine(false, tbCols));
+        pdfPTable.addCell(addData("สูญเสียมือหรือเท้า 1 ข้างหรือมากกว่า", getFontNormalStyle(), null, TB_HORIZONTAL_ALIGN_LEFT, null));
+        pdfPTable.addCell(addData(toCurrency(p.getLossOfHandOrLeg().getValue()) + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT, null));
+        pdfPTable.addCell(addLine(false, tbCols));
+        pdfPTable.addCell(addData("สูญเสียสายตา 1 ข้างหรือมากกว่า", getFontNormalStyle(), null, TB_HORIZONTAL_ALIGN_LEFT, null));
+        pdfPTable.addCell(addData(toCurrency(p.getLossOfSight().getValue()) + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT, null));
+        pdfPTable.addCell(addLine(false, tbCols));
+        pdfPTable.addCell(addData("สูญเสียการได้ยิน", getFontNormalStyle(), null, TB_HORIZONTAL_ALIGN_LEFT, null));
+        pdfPTable.addCell(addData(toCurrency(p.getLossOfHearingMin().getValue()) + " - " + toCurrency(p.getLossOfHearingMax().getValue()) + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT, null));
+        pdfPTable.addCell(addLine(false, tbCols));
+        pdfPTable.addCell(addData("สูญเสียการพูด", getFontNormalStyle(), null, TB_HORIZONTAL_ALIGN_LEFT, null));
+        pdfPTable.addCell(addData(toCurrency(p.getLossOfSpeech().getValue()) + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT, null));
+        pdfPTable.addCell(addLine(false, tbCols));
+        pdfPTable.addCell(addData("สูญเสียกระจกตาทั้งสองข้าง", getFontNormalStyle(), null, TB_HORIZONTAL_ALIGN_LEFT, null));
+        pdfPTable.addCell(addData(toCurrency(p.getLossOfCorneaForBothEyes().getValue()) + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT, null));
+        pdfPTable.addCell(addLine(false, tbCols));
+        pdfPTable.addCell(addData("สูญเสียนิ้วมือหรือนิ้วเท้า", getFontNormalStyle(), null, TB_HORIZONTAL_ALIGN_LEFT, null));
+        pdfPTable.addCell(addData(toCurrency(p.getLossOfFingersMin().getValue()) + " - " + toCurrency(p.getLossOfFingersMax().getValue()) + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT, null));
+        pdfPTable.addCell(addData("(ขึ้นอยู่กับจำนวนข้อที่สูญเสีย)", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
+        pdfPTable.addCell(addLine(false, tbCols));
+        pdfPTable.addCell(addData("กระดูกขาหรือสะบ้า แตกหักและรักษาไม่หาย", getFontNormalStyle(), null, TB_HORIZONTAL_ALIGN_LEFT, null));
+        pdfPTable.addCell(addData(toCurrency(p.getNoneCurableBoneFracture().getValue()) + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT, null));
+        pdfPTable.addCell(addLine(false, tbCols));
+        pdfPTable.addCell(addData("ขาหดสั้นลงอย่างน้อย 5 เซนติเมตร", getFontNormalStyle(), null, TB_HORIZONTAL_ALIGN_LEFT, null));
+        pdfPTable.addCell(addData(toCurrency(p.getLegsShortenBy5cm().getValue()) + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT, null));
+        pdfPTable.addCell(addLine(false, tbCols));
+        pdfPTable.addCell(addData("บาดแผลไฟไหม้ฉกรรจ์", getFontNormalStyle(), null, TB_HORIZONTAL_ALIGN_LEFT, null));
+        pdfPTable.addCell(addData(toCurrency(p.getBurnInjuryMin().getValue()) + " - " + toCurrency(p.getBurnInjuryMax().getValue()) + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT, null));
+        pdfPTable.addCell(addData("(เสียหายตั้งแต่ 2% ขึ้นไปของผิวหนังทั้งหมด)", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
+        pdfPTable.addCell(addLine(false, tbCols));
+        pdfPTable.addCell(addData("ค่ารักษาพยาบาลเนื่องจากอุบัติเหตุ", getFontHeaderStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
+        pdfPTable.addCell(addLine(false, tbCols));
+        pdfPTable.addCell(addData("ตามที่เกิดขึ้นจริง แต่ไม่เกินครั้งละ", getFontNormalStyle(), null, TB_HORIZONTAL_ALIGN_LEFT, null));
+        pdfPTable.addCell(addData(toCurrency(p.getMedicalCareCost().getValue()) + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT, null));
+        pdfPTable.addCell(addLine(false, tbCols));
+        pdfPTable.addCell(addData("ผลประโยชน์ชดเชยรายวัน", getFontHeaderStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
+        pdfPTable.addCell(addLine(false, tbCols));
+        pdfPTable.addCell(addData("กรณีเข้ารักษาตัวในโรงพยาบาล", getFontNormalStyle(), null, TB_HORIZONTAL_ALIGN_LEFT, null));
+        pdfPTable.addCell(addData(toCurrency(p.getHospitalizationSumInsured().getValue()) + " บาท", getFontNormalBlueStyle(), null, TB_HORIZONTAL_ALIGN_RIGHT, null));
+        pdfPTable.addCell(addData("(จำนวนวันสูงสุดไม่เกิน 365 วัน)", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
+        pdfPTable.addCell(addLine(true, tbCols));
+        pdfPTable.addCell(addLine(false, tbCols));
+        pdfPTable.addCell(addData("* หมายเหตุ:", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
+        pdfPTable.addCell(addLine(false, tbCols));
+        pdfPTable.addCell(addData("ข้อยกเว้นที่สำคัญ:", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
+        pdfPTable.addCell(addData("1) การฆ่าตัวตาย หรือทำร้ายตัวเอง", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
+        pdfPTable.addCell(addData("2) ขณะที่มีการล่าสัตว์ แข่งรถ แข่งเรือ แข่งม้า เล่นหรือแข่งสกีทุกชนิด เล่น/แข่งสเก็ต ชกมวย โดดร่ม ขึ้น/ลง/โดยสารในบอลลูน เครื่องร่อน บันจี้จั๊มพ์ ปีนหรือไต่เขาที่ต้องใช้เครื่องมือช่วย ดำน้ำที่ต้องใช้ถังอากาศและเครื่องช่วยหายใจใต้น้ำ",
+                getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
+        pdfPTable.addCell(addData("3) ขึ้นหรือลงหรือโดยสาร อยู่ในอากาศยานที่มิได้จดทะเบียนเพื่อบรรทุกผู้โดยสาร", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
+        pdfPTable.addCell(addLine(false, tbCols));
+        pdfPTable.addCell(addData("คุ้มครอง 2 เท่า กรณีเสียชีวิตจากอุบัติเหตุ", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
+        pdfPTable.addCell(addData("1) อุบัติเหตุที่เกิดขึ้นจากยานพาหนะสาธารณะทางบก", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
+        pdfPTable.addCell(addData("2) ขณะที่อยู่ในลิฟท์", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
+        pdfPTable.addCell(addData("3) การเสียชีวิตที่เกิดขึ้น เนื่องจากไฟไหม้โรงมหรศพ โรงแรม หรืออาคารสาธารณะ", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
+        pdfPTable.addCell(addLine(false, tbCols));
+        pdfPTable.addCell(addData("อุบัติเหตุสาธารณะ ได้แก่", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
+        pdfPTable.addCell(addData("1) ผู้เอาประกันภัยโดยสารในฐานะผู้โดยสารในยานพาหนะสาธารณะที่ขับเคลื่อนด้วยเครื่องจักรกล ซึ่งผู้ทำการขนส่งสาธารณะเป็นผู้รับจ้างทำการขนส่งบนเส้นทางขนส่งทางบกที่ได้กำหนดไว้ หรือ", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
+        pdfPTable.addCell(addData("2) ขณะที่ผู้เอาประกันภัยอยู่ในลิฟท์ (ยกเว้นลิฟท์ที่ใช้ในเหมืองแร่หรือสถานที่ก่อสร้าง) หรือ", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
+        pdfPTable.addCell(addData("3) เกิดขึ้นเนื่องจากไฟไหม้โรงมหรสพ โรงแรม หรืออาคารสาธารณะอื่นใด ซึ่งผู้เอาประกันภัยอยู่ ณ สถานที่นั้น ในขณะที่เริ่มไฟไหม้", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
+        pdfPTable.addCell(addLine(false, tbCols));
+        pdfPTable.addCell(addData(TAB + "- โปรดศึกษา อ่าน และทำความเข้าใจรายละเอียดเพิ่มเติมในเอกสารประกอบการขายของบริษัทฯ", getFontNormalGrayStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
+        pdfPTable.addCell(addData(TAB + "- อายุขณะขอเอาประกันภัย 20 - 59 ปี", getFontNormalGrayStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
+        pdfPTable.addCell(addData(TAB + "- จำนวนเงินเอาประกันภัยขั้นต่ำ 100,000 บาท", getFontNormalGrayStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
 
-
-        ByteArrayOutputStream content = new ByteArrayOutputStream();
-        Document document = new Document(PageSize.A4, 20, 20, 20, 20);
-        PdfWriter.getInstance(document, content);
-        document.open();
-        document.add(table1);
-        //document.add(table2);
-        document.close();
-        content.close();
-        return Pair.of(content.toByteArray(), "proposal_" + quote.getQuoteId() + "_" + getDate() + ".pdf");
+        return Pair.of(PdfIOUtil.writeToBytes(pdfPTable), "proposal_" + quote.getQuoteId() + "_" + getDate() + ".pdf");
 
     }
 
-    private String toCurrency(Double d){
+    private String toCurrency(Double d) {
         return (new DecimalFormat(MONEY_DECIMAL_FORMAT)).format(d);
     }
 
@@ -331,7 +327,7 @@ public class SaleIllustrationiFineService {
         return fontExtraSmallGray;
     }
 
-    private byte[] getResourceAsByteArray(String imgPath){
+    private byte[] getResourceAsByteArray(String imgPath) {
         byte[] outPut = new byte[0];
         try {
             outPut = toByteArray(this.getClass().getResourceAsStream(imgPath));

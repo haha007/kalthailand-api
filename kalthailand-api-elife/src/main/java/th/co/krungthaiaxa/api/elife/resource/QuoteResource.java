@@ -22,8 +22,8 @@ import th.co.krungthaiaxa.api.common.utils.JsonUtil;
 import th.co.krungthaiaxa.api.elife.exception.ElifeException;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
+import th.co.krungthaiaxa.api.elife.products.ProductEmailService;
 import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
-import th.co.krungthaiaxa.api.elife.products.ProductType;
 import th.co.krungthaiaxa.api.elife.service.EmailService;
 import th.co.krungthaiaxa.api.elife.service.QuoteService;
 import th.co.krungthaiaxa.api.elife.service.SessionQuoteService;
@@ -51,14 +51,16 @@ public class QuoteResource {
     private final SessionQuoteService sessionQuoteService;
     private final EmailService emailService;
 
+    private final ProductEmailService productEmailService;
     @Value("${kal.api.auth.header}")
     private String tokenHeader;
 
     @Inject
-    public QuoteResource(QuoteService quoteService, SessionQuoteService sessionQuoteService, EmailService emailService) {
+    public QuoteResource(QuoteService quoteService, SessionQuoteService sessionQuoteService, EmailService emailService, ProductEmailService productEmailService) {
         this.quoteService = quoteService;
         this.sessionQuoteService = sessionQuoteService;
         this.emailService = emailService;
+        this.productEmailService = productEmailService;
     }
 
     @ApiOperation(value = "Sending email for quote", notes = "Sending email for quote", response = Quote.class)
@@ -68,7 +70,7 @@ public class QuoteResource {
             @ApiResponse(code = 500, message = "If email could not be sent", response = Error.class)
     })
     @ResponseBody
-    public ResponseEntity<byte[]> sendEmail(
+    public void sendEmail(
             @ApiParam(value = "The quote Id", required = true)
             @PathVariable String quoteId,
             @ApiParam(value = "The content of the graph image in base 64 encoded.", required = false)
@@ -77,28 +79,7 @@ public class QuoteResource {
             @RequestParam String sessionId,
             @ApiParam(value = "The channel being used to create the quote.", required = true)
             @RequestParam ChannelType channelType) {
-        Optional<Quote> quote = quoteService.findByQuoteId(quoteId, sessionId, channelType);
-        if (!quote.isPresent()) {
-            return new ResponseEntity<>(getJson(ErrorCode.QUOTE_DOES_NOT_EXIST_OR_ACCESS_DENIED), NOT_FOUND);
-        }
-
-        try {
-            String productId = quote.get().getCommonData().getProductId();
-
-            if (productId.equals(ProductType.PRODUCT_10_EC.getLogicName())) {
-                emailService.sendQuote10ECEmail(quote.get(), base64Image);
-            } else if (productId.equals(ProductType.PRODUCT_IFINE.getLogicName())) {
-                emailService.sendQuoteiFineEmail(quote.get());
-            } else if (productId.equals(ProductType.PRODUCT_IPROTECT.getLogicName())) {
-                emailService.sendQuoteIProtect(quote.get());
-            } else {
-                logger.debug("No mail to send for product {}", productId);
-            }
-        } catch (Exception e) {
-            logger.error("Unable to send email for [" + quote.get().getInsureds().get(0).getPerson().getEmail() + "]", e);
-            return new ResponseEntity<>(getJson(ErrorCode.UNABLE_TO_SEND_EMAIL.apply(e.getMessage())), INTERNAL_SERVER_ERROR);
-        }
-        return new ResponseEntity<>(getJson(""), OK);
+        productEmailService.sendQuoteEmail(quoteId, sessionId, channelType, base64Image);
     }
 
     @ApiOperation(value = "Get latest Quote", notes = "Returns the latest quote attached to the given sessionId. " +
@@ -138,7 +119,7 @@ public class QuoteResource {
             @RequestParam ChannelType channelType) {
         Optional<Quote> quote = quoteService.findByQuoteId(quoteId, sessionId, channelType);
         if (!quote.isPresent()) {
-            return new ResponseEntity<>(getJson(ErrorCode.QUOTE_DOES_NOT_EXIST_OR_ACCESS_DENIED), NOT_FOUND);
+            return new ResponseEntity<>(getJson(ErrorCode.QUOTE_DOES_NOT_EXIST), NOT_FOUND);
         }
 
         return new ResponseEntity<>(getJson(quote.get()), OK);
@@ -187,7 +168,7 @@ public class QuoteResource {
             HttpServletRequest httpServletRequest) {
         Optional<Quote> tmp = quoteService.findByQuoteId(quoteId, sessionId, channelType);
         if (!tmp.isPresent()) {
-            return new ResponseEntity<>(getJson(ErrorCode.QUOTE_DOES_NOT_EXIST_OR_ACCESS_DENIED), NOT_FOUND);
+            return new ResponseEntity<>(getJson(ErrorCode.QUOTE_DOES_NOT_EXIST), NOT_FOUND);
         }
 
         Quote quote;

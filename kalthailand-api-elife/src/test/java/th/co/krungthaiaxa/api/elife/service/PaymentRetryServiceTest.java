@@ -95,7 +95,7 @@ public class PaymentRetryServiceTest extends ELifeTest {
         CollectionFile collectionFile = collectionFileList.get(0);
         String paymentId01Fail = getPaymentIdFromFirstLineOfCollectionFile(collectionFile);
 
-        GreenMailUtil.writeReceiveMessagesToFiles(greenMail, "test/emails");
+        GreenMailUtil.writeReceiveMessagesToFiles(greenMail, "testresult/emails");
         Assert.assertTrue(greenMail.getReceivedMessages().length > 0);
         greenMail.purgeEmailFromAllMailboxes();
 
@@ -137,7 +137,7 @@ public class PaymentRetryServiceTest extends ELifeTest {
         RetryPaymentResult retryPaymentResult = retryFailedPaymentInCollection(COLLECTION_FILE, POLICY);
         PAYMENT_02_RETRY = retryPaymentResult.retryPayment;
 
-        GreenMailUtil.writeReceiveMessagesToFiles(greenMail, "test/emails");
+        GreenMailUtil.writeReceiveMessagesToFiles(greenMail, "testresult/emails");
         Assert.assertTrue(greenMail.getReceivedMessages().length > 0);
     }
 

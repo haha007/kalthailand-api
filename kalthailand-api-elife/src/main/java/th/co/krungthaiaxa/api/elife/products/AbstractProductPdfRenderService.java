@@ -1,92 +1,82 @@
 package th.co.krungthaiaxa.api.elife.products;
 
-import static org.apache.commons.io.IOUtils.toByteArray;
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.PdfPCell;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.MessageSource;
+import org.springframework.stereotype.Component;
+import th.co.krungthaiaxa.api.elife.model.Periodicity;
+import th.co.krungthaiaxa.api.elife.model.Quote;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
-import javax.inject.Inject;
-
-import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.apache.commons.lang3.tuple.Pair;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.MessageSource;
-import org.springframework.stereotype.Component;
-
-import com.itextpdf.text.BaseColor;
-import com.itextpdf.text.Document;
-import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.Font;
-import com.itextpdf.text.Image;
-import com.itextpdf.text.PageSize;
-import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.Phrase;
-import com.itextpdf.text.Rectangle;
-import com.itextpdf.text.pdf.BaseFont;
-import com.itextpdf.text.pdf.PdfPCell;
-import com.itextpdf.text.pdf.PdfPTable;
-import com.itextpdf.text.pdf.PdfWriter;
-
-import th.co.krungthaiaxa.api.elife.model.Periodicity;
-import th.co.krungthaiaxa.api.elife.model.Quote;
+import static org.apache.commons.io.IOUtils.toByteArray;
 
 @Component
-public abstract class AbstractProductPdfRenderService implements InterfaceProductPdfRenderService {
-	
-	protected final static Logger LOGGER = LoggerFactory.getLogger(AbstractProductPdfRenderService.class);
-	
-	protected static final BaseColor BORDER_COLOR = new BaseColor(218, 218, 218);
-	protected static final String _fontNormal = "/saleillustration/PSL094.TTF";
-	protected static final String _fontBold = "/saleillustration/PSL096.TTF";
-	protected static final Integer TB_HORIZONTAL_ALIGN_LEFT = 0;
-	protected static final Integer TB_HORIZONTAL_ALIGN_CENTER = 1;
-	protected static final Integer TB_HORIZONTAL_ALIGN_RIGHT = 2;
-	protected static final Integer TB_VERTICAL_ALIGN_TOP = 0;
-	protected static final Integer FONT_SIZE_HEADER = 27;
-	protected static final Integer FONT_SIZE_NORMAL = 15;
-	protected static final Integer FONT_SIZE_SMALL = 12;
-	protected static final Integer BENEFIT_IMG_SIZE = 40;
-	protected static final String TAB = "     ";
-	protected static final String NEW_LINE = System.getProperty("line.separator");
-	protected String MONEY_DECIMAL_FORMAT = "#,##0.00";
-	protected final String PDF_NAME = "proposal_";
-	protected final String PDF_EXTENSION = ".pdf";
-	protected final String UNDERSCORE = "_";
-	
+public abstract class AbstractProductPdfRenderService implements SaleIllustrationService {
+
+    protected final static Logger LOGGER = LoggerFactory.getLogger(AbstractProductPdfRenderService.class);
+
+    protected static final BaseColor BORDER_COLOR = new BaseColor(218, 218, 218);
+    protected static final String _fontNormal = "/saleillustration/PSL094.TTF";
+    protected static final String _fontBold = "/saleillustration/PSL096.TTF";
+    protected static final Integer TB_HORIZONTAL_ALIGN_LEFT = 0;
+    protected static final Integer TB_HORIZONTAL_ALIGN_CENTER = 1;
+    protected static final Integer TB_HORIZONTAL_ALIGN_RIGHT = 2;
+    protected static final Integer TB_VERTICAL_ALIGN_TOP = 0;
+    protected static final Integer FONT_SIZE_HEADER = 27;
+    protected static final Integer FONT_SIZE_NORMAL = 15;
+    protected static final Integer FONT_SIZE_SMALL = 12;
+    protected static final Integer BENEFIT_IMG_SIZE = 40;
+    protected static final String TAB = "     ";
+    protected static final String NEW_LINE = System.getProperty("line.separator");
+    protected String MONEY_DECIMAL_FORMAT = "#,##0.00";
+    protected final String PDF_NAME = "proposal_";
+    protected final String PDF_EXTENSION = ".pdf";
+    protected final String UNDERSCORE = "_";
+
     @Inject
     private MessageSource messageSource;
-    private Locale thLocale = new Locale("th","");
+    private Locale thLocale = new Locale("th", "");
     
     /*
      * custom value specific
      * */
-    
-    protected String getProductWordInProps(Quote quote, Boolean thai){
-    	if(thai){
-    		return messageSource.getMessage("product.id."+quote.getCommonData().getProductId(), null, thLocale);
-    	}else{
-    		return messageSource.getMessage("product.id."+quote.getCommonData().getProductId(), null, null);
-    	}
+
+    protected String getProductWordInProps(Quote quote, Boolean thai) {
+        if (thai) {
+            return messageSource.getMessage("product.id." + quote.getCommonData().getProductId(), null, thLocale);
+        } else {
+            return messageSource.getMessage("product.id." + quote.getCommonData().getProductId(), null, null);
+        }
     }
-    
-    protected String toThaiPaymentMode(Periodicity due){
-    	return messageSource.getMessage("payment.mode." + due.getCode().toString(), null, thLocale);
+
+    protected String toThaiPaymentMode(Periodicity due) {
+        return messageSource.getMessage("payment.mode." + due.getCode().toString(), null, thLocale);
     }
-    
-    protected String toCurrency(Double d){
+
+    protected String toCurrency(Double d) {
         return (new DecimalFormat(MONEY_DECIMAL_FORMAT)).format(d);
     }
     
     /*
      * get pdf file name
      * */
-    
-    protected String getPDFName(Quote quote){
-    	return PDF_NAME + quote.getQuoteId() + UNDERSCORE + getDate() + PDF_EXTENSION;
+
+    protected String getPDFName(Quote quote) {
+        return PDF_NAME + quote.getQuoteId() + UNDERSCORE + getDate() + PDF_EXTENSION;
     }
     
     /*
@@ -226,7 +216,7 @@ public abstract class AbstractProductPdfRenderService implements InterfaceProduc
      * get byte[] array source from path of file 
      * */
 
-    protected byte[] getResourceAsByteArray(String imgPath){
+    protected byte[] getResourceAsByteArray(String imgPath) {
         byte[] outPut = new byte[0];
         try {
             outPut = toByteArray(this.getClass().getResourceAsStream(imgPath));
@@ -239,7 +229,7 @@ public abstract class AbstractProductPdfRenderService implements InterfaceProduc
     /*
      * get now date using within abstract class
      * */
-    
+
     private String getDate() {
         return LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
     }

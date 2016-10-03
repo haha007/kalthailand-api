@@ -207,7 +207,7 @@ public class EmailServiceTest extends ELifeTest {
         } else if (policy.getCommonData().getProductId().equals(ProductType.PRODUCT_IFINE.getLogicName())) {
             sumInsure = money.format(policy.getPremiumsData().getProductIFinePremium().getSumInsured().getValue());
         } else if (policy.getCommonData().getProductId().equals(ProductType.PRODUCT_IGEN.getLogicName())) {
-            sumInsure = money.format(policy.getPremiumsData().getProductIGenPremium().getSumInsured().getValue());
+            sumInsure = money.format(policy.getPremiumsData().getPremiumDetail().getSumInsured().getValue());
         }
         assertThat("<td align=\"right\" class=\"header-normal\" >" + sumInsure + " บาท</td>");
         assertThat("<td align=\"right\" class=\"header-normal\" >" + money.format(policy.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()) + " บาท</td>");

@@ -138,7 +138,7 @@ public class QuoteResourceTest extends ELifeTest {
         ResponseEntity<String> response = template.getForEntity(builder.toUriString(), String.class);
         assertThat(response.getStatusCode().value()).isEqualTo(NOT_FOUND.value());
         Error error = TestUtil.getErrorFromJSon(response.getBody());
-        assertThat(error).isEqualToComparingFieldByField(ErrorCode.QUOTE_DOES_NOT_EXIST_OR_ACCESS_DENIED);
+        assertThat(error).isEqualToComparingFieldByField(ErrorCode.QUOTE_DOES_NOT_EXIST);
     }
 
     @Test
@@ -160,7 +160,7 @@ public class QuoteResourceTest extends ELifeTest {
         ResponseEntity<String> response = template.getForEntity(builder.toUriString(), String.class);
         assertThat(response.getStatusCode().value()).isEqualTo(NOT_FOUND.value());
         Error error = TestUtil.getErrorFromJSon(response.getBody());
-        assertThat(error).isEqualToComparingFieldByField(ErrorCode.QUOTE_DOES_NOT_EXIST_OR_ACCESS_DENIED);
+        assertThat(error).isEqualToComparingFieldByField(ErrorCode.QUOTE_DOES_NOT_EXIST);
     }
 
     @Test

@@ -43,6 +43,10 @@ public class ProductQuotationFactory {
         return productQuotation;
     }
 
+    public static ProductQuotation constructIProtectDefault() {
+        return constructIProtect(33, PeriodicityCode.EVERY_MONTH, 2000.0, false, 35, GenderCode.MALE);
+    }
+
     public static ProductQuotation constructIProtect(Integer age, PeriodicityCode periodicityCode, Double amountValue, Boolean isSumInsured, Integer taxRate, GenderCode genderCode) {
         return constructQuotation(ProductType.PRODUCT_IPROTECT, IProtectPackage.IPROTECT10.name(), age, periodicityCode, amountValue, isSumInsured, taxRate, genderCode, 1, null);
     }
@@ -66,6 +70,7 @@ public class ProductQuotationFactory {
      * You should use this for only integration test, we don't actually care about the calculation result of this input.
      *
      * @return
+     * @Note: Never change values in this method. If you want to use another value, please create the new method.
      */
     public static ProductQuotation constructIGenDefault() {
         return ProductQuotationFactory.constructIGen(33, PeriodicityCode.EVERY_YEAR, 1000000.0, true, 35, ProductDividendOption.END_OF_CONTRACT_PAY_BACK);

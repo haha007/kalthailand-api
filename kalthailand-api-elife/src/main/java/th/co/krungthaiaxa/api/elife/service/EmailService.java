@@ -1,6 +1,5 @@
 package th.co.krungthaiaxa.api.elife.service;
 
-import com.itextpdf.text.DocumentException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
@@ -9,10 +8,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
+import th.co.krungthaiaxa.api.common.utils.IOUtil;
 import th.co.krungthaiaxa.api.elife.model.Person;
 import th.co.krungthaiaxa.api.elife.model.Policy;
-import th.co.krungthaiaxa.api.elife.model.product.ProductIFinePremium;
 import th.co.krungthaiaxa.api.elife.model.Quote;
+import th.co.krungthaiaxa.api.elife.model.product.ProductIFinePremium;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
 import th.co.krungthaiaxa.api.elife.products.iprotect.IProtectEmailService;
 import th.co.krungthaiaxa.api.elife.utils.EmailSender;
@@ -33,6 +33,10 @@ import java.util.Set;
 
 import static org.apache.commons.io.IOUtils.toByteArray;
 
+/**
+ * @deprecated should use {@link QuoteEmailService}
+ */
+@Deprecated
 @Service
 public class EmailService {
     private final static Logger logger = LoggerFactory.getLogger(EmailService.class);
@@ -85,13 +89,14 @@ public class EmailService {
         logger.debug("The email was sent to {}", toEmail);
     }
 
-    public void sendQuote10ECEmail(Quote quote, String base64Image) throws IOException, MessagingException, DocumentException {
+    public void sendQuote10ECEmail(Quote quote, String base64Image) {
         logger.info("Sending quote 10EC email");
         List<Pair<byte[], String>> base64ImgFileNames = new ArrayList<>();
         base64ImgFileNames.add(Pair.of(Base64.getDecoder().decode(base64Image), "<imageElife2>"));
-        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/benefitBlue.jpg")), "<benefitRed>"));
-        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/benefitGreen.jpg")), "<benefitGreen>"));
-        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/benefitPoint.jpg")), "<benefitPoint>"));
+
+        base64ImgFileNames.add(Pair.of(IOUtil.loadBinaryFileInClassPath("/images/email/benefitBlue.jpg"), "<benefitRed>"));
+        base64ImgFileNames.add(Pair.of(IOUtil.loadBinaryFileInClassPath("/images/email/benefitGreen.jpg"), "<benefitGreen>"));
+        base64ImgFileNames.add(Pair.of(IOUtil.loadBinaryFileInClassPath("/images/email/benefitPoint.jpg"), "<benefitPoint>"));
         //generate sale illustration 10EC pdf file
         List<Pair<byte[], String>> attachments = new ArrayList<>();
         attachments.add(saleIllustration10ECService.generatePDF(quote, base64Image));
@@ -99,11 +104,11 @@ public class EmailService {
         logger.info("Quote email sent");
     }
 
-    public void sendQuoteiFineEmail(Quote quote) throws IOException, MessagingException, DocumentException {
+    public void sendQuoteiFineEmail(Quote quote) {
         logger.info("Sending quote iFine email");
         List<Pair<byte[], String>> base64ImgFileNames = new ArrayList<>();
 
-        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/logo.png")), "<imageLogo>"));
+        base64ImgFileNames.add(Pair.of(IOUtil.loadBinaryFileInClassPath("/images/email/logo.png"), "<imageLogo>"));
         //generate sale illustration iFine pdf file
         List<Pair<byte[], String>> attachments = new ArrayList<>();
         attachments.add(saleIllustrationiFineService.generatePDF(quote));
@@ -153,9 +158,9 @@ public class EmailService {
         logger.info("Ereceipt email sent");
     }
 
-    private String getQuote10ECEmailContent(Quote quote) throws IOException {
+    private String getQuote10ECEmailContent(Quote quote) {
         String decimalFormat = "#,##0.00";
-        String emailContent = IOUtils.toString(this.getClass().getResourceAsStream("/email-content/email-quote-10ec-content.txt"), Charset.forName("UTF-8"));
+        String emailContent = IOUtil.loadTextFileInClassPath("/email-content/email-quote-10ec-content.txt");
         return emailContent.replace("%1$s", quote.getCommonData().getNbOfYearsOfCoverage().toString())
                 .replace("%2$s", quote.getCommonData().getNbOfYearsOfPremium().toString())
                 .replace("%3$s", quote.getInsureds().get(0).getAgeAtSubscription().toString())
@@ -206,7 +211,7 @@ public class EmailService {
         } else if (pol.getCommonData().getProductId().equals(ProductType.PRODUCT_IFINE.getLogicName())) {
             sumInsure = money.format(pol.getPremiumsData().getProductIFinePremium().getSumInsured().getValue());
         } else if (pol.getCommonData().getProductId().equals(ProductType.PRODUCT_IGEN.getLogicName())) {
-            sumInsure = money.format(pol.getPremiumsData().getProductIGenPremium().getSumInsured().getValue());
+            sumInsure = money.format(pol.getPremiumsData().getPremiumDetail().getSumInsured().getValue());
         } else if (pol.getCommonData().getProductId().equals(ProductType.PRODUCT_IPROTECT.getLogicName())) {
             sumInsure = money.format(pol.getPremiumsData().getProductIProtectPremium().getSumInsured().getValue());
         }
@@ -219,9 +224,9 @@ public class EmailService {
                 .replace("%PREMIUM%", (new DecimalFormat("#,##0.00")).format(pol.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()));
     }
 
-    private String getQuoteiFineEmailContent(Quote quote) throws IOException {
+    private String getQuoteiFineEmailContent(Quote quote) {
         String decimalFormat = "#,##0.00";
-        String emailContent = IOUtils.toString(this.getClass().getResourceAsStream("/email-content/email-quote-ifine-content.txt"), Charset.forName("UTF-8"));
+        String emailContent = IOUtil.loadTextFileInClassPath("/email-content/email-quote-ifine-content.txt");
         ProductIFinePremium p = quote.getPremiumsData().getProductIFinePremium();
         return emailContent.replace("%2$s", DateTimeUtil.formatBuddhistThaiDate(quote.getInsureds().get(0).getStartDate()))
                 .replace("%3$s", "'" + getLineURL() + "fatca-questions/" + quote.getQuoteId() + "'")
@@ -264,6 +269,6 @@ public class EmailService {
     }
 
     public void sendQuoteIProtect(Quote quote) {
-        iProtectEmailService.sendQuoteIProtect(quote);
+        iProtectEmailService.sendQuoteEmail(quote);
     }
 }

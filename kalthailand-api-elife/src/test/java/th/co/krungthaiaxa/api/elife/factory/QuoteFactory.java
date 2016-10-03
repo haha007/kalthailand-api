@@ -17,8 +17,6 @@ import th.co.krungthaiaxa.api.elife.service.QuoteService;
 
 import javax.inject.Inject;
 
-import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
-
 /**
  * @author khoi.tran on 9/19/16.
  */
@@ -33,11 +31,29 @@ public class QuoteFactory {
     public final GreenMailRule greenMail = new GreenMailRule(ServerSetupTest.SMTP_IMAP);
 
     public Quote createDefaultQuoteForLine(int age, String email) {
-        Quote quote = quoteService.createQuote(randomNumeric(20), ChannelType.LINE, TestUtil.productQuotation(age, PeriodicityCode.EVERY_MONTH));
-        TestUtil.quote(quote, TestUtil.beneficiary(100.0));
-        PersonFactory.setValuesToFirstInsuredPerson(quote, age, "DefaultName", email);
-        quote = quoteService.updateQuote(quote, "token");
+        Quote quote = quoteService.createQuote(RequestFactory.generateSession(), ChannelType.LINE, TestUtil.productQuotation(age, PeriodicityCode.EVERY_MONTH));
+        TestUtil.quote(quote, BeneficiaryFactory.constructDefaultBeneficiary());
+        PersonFactory.setValuesToFirstInsuredPerson(quote, age, "MockInsuredPerson", email);
+        quote = quoteService.updateQuote(quote, RequestFactory.generateAccessToken());
         return quote;
+    }
+
+    public QuoteResult createDefaultIGen(String email) {
+        ProductQuotation productQuotation = ProductQuotationFactory.constructIGenDefault();
+        return createQuote(productQuotation, email);
+    }
+
+    public QuoteResult createDefaultIProtect(String email) {
+        ProductQuotation productQuotation = ProductQuotationFactory.constructIProtectDefault();
+        return createQuote(productQuotation, email);
+    }
+
+    private QuoteResult createQuote(ProductQuotation productQuotation, String email) {
+        String sessionId = RequestFactory.generateSession();
+        ChannelType channelType = ChannelType.LINE;
+        Quote quote = quoteService.createQuote(sessionId, channelType, productQuotation);
+        PersonFactory.setValuesToFirstInsuredPerson(quote, "MockInsuredPerson", email);
+        return new QuoteResult(quoteService.updateQuote(quote, RequestFactory.generateAccessToken()), sessionId, channelType);
     }
 
     public Quote createDefaultIProtectQuoteForLine(int age, String email) {
@@ -53,10 +69,49 @@ public class QuoteFactory {
                 taxPercentage,
                 GenderCode.MALE);
 
-        Quote quote = quoteService.createQuote(randomNumeric(20), ChannelType.LINE, productQuotation);
-        TestUtil.quote(quote, TestUtil.beneficiary(100.0));
-        PersonFactory.setValuesToFirstInsuredPerson(quote, age, "DefaultName", email);
-        quote = quoteService.updateQuote(quote, "token");
+        Quote quote = quoteService.createQuote(RequestFactory.generateSession(), ChannelType.LINE, productQuotation);
+        TestUtil.quote(quote, BeneficiaryFactory.constructDefaultBeneficiary());
+        PersonFactory.setValuesToFirstInsuredPerson(quote, age, "MockInsuredPerson", email);
+        quote = quoteService.updateQuote(quote, RequestFactory.generateAccessToken());
         return quote;
+    }
+
+    public static class QuoteResult {
+        private Quote quote;
+        private String sessionId;
+        private ChannelType channelType;
+
+        public QuoteResult() {
+        }
+
+        public QuoteResult(Quote quote, String sessionId, ChannelType channelType) {
+            this.quote = quote;
+            this.sessionId = sessionId;
+            this.channelType = channelType;
+        }
+
+        public String getSessionId() {
+            return sessionId;
+        }
+
+        public void setSessionId(String sessionId) {
+            this.sessionId = sessionId;
+        }
+
+        public ChannelType getChannelType() {
+            return channelType;
+        }
+
+        public void setChannelType(ChannelType channelType) {
+            this.channelType = channelType;
+        }
+
+        public Quote getQuote() {
+            return quote;
+        }
+
+        public void setQuote(Quote quote) {
+            this.quote = quote;
+        }
     }
 }
