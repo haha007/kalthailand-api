@@ -12,6 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
+import th.co.krungthaiaxa.api.common.exeption.FileIOException;
+import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
 import th.co.krungthaiaxa.api.elife.model.CoverageBeneficiary;
 import th.co.krungthaiaxa.api.elife.model.GeographicalAddress;
 import th.co.krungthaiaxa.api.elife.model.Insured;
@@ -63,36 +65,43 @@ public class ApplicationFormService {
     private final String MARK = "X";
     private final DecimalFormat MONEY_FORMAT = new DecimalFormat("#,##0.00");
 
-    public byte[] generateNotValidatedApplicationForm(Policy policy) throws Exception {
+    public byte[] generateNotValidatedApplicationForm(Policy policy) {
         return generateValidatedApplicationForm(policy, false);
     }
 
-    public byte[] generateValidatedApplicationForm(Policy policy) throws Exception {
+    public byte[] generateValidatedApplicationForm(Policy policy) {
         return generateValidatedApplicationForm(policy, true);
     }
 
-    private byte[] generateValidatedApplicationForm(Policy policy, boolean validatedPolicy) throws Exception {
-        ByteArrayOutputStream content = new ByteArrayOutputStream();
+    private byte[] generateValidatedApplicationForm(Policy policy, boolean validatedPolicy) {
+        try {
 
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(FILE_PATH);
-        PdfReader pdfReader = new PdfReader(inputStream);
-        PdfStamper pdfStamper = new PdfStamper(pdfReader, content);
+            ByteArrayOutputStream content = new ByteArrayOutputStream();
 
-        // page1
-        getPage1(pdfStamper.getOverContent(1), policy, validatedPolicy);
+            InputStream inputStream = getClass().getClassLoader().getResourceAsStream(FILE_PATH);
+            PdfReader pdfReader = null;
+            pdfReader = new PdfReader(inputStream);
 
-        // page2
-        getPage2(pdfStamper.getOverContent(2), policy);
+            PdfStamper pdfStamper = new PdfStamper(pdfReader, content);
 
-        // page3
-        getPage3(pdfStamper.getOverContent(3));
+            // page1
+            getPage1(pdfStamper.getOverContent(1), policy, validatedPolicy);
 
-        pdfStamper.close();
-        content.close();
-        return content.toByteArray();
+            // page2
+            getPage2(pdfStamper.getOverContent(2), policy);
+
+            // page3
+            getPage3(pdfStamper.getOverContent(3));
+
+            pdfStamper.close();
+            content.close();
+            return content.toByteArray();
+        } catch (IOException | DocumentException e) {
+            throw new FileIOException("Cannot generate application form for policy: " + ObjectMapperUtil.toStringMultiLine(policy), e);
+        }
     }
 
-    private void getPage1(PdfContentByte pdfContentByte, Policy pol, boolean validatedPolicy) throws Exception {
+    private void getPage1(PdfContentByte pdfContentByte, Policy pol, boolean validatedPolicy) throws IOException {
         BaseFont font = getBaseFont();
 
         Insured insured = pol.getInsureds().get(0);
@@ -249,18 +258,15 @@ public class ApplicationFormService {
         //contact email
         writeText(pdfContentByte, font, person.getEmail(), 74, 204, MEDIUM_SIZE);
 
-        if (pol.getCommonData().getProductId().equals(ProductType.PRODUCT_IFINE.getLogicName()) ||
-                pol.getCommonData().getProductId().equals(ProductType.PRODUCT_IPROTECT.getLogicName())) {
-            if (pol.getInsureds().get(0).getProfessionName().equals("คนงานก่อสร้าง")) {
-                writeText(pdfContentByte, font, MARK, 36, 134, MEDIUM_SIZE);
-            } else if (pol.getInsureds().get(0).getProfessionName().equals("คนขับรถแท๊กซี่ / คนขับรถมอเตอร์ไซค์รับจ้าง")) {
-                writeText(pdfContentByte, font, MARK, 108, 134, MEDIUM_SIZE);
-            } else if (pol.getInsureds().get(0).getProfessionName().equals("คนงานเหมือง / สำรวจหาน้ำมัน")) {
-                writeText(pdfContentByte, font, MARK, 274, 130, MEDIUM_SIZE);
-            } else {
-                writeText(pdfContentByte, font, MARK, 36, 116, MEDIUM_SIZE);
-                writeText(pdfContentByte, font, pol.getInsureds().get(0).getProfessionName(), 126, 116, MEDIUM_SIZE);
-            }
+        if (pol.getInsureds().get(0).getProfessionName().equals("คนงานก่อสร้าง")) {
+            writeText(pdfContentByte, font, MARK, 36, 134, MEDIUM_SIZE);
+        } else if (pol.getInsureds().get(0).getProfessionName().equals("คนขับรถแท๊กซี่ / คนขับรถมอเตอร์ไซค์รับจ้าง")) {
+            writeText(pdfContentByte, font, MARK, 108, 134, MEDIUM_SIZE);
+        } else if (pol.getInsureds().get(0).getProfessionName().equals("คนงานเหมือง / สำรวจหาน้ำมัน")) {
+            writeText(pdfContentByte, font, MARK, 274, 130, MEDIUM_SIZE);
+        } else {
+            writeText(pdfContentByte, font, MARK, 36, 116, MEDIUM_SIZE);
+            writeText(pdfContentByte, font, pol.getInsureds().get(0).getProfessionName(), 126, 116, MEDIUM_SIZE);
         }
 
         //occupation position
@@ -285,7 +291,7 @@ public class ApplicationFormService {
         }
     }
 
-    private void getPage2(PdfContentByte pdfContentByte, Policy pol) throws Exception {
+    private void getPage2(PdfContentByte pdfContentByte, Policy pol) throws IOException {
         BaseFont font = getBaseFont();
 
         if (pol.getCommonData().getProductId().equals(ProductType.PRODUCT_10_EC.getLogicName())) {
@@ -391,7 +397,7 @@ public class ApplicationFormService {
         writeText(pdfContentByte, font, MARK, 36, 70, MEDIUM_SIZE);
     }
 
-    private void getPage3(PdfContentByte pdfContentByte) throws Exception {
+    private void getPage3(PdfContentByte pdfContentByte) throws IOException {
         BaseFont font = getBaseFont();
 
         //health question 3

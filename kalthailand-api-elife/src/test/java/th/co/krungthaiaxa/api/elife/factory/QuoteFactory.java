@@ -38,6 +38,10 @@ public class QuoteFactory {
         return quote;
     }
 
+    public QuoteResult createDefaultIGen() {
+        return createDefaultIGen("dummy@krungthai-axa.co.th");
+    }
+
     public QuoteResult createDefaultIGen(String email) {
         ProductQuotation productQuotation = ProductQuotationFactory.constructIGenDefault();
         return createQuote(productQuotation, email);
@@ -52,8 +56,10 @@ public class QuoteFactory {
         String sessionId = RequestFactory.generateSession();
         ChannelType channelType = ChannelType.LINE;
         Quote quote = quoteService.createQuote(sessionId, channelType, productQuotation);
+        TestUtil.quote(quote, BeneficiaryFactory.constructDefaultBeneficiary());
         PersonFactory.setValuesToFirstInsuredPerson(quote, "MockInsuredPerson", email);
-        return new QuoteResult(quoteService.updateQuote(quote, RequestFactory.generateAccessToken()), sessionId, channelType);
+        quote = quoteService.updateQuote(quote, RequestFactory.generateAccessToken());
+        return new QuoteResult(quote, sessionId, channelType);
     }
 
     public Quote createDefaultIProtectQuoteForLine(int age, String email) {
