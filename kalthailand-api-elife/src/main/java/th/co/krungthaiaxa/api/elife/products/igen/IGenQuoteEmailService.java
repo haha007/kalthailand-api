@@ -23,22 +23,22 @@ public class IGenQuoteEmailService extends AbstractQuoteEmailService {
         Insured insured = quote.getInsureds().stream().reduce((first, second) -> second).get();
         PremiumDetail premium = quote.getPremiumsData().getPremiumDetail();
         Integer taxDeclared = (insured.getDeclaredTaxPercentAtSubscription() == null ? 0 : insured.getDeclaredTaxPercentAtSubscription());
-        return emailContent.replace("%1$s", toThaiYear(quote.getCreationDateTime()))
-                .replace("%2$s", "'" + getLineURL() + "fatca-questions/" + quote.getQuoteId() + "'")
-                .replace("%3$s", toThaiPaymentMode(quote.getPremiumsData().getFinancialScheduler().getPeriodicity()))
-                .replace("%4$s", toCurrency(getVal(quote.getPremiumsData().getFinancialScheduler().getModalAmount())))
-                .replace("%5$s", toCurrency(premium.getYearlyCashBacksForEndOfContract().stream().reduce((first, second) -> second).get().getAmount().getValue()))
-                .replace("%6$s", toCurrency(premium.getYearlyCashBacksForAnnual().stream().reduce((first, second) -> second).get().getAmount().getValue()))
-                .replace("%7$s", toCurrency(getVal(premium.getYearlyDeathBenefits().get(0).getAmount())))
-                .replace("%8$s", toCurrency(getVal(premium.getYearlyDeathBenefits().get(3).getAmount())))
-                .replace("%9$s", toCurrency(getVal(premium.getYearlyDeathBenefits().get(4).getAmount())))
-                .replace("%10$s", toCurrency(getVal(premium.getYearlyDeathBenefits().get(5).getAmount())))
-                .replace("%11$s", String.valueOf(taxDeclared))
-                .replace("%12$s", toCurrency(premium.getYearlyTaxDeduction().getValue()))
-                .replace("%13$s", toCurrency(premium.getTotalTaxDeduction().getValue()))
-                .replace("%14$s", "'" + getLineURL() + "'")
-                .replace("%15$s", "'" + getLineURL() + "fatca-questions/" + quote.getQuoteId() + "'")
-                .replace("%16$s", "'" + getLineURL() + "quote-product/line-" + productId + "'");
+        return emailContent.replace("%CREATE_DATE_TIME%", toThaiYear(quote.getCreationDateTime()))
+                .replace("%FATCA_QUESTION_LINK%", "'" + getLineURL() + "fatca-questions/" + quote.getQuoteId() + "'")
+                .replace("%PREMIUM_PERIODICITY%", toThaiPaymentMode(quote.getPremiumsData().getFinancialScheduler().getPeriodicity()))
+                .replace("%PREMIUM_VALUE%", toCurrency(getVal(quote.getPremiumsData().getFinancialScheduler().getModalAmount())))
+                .replace("%YEARLY_CASH_BACK_END_OF_CONTRACT%", toCurrency(premium.getYearlyCashBacksForEndOfContract().stream().reduce((first, second) -> second).get().getAmount().getValue()))
+                .replace("%YEARLY_CASH_BACK_ANNUAL%", toCurrency(premium.getYearlyCashBacksForAnnual().stream().reduce((first, second) -> second).get().getAmount().getValue()))
+                .replace("%DEATH_BENEFIT_0%", toCurrency(getVal(premium.getYearlyDeathBenefits().get(0).getAmount())))
+                .replace("%DEATH_BENEFIT_3%", toCurrency(getVal(premium.getYearlyDeathBenefits().get(3).getAmount())))
+                .replace("%DEATH_BENEFIT_4%", toCurrency(getVal(premium.getYearlyDeathBenefits().get(4).getAmount())))
+                .replace("%DEATH_BENEFIT_5%", toCurrency(getVal(premium.getYearlyDeathBenefits().get(5).getAmount())))
+                .replace("%TAX_DECLARED%", String.valueOf(taxDeclared))
+                .replace("%TAX_YEARLY_DEDUCTION%", toCurrency(premium.getYearlyTaxDeduction().getValue()))
+                .replace("%TAX_YEARLY_TOTAL%", toCurrency(premium.getTotalTaxDeduction().getValue()))
+                .replace("%LINE_URL%", "'" + getLineURL() + "'")
+                .replace("%LINE_FATCA_QUESTION_URL%", "'" + getLineURL() + "fatca-questions/" + quote.getQuoteId() + "'")
+                .replace("%LINE_QUOTE_PRODUCT_URL%", "'" + getLineURL() + "quote-product/line-" + productId + "'");
     }
 //
 //    /*

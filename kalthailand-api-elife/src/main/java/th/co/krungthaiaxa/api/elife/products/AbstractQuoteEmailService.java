@@ -34,7 +34,7 @@ public abstract class AbstractQuoteEmailService {
     @Value("${email.subject.quote}")
     private String emailQuoteSubject;
 
-    @Value("https://line.me/R/ch/${lineId}/elife/th/")
+    @Value("https://line.me/R/ch/${line.app.id}/elife/th/")
     private String lineURL;
     @Inject
     private MessageSource messageSource;

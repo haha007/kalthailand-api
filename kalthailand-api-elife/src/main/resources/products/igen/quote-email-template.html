@@ -66,7 +66,7 @@
     ขอบคุณที่ให้ความสนใจในแผนประกันของเรา
 </div>
 <p class="bd-text">
-    กรุงไทย-แอกซ่า ประกันชีวิต ยินดีนำเสนอแบบแผนประกันตามรายละเอียดที่คุณเลือก ในวันที่ %1$s
+    กรุงไทย-แอกซ่า ประกันชีวิต ยินดีนำเสนอแบบแผนประกันตามรายละเอียดที่คุณเลือก ในวันที่ %CREATE_DATE_TIME%
     </div>
 
 <div>&nbsp;</div>
@@ -77,7 +77,7 @@
 <div class="bd-text">
     เพื่อสมัครรับความคุ้มครองตามแบบแผนประกันภัยนี้
     กรุณากรอกใบยื่นขอประกันภัยเพื่อดำเนินการต่อ ที่นี่:
-    <a href=%2$s>คลิก</a>
+    <a href=%FATCA_QUESTION_LINK%>คลิก</a>
 </div>
 <div class="bd-text">
     หากมีข้อสงสัยใดๆ สามารถติดต่อศูนย์บริการลูกค้าได้ที่ 1159
@@ -93,8 +93,8 @@
         <td colspan="2" class="bd-header">เบี้ยประกัน</td>
     </tr>
     <tr>
-        <td class="tb-field">งวดชำระ%3$s</td>
-        <td class="tb-value" valign="top">%4$s บาท</td>
+        <td class="tb-field">งวดชำระ%PREMIUM_PERIODICITY%</td>
+        <td class="tb-value" valign="top">%PREMIUM_VALUE% บาท</td>
     </tr>
     <tr>
         <td>
@@ -120,7 +120,7 @@
     </tr>
     <tr>
         <td class="tb-field">กรณีรับครั้งเดียวโดยสะสมไว้กับ</td>
-        <td class="tb-value" valign="top">ขั้นต่ำ %5$s บาท</td>
+        <td class="tb-value" valign="top">ขั้นต่ำ %YEARLY_CASH_BACK_END_OF_CONTRACT% บาท</td>
     </tr>
     <tr>
         <td class="tb-field">บริษัทฯ ด้วยอัตราดอกเบี้ยขั้นต่ำ</td>
@@ -132,7 +132,7 @@
     </tr>
     <tr>
         <td class="tb-field">กรณีเลือกรับทุกปี รับรวม</td>
-        <td class="tb-value" valign="top">%6$s บาท</td>
+        <td class="tb-value" valign="top">%YEARLY_CASH_BACK_ANNUAL% บาท</td>
     </tr>
     <tr>
         <td>
@@ -148,19 +148,19 @@
     </tr>
     <tr>
         <td class="tb-field">ปีที่ 1-3</td>
-        <td class="tb-value" valign="top">%7$s บาท</td>
+        <td class="tb-value" valign="top">%DEATH_BENEFIT_0% บาท</td>
     </tr>
     <tr>
         <td class="tb-field">ปีที่ 4</td>
-        <td class="tb-value" valign="top">%8$s บาท</td>
+        <td class="tb-value" valign="top">%DEATH_BENEFIT_3% บาท</td>
     </tr>
     <tr>
         <td class="tb-field">ปีที่ 5</td>
-        <td class="tb-value" valign="top">%9$s บาท</td>
+        <td class="tb-value" valign="top">%DEATH_BENEFIT_4% บาท</td>
     </tr>
     <tr>
         <td class="tb-field">ปีที่ 6-10</td>
-        <td class="tb-value" valign="top">%10$s บาท</td>
+        <td class="tb-value" valign="top">%DEATH_BENEFIT_5% บาท</td>
     </tr>
     <tr>
         <td>
@@ -178,11 +178,11 @@
         <td colspan="2" class="gray-text">ลดหย่อนภาษีที่อัตราสูงสุด</td>
     </tr>
     <tr>
-        <td colspan="2" class="gray-text">ที่ชำระ %11$s% ต่อปี</td>
+        <td colspan="2" class="gray-text">ที่ชำระ %TAX_DECLARED%% ต่อปี</td>
     </tr>
     <tr>
         <td class="tb-field">ท่านจะได้รับประโยชน์จาก</td>
-        <td class="tb-value" valign="top">%12$s บาท</td>
+        <td class="tb-value" valign="top">%TAX_YEARLY_DEDUCTION% บาท</td>
     </tr>
     <tr>
         <td class="tb-field">การลดหย่อนภาษี ปีละ</td>
@@ -190,7 +190,7 @@
     </tr>
     <tr>
         <td class="tb-field">รวมผลประโยชน์ทางภาษีจาก</td>
-        <td class="tb-value" valign="top">%13$s บาท</td>
+        <td class="tb-value" valign="top">%TAX_YEARLY_TOTAL% บาท</td>
     </tr>
     <tr>
         <td class="tb-field">การชำระเยี้ยประกันภัย</td>
@@ -217,7 +217,7 @@
     <table align="center" border="0">
         <tr>
             <td colspan="3" align="center">
-                <a href=%14$s style="width:400px;" class="btn btn-top">ดูแบบประกันอื่นๆ</a>
+                <a href=%LINE_URL% style="width:400px;" class="btn btn-top">ดูแบบประกันอื่นๆ</a>
             </td>
         </tr>
         <tr>
@@ -227,11 +227,11 @@
         </tr>
         <tr>
             <td align="left">
-                <a href=%15$s style="width:195px;" class="btn">สั่งซื้อ</a>
+                <a href=%LINE_FATCA_QUESTION_URL% style="width:195px;" class="btn">สั่งซื้อ</a>
             </td>
             <td></td>
             <td align="right">
-                <a href=%16$s style="width:195px;" class="btn">คำนวณใหม่</a>
+                <a href=%LINE_QUOTE_PRODUCT_URL% style="width:195px;" class="btn">คำนวณใหม่</a>
             </td>
         </tr>
     </table>
