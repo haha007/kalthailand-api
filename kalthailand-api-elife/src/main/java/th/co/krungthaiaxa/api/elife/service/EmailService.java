@@ -9,11 +9,13 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
 import th.co.krungthaiaxa.api.common.utils.IOUtil;
+import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.model.Person;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.product.ProductIFinePremium;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
+import th.co.krungthaiaxa.api.elife.products.ProductUtils;
 import th.co.krungthaiaxa.api.elife.products.iprotect.IProtectQuoteEmailService;
 import th.co.krungthaiaxa.api.elife.utils.EmailSender;
 import th.co.krungthaiaxa.api.elife.utils.EmailUtil;
@@ -34,7 +36,7 @@ import java.util.Set;
 import static org.apache.commons.io.IOUtils.toByteArray;
 
 /**
- * @deprecated should use {@link QuoteEmailService}
+ * @deprecated should use {@link th.co.krungthaiaxa.api.elife.products.ProductEmailService}
  */
 @Deprecated
 @Service
@@ -179,11 +181,12 @@ public class EmailService {
         return IOUtils.toString(this.getClass().getResourceAsStream("/email-content/email-user-not-response-subject.txt"), Charset.forName("UTF-8"));
     }
 
-    private String getUserNotResponseContent(Policy pol) throws IOException {
+    private String getUserNotResponseContent(Policy policy) throws IOException {
         String emailContent = IOUtils.toString(this.getClass().getResourceAsStream("/email-content/email-user-not-response.html"), Charset.forName("UTF-8"));
-        Person person = pol.getInsureds().get(0).getPerson();
+        Insured mainInsured = ProductUtils.validateExistMainInsured(policy);
+        Person person = mainInsured.getPerson();
         return emailContent.replace("%FULL_NAME%", person.getGivenName() + " " + person.getSurName())
-                .replace("%POLICY_ID%", pol.getPolicyId());
+                .replace("%POLICY_ID%", policy.getPolicyId());
     }
 
     private String getPhoneNumberIsWrongContentSubject() throws IOException {

@@ -14,6 +14,7 @@ import th.co.krungthaiaxa.api.elife.service.QuoteService;
 
 /**
  * @author khoi.tran on 10/3/16.
+ *         This class is used to send email for all product types.
  */
 @Service
 public class ProductEmailService {
