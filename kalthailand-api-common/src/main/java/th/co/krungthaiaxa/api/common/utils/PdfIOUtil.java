@@ -24,7 +24,7 @@ public class PdfIOUtil {
 
             document.open();
             document.add(pdfPTable);
-
+            document.close();
             return content.toByteArray();
         } catch (DocumentException e) {
             throw new FileIOException("Cannot write pdfpTable to bytes: " + pdfPTable.getSummary(), e);
@@ -32,9 +32,6 @@ public class PdfIOUtil {
             try {
                 if (content != null) {
                     content.close();
-                }
-                if (document != null) {
-                    document.close();
                 }
             } catch (IOException e) {
                 throw new FileIOException("Cannot close Pdf writer", e);
