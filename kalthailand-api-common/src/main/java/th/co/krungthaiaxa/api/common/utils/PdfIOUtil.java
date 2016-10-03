@@ -15,18 +15,30 @@ import java.io.IOException;
  */
 public class PdfIOUtil {
     public static byte[] writeToBytes(PdfPTable pdfPTable) {
+        ByteArrayOutputStream content = null;
+        Document document = null;
         try {
-            ByteArrayOutputStream content = new ByteArrayOutputStream();
-            Document document = new Document(PageSize.A4, 20, 20, 20, 20);
+            content = new ByteArrayOutputStream();
+            document = new Document(PageSize.A4, 20, 20, 20, 20);
             PdfWriter.getInstance(document, content);
 
             document.open();
             document.add(pdfPTable);
-            document.close();
-            content.close();
+
             return content.toByteArray();
-        } catch (DocumentException | IOException e) {
+        } catch (DocumentException e) {
             throw new FileIOException("Cannot write pdfpTable to bytes: " + pdfPTable.getSummary(), e);
+        } finally {
+            try {
+                if (content != null) {
+                    content.close();
+                }
+                if (document != null) {
+                    document.close();
+                }
+            } catch (IOException e) {
+                throw new FileIOException("Cannot close Pdf writer", e);
+            }
         }
     }
 }

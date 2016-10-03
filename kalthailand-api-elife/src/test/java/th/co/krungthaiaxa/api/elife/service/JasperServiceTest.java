@@ -16,7 +16,7 @@ public class JasperServiceTest {
         sampleData.setFirstname("Khoi");
         sampleData.setLastname("Tran");
 
-        jasperService.exportPdfFile("/jasper/sample.jrxml", sampleData, "target/test/jasper/sample-output.pdf");
+        jasperService.exportPdfFile("/jasper/sample.jrxml", sampleData, "testresult/jasper/sample-output.pdf");
     }
 
     private static class SampleData {
