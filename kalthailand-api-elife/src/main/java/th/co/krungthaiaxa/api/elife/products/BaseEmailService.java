@@ -1,4 +1,4 @@
-package th.co.krungthaiaxa.api.elife.products.iprotect;
+package th.co.krungthaiaxa.api.elife.products;
 
 import com.itextpdf.text.DocumentException;
 import org.apache.commons.lang3.tuple.Pair;
@@ -6,12 +6,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
-import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.common.utils.IOUtil;
 import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.model.Quote;
-import th.co.krungthaiaxa.api.elife.products.BaseEmailService;
-import th.co.krungthaiaxa.api.elife.products.ProductUtils;
+import th.co.krungthaiaxa.api.elife.products.iprotect.IProtectSaleIllustrationService;
 import th.co.krungthaiaxa.api.elife.utils.EmailSender;
 import th.co.krungthaiaxa.api.elife.utils.EmailUtil;
 
@@ -26,57 +24,59 @@ import java.util.Locale;
 /**
  * @author khoi.tran on 8/31/16.
  */
-@Service
-public class IProtectEmailService extends BaseEmailService {
-    private final static Logger logger = LoggerFactory.getLogger(IProtectEmailService.class);
-    public static final String EMAIL_PATH = "/email-content/email-quote-iprotect-content.txt";
+public abstract class BaseEmailService {
+    private final static Logger logger = LoggerFactory.getLogger(BaseEmailService.class);
+    //    public static final String EMAIL_PATH = "/email-content/email-quote-iprotect-content.txt";
     @Value("${email.name}")
     private String fromEmail;
+
     @Value("${email.subject.quote}")
     private String emailQuoteSubject;
-    @Value("${line.app.id}")
-    private String lineId;
+
+    @Value("https://line.me/R/ch/${lineId}/elife/th/")
+    private String lineURL;
     @Inject
     private MessageSource messageSource;
     private Locale thLocale = new Locale("th", "");
 
     private final EmailSender emailSender;
-    private final IProtectSaleIllustrationService iProtectSaleIllustrationService;
+    private final IProtectSaleIllustrationService saleIllustrationService;
 
     @Inject
-    public IProtectEmailService(EmailSender emailSender, IProtectSaleIllustrationService iProtectSaleIllustrationService) {
+    public BaseEmailService(EmailSender emailSender, IProtectSaleIllustrationService saleIllustrationService) {
         this.emailSender = emailSender;
-        this.iProtectSaleIllustrationService = iProtectSaleIllustrationService;
+        this.saleIllustrationService = saleIllustrationService;
     }
 
     public void sendQuoteIProtect(Quote quote) {
         logger.info("Sending quote iProtect email...");
-        List<Pair<byte[], String>> base64ImgFileNames = EmailUtil.initImagePairs("logo");
+        String emailTemplate = IOUtil.loadTextFileInClassPath(getEmailTemplatePath());
         List<Pair<byte[], String>> attachments = new ArrayList<>();
         try {
-            attachments.add(iProtectSaleIllustrationService.generatePDF(quote));
+            attachments.add(saleIllustrationService.generatePDF(quote));
         } catch (DocumentException e) {
             logger.error(e.getMessage());
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
         Insured mainInsured = ProductUtils.validateExistMainInsured(quote);
-        emailSender.sendEmail(fromEmail, mainInsured.getPerson().getEmail(), emailQuoteSubject, getEmailContent(quote), base64ImgFileNames, attachments);
+        String emailContent = getEmailContent(emailTemplate, quote);
+        emailSender.sendEmail(fromEmail, mainInsured.getPerson().getEmail(), emailQuoteSubject, emailContent, loadImagePairs(), attachments);
         logger.info("Quote iProtect email sent!");
     }
 
-    @Override
-    protected String getEmailTemplatePath() {
-        return "/email-content/email-quote-iprotect-content.txt";
-
+    protected List<Pair<byte[], String>> loadImagePairs() {
+        List<Pair<byte[], String>> base64ImgFileNames = EmailUtil.initImagePairs("logo");
+        return base64ImgFileNames;
     }
 
-    private String getEmailContent(Quote quote) {
+    private String getEmailContent(String emailTemplate, Quote quote) {
         String dcFormat = "#,##0.00";
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         DecimalFormat dcf = new DecimalFormat(dcFormat);
-        String emailContent = IOUtil.loadTextFileInClassPath(EMAIL_PATH);
-        Integer taxDeclared = (quote.getInsureds().get(0).getDeclaredTaxPercentAtSubscription() == null ? 0 : quote.getInsureds().get(0).getDeclaredTaxPercentAtSubscription());
+        String emailContent = emailTemplate;
+        Insured mainInsured = ProductUtils.validateExistMainInsured(quote);
+        Integer taxDeclared = (mainInsured.getDeclaredTaxPercentAtSubscription() == null ? 0 : mainInsured.getDeclaredTaxPercentAtSubscription());
         return emailContent.replace("%1$s", quote.getCreationDateTime().plusYears(543).format(formatter))
                 .replace("%2$s", "'" + getLineURL() + "fatca-questions/" + quote.getQuoteId() + "'")
                 .replace("%3$s", dcf.format(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()))
@@ -91,7 +91,34 @@ public class IProtectEmailService extends BaseEmailService {
                 .replace("%12$s", messageSource.getMessage("payment.mode." + quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().toString(), null, thLocale));
     }
 
-    private String getLineURL() {
-        return "https://line.me/R/ch/" + lineId + "/elife/th/";
+    abstract protected String getEmailTemplatePath();
+
+    public String getFromEmail() {
+        return fromEmail;
     }
+
+    public void setFromEmail(String fromEmail) {
+        this.fromEmail = fromEmail;
+    }
+
+    public String getLineURL() {
+        return lineURL;
+    }
+
+    public void setLineURL(String lineURL) {
+        this.lineURL = lineURL;
+    }
+
+    public MessageSource getMessageSource() {
+        return messageSource;
+    }
+
+    public void setMessageSource(MessageSource messageSource) {
+        this.messageSource = messageSource;
+    }
+
+    public EmailSender getEmailSender() {
+        return emailSender;
+    }
+
 }
