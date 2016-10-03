@@ -323,7 +323,7 @@ public class ApplicationFormService {
             writeText(pdfContentByte, font, MARK, 348, 814, MEDIUM_SIZE);
             writeText(pdfContentByte, font, MARK, 350, 762, MEDIUM_SIZE);
             //premium
-            writeText(pdfContentByte, font, MONEY_FORMAT.format(pol.getPremiumsData().getPremiumDetail().getSumInsured().getValue()), 430, 762, MEDIUM_SIZE);
+            writeText(pdfContentByte, font, MONEY_FORMAT.format(pol.getPremiumsData().getPremiumDetail().getSumInsured().getValue()), 430, 764, MEDIUM_SIZE);
         }
 
         //coverage period
