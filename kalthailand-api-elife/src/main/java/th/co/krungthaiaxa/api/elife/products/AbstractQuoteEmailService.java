@@ -69,8 +69,6 @@ public abstract class AbstractQuoteEmailService {
         return base64ImgFileNames;
     }
 
-    abstract protected String getEmailContent(String emailTemplate, Quote quote);
-
     protected String getEmailTemplatePath(Quote quote) {
         String productId = quote.getCommonData().getProductId();
         return String.format("/products/%s/quote-email-template.html", productId);
@@ -87,6 +85,8 @@ public abstract class AbstractQuoteEmailService {
     protected String toThaiPaymentMode(Periodicity due) {
         return messageSource.getMessage("payment.mode." + due.getCode().toString(), null, thLocale);
     }
+
+    abstract protected String getEmailContent(String emailTemplate, Quote quote);
 
     protected Double getVal(Amount amount) {
         return amount.getValue();

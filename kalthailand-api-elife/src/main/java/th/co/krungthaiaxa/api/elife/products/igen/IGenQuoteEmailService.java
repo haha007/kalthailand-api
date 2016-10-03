@@ -6,23 +6,19 @@ import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.product.PremiumDetail;
 import th.co.krungthaiaxa.api.elife.products.AbstractQuoteEmailService;
-import th.co.krungthaiaxa.api.elife.products.ProductType;
 import th.co.krungthaiaxa.api.elife.utils.EmailSender;
 
 @Service
-public class IGenEmailService extends AbstractQuoteEmailService {
-
-    private final String productId = ProductType.PRODUCT_IGEN.getLogicName();
-
-    public final String quoteEmailPath = "/email-content/email-quote-" + productId + "-content.txt";
+public class IGenQuoteEmailService extends AbstractQuoteEmailService {
 
     @Autowired
-    public IGenEmailService(EmailSender emailSender, IGenSaleIllustrationService saleIllustrationService) {
+    public IGenQuoteEmailService(EmailSender emailSender, IGenSaleIllustrationService saleIllustrationService) {
         super(emailSender, saleIllustrationService);
     }
 
     @Override
     public String getEmailContent(String emailTemplate, Quote quote) {
+        String productId = quote.getCommonData().getProductId();
         String emailContent = emailTemplate;
         Insured insured = quote.getInsureds().stream().reduce((first, second) -> second).get();
         PremiumDetail premium = quote.getPremiumsData().getPremiumDetail();

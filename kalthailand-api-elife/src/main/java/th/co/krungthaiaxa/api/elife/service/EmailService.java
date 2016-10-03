@@ -14,7 +14,7 @@ import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.product.ProductIFinePremium;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
-import th.co.krungthaiaxa.api.elife.products.iprotect.IProtectEmailService;
+import th.co.krungthaiaxa.api.elife.products.iprotect.IProtectQuoteEmailService;
 import th.co.krungthaiaxa.api.elife.utils.EmailSender;
 import th.co.krungthaiaxa.api.elife.utils.EmailUtil;
 
@@ -43,7 +43,7 @@ public class EmailService {
     private final EmailSender emailSender;
     private final SaleIllustration10ECService saleIllustration10ECService;
     private final SaleIllustrationiFineService saleIllustrationiFineService;
-    private final IProtectEmailService iProtectEmailService;
+    private final IProtectQuoteEmailService iProtectEmailService;
     @Value("${email.name}")
     private String emailName;
     @Value("${email.subject.quote}")
@@ -58,7 +58,7 @@ public class EmailService {
     private Locale thLocale = new Locale("th", "");
 
     @Inject
-    public EmailService(EmailSender emailSender, SaleIllustration10ECService saleIllustration10ECService, SaleIllustrationiFineService saleIllustrationiFineService, IProtectEmailService iProtectEmailService) {
+    public EmailService(EmailSender emailSender, SaleIllustration10ECService saleIllustration10ECService, SaleIllustrationiFineService saleIllustrationiFineService, IProtectQuoteEmailService iProtectEmailService) {
         this.emailSender = emailSender;
         this.saleIllustration10ECService = saleIllustration10ECService;
         this.saleIllustrationiFineService = saleIllustrationiFineService;

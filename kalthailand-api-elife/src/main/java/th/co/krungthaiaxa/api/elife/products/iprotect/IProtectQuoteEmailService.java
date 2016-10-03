@@ -18,11 +18,11 @@ import java.time.format.DateTimeFormatter;
  * @author khoi.tran on 8/31/16.
  */
 @Service
-public class IProtectEmailService extends AbstractQuoteEmailService {
-    private final static Logger logger = LoggerFactory.getLogger(IProtectEmailService.class);
+public class IProtectQuoteEmailService extends AbstractQuoteEmailService {
+    private final static Logger LOGGER = LoggerFactory.getLogger(IProtectQuoteEmailService.class);
 
     @Inject
-    public IProtectEmailService(EmailSender emailSender, IProtectSaleIllustrationService iProtectSaleIllustrationService) {
+    public IProtectQuoteEmailService(EmailSender emailSender, IProtectSaleIllustrationService iProtectSaleIllustrationService) {
         super(emailSender, iProtectSaleIllustrationService);
     }
 
