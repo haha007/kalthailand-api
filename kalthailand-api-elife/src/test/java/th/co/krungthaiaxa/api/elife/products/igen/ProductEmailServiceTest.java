@@ -14,6 +14,7 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import th.co.krungthaiaxa.api.elife.ELifeTest;
 import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
 import th.co.krungthaiaxa.api.elife.factory.QuoteFactory;
 import th.co.krungthaiaxa.api.elife.model.Quote;
@@ -33,7 +34,7 @@ import java.util.List;
 @SpringApplicationConfiguration(classes = KalApiElifeApplication.class)
 @WebAppConfiguration
 @ActiveProfiles("test")
-public class ProductEmailServiceTest {
+public class ProductEmailServiceTest extends ELifeTest {
 
     protected final static Logger LOGGER = LoggerFactory.getLogger(ProductEmailServiceTest.class);
     @Rule
