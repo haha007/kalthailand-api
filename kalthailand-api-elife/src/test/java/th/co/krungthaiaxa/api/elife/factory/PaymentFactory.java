@@ -12,14 +12,14 @@ public class PaymentFactory {
     public static void generateRandomValuesForPayment(Payment payment) {
         payment.setTransactionId(generateTransactionId());
         payment.setOrderId(generateOrderId());
-        payment.setRegistrationKey(generateRegKeyId());
+        payment.setRegistrationKey(generatePaymentRegKey());
     }
 
     public static String generateOrderId() {
         return "MOCKORDER_" + System.currentTimeMillis();
     }
 
-    public static String generateRegKeyId() {
+    public static String generatePaymentRegKey() {
         return "MOCKREGKEY_" + RandomStringUtils.randomAlphanumeric(15);
     }
 

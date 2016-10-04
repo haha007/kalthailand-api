@@ -45,7 +45,7 @@ import java.util.Optional;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiElifeApplication.class)
 @WebAppConfiguration
-@ActiveProfiles("test")
+@ActiveProfiles("uat")
 public class PaymentRetryServiceTest extends ELifeTest {
     public static final Logger LOGGER = LoggerFactory.getLogger(PaymentRetryServiceTest.class);
     @Inject
@@ -206,7 +206,7 @@ public class PaymentRetryServiceTest extends ELifeTest {
     private RetryPaymentResult retryFailedPaymentInCollection(CollectionFile collectionFile, Policy policy) {
         String oldPaymentId = getPaymentIdFromFirstLineOfCollectionFile(collectionFile);
         String orderId = PaymentFactory.generateOrderId();
-        String newRegKey = PaymentFactory.generateRegKeyId();
+        String newRegKey = PaymentFactory.generatePaymentRegKey();
         String transId = PaymentFactory.generateTransactionId();
         String accessToken = RequestFactory.generateAccessToken();
         Payment retryPayment = paymentService.retryFailedPayment(policy.getPolicyId(), oldPaymentId, orderId, transId, newRegKey, accessToken);

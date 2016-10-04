@@ -423,7 +423,7 @@ public class PolicyResource {
             @ApiParam(name = "paymentId", value = "The payment ID", required = true)
             @RequestParam("paymentId") String paymentId,
             @ApiParam(value = "The order id used to book the payment", required = true)
-            @RequestParam String orderId,
+            @RequestParam(required = true) String orderId,
             @ApiParam(value = "The transaction id to use to confirm the payment. Must be sent of status id SUCCESS", required = false)
             @RequestParam(required = false) String transactionId,
             @ApiParam(value = "The RegKey for Monthly Mode Payment Only", required = false)
@@ -434,22 +434,18 @@ public class PolicyResource {
             return new ResponseEntity<>(getJson(ErrorCode.ORDER_ID_NOT_PROVIDED), NOT_ACCEPTABLE);
         }
 
-        Optional<Policy> policy = policyService.findPolicyByPolicyNumber(policyId);
-        if (!policy.isPresent()) {
-            logger.error("Unable to find the policy with ID [" + policyId + "]");
-            return new ResponseEntity<>(getJson(ErrorCode.POLICY_DOES_NOT_EXIST), NOT_FOUND);
-        }
-
-        if (!policy.get().getStatus().equals(PolicyStatus.VALIDATED)) {
-            logger.error("The policy is in status [" + policy.get().getStatus().name() + "], it must be " + VALIDATED + " status.");
+        Policy policy = policyService.validateExistPolicy(policyId);
+        if (!policy.getStatus().equals(PolicyStatus.VALIDATED)) {
+            logger.error("The policy is in status [" + policy.getStatus().name() + "], it must be " + VALIDATED + " status.");
             return new ResponseEntity<>(getJson(ErrorCode.POLICY_IS_NOT_VALIDATED_FOR_PAYMENT.apply(policyId)), NOT_ACCEPTABLE);
         }
         String accessToken = httpServletRequest.getHeader(accessTokenHeader);
         paymentService.retryFailedPayment(policyId, paymentId, orderId, transactionId, regKey, accessToken);
 
-        return new ResponseEntity<>(getJson(policy.get()), OK);
+        return new ResponseEntity<>(getJson(policy), OK);
     }
 
+    //TODO this method should be refactor!
     @ApiOperation(value = "Update Policy status", notes = "Updates the Policy status to VALIDATED. If " +
             "susuccessful, it also generates the eReceipt form document (image and PDF) and eReceipt pdf is sent to " +
             "Tele sale API. LINE Pay API is called to confirm the payment booking made earlier using the " +
@@ -484,13 +480,9 @@ public class PolicyResource {
             return new ResponseEntity<>(getJson(ErrorCode.REAL_CAPTURE_API_HAS_TO_BE_USED), NOT_ACCEPTABLE);
         }
 
-        Optional<Policy> policy = policyService.findPolicyByPolicyNumber(policyId);
-        if (!policy.isPresent()) {
-            logger.error("Unable to find the policy with ID [" + policyId + "]");
-            return new ResponseEntity<>(getJson(ErrorCode.POLICY_DOES_NOT_EXIST), NOT_FOUND);
-        }
+        Policy policy = policyService.validateExistPolicy(policyId);
 
-        Optional<Payment> paymentOptional = policy.get().getPayments()
+        Optional<Payment> paymentOptional = policy.getPayments()
                 .stream()
                 .filter(tmp -> tmp.getTransactionId() != null)
                 .findFirst();
@@ -537,17 +529,17 @@ public class PolicyResource {
 
         // Update the payment if confirm is success
         policyService.updatePayment(payment, payment.getAmount().getValue(), payment.getAmount().getCurrencyCode(), LINE, linePayResponse);
-        policyService.updateRegistrationForAllNotProcessedPayment(policy.get(), linePayResponse.getInfo().getRegKey());
+        policyService.updateRegistrationForAllNotProcessedPayment(policy, linePayResponse.getInfo().getRegKey());
 
         try {
             String accessToken = httpServletRequest.getHeader(accessTokenHeader);
-            policyService.updatePolicyAfterPolicyHasBeenValidated(policy.get(), agentCode, agentName, accessToken);
+            policyService.updatePolicyAfterPolicyHasBeenValidated(policy, agentCode, agentName, accessToken);
         } catch (ElifeException e) {
             logger.error("Payment is successful but there was an error whil trying to update policy status.", e);
             return new ResponseEntity<>(getJson(ErrorCode.POLICY_VALIDATION_ERROR.apply(e.getMessage())), INTERNAL_SERVER_ERROR);
         }
 
-        return new ResponseEntity<>(getJson(policy.get()), OK);
+        return new ResponseEntity<>(getJson(policy), OK);
     }
 
     private void createPolicyExtractExcelFileLine(Sheet sheet, Policy policy) {

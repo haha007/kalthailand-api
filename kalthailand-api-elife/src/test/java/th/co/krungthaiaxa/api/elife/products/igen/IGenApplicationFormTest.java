@@ -57,4 +57,15 @@ public class IGenApplicationFormTest extends ELifeTest {
         File file = new File("testresult/" + System.currentTimeMillis() + "_applicationform_" + policy.getPolicyId() + ".pdf");
         FileUtils.writeByteArrayToFile(file, pdfContent);
     }
+
+    @Test
+    public void test_generate_applicationForm_for_validated_quote() throws IOException {
+        QuoteFactory.QuoteResult quoteResult = quoteFactory.createDefaultIGen();
+        Policy policy = policyService.createPolicy(quoteResult.getQuote());
+        documentService.generateValidatedPolicyDocuments(policy, quoteResult.getSessionId());
+
+        byte[] pdfContent = applicationFormService.generateNotValidatedApplicationForm(policy);
+        File file = new File("testresult/" + System.currentTimeMillis() + "_applicationform_" + policy.getPolicyId() + ".pdf");
+        FileUtils.writeByteArrayToFile(file, pdfContent);
+    }
 }
