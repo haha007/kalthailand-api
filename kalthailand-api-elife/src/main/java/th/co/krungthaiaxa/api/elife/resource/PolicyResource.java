@@ -416,15 +416,10 @@ public class PolicyResource {
             @ApiParam(value = "The order id used to book the payment", required = true)
             @RequestParam(required = true) String orderId,
             @ApiParam(value = "The transaction id to use to confirm the payment. Must be sent of status id SUCCESS", required = false)
-            @RequestParam(required = false) String transactionId,
+            @RequestParam(required = true) String transactionId,
             @ApiParam(value = "The RegKey for Monthly Mode Payment Only", required = false)
-            @RequestParam(required = false) String regKey,
+            @RequestParam(required = true) String regKey,
             HttpServletRequest httpServletRequest) {
-        if (isEmpty(orderId)) {
-            logger.error("The order ID was not received");
-            return new ResponseEntity<>(getJson(ErrorCode.ORDER_ID_NOT_PROVIDED), NOT_ACCEPTABLE);
-        }
-
         Policy policy = policyService.validateExistPolicy(policyId);
         if (!policy.getStatus().equals(PolicyStatus.VALIDATED)) {
             logger.error("The policy is in status [" + policy.getStatus().name() + "], it must be " + VALIDATED + " status.");
