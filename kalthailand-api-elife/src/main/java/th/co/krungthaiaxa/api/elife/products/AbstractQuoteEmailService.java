@@ -70,7 +70,7 @@ public abstract class AbstractQuoteEmailService {
 
     protected String getEmailTemplatePath(Quote quote) {
         String productId = quote.getCommonData().getProductId();
-        return String.format("/products/%s/email-quote.html", productId);
+        return String.format("/products/%s/email-quote.html", productId.toLowerCase());
     }
 
     protected String toCurrency(Double value) {
