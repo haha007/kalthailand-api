@@ -23,11 +23,12 @@ Policy API endpoints:
 - **_/ebiz/policy_**, method **_POST_**: creates a policy out of a quote if and only if all data has been validated
 - **_/ebiz/policy_**, method **_PUT_**: updates a policy. Possibly to save an online transaction status (so far only LINE is supported)
 
+----------------------------
 Maven build:
 - On local machine, if you are using Tomcat, then use command line:
-  mvn clean install
+  mvn clean install -DskipTests
 - On production and UAT, it's using JBoss which is an JavaEE container, so we need to use command line:
-  mvn clean install -P jee
+  mvn clean install -P jee -DskipTests
 Reason:
 The artifact "javax.mail" in group "com.sun.mail" package is provided by JavaEE container. So with JBoss, it's already provided. But with Tomcat, we have to include it in libraries.
 (You can see more detail in api-parent/pom.xml)
@@ -36,7 +37,11 @@ You can check the information of current API in this link:
 http://localhost:8080/api-elife/project-info
 
 =========================
+v1.7.0:
 iGen product:
++ Quote calculation
++ Quote email (mail + sale illustration attachment)
++ Create policy from quote
 --------------
 initiate data:
 productPremiumRate

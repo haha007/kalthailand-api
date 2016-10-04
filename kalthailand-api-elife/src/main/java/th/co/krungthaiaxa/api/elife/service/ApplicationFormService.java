@@ -291,61 +291,64 @@ public class ApplicationFormService {
         }
     }
 
-    private void getPage2(PdfContentByte pdfContentByte, Policy pol) throws IOException {
+    private void getPage2(PdfContentByte pdfContentByte, Policy policy) throws IOException {
         BaseFont font = getBaseFont();
 
-        if (pol.getCommonData().getProductId().equals(ProductType.PRODUCT_10_EC.getLogicName())) {
+        String productId = policy.getCommonData().getProductId();
+        if (productId.equals(ProductType.PRODUCT_10_EC.getLogicName())) {
             //TODO Should be changed because we don't use 10EC anymore.
             writeText(pdfContentByte, font, MARK, 348, 814, MEDIUM_SIZE);
             writeText(pdfContentByte, font, MARK, 350, 780, MEDIUM_SIZE);
             //Premium
-            writeText(pdfContentByte, font, MONEY_FORMAT.format(getYearlyPremium(pol.getPremiumsData().getFinancialScheduler().getModalAmount().getValue(), pol.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode())), 434, 780, MEDIUM_SIZE);
-        } else if (pol.getCommonData().getProductId().equals(ProductType.PRODUCT_IFINE.getLogicName())) {
+            writeText(pdfContentByte, font, MONEY_FORMAT.format(getYearlyPremium(policy.getPremiumsData().getFinancialScheduler().getModalAmount().getValue(), policy.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode())), 434, 780, MEDIUM_SIZE);
+        } else if (productId.equals(ProductType.PRODUCT_IFINE.getLogicName())) {
             writeText(pdfContentByte, font, MARK, 38, 802, MEDIUM_SIZE);
             //Plan
-            if (pol.getPremiumsData().getProductIFinePremium().getProductIFinePackage().equals(ProductIFinePackage.IFINE1)) {
+            ProductIFinePackage productIFinePackage = policy.getPremiumsData().getProductIFinePremium().getProductIFinePackage();
+            if (productIFinePackage.equals(ProductIFinePackage.IFINE1)) {
                 writeText(pdfContentByte, font, MARK, 96, 766, MEDIUM_SIZE);
-            } else if (pol.getPremiumsData().getProductIFinePremium().getProductIFinePackage().equals(ProductIFinePackage.IFINE2)) {
+            } else if (productIFinePackage.equals(ProductIFinePackage.IFINE2)) {
                 writeText(pdfContentByte, font, MARK, 146, 766, MEDIUM_SIZE);
-            } else if (pol.getPremiumsData().getProductIFinePremium().getProductIFinePackage().equals(ProductIFinePackage.IFINE3)) {
+            } else if (productIFinePackage.equals(ProductIFinePackage.IFINE3)) {
                 writeText(pdfContentByte, font, MARK, 196, 766, MEDIUM_SIZE);
-            } else if (pol.getPremiumsData().getProductIFinePremium().getProductIFinePackage().equals(ProductIFinePackage.IFINE4)) {
+            } else if (productIFinePackage.equals(ProductIFinePackage.IFINE4)) {
                 writeText(pdfContentByte, font, MARK, 242, 766, MEDIUM_SIZE);
-            } else if (pol.getPremiumsData().getProductIFinePremium().getProductIFinePackage().equals(ProductIFinePackage.IFINE5)) {
+            } else if (productIFinePackage.equals(ProductIFinePackage.IFINE5)) {
                 writeText(pdfContentByte, font, MARK, 292, 766, MEDIUM_SIZE);
             }
-        } else if (pol.getCommonData().getProductId().equals(ProductType.PRODUCT_IPROTECT.getLogicName())) {
+        } else if (productId.equals(ProductType.PRODUCT_IPROTECT.getLogicName())) {
+            //Header
             writeText(pdfContentByte, font, MARK, 348, 814, MEDIUM_SIZE);
+            //Premium line for iGen
             writeText(pdfContentByte, font, MARK, 350, 780, MEDIUM_SIZE);
-            //premium
-            writeText(pdfContentByte, font, MONEY_FORMAT.format(pol.getPremiumsData().getProductIProtectPremium().getSumInsured().getValue()), 430, 780, MEDIUM_SIZE);
-        } else if (pol.getCommonData().getProductId().equals(ProductType.PRODUCT_IGEN.getLogicName())) {
+            writeText(pdfContentByte, font, MONEY_FORMAT.format(policy.getPremiumsData().getProductIProtectPremium().getSumInsured().getValue()), 430, 780, MEDIUM_SIZE);
+        } else if (productId.equals(ProductType.PRODUCT_IGEN.getLogicName())) {
+            //Header
             writeText(pdfContentByte, font, MARK, 348, 814, MEDIUM_SIZE);
+            //Premium line for iGen
             writeText(pdfContentByte, font, MARK, 350, 762, MEDIUM_SIZE);
-            //premium
-            writeText(pdfContentByte, font, MONEY_FORMAT.format(pol.getPremiumsData().getPremiumDetail().getSumInsured().getValue()), 430, 764, MEDIUM_SIZE);
+            writeText(pdfContentByte, font, MONEY_FORMAT.format(policy.getPremiumsData().getPremiumDetail().getSumInsured().getValue()), 430, 764, MEDIUM_SIZE);
         }
 
         //coverage period
-        writeText(pdfContentByte, font, String.valueOf(pol.getCommonData().getNbOfYearsOfCoverage()), 114, 604, MEDIUM_SIZE);
+        writeText(pdfContentByte, font, String.valueOf(policy.getCommonData().getNbOfYearsOfCoverage()), 114, 604, MEDIUM_SIZE);
         //premium period
-        writeText(pdfContentByte, font, String.valueOf(pol.getCommonData().getNbOfYearsOfPremium()), 256, 604, MEDIUM_SIZE);
+        writeText(pdfContentByte, font, String.valueOf(policy.getCommonData().getNbOfYearsOfPremium()), 256, 604, MEDIUM_SIZE);
 
-        String productId = pol.getCommonData().getProductId();
-        //TODO how about iGen?
+        //TODO how about iGen? Do we need to show dividend option?
         if (productId.equals(ProductType.PRODUCT_10_EC.getLogicName())) {
             //dividend option
-            if (pol.getPremiumsData().getProduct10ECPremium().getDividendOption().equals(YEARLY_CASH)) {
+            if (policy.getPremiumsData().getProduct10ECPremium().getDividendOption().equals(YEARLY_CASH)) {
                 //divident option 1
                 writeText(pdfContentByte, font, MARK, 32, 560, MEDIUM_SIZE);
                 //divident option 1.1
                 writeText(pdfContentByte, font, MARK, 70, 560, MEDIUM_SIZE);
-            } else if (pol.getPremiumsData().getProduct10ECPremium().getDividendOption().equals(YEARLY_FOR_NEXT_PREMIUM)) {
+            } else if (policy.getPremiumsData().getProduct10ECPremium().getDividendOption().equals(YEARLY_FOR_NEXT_PREMIUM)) {
                 //divident option 1
                 writeText(pdfContentByte, font, MARK, 32, 560, MEDIUM_SIZE);
                 //divident option 1.2
                 writeText(pdfContentByte, font, MARK, 70, 544, MEDIUM_SIZE);
-            } else if (pol.getPremiumsData().getProduct10ECPremium().getDividendOption().equals(IN_FINE)) {
+            } else if (policy.getPremiumsData().getProduct10ECPremium().getDividendOption().equals(IN_FINE)) {
                 //divident option 2
                 writeText(pdfContentByte, font, MARK, 32, 528, MEDIUM_SIZE);
             }
@@ -353,31 +356,31 @@ public class ApplicationFormService {
         }
 
         //payment mode
-        if (pol.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().equals(EVERY_MONTH)) {
+        if (policy.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().equals(EVERY_MONTH)) {
             //payment mode 1 m
             writeText(pdfContentByte, font, MARK, 126, 498, MEDIUM_SIZE);
-        } else if (pol.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().equals(EVERY_HALF_YEAR)) {
+        } else if (policy.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().equals(EVERY_HALF_YEAR)) {
             //payment mode 6 m
             writeText(pdfContentByte, font, MARK, 238, 498, MEDIUM_SIZE);
-        } else if (pol.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().equals(EVERY_QUARTER)) {
+        } else if (policy.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().equals(EVERY_QUARTER)) {
             //payment mode 3 m
             writeText(pdfContentByte, font, MARK, 178, 498, MEDIUM_SIZE);
-        } else if (pol.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().equals(EVERY_YEAR)) {
+        } else if (policy.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().equals(EVERY_YEAR)) {
             //payment mode 12 m
             writeText(pdfContentByte, font, MARK, 300, 498, MEDIUM_SIZE);
         }
 
         //nb premium
-        writeText(pdfContentByte, font, MONEY_FORMAT.format(pol.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()), 162, 474, MEDIUM_SIZE);
+        writeText(pdfContentByte, font, MONEY_FORMAT.format(policy.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()), 162, 474, MEDIUM_SIZE);
 
         //line payment channel
         writeText(pdfContentByte, font, MARK, 78, 412, MEDIUM_SIZE);
 
         //Benefit
         List<Integer> listY = getBenefitPositionY();
-        List<CoverageBeneficiary> allBenefit = pol.getCoverages().get(0).getBeneficiaries();
+        List<CoverageBeneficiary> allBenefit = policy.getCoverages().get(0).getBeneficiaries();
         for (Integer a = 0; a < allBenefit.size(); a++) {
-            CoverageBeneficiary benefit = pol.getCoverages().get(0).getBeneficiaries().get(a);
+            CoverageBeneficiary benefit = policy.getCoverages().get(0).getBeneficiaries().get(a);
             //benefit name
             writeText(pdfContentByte, font, benefit.getPerson().getGivenName() + " " + benefit.getPerson().getSurName(), 38, listY.get(a), MEDIUM_SIZE);
             //benefit age
