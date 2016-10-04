@@ -13,10 +13,13 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.api.elife.ELifeTest;
 import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
 import th.co.krungthaiaxa.api.elife.factory.QuoteFactory;
+import th.co.krungthaiaxa.api.elife.factory.RequestFactory;
 import th.co.krungthaiaxa.api.elife.model.Policy;
+import th.co.krungthaiaxa.api.elife.model.line.LinePayCaptureMode;
 import th.co.krungthaiaxa.api.elife.service.ApplicationFormService;
 import th.co.krungthaiaxa.api.elife.service.DocumentService;
 import th.co.krungthaiaxa.api.elife.service.PolicyService;
+import th.co.krungthaiaxa.api.elife.service.PolicyValidatedProcessingService;
 import th.co.krungthaiaxa.api.elife.service.QuoteService;
 
 import java.io.File;
@@ -37,6 +40,8 @@ public class IGenApplicationFormTest extends ELifeTest {
     private QuoteService quoteService;
     @Autowired
     private PolicyService policyService;
+    @Autowired
+    private PolicyValidatedProcessingService policyValidatedProcessingService;
 
     @Autowired
     private DocumentService documentService;
@@ -62,9 +67,10 @@ public class IGenApplicationFormTest extends ELifeTest {
     public void test_generate_applicationForm_for_validated_quote() throws IOException {
         QuoteFactory.QuoteResult quoteResult = quoteFactory.createDefaultIGen();
         Policy policy = policyService.createPolicy(quoteResult.getQuote());
-        documentService.generateValidatedPolicyDocuments(policy, quoteResult.getSessionId());
-
-        byte[] pdfContent = applicationFormService.generateNotValidatedApplicationForm(policy);
+        String agentCode = "999999-99-999999";
+        String agentName = "Mock Agent";
+        policy = policyValidatedProcessingService.processValidatedPolicy(new PolicyValidatedProcessingService.PolicyValidationRequest(policy.getPolicyId(), agentCode, agentName, LinePayCaptureMode.FAKE_WITH_SUCCESS, RequestFactory.generateAccessToken()));
+        byte[] pdfContent = applicationFormService.generateValidatedApplicationForm(policy);
         File file = new File("testresult/" + System.currentTimeMillis() + "_applicationform_" + policy.getPolicyId() + ".pdf");
         FileUtils.writeByteArrayToFile(file, pdfContent);
     }
