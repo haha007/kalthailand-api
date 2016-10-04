@@ -30,7 +30,7 @@ import static th.co.krungthaiaxa.api.elife.model.enums.ChannelType.LINE;
 @SpringApplicationConfiguration(classes = KalApiElifeApplication.class)
 @WebAppConfiguration
 @ActiveProfiles("test")
-public class IGenPdfRenderServiceTest {
+public class IGenSaleIllustrationServiceTest {
 
     @Inject
     private QuoteService quoteService;
