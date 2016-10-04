@@ -5,6 +5,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.common.exeption.BadArgumentException;
@@ -66,6 +68,16 @@ public class PaymentService {
         this.emailService = emailService;
         this.documentService = documentService;
         this.messageSource = messageSource;
+    }
+
+    public Payment findFirstPaymentHasTransactionId(String policyNumber) {
+        Pageable pageable = new PageRequest(0, 1);
+        List<Payment> payments = paymentRepository.findByPolicyIdAndTransactionIdNotNull(policyNumber, pageable);
+        if (payments.isEmpty()) {
+            return null;
+        } else {
+            return payments.get(0);
+        }
     }
 
     public Optional<Payment> findLastestPaymentByPolicyNumberAndRegKeyNotNull(String policyNumber) {

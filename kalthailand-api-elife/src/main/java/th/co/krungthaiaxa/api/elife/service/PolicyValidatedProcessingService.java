@@ -5,12 +5,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.common.exeption.BaseException;
 import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
 import th.co.krungthaiaxa.api.common.validator.BeanValidator;
-import th.co.krungthaiaxa.api.elife.exception.ElifeException;
+import th.co.krungthaiaxa.api.elife.exception.LinePaymentException;
+import th.co.krungthaiaxa.api.elife.exception.PolicyValidatedProcessException;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayCaptureMode;
@@ -19,13 +19,7 @@ import th.co.krungthaiaxa.api.elife.model.line.LinePayResponseInfo;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayResponsePaymentInfo;
 
 import javax.validation.constraints.NotNull;
-import java.io.IOException;
-import java.util.Optional;
 
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
-import static org.springframework.http.HttpStatus.NOT_ACCEPTABLE;
-import static org.springframework.http.HttpStatus.OK;
-import static th.co.krungthaiaxa.api.common.utils.JsonUtil.getJson;
 import static th.co.krungthaiaxa.api.elife.model.enums.ChannelType.LINE;
 import static th.co.krungthaiaxa.api.elife.model.line.LinePayCaptureMode.FAKE_WITH_ERROR;
 import static th.co.krungthaiaxa.api.elife.model.line.LinePayCaptureMode.FAKE_WITH_SUCCESS;
@@ -44,12 +38,14 @@ public class PolicyValidatedProcessingService {
     @Value("${environment.name}")
     private String environmentName;
 
+    private final PaymentService paymentService;
     private final PolicyService policyService;
     private final BeanValidator beanValidator;
     private LineService lineService;
 
     @Autowired
-    public PolicyValidatedProcessingService(PolicyService policyService, BeanValidator beanValidator) {
+    public PolicyValidatedProcessingService(PaymentService paymentService, PolicyService policyService, BeanValidator beanValidator) {
+        this.paymentService = paymentService;
         this.policyService = policyService;
         this.beanValidator = beanValidator;
     }
@@ -69,25 +65,15 @@ public class PolicyValidatedProcessingService {
 
         Policy policy = policyService.validateExistPolicy(policyId);
 
-        Optional<Payment> paymentOptional = policy.getPayments()
-                .stream()
-                .filter(tmp -> tmp.getTransactionId() != null)
-                .findFirst();
-        if (!paymentOptional.isPresent()) {
-            LOGGER.error("Unable to find a payment with a transaction id pending for confirmation in the policy with ID [" + policyId + "]");
-            return new ResponseEntity<>(getJson(ErrorCode.POLICY_DOES_NOT_CONTAIN_A_PAYMENT_WITH_TRANSACTION_ID), NOT_ACCEPTABLE);
+        Payment paymentHasTransaction = paymentService.findFirstPaymentHasTransactionId(policyId);
+        if (paymentHasTransaction == null) {
+            throw new PolicyValidatedProcessException("Not found any payment inside policy which has transactionId. policyId: " + policyId);
         }
 
-        Payment payment = paymentOptional.get();
         LinePayResponse linePayResponse = null;
         if (linePayCaptureMode.equals(REAL)) {
-            LOGGER.info("Will try to confirm payment with ID [" + payment.getPaymentId() + "] and transation ID [" + payment.getTransactionId() + "] on the policy with ID [" + policyId + "]");
-            try {
-                linePayResponse = lineService.capturePayment(payment.getTransactionId(), payment.getAmount().getValue(), payment.getAmount().getCurrencyCode());
-            } catch (RuntimeException | IOException e) {
-                LOGGER.error("Unable to confirm the payment in the policy with ID [" + policyId + "]", e);
-                return new ResponseEntity<>(getJson(ErrorCode.UNABLE_TO_CAPTURE_PAYMENT.apply(e.getMessage())), NOT_ACCEPTABLE);
-            }
+            LOGGER.info("Will try to confirm payment with ID [" + paymentHasTransaction.getPaymentId() + "] and transation ID [" + paymentHasTransaction.getTransactionId() + "] on the policy with ID [" + policyId + "]");
+            linePayResponse = lineService.capturePayment(paymentHasTransaction.getTransactionId(), paymentHasTransaction.getAmount().getValue(), paymentHasTransaction.getAmount().getCurrencyCode());
         } else if (linePayCaptureMode.equals(FAKE_WITH_ERROR)) {
             linePayResponse = new LinePayResponse();
             linePayResponse.setReturnCode("9999");
@@ -108,24 +94,17 @@ public class PolicyValidatedProcessingService {
         }
 
         if (linePayResponse == null) {
-            return new ResponseEntity<>(getJson(ErrorCode.UNABLE_TO_CAPTURE_PAYMENT.apply("No way to call Line Pay capture API has been provided")), NOT_ACCEPTABLE);
+            throw new LinePaymentException("No way to call Line Pay capture API has been provided");
         } else if (!linePayResponse.getReturnCode().equals(LineService.RESPONSE_CODE_SUCCESS)) {
             String msg = "Confirming payment didn't go through. Error code is [" + linePayResponse.getReturnCode() + "], error message is [" + linePayResponse.getReturnMessage() + "]";
-            return new ResponseEntity<>(getJson(ErrorCode.UNABLE_TO_CAPTURE_PAYMENT.apply(msg)), NOT_ACCEPTABLE);
+            throw new LinePaymentException(msg);
         }
 
         // Update the payment if confirm is success
-        policyService.updatePayment(payment, payment.getAmount().getValue(), payment.getAmount().getCurrencyCode(), LINE, linePayResponse);
+        policyService.updatePayment(paymentHasTransaction, paymentHasTransaction.getAmount().getValue(), paymentHasTransaction.getAmount().getCurrencyCode(), LINE, linePayResponse);
         policyService.updateRegistrationForAllNotProcessedPayment(policy, linePayResponse.getInfo().getRegKey());
-
-        try {
-            policyService.updatePolicyAfterPolicyHasBeenValidated(policy, agentCode, agentName, accessToken);
-        } catch (ElifeException e) {
-            LOGGER.error("Payment is successful but there was an error whil trying to update policy status.", e);
-            return new ResponseEntity<>(getJson(ErrorCode.POLICY_VALIDATION_ERROR.apply(e.getMessage())), INTERNAL_SERVER_ERROR);
-        }
-
-        return new ResponseEntity<>(getJson(policy), OK);
+        policy = policyService.updatePolicyAfterPolicyHasBeenValidated(policy, agentCode, agentName, accessToken);
+        return policy;
     }
 
     public static class PolicyValidationRequest {

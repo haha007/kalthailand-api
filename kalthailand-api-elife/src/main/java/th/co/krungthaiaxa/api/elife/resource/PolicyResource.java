@@ -41,6 +41,8 @@ import th.co.krungthaiaxa.api.elife.service.DocumentService;
 import th.co.krungthaiaxa.api.elife.service.LineService;
 import th.co.krungthaiaxa.api.elife.service.PaymentService;
 import th.co.krungthaiaxa.api.elife.service.PolicyService;
+import th.co.krungthaiaxa.api.elife.service.PolicyValidatedProcessingService;
+import  th.co.krungthaiaxa.api.elife.service.PolicyValidatedProcessingService.PolicyValidationRequest;
 import th.co.krungthaiaxa.api.elife.service.QuoteService;
 import th.co.krungthaiaxa.api.elife.utils.ExcelUtils;
 
@@ -87,18 +89,21 @@ public class PolicyResource {
     private final PolicyService policyService;
     private final QuoteService quoteService;
     private final PaymentService paymentService;
+    private final PolicyValidatedProcessingService policyValidatedProcessingService;
+
     @Value("${environment.name}")
     private String environmentName;
     @Value("${kal.api.auth.header}")
     private String accessTokenHeader;
 
     @Inject
-    public PolicyResource(DocumentService documentService, LineService lineService, PolicyService policyService, QuoteService quoteService, PaymentService paymentService) {
+    public PolicyResource(DocumentService documentService, LineService lineService, PolicyService policyService, QuoteService quoteService, PaymentService paymentService, PolicyValidatedProcessingService policyValidatedProcessingService) {
         this.documentService = documentService;
         this.lineService = lineService;
         this.policyService = policyService;
         this.quoteService = quoteService;
         this.paymentService = paymentService;
+        this.policyValidatedProcessingService = policyValidatedProcessingService;
     }
 
     @ApiOperation(value = "List of policies", notes = "Gets a list of policies.", response = Policy.class, responseContainer = "List")
@@ -468,7 +473,9 @@ public class PolicyResource {
             @ApiParam(value = "The type of call to Line Pay Capture API", required = true)
             @RequestParam LinePayCaptureMode linePayCaptureMode,
             HttpServletRequest httpServletRequest) {
-
+        String accessToken = httpServletRequest.getHeader(accessTokenHeader);
+        PolicyValidatedProcessingService.PolicyValidationRequest policyValidationRequest = new PolicyValidatedProcessingService.PolicyValidationRequest(policyId, agentCode, agentName, linePayCaptureMode, accessToken);
+        policyValidatedProcessingService.processValidatedPolicy(policyValidationRequest);
         Pattern pattern = Pattern.compile("[0-9]{6}-[0-9]{2}-[0-9]{6}$");
         Matcher matcher = pattern.matcher(agentCode);
         if (!matcher.find()) {
@@ -499,7 +506,7 @@ public class PolicyResource {
                 linePayResponse = lineService.capturePayment(payment.getTransactionId(), payment.getAmount().getValue(), payment.getAmount().getCurrencyCode());
             } catch (RuntimeException | IOException e) {
                 logger.error("Unable to confirm the payment in the policy with ID [" + policyId + "]", e);
-                return new ResponseEntity<>(getJson(ErrorCode.UNABLE_TO_CAPTURE_PAYMENT.apply(e.getMessage())), NOT_ACCEPTABLE);
+                return new ResponseEntity<>(getJson(ErrorCode.LINE_PAYMENT_ERROR.apply(e.getMessage())), NOT_ACCEPTABLE);
             }
         } else if (linePayCaptureMode.equals(FAKE_WITH_ERROR)) {
             linePayResponse = new LinePayResponse();
@@ -521,10 +528,10 @@ public class PolicyResource {
         }
 
         if (linePayResponse == null) {
-            return new ResponseEntity<>(getJson(ErrorCode.UNABLE_TO_CAPTURE_PAYMENT.apply("No way to call Line Pay capture API has been provided")), NOT_ACCEPTABLE);
+            return new ResponseEntity<>(getJson(ErrorCode.LINE_PAYMENT_ERROR.apply("No way to call Line Pay capture API has been provided")), NOT_ACCEPTABLE);
         } else if (!linePayResponse.getReturnCode().equals(LineService.RESPONSE_CODE_SUCCESS)) {
             String msg = "Confirming payment didn't go through. Error code is [" + linePayResponse.getReturnCode() + "], error message is [" + linePayResponse.getReturnMessage() + "]";
-            return new ResponseEntity<>(getJson(ErrorCode.UNABLE_TO_CAPTURE_PAYMENT.apply(msg)), NOT_ACCEPTABLE);
+            return new ResponseEntity<>(getJson(ErrorCode.LINE_PAYMENT_ERROR.apply(msg)), NOT_ACCEPTABLE);
         }
 
         // Update the payment if confirm is success
@@ -532,7 +539,6 @@ public class PolicyResource {
         policyService.updateRegistrationForAllNotProcessedPayment(policy, linePayResponse.getInfo().getRegKey());
 
         try {
-            String accessToken = httpServletRequest.getHeader(accessTokenHeader);
             policyService.updatePolicyAfterPolicyHasBeenValidated(policy, agentCode, agentName, accessToken);
         } catch (ElifeException e) {
             logger.error("Payment is successful but there was an error whil trying to update policy status.", e);

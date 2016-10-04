@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import th.co.krungthaiaxa.api.common.utils.JsonUtil;
+import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
+import th.co.krungthaiaxa.api.elife.exception.LinePaymentException;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayRecurringResponse;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayResponse;
@@ -319,7 +321,7 @@ public class LineService {
         return linePayResponse;
     }
 
-    public LinePayResponse capturePayment(String transactionId, Double amount, String currency) throws IOException {
+    public LinePayResponse capturePayment(String transactionId, Double amount, String currency) {
         logger.info("Capturing payment");
         LinePayConfirmingRequest linePayConfirmingRequest = new LinePayConfirmingRequest();
         linePayConfirmingRequest.setAmount(amount.toString());
@@ -338,10 +340,10 @@ public class LineService {
         try {
             response = restTemplate.exchange(builder.toUriString(), POST, entity, String.class);
         } catch (RuntimeException e) {
-            throw new IOException("Unable to capture payment", e);
+            throw new LinePaymentException("Unable to capture payment", e);
         }
         if (!response.getStatusCode().equals(OK)) {
-            throw new IOException("Line's response for capturing payment is [" + response.getStatusCode() + "]. Response body is [" + response.getBody() + "]");
+            throw new LinePaymentException("Line's response for capturing payment is [" + response.getStatusCode() + "]. Response body is [" + response.getBody() + "]");
         }
 
         logger.info("Payment is captured with success");
@@ -351,8 +353,8 @@ public class LineService {
         return linePayResponse;
     }
 
-    private LinePayResponse getBookingResponseFromJSon(String json) throws IOException {
-        return JsonUtil.mapper.readValue(json, LinePayResponse.class);
+    private LinePayResponse getBookingResponseFromJSon(String json) {
+        return ObjectMapperUtil.toObject(JsonUtil.mapper, json, LinePayResponse.class);
     }
 
     private class LinePushNotificationRequest {

@@ -56,7 +56,10 @@ public class ErrorCode {
     public static final Error POLICY_DOES_NOT_CONTAIN_A_PAYMENT_WITH_TRANSACTION_ID = new Error("0402", "The policy does not contain a payment with a transaction id", "The policy does not contain a payment with a transaction id");
     public static final Function<String, Error> POLICY_CANNOT_BE_CREATED = msg -> new Error("0403", "Unable to create your policy. Error is: " + msg, "The policy could not be created out of the quote for validation reasons");
     public static final Function<String, Error> POLICY_IS_CANCELED = msg -> new Error("0404", "The policy [" + msg + "] is canceled", "The policy [" + msg + "] is canceled");
+
     public static final Function<String, Error> POLICY_IS_PENDING_PAYMENT = msg -> new Error("0405", "The policy [" + msg + "] is waiting for payment registration", "The policy [" + msg + "] is waiting for payment registration");
+    public static final String ERROR_CODE_POLICY_VALIDATION_PROCESS = "0406";
+
     public static final Function<String, Error> POLICY_IS_NOT_PENDING_FOR_PAYMENT = msg -> new Error("0407", "The policy [" + msg + "] is not pending for payment and cannot be updated to pending for validation",
             "The policy [" + msg + "] is not pending for payment and cannot be updated to pending for validation");
     public static final Function<String, Error> POLICY_IS_NOT_VALIDATED_FOR_PAYMENT = msg -> new Error("0407", "The policy [" + msg + "] is not validated for payment and cannot be updated to validated status",
@@ -71,8 +74,8 @@ public class ErrorCode {
     // Line
     public static final Error UNABLE_TO_DECRYPT = new Error("0501", "Unable to get your user ID", "The provided text could not be decrypted");
     public static final Error UNABLE_TO_GET_LINE_BC = new Error("0502", "Unable to get line bc", "The provided mid is not valid or have no line bc data along with input mid");
-    public static final String ERROR_CODE_UNABLE_TO_CAPTURE_PAYMENT = "0503";
-    public static final Function<String, Error> UNABLE_TO_CAPTURE_PAYMENT = msg -> new Error(ERROR_CODE_UNABLE_TO_CAPTURE_PAYMENT, "Unable to confirm the payment. Error is [" + msg + "]", "Unable to confirm the payment. Error is [" + msg + "]");
+    public static final String ERROR_CODE_LINE_PAYMENT = "0503";
+    public static final Function<String, Error> LINE_PAYMENT_ERROR = msg -> new Error(ERROR_CODE_LINE_PAYMENT, "Unable to confirm the payment. Error is [" + msg + "]", "Unable to confirm the payment. Error is [" + msg + "]");
     public static final String ERROR_CODE_LINE_TOKEN_NOT_EXIST = "0504";
 
     //Payment
