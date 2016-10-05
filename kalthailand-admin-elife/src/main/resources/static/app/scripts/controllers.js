@@ -657,32 +657,37 @@
             event.preventDefault();
             searchForPolicyDetail();
         };
-        $scope.getProductDisplayName = function (productName){
-        	var newProductName = '';
-        	if (productName=='Product iProtect'){
-        		newProductName='Product iProtect S';
-        	}else{
-        		newProductName = productName;
-        	}
-        	return newProductName;
+        $scope.getProductDisplayName = function (productName) {
+            var newProductName = '';
+            if (productName == 'Product iProtect') {
+                newProductName = 'iProtect S';
+            } else {
+                newProductName = productName;
+            }
+            return newProductName;
         }
         function searchForPolicyDetail() {
             PolicyDetail.get({id: $scope.policyID},
                 function (successResponse) {
                     $scope.scenarioID = 1;
                     $scope.linePayCaptureMode = 'FAKE_WITH_SUCCESS';
-                    $scope.errorMessage = null;
-                    $scope.successMessage = null;
+                    $scope.showSuccessMessage(null);
                     $scope.policyDetail = successResponse;
-                    
-                    if (successResponse.premiumsData.product10ECPremium) {
+                    var productId = successResponse.commonData.productId;
+                    if (productId == "10EC") {
                         $scope.sumInsured = successResponse.premiumsData.product10ECPremium.sumInsured.value + " " + successResponse.premiumsData.product10ECPremium.sumInsured.currencyCode;
-                    } else if (successResponse.premiumsData.productIProtectPremium) {
-                    	$scope.sumInsured = successResponse.premiumsData.productIProtectPremium.sumInsured.value + " " + successResponse.premiumsData.productIProtectPremium.sumInsured.currencyCode;
-                    } else if (successResponse.premiumsData.productIFinePremium) {
+                    } else if (productId == "iProtect") {
+                        $scope.sumInsured = successResponse.premiumsData.productIProtectPremium.sumInsured.value + " " + successResponse.premiumsData.productIProtectPremium.sumInsured.currencyCode;
+                    } else if (productId == "iFine") {
                         $scope.sumInsured = successResponse.premiumsData.productIFinePremium.sumInsured.value + " " + successResponse.premiumsData.productIFinePremium.sumInsured.currencyCode;
+                    } else {
+                        if (!hasValue(successResponse.premiumsData.premiumDetail)) {
+                            $scope.showErrorMessage("Not found detail of this policy (" + productId + ")");
+                            return;
+                        }
+                        $scope.sumInsured = successResponse.premiumsData.premiumDetail.sumInsured.value + " " + successResponse.premiumsData.productIFinePremium.sumInsured.currencyCode;
                     }
-                    
+
                     var periodicity = '' + successResponse.premiumsData.financialScheduler.periodicity.code;
                     $scope.periodicity = periodicity;
                     var premium = successResponse.premiumsData.financialScheduler.modalAmount.value;
@@ -698,55 +703,63 @@
                     }
                 },
                 function (errorResponse) {
-                    $scope.successMessage = null;
-                    $scope.errorMessage = errorResponse.data.userMessage;
+                    $scope.showErrorMessage(errorResponse.data.userMessage);
                     $scope.policyDetail = null;
                     $scope.annualPremium = null;
                     $scope.sumInsured = null;
                 });
+
         }
 
+        $scope.showErrorMessage = function (msg) {
+            $scope.successMessage = null;
+            $scope.errorMessage = msg;
+        }
+        $scope.showSuccessMessage = function (msg) {
+            $scope.successMessage = msg;
+            $scope.errorMessage = null;
+        }
 
     });
 
     app.controller('CommissionController', function (CommissionService, $scope, $route, $http, $localStorage) {
         $scope.service = CommissionService;
     });
-    
+
     app.controller('CommissionResultController', function (CommissionResultService, $scope, $route, $http, $localStorage) {
         $scope.service = CommissionResultService;
-        
+
         var dateNow = new Date();
         var day = dateNow.getDate();
         day = 1;
-        
+
         // Calculate Button is enable on 1-10 of month
-        if(day >= 1 && day <= 10) {
-        	// 1-10 is false to Enable button
-        	$scope.calculateButton = false;
-        	$scope.redNotice = '';
+        if (day >= 1 && day <= 10) {
+            // 1-10 is false to Enable button
+            $scope.calculateButton = false;
+            $scope.redNotice = '';
         } else {
-        	// 11+ is true to Disable button
-        	$scope.calculateButton = true;
-        	$scope.redNotice = '(Commission  can only be generated before 10<sup>th</sup> day of a month)';
+            // 11+ is true to Disable button
+            $scope.calculateButton = true;
+            $scope.redNotice = '(Commission  can only be generated before 10<sup>th</sup> day of a month)';
         }
-        
+
         $scope.commissionResultAll = CommissionResultService;
-        
+
         $scope.callGenerateCommission = function () {
-        	var obj = {'createdDateTime': 'Waiting...' };
-        	$scope.commissionResultAll.commissionList.splice(0, 0, obj);
-        	CommissionResultService.generateCommission();
-        	$scope.loadNewFilter();
+            var obj = {'createdDateTime': 'Waiting...'};
+            $scope.commissionResultAll.commissionList.splice(0, 0, obj);
+            CommissionResultService.generateCommission();
+            $scope.loadNewFilter();
         }
-        
-        $scope.loadNewFilter = function (){
-            $scope.commissionResultAll = CommissionResultService;      
+
+        $scope.loadNewFilter = function () {
+            $scope.commissionResultAll = CommissionResultService;
             $scope.calculateButton = false;
             $scope.redNotice = '';
 //            $scope.redNotice = 'Please wait system is processing for generate reusult ...';
         }
-        
-        
+
+
     });
 })();
