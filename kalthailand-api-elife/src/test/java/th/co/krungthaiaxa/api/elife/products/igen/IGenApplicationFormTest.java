@@ -17,16 +17,16 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.api.elife.ELifeTest;
 import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
+import th.co.krungthaiaxa.api.elife.TestUtil;
 import th.co.krungthaiaxa.api.elife.factory.PolicyFactory;
 import th.co.krungthaiaxa.api.elife.factory.QuoteFactory;
-import th.co.krungthaiaxa.api.elife.factory.RequestFactory;
 import th.co.krungthaiaxa.api.elife.model.Policy;
-import th.co.krungthaiaxa.api.elife.model.line.LinePayCaptureMode;
 import th.co.krungthaiaxa.api.elife.service.ApplicationFormService;
 import th.co.krungthaiaxa.api.elife.service.DocumentService;
 import th.co.krungthaiaxa.api.elife.service.PolicyService;
 import th.co.krungthaiaxa.api.elife.service.PolicyValidatedProcessingService;
 import th.co.krungthaiaxa.api.elife.service.QuoteService;
+import th.co.krungthaiaxa.api.elife.utils.GreenMailUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -80,19 +80,17 @@ public class IGenApplicationFormTest extends ELifeTest {
         documentService.generateNotValidatedPolicyDocuments(policy);
 
         byte[] pdfContent = applicationFormService.generateNotValidatedApplicationForm(policy);
-        File file = new File("testresult/" + System.currentTimeMillis() + "_applicationform_" + policy.getPolicyId() + ".pdf");
+        File file = new File(TestUtil.PATH_TEST_RESULT + System.currentTimeMillis() + "_applicationform_" + policy.getPolicyId() + ".pdf");
         FileUtils.writeByteArrayToFile(file, pdfContent);
     }
 
     @Test
     public void test_generate_applicationForm_for_validated_quote() throws IOException {
         QuoteFactory.QuoteResult quoteResult = quoteFactory.createDefaultIGen();
-        Policy policy = policyService.createPolicy(quoteResult.getQuote());
-        String agentCode = "999999-99-999999";
-        String agentName = "Mock Agent";
-        policy = policyValidatedProcessingService.processValidatedPolicy(new PolicyValidatedProcessingService.PolicyValidationRequest(policy.getPolicyId(), agentCode, agentName, LinePayCaptureMode.FAKE_WITH_SUCCESS, RequestFactory.generateAccessToken()));
+        Policy policy = policyFactory.createPolicyWithValidatedStatus(quoteResult.getQuote());
         byte[] pdfContent = applicationFormService.generateValidatedApplicationForm(policy);
-        File file = new File("testresult/" + System.currentTimeMillis() + "_applicationform_" + policy.getPolicyId() + ".pdf");
+        File file = new File(TestUtil.PATH_TEST_RESULT + System.currentTimeMillis() + "_applicationform_" + policy.getPolicyId() + ".pdf");
         FileUtils.writeByteArrayToFile(file, pdfContent);
+        GreenMailUtil.writeReceiveMessagesToFiles(greenMail, TestUtil.PATH_TEST_RESULT + "emails");
     }
 }

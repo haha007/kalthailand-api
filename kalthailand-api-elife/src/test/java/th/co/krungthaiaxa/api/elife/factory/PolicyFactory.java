@@ -34,14 +34,19 @@ public class PolicyFactory {
     }
 
     public Policy createPolicyForLineWithValidated(int age, String email) {
-        Policy policy = createPolicyForLineWithPendingValidation(age, email);
+        Quote quote = quoteFactory.createDefaultIProtectQuoteForLine(age, email);
+        return createPolicyWithValidatedStatus(quote);
+    }
+
+    public Policy createPolicyWithValidatedStatus(Quote quote) {
+        Policy policy = policyService.createPolicy(quote);
         Payment payment = policy.getPayments().get(0);
         String orderId = PaymentFactory.generateOrderId();
         String transactionId = PaymentFactory.generateTransactionId();
         String regKey = PaymentFactory.generatePaymentRegKey();
         policyService.updatePayment(payment, orderId, transactionId, regKey);
         policyService.updatePolicyAfterFirstPaymentValidated(policy);
-        policyService.updatePolicyAfterPolicyHasBeenValidated(policy, "999999-99-999999", "agentName", RequestFactory.generateAccessToken());
+        policy = policyService.updatePolicyAfterPolicyHasBeenValidated(policy, "999999-99-999999", "Mock Agent Name", RequestFactory.generateAccessToken());
         return policy;
     }
 }
