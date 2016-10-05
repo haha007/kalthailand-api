@@ -416,9 +416,9 @@ public class PolicyResource {
             @ApiParam(value = "The order id used to book the payment", required = true)
             @RequestParam(required = true) String orderId,
             @ApiParam(value = "The transaction id to use to confirm the payment. Must be sent of status id SUCCESS", required = false)
-            @RequestParam(required = true) String transactionId,
+            @RequestParam(required = false) String transactionId,
             @ApiParam(value = "The RegKey for Monthly Mode Payment Only", required = false)
-            @RequestParam(required = true) String regKey,
+            @RequestParam(required = false) String regKey,
             HttpServletRequest httpServletRequest) {
         Policy policy = policyService.validateExistPolicy(policyId);
         if (!policy.getStatus().equals(PolicyStatus.VALIDATED)) {
