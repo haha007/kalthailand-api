@@ -46,6 +46,10 @@ public class GreenMailUtil {
         return msgs.stream().collect(Collectors.joining("\n"));
     }
 
+    /**
+     * @param greenMail
+     * @param parentFolder example: "target/testresult/emails"
+     */
     public static void writeReceiveMessagesToFiles(GreenMailRule greenMail, String parentFolder) {
         MimeMessage[] mailMessages = greenMail.getReceivedMessages();
         List<String> msgs = new ArrayList<>();
@@ -56,7 +60,7 @@ public class GreenMailUtil {
 
     private static void writeReceiveMesssageToFile(MimeMessage mailMessage, String parentFolderPath) {
         try {
-            File parentFolder = IOUtil.createParentFolderIfNecessary(parentFolderPath);
+            File parentFolder = IOUtil.createFolderIfNecessary(parentFolderPath);
             String fileCoreName = parentFolder + "/" + System.currentTimeMillis() + "_" + mailMessage.getSubject();
             File file = new File(fileCoreName + ".html");
             MimeMultipart mimeMultipart = (MimeMultipart) mailMessage.getContent();

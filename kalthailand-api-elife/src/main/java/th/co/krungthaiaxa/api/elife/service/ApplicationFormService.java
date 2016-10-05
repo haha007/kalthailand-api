@@ -318,15 +318,15 @@ public class ApplicationFormService {
             }
         } else if (productId.equals(ProductType.PRODUCT_IPROTECT.getLogicName())) {
             //Header
-            writeText(pdfContentByte, font, MARK, 348, 814, MEDIUM_SIZE);
-            //Premium line for iGen
-            writeText(pdfContentByte, font, MARK, 350, 780, MEDIUM_SIZE);
-            writeText(pdfContentByte, font, MONEY_FORMAT.format(policy.getPremiumsData().getProductIProtectPremium().getSumInsured().getValue()), 430, 780, MEDIUM_SIZE);
+            writeText(pdfContentByte, font, MARK, 348, 813, MEDIUM_SIZE);
+            //Premium line for iProtect
+            writeText(pdfContentByte, font, MARK, 351, 779, MEDIUM_SIZE);
+            writeText(pdfContentByte, font, MONEY_FORMAT.format(policy.getPremiumsData().getProductIProtectPremium().getSumInsured().getValue()), 475, 780, MEDIUM_SIZE);
         } else if (productId.equals(ProductType.PRODUCT_IGEN.getLogicName())) {
             //Header
-            writeText(pdfContentByte, font, MARK, 348, 814, MEDIUM_SIZE);
+            writeText(pdfContentByte, font, MARK, 348, 813, MEDIUM_SIZE);
             //Premium line for iGen
-            writeText(pdfContentByte, font, MARK, 350, 762, MEDIUM_SIZE);
+            writeText(pdfContentByte, font, MARK, 351, 762, MEDIUM_SIZE);
             writeText(pdfContentByte, font, MONEY_FORMAT.format(policy.getPremiumsData().getPremiumDetail().getSumInsured().getValue()), 430, 764, MEDIUM_SIZE);
         }
 

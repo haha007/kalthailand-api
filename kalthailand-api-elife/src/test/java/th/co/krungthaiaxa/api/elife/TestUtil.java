@@ -40,14 +40,13 @@ import th.co.krungthaiaxa.api.elife.products.ProductType;
 import th.co.krungthaiaxa.api.elife.products.igen.IGenService;
 import th.co.krungthaiaxa.api.elife.utils.BeneficiaryUtils;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeUtility;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeUtility;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
@@ -59,6 +58,7 @@ import static th.co.krungthaiaxa.api.elife.model.enums.USPermanentResident.NOT_P
 import static th.co.krungthaiaxa.api.elife.products.ProductUtils.amountTHB;
 
 public class TestUtil {
+    public static final String PATH_TEST_RESULT = "target/testresult/";
 
     public static ProductQuotation productQuotation(Integer age, PeriodicityCode periodicityCode) {
         return productQuotation(ProductType.PRODUCT_10_EC, age, periodicityCode, 350000.0, true, 23, GenderCode.FEMALE);
@@ -410,7 +410,7 @@ public class TestUtil {
 
         return linePayResponse;
     }
-    
+
     public static String decodeSimpleBody(String encodedBody) throws MessagingException, IOException {
         InputStream inputStream = MimeUtility.decode(new ByteArrayInputStream(encodedBody.getBytes("UTF-8")), "quoted-printable");
         BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);

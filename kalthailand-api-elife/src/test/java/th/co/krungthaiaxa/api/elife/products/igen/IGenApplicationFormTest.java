@@ -12,6 +12,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.api.elife.ELifeTest;
 import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
+import th.co.krungthaiaxa.api.elife.TestUtil;
 import th.co.krungthaiaxa.api.elife.factory.QuoteFactory;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.service.ApplicationFormService;
@@ -54,7 +55,7 @@ public class IGenApplicationFormTest extends ELifeTest {
         documentService.generateNotValidatedPolicyDocuments(policy);
 
         byte[] pdfContent = applicationFormService.generateNotValidatedApplicationForm(policy);
-        File file = new File("testresult/" + System.currentTimeMillis() + "_applicationform_" + policy.getPolicyId() + ".pdf");
+        File file = new File(TestUtil.PATH_TEST_RESULT + System.currentTimeMillis() + "_applicationform_" + policy.getPolicyId() + ".pdf");
         FileUtils.writeByteArrayToFile(file, pdfContent);
     }
 }
