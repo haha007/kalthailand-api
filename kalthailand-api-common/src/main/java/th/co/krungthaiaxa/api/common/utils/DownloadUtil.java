@@ -17,7 +17,7 @@ public class DownloadUtil {
 
     public static void writeBytesToResponseWithFileNamePrefix(HttpServletResponse response, byte[] content, String fileNamePrefix) {
         String dateTime = DateTimeUtil.formatLocalDateTime(LocalDateTime.now(), "yyyyMMdd_HHmmss");
-        String fileName = fileNamePrefix + dateTime + ".xlsx";
+        String fileName = fileNamePrefix + "_" + dateTime + ".xlsx";
 
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         response.setContentLength(content.length);
