@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,21 +19,31 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import th.co.krungthaiaxa.api.common.model.error.Error;
 import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
+import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
 import th.co.krungthaiaxa.api.common.utils.JsonUtil;
 import th.co.krungthaiaxa.api.elife.exception.ElifeException;
 import th.co.krungthaiaxa.api.elife.model.Quote;
+import th.co.krungthaiaxa.api.elife.model.QuoteCount;
+import th.co.krungthaiaxa.api.elife.model.SessionQuoteCount;
 import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
 import th.co.krungthaiaxa.api.elife.products.ProductEmailService;
 import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
 import th.co.krungthaiaxa.api.elife.service.EmailService;
+import th.co.krungthaiaxa.api.elife.service.QuoteCountForAllProductsService;
 import th.co.krungthaiaxa.api.elife.service.QuoteService;
 import th.co.krungthaiaxa.api.elife.service.SessionQuoteService;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
+import static java.time.LocalDateTime.now;
+import static java.time.format.DateTimeFormatter.ofPattern;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_ACCEPTABLE;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -48,6 +59,7 @@ import static th.co.krungthaiaxa.api.common.utils.JsonUtil.getJson;
 public class QuoteResource {
     private final static Logger logger = LoggerFactory.getLogger(QuoteResource.class);
     private final QuoteService quoteService;
+    private final QuoteCountForAllProductsService quoteCountForAllProductsService;
     private final SessionQuoteService sessionQuoteService;
     private final EmailService emailService;
 
@@ -56,8 +68,9 @@ public class QuoteResource {
     private String tokenHeader;
 
     @Inject
-    public QuoteResource(QuoteService quoteService, SessionQuoteService sessionQuoteService, EmailService emailService, ProductEmailService productEmailService) {
+    public QuoteResource(QuoteService quoteService, QuoteCountForAllProductsService quoteCountForAllProductsService, SessionQuoteService sessionQuoteService, EmailService emailService, ProductEmailService productEmailService) {
         this.quoteService = quoteService;
+        this.quoteCountForAllProductsService = quoteCountForAllProductsService;
         this.sessionQuoteService = sessionQuoteService;
         this.emailService = emailService;
         this.productEmailService = productEmailService;
@@ -191,4 +204,58 @@ public class QuoteResource {
 
         return new ResponseEntity<>(getJson(updatedQuote), OK);
     }
+
+    @ApiOperation(value = "Count sessionQuotes for every product", notes = "Count sessionQuotes for every product", response = SessionQuoteCount.class, responseContainer = "List")
+    @RequestMapping(value = "/quotes/all-products/counts", produces = APPLICATION_JSON_VALUE, method = GET)
+    @ResponseBody
+    public List<QuoteCount> getTotalQuoteCount(
+            @ApiParam(value = "The start searching date", required = true)
+            @RequestParam("fromDate") String startDateString,
+            @ApiParam(value = "The end searching date", required = true)
+            @RequestParam("toDate") String endDateString) {
+        LocalDateTime startDate = DateTimeUtil.toLocalDateTimePatternISO(startDateString).toLocalDate().atStartOfDay();
+        LocalDateTime endDate = DateTimeUtil.toLocalDateTimePatternISO(endDateString);
+        endDate = DateTimeUtil.toEndOfDate(endDate);
+        return quoteCountForAllProductsService.countQuotesOfAllProducts(startDate, endDate);
+    }
+
+    //TODO need to refactor
+    @ApiOperation(value = "Excel report for counting session quotes", notes = "Export Excel report for counting sessionQuotes for every product", response = Quote.class, responseContainer = "List")
+    @RequestMapping(value = "/quotes/all-products/download", method = GET)
+    @ResponseBody
+    public void downloadTotalQuoteCountExcelFile(
+            @ApiParam(value = "The start searching date", required = true)
+            @RequestParam("fromDate") String startDateString,
+            @ApiParam(value = "The end searching date", required = true)
+            @RequestParam("toDate") String endDateString,
+            HttpServletResponse response) {
+
+        LocalDateTime startDate = DateTimeUtil.toLocalDateTimePatternISO(startDateString).toLocalDate().atStartOfDay();
+        LocalDateTime endDate = DateTimeUtil.toLocalDateTimePatternISO(endDateString);
+        endDate = DateTimeUtil.toEndOfDate(endDate);
+
+        String now = getDateTimeNow();
+        byte[] content = quoteCountForAllProductsService.exportTotalQuotesCountReport(startDate, endDate);
+
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setContentLength(content.length);
+
+        String fileName = "eLife_TotalQuoteCountExtract_" + now + ".xlsx";
+        // set headers for the response
+        String headerKey = "Content-Disposition";
+        String headerValue = String.format("attachment; filename=\"%s\"", fileName);
+        response.setHeader(headerKey, headerValue);
+
+        try (OutputStream outStream = response.getOutputStream()) {
+            IOUtils.write(content, outStream);
+        } catch (IOException e) {
+            logger.error("Unable to download the quote total count excel file", e);
+        }
+
+    }
+
+    private String getDateTimeNow() {
+        return ofPattern("yyyyMMdd_HHmmss").format(now());
+    }
+
 }
