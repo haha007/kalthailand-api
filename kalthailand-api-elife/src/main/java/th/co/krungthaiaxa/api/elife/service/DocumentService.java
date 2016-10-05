@@ -341,6 +341,8 @@ public class DocumentService {
             premium = policy.getPremiumsData().getProductIFinePremium().getSumInsured().getValue();
         } else if (policy.getCommonData().getProductId().equals(ProductType.PRODUCT_IPROTECT.getLogicName())) {
             premium = policy.getPremiumsData().getProductIProtectPremium().getSumInsured().getValue();
+        } else {
+            premium = policy.getPremiumsData().getPremiumDetail().getSumInsured().getValue();
         }
         graphics.drawString(formatter.format(premium), 553, 353);
 

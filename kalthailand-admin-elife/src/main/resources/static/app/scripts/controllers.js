@@ -599,6 +599,7 @@
                 },
                 function (err) {
                     $scope.isFetching = false;
+
                     $scope.successMessage = null;
                     $scope.errorMessage = err.toString();
                 }
@@ -657,14 +658,15 @@
             event.preventDefault();
             searchForPolicyDetail();
         };
-        $scope.getProductDisplayName = function (productName) {
-            var newProductName = '';
-            if (productName == 'Product iProtect') {
-                newProductName = 'iProtect S';
+        $scope.getProductDisplayName = function (policyDetail) {
+            var productId = policyDetail.commonData.productId;
+            var productName;
+            if (productId == "iProtect") {
+                productName = 'iProtect S';
             } else {
-                newProductName = productName;
+                productName = productId;
             }
-            return newProductName;
+            return productName;
         }
         function searchForPolicyDetail() {
             PolicyDetail.get({id: $scope.policyID},
@@ -674,19 +676,22 @@
                     $scope.showSuccessMessage(null);
                     $scope.policyDetail = successResponse;
                     var productId = successResponse.commonData.productId;
+                    var sumInsuredAmount;
                     if (productId == "10EC") {
-                        $scope.sumInsured = successResponse.premiumsData.product10ECPremium.sumInsured.value + " " + successResponse.premiumsData.product10ECPremium.sumInsured.currencyCode;
+                        sumInsuredAmount = successResponse.premiumsData.product10ECPremium.sumInsured;
                     } else if (productId == "iProtect") {
-                        $scope.sumInsured = successResponse.premiumsData.productIProtectPremium.sumInsured.value + " " + successResponse.premiumsData.productIProtectPremium.sumInsured.currencyCode;
+                        sumInsuredAmount = successResponse.premiumsData.productIProtectPremium.sumInsured;
                     } else if (productId == "iFine") {
-                        $scope.sumInsured = successResponse.premiumsData.productIFinePremium.sumInsured.value + " " + successResponse.premiumsData.productIFinePremium.sumInsured.currencyCode;
+                        sumInsuredAmount = successResponse.premiumsData.productIFinePremium.sumInsured;
                     } else {
                         if (!hasValue(successResponse.premiumsData.premiumDetail)) {
                             $scope.showErrorMessage("Not found detail of this policy (" + productId + ")");
                             return;
                         }
-                        $scope.sumInsured = successResponse.premiumsData.premiumDetail.sumInsured.value + " " + successResponse.premiumsData.productIFinePremium.sumInsured.currencyCode;
+                        sumInsuredAmount = successResponse.premiumsData.premiumDetail.sumInsured;
                     }
+                    $scope.sumInsured = sumInsuredAmount.value + " " + sumInsuredAmount.currencyCode;
+
 
                     var periodicity = '' + successResponse.premiumsData.financialScheduler.periodicity.code;
                     $scope.periodicity = periodicity;
@@ -697,8 +702,7 @@
                         $scope.annualPremium = (premium * 4) + " " + successResponse.premiumsData.financialScheduler.modalAmount.currencyCode;
                     } else if (periodicity == 'EVERY_HALF_YEAR') {
                         $scope.annualPremium = (premium * 2) + " " + successResponse.premiumsData.financialScheduler.modalAmount.currencyCode;
-                    }
-                    else {
+                    } else {
                         $scope.annualPremium = premium + " " + successResponse.premiumsData.financialScheduler.modalAmount.currencyCode;
                     }
                 },
