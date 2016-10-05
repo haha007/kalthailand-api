@@ -91,4 +91,8 @@ public class DateTimeUtil {
         localDateTime = localDateTime.plusYears(year);
         return localDateTime.atZone(ZoneId.systemDefault()).toInstant();
     }
+
+    public static String formatLocalDateTime(LocalDateTime localDateTime, String pattern) {
+        return localDateTime.format(DateTimeFormatter.ofPattern(pattern));
+    }
 }

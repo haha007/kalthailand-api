@@ -3,7 +3,6 @@ package th.co.krungthaiaxa.api.elife.resource;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,19 +10,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
+import th.co.krungthaiaxa.api.common.utils.DownloadUtil;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.SessionQuoteCount;
 import th.co.krungthaiaxa.api.elife.service.SessionQuoteService;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static java.time.LocalDateTime.now;
-import static java.time.format.DateTimeFormatter.ofPattern;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
@@ -63,28 +59,9 @@ public class SessionQuoteResource {
 
         LocalDateTime startDate = DateTimeUtil.toLocalDateTimePatternISO(startDateString);
         LocalDateTime endDate = DateTimeUtil.toLocalDateTimePatternISO(endDateString);
-        String now = getDateTimeNow();
         byte[] content = sessionQuoteService.exportTotalQuotesCountReport(startDate, endDate);
-
-        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-        response.setContentLength(content.length);
-
-        String fileName = "eLife_TotalQuoteCountExtract_" + now + ".xlsx";
-        // set headers for the response
-        String headerKey = "Content-Disposition";
-        String headerValue = String.format("attachment; filename=\"%s\"", fileName);
-        response.setHeader(headerKey, headerValue);
-
-        try (OutputStream outStream = response.getOutputStream()) {
-            IOUtils.write(content, outStream);
-        } catch (IOException e) {
-            logger.error("Unable to download the quote total count excel file", e);
-        }
-
+        DownloadUtil.writeBytesToResponseWithFileNamePrefix(response, content, "session-quotes-count");
     }
 
-    private String getDateTimeNow() {
-        return ofPattern("yyyyMMdd_HHmmss").format(now());
-    }
 
 }
