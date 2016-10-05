@@ -24,6 +24,7 @@ import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.service.ApplicationFormService;
 import th.co.krungthaiaxa.api.elife.service.DocumentService;
 import th.co.krungthaiaxa.api.elife.service.PolicyService;
+import th.co.krungthaiaxa.api.elife.service.PolicyValidatedProcessingService;
 import th.co.krungthaiaxa.api.elife.service.QuoteService;
 import th.co.krungthaiaxa.api.elife.utils.GreenMailUtil;
 
@@ -47,6 +48,9 @@ public class IGenApplicationFormTest extends ELifeTest {
     private PolicyService policyService;
     @Autowired
     private PolicyFactory policyFactory;
+    @Autowired
+    private PolicyValidatedProcessingService policyValidatedProcessingService;
+
     @Autowired
     private DocumentService documentService;
 

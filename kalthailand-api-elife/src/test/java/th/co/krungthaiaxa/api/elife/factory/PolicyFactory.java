@@ -43,7 +43,7 @@ public class PolicyFactory {
         Payment payment = policy.getPayments().get(0);
         String orderId = PaymentFactory.generateOrderId();
         String transactionId = PaymentFactory.generateTransactionId();
-        String regKey = PaymentFactory.generateRegKeyId();
+        String regKey = PaymentFactory.generatePaymentRegKey();
         policyService.updatePayment(payment, orderId, transactionId, regKey);
         policyService.updatePolicyAfterFirstPaymentValidated(policy);
         policy = policyService.updatePolicyAfterPolicyHasBeenValidated(policy, "999999-99-999999", "Mock Agent Name", RequestFactory.generateAccessToken());

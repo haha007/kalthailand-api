@@ -220,6 +220,7 @@ public class PolicyService {
             return;
         }
 
+        //TODO Improve performance: use Mongo query to update
         // Save the registration key in all other payments
         policy.getPayments().stream().filter(tmp -> tmp.getStatus().equals(NOT_PROCESSED)).forEach(tmp -> {
             if (!registrationKey.equals(tmp.getRegistrationKey())) {

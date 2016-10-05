@@ -36,7 +36,7 @@ public class SessionQuoteService {
         return result;
     }
 
-    private SessionQuoteCount countSessionQuotes(ProductType productType, LocalDateTime startDate, LocalDateTime endDate) {
+    public SessionQuoteCount countSessionQuotes(ProductType productType, LocalDateTime startDate, LocalDateTime endDate) {
         long countForEachProduct = sessionQuoteRepository.countByProductIdAndStartDateInRange(productType.getLogicName(), startDate, endDate);
         return new SessionQuoteCount(productType.getLogicName(), countForEachProduct);
     }

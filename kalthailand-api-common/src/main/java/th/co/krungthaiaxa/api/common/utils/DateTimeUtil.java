@@ -63,10 +63,15 @@ public class DateTimeUtil {
         return localDate.atStartOfDay().toInstant(ZoneOffset.UTC);
     }
 
+    public static LocalDateTime toEndOfDate(LocalDateTime localDateTime) {
+        return localDateTime.toLocalDate().atStartOfDay().plusDays(1).minusSeconds(1);
+    }
+
     public static LocalDateTime toLocalDateTimePatternISO(String dateString) {
         LocalDateTime localDateTime;
         if (StringUtils.isNotBlank(dateString)) {
             localDateTime = LocalDateTime.from(DateTimeFormatter.ISO_DATE_TIME.parse(dateString));
+            localDateTime = localDateTime.toLocalDate().atStartOfDay().plusDays(1).minusSeconds(1);
         } else {
             localDateTime = null;
         }

@@ -33,14 +33,13 @@ import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
 import th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayCaptureMode;
-import th.co.krungthaiaxa.api.elife.model.line.LinePayResponse;
-import th.co.krungthaiaxa.api.elife.model.line.LinePayResponseInfo;
-import th.co.krungthaiaxa.api.elife.model.line.LinePayResponsePaymentInfo;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
 import th.co.krungthaiaxa.api.elife.service.DocumentService;
 import th.co.krungthaiaxa.api.elife.service.LineService;
 import th.co.krungthaiaxa.api.elife.service.PaymentService;
 import th.co.krungthaiaxa.api.elife.service.PolicyService;
+import th.co.krungthaiaxa.api.elife.service.PolicyValidatedProcessingService;
+import th.co.krungthaiaxa.api.elife.service.PolicyValidatedProcessingService.PolicyValidationRequest;
 import th.co.krungthaiaxa.api.elife.service.QuoteService;
 import th.co.krungthaiaxa.api.elife.utils.ExcelUtils;
 
@@ -55,8 +54,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static java.time.LocalDateTime.now;
 import static java.time.format.DateTimeFormatter.ofPattern;
@@ -70,12 +67,8 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 import static th.co.krungthaiaxa.api.common.utils.JsonUtil.getJson;
-import static th.co.krungthaiaxa.api.elife.model.enums.ChannelType.LINE;
 import static th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus.PENDING_VALIDATION;
 import static th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus.VALIDATED;
-import static th.co.krungthaiaxa.api.elife.model.line.LinePayCaptureMode.FAKE_WITH_ERROR;
-import static th.co.krungthaiaxa.api.elife.model.line.LinePayCaptureMode.FAKE_WITH_SUCCESS;
-import static th.co.krungthaiaxa.api.elife.model.line.LinePayCaptureMode.REAL;
 import static th.co.krungthaiaxa.api.elife.utils.ExcelUtils.text;
 
 @RestController
@@ -87,18 +80,21 @@ public class PolicyResource {
     private final PolicyService policyService;
     private final QuoteService quoteService;
     private final PaymentService paymentService;
+    private final PolicyValidatedProcessingService policyValidatedProcessingService;
+
     @Value("${environment.name}")
     private String environmentName;
     @Value("${kal.api.auth.header}")
     private String accessTokenHeader;
 
     @Inject
-    public PolicyResource(DocumentService documentService, LineService lineService, PolicyService policyService, QuoteService quoteService, PaymentService paymentService) {
+    public PolicyResource(DocumentService documentService, LineService lineService, PolicyService policyService, QuoteService quoteService, PaymentService paymentService, PolicyValidatedProcessingService policyValidatedProcessingService) {
         this.documentService = documentService;
         this.lineService = lineService;
         this.policyService = policyService;
         this.quoteService = quoteService;
         this.paymentService = paymentService;
+        this.policyValidatedProcessingService = policyValidatedProcessingService;
     }
 
     @ApiOperation(value = "List of policies", notes = "Gets a list of policies.", response = Policy.class, responseContainer = "List")
@@ -368,19 +364,14 @@ public class PolicyResource {
             logger.error("The order ID was not received");
             return new ResponseEntity<>(getJson(ErrorCode.ORDER_ID_NOT_PROVIDED), NOT_ACCEPTABLE);
         }
+        Policy policy = policyService.validateExistPolicy(policyId);
 
-        Optional<Policy> policy = policyService.findPolicyByPolicyNumber(policyId);
-        if (!policy.isPresent()) {
-            logger.error("Unable to find the policy with ID [" + policyId + "]");
-            return new ResponseEntity<>(getJson(ErrorCode.POLICY_DOES_NOT_EXIST), NOT_FOUND);
-        }
-
-        if (!policy.get().getStatus().equals(PolicyStatus.PENDING_PAYMENT)) {
-            logger.error("The policy is in status [" + policy.get().getStatus().name() + "] and cannot be updated to " + PENDING_VALIDATION + " status.");
+        if (!policy.getStatus().equals(PolicyStatus.PENDING_PAYMENT)) {
+            logger.error("The policy is in status [" + policy.getStatus().name() + "] and cannot be updated to " + PENDING_VALIDATION + " status.");
             return new ResponseEntity<>(getJson(ErrorCode.POLICY_IS_NOT_PENDING_FOR_PAYMENT.apply(policyId)), NOT_ACCEPTABLE);
         }
 
-        Optional<Payment> payment = policy.get().getPayments().stream().filter(tmp -> tmp.getPaymentId().equals(paymentId)).findFirst();
+        Optional<Payment> payment = policy.getPayments().stream().filter(tmp -> tmp.getPaymentId().equals(paymentId)).findFirst();
         if (!payment.isPresent()) {
             logger.error("Unable to find the payment with ID [" + paymentId + "] in the policy with ID [" + policyId + "]");
             return new ResponseEntity<>(getJson(ErrorCode.POLICY_DOES_NOT_CONTAIN_A_PAYMENT_WITH_TRANSACTION_ID), NOT_ACCEPTABLE);
@@ -388,7 +379,7 @@ public class PolicyResource {
 
         // If no transaction id, then in error, nothing else should be done since we don't have a status (error / success)
         if (!transactionId.isPresent() || isEmpty(transactionId.get())) {
-            return new ResponseEntity<>(getJson(policy.get()), OK);
+            return new ResponseEntity<>(getJson(policy), OK);
         }
 
         // Update the payment
@@ -399,9 +390,9 @@ public class PolicyResource {
         }
 
         // Update the policy status
-        policyService.updatePolicyAfterFirstPaymentValidated(policy.get());
+        policyService.updatePolicyAfterFirstPaymentValidated(policy);
 
-        return new ResponseEntity<>(getJson(policy.get()), OK);
+        return new ResponseEntity<>(getJson(policy), OK);
     }
 
     @ApiOperation(value = "Update Policy status", notes = "Updates the Policy status to VALIDATED. If " +
@@ -423,33 +414,24 @@ public class PolicyResource {
             @ApiParam(name = "paymentId", value = "The payment ID", required = true)
             @RequestParam("paymentId") String paymentId,
             @ApiParam(value = "The order id used to book the payment", required = true)
-            @RequestParam String orderId,
+            @RequestParam(required = true) String orderId,
             @ApiParam(value = "The transaction id to use to confirm the payment. Must be sent of status id SUCCESS", required = false)
-            @RequestParam(required = false) String transactionId,
+            @RequestParam(required = true) String transactionId,
             @ApiParam(value = "The RegKey for Monthly Mode Payment Only", required = false)
-            @RequestParam(required = false) String regKey,
+            @RequestParam(required = true) String regKey,
             HttpServletRequest httpServletRequest) {
-        if (isEmpty(orderId)) {
-            logger.error("The order ID was not received");
-            return new ResponseEntity<>(getJson(ErrorCode.ORDER_ID_NOT_PROVIDED), NOT_ACCEPTABLE);
-        }
-
-        Optional<Policy> policy = policyService.findPolicyByPolicyNumber(policyId);
-        if (!policy.isPresent()) {
-            logger.error("Unable to find the policy with ID [" + policyId + "]");
-            return new ResponseEntity<>(getJson(ErrorCode.POLICY_DOES_NOT_EXIST), NOT_FOUND);
-        }
-
-        if (!policy.get().getStatus().equals(PolicyStatus.VALIDATED)) {
-            logger.error("The policy is in status [" + policy.get().getStatus().name() + "], it must be " + VALIDATED + " status.");
+        Policy policy = policyService.validateExistPolicy(policyId);
+        if (!policy.getStatus().equals(PolicyStatus.VALIDATED)) {
+            logger.error("The policy is in status [" + policy.getStatus().name() + "], it must be " + VALIDATED + " status.");
             return new ResponseEntity<>(getJson(ErrorCode.POLICY_IS_NOT_VALIDATED_FOR_PAYMENT.apply(policyId)), NOT_ACCEPTABLE);
         }
         String accessToken = httpServletRequest.getHeader(accessTokenHeader);
         paymentService.retryFailedPayment(policyId, paymentId, orderId, transactionId, regKey, accessToken);
 
-        return new ResponseEntity<>(getJson(policy.get()), OK);
+        return new ResponseEntity<>(getJson(policy), OK);
     }
 
+    //TODO this method should be refactor!
     @ApiOperation(value = "Update Policy status", notes = "Updates the Policy status to VALIDATED. If " +
             "susuccessful, it also generates the eReceipt form document (image and PDF) and eReceipt pdf is sent to " +
             "Tele sale API. LINE Pay API is called to confirm the payment booking made earlier using the " +
@@ -462,7 +444,7 @@ public class PolicyResource {
     })
     @RequestMapping(value = "/policies/{policyId}/update/status/validated", produces = APPLICATION_JSON_VALUE, method = PUT)
     @ResponseBody
-    public ResponseEntity<byte[]> updatePolicyToValidated(
+    public Policy updatePolicyToValidated(
             @ApiParam(value = "The policy ID", required = true)
             @PathVariable String policyId,
             @ApiParam(value = "The code of validating agent", required = true)
@@ -472,82 +454,9 @@ public class PolicyResource {
             @ApiParam(value = "The type of call to Line Pay Capture API", required = true)
             @RequestParam LinePayCaptureMode linePayCaptureMode,
             HttpServletRequest httpServletRequest) {
-
-        Pattern pattern = Pattern.compile("[0-9]{6}-[0-9]{2}-[0-9]{6}$");
-        Matcher matcher = pattern.matcher(agentCode);
-        if (!matcher.find()) {
-            logger.error("Agent code [" + policyId + "] is not following format '123456-12-123456'.");
-            return new ResponseEntity<>(getJson(ErrorCode.AGENT_CODE_FORMAT_ERROR), NOT_ACCEPTABLE);
-        }
-
-        if (environmentName.equals("PRD") && !linePayCaptureMode.equals(REAL)) {
-            return new ResponseEntity<>(getJson(ErrorCode.REAL_CAPTURE_API_HAS_TO_BE_USED), NOT_ACCEPTABLE);
-        }
-
-        Optional<Policy> policy = policyService.findPolicyByPolicyNumber(policyId);
-        if (!policy.isPresent()) {
-            logger.error("Unable to find the policy with ID [" + policyId + "]");
-            return new ResponseEntity<>(getJson(ErrorCode.POLICY_DOES_NOT_EXIST), NOT_FOUND);
-        }
-
-        Optional<Payment> paymentOptional = policy.get().getPayments()
-                .stream()
-                .filter(tmp -> tmp.getTransactionId() != null)
-                .findFirst();
-        if (!paymentOptional.isPresent()) {
-            logger.error("Unable to find a payment with a transaction id pending for confirmation in the policy with ID [" + policyId + "]");
-            return new ResponseEntity<>(getJson(ErrorCode.POLICY_DOES_NOT_CONTAIN_A_PAYMENT_WITH_TRANSACTION_ID), NOT_ACCEPTABLE);
-        }
-
-        Payment payment = paymentOptional.get();
-        LinePayResponse linePayResponse = null;
-        if (linePayCaptureMode.equals(REAL)) {
-            logger.info("Will try to confirm payment with ID [" + payment.getPaymentId() + "] and transation ID [" + payment.getTransactionId() + "] on the policy with ID [" + policyId + "]");
-            try {
-                linePayResponse = lineService.capturePayment(payment.getTransactionId(), payment.getAmount().getValue(), payment.getAmount().getCurrencyCode());
-            } catch (RuntimeException | IOException e) {
-                logger.error("Unable to confirm the payment in the policy with ID [" + policyId + "]", e);
-                return new ResponseEntity<>(getJson(ErrorCode.UNABLE_TO_CAPTURE_PAYMENT.apply(e.getMessage())), NOT_ACCEPTABLE);
-            }
-        } else if (linePayCaptureMode.equals(FAKE_WITH_ERROR)) {
-            linePayResponse = new LinePayResponse();
-            linePayResponse.setReturnCode("9999");
-            linePayResponse.setReturnMessage("This is a fake call to Line Pay API with an error as a result");
-        } else if (linePayCaptureMode.equals(FAKE_WITH_SUCCESS)) {
-            LinePayResponsePaymentInfo payResponsePaymentInfo = new LinePayResponsePaymentInfo();
-            payResponsePaymentInfo.setMethod("someMethodAfterFakeCallToLinePayCaptureAPI");
-            payResponsePaymentInfo.setCreditCardName("someCreditCardNameAfterFakeCallToLinePayCaptureAPI");
-
-            LinePayResponseInfo info = new LinePayResponseInfo();
-            info.setRegKey("someRegistrationKeyAfterFakeCallToLinePayCaptureAPI");
-            info.addPayInfo(payResponsePaymentInfo);
-
-            linePayResponse = new LinePayResponse();
-            linePayResponse.setReturnCode(LineService.RESPONSE_CODE_SUCCESS);
-            linePayResponse.setReturnMessage("This is a fake call to Line Pay API with success");
-            linePayResponse.setInfo(info);
-        }
-
-        if (linePayResponse == null) {
-            return new ResponseEntity<>(getJson(ErrorCode.UNABLE_TO_CAPTURE_PAYMENT.apply("No way to call Line Pay capture API has been provided")), NOT_ACCEPTABLE);
-        } else if (!linePayResponse.getReturnCode().equals(LineService.RESPONSE_CODE_SUCCESS)) {
-            String msg = "Confirming payment didn't go through. Error code is [" + linePayResponse.getReturnCode() + "], error message is [" + linePayResponse.getReturnMessage() + "]";
-            return new ResponseEntity<>(getJson(ErrorCode.UNABLE_TO_CAPTURE_PAYMENT.apply(msg)), NOT_ACCEPTABLE);
-        }
-
-        // Update the payment if confirm is success
-        policyService.updatePayment(payment, payment.getAmount().getValue(), payment.getAmount().getCurrencyCode(), LINE, linePayResponse);
-        policyService.updateRegistrationForAllNotProcessedPayment(policy.get(), linePayResponse.getInfo().getRegKey());
-
-        try {
-            String accessToken = httpServletRequest.getHeader(accessTokenHeader);
-            policyService.updatePolicyAfterPolicyHasBeenValidated(policy.get(), agentCode, agentName, accessToken);
-        } catch (ElifeException e) {
-            logger.error("Payment is successful but there was an error whil trying to update policy status.", e);
-            return new ResponseEntity<>(getJson(ErrorCode.POLICY_VALIDATION_ERROR.apply(e.getMessage())), INTERNAL_SERVER_ERROR);
-        }
-
-        return new ResponseEntity<>(getJson(policy.get()), OK);
+        String accessToken = httpServletRequest.getHeader(accessTokenHeader);
+        PolicyValidationRequest policyValidationRequest = new PolicyValidationRequest(policyId, agentCode, agentName, linePayCaptureMode, accessToken);
+        return policyValidatedProcessingService.processValidatedPolicy(policyValidationRequest);
     }
 
     private void createPolicyExtractExcelFileLine(Sheet sheet, Policy policy) {

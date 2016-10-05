@@ -8,7 +8,7 @@ import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
  */
 public class LinePaymentException extends BaseException {
     private static final long serialVersionUID = -5046622369228818254L;
-    public static final String ERROR_CODE = ErrorCode.ERROR_CODE_UNABLE_TO_CAPTURE_PAYMENT;
+    public static final String ERROR_CODE = ErrorCode.ERROR_CODE_LINE_PAYMENT;
 
     public LinePaymentException(String message) {
         super(ERROR_CODE, message);
