@@ -5,7 +5,6 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import th.co.krungthaiaxa.api.common.model.error.Error;
 import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
 import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
+import th.co.krungthaiaxa.api.common.utils.DownloadUtil;
 import th.co.krungthaiaxa.api.common.utils.JsonUtil;
 import th.co.krungthaiaxa.api.elife.exception.ElifeException;
 import th.co.krungthaiaxa.api.elife.model.Quote;
@@ -37,13 +37,10 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static java.time.LocalDateTime.now;
-import static java.time.format.DateTimeFormatter.ofPattern;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_ACCEPTABLE;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -233,29 +230,7 @@ public class QuoteResource {
         LocalDateTime startDate = DateTimeUtil.toLocalDateTimePatternISO(startDateString).toLocalDate().atStartOfDay();
         LocalDateTime endDate = DateTimeUtil.toLocalDateTimePatternISO(endDateString);
         endDate = DateTimeUtil.toEndOfDate(endDate);
-
-        String now = getDateTimeNow();
         byte[] content = quoteCountForAllProductsService.exportTotalQuotesCountReport(startDate, endDate);
-
-        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-        response.setContentLength(content.length);
-
-        String fileName = "eLife_TotalQuoteCountExtract_" + now + ".xlsx";
-        // set headers for the response
-        String headerKey = "Content-Disposition";
-        String headerValue = String.format("attachment; filename=\"%s\"", fileName);
-        response.setHeader(headerKey, headerValue);
-
-        try (OutputStream outStream = response.getOutputStream()) {
-            IOUtils.write(content, outStream);
-        } catch (IOException e) {
-            logger.error("Unable to download the quote total count excel file", e);
-        }
-
+        DownloadUtil.writeBytesToResponseWithFileNamePrefix(response, content, "quotes-count");
     }
-
-    private String getDateTimeNow() {
-        return ofPattern("yyyyMMdd_HHmmss").format(now());
-    }
-
 }
