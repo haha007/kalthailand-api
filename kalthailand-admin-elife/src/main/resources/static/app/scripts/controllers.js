@@ -644,8 +644,8 @@
                         $(window).scrollTop(0);
                     },
                     function (errorResponse) {
-                        $scope.successMessage = null;
-                        $scope.errorMessage = errorResponse.data.userMessage;
+                        var msg = formatErrorMessage(errorResponse.data);
+                        $scope.showErrorMessage(msg);
                         $scope.policyDetail = null;
                         $scope.annualPremium = null;
                         $scope.sumInsured = null;
@@ -767,3 +767,20 @@
 
     });
 })();
+
+function formatErrorMessage(error) {
+    var prefixMessage = error.userMessage;
+    var fieldsMessage = "";
+    if (hasValue(error.fieldErrors)) {
+        for (i = 0; i < error.fieldErrors.length; i++) {
+            var field = error.fieldErrors[i];
+            var fieldName = field.field;
+            var fieldMessage = field.message;
+            if (fieldsMessage.length > 0) {
+                fieldsMessage += ". ";
+            }
+            fieldsMessage += fieldMessage;
+        }
+    }
+    return prefixMessage + fieldsMessage;
+}
