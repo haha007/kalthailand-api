@@ -75,6 +75,7 @@ public class KalApiTokenFilter implements Filter {
         if (httpServletRequest.getRequestURI().endsWith("/policies/extract/download") ||
                 httpServletRequest.getRequestURI().contains("/RLS/deduction/download/") ||
                 httpServletRequest.getRequestURI().contains("/session-quotes/all-products-counts/download") ||
+                httpServletRequest.getRequestURI().contains("/quotes/all-products/download") ||
                 httpServletRequest.getRequestURI().contains("/commissions/calculation/download/") ||
                 (httpServletRequest.getRequestURI().contains("/policies/") &&
                         httpServletRequest.getRequestURI().contains("/document/") &&
@@ -123,7 +124,6 @@ public class KalApiTokenFilter implements Filter {
         LogUtil.logRuntime(startTime, LogUtil.toStringRequestURL(httpServletRequest));
         chain.doFilter(request, response);
     }
-
 
     @Override
     public void destroy() {
