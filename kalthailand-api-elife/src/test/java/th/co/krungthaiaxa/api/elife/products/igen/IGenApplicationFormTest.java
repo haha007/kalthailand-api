@@ -1,7 +1,12 @@
 package th.co.krungthaiaxa.api.elife.products.igen;
 
+import com.icegreen.greenmail.junit.GreenMailRule;
+import com.icegreen.greenmail.util.ServerSetupTest;
 import org.apache.commons.io.FileUtils;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.FixMethodOrder;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
@@ -12,6 +17,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.api.elife.ELifeTest;
 import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
+import th.co.krungthaiaxa.api.elife.factory.PolicyFactory;
 import th.co.krungthaiaxa.api.elife.factory.QuoteFactory;
 import th.co.krungthaiaxa.api.elife.factory.RequestFactory;
 import th.co.krungthaiaxa.api.elife.model.Policy;
@@ -41,6 +47,8 @@ public class IGenApplicationFormTest extends ELifeTest {
     @Autowired
     private PolicyService policyService;
     @Autowired
+    private PolicyFactory policyFactory;
+    @Autowired
     private PolicyValidatedProcessingService policyValidatedProcessingService;
 
     @Autowired
@@ -51,6 +59,19 @@ public class IGenApplicationFormTest extends ELifeTest {
 
     @Autowired
     private QuoteFactory quoteFactory;
+
+    @Rule
+    public final GreenMailRule greenMail = new GreenMailRule(ServerSetupTest.SMTP_IMAP);
+
+    @Before
+    public void setup() {
+        greenMail.start();
+    }
+
+    @After
+    public void tearDown() {
+        greenMail.stop();
+    }
 
     @Test
     public void test_generate_applicationForm_for_not_validated_quote() throws IOException {
