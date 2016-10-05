@@ -13,7 +13,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.model.Policy;
+import th.co.krungthaiaxa.api.elife.products.ProductUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -51,7 +53,8 @@ public class SMSApiService {
         List<NameValuePair> params = new ArrayList<>(2);
         params.add(new BasicNameValuePair("ACCOUNT", smsUser));
         params.add(new BasicNameValuePair("PASSWORD", smsPass));
-        params.add(new BasicNameValuePair("MOBILE", policy.getInsureds().get(0).getPerson().getMobilePhoneNumber().getNumber()));
+        Insured mainPerson = ProductUtils.validateExistMainInsured(policy);
+        params.add(new BasicNameValuePair("MOBILE", mainPerson.getPerson().getMobilePhoneNumber().getNumber()));
         params.add(new BasicNameValuePair("MESSAGE", message));
         httppost.setEntity(new UrlEncodedFormEntity(params, "TIS-620"));
 
