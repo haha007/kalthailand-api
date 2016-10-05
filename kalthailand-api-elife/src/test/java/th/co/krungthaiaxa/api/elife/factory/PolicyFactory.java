@@ -2,7 +2,6 @@ package th.co.krungthaiaxa.api.elife.factory;
 
 import com.icegreen.greenmail.junit.GreenMailRule;
 import com.icegreen.greenmail.util.ServerSetupTest;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Rule;
 import org.springframework.stereotype.Component;
 import th.co.krungthaiaxa.api.elife.model.Payment;
@@ -35,14 +34,19 @@ public class PolicyFactory {
     }
 
     public Policy createPolicyForLineWithValidated(int age, String email) {
-        Policy policy = createPolicyForLineWithPendingValidation(age, email);
+        Quote quote = quoteFactory.createDefaultIProtectQuoteForLine(age, email);
+        return createPolicyWithValidatedStatus(quote);
+    }
+
+    public Policy createPolicyWithValidatedStatus(Quote quote) {
+        Policy policy = policyService.createPolicy(quote);
         Payment payment = policy.getPayments().get(0);
-        String orderId = RandomStringUtils.randomNumeric(10);
-        String transactionId = RandomStringUtils.randomNumeric(15);
-        String regKey = RandomStringUtils.randomNumeric(20);
+        String orderId = PaymentFactory.generateOrderId();
+        String transactionId = PaymentFactory.generateTransactionId();
+        String regKey = PaymentFactory.generateRegKeyId();
         policyService.updatePayment(payment, orderId, transactionId, regKey);
         policyService.updatePolicyAfterFirstPaymentValidated(policy);
-        policyService.updatePolicyAfterPolicyHasBeenValidated(policy, "999999-99-999999", "agentName", "token");
+        policy = policyService.updatePolicyAfterPolicyHasBeenValidated(policy, "999999-99-999999", "Mock Agent Name", RequestFactory.generateAccessToken());
         return policy;
     }
 }
