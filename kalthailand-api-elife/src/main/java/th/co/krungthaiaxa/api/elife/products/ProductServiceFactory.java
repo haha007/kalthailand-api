@@ -1,8 +1,8 @@
 package th.co.krungthaiaxa.api.elife.products;
 
 import org.springframework.stereotype.Component;
-import th.co.krungthaiaxa.api.elife.products.igen.IGenService;
-import th.co.krungthaiaxa.api.elife.products.iprotect.IProtectService;
+import th.co.krungthaiaxa.api.elife.products.igen.IGenQuoteCalculationService;
+import th.co.krungthaiaxa.api.elife.products.iprotect.IProtectQuoteCalculationService;
 
 import javax.inject.Inject;
 
@@ -10,11 +10,11 @@ import javax.inject.Inject;
 public class ProductServiceFactory {
     private final ProductIBeginService productIBegin;
     private final ProductIFineService productIFine;
-    private final IGenService productIGen;
-    private final IProtectService productIProtect;
+    private final IGenQuoteCalculationService productIGen;
+    private final IProtectQuoteCalculationService productIProtect;
 
     @Inject
-    public ProductServiceFactory(ProductIBeginService productIBegin, ProductIFineService productIFine, IGenService iGenService, IProtectService iProtectService) {
+    public ProductServiceFactory(ProductIBeginService productIBegin, ProductIFineService productIFine, IGenQuoteCalculationService iGenService, IProtectQuoteCalculationService iProtectService) {
         this.productIBegin = productIBegin;
         this.productIFine = productIFine;
         this.productIGen = iGenService;

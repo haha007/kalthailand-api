@@ -46,7 +46,7 @@ public class IGenServiceTest extends ELifeTest {
     public static final ProductType PRODUCT_TYPE = ProductType.PRODUCT_IGEN;
 
     @Autowired
-    private IGenService productService;
+    private IGenQuoteCalculationService productService;
     @Autowired
     private QuoteService quoteService;
     @Autowired

@@ -57,7 +57,7 @@ public class IProtectServiceTest extends ELifeTest {
     IProtectDiscountRateExcelLoaderService iProtectDiscountRateExcelLoaderService;
 
     @Inject
-    IProtectService productService;
+    IProtectQuoteCalculationService productService;
 
     private static Quote quote = null;
 

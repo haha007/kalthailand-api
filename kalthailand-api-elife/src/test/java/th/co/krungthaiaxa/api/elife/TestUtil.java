@@ -37,7 +37,7 @@ import th.co.krungthaiaxa.api.elife.products.ProductIFineService;
 import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
 import th.co.krungthaiaxa.api.elife.products.ProductService;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
-import th.co.krungthaiaxa.api.elife.products.igen.IGenService;
+import th.co.krungthaiaxa.api.elife.products.igen.IGenQuoteCalculationService;
 import th.co.krungthaiaxa.api.elife.utils.BeneficiaryUtils;
 
 import javax.mail.MessagingException;
@@ -257,8 +257,8 @@ public class TestUtil {
         return new ProductIFineService();
     }
 
-    public static IGenService productIGenService() {
-        return new IGenService();
+    public static IGenQuoteCalculationService productIGenService() {
+        return new IGenQuoteCalculationService();
     }
 
     //TODO use BeneficiaryFactory

@@ -41,7 +41,7 @@ import java.io.IOException;
 @ActiveProfiles("test")
 public class IGenApplicationFormTest extends ELifeTest {
     @Autowired
-    private IGenService productService;
+    private IGenQuoteCalculationService productService;
     @Autowired
     private QuoteService quoteService;
     @Autowired
