@@ -10,6 +10,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.api.elife.ELifeTest;
 import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
+import th.co.krungthaiaxa.api.elife.factory.ProductQuotationFactory;
 import th.co.krungthaiaxa.api.elife.factory.QuoteFactory;
 import th.co.krungthaiaxa.api.elife.model.QuoteCount;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
@@ -29,6 +30,8 @@ public class QuoteCountsServiceTest extends ELifeTest {
     QuoteFactory quoteFactory;
 
     @Autowired
+    QuoteService quoteService;
+    @Autowired
     QuoteCountForAllProductsService quoteCountForAllProductsService;
 
     @Test
@@ -38,21 +41,27 @@ public class QuoteCountsServiceTest extends ELifeTest {
         LocalDateTime toDateTime = LocalDateTime.now();
 
         List<QuoteCount> quoteCountListBefore = quoteCountForAllProductsService.countQuotesOfAllProducts(fromDateTime, toDateTime);
-        quoteFactory.createDefaultIGen();
+
+        //Create one new iProtect
         quoteFactory.createDefaultIProtect();
+
+        //Create new iGen
+        QuoteFactory.QuoteResult quoteResult = quoteFactory.createDefaultIGen();
+        //Create another iGen with the same quoteSessionId
+        quoteFactory.createQuote(quoteResult.getSessionId(), ProductQuotationFactory.constructIGenDefault(), ProductQuotationFactory.DUMMY_EMAIL);
 
         toDateTime = LocalDateTime.now();
         List<QuoteCount> quoteCountListAfter = quoteCountForAllProductsService.countQuotesOfAllProducts(fromDateTime, toDateTime);
 
-        assertQuoteCountsDiff(quoteCountListBefore, quoteCountListAfter, ProductType.PRODUCT_IFINE, 0);
-        assertQuoteCountsDiff(quoteCountListBefore, quoteCountListAfter, ProductType.PRODUCT_IGEN, -1);
-        assertQuoteCountsDiff(quoteCountListBefore, quoteCountListAfter, ProductType.PRODUCT_IPROTECT, -1);
+        assertQuoteCountsDiff(quoteCountListBefore, quoteCountListAfter, ProductType.PRODUCT_IFINE, 0, 0);
+        assertQuoteCountsDiff(quoteCountListBefore, quoteCountListAfter, ProductType.PRODUCT_IPROTECT, -1, -1);
+        assertQuoteCountsDiff(quoteCountListBefore, quoteCountListAfter, ProductType.PRODUCT_IGEN, -1, -2);
     }
 
-    private void assertQuoteCountsDiff(List<QuoteCount> quoteCountsBefore, List<QuoteCount> quoteCountsAfter, ProductType productType, long diffNumber) {
+    private void assertQuoteCountsDiff(List<QuoteCount> quoteCountsBefore, List<QuoteCount> quoteCountsAfter, ProductType productType, long diffSessionQuotes, long diffQuotes) {
         QuoteCount quoteCountBefore = findQuoteCount(quoteCountsBefore, productType);
         QuoteCount quoteCountAfter = findQuoteCount(quoteCountsAfter, productType);
-        assertQuoteCountDiff(quoteCountBefore, quoteCountAfter, diffNumber);
+        assertQuoteCountDiff(quoteCountBefore, quoteCountAfter, diffSessionQuotes, diffQuotes);
     }
 
     private QuoteCount findQuoteCount(List<QuoteCount> quoteCounts, ProductType productType) {
@@ -64,8 +73,8 @@ public class QuoteCountsServiceTest extends ELifeTest {
         return null;
     }
 
-    private void assertQuoteCountDiff(QuoteCount before, QuoteCount after, long diffNumber) {
+    private void assertQuoteCountDiff(QuoteCount before, QuoteCount after, long diffSessionQuotes, long diffNumber) {
+        Assert.assertEquals((long) before.getSessionQuoteCount(), after.getSessionQuoteCount() + diffSessionQuotes);
         Assert.assertEquals((long) before.getQuoteCount(), after.getQuoteCount() + diffNumber);
-        Assert.assertEquals((long) before.getSessionQuoteCount(), after.getSessionQuoteCount() + diffNumber);
     }
 }

@@ -58,6 +58,10 @@ public class QuoteFactory {
 
     public QuoteResult createQuote(ProductQuotation productQuotation, String email) {
         String sessionId = RequestFactory.generateSession();
+        return createQuote(sessionId, productQuotation, email);
+    }
+
+    public QuoteResult createQuote(String sessionId, ProductQuotation productQuotation, String email) {
         ChannelType channelType = ChannelType.LINE;
         Quote quote = quoteService.createQuote(sessionId, channelType, productQuotation);
         TestUtil.quote(quote, BeneficiaryFactory.constructDefaultBeneficiary());
