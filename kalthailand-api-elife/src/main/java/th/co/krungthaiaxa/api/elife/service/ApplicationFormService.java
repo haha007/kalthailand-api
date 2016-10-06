@@ -22,7 +22,9 @@ import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.enums.GenderCode;
 import th.co.krungthaiaxa.api.elife.model.enums.MaritalStatus;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
+import th.co.krungthaiaxa.api.elife.model.enums.ProductDividendOption;
 import th.co.krungthaiaxa.api.elife.model.enums.RegistrationTypeName;
+import th.co.krungthaiaxa.api.elife.model.product.PremiumDetail;
 import th.co.krungthaiaxa.api.elife.products.ProductIFinePackage;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
 
@@ -353,6 +355,8 @@ public class ApplicationFormService {
                 writeText(pdfContentByte, font, MARK, 32, 528, MEDIUM_SIZE);
             }
 
+        } else if (productId.equals(ProductType.PRODUCT_IGEN.getLogicName())) {
+            fillDataForDividendOption(policy, pdfContentByte, font);
         }
 
         //payment mode
@@ -404,6 +408,25 @@ public class ApplicationFormService {
 
         //health question 2
         writeText(pdfContentByte, font, MARK, 36, 70, MEDIUM_SIZE);
+    }
+
+    private void fillDataForDividendOption(Policy policy, PdfContentByte pdfContentByte, BaseFont font) {
+        //dividend option
+        PremiumDetail premiumDetail = policy.getPremiumsData().getPremiumDetail();
+        if (premiumDetail.getDividendOptionId().equals(ProductDividendOption.ANNUAL_PAY_BACK_CASH.getId())) {
+            //divident option 1
+            writeText(pdfContentByte, font, MARK, 32, 560, MEDIUM_SIZE);
+            //divident option 1.1
+            writeText(pdfContentByte, font, MARK, 70, 560, MEDIUM_SIZE);
+        } else if (premiumDetail.getDividendOptionId().equals(ProductDividendOption.ANNUAL_PAY_BACK_NEXT_PREMIUM.getId())) {
+            //divident option 1
+            writeText(pdfContentByte, font, MARK, 32, 560, MEDIUM_SIZE);
+            //divident option 1.2
+            writeText(pdfContentByte, font, MARK, 70, 544, MEDIUM_SIZE);
+        } else if (premiumDetail.getDividendOptionId().equals(ProductDividendOption.END_OF_CONTRACT_PAY_BACK.getId())) {
+            //divident option 2
+            writeText(pdfContentByte, font, MARK, 32, 528, MEDIUM_SIZE);
+        }
     }
 
     private void getPage3(PdfContentByte pdfContentByte) throws IOException {

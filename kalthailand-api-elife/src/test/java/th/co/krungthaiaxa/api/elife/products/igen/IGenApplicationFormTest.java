@@ -19,8 +19,12 @@ import th.co.krungthaiaxa.api.elife.ELifeTest;
 import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
 import th.co.krungthaiaxa.api.elife.TestUtil;
 import th.co.krungthaiaxa.api.elife.factory.PolicyFactory;
+import th.co.krungthaiaxa.api.elife.factory.ProductQuotationFactory;
 import th.co.krungthaiaxa.api.elife.factory.QuoteFactory;
 import th.co.krungthaiaxa.api.elife.model.Policy;
+import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
+import th.co.krungthaiaxa.api.elife.model.enums.ProductDividendOption;
+import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
 import th.co.krungthaiaxa.api.elife.service.ApplicationFormService;
 import th.co.krungthaiaxa.api.elife.service.DocumentService;
 import th.co.krungthaiaxa.api.elife.service.PolicyService;
@@ -85,9 +89,27 @@ public class IGenApplicationFormTest extends ELifeTest {
     }
 
     @Test
-    public void test_generate_applicationForm_for_validated_quote() throws IOException {
+    public void test_generate_applicationForm_for_validated_quote_end_of_contract() throws IOException {
         QuoteFactory.QuoteResult quoteResult = quoteFactory.createDefaultIGen();
         Policy policy = policyFactory.createPolicyWithValidatedStatus(quoteResult.getQuote());
+        testGenerateValidatedApplicationForm(policy);
+    }
+
+    @Test
+    public void test_generate_applicationForm_for_validated_quote_annual_cash_back() throws IOException {
+        ProductQuotation productQuotation = ProductQuotationFactory.constructIGen(33, PeriodicityCode.EVERY_YEAR, 1000000.0, true, 35, ProductDividendOption.ANNUAL_PAY_BACK_CASH);
+        Policy policy = policyFactory.createPolicyWithValidatedStatus(productQuotation, ProductQuotationFactory.DUMMY_EMAIL);
+        testGenerateValidatedApplicationForm(policy);
+    }
+
+    @Test
+    public void test_generate_applicationForm_for_validated_quote_annual_next_premium() throws IOException {
+        ProductQuotation productQuotation = ProductQuotationFactory.constructIGen(33, PeriodicityCode.EVERY_YEAR, 1000000.0, true, 35, ProductDividendOption.ANNUAL_PAY_BACK_NEXT_PREMIUM);
+        Policy policy = policyFactory.createPolicyWithValidatedStatus(productQuotation, ProductQuotationFactory.DUMMY_EMAIL);
+        testGenerateValidatedApplicationForm(policy);
+    }
+
+    private void testGenerateValidatedApplicationForm(Policy policy) throws IOException {
         byte[] pdfContent = applicationFormService.generateValidatedApplicationForm(policy);
         File file = new File(TestUtil.PATH_TEST_RESULT + System.currentTimeMillis() + "_applicationform_" + policy.getPolicyId() + ".pdf");
         FileUtils.writeByteArrayToFile(file, pdfContent);
