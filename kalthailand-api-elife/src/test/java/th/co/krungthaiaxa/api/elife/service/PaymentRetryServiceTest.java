@@ -45,7 +45,7 @@ import java.util.Optional;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiElifeApplication.class)
 @WebAppConfiguration
-@ActiveProfiles("uat")
+@ActiveProfiles("test")
 public class PaymentRetryServiceTest extends ELifeTest {
     public static final Logger LOGGER = LoggerFactory.getLogger(PaymentRetryServiceTest.class);
     @Inject
