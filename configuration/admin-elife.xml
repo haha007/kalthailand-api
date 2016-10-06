@@ -1,0 +1,4 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Context>
+<Environment name="spring.profiles.active" value="uat" type="java.lang.String" override="false"/>
+</Context>
