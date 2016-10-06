@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.Quote;
+import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
 import th.co.krungthaiaxa.api.elife.service.PolicyService;
 import th.co.krungthaiaxa.api.elife.service.QuoteService;
 
@@ -36,6 +37,11 @@ public class PolicyFactory {
     public Policy createPolicyForLineWithValidated(int age, String email) {
         Quote quote = quoteFactory.createDefaultIProtectQuoteForLine(age, email);
         return createPolicyWithValidatedStatus(quote);
+    }
+
+    public Policy createPolicyWithValidatedStatus(ProductQuotation productQuotation, String insuredEmail) {
+        QuoteFactory.QuoteResult quoteResult = quoteFactory.createQuote(productQuotation, insuredEmail);
+        return createPolicyWithValidatedStatus(quoteResult.getQuote());
     }
 
     public Policy createPolicyWithValidatedStatus(Quote quote) {

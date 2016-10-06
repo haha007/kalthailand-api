@@ -39,7 +39,7 @@ public class QuoteFactory {
     }
 
     public QuoteResult createDefaultIGen() {
-        return createDefaultIGen("dummy@krungthai-axa.co.th");
+        return createDefaultIGen(ProductQuotationFactory.DUMMY_EMAIL);
     }
 
     public QuoteResult createDefaultIGen(String email) {
@@ -52,7 +52,7 @@ public class QuoteFactory {
         return createQuote(productQuotation, email);
     }
 
-    private QuoteResult createQuote(ProductQuotation productQuotation, String email) {
+    public QuoteResult createQuote(ProductQuotation productQuotation, String email) {
         String sessionId = RequestFactory.generateSession();
         ChannelType channelType = ChannelType.LINE;
         Quote quote = quoteService.createQuote(sessionId, channelType, productQuotation);

@@ -19,12 +19,14 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
 import th.co.krungthaiaxa.api.elife.ELifeTest;
 import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
+import th.co.krungthaiaxa.api.elife.TestUtil;
 import th.co.krungthaiaxa.api.elife.data.CollectionFile;
 import th.co.krungthaiaxa.api.elife.data.DeductionFileLine;
 import th.co.krungthaiaxa.api.elife.exception.PaymentHasNewerCompletedException;
 import th.co.krungthaiaxa.api.elife.factory.CollectionFileFactory;
 import th.co.krungthaiaxa.api.elife.factory.PaymentFactory;
 import th.co.krungthaiaxa.api.elife.factory.PolicyFactory;
+import th.co.krungthaiaxa.api.elife.factory.ProductQuotationFactory;
 import th.co.krungthaiaxa.api.elife.factory.QuoteFactory;
 import th.co.krungthaiaxa.api.elife.factory.RequestFactory;
 import th.co.krungthaiaxa.api.elife.mock.LineServiceMockFactory;
@@ -33,6 +35,7 @@ import th.co.krungthaiaxa.api.elife.model.PaymentInformation;
 import th.co.krungthaiaxa.api.elife.model.PaymentNewerCompletedResult;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus;
+import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
 import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
 import th.co.krungthaiaxa.api.elife.utils.GreenMailUtil;
 
@@ -73,39 +76,64 @@ public class PaymentRetryServiceTest extends ELifeTest {
     private static String PAYMENT_ID_01_FAIL;
     private static Payment PAYMENT_02_RETRY;
 
+    public void testFullFlowForPaymentFailAndRetrySuccess(ProductQuotation productQuotation) throws FolderException {
+        PolicyWithFirstFailPayment policyWithFirstFailPayment = testCreatePolicyAndTheFirstFailPayment(productQuotation, ProductQuotationFactory.DUMMY_EMAIL);
+        PaymentNewerCompletedResult paymentNewerCompletedResult = paymentService.findNewerCompletedPaymentInSamePolicy(policyWithFirstFailPayment.failPaymentId);
+        Payment failPayment = paymentNewerCompletedResult.getPayment();
+        Assert.assertEquals(policyWithFirstFailPayment.failPaymentId, failPayment.getPaymentId());
+        Assert.assertNull(paymentNewerCompletedResult.getNewerCompletedPayment());
+
+        setupLineServiceWithResponseCode(LineService.RESPONSE_CODE_SUCCESS);
+        RetryPaymentResult retryPaymentResult = retryFailedPaymentInCollection(policyWithFirstFailPayment.collectionFile, policyWithFirstFailPayment.policy);
+
+        GreenMailUtil.writeReceiveMessagesToFiles(greenMail, TestUtil.PATH_TEST_RESULT + "/emails");
+        Assert.assertTrue(greenMail.getReceivedMessages().length > 0);
+    }
+
     @Test
-    public void test01_payment_fail_should_has_result_in_collection() throws FolderException {
+    public void test_iGen_full_flow_for_payment_fail_and_then_retry_success() throws FolderException {
+        ProductQuotation productQuotation = ProductQuotationFactory.constructIGenDefaultWithMonthlyPayment();
+        testFullFlowForPaymentFailAndRetrySuccess(productQuotation);
+    }
+
+    @Test
+    public void test01_iProtect_payment_fail_should_has_result_in_collection() throws FolderException {
         PolicyWithFirstFailPayment policyWithFirstFailPayment = testCreatePolicyAndTheFirstFailPayment();
         POLICY = policyWithFirstFailPayment.policy;
         COLLECTION_FILE = policyWithFirstFailPayment.collectionFile;
-        PAYMENT_ID_01_FAIL = policyWithFirstFailPayment.paymentId;
+        PAYMENT_ID_01_FAIL = policyWithFirstFailPayment.failPaymentId;
     }
 
     private PolicyWithFirstFailPayment testCreatePolicyAndTheFirstFailPayment() throws FolderException {
+        ProductQuotation productQuotation = ProductQuotationFactory.constructIProtectDefault();
+        return testCreatePolicyAndTheFirstFailPayment(productQuotation, ProductQuotationFactory.DUMMY_EMAIL);
+    }
+
+    private PolicyWithFirstFailPayment testCreatePolicyAndTheFirstFailPayment(ProductQuotation productQuotation, String insuredEmail) throws FolderException {
         PolicyWithFirstFailPayment result = new PolicyWithFirstFailPayment();
         mongoTemplate.dropCollection(CollectionFile.class);
 
-        Policy policy = policyFactory.createPolicyForLineWithValidated(30, "khoi.tran.ags@gmail.com");
-        String lineResponseCode = "4000";
-        setupLineServiceWithResponseCode(lineResponseCode);
+        Policy policy = policyFactory.createPolicyWithValidatedStatus(productQuotation, insuredEmail);
 
+        String mockLineResponseFailCode = "4000";
+        setupLineServiceWithResponseCode(mockLineResponseFailCode);
         InputStream inputStream = CollectionFileFactory.constructCollectionExcelFile(policy.getPolicyId());
         rlsService.importCollectionFile(inputStream);
         List<CollectionFile> collectionFileList = rlsService.processLatestCollectionFiles();
         CollectionFile collectionFile = collectionFileList.get(0);
         String paymentId01Fail = getPaymentIdFromFirstLineOfCollectionFile(collectionFile);
 
-        GreenMailUtil.writeReceiveMessagesToFiles(greenMail, "testresult/emails");
+        GreenMailUtil.writeReceiveMessagesToFiles(greenMail, TestUtil.PATH_TEST_RESULT + "/emails");
         Assert.assertTrue(greenMail.getReceivedMessages().length > 0);
         greenMail.purgeEmailFromAllMailboxes();
 
         //Assert
         DeductionFileLine deductionFileLine = getDeductionFileLineByPolicyNumber(collectionFile, policy.getPolicyId());
-        Assert.assertEquals(lineResponseCode, deductionFileLine.getRejectionCode());
+        Assert.assertEquals(mockLineResponseFailCode, deductionFileLine.getRejectionCode());
         Assert.assertEquals(PaymentFailEmailService.RESPONSE_CODE_EMAIL_SENT_SUCCESS, deductionFileLine.getInformCustomerCode());
 
         result.collectionFile = collectionFile;
-        result.paymentId = paymentId01Fail;
+        result.failPaymentId = paymentId01Fail;
         result.policy = policy;
         return result;
     }
@@ -113,13 +141,13 @@ public class PaymentRetryServiceTest extends ELifeTest {
     private static class PolicyWithFirstFailPayment {
         private Policy policy;
         private CollectionFile collectionFile;
-        private String paymentId;
+        private String failPaymentId;
     }
 
     @Test
     public void test02_validate_no_newer_retrypayment() throws FolderException {
         if (PAYMENT_ID_01_FAIL == null) {
-            test01_payment_fail_should_has_result_in_collection();
+            test01_iProtect_payment_fail_should_has_result_in_collection();
         }
         PaymentNewerCompletedResult paymentNewerCompletedResult = paymentService.findNewerCompletedPaymentInSamePolicy(PAYMENT_ID_01_FAIL);
         Payment failPayment = paymentNewerCompletedResult.getPayment();
@@ -130,14 +158,14 @@ public class PaymentRetryServiceTest extends ELifeTest {
     @Test
     public void test03_retry_payment_success_after_the_first_fail() throws FolderException {
         if (POLICY == null || COLLECTION_FILE == null) {
-            test01_payment_fail_should_has_result_in_collection();
+            test01_iProtect_payment_fail_should_has_result_in_collection();
         }
         //Retry the fail payment:
         setupLineServiceWithResponseCode(LineService.RESPONSE_CODE_SUCCESS);
         RetryPaymentResult retryPaymentResult = retryFailedPaymentInCollection(COLLECTION_FILE, POLICY);
         PAYMENT_02_RETRY = retryPaymentResult.retryPayment;
 
-        GreenMailUtil.writeReceiveMessagesToFiles(greenMail, "testresult/emails");
+        GreenMailUtil.writeReceiveMessagesToFiles(greenMail, TestUtil.PATH_TEST_RESULT + "/emails");
         Assert.assertTrue(greenMail.getReceivedMessages().length > 0);
     }
 
@@ -171,7 +199,7 @@ public class PaymentRetryServiceTest extends ELifeTest {
     @Test
     public void test_B_01_newpayment_without_retry() throws FolderException {
         PolicyWithFirstFailPayment policyWithFirstFailPayment = testCreatePolicyAndTheFirstFailPayment();
-        String paymentId01Fail = policyWithFirstFailPayment.paymentId;
+        String paymentId01Fail = policyWithFirstFailPayment.failPaymentId;
 
         LOGGER.debug("Payment01: " + paymentId01Fail);
         Payment payment02 = saveCompletedStatusForNextPayment(paymentId01Fail);

@@ -17,6 +17,7 @@ import static th.co.krungthaiaxa.api.elife.products.ProductUtils.amountTHB;
  */
 @Component
 public class ProductQuotationFactory {
+    public static final String DUMMY_EMAIL = "dummy@krungthai-axa.co.th";
 
     public static ProductQuotation constructQuotation(ProductType productType, String packageName, Integer age, PeriodicityCode periodicityCode, Double amountValue, Boolean isSumInsured, Integer taxRate, GenderCode genderCode, Integer occupationTypeId,
             ProductDividendOption productDividendOption) {
@@ -74,5 +75,9 @@ public class ProductQuotationFactory {
      */
     public static ProductQuotation constructIGenDefault() {
         return ProductQuotationFactory.constructIGen(33, PeriodicityCode.EVERY_YEAR, 1000000.0, true, 35, ProductDividendOption.END_OF_CONTRACT_PAY_BACK);
+    }
+
+    public static ProductQuotation constructIGenDefaultWithMonthlyPayment() {
+        return ProductQuotationFactory.constructIGen(33, PeriodicityCode.EVERY_MONTH, 1000000.0, true, 35, ProductDividendOption.END_OF_CONTRACT_PAY_BACK);
     }
 }
