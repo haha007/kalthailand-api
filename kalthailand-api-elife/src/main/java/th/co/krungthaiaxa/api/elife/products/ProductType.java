@@ -10,7 +10,7 @@ public enum ProductType {
     PRODUCT_10_EC("10EC", "10EC", "Product 10 EC"),
     PRODUCT_IBEGIN("iBegin", "iBegin", "Product iBegin"),
     PRODUCT_IFINE("iFine", "iFine", "Product iFine"),
-    PRODUCT_IGEN("iGen", "iGen", "iGen"),
+    PRODUCT_IGEN("iGen", "iGen", "Product iGen"),
     PRODUCT_IPROTECT("iProtect", "iProtect S", "Product iProtect");
     /**
      * It's same as productId.
@@ -21,6 +21,7 @@ public enum ProductType {
 
     /**
      * @deprecated I just keep it to make compatible with old code & old data. Don't use it in future!!!
+     * This value is used to connect to TMC. The formate is "Product XXX"
      */
     @Deprecated
     private String logicDisplayName;
