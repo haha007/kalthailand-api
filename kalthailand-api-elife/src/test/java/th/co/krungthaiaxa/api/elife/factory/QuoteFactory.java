@@ -47,6 +47,10 @@ public class QuoteFactory {
         return createQuote(productQuotation, email);
     }
 
+    public QuoteResult createDefaultIProtect() {
+        return createDefaultIProtect(ProductQuotationFactory.DUMMY_EMAIL);
+    }
+
     public QuoteResult createDefaultIProtect(String email) {
         ProductQuotation productQuotation = ProductQuotationFactory.constructIProtectDefault();
         return createQuote(productQuotation, email);
