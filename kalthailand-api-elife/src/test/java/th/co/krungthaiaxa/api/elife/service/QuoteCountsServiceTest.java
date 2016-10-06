@@ -33,6 +33,7 @@ public class QuoteCountsServiceTest extends ELifeTest {
 
     @Test
     public void test_quote_count_correct_number() {
+        //The method should be able to search from beginning of fromDate to ending of toDate. So we can test with fromDateTime & endDateTime at the same date.
         LocalDateTime fromDateTime = LocalDateTime.now();
         LocalDateTime toDateTime = LocalDateTime.now();
 
