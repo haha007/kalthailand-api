@@ -18,6 +18,7 @@ import th.co.krungthaiaxa.api.elife.exception.PolicyNotFoundException;
 import th.co.krungthaiaxa.api.elife.exception.PolicyValidationException;
 import th.co.krungthaiaxa.api.elife.model.Document;
 import th.co.krungthaiaxa.api.elife.model.DocumentDownload;
+import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.PaymentInformation;
 import th.co.krungthaiaxa.api.elife.model.Policy;
@@ -31,6 +32,7 @@ import th.co.krungthaiaxa.api.elife.model.line.LinePayResponse;
 import th.co.krungthaiaxa.api.elife.products.ProductService;
 import th.co.krungthaiaxa.api.elife.products.ProductServiceFactory;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
+import th.co.krungthaiaxa.api.elife.products.ProductUtils;
 import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
 import th.co.krungthaiaxa.api.elife.repository.PolicyCriteriaRepository;
 import th.co.krungthaiaxa.api.elife.repository.PolicyNumberRepository;
@@ -274,8 +276,8 @@ public class PolicyService {
         // Send Email
         try {
             emailService.sendPolicyBookedEmail(policy);
-        } catch (IOException | MessagingException e) {
-            logger.error(String.format("Unable to send email for booking policy [%1$s].", policy.getPolicyId()), e);
+        } catch (Exception e) {
+            logger.error(String.format("Unable to send email for booking policy [%s]: %s", policy.getPolicyId(), e.getMessage()), e);
         }
 
         // Send SMS
@@ -286,8 +288,8 @@ public class PolicyService {
             if (!m.get("STATUS").equals("0")) {
                 logger.error(String.format("SMS for policy booking could not be sent on policy [%1$s].", policy.getPolicyId()));
             }
-        } catch (IOException e) {
-            logger.error(String.format("Unable to send policy booking SMS message on policy [%1$s].", policy.getPolicyId()), e);
+        } catch (Exception e) {
+            logger.error(String.format("Unable to send policy booking SMS message on policy [%s]: %s", policy.getPolicyId(), e.getMessage()), e);
         }
 
         // Send push notification
@@ -295,19 +297,17 @@ public class PolicyService {
             String pushContent = IOUtils.toString(this.getClass().getResourceAsStream("/pushnotification-content/policy-booked-notification.txt"), Charset.forName("UTF-8"));
             String sendMsg = pushContent.replace("%POLICY_ID%", policy.getPolicyId());
             sendMsg = sendMsg.replace("%FULL_NAME%", policy.getInsureds().get(0).getPerson().getGivenName() + " " + policy.getInsureds().get(0).getPerson().getSurName());
-            lineService.sendPushNotification(
-                    sendMsg
-                    , policy.getInsureds().get(0).getPerson().getLineId());
-        } catch (IOException e) {
-            logger.error(String.format("Unable to send push notification for policy booking on policy [%1$s].", policy.getPolicyId()), e);
+            lineService.sendPushNotification(sendMsg, policy.getInsureds().get(0).getPerson().getLineId());
+        } catch (Exception e) {
+            logger.error(String.format("Unable to send push notification for policy booking on policy [%s]: %s", policy.getPolicyId(), e.getMessage()), e);
         }
 
         // Send Application Form to TMC
         DocumentDownload applicationFormDocument = documentService.findDocumentDownload(applicationFormPdf.get().getId());
         try {
             tmcClient.sendPDFToTMC(policy, applicationFormDocument.getContent(), APPLICATION_FORM);
-        } catch (ElifeException e) {
-            logger.error("Unable to send application Form to TMC on policy [" + policy.getPolicyId() + "].", e);
+        } catch (Exception e) {
+            logger.error("Unable to send application Form to TMC on policy [" + policy.getPolicyId() + "]: " + e.getMessage(), e);
         }
 
         // Send DA Form to TMC (DA form may not exist)
@@ -315,8 +315,8 @@ public class PolicyService {
             DocumentDownload daFormDocument = documentService.findDocumentDownload(daFormPdf.get().getId());
             try {
                 tmcClient.sendPDFToTMC(policy, daFormDocument.getContent(), DA_FORM);
-            } catch (ElifeException e) {
-                logger.error("Unable to send DA Form to TMC on policy [" + policy.getPolicyId() + "].", e);
+            } catch (Exception e) {
+                logger.error("Unable to send DA Form to TMC on policy [" + policy.getPolicyId() + "]: " + e.getMessage(), e);
             }
         }
     }
@@ -334,7 +334,7 @@ public class PolicyService {
         try {
             documentService.generateValidatedPolicyDocuments(policy, token);
         } catch (Exception e) {
-            throw new ElifeException("Can't generate documents for the policy [" + policy.getPolicyId() + "]", e);
+            throw new ElifeException("Can't generate documents for the policy [" + policy.getPolicyId() + "]: "+e.getMessage(), e);
         }
 
         // Should block if eReceipt is not generated
@@ -360,8 +360,8 @@ public class PolicyService {
         DocumentDownload documentDownload = documentService.findDocumentDownload(documentPdf.get().getId());
         try {
             emailService.sendEreceiptEmail(policy, Pair.of(Base64.getDecoder().decode(documentDownload.getContent()), "e-receipt_" + policy.getPolicyId() + ".pdf"));
-        } catch (IOException | MessagingException e) {
-            logger.error(String.format("Unable to send email for validation of policy [%1$s].", policy.getPolicyId()), e);
+        } catch (Exception e) {
+            logger.error(String.format("Unable to send email for validation of policy [%s]: %s", policy.getPolicyId(), e.getMessage()), e);
         }
 
         // Send SMS
@@ -371,31 +371,31 @@ public class PolicyService {
             if (!m.get("STATUS").equals("0")) {
                 logger.error(String.format("SMS for policy validation could not be sent on policy [%1$s].", policy.getPolicyId()));
             }
-        } catch (IOException e) {
-            logger.error(String.format("Unable to send policy validation SMS message on policy [%1$s].", policy.getPolicyId()), e);
+        } catch (Exception e) {
+            logger.error(String.format("Unable to send policy validation SMS message on policy [%s]: %s", policy.getPolicyId(), e.getMessage()), e);
         }
 
         // Send push notification
         try {
             String pushContent = IOUtils.toString(this.getClass().getResourceAsStream("/pushnotification-content/policy-purchased-notification.txt"), Charset.forName("UTF-8"));
             lineService.sendPushNotification(pushContent, policy.getInsureds().get(0).getPerson().getLineId());
-        } catch (IOException e) {
-            logger.error(String.format("Unable to send push notification for policy validation on policy [%1$s].", policy.getPolicyId()), e);
+        } catch (Exception e) {
+            logger.error(String.format("Unable to send push notification for policy validation on policy [%s]: %s", policy.getPolicyId(), e.getMessage()), e);
         }
 
         // Sign eReceipt and send it to TMC
         try {
             tmcClient.sendPDFToTMC(policy, documentDownload.getContent(), ERECEIPT_PDF);
-        } catch (ElifeException e) {
-            logger.error("Unable to send eReceipt to TMC on policy [" + policy.getPolicyId() + "].", e);
+        } catch (Exception e) {
+            logger.error("Unable to send eReceipt to TMC on policy [" + policy.getPolicyId() + "]:" + e.getMessage(), e);
         }
 
         // Send Validated Application Form to TMC
         DocumentDownload applicationFormValidatedDocument = documentService.findDocumentDownload(applicationFormValidatedPdf.get().getId());
         try {
             tmcClient.sendPDFToTMC(policy, applicationFormValidatedDocument.getContent(), APPLICATION_FORM);
-        } catch (ElifeException e) {
-            logger.error("Unable to send validated application Form to TMC on policy [" + policy.getPolicyId() + "].", e);
+        } catch (Exception e) {
+            logger.error("Unable to send validated application Form to TMC on policy [" + policy.getPolicyId() + "]: "+e.getMessage(), e);
         }
         return policy;
     }
@@ -405,6 +405,7 @@ public class PolicyService {
         return Pair.of(Base64.getDecoder().decode(documentDownload.getContent()), "e-receipt_" + policyId + ".pdf");
     }
 
+    //TODO change logic: if send email fail, it still continue with SMS & line push notification, then after that return error for email.
     public void sendNotificationsWhenUserNotRespondingToCalls(Policy policy) throws IOException, MessagingException {
         // Send Email
         emailService.sendUserNotRespondingEmail(policy);
@@ -418,16 +419,19 @@ public class PolicyService {
 
         // Send push notification
         String pushContent = IOUtils.toString(this.getClass().getResourceAsStream("/pushnotification-content/user-not-responging-notification.txt"), Charset.forName("UTF-8"));
-        lineService.sendPushNotification(pushContent.replace("%POLICY_ID%", policy.getPolicyId()), policy.getInsureds().get(0).getPerson().getLineId());
+        Insured mainInsured = ProductUtils.validateExistMainInsured(policy);
+        lineService.sendPushNotification(pushContent.replace("%POLICY_ID%", policy.getPolicyId()), mainInsured.getPerson().getLineId());
     }
 
+    //TODO change logic: if send email fail, it still continue with line push notification, then after that return error for email.
     public void sendNotificationsWhenPhoneNumberIsWrong(Policy policy) throws IOException, MessagingException {
         // Send Email
         emailService.sendPhoneNumberIsWrongEmail(policy);
 
         // Send push notification
         String pushContent = IOUtils.toString(this.getClass().getResourceAsStream("/pushnotification-content/phone-number-wrong-notification.txt"), Charset.forName("UTF-8"));
-        lineService.sendPushNotification(pushContent.replace("%POLICY_ID%", policy.getPolicyId()), policy.getInsureds().get(0).getPerson().getLineId());
+        Insured mainInsured = ProductUtils.validateExistMainInsured(policy);
+        lineService.sendPushNotification(pushContent.replace("%POLICY_ID%", policy.getPolicyId()), mainInsured.getPerson().getLineId());
     }
 
     private void updatePayment(Payment payment, Double value, String currencyCode, ChannelType channelType, String errorCode, String errorMessage, String registrationKey, String creditCardName, String paymentMethod) {

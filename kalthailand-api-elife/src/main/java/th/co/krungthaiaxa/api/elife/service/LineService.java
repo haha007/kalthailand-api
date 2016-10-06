@@ -147,8 +147,8 @@ public class LineService {
         ResponseEntity<String> response;
         try {
             response = restTemplate.exchange(builder.toUriString(), POST, entity, String.class);
-        } catch (RuntimeException e) {
-            throw new IOException("Unable to send push notification", e);
+        } catch (Exception e) {
+            throw new IOException("Unable to send push notification: " + e.getMessage(), e);
         }
         if (!response.getStatusCode().equals(OK)) {
             throw new IOException("Line's response for push notification is [" + response.getStatusCode() + "]. Response body is [" + response.getBody() + "]");
@@ -183,8 +183,8 @@ public class LineService {
         ResponseEntity<String> response;
         try {
             response = restTemplate.exchange(builder.toUriString(), POST, entity, String.class);
-        } catch (RuntimeException e) {
-            throw new IOException("Unable to book payment", e);
+        } catch (Exception e) {
+            throw new IOException("Unable to book payment: " + e.getMessage(), e);
         }
         if (!response.getStatusCode().equals(OK)) {
             throw new IOException("Line's response for booking payment is [" + response.getStatusCode() + "]. Response body is [" + response.getBody() + "]");
@@ -212,8 +212,8 @@ public class LineService {
         ResponseEntity<String> response;
         try {
             response = restTemplate.exchange(builder.toUriString(), POST, entity, String.class);
-        } catch (RuntimeException e) {
-            throw new IOException("Unable to confirm payment", e);
+        } catch (Exception e) {
+            throw new IOException("Unable to confirm payment:" + e.getMessage(), e);
         }
         if (!response.getStatusCode().equals(OK)) {
             throw new IOException("Line's response for confirming payment is [" + response.getStatusCode() + "]. Response body is [" + response.getBody() + "]");
@@ -271,10 +271,8 @@ public class LineService {
             logger.info("Notification is sent with success");
             linePayResponse = JsonUtil.mapper.readValue(response.toString(), LinePayRecurringResponse.class);
 
-        } catch (MalformedURLException e) {
-            throw new IOException("Unable to send Line push notification.", e);
-        } catch (IOException e) {
-            throw new IOException("Unexpected to send Line push notification.", e);
+        } catch (Exception e) {
+            throw new IOException("Error with preApproved: " + e.getMessage(), e);
         }
         System.out.println("Stop sending POST to LINE Pay for Recurring Payment --------------------------------------->");
 
@@ -340,7 +338,7 @@ public class LineService {
         try {
             response = restTemplate.exchange(builder.toUriString(), POST, entity, String.class);
         } catch (RuntimeException e) {
-            throw new LinePaymentException("Unable to capture payment", e);
+            throw new LinePaymentException("Unable to capture payment: " + e.getMessage(), e);
         }
         if (!response.getStatusCode().equals(OK)) {
             throw new LinePaymentException("Line's response for capturing payment is [" + response.getStatusCode() + "]. Response body is [" + response.getBody() + "]");
