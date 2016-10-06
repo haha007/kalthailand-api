@@ -77,14 +77,17 @@ public class PaymentRetryServiceTest extends ELifeTest {
     private static Payment PAYMENT_02_RETRY;
 
     public void testFullFlowForPaymentFailAndRetrySuccess(ProductQuotation productQuotation) throws FolderException {
+        //01 -  Create first fail payment.
         PolicyWithFirstFailPayment policyWithFirstFailPayment = testCreatePolicyAndTheFirstFailPayment(productQuotation, ProductQuotationFactory.DUMMY_EMAIL);
+        //      Assert
         PaymentNewerCompletedResult paymentNewerCompletedResult = paymentService.findNewerCompletedPaymentInSamePolicy(policyWithFirstFailPayment.failPaymentId);
         Payment failPayment = paymentNewerCompletedResult.getPayment();
         Assert.assertEquals(policyWithFirstFailPayment.failPaymentId, failPayment.getPaymentId());
         Assert.assertNull(paymentNewerCompletedResult.getNewerCompletedPayment());
 
+        //02 -  Retry payment
         setupLineServiceWithResponseCode(LineService.RESPONSE_CODE_SUCCESS);
-        RetryPaymentResult retryPaymentResult = retryFailedPaymentInCollection(policyWithFirstFailPayment.collectionFile, policyWithFirstFailPayment.policy);
+        testRetryFailedPaymentInCollection(policyWithFirstFailPayment.collectionFile, policyWithFirstFailPayment.policy);
 
         GreenMailUtil.writeReceiveMessagesToFiles(greenMail, TestUtil.PATH_TEST_RESULT + "/emails");
         Assert.assertTrue(greenMail.getReceivedMessages().length > 0);
@@ -162,7 +165,7 @@ public class PaymentRetryServiceTest extends ELifeTest {
         }
         //Retry the fail payment:
         setupLineServiceWithResponseCode(LineService.RESPONSE_CODE_SUCCESS);
-        RetryPaymentResult retryPaymentResult = retryFailedPaymentInCollection(COLLECTION_FILE, POLICY);
+        RetryPaymentResult retryPaymentResult = testRetryFailedPaymentInCollection(COLLECTION_FILE, POLICY);
         PAYMENT_02_RETRY = retryPaymentResult.retryPayment;
 
         GreenMailUtil.writeReceiveMessagesToFiles(greenMail, TestUtil.PATH_TEST_RESULT + "/emails");
@@ -193,7 +196,7 @@ public class PaymentRetryServiceTest extends ELifeTest {
         if (PAYMENT_02_RETRY == null) {
             test03_retry_payment_success_after_the_first_fail();
         }
-        retryFailedPaymentInCollection(COLLECTION_FILE, POLICY);
+        testRetryFailedPaymentInCollection(COLLECTION_FILE, POLICY);
     }
 
     @Test
@@ -231,7 +234,7 @@ public class PaymentRetryServiceTest extends ELifeTest {
         return collectionFile.getDeductionFile().getLines().get(0).getPaymentId();
     }
 
-    private RetryPaymentResult retryFailedPaymentInCollection(CollectionFile collectionFile, Policy policy) {
+    private RetryPaymentResult testRetryFailedPaymentInCollection(CollectionFile collectionFile, Policy policy) {
         String oldPaymentId = getPaymentIdFromFirstLineOfCollectionFile(collectionFile);
         String orderId = PaymentFactory.generateOrderId();
         String newRegKey = PaymentFactory.generatePaymentRegKey();
