@@ -7,10 +7,10 @@ import th.co.krungthaiaxa.api.common.utils.PdfIOUtil;
 import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.product.PremiumDetail;
-import th.co.krungthaiaxa.api.elife.products.AbstractProductPdfRenderService;
+import th.co.krungthaiaxa.api.elife.products.AbstractSaleIllustrationService;
 
 @Service
-public class IGenSaleIllustrationService extends AbstractProductPdfRenderService {
+public class IGenSaleIllustrationService extends AbstractSaleIllustrationService {
 
 	/*
      * must be implement for sale illustration pdf file generated

@@ -40,7 +40,7 @@ import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.notNull;
 /**
  * @author khoi.tran on 9/30/16.
  */
-public abstract class AbstractProductService implements ProductService {
+public abstract class AbstractQuoteCalculationService implements ProductService {
     private final PermanentMemoryCache<ProductSpecId, ProductSpec> productSpecCache = new PermanentMemoryCache<>();
     @Autowired
     private BeanValidator beanValidator;

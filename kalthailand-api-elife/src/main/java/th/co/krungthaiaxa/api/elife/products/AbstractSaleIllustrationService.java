@@ -24,10 +24,11 @@ import java.util.Locale;
 
 import static org.apache.commons.io.IOUtils.toByteArray;
 
+//TODO need to refactor!
 @Component
-public abstract class AbstractProductPdfRenderService implements SaleIllustrationService {
+public abstract class AbstractSaleIllustrationService implements SaleIllustrationService {
 
-    protected final static Logger LOGGER = LoggerFactory.getLogger(AbstractProductPdfRenderService.class);
+    protected final static Logger LOGGER = LoggerFactory.getLogger(AbstractSaleIllustrationService.class);
 
     protected static final BaseColor BORDER_COLOR = new BaseColor(218, 218, 218);
     protected static final String _fontNormal = "/saleillustration/PSL094.TTF";

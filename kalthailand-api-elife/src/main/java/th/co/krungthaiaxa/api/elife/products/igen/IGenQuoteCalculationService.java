@@ -14,7 +14,7 @@ import th.co.krungthaiaxa.api.elife.model.product.ProductSpecId;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 import th.co.krungthaiaxa.api.elife.model.enums.ProductDividendOption;
-import th.co.krungthaiaxa.api.elife.products.AbstractProductService;
+import th.co.krungthaiaxa.api.elife.products.AbstractQuoteCalculationService;
 import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
 import th.co.krungthaiaxa.api.elife.products.ProductService;
 import th.co.krungthaiaxa.api.elife.products.ProductUtils;
@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class IGenService extends AbstractProductService implements ProductService {
+public class IGenQuoteCalculationService extends AbstractQuoteCalculationService implements ProductService {
     @Inject
     private OccupationTypeRepository occupationTypeRepository;
 

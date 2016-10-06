@@ -15,7 +15,7 @@ import th.co.krungthaiaxa.api.elife.model.product.ProductSpec;
 import th.co.krungthaiaxa.api.elife.model.product.ProductSpecId;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
-import th.co.krungthaiaxa.api.elife.products.AbstractProductService;
+import th.co.krungthaiaxa.api.elife.products.AbstractQuoteCalculationService;
 import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
 import th.co.krungthaiaxa.api.elife.products.ProductService;
 import th.co.krungthaiaxa.api.elife.products.ProductUtils;
@@ -26,7 +26,7 @@ import java.time.Instant;
 import java.util.Optional;
 
 @Service
-public class IProtectService extends AbstractProductService implements ProductService {
+public class IProtectQuoteCalculationService extends AbstractQuoteCalculationService implements ProductService {
 
     @Inject
     private IProtectDiscountRateService iProtectDiscountRateService;
