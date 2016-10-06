@@ -36,6 +36,12 @@ The artifact "javax.mail" in group "com.sun.mail" package is provided by JavaEE 
 You can check the information of current API in this link:
 http://localhost:8080/api-elife/project-info
 
+
+If you need to restart the JBoss, use following commandline:
+sudo service jboss-as-standalone.sh restart
+
+Log folder:
+opt/elife/logs/api-elife*.log
 =========================
 v1.7.0:
 iGen product:
