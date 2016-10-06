@@ -25,6 +25,12 @@
             <artifactId>jsoup</artifactId>
             <version>1.8.3</version>
         </dependency>
+
+        <dependency>
+            <groupId>th.co.krungthaiaxa</groupId>
+            <artifactId>api-common</artifactId>
+            <version>${kalthailand.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
