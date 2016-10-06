@@ -41,7 +41,8 @@ If you need to restart the JBoss, use following commandline:
 sudo service jboss-as-standalone.sh restart
 
 Log folder:
-opt/elife/logs/api-elife*.log
+cd /opt/elife/logs/
+api-elife*.log
 =========================
 v1.7.0:
 iGen product:
