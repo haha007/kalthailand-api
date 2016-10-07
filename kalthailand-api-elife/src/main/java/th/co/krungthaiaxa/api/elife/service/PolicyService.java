@@ -66,8 +66,6 @@ import static th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus.INCOMPLETE;
 import static th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus.NOT_PROCESSED;
 import static th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus.OVERPAID;
 import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.EVERY_MONTH;
-import static th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus.PENDING_PAYMENT;
-import static th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus.PENDING_VALIDATION;
 import static th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus.VALIDATED;
 import static th.co.krungthaiaxa.api.elife.products.ProductUtils.amount;
 
@@ -166,7 +164,7 @@ public class PolicyService {
             productService.createPolicyFromQuote(policy, quote);
 
             policy.getPayments().stream().forEach(paymentRepository::save);
-            policy.setStatus(PENDING_PAYMENT);
+            policy.setStatus(PolicyStatus.PENDING_PAYMENT);
             Instant now = Instant.now();
             policy.setCreationDateTime(now);
             policy.setLastUpdateDateTime(now);
@@ -269,7 +267,7 @@ public class PolicyService {
             }
         }
 
-        policy.setStatus(PENDING_VALIDATION);
+        policy.setStatus(PolicyStatus.PENDING_VALIDATION);
         policy.setLastUpdateDateTime(Instant.now());
         policyRepository.save(policy);
 
@@ -322,7 +320,7 @@ public class PolicyService {
     }
 
     public Policy updatePolicyAfterPolicyHasBeenValidated(Policy policy, String agentCode, String agentName, String token) {
-        if (!PENDING_VALIDATION.equals(policy.getStatus())) {
+        if (!PolicyStatus.PENDING_VALIDATION.equals(policy.getStatus())) {
             throw new ElifeException("Can't validate policy [" + policy.getPolicyId() + "], it is not pending for validation, it's " + policy.getStatus());
         }
 

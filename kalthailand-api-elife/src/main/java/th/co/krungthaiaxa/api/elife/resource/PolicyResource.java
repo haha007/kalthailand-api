@@ -67,7 +67,6 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 import static th.co.krungthaiaxa.api.common.utils.JsonUtil.getJson;
-import static th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus.PENDING_VALIDATION;
 import static th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus.VALIDATED;
 import static th.co.krungthaiaxa.api.elife.utils.ExcelUtils.text;
 
@@ -367,7 +366,7 @@ public class PolicyResource {
         Policy policy = policyService.validateExistPolicy(policyId);
 
         if (!policy.getStatus().equals(PolicyStatus.PENDING_PAYMENT)) {
-            logger.error("The policy is in status [" + policy.getStatus().name() + "] and cannot be updated to " + PENDING_VALIDATION + " status.");
+            logger.error("The policy is in status [" + policy.getStatus().name() + "] and cannot be updated to " + PolicyStatus.PENDING_VALIDATION + " status.");
             return new ResponseEntity<>(getJson(ErrorCode.POLICY_IS_NOT_PENDING_FOR_PAYMENT.apply(policyId)), NOT_ACCEPTABLE);
         }
 
@@ -382,12 +381,7 @@ public class PolicyResource {
             return new ResponseEntity<>(getJson(policy), OK);
         }
 
-        // Update the payment
-        if (regKey.isPresent()) {
-            policyService.updatePayment(payment.get(), orderId, transactionId.get(), (!regKey.isPresent() ? "" : regKey.get()));
-        } else {
-            policyService.updatePayment(payment.get(), orderId, transactionId.get(), "");
-        }
+        policyService.updatePayment(payment.get(), orderId, transactionId.get(), (!regKey.isPresent() ? "" : regKey.get()));
 
         // Update the policy status
         policyService.updatePolicyAfterFirstPaymentValidated(policy);
