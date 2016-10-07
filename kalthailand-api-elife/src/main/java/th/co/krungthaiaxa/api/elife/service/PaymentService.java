@@ -70,6 +70,7 @@ public class PaymentService {
         this.messageSource = messageSource;
     }
 
+    //TODO should move to {@link PaymentQueryService}
     public Payment findFirstPaymentHasTransactionId(String policyNumber) {
         Pageable pageable = new PageRequest(0, 1);
         List<Payment> payments = paymentRepository.findByPolicyIdAndTransactionIdNotNull(policyNumber, pageable);

@@ -69,13 +69,14 @@ public class DocumentService {
     private final DAFormService daFormService;
     private final SigningClient signingClient;
     private final PaymentRepository paymentRepository;
+    private final PaymentQueryService paymentQueryService;
 
     @Inject
     public DocumentService(DocumentRepository documentRepository,
             DocumentDownloadRepository documentDownloadRepository,
             PolicyRepository policyRepository,
             ApplicationFormService applicationFormService,
-            DAFormService daFormService, SigningClient signingClient, PaymentRepository paymentRepository) {
+            DAFormService daFormService, SigningClient signingClient, PaymentRepository paymentRepository, PaymentQueryService paymentQueryService) {
         this.documentRepository = documentRepository;
         this.documentDownloadRepository = documentDownloadRepository;
         this.policyRepository = policyRepository;
@@ -83,6 +84,7 @@ public class DocumentService {
         this.daFormService = daFormService;
         this.signingClient = signingClient;
         this.paymentRepository = paymentRepository;
+        this.paymentQueryService = paymentQueryService;
     }
 
     public DocumentDownload findDocumentDownload(String documentId) {
@@ -187,7 +189,8 @@ public class DocumentService {
         }
 
         // Generate Ereceipt as Image
-        Payment firstPayment = policy.getPayments().get(0);
+        //TODO payment was updated, so we should not get it from policy.payments(0). It's not correct! We must get it from DB.
+        Payment firstPayment = paymentQueryService.validateExistFirstPaymentOrderById(policy.getPolicyId());
         byte[] ereceiptImage = null;
         Optional<Document> documentImage = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(ERECEIPT_IMAGE)).findFirst();
         if (!documentImage.isPresent()) {

@@ -16,6 +16,8 @@ import java.util.Optional;
 public interface PaymentRepository extends MongoRepository<Payment, String> {
     List<Payment> findByPolicyId(String policyId);
 
+    List<Payment> findByPolicyId(String policyId, Pageable pageable);
+
     @Query(value = "{"
             + " '$and':["
             + "      {'policyId': ?0}"

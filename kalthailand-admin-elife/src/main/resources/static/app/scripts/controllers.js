@@ -599,9 +599,9 @@
                 },
                 function (err) {
                     $scope.isFetching = false;
-
-                    $scope.successMessage = null;
-                    $scope.errorMessage = err.toString();
+                    $scope.showErrorMessage(err.data);
+                    //$scope.successMessage = null;
+                    //$scope.errorMessage = err.toString();
                 }
             )
 
@@ -659,6 +659,9 @@
             searchForPolicyDetail();
         };
         $scope.getProductDisplayName = function (policyDetail) {
+            if (!hasValue(policyDetail)) {
+                return null;
+            }
             var productId = policyDetail.commonData.productId;
             var productName;
             if (productId == "iProtect") {
