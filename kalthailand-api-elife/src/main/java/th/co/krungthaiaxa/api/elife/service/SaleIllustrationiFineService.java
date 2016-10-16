@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
+import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
 import th.co.krungthaiaxa.api.common.utils.PdfIOUtil;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
@@ -63,7 +64,7 @@ public class SaleIllustrationiFineService {
 
         if (logger.isDebugEnabled()) {
             logger.debug(String.format("[%1$s] .....", "generatePDF"));
-            logger.debug(String.format("quote is %1$s", quote.toString()));
+            logger.debug(String.format("quote is %1$s", ObjectMapperUtil.toStringMultiLine(quote)));
         }
 
         ProductIFinePremium p = quote.getPremiumsData().getProductIFinePremium();
