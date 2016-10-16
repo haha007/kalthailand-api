@@ -14,3 +14,4 @@ kalthailand-api-elife/logs/*.*
 kalthailand-api-elife/test
 kalthailand-api-elife/testresult
 kalthailand-admin-elife/bin/
+.sonar
