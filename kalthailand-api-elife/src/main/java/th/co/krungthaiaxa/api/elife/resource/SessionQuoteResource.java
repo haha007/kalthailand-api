@@ -60,7 +60,7 @@ public class SessionQuoteResource {
         LocalDateTime startDate = DateTimeUtil.toLocalDateTimePatternISO(startDateString);
         LocalDateTime endDate = DateTimeUtil.toLocalDateTimePatternISO(endDateString);
         byte[] content = sessionQuoteService.exportTotalQuotesCountReport(startDate, endDate);
-        DownloadUtil.writeBytesToResponseWithFileNamePrefix(response, content, "session-quotes-count");
+        DownloadUtil.writeBytesToResponseWithDateRollFileName(response, content, "session-quotes-count");
     }
 
 

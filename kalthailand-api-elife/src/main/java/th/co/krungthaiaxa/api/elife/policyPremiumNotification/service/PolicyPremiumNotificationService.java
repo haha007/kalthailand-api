@@ -1,25 +1,21 @@
 package th.co.krungthaiaxa.api.elife.policyPremiumNotification.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.common.utils.IOUtil;
 import th.co.krungthaiaxa.api.elife.exception.SMSException;
-import th.co.krungthaiaxa.api.elife.model.Amount;
-import th.co.krungthaiaxa.api.elife.model.Insured;
-import th.co.krungthaiaxa.api.elife.model.Periodicity;
-import th.co.krungthaiaxa.api.elife.model.Policy;
-import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
+import th.co.krungthaiaxa.api.elife.model.PolicyCDB;
 import th.co.krungthaiaxa.api.elife.model.sms.SMSResponse;
-import th.co.krungthaiaxa.api.elife.products.ProductUtils;
+import th.co.krungthaiaxa.api.elife.policyPremiumNotification.model.PolicyPremiumNoticeRequest;
+import th.co.krungthaiaxa.api.elife.policyPremiumNotification.model.PolicyPremiumNoticeSMSRequest;
 import th.co.krungthaiaxa.api.elife.service.ElifeEmailHelper;
 import th.co.krungthaiaxa.api.elife.service.ElifeEmailService;
-import th.co.krungthaiaxa.api.elife.service.PolicyService;
 import th.co.krungthaiaxa.api.elife.service.SMSApiService;
 import th.co.krungthaiaxa.api.elife.utils.EmailUtil;
-import th.co.krungthaiaxa.api.elife.utils.PersonUtil;
 
-import java.util.Collections;
+import java.util.List;
 
 /**
  * @author khoi.tran on 10/17/16.
@@ -27,79 +23,81 @@ import java.util.Collections;
  */
 @Service
 public class PolicyPremiumNotificationService {
-    private final PolicyService policyService;
+    private final PolicyCDBService policyCDBService;
     private final SMSApiService smsApiService;
-    private final ElifeEmailService axaEmailService;
-    private final ElifeEmailHelper axaEmailHelper;
+    private final ElifeEmailService elifeEmailService;
+    private final ElifeEmailHelper elifeEmailHelper;
     private final ObjectMapper objectMapper;
 
     @Autowired
-    public PolicyPremiumNotificationService(PolicyService policyService, SMSApiService smsApiService, ElifeEmailService axaEmailService, ElifeEmailHelper axaEmailHelper, ObjectMapper objectMapper) {
-        this.policyService = policyService;
+    public PolicyPremiumNotificationService(PolicyCDBService policyCDBService, SMSApiService smsApiService, ElifeEmailService elifeEmailService, ElifeEmailHelper elifeEmailHelper, ObjectMapper objectMapper) {
+        this.policyCDBService = policyCDBService;
         this.smsApiService = smsApiService;
-        this.axaEmailService = axaEmailService;
-        this.axaEmailHelper = axaEmailHelper;
+        this.elifeEmailService = elifeEmailService;
+        this.elifeEmailHelper = elifeEmailHelper;
         this.objectMapper = objectMapper;
     }
 
-    public void sendSMS(String policyNumber) {
-        Policy policy = policyService.validateExistPolicy(policyNumber);
-        Amount premiumAmount = ProductUtils.getPremiumAmount(policy);
-        PeriodicityCode periodicityCode = ProductUtils.getPremiumPeriodicity(policy).getCode();
-        Insured mainInsured = ProductUtils.validateExistMainInsured(policy);
-        String mainInsuredFullName = PersonUtil.getFullName(mainInsured.getPerson());
-        String phoneNumber = PersonUtil.validateExistMobilePhoneNumber(mainInsured.getPerson());
-
-        //TODO need to be updated.
-        String companyCode = "000";
-
-        String message = String.format("You bought an insurance policy %s from KrungthaiAXALife Insurance %s. "
-                        + "%n Client name: %s. "
-                        + "%n Premium amount: %s"
-                        + "%n Premium periodicity: %s",
-                policyNumber, companyCode, mainInsuredFullName, premiumAmount, periodicityCode.getLabel());
+    public void sendSMS(PolicyPremiumNoticeSMSRequest policyPremiumNoticeSMSRequest) {
+        PolicyCDB policy = policyCDBService.validateExistByPolicyNumberAndMainInsuredDOB(policyPremiumNoticeSMSRequest.getPolicyNumber(), policyPremiumNoticeSMSRequest.getInsuredDob());
+        String phoneNumber = policy.getMainInsured().getMobilePhone();
+        String messageTemplate = IOUtil.loadTextFileInClassPath("/policy-premium/premium-notice-sms.txt");
+        String message = fillNoticeSMS(messageTemplate, policyPremiumNoticeSMSRequest, policy);
         SMSResponse smsResponse = smsApiService.sendMessage(phoneNumber, message);
         if (!smsResponse.getStatus().equals(SMSResponse.STATUS_SUCCESS)) {
             throw new SMSException("Sending SMS not success", smsResponse);
         }
     }
 
-    public void sendEmail(String policyNumber) {
-        Policy policy = policyService.validateExistPolicy(policyNumber);
-
-        Insured mainInsured = ProductUtils.validateExistMainInsured(policy);
-        String toEmail = mainInsured.getPerson().getEmail();
-
-        //TODO need to be updated
-        String emailSubject = "Policy Premium Notification";
-        String emailTemplate = IOUtil.loadTextFileInClassPath("/email-content/email-policy-premium-notification.html");
-        String emailContent = fillNotificationEmail(emailTemplate, policy);
-        axaEmailService.sendEmail(toEmail, emailSubject, emailContent, EmailUtil.initImagePairs("logo"), Collections.EMPTY_LIST);
-    }
-
-    private String fillNotificationEmail(String emailTemplate, Policy policy) {
-
-        Insured mainInsured = ProductUtils.validateExistMainInsured(policy);
-        Amount premiumAmount = ProductUtils.getPremiumAmount(policy);
-        Periodicity periodicity = ProductUtils.getPremiumPeriodicity(policy);
-        String mainInsuredFullName = PersonUtil.getFullName(mainInsured.getPerson());
-        //TODO need to be updated (must be passed from client)
-        String companyCode = "000";
-
-        String emailContent = emailTemplate;
-        return emailContent.replace("%DUE_DATE%", axaEmailHelper.toThaiYear(policy.getCreationDateTime()))
-                .replace("%PREMIUM_PERIODICITY%", axaEmailHelper.toThaiPaymentMode(periodicity))
-                .replace("%PREMIUM_VALUE%", axaEmailHelper.toCurrencyValue(premiumAmount.getValue()))
+    private String fillNoticeSMS(String messageTemplate, PolicyPremiumNoticeSMSRequest policyPremiumNoticeSMSRequest, PolicyCDB policy) {
+        return messageTemplate
+                .replaceAll("%COMPANY_CODE%", policyPremiumNoticeSMSRequest.getCompanyCode())
+                .replaceAll("%POLICY_NUMBER%", policy.getPolicyNumber())
+                .replaceAll("%DUE_DATE%", elifeEmailHelper.toNormalDate(policy.getDueDate()))
+                .replaceAll("%PREMIUM_AMOUNT%", elifeEmailHelper.toCurrencyValue(policy.getPremiumValue()))
                 ;
     }
 
-    //TODO pdf will be generated by RLS Service, we don't need to generate it by ourselves.
-//    private byte[] exportPdf(String policyNumber) {
-//        Policy policy = policyService.validateExistPolicy(policyNumber);
-//        String jasperTemplateClassPath = "/policy-premium/biller.jasper";
-//        PdfDataSource dataSource = toPdfDataSource(policy);
-//        return JasperUtil.exportPdfFromCompiledTemplate(jasperTemplateClassPath, objectMapper, dataSource);
+    public void sendEmail(PolicyPremiumNoticeRequest policyPremiumNoticeRequest) {
+        PolicyCDB policy = policyCDBService.validateExistByPolicyNumberAndMainInsuredDOB(policyPremiumNoticeRequest.getPolicyNumber(), policyPremiumNoticeRequest.getInsuredDob());
+        String toEmail = policy.getMainInsured().getEmail();
+
+        //TODO need to be updated
+        String emailSubject = "Policy Premium Notification";
+        String emailTemplate = IOUtil.loadTextFileInClassPath("/policy-premium/premium-notice-email.html");
+        String emailContent = emailTemplate;//fillNotificationEmail(emailTemplate, policy);
+
+        byte[] premiumNoticePdfBytes = exportPdf(policyPremiumNoticeRequest, policy);
+        List<Pair<byte[], String>> attachment = EmailUtil.initAttachment("premium-notice.pdf", premiumNoticePdfBytes);
+        elifeEmailService.sendEmail(toEmail, emailSubject, emailContent, EmailUtil.initImagePairs("logo"), attachment);
+    }
+
+//    private String fillNotificationEmail(String emailTemplate, PolicyCDB policy) {
+//
+//        Insured mainInsured = ProductUtils.validateExistMainInsured(policy);
+//        Amount premiumAmount = ProductUtils.getPremiumAmount(policy);
+//        Periodicity periodicity = ProductUtils.getPremiumPeriodicity(policy);
+//        String mainInsuredFullName = PersonUtil.getFullName(mainInsured.getPerson());
+//        //TODO need to be updated (must be passed from client)
+//        String companyCode = "000";
+//
+//        String emailContent = emailTemplate;
+//        return emailContent.replace("%DUE_DATE%", elifeEmailHelper.toThaiYear(policy.getCreationDateTime()))
+//                .replace("%PREMIUM_PERIODICITY%", elifeEmailHelper.toThaiPaymentMode(periodicity))
+//                .replace("%PREMIUM_VALUE%", elifeEmailHelper.toCurrencyValue(premiumAmount.getValue()))
+//                ;
 //    }
+
+    //TODO pdf will be generated by RLS Service, we don't need to generate it by ourselves.
+    public byte[] exportPdf(PolicyPremiumNoticeRequest policyPremiumNoticeRequest) {
+        PolicyCDB policy = policyCDBService.validateExistByPolicyNumberAndMainInsuredDOB(policyPremiumNoticeRequest.getPolicyNumber(), policyPremiumNoticeRequest.getInsuredDob());
+        return exportPdf(policyPremiumNoticeRequest, policy);
+    }
+
+    //TODO this is just sample file, we will need detail implementation later.
+    public byte[] exportPdf(PolicyPremiumNoticeRequest policyPremiumNoticeRequest, PolicyCDB policyCDB) {
+        return IOUtil.loadBinaryFileInClassPath("/policy-premium/premium-notice-pdf-mock.pdf");
+    }
 //
 //    private PdfDataSource toPdfDataSource(Policy policy) {
 //        PdfDataSource dataSource = new PdfDataSource();

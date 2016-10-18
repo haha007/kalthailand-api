@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import th.co.krungthaiaxa.api.common.model.error.Error;
 import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
 import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
+import th.co.krungthaiaxa.api.common.utils.DownloadUtil;
 import th.co.krungthaiaxa.api.common.utils.JsonUtil;
 import th.co.krungthaiaxa.api.common.utils.RequestUtil;
 import th.co.krungthaiaxa.api.elife.exception.ElifeException;
@@ -36,6 +37,8 @@ import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
 import th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayCaptureMode;
+import th.co.krungthaiaxa.api.elife.policyPremiumNotification.model.PolicyPremiumNoticeRequest;
+import th.co.krungthaiaxa.api.elife.policyPremiumNotification.model.PolicyPremiumNoticeSMSRequest;
 import th.co.krungthaiaxa.api.elife.policyPremiumNotification.service.PolicyCDBService;
 import th.co.krungthaiaxa.api.elife.policyPremiumNotification.service.PolicyPremiumNotificationService;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
@@ -51,6 +54,7 @@ import javax.inject.Inject;
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.time.LocalDate;
@@ -464,24 +468,43 @@ public class PolicyResource {
     @ApiResponses({
             @ApiResponse(code = 500, message = "If there was some internal error", response = Error.class)
     })
-    @RequestMapping(value = "/policies/{policyId}/premium/sms", produces = APPLICATION_JSON_VALUE, method = PUT)
+    @RequestMapping(value = "/policies/{policyId}/premium/sms", produces = APPLICATION_JSON_VALUE, method = POST)
     @ResponseBody
     public void sendSMSPolicyPremium(
             @ApiParam(value = "policyId", required = true)
-            @PathVariable("policyId") String policyNumber) {
-        policyPremiumNotificationService.sendSMS(policyNumber);
+            @PathVariable("policyId") String policyNumber,
+            @RequestBody @Valid PolicyPremiumNoticeSMSRequest policyPremiumNoticeSMSRequest) {
+        policyPremiumNoticeSMSRequest.setPolicyNumber(policyNumber);
+        policyPremiumNotificationService.sendSMS(policyPremiumNoticeSMSRequest);
     }
 
     @ApiOperation(value = "Notify policy's premium via Email", notes = "Send the notification about premium information to client via email", response = Policy.class)
     @ApiResponses({
             @ApiResponse(code = 500, message = "If there was some internal error", response = Error.class)
     })
-    @RequestMapping(value = "/policies/{policyId}/premium/email", produces = APPLICATION_JSON_VALUE, method = PUT)
+    @RequestMapping(value = "/policies/{policyId}/premium/email", produces = APPLICATION_JSON_VALUE, method = POST)
     @ResponseBody
     public void sendEmailPolicyPremium(
             @ApiParam(value = "policyId", required = true)
-            @PathVariable("policyId") String policyNumber) {
-        policyPremiumNotificationService.sendEmail(policyNumber);
+            @PathVariable("policyId") String policyNumber,
+            @RequestBody @Valid PolicyPremiumNoticeRequest policyPremiumNoticeRequest) {
+        policyPremiumNoticeRequest.setPolicyNumber(policyNumber);
+        policyPremiumNotificationService.sendEmail(policyPremiumNoticeRequest);
+    }
+
+    @ApiOperation(value = "Download policy's premium notification pdf", response = Policy.class)
+    @ApiResponses({
+            @ApiResponse(code = 500, message = "If there was some internal error", response = Error.class)
+    })
+    @RequestMapping(value = "/policies/{policyId}/premium/pdf", produces = APPLICATION_JSON_VALUE, method = POST)
+    public void sendEmailPolicyPremium(
+            @ApiParam(value = "policyId", required = true)
+            @PathVariable("policyId") String policyNumber,
+            @RequestBody @Valid PolicyPremiumNoticeRequest policyPremiumNoticeRequest,
+            HttpServletResponse httpServletResponse) {
+        policyPremiumNoticeRequest.setPolicyNumber(policyNumber);
+        byte[] pdf = policyPremiumNotificationService.exportPdf(policyPremiumNoticeRequest);
+        DownloadUtil.writeBytesToResponse(httpServletResponse, pdf, "premium-notice.pdf", DownloadUtil.DownloadType.PDF);
     }
 
     @ApiOperation(value = "Get policy detail from Core DB (CDB) system.", notes = "This method doesn't get policy detail from eLife DB, it will get detail from CDB.", response = Policy.class)
@@ -493,7 +516,7 @@ public class PolicyResource {
     public PolicyCDB getPolicyDetailFromCDB(
             @ApiParam(value = "policyId", required = true)
             @PathVariable("policyId") String policyNumber,
-            @ApiParam(value = "The dob of main insured", required = true)
+            @ApiParam(value = "The dob of main insured. Pattern: 'yyyy-MM-dd'", required = true)
             @RequestParam(name = "insuredDob", required = true) String insuredDobString) {
         LocalDate insuredDob = DateTimeUtil.toLocalDate(insuredDobString, RequestUtil.PATTERN_LOCAL_DATE);
         return policyCDBService.findOneByPolicyNumberAndMainInsuredDOB(policyNumber, insuredDob);

@@ -2,6 +2,7 @@ package th.co.krungthaiaxa.api.elife.utils;
 
 import org.apache.commons.lang3.tuple.Pair;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,5 +26,10 @@ public class EmailUtil {
             imagesMap.put("<image" + imageName + ">", "/images/email/" + imageName + ".png");
         }
         return th.co.krungthaiaxa.api.common.utils.EmailUtil.createBase64ImagePairs(imagesMap);
+    }
+
+    public static List<Pair<byte[], String>> initAttachment(String attachmentName, byte[] attachmentData) {
+        Pair pair = Pair.of(attachmentData, attachmentName);
+        return Arrays.asList(pair);
     }
 }

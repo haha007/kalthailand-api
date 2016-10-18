@@ -2,6 +2,7 @@ package th.co.krungthaiaxa.api.elife.policyPremiumNotification.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import th.co.krungthaiaxa.api.elife.exception.PolicyNotFoundException;
 import th.co.krungthaiaxa.api.elife.model.PolicyCDB;
 import th.co.krungthaiaxa.api.elife.repository.cdb.PolicyCDBRepository;
 
@@ -20,5 +21,15 @@ public class PolicyCDBService {
 
     public PolicyCDB findOneByPolicyNumberAndMainInsuredDOB(String policyNumber, LocalDate insuredDob) {
         return policyCDBRepository.findOneByPolicyNumberAndDOB(policyNumber, insuredDob);
+    }
+
+    public PolicyCDB validateExistByPolicyNumberAndMainInsuredDOB(String policyNumber, LocalDate insuredDob) {
+        PolicyCDB policyCDB = policyCDBRepository.findOneByPolicyNumberAndDOB(policyNumber, insuredDob);
+        if (policyCDB == null) {
+            String msg = String.format("Cannot found policy by policyId %s and insuredDob %s", policyNumber, insuredDob);
+            throw new PolicyNotFoundException(msg);
+        } else {
+            return policyCDB;
+        }
     }
 }

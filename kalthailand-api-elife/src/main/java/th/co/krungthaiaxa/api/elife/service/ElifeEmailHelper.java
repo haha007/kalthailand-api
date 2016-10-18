@@ -8,6 +8,7 @@ import th.co.krungthaiaxa.api.elife.model.Periodicity;
 import javax.inject.Inject;
 import java.text.DecimalFormat;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
@@ -36,6 +37,10 @@ public class ElifeEmailHelper {
 
     public String toCurrencyValue(Double value) {
         return DECIMAL_FORMAT.format(value);
+    }
+
+    public String toNormalDate(LocalDate localDate) {
+        return DateTimeUtil.formatLocalDate(localDate, DateTimeUtil.PATTERN_THAI_DATE);
     }
 
     public String toThaiYear(Instant instant) {

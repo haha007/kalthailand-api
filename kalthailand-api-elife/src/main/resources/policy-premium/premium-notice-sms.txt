@@ -1,6 +1,5 @@
 กรุงไทย-แอกซ่า ประกันชีวิต จำกัด(มหาชน)
-Com.code : %COMP_CODE_NUMBER% (%COMP_CODE_TEXT%)
+Com.code : %COMPANY_CODE%
 Ref.no.1 : %POLICY_NUMBER%
 Ref.no.2 : %DUE_DATE%
 จำนวนเงิน : %PREMIUM_AMOUNT%
-Periodicity: %PERIODICITY%
