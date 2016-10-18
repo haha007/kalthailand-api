@@ -23,7 +23,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import th.co.krungthaiaxa.api.common.model.error.Error;
 import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
+import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
 import th.co.krungthaiaxa.api.common.utils.JsonUtil;
+import th.co.krungthaiaxa.api.common.utils.RequestUtil;
 import th.co.krungthaiaxa.api.elife.exception.ElifeException;
 import th.co.krungthaiaxa.api.elife.model.Document;
 import th.co.krungthaiaxa.api.elife.model.DocumentDownload;
@@ -492,7 +494,8 @@ public class PolicyResource {
             @ApiParam(value = "policyId", required = true)
             @PathVariable("policyId") String policyNumber,
             @ApiParam(value = "The dob of main insured", required = true)
-            @RequestParam LocalDate insuredDob) {
+            @RequestParam(name = "insuredDob", required = true) String insuredDobString) {
+        LocalDate insuredDob = DateTimeUtil.toLocalDate(insuredDobString, RequestUtil.PATTERN_LOCAL_DATE);
         return policyCDBService.findOneByPolicyNumberAndMainInsuredDOB(policyNumber, insuredDob);
     }
 
