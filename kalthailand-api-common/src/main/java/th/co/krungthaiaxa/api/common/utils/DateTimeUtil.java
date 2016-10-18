@@ -95,4 +95,8 @@ public class DateTimeUtil {
     public static String formatLocalDateTime(LocalDateTime localDateTime, String pattern) {
         return localDateTime.format(DateTimeFormatter.ofPattern(pattern));
     }
+
+    public static LocalDateTime toThaiLocalDateTime(Instant instant) {
+        return LocalDateTime.ofInstant(instant, getThaiZoneId());
+    }
 }

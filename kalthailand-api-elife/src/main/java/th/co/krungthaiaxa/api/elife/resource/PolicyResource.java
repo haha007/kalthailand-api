@@ -33,6 +33,7 @@ import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
 import th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayCaptureMode;
+import th.co.krungthaiaxa.api.elife.policyPremiumNotification.service.PolicyPremiumNotificationService;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
 import th.co.krungthaiaxa.api.elife.service.DocumentService;
 import th.co.krungthaiaxa.api.elife.service.LineService;
@@ -80,6 +81,7 @@ public class PolicyResource {
     private final QuoteService quoteService;
     private final PaymentService paymentService;
     private final PolicyValidatedProcessingService policyValidatedProcessingService;
+    private final PolicyPremiumNotificationService policyPremiumNotificationService;
 
     @Value("${environment.name}")
     private String environmentName;
@@ -87,13 +89,15 @@ public class PolicyResource {
     private String accessTokenHeader;
 
     @Inject
-    public PolicyResource(DocumentService documentService, LineService lineService, PolicyService policyService, QuoteService quoteService, PaymentService paymentService, PolicyValidatedProcessingService policyValidatedProcessingService) {
+    public PolicyResource(DocumentService documentService, LineService lineService, PolicyService policyService, QuoteService quoteService, PaymentService paymentService, PolicyValidatedProcessingService policyValidatedProcessingService,
+            PolicyPremiumNotificationService policyPremiumNotificationService) {
         this.documentService = documentService;
         this.lineService = lineService;
         this.policyService = policyService;
         this.quoteService = quoteService;
         this.paymentService = paymentService;
         this.policyValidatedProcessingService = policyValidatedProcessingService;
+        this.policyPremiumNotificationService = policyPremiumNotificationService;
     }
 
     @ApiOperation(value = "List of policies", notes = "Gets a list of policies.", response = Policy.class, responseContainer = "List")
@@ -451,6 +455,30 @@ public class PolicyResource {
         String accessToken = httpServletRequest.getHeader(accessTokenHeader);
         PolicyValidationRequest policyValidationRequest = new PolicyValidationRequest(policyId, agentCode, agentName, linePayCaptureMode, accessToken);
         return policyValidatedProcessingService.processValidatedPolicy(policyValidationRequest);
+    }
+
+    @ApiOperation(value = "Notify policy's premium via SMS", notes = "Send the notification about premium information to client via SMS", response = Policy.class)
+    @ApiResponses({
+            @ApiResponse(code = 500, message = "If there was some internal error", response = Error.class)
+    })
+    @RequestMapping(value = "/policies/{policyId}/premium/sms", produces = APPLICATION_JSON_VALUE, method = PUT)
+    @ResponseBody
+    public void sendSMSPolicyPremium(
+            @ApiParam(value = "policyId", required = true)
+            @PathVariable("policyId") String policyNumber) {
+        policyPremiumNotificationService.sendSMS(policyNumber);
+    }
+
+    @ApiOperation(value = "Notify policy's premium via Email", notes = "Send the notification about premium information to client via email", response = Policy.class)
+    @ApiResponses({
+            @ApiResponse(code = 500, message = "If there was some internal error", response = Error.class)
+    })
+    @RequestMapping(value = "/policies/{policyId}/premium/email", produces = APPLICATION_JSON_VALUE, method = PUT)
+    @ResponseBody
+    public void sendEmailPolicyPremium(
+            @ApiParam(value = "policyId", required = true)
+            @PathVariable("policyId") String policyNumber) {
+        policyPremiumNotificationService.sendEmail(policyNumber);
     }
 
     private void createPolicyExtractExcelFileLine(Sheet sheet, Policy policy) {

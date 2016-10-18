@@ -8,7 +8,8 @@ import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.products.AbstractQuoteEmailService;
 import th.co.krungthaiaxa.api.elife.products.ProductUtils;
-import th.co.krungthaiaxa.api.elife.utils.EmailSender;
+import th.co.krungthaiaxa.api.elife.service.AxaEmailHelper;
+import th.co.krungthaiaxa.api.elife.service.AxaEmailService;
 
 import javax.inject.Inject;
 import java.text.DecimalFormat;
@@ -22,8 +23,8 @@ public class IProtectQuoteEmailService extends AbstractQuoteEmailService {
     private final static Logger LOGGER = LoggerFactory.getLogger(IProtectQuoteEmailService.class);
 
     @Inject
-    public IProtectQuoteEmailService(EmailSender emailSender, IProtectSaleIllustrationService iProtectSaleIllustrationService) {
-        super(emailSender, iProtectSaleIllustrationService);
+    public IProtectQuoteEmailService(AxaEmailService axaEmailService, AxaEmailHelper axaEmailHelper, IProtectSaleIllustrationService iProtectSaleIllustrationService) {
+        super(axaEmailService, axaEmailHelper, iProtectSaleIllustrationService);
     }
 
     @Override
@@ -48,6 +49,6 @@ public class IProtectQuoteEmailService extends AbstractQuoteEmailService {
                 .replace("%9$s", "'" + getLineURL() + "fatca-questions/" + quote.getQuoteId() + "'")
                 .replace("%10$s", "'" + getLineURL() + "quote-product/line-iProtect" + "'")
                 .replace("%11$s", String.valueOf(taxDeclared))
-                .replace("%12$s", getMessageSource().getMessage("payment.mode." + quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().toString(), null, LocaleUtil.THAI_LOCALE));
+                .replace("%12$s", getAxaEmailHelper().getMessageSource().getMessage("payment.mode." + quote.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().toString(), null, LocaleUtil.THAI_LOCALE));
     }
 }

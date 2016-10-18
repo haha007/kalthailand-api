@@ -4,6 +4,7 @@ import java.util.List;
 
 public class Error {
     private String code;
+    private Object details;
     private String userMessage;
     private String developerMessage;
     private List<FieldError> fieldErrors;
@@ -12,7 +13,6 @@ public class Error {
     public Error() {
     }
 
-    // Visibility has to be package so only ErrorCode can create Error instances
     public Error(String code, String userMessage, String developerMessage) {
         this.code = code;
         this.userMessage = userMessage;
@@ -49,5 +49,13 @@ public class Error {
 
     public void setFieldErrors(List<FieldError> fieldErrors) {
         this.fieldErrors = fieldErrors;
+    }
+
+    public Object getDetails() {
+        return details;
+    }
+
+    public void setDetails(Object details) {
+        this.details = details;
     }
 }

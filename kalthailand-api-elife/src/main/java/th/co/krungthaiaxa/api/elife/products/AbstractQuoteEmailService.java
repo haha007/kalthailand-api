@@ -4,51 +4,38 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.MessageSource;
-import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
 import th.co.krungthaiaxa.api.common.utils.IOUtil;
 import th.co.krungthaiaxa.api.elife.model.Amount;
 import th.co.krungthaiaxa.api.elife.model.Insured;
-import th.co.krungthaiaxa.api.elife.model.Periodicity;
 import th.co.krungthaiaxa.api.elife.model.Quote;
-import th.co.krungthaiaxa.api.elife.utils.EmailSender;
+import th.co.krungthaiaxa.api.elife.service.AxaEmailHelper;
+import th.co.krungthaiaxa.api.elife.service.AxaEmailService;
 import th.co.krungthaiaxa.api.elife.utils.EmailUtil;
 
 import javax.inject.Inject;
-import java.text.DecimalFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * @author khoi.tran on 8/31/16.
  */
 public abstract class AbstractQuoteEmailService {
     private final static Logger logger = LoggerFactory.getLogger(AbstractQuoteEmailService.class);
-    @Value("${email.name}")
-    private String fromEmail;
 
     @Value("${email.subject.quote}")
     private String emailQuoteSubject;
 
     @Value("https://line.me/R/ch/${line.app.id}/elife/th/")
     private String lineURL;
-    @Inject
-    private MessageSource messageSource;
-    private Locale thLocale = new Locale("th", "");
 
-    private final static String DECIMAL_PATTERN = "#,##0.00";
-    private final static DecimalFormat DECIMAL_FORMAT = new DecimalFormat(DECIMAL_PATTERN);
-    private final static DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(DateTimeUtil.PATTERN_THAI_DATE);
-
-    private final EmailSender emailSender;
+    private final AxaEmailService axaEmailService;
+    private final AxaEmailHelper axaEmailHelper;
     private final SaleIllustrationService saleIllustrationService;
 
     @Inject
-    public AbstractQuoteEmailService(EmailSender emailSender, SaleIllustrationService saleIllustrationService) {
-        this.emailSender = emailSender;
+    public AbstractQuoteEmailService(AxaEmailService axaEmailService, AxaEmailHelper axaEmailHelper, SaleIllustrationService saleIllustrationService) {
+        this.axaEmailService = axaEmailService;
+        this.axaEmailHelper = axaEmailHelper;
         this.saleIllustrationService = saleIllustrationService;
     }
 
@@ -59,7 +46,7 @@ public abstract class AbstractQuoteEmailService {
         attachments.add(saleIllustrationService.generatePDF(quote));
         Insured mainInsured = ProductUtils.validateExistMainInsured(quote);
         String emailContent = getEmailContent(emailTemplate, quote);
-        emailSender.sendEmail(fromEmail, mainInsured.getPerson().getEmail(), emailQuoteSubject, emailContent, loadImagePairs(), attachments);
+        axaEmailService.sendEmail(mainInsured.getPerson().getEmail(), emailQuoteSubject, emailContent, loadImagePairs(), attachments);
         logger.info("Quote iProtect email sent!");
     }
 
@@ -73,30 +60,10 @@ public abstract class AbstractQuoteEmailService {
         return String.format("/products/%s/email-quote.html", productId.toLowerCase());
     }
 
-    protected String toCurrency(Double value) {
-        return DECIMAL_FORMAT.format(value);
-    }
-
-    protected String toThaiYear(LocalDateTime time) {
-        return time.plusYears(543).format(DATE_TIME_FORMATTER);
-    }
-
-    protected String toThaiPaymentMode(Periodicity due) {
-        return messageSource.getMessage("payment.mode." + due.getCode().toString(), null, thLocale);
-    }
-
     abstract protected String getEmailContent(String emailTemplate, Quote quote);
 
     protected Double getVal(Amount amount) {
         return amount.getValue();
-    }
-
-    public String getFromEmail() {
-        return fromEmail;
-    }
-
-    public void setFromEmail(String fromEmail) {
-        this.fromEmail = fromEmail;
     }
 
     public String getLineURL() {
@@ -107,16 +74,11 @@ public abstract class AbstractQuoteEmailService {
         this.lineURL = lineURL;
     }
 
-    public MessageSource getMessageSource() {
-        return messageSource;
+    public AxaEmailService getAxaEmailService() {
+        return axaEmailService;
     }
 
-    public void setMessageSource(MessageSource messageSource) {
-        this.messageSource = messageSource;
+    public AxaEmailHelper getAxaEmailHelper() {
+        return axaEmailHelper;
     }
-
-    public EmailSender getEmailSender() {
-        return emailSender;
-    }
-
 }

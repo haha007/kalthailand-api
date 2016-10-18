@@ -1,6 +1,9 @@
 package th.co.krungthaiaxa.api.elife.service;
 
+import com.itextpdf.text.log.Logger;
+import com.itextpdf.text.log.LoggerFactory;
 import org.apache.commons.io.IOUtils;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.SpringApplicationConfiguration;
@@ -15,14 +18,12 @@ import th.co.krungthaiaxa.api.elife.exception.QuoteCalculationException;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
+import th.co.krungthaiaxa.api.elife.model.sms.SMSResponse;
 
 import javax.inject.Inject;
 import java.nio.charset.Charset;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Created by santilik on 3/15/2016.
@@ -33,6 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @WebAppConfiguration
 @ActiveProfiles("test")
 public class SMSApiServiceTest extends ELifeTest {
+    public static final Logger LOGGER = LoggerFactory.getLogger(SMSApiService.class);
     @Inject
     private PolicyService policyService;
     @Inject
@@ -42,7 +44,6 @@ public class SMSApiServiceTest extends ELifeTest {
 
     @Test
     public void should_return_0_when_sending_comfirmation_message_successfully() throws Exception {
-        Map<String, String> m = new HashMap<>();
         Policy pol = getPolicy();
         pol.getInsureds().get(0).getPerson().getMobilePhoneNumber().setNumber("0863878803");
         pol.setPolicyId("555-55555555");
@@ -54,9 +55,15 @@ public class SMSApiServiceTest extends ELifeTest {
         smsApiService.sendConfirmationMessage(pol, smsContent);
 
         smsContent = IOUtils.toString(this.getClass().getResourceAsStream("/sms-content/user-not-responging-sms.txt"), Charset.forName("UTF-8"));
-        m = smsApiService.sendConfirmationMessage(pol, smsContent.replace("%POLICY_ID%", pol.getPolicyId()));
+        SMSResponse m = smsApiService.sendConfirmationMessage(pol, smsContent.replace("%POLICY_ID%", pol.getPolicyId()));
 
-        assertThat(m.get("STATUS")).contains("0");
+        Assert.assertEquals(SMSResponse.STATUS_SUCCESS, m.getStatus());
+    }
+
+    @Test
+    public void should_sending_message_successfully() throws Exception {
+        SMSResponse response = smsApiService.sendMessageNoCatchException("0863878803", "Testing message");
+        LOGGER.debug("SMS Result: " + response);
     }
 
     private Policy getPolicy() throws QuoteCalculationException, PolicyValidationException {

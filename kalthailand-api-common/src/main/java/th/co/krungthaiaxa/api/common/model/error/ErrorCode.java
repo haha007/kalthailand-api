@@ -20,6 +20,9 @@ public class ErrorCode {
     //Jasper Exception (0040 -> 0049)
     public static final String ERROR_CODE_JASPER = "0040";
 
+    //SMS (0050 -> 0059)
+    public static final String ERROR_CODE_SMS = "0050";
+
     /**
      * Amount Exception
      */

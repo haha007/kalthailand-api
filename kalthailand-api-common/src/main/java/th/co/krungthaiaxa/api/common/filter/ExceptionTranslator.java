@@ -84,6 +84,7 @@ public class ExceptionTranslator {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Error processInternalException(final BaseException exception) {
         final Error result = new Error(exception.getErrorCode(), exception.getMessage(), exception.getMessage());
+        result.setDetails(exception.getDetails());
         this.loggingMessage(result, exception);
         return result;
     }

@@ -11,11 +11,13 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JsonDataSource;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.type.WhenNoDataTypeEnum;
+import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import th.co.krungthaiaxa.api.common.exeption.JasperException;
 import th.co.krungthaiaxa.api.common.utils.IOUtil;
+import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,7 +27,7 @@ import java.util.Map;
  * @author khoi.tran on 8/31/16.
  */
 public class JasperUtil {
-    public static final Logger logger = LoggerFactory.getLogger(JasperUtil.class);
+    public static final Logger LOGGER = LoggerFactory.getLogger(JasperUtil.class);
 
     ObjectMapper objectMapper;
 
@@ -44,7 +46,7 @@ public class JasperUtil {
             JsonDataSource jsonDataSource = new JsonDataSource(jsonDataSourceInputSteam, null);
             JasperPrint jasperPrint = export(jrxmlPath, null, jsonDataSource);
             JasperExportManager.exportReportToPdfFile(jasperPrint, destinationFile);
-            logger.debug("Exported file '{}'", destinationFile);
+            LOGGER.debug("Exported file '{}'", destinationFile);
         } catch (JRException e) {
             throw new JasperException("Cannot read datasource from jsonInputStream. " + e.getMessage(), e);
         }
@@ -67,16 +69,57 @@ public class JasperUtil {
             String msg = String.format("Cannot create pdf from jrxmlPath '%s'. %s", jrxmlPath, jre.getMessage());
             throw new JasperException(msg, jre);
         } finally {
-            if (inStream != null) {
-                try {
-                    inStream.close();
-                } catch (IOException e) {
-                    String msg = String.format("Error closing stream from jrxmlPath '%s'. %s", jrxmlPath, e.getMessage());
-                    logger.error(msg, e);
-                }
-            }
+            closeInputStream(inStream);
         }
 
         return jasperPrint;
+    }
+
+    public static byte[] exportPdfFromCompiledTemplate(String compiledJasperReportPath, ObjectMapper objectMapper, Object dataSource) {
+        try {
+            JsonDataSource jsonDataSource = toJsonDataSource(objectMapper, dataSource);
+            JasperPrint jasperPrint = exportFromCompiledTemplate(compiledJasperReportPath, null, jsonDataSource);
+            return JasperExportManager.exportReportToPdf(jasperPrint);
+        } catch (JRException e) {
+            throw new JasperException("Cannot read datasource from jsonInputStream. " + e.getMessage(), e);
+        }
+    }
+
+    public static JasperPrint exportFromCompiledTemplate(String compiledJasperReportPath, Map<String, Object> parameters, ObjectMapper objectMapper, Object dataSource) {
+        JsonDataSource jsonDataSource = toJsonDataSource(objectMapper, dataSource);
+        return exportFromCompiledTemplate(compiledJasperReportPath, parameters, jsonDataSource);
+    }
+
+    public static JasperPrint exportFromCompiledTemplate(String compiledJasperReportPath, Map<String, Object> parameters, JsonDataSource jsonDataSource) {
+        InputStream compiledJasperReportInputStream = IOUtil.loadInputStreamFileInClassPath(compiledJasperReportPath);
+        try {
+            JasperReport jasperReport = (JasperReport) JRLoader.loadObject(compiledJasperReportInputStream);
+            jasperReport.setWhenNoDataType(WhenNoDataTypeEnum.ALL_SECTIONS_NO_DETAIL);
+            return JasperFillManager.fillReport(jasperReport, parameters, jsonDataSource);
+        } catch (JRException e) {
+            throw new JasperException("Cannot load jasper report template from: " + compiledJasperReportPath + ":\n " + e.getMessage(), e);
+        } finally {
+            closeInputStream(compiledJasperReportInputStream);
+        }
+    }
+
+    private static void closeInputStream(InputStream inputStream) {
+        if (inputStream != null) {
+            try {
+                inputStream.close();
+            } catch (IOException e) {
+                String msg = String.format("Error closing stream from %s", e.getMessage());
+                LOGGER.error(msg, e);
+            }
+        }
+    }
+
+    private static JsonDataSource toJsonDataSource(ObjectMapper objectMapper, Object dataSource) {
+        InputStream jsonInputStream = ObjectMapperUtil.toJsonInputStream(objectMapper, dataSource);
+        try {
+            return new JsonDataSource(jsonInputStream, null);
+        } catch (JRException e) {
+            throw new JasperException("Cannot create jsonDataSource form dataSource: " + e.getMessage(), e);
+        }
     }
 }

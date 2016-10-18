@@ -29,6 +29,7 @@ import th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus;
 import th.co.krungthaiaxa.api.elife.model.enums.RegistrationTypeName;
 import th.co.krungthaiaxa.api.elife.model.enums.SuccessErrorStatus;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayResponse;
+import th.co.krungthaiaxa.api.elife.model.sms.SMSResponse;
 import th.co.krungthaiaxa.api.elife.products.ProductService;
 import th.co.krungthaiaxa.api.elife.products.ProductServiceFactory;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
@@ -49,7 +50,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -282,8 +282,8 @@ public class PolicyService {
         try {
             String smsContent = IOUtils.toString(this.getClass().getResourceAsStream("/sms-content/policy-booked-sms.txt"), Charset.forName("UTF-8"));
             String fullName = policy.getInsureds().get(0).getPerson().getGivenName() + " " + policy.getInsureds().get(0).getPerson().getSurName();
-            Map<String, String> m = smsApiService.sendConfirmationMessage(policy, smsContent.replace("%POLICY_ID%", policy.getPolicyId()).replace("%FULL_NAME%", fullName));
-            if (!m.get("STATUS").equals("0")) {
+            SMSResponse m = smsApiService.sendConfirmationMessage(policy, smsContent.replace("%POLICY_ID%", policy.getPolicyId()).replace("%FULL_NAME%", fullName));
+            if (!m.getStatus().equals(SMSResponse.STATUS_SUCCESS)) {
                 logger.error(String.format("SMS for policy booking could not be sent on policy [%1$s].", policy.getPolicyId()));
             }
         } catch (Exception e) {
@@ -332,7 +332,7 @@ public class PolicyService {
         try {
             documentService.generateValidatedPolicyDocuments(policy, token);
         } catch (Exception e) {
-            throw new ElifeException("Can't generate documents for the policy [" + policy.getPolicyId() + "]: "+e.getMessage(), e);
+            throw new ElifeException("Can't generate documents for the policy [" + policy.getPolicyId() + "]: " + e.getMessage(), e);
         }
 
         // Should block if eReceipt is not generated
@@ -365,8 +365,8 @@ public class PolicyService {
         // Send SMS
         try {
             String smsContent = IOUtils.toString(this.getClass().getResourceAsStream("/sms-content/policy-purchased-sms.txt"), Charset.forName("UTF-8"));
-            Map<String, String> m = smsApiService.sendConfirmationMessage(policy, smsContent);
-            if (!m.get("STATUS").equals("0")) {
+            SMSResponse m = smsApiService.sendConfirmationMessage(policy, smsContent);
+            if (!m.getStatus().equals(SMSResponse.STATUS_SUCCESS)) {
                 logger.error(String.format("SMS for policy validation could not be sent on policy [%1$s].", policy.getPolicyId()));
             }
         } catch (Exception e) {
@@ -393,7 +393,7 @@ public class PolicyService {
         try {
             tmcClient.sendPDFToTMC(policy, applicationFormValidatedDocument.getContent(), APPLICATION_FORM);
         } catch (Exception e) {
-            logger.error("Unable to send validated application Form to TMC on policy [" + policy.getPolicyId() + "]: "+e.getMessage(), e);
+            logger.error("Unable to send validated application Form to TMC on policy [" + policy.getPolicyId() + "]: " + e.getMessage(), e);
         }
         return policy;
     }
@@ -410,8 +410,8 @@ public class PolicyService {
 
         // Send SMS
         String smsContent = IOUtils.toString(this.getClass().getResourceAsStream("/sms-content/user-not-responging-sms.txt"), Charset.forName("UTF-8"));
-        Map<String, String> m = smsApiService.sendConfirmationMessage(policy, smsContent.replace("%POLICY_ID%", policy.getPolicyId()));
-        if (!m.get("STATUS").equals("0")) {
+        SMSResponse m = smsApiService.sendConfirmationMessage(policy, smsContent.replace("%POLICY_ID%", policy.getPolicyId()));
+        if (!m.getStatus().equals(SMSResponse.STATUS_SUCCESS)) {
             throw new IOException(String.format("SMS when user not responding could not be sent on policy [%1$s].", policy.getPolicyId()));
         }
 

@@ -6,14 +6,15 @@ import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.product.PremiumDetail;
 import th.co.krungthaiaxa.api.elife.products.AbstractQuoteEmailService;
-import th.co.krungthaiaxa.api.elife.utils.EmailSender;
+import th.co.krungthaiaxa.api.elife.service.AxaEmailHelper;
+import th.co.krungthaiaxa.api.elife.service.AxaEmailService;
 
 @Service
 public class IGenQuoteEmailService extends AbstractQuoteEmailService {
 
     @Autowired
-    public IGenQuoteEmailService(EmailSender emailSender, IGenSaleIllustrationService saleIllustrationService) {
-        super(emailSender, saleIllustrationService);
+    public IGenQuoteEmailService(AxaEmailService axaEmailService, AxaEmailHelper axaEmailHelper, IGenSaleIllustrationService saleIllustrationService) {
+        super(axaEmailService, axaEmailHelper, saleIllustrationService);
     }
 
     @Override
@@ -23,64 +24,23 @@ public class IGenQuoteEmailService extends AbstractQuoteEmailService {
         Insured insured = quote.getInsureds().stream().reduce((first, second) -> second).get();
         PremiumDetail premium = quote.getPremiumsData().getPremiumDetail();
         Integer taxDeclared = (insured.getDeclaredTaxPercentAtSubscription() == null ? 0 : insured.getDeclaredTaxPercentAtSubscription());
-        return emailContent.replace("%CREATE_DATE_TIME%", toThaiYear(quote.getCreationDateTime()))
+        return emailContent.replace("%CREATE_DATE_TIME%", getAxaEmailHelper().toThaiYear(quote.getCreationDateTime()))
                 .replace("%FATCA_QUESTION_LINK%", "'" + getLineURL() + "fatca-questions/" + quote.getQuoteId() + "'")
-                .replace("%PREMIUM_PERIODICITY%", toThaiPaymentMode(quote.getPremiumsData().getFinancialScheduler().getPeriodicity()))
-                .replace("%PREMIUM_VALUE%", toCurrency(getVal(quote.getPremiumsData().getFinancialScheduler().getModalAmount())))
-                .replace("%YEARLY_CASH_BACK_END_OF_CONTRACT%", toCurrency(premium.getYearlyCashBacksForEndOfContract().stream().reduce((first, second) -> second).get().getAmount().getValue()))
-                .replace("%YEARLY_CASH_BACK_ANNUAL%", toCurrency(premium.getYearlyCashBacksForAnnual().stream().reduce((first, second) -> second).get().getAmount().getValue()))
-                .replace("%DEATH_BENEFIT_0%", toCurrency(getVal(premium.getYearlyDeathBenefits().get(0).getAmount())))
-                .replace("%DEATH_BENEFIT_3%", toCurrency(getVal(premium.getYearlyDeathBenefits().get(3).getAmount())))
-                .replace("%DEATH_BENEFIT_4%", toCurrency(getVal(premium.getYearlyDeathBenefits().get(4).getAmount())))
-                .replace("%DEATH_BENEFIT_5%", toCurrency(getVal(premium.getYearlyDeathBenefits().get(5).getAmount())))
+                .replace("%PREMIUM_PERIODICITY%", getAxaEmailHelper().toThaiPaymentMode(quote.getPremiumsData().getFinancialScheduler().getPeriodicity()))
+                .replace("%PREMIUM_VALUE%", getAxaEmailHelper().toCurrencyValue(getVal(quote.getPremiumsData().getFinancialScheduler().getModalAmount())))
+                .replace("%YEARLY_CASH_BACK_END_OF_CONTRACT%", getAxaEmailHelper().toCurrencyValue(premium.getYearlyCashBacksForEndOfContract().stream().reduce((first, second) -> second).get().getAmount().getValue()))
+                .replace("%YEARLY_CASH_BACK_ANNUAL%", getAxaEmailHelper().toCurrencyValue(premium.getYearlyCashBacksForAnnual().stream().reduce((first, second) -> second).get().getAmount().getValue()))
+                .replace("%DEATH_BENEFIT_0%", getAxaEmailHelper().toCurrencyValue(getVal(premium.getYearlyDeathBenefits().get(0).getAmount())))
+                .replace("%DEATH_BENEFIT_3%", getAxaEmailHelper().toCurrencyValue(getVal(premium.getYearlyDeathBenefits().get(3).getAmount())))
+                .replace("%DEATH_BENEFIT_4%", getAxaEmailHelper().toCurrencyValue(getVal(premium.getYearlyDeathBenefits().get(4).getAmount())))
+                .replace("%DEATH_BENEFIT_5%", getAxaEmailHelper().toCurrencyValue(getVal(premium.getYearlyDeathBenefits().get(5).getAmount())))
                 .replace("%TAX_DECLARED%", String.valueOf(taxDeclared))
-                .replace("%TAX_YEARLY_DEDUCTION%", toCurrency(premium.getYearlyTaxDeduction().getValue()))
-                .replace("%TAX_YEARLY_TOTAL%", toCurrency(premium.getTotalTaxDeduction().getValue()))
+                .replace("%TAX_YEARLY_DEDUCTION%", getAxaEmailHelper().toCurrencyValue(premium.getYearlyTaxDeduction().getValue()))
+                .replace("%TAX_YEARLY_TOTAL%", getAxaEmailHelper().toCurrencyValue(premium.getTotalTaxDeduction().getValue()))
                 .replace("%LINE_URL%", "'" + getLineURL() + "'")
                 .replace("%LINE_FATCA_QUESTION_URL%", "'" + getLineURL() + "fatca-questions/" + quote.getQuoteId() + "'")
                 .replace("%LINE_QUOTE_PRODUCT_URL%", "'" + getLineURL() + "quote-product/line-" + productId + "'");
     }
-//
-//    /*
-//     * must be implement for e receipt email
-//     * */
-//
-//    @Override
-//    public void sendEreceiptEmail(Policy policy) {
-//        // TODO Auto-generated method stub
-//            TODO The email template is the same for all products, so no need to put it here.
-//
-//    }
-//
-//	/*
-//     * must be implement for policy booked email
-//     * */
-//
-//    @Override
-//    public void sendPolicyBookedEmail(Policy policy) {
-//        // TODO Auto-generated method stub:  TODO The email template is the same for all products, so no need to put it here.
-//
-//    }
-//
-//	/*
-//     * must be implement for wrong phone number email
-//     * */
-//
-//    @Override
-//    public void sendWrongPhoneNumberEmail(Policy policy) {
-//        // TODO Auto-generated method stub
-//
-//    }
-//
-//	/*
-//     * must be implement for user not response email
-//     * */
-//
-//    @Override
-//    public void sendUserNotResponseEmail(Policy policy) {
-//        // TODO Auto-generated method stub
-//
-//    }
 
 }
 

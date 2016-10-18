@@ -15,6 +15,7 @@ import th.co.krungthaiaxa.api.elife.model.DatedAmount;
 import th.co.krungthaiaxa.api.elife.model.GeographicalAddress;
 import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.model.Payment;
+import th.co.krungthaiaxa.api.elife.model.Periodicity;
 import th.co.krungthaiaxa.api.elife.model.Person;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.Quote;
@@ -398,6 +399,13 @@ public class ProductUtils {
 
     public static Amount getPremiumAmount(Quote quote) {
         return quote.getPremiumsData().getFinancialScheduler().getModalAmount();
+    }
+
+    public static Amount getPremiumAmount(Policy policy) {
+        return policy.getPremiumsData().getFinancialScheduler().getModalAmount();
+    }
+    public static Periodicity getPremiumPeriodicity(Policy policy) {
+        return policy.getPremiumsData().getFinancialScheduler().getPeriodicity();
     }
 
     public static Coverage addCoverageIfNotExist(Quote quote, String productLogicName) {
