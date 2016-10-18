@@ -16,19 +16,44 @@ import java.util.Map;
 @Repository
 public class PolicyCDBRepository {
     public static final String CDB_DATE_PATTERN = "yyyyMMdd";
-
+    public static final boolean MOCK_DATA = true;
     @Autowired
     @Qualifier("cdbTemplate")
     private JdbcTemplate jdbcTemplate;
 
-    public PolicyCDB findOneByPolicyNumberAndDOB(String policyNumber, LocalDate dob) {
+    public PolicyCDB findOneByPolicyNumberAndDOB(String policyNumber, LocalDate insuredDob) {
+        if (MOCK_DATA) {
+            return mockData(policyNumber, insuredDob);
+        }
+
         String query = " SELECT PNO, PDOB,PNAMF, PNAME, PPTD,PMPREM, "
                 + " PLMBNO, PIEMAL, PSTU FROM LFKLUDTA_LFPPML "
                 + " WHERE PNO = ? AND PDOB = ? "
                 + " AND PSTU IN ('1','2','5','6','B','F') ";
-        String dobString = DateTimeUtil.formatLocalDate(dob, CDB_DATE_PATTERN);
+        String dobString = DateTimeUtil.formatLocalDate(insuredDob, CDB_DATE_PATTERN);
         Map<String, Object> result = jdbcTemplate.queryForMap(query, policyNumber, dobString);
         return toPolicy(result);
+    }
+
+    //TODO Just temporary
+    private PolicyCDB mockData(String policyNumber, LocalDate insuredDob) {
+        if (policyNumber.startsWith("4")) {
+            return null;
+        }
+        PolicyCDB policyCDB = new PolicyCDB();
+        PolicyCDB.InsuredCDB mainInsuredCDB = new PolicyCDB.InsuredCDB();
+        mainInsuredCDB.setMobilePhone("");
+        mainInsuredCDB.setEmail("chairat.poo@krungthai-axa.co.th");
+        mainInsuredCDB.setFullName("Chairat Poo");
+        mainInsuredCDB.setFirstName("Jo");
+        mainInsuredCDB.setDob(insuredDob);
+
+        policyCDB.setMainInsured(mainInsuredCDB);
+        policyCDB.setStatus("1");
+        policyCDB.setPolicyNumber(policyNumber);
+        policyCDB.setPremiumValue(1000.0);
+        policyCDB.setDueDate(LocalDate.now());
+        return policyCDB;
     }
 
     private PolicyCDB toPolicy(Map<String, Object> queryRow) {

@@ -77,9 +77,9 @@ public class KalApiTokenFilter implements Filter {
                 httpServletRequest.getRequestURI().contains("/session-quotes/all-products-counts/download") ||
                 httpServletRequest.getRequestURI().contains("/quotes/all-products/download") ||
                 httpServletRequest.getRequestURI().contains("/commissions/calculation/download/") ||
-                (httpServletRequest.getRequestURI().contains("/policies/") &&
-                        httpServletRequest.getRequestURI().contains("/document/") &&
-                        httpServletRequest.getRequestURI().contains("/download"))) {
+                (httpServletRequest.getRequestURI().contains("/policies/") && httpServletRequest.getRequestURI().contains("/pdf")) ||
+                (httpServletRequest.getRequestURI().contains("/policies/") && httpServletRequest.getRequestURI().contains("/download"))
+                ) {
             chain.doFilter(httpServletRequest, response);
             return;
         }
