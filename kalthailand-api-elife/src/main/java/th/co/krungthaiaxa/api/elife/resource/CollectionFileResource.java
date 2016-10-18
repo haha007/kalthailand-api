@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
 import th.co.krungthaiaxa.api.elife.data.CollectionFile;
-import th.co.krungthaiaxa.api.elife.service.RLSService;
+import th.co.krungthaiaxa.api.elife.service.CollectionFileProcessingService;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
@@ -34,14 +34,14 @@ import static th.co.krungthaiaxa.api.common.utils.JsonUtil.getJson;
 
 @RestController
 @Api(value = "RLS")
-public class RLSResource {
-    private final static Logger logger = LoggerFactory.getLogger(RLSResource.class);
+public class CollectionFileResource {
+    private final static Logger logger = LoggerFactory.getLogger(CollectionFileResource.class);
 
-    private final RLSService rlsService;
+    private final CollectionFileProcessingService collectionFileProcessingService;
 
     @Inject
-    public RLSResource(RLSService rlsService) {
-        this.rlsService = rlsService;
+    public CollectionFileResource(CollectionFileProcessingService collectionFileProcessingService) {
+        this.collectionFileProcessingService = collectionFileProcessingService;
     }
 
     @ApiOperation(value = "Upload Collection files", notes = "Uploads a collection file and check for content validity", response = String.class)
@@ -49,7 +49,7 @@ public class RLSResource {
     @ResponseBody
     public ResponseEntity<byte[]> uploadCollectionFile(@RequestParam("file") MultipartFile file) {
         try {
-            rlsService.importCollectionFile(file.getInputStream());
+            collectionFileProcessingService.importCollectionFile(file.getInputStream());
         } catch (IOException | IllegalArgumentException e) {
             return new ResponseEntity<>(getJson(ErrorCode.INVALID_COLLECTION_FILE.apply(e.getMessage())), NOT_ACCEPTABLE);
         }
@@ -61,18 +61,18 @@ public class RLSResource {
     @ResponseBody
     public ResponseEntity<byte[]> getCollectionFiles() {
         logger.info("Getting all collection File");
-        return new ResponseEntity<>(getJson(rlsService.getCollectionFiles()), OK);
+        return new ResponseEntity<>(getJson(collectionFileProcessingService.getCollectionFiles()), OK);
     }
 
     @ApiOperation(value = "Get Deduction file", notes = "Get a Deduction file")
     @RequestMapping(value = "/RLS/deduction/download/{collectionFileId}", produces = APPLICATION_JSON_VALUE, method = GET)
     public void getDeductionFile(@PathVariable String collectionFileId, HttpServletResponse response) {
         logger.info("Downloading deduction File");
-        CollectionFile collectionFile = rlsService.findOne(collectionFileId);
+        CollectionFile collectionFile = collectionFileProcessingService.findOne(collectionFileId);
         if (collectionFile == null) {
             return;
         }
-        byte[] excelFileContent = rlsService.createDeductionExcelFile(collectionFile.getDeductionFile());
+        byte[] excelFileContent = collectionFileProcessingService.createDeductionExcelFile(collectionFile.getDeductionFile());
 
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         response.setContentLength(excelFileContent.length);
@@ -93,6 +93,6 @@ public class RLSResource {
     @ApiOperation(value = "Get Deduction file", notes = "Get a Deduction file")
     @RequestMapping(value = "/RLS/collectionFile/process", produces = APPLICATION_JSON_VALUE, method = GET)
     public List<CollectionFile> processCollectionFile() {
-        return rlsService.processLatestCollectionFiles();
+        return collectionFileProcessingService.processLatestCollectionFiles();
     }
 }

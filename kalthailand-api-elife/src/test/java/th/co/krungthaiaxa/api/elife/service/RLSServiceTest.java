@@ -60,7 +60,7 @@ public class RLSServiceTest extends ELifeTest {
     @Inject
     private QuoteService quoteService;
     @Inject
-    private RLSService rlsService;
+    private CollectionFileProcessingService rlsService;
     @Inject
     private CollectionFileRepository collectionFileRepository;
     @Inject

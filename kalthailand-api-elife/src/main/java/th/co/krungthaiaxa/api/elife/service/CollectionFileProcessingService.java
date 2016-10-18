@@ -59,9 +59,13 @@ import static th.co.krungthaiaxa.api.elife.service.LineService.RESPONSE_CODE_SUC
 import static th.co.krungthaiaxa.api.elife.utils.ExcelUtils.appendRow;
 import static th.co.krungthaiaxa.api.elife.utils.ExcelUtils.text;
 
+/**
+ * This class contains methods for processing the collectionFile.
+ * After processing collection files, the result (Excel) file will be updated into RLS system (manually).
+ */
 @Service
-public class RLSService {
-    private final static Logger logger = LoggerFactory.getLogger(RLSService.class);
+public class CollectionFileProcessingService {
+    private final static Logger logger = LoggerFactory.getLogger(CollectionFileProcessingService.class);
     public final static String COLLECTION_FILE_SHEET_NAME = "LFDISC6";
     private final static Integer COLLECTION_FILE_NUMBER_OF_COLUMNS = 6;
     public final static String COLLECTION_FILE_COLUMN_NAME_1 = "M92DOC6";
@@ -86,7 +90,8 @@ public class RLSService {
     private final PaymentFailEmailService paymentInformService;
 
     @Inject
-    public RLSService(CollectionFileRepository collectionFileRepository, PaymentRepository paymentRepository, PolicyRepository policyRepository, PolicyService policyService, PaymentService paymentService, LineService lineService, PaymentFailEmailService paymentInformService) {
+    public CollectionFileProcessingService(CollectionFileRepository collectionFileRepository, PaymentRepository paymentRepository, PolicyRepository policyRepository, PolicyService policyService, PaymentService paymentService, LineService lineService,
+            PaymentFailEmailService paymentInformService) {
         this.collectionFileRepository = collectionFileRepository;
         this.paymentRepository = paymentRepository;
         this.policyRepository = policyRepository;

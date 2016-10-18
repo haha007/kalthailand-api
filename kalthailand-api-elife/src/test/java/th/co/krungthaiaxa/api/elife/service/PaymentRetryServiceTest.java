@@ -52,7 +52,7 @@ import java.util.Optional;
 public class PaymentRetryServiceTest extends ELifeTest {
     public static final Logger LOGGER = LoggerFactory.getLogger(PaymentRetryServiceTest.class);
     @Inject
-    private RLSService rlsService;
+    private CollectionFileProcessingService rlsService;
     private LineService lineService;
     @Inject
     private MongoTemplate mongoTemplate;
