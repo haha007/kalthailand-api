@@ -5,7 +5,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
+import th.co.krungthaiaxa.api.elife.data.GeneralSetting;
 import th.co.krungthaiaxa.api.elife.model.PolicyCDB;
+import th.co.krungthaiaxa.api.elife.service.GeneralSettingService;
 
 import java.time.LocalDate;
 import java.util.Map;
@@ -17,12 +19,17 @@ import java.util.Map;
 public class PolicyCDBRepository {
     public static final String CDB_DATE_PATTERN = "yyyyMMdd";
     public static final boolean MOCK_DATA = true;
+
+    @Autowired
+    private GeneralSettingService generalSettingService;
+
     @Autowired
     @Qualifier("cdbTemplate")
     private JdbcTemplate jdbcTemplate;
 
     public PolicyCDB findOneByPolicyNumberAndDOB(String policyNumber, LocalDate insuredDob) {
-        if (MOCK_DATA) {
+        GeneralSetting generalSetting = generalSettingService.loadGeneralSetting();
+        if (generalSetting.isPolicyPremiumMockData()) {
             return mockData(policyNumber, insuredDob);
         }
 

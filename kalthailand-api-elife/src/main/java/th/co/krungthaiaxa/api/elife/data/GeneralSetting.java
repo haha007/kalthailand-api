@@ -9,6 +9,7 @@ import java.util.List;
  */
 @Document(collection = "generalSetting")
 public class GeneralSetting {
+    private boolean policyPremiumMockData = true;
     private RetryPaymentSetting retryPaymentSetting;
 
     public RetryPaymentSetting getRetryPaymentSetting() {
@@ -17,6 +18,14 @@ public class GeneralSetting {
 
     public void setRetryPaymentSetting(RetryPaymentSetting retryPaymentSetting) {
         this.retryPaymentSetting = retryPaymentSetting;
+    }
+
+    public boolean isPolicyPremiumMockData() {
+        return policyPremiumMockData;
+    }
+
+    public void setPolicyPremiumMockData(boolean policyPremiumMockData) {
+        this.policyPremiumMockData = policyPremiumMockData;
     }
 
     public static class RetryPaymentSetting {

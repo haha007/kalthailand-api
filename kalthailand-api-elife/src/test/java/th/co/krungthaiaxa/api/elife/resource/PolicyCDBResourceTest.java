@@ -23,10 +23,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import th.co.krungthaiaxa.api.elife.ELifeTest;
 import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
-import th.co.krungthaiaxa.api.elife.repository.PolicyRepository;
-import th.co.krungthaiaxa.api.elife.service.QuoteService;
 
-import javax.inject.Inject;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -43,13 +40,10 @@ public class PolicyCDBResourceTest extends ELifeTest {
     public final GreenMailRule greenMail = new GreenMailRule(ServerSetupTest.SMTP_IMAP);
     @Value("${local.server.port}")
     private int port;
+    @Value("http://localhost:${local.server.port}")
+    private String baseUrl;
     private URI base;
     private RestTemplate template;
-
-    @Inject
-    private PolicyRepository policyRepository;
-    @Inject
-    private QuoteService quoteService;
 
     @Before
     public void setUp() throws Exception {
@@ -59,9 +53,8 @@ public class PolicyCDBResourceTest extends ELifeTest {
 
     @Test
     public void can_get_policy_cdb() throws IOException, URISyntaxException {
-//        Policy policy =
         String policyNumber = "502-0123456";
-        URI paymentURI = new URI("http://localhost:" + port + "/policies/" + policyNumber + "/cdb");
+        URI paymentURI = new URI(baseUrl + "/policies/" + policyNumber + "/cdb");
         UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromUri(paymentURI)
                 .queryParam("insuredDob", LocalDate.now())
                 .queryParam("orderId", "myOrderId")
@@ -70,9 +63,5 @@ public class PolicyCDBResourceTest extends ELifeTest {
         ResponseEntity<String> responseEntity = template.exchange(uriComponentsBuilder.toUriString(), HttpMethod.GET, null, String.class);
         LOGGER.debug(responseEntity.getBody());
         Assert.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-//
-//        Policy updatedPolicy = TestUtil.getPolicyFromJSon(responseEntity.getBody());
-//        assertThat(responseEntity.getStatusCode().value()).isEqualTo(OK.value());
-//        Assertions.assertThat(updatedPolicy.getPayments().get(0).getStatus()).isEqualTo(PaymentStatus.NOT_PROCESSED);
     }
 }
