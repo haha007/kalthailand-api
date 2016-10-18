@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.TestRestTemplate;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,10 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import th.co.krungthaiaxa.api.elife.ELifeTest;
 import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
+import th.co.krungthaiaxa.api.elife.TestUtil;
+import th.co.krungthaiaxa.api.elife.policyPremiumNotification.model.PolicyPremiumNoticeRequest;
+import th.co.krungthaiaxa.api.elife.policyPremiumNotification.model.PolicyPremiumNoticeSMSRequest;
+import th.co.krungthaiaxa.api.elife.utils.GreenMailUtil;
 
 import java.io.IOException;
 import java.net.URI;
@@ -54,13 +59,43 @@ public class PolicyCDBResourceTest extends ELifeTest {
     @Test
     public void can_get_policy_cdb() throws IOException, URISyntaxException {
         String policyNumber = "502-0123456";
-        URI paymentURI = new URI(baseUrl + "/policies/" + policyNumber + "/cdb");
+        URI paymentURI = new URI(baseUrl + "/policies/" + policyNumber + "/premium/cdb");
         UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromUri(paymentURI)
                 .queryParam("insuredDob", LocalDate.now())
                 .queryParam("orderId", "myOrderId")
                 .queryParam("registrationKey", "myRegistrationKey")
                 .queryParam("transactionId", "myTransactionId");
         ResponseEntity<String> responseEntity = template.exchange(uriComponentsBuilder.toUriString(), HttpMethod.GET, null, String.class);
+        LOGGER.debug(responseEntity.getBody());
+        Assert.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+    }
+
+    @Test
+    public void can_send_email() throws IOException, URISyntaxException {
+        String policyNumber = "502-0123456";
+        URI paymentURI = new URI(baseUrl + "/policies/" + policyNumber + "/premium/email");
+        PolicyPremiumNoticeRequest policyPremiumNoticeRequest = new PolicyPremiumNoticeRequest();
+        policyPremiumNoticeRequest.setInsuredDob(LocalDate.now().minusYears(10));
+
+        UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromUri(paymentURI);
+        HttpEntity<PolicyPremiumNoticeRequest> httpEntity = new HttpEntity(policyPremiumNoticeRequest);
+        ResponseEntity<String> responseEntity = template.exchange(uriComponentsBuilder.toUriString(), HttpMethod.POST, httpEntity, String.class);
+        LOGGER.debug(responseEntity.getBody());
+        Assert.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        GreenMailUtil.writeReceiveMessagesToFiles(greenMail, TestUtil.PATH_TEST_RESULT + "/emails");
+    }
+
+    @Test
+    public void can_send_sms() throws IOException, URISyntaxException {
+        String policyNumber = "502-0123456";
+        URI paymentURI = new URI(baseUrl + "/policies/" + policyNumber + "/premium/email");
+        PolicyPremiumNoticeSMSRequest policyPremiumNoticeRequest = new PolicyPremiumNoticeSMSRequest();
+        policyPremiumNoticeRequest.setInsuredDob(LocalDate.now().minusYears(10));
+        policyPremiumNoticeRequest.setCompanyCode("MOCK_COMPANY_CODE");
+
+        UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromUri(paymentURI);
+        HttpEntity<PolicyPremiumNoticeSMSRequest> httpEntity = new HttpEntity(policyPremiumNoticeRequest);
+        ResponseEntity<String> responseEntity = template.exchange(uriComponentsBuilder.toUriString(), HttpMethod.POST, httpEntity, String.class);
         LOGGER.debug(responseEntity.getBody());
         Assert.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
     }

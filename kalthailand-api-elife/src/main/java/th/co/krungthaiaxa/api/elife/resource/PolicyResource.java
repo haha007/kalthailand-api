@@ -511,7 +511,7 @@ public class PolicyResource {
     @ApiResponses({
             @ApiResponse(code = 500, message = "If there was some internal error", response = Error.class)
     })
-    @RequestMapping(value = "/policies/{policyId}/cdb", produces = APPLICATION_JSON_VALUE, method = GET)
+    @RequestMapping(value = "/policies/{policyId}/premium/cdb", produces = APPLICATION_JSON_VALUE, method = GET)
     @ResponseBody
     public PolicyCDB getPolicyDetailFromCDB(
             @ApiParam(value = "policyId", required = true)
