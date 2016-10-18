@@ -50,7 +50,7 @@ import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.EVERY_YEA
 @SpringApplicationConfiguration(classes = KalApiElifeApplication.class)
 @WebAppConfiguration
 @ActiveProfiles("test")
-public class RLSServiceTest extends ELifeTest {
+public class CollectionFileProcessingServiceTest extends ELifeTest {
     @Inject
     private PaymentRepository paymentRepository;
     @Inject
