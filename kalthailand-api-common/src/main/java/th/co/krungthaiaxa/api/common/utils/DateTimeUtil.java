@@ -99,4 +99,12 @@ public class DateTimeUtil {
     public static LocalDateTime toThaiLocalDateTime(Instant instant) {
         return LocalDateTime.ofInstant(instant, getThaiZoneId());
     }
+
+    public static LocalDate toLocalDate(String dateString, String datePattern) {
+        return LocalDate.from(DateTimeFormatter.ofPattern(datePattern).parse(dateString));
+    }
+
+    public static LocalDateTime toLocalDateTime(String dateString, String datePattern) {
+        return LocalDateTime.from(DateTimeFormatter.ofPattern(datePattern).parse(dateString));
+    }
 }

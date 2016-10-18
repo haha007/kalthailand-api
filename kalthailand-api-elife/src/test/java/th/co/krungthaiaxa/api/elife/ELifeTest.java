@@ -16,7 +16,7 @@ import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.soap.client.core.SoapActionCallback;
 import th.co.krungthaiaxa.api.elife.client.*;
 import th.co.krungthaiaxa.api.elife.filter.KalApiTokenFilter;
-import th.co.krungthaiaxa.api.elife.repository.CDBRepository;
+import th.co.krungthaiaxa.api.elife.repository.cdb.CDBRepository;
 import th.co.krungthaiaxa.api.elife.repository.LineBCRepository;
 import th.co.krungthaiaxa.api.elife.tmc.TMCClient;
 import th.co.krungthaiaxa.api.elife.tmc.TMCSendingPDFResponse;

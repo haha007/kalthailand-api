@@ -8,8 +8,8 @@ import th.co.krungthaiaxa.api.common.utils.IOUtil;
 import th.co.krungthaiaxa.api.elife.model.Amount;
 import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.model.Quote;
-import th.co.krungthaiaxa.api.elife.service.AxaEmailHelper;
-import th.co.krungthaiaxa.api.elife.service.AxaEmailService;
+import th.co.krungthaiaxa.api.elife.service.ElifeEmailHelper;
+import th.co.krungthaiaxa.api.elife.service.ElifeEmailService;
 import th.co.krungthaiaxa.api.elife.utils.EmailUtil;
 
 import javax.inject.Inject;
@@ -28,12 +28,12 @@ public abstract class AbstractQuoteEmailService {
     @Value("https://line.me/R/ch/${line.app.id}/elife/th/")
     private String lineURL;
 
-    private final AxaEmailService axaEmailService;
-    private final AxaEmailHelper axaEmailHelper;
+    private final ElifeEmailService axaEmailService;
+    private final ElifeEmailHelper axaEmailHelper;
     private final SaleIllustrationService saleIllustrationService;
 
     @Inject
-    public AbstractQuoteEmailService(AxaEmailService axaEmailService, AxaEmailHelper axaEmailHelper, SaleIllustrationService saleIllustrationService) {
+    public AbstractQuoteEmailService(ElifeEmailService axaEmailService, ElifeEmailHelper axaEmailHelper, SaleIllustrationService saleIllustrationService) {
         this.axaEmailService = axaEmailService;
         this.axaEmailHelper = axaEmailHelper;
         this.saleIllustrationService = saleIllustrationService;
@@ -74,11 +74,11 @@ public abstract class AbstractQuoteEmailService {
         this.lineURL = lineURL;
     }
 
-    public AxaEmailService getAxaEmailService() {
+    public ElifeEmailService getAxaEmailService() {
         return axaEmailService;
     }
 
-    public AxaEmailHelper getAxaEmailHelper() {
+    public ElifeEmailHelper getAxaEmailHelper() {
         return axaEmailHelper;
     }
 }

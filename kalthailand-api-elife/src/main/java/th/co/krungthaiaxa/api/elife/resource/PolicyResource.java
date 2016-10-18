@@ -29,14 +29,15 @@ import th.co.krungthaiaxa.api.elife.model.Document;
 import th.co.krungthaiaxa.api.elife.model.DocumentDownload;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.Policy;
+import th.co.krungthaiaxa.api.elife.model.PolicyCDB;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
 import th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayCaptureMode;
+import th.co.krungthaiaxa.api.elife.policyPremiumNotification.service.PolicyCDBService;
 import th.co.krungthaiaxa.api.elife.policyPremiumNotification.service.PolicyPremiumNotificationService;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
 import th.co.krungthaiaxa.api.elife.service.DocumentService;
-import th.co.krungthaiaxa.api.elife.service.LineService;
 import th.co.krungthaiaxa.api.elife.service.PaymentService;
 import th.co.krungthaiaxa.api.elife.service.PolicyService;
 import th.co.krungthaiaxa.api.elife.service.PolicyValidatedProcessingService;
@@ -76,12 +77,12 @@ import static th.co.krungthaiaxa.api.elife.utils.ExcelUtils.text;
 public class PolicyResource {
     private final static Logger logger = LoggerFactory.getLogger(PolicyResource.class);
     private final DocumentService documentService;
-    private final LineService lineService;
     private final PolicyService policyService;
     private final QuoteService quoteService;
     private final PaymentService paymentService;
     private final PolicyValidatedProcessingService policyValidatedProcessingService;
     private final PolicyPremiumNotificationService policyPremiumNotificationService;
+    private final PolicyCDBService policyCDBService;
 
     @Value("${environment.name}")
     private String environmentName;
@@ -89,15 +90,15 @@ public class PolicyResource {
     private String accessTokenHeader;
 
     @Inject
-    public PolicyResource(DocumentService documentService, LineService lineService, PolicyService policyService, QuoteService quoteService, PaymentService paymentService, PolicyValidatedProcessingService policyValidatedProcessingService,
-            PolicyPremiumNotificationService policyPremiumNotificationService) {
+    public PolicyResource(DocumentService documentService, PolicyService policyService, QuoteService quoteService, PaymentService paymentService, PolicyValidatedProcessingService policyValidatedProcessingService,
+            PolicyPremiumNotificationService policyPremiumNotificationService, PolicyCDBService policyCDBService) {
         this.documentService = documentService;
-        this.lineService = lineService;
         this.policyService = policyService;
         this.quoteService = quoteService;
         this.paymentService = paymentService;
         this.policyValidatedProcessingService = policyValidatedProcessingService;
         this.policyPremiumNotificationService = policyPremiumNotificationService;
+        this.policyCDBService = policyCDBService;
     }
 
     @ApiOperation(value = "List of policies", notes = "Gets a list of policies.", response = Policy.class, responseContainer = "List")
@@ -479,6 +480,20 @@ public class PolicyResource {
             @ApiParam(value = "policyId", required = true)
             @PathVariable("policyId") String policyNumber) {
         policyPremiumNotificationService.sendEmail(policyNumber);
+    }
+
+    @ApiOperation(value = "Get policy detail from Core DB (CDB) system.", notes = "This method doesn't get policy detail from eLife DB, it will get detail from CDB.", response = Policy.class)
+    @ApiResponses({
+            @ApiResponse(code = 500, message = "If there was some internal error", response = Error.class)
+    })
+    @RequestMapping(value = "/policies/{policyId}/cdb", produces = APPLICATION_JSON_VALUE, method = GET)
+    @ResponseBody
+    public PolicyCDB getPolicyDetailFromCDB(
+            @ApiParam(value = "policyId", required = true)
+            @PathVariable("policyId") String policyNumber,
+            @ApiParam(value = "The dob of main insured", required = true)
+            @RequestParam LocalDate insuredDob) {
+        return policyCDBService.findOneByPolicyNumberAndMainInsuredDOB(policyNumber, insuredDob);
     }
 
     private void createPolicyExtractExcelFileLine(Sheet sheet, Policy policy) {

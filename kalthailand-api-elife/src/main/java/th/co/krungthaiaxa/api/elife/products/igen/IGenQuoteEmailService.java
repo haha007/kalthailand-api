@@ -6,14 +6,14 @@ import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.product.PremiumDetail;
 import th.co.krungthaiaxa.api.elife.products.AbstractQuoteEmailService;
-import th.co.krungthaiaxa.api.elife.service.AxaEmailHelper;
-import th.co.krungthaiaxa.api.elife.service.AxaEmailService;
+import th.co.krungthaiaxa.api.elife.service.ElifeEmailHelper;
+import th.co.krungthaiaxa.api.elife.service.ElifeEmailService;
 
 @Service
 public class IGenQuoteEmailService extends AbstractQuoteEmailService {
 
     @Autowired
-    public IGenQuoteEmailService(AxaEmailService axaEmailService, AxaEmailHelper axaEmailHelper, IGenSaleIllustrationService saleIllustrationService) {
+    public IGenQuoteEmailService(ElifeEmailService axaEmailService, ElifeEmailHelper axaEmailHelper, IGenSaleIllustrationService saleIllustrationService) {
         super(axaEmailService, axaEmailHelper, saleIllustrationService);
     }
 

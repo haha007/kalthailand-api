@@ -12,8 +12,8 @@ import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 import th.co.krungthaiaxa.api.elife.model.sms.SMSResponse;
 import th.co.krungthaiaxa.api.elife.products.ProductUtils;
-import th.co.krungthaiaxa.api.elife.service.AxaEmailHelper;
-import th.co.krungthaiaxa.api.elife.service.AxaEmailService;
+import th.co.krungthaiaxa.api.elife.service.ElifeEmailHelper;
+import th.co.krungthaiaxa.api.elife.service.ElifeEmailService;
 import th.co.krungthaiaxa.api.elife.service.PolicyService;
 import th.co.krungthaiaxa.api.elife.service.SMSApiService;
 import th.co.krungthaiaxa.api.elife.utils.EmailUtil;
@@ -29,12 +29,12 @@ import java.util.Collections;
 public class PolicyPremiumNotificationService {
     private final PolicyService policyService;
     private final SMSApiService smsApiService;
-    private final AxaEmailService axaEmailService;
-    private final AxaEmailHelper axaEmailHelper;
+    private final ElifeEmailService axaEmailService;
+    private final ElifeEmailHelper axaEmailHelper;
     private final ObjectMapper objectMapper;
 
     @Autowired
-    public PolicyPremiumNotificationService(PolicyService policyService, SMSApiService smsApiService, AxaEmailService axaEmailService, AxaEmailHelper axaEmailHelper, ObjectMapper objectMapper) {
+    public PolicyPremiumNotificationService(PolicyService policyService, SMSApiService smsApiService, ElifeEmailService axaEmailService, ElifeEmailHelper axaEmailHelper, ObjectMapper objectMapper) {
         this.policyService = policyService;
         this.smsApiService = smsApiService;
         this.axaEmailService = axaEmailService;

@@ -1,6 +1,7 @@
 package th.co.krungthaiaxa.api.elife.service;
 
 import org.springframework.context.MessageSource;
+import org.springframework.stereotype.Component;
 import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
 import th.co.krungthaiaxa.api.elife.model.Periodicity;
 
@@ -13,8 +14,10 @@ import java.util.Locale;
 
 /**
  * @author khoi.tran on 10/17/16.
+ *         This class is only helpful for eLife only.
  */
-public class AxaEmailHelper {
+@Component
+public class ElifeEmailHelper {
     @Inject
     private MessageSource messageSource;
     private Locale thLocale = new Locale("th", "");

@@ -8,8 +8,8 @@ import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.products.AbstractQuoteEmailService;
 import th.co.krungthaiaxa.api.elife.products.ProductUtils;
-import th.co.krungthaiaxa.api.elife.service.AxaEmailHelper;
-import th.co.krungthaiaxa.api.elife.service.AxaEmailService;
+import th.co.krungthaiaxa.api.elife.service.ElifeEmailHelper;
+import th.co.krungthaiaxa.api.elife.service.ElifeEmailService;
 
 import javax.inject.Inject;
 import java.text.DecimalFormat;
@@ -23,7 +23,7 @@ public class IProtectQuoteEmailService extends AbstractQuoteEmailService {
     private final static Logger LOGGER = LoggerFactory.getLogger(IProtectQuoteEmailService.class);
 
     @Inject
-    public IProtectQuoteEmailService(AxaEmailService axaEmailService, AxaEmailHelper axaEmailHelper, IProtectSaleIllustrationService iProtectSaleIllustrationService) {
+    public IProtectQuoteEmailService(ElifeEmailService axaEmailService, ElifeEmailHelper axaEmailHelper, IProtectSaleIllustrationService iProtectSaleIllustrationService) {
         super(axaEmailService, axaEmailHelper, iProtectSaleIllustrationService);
     }
 

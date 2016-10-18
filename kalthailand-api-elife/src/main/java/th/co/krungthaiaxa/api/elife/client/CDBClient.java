@@ -4,7 +4,7 @@ import org.apache.commons.lang3.tuple.Triple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import th.co.krungthaiaxa.api.elife.repository.CDBRepository;
+import th.co.krungthaiaxa.api.elife.repository.cdb.CDBRepository;
 
 import javax.inject.Inject;
 import java.util.Optional;
