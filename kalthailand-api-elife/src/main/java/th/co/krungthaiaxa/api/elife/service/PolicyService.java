@@ -215,16 +215,16 @@ public class PolicyService {
                 method);
     }
 
-    public void updateRegistrationForAllNotProcessedPayment(Policy policy, String registrationKey) {
-        if (isBlank(registrationKey)) {
+    public void updateRegKeyForAllNotProcessedPayments(Policy policy, String newRegistrationKey) {
+        if (isBlank(newRegistrationKey)) {
             return;
         }
 
         //TODO Improve performance: use Mongo query to update
         // Save the registration key in all other payments
-        policy.getPayments().stream().filter(tmp -> tmp.getStatus().equals(NOT_PROCESSED)).forEach(tmp -> {
-            if (!registrationKey.equals(tmp.getRegistrationKey())) {
-                tmp.setRegistrationKey(registrationKey);
+        policy.getPayments().stream().filter(paymentPredicate -> paymentPredicate.getStatus().equals(NOT_PROCESSED)).forEach(payment -> {
+            if (!newRegistrationKey.equals(payment.getRegistrationKey())) {
+                payment.setRegistrationKey(newRegistrationKey);
             }
         });
     }

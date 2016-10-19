@@ -95,14 +95,15 @@ public class PolicyValidatedProcessingService {
 
         if (linePayResponse == null) {
             throw new LinePaymentException("No way to call Line Pay capture API has been provided");
-        } else if (!linePayResponse.getReturnCode().equals(LineService.RESPONSE_CODE_SUCCESS)) {
+        } else if (!LineService.RESPONSE_CODE_SUCCESS.equals(linePayResponse.getReturnCode())) {
             String msg = "Confirming payment didn't go through. Error code is [" + linePayResponse.getReturnCode() + "], error message is [" + linePayResponse.getReturnMessage() + "]";
             throw new LinePaymentException(msg);
         }
 
         // Update the payment if confirm is success
         policyService.updatePayment(paymentHasTransaction, paymentHasTransaction.getAmount().getValue(), paymentHasTransaction.getAmount().getCurrencyCode(), LINE, linePayResponse);
-        policyService.updateRegistrationForAllNotProcessedPayment(policy, linePayResponse.getInfo().getRegKey());
+        String regKey = linePayResponse.getInfo().getRegKey();
+        policyService.updateRegKeyForAllNotProcessedPayments(policy, regKey);
         policy = policyService.updatePolicyAfterPolicyHasBeenValidated(policy, agentCode, agentName, accessToken);
         return policy;
     }
