@@ -1,13 +1,5 @@
 package th.co.krungthaiaxa.api.elife.products.iprotect;
 
-import com.itextpdf.text.BaseColor;
-import com.itextpdf.text.Font;
-import com.itextpdf.text.Image;
-import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.Phrase;
-import com.itextpdf.text.Rectangle;
-import com.itextpdf.text.pdf.BaseFont;
-import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
@@ -19,48 +11,28 @@ import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 import th.co.krungthaiaxa.api.elife.model.product.ProductIProtectPremium;
-import th.co.krungthaiaxa.api.elife.products.SaleIllustrationService;
+import th.co.krungthaiaxa.api.elife.products.AbstractSaleIllustrationService;
 
 import javax.inject.Inject;
-import java.io.IOException;
 import java.text.DecimalFormat;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
-
-import static org.apache.commons.io.IOUtils.toByteArray;
 
 /**
  * Created by SantiLik on 3/28/2016.
  */
 
 @Service
-public class IProtectSaleIllustrationService implements SaleIllustrationService {
+public class IProtectSaleIllustrationService extends AbstractSaleIllustrationService {
 
-    private final static Logger logger = LoggerFactory.getLogger(IProtectSaleIllustrationService.class);
-    private static final BaseColor BORDER_COLOR = new BaseColor(218, 218, 218);
-    private static final String _fontNormal = "/saleillustration/PSL094.TTF";
-    private static final String _fontBold = "/saleillustration/PSL096.TTF";
-    private static final Integer TB_HORIZONTAL_ALIGN_LEFT = 0;
-    private static final Integer TB_HORIZONTAL_ALIGN_CENTER = 1;
-    private static final Integer TB_HORIZONTAL_ALIGN_RIGHT = 2;
-    private static final Integer TB_VERTICAL_ALIGN_TOP = 0;
-    private static final Integer FONT_SIZE_HEADER = 27;
-    private static final Integer FONT_SIZE_NORMAL = 15;
-    private static final Integer FONT_SIZE_SMALL = 12;
-    private static final Integer BENEFIT_IMG_SIZE = 40;
-    private static final String TAB = "     ";
-    private static final String NEW_LINE = System.getProperty("line.separator");
+    private final static Logger LOGGER = LoggerFactory.getLogger(IProtectSaleIllustrationService.class);
+
     @Inject
     private MessageSource messageSource;
-    private Locale thLocale = new Locale("th", "");
-    private String MONEY_DECIMAL_FORMAT = "#,##0.00";
 
     @Override
     public Pair<byte[], String> generatePDF(Quote quote) {
-        if (logger.isDebugEnabled()) {
-            logger.debug(String.format("[%1$s] .....", "generatePDF"));
-            logger.debug(String.format("quote is %1$s", quote.toString()));
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug(String.format("[%1$s] .....", "generatePDF"));
+            LOGGER.debug(String.format("quote is %1$s", quote.toString()));
         }
 
         ProductIProtectPremium p = quote.getPremiumsData().getProductIProtectPremium();
@@ -104,149 +76,6 @@ public class IProtectSaleIllustrationService implements SaleIllustrationService 
         pdfPTable.addCell(addData("- เบี้ยประกันต่อเดือนต้องไม่ต่ำกว่า 1,000 บาท", getFontExtraSmallStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
 
         return Pair.of(PdfIOUtil.writeToBytes(pdfPTable), "proposal_" + quote.getQuoteId() + "_" + getDate() + ".pdf");
-    }
-
-    private String toCurrency(Double d) {
-        return (new DecimalFormat(MONEY_DECIMAL_FORMAT)).format(d);
-    }
-
-    private String getDate() {
-        return LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-    }
-
-    private static PdfPCell addImage(byte[] imgContent, Integer imgScale, Integer colSpan, Integer horizontalAlignment) {
-        Image img;
-        try {
-            img = Image.getInstance(imgContent);
-        } catch (Exception e) {
-            logger.error("Unable to add image", e);
-            return new PdfPCell();
-        }
-        img.scalePercent(imgScale);
-        PdfPCell cell = new PdfPCell(img);
-        cell.setBorder(Rectangle.NO_BORDER);
-        if (colSpan != null) {
-            cell.setColspan(colSpan);
-        }
-        cell.setHorizontalAlignment(horizontalAlignment);
-        return cell;
-    }
-
-    private static PdfPCell addData(String msg, Font fontStyle, Integer colSpan, Integer horizontalAlignment, Integer verticalAlignment) {
-        PdfPCell cell = new PdfPCell(new Phrase(new Paragraph(msg, fontStyle)));
-        cell.setBorder(Rectangle.NO_BORDER);
-        if (colSpan != null) {
-            cell.setColspan(colSpan);
-        }
-        cell.setHorizontalAlignment(horizontalAlignment);
-        if (verticalAlignment != null) {
-            cell.setVerticalAlignment(verticalAlignment);
-        }
-        return cell;
-    }
-
-    private static PdfPCell addLine(boolean border, Integer colSpan) {
-        PdfPCell cell = new PdfPCell(new Phrase(" "));
-        if (border) {
-            cell.setBorder(Rectangle.BOTTOM);
-            cell.setBorderColor(BORDER_COLOR);
-        } else {
-            cell.setBorder(Rectangle.NO_BORDER);
-        }
-        if (colSpan != null) {
-            cell.setColspan(colSpan);
-        }
-        return cell;
-    }
-
-    private Font getFontHeaderStyle() {
-        BaseFont bfBold = null;
-        try {
-            bfBold = BaseFont.createFont(_fontBold, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
-        } catch (Exception e) {
-            logger.error("Unable to add image", e);
-        }
-        Font fontHeader = new Font(bfBold, FONT_SIZE_HEADER);
-        fontHeader.setColor(new BaseColor(14, 50, 131));
-        return fontHeader;
-    }
-
-    private Font getFontNormalStyle() {
-        BaseFont bfNormal = null;
-        try {
-            bfNormal = BaseFont.createFont(_fontBold, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
-        } catch (Exception e) {
-            logger.error("Unable to add image", e);
-        }
-        return new Font(bfNormal, FONT_SIZE_NORMAL);
-    }
-
-    private Font getFontNormalGrayStyle() {
-        BaseFont bfNormal = null;
-        try {
-            bfNormal = BaseFont.createFont(_fontBold, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
-        } catch (Exception e) {
-            logger.error("Unable to add image", e);
-        }
-        Font fontNormalGray = new Font(bfNormal, FONT_SIZE_NORMAL);
-        fontNormalGray.setColor(new BaseColor(145, 145, 145));
-        return fontNormalGray;
-    }
-
-    private Font getFontNormalDeepGrayStyle() {
-        BaseFont bfNormal = null;
-        try {
-            bfNormal = BaseFont.createFont(_fontBold, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
-        } catch (Exception e) {
-            logger.error("Unable to add image", e);
-        }
-        Font fontNormalGray = new Font(bfNormal, FONT_SIZE_NORMAL);
-        fontNormalGray.setColor(new BaseColor(88, 88, 88));
-        return fontNormalGray;
-    }
-
-    private Font getFontNormalBlueStyle() {
-        BaseFont bfNormalBlue = null;
-        try {
-            bfNormalBlue = BaseFont.createFont(_fontBold, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
-        } catch (Exception e) {
-            logger.error("Unable to add image", e);
-        }
-        Font fontNormalBlue = new Font(bfNormalBlue, FONT_SIZE_NORMAL);
-        fontNormalBlue.setColor(new BaseColor(31, 139, 179));
-        return fontNormalBlue;
-    }
-
-    private Font getFontExtraSmallStyle() {
-        BaseFont bfExtraSmall = null;
-        try {
-            bfExtraSmall = BaseFont.createFont(_fontNormal, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
-        } catch (Exception e) {
-            logger.error("Unable to add image", e);
-        }
-        return new Font(bfExtraSmall, FONT_SIZE_SMALL);
-    }
-
-    private Font getFontExtraSmallGrayStyle() {
-        BaseFont bfExtraSmall = null;
-        try {
-            bfExtraSmall = BaseFont.createFont(_fontNormal, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
-        } catch (Exception e) {
-            logger.error("Unable to add image", e);
-        }
-        Font fontExtraSmallGray = new Font(bfExtraSmall, FONT_SIZE_SMALL);
-        fontExtraSmallGray.setColor(new BaseColor(145, 145, 145));
-        return fontExtraSmallGray;
-    }
-
-    private byte[] getResourceAsByteArray(String imgPath) {
-        byte[] outPut = new byte[0];
-        try {
-            outPut = toByteArray(this.getClass().getResourceAsStream(imgPath));
-        } catch (IOException e) {
-            logger.error("Unable to get resource as byte array", e);
-        }
-        return outPut;
     }
 
 }

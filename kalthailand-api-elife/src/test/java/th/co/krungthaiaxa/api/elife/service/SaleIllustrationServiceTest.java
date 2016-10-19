@@ -10,6 +10,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.api.elife.ELifeTest;
 import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
+import th.co.krungthaiaxa.api.elife.TestUtil;
 import th.co.krungthaiaxa.api.elife.factory.ProductQuotationFactory;
 import th.co.krungthaiaxa.api.elife.factory.QuoteFactory;
 import th.co.krungthaiaxa.api.elife.model.Amount;
@@ -71,7 +72,7 @@ public class SaleIllustrationServiceTest extends ELifeTest {
         Pair<byte[], String> pair = iProtectSaleIllustrationService.generatePDF(quote);
         assertThat(pair.getLeft()).isNotEmpty();
         assertThat(pair.getRight()).isNotEmpty();
-        FileUtils.writeByteArrayToFile(new File("target/" + pair.getRight()), pair.getLeft());
+        FileUtils.writeByteArrayToFile(new File(TestUtil.PATH_TEST_RESULT + "iProtect-sale-illustration_" + pair.getRight()), pair.getLeft());
     }
 
     @Test
@@ -93,7 +94,8 @@ public class SaleIllustrationServiceTest extends ELifeTest {
         Pair<byte[], String> pair = iProtectSaleIllustrationService.generatePDF(quote);
         assertThat(pair.getLeft()).isNotEmpty();
         assertThat(pair.getRight()).isNotEmpty();
-        FileUtils.writeByteArrayToFile(new File("target/" + pair.getRight()), pair.getLeft());
+        FileUtils.writeByteArrayToFile(new File(TestUtil.PATH_TEST_RESULT + "iProtect-sale-illustration_" + pair.getRight()), pair.getLeft());
+
     }
 
     @Test
@@ -105,7 +107,8 @@ public class SaleIllustrationServiceTest extends ELifeTest {
         Pair<byte[], String> pair = saleIllustration10ECService.generatePDF(quote, base64);
         assertThat(pair.getLeft()).isNotEmpty();
         assertThat(pair.getRight()).isNotEmpty();
-        FileUtils.writeByteArrayToFile(new File("target/" + pair.getRight()), pair.getLeft());
+        FileUtils.writeByteArrayToFile(new File(TestUtil.PATH_TEST_RESULT + "10ec-sale-illustration_" + pair.getRight()), pair.getLeft());
+
     }
 
     @Test
@@ -117,7 +120,8 @@ public class SaleIllustrationServiceTest extends ELifeTest {
         Pair<byte[], String> pair = saleIllustrationiFineService.generatePDF(quote);
         assertThat(pair.getLeft()).isNotEmpty();
         assertThat(pair.getRight()).isNotEmpty();
-        FileUtils.writeByteArrayToFile(new File("target/" + pair.getRight()), pair.getLeft());
+        FileUtils.writeByteArrayToFile(new File(TestUtil.PATH_TEST_RESULT + "iFine-sale-illustration_" + pair.getRight()), pair.getLeft());
+
     }
 
     @Test
@@ -129,7 +133,8 @@ public class SaleIllustrationServiceTest extends ELifeTest {
         Pair<byte[], String> pair = saleIllustrationiFineService.generatePDF(quote);
         assertThat(pair.getLeft()).isNotEmpty();
         assertThat(pair.getRight()).isNotEmpty();
-        FileUtils.writeByteArrayToFile(new File("target/" + pair.getRight()), pair.getLeft());
+        FileUtils.writeByteArrayToFile(new File(TestUtil.PATH_TEST_RESULT + "iFine-sale-illustration_" + pair.getRight()), pair.getLeft());
+
     }
 
 }

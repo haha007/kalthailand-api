@@ -2,6 +2,8 @@ package th.co.krungthaiaxa.api.elife.products.igen;
 
 import com.itextpdf.text.pdf.PdfPTable;
 import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.common.utils.PdfIOUtil;
 import th.co.krungthaiaxa.api.elife.model.Insured;
@@ -11,6 +13,7 @@ import th.co.krungthaiaxa.api.elife.products.AbstractSaleIllustrationService;
 
 @Service
 public class IGenSaleIllustrationService extends AbstractSaleIllustrationService {
+    private final static Logger LOGGER = LoggerFactory.getLogger(IGenSaleIllustrationService.class);
 
 	/*
      * must be implement for sale illustration pdf file generated

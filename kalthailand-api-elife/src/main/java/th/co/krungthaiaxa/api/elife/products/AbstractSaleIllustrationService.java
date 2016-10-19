@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
+import th.co.krungthaiaxa.api.common.utils.LocaleUtil;
 import th.co.krungthaiaxa.api.elife.model.Periodicity;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 
@@ -28,7 +29,7 @@ import static org.apache.commons.io.IOUtils.toByteArray;
 @Component
 public abstract class AbstractSaleIllustrationService implements SaleIllustrationService {
 
-    protected final static Logger LOGGER = LoggerFactory.getLogger(AbstractSaleIllustrationService.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(AbstractSaleIllustrationService.class);
 
     protected static final BaseColor BORDER_COLOR = new BaseColor(218, 218, 218);
     protected static final String _fontNormal = "/saleillustration/PSL094.TTF";
@@ -47,10 +48,11 @@ public abstract class AbstractSaleIllustrationService implements SaleIllustratio
     protected final String PDF_NAME = "proposal_";
     protected final String PDF_EXTENSION = ".pdf";
     protected final String UNDERSCORE = "_";
+    protected Locale thLocale = LocaleUtil.THAI_LOCALE;
 
     @Inject
     private MessageSource messageSource;
-    private Locale thLocale = new Locale("th", "");
+
     
     /*
      * custom value specific
@@ -231,7 +233,7 @@ public abstract class AbstractSaleIllustrationService implements SaleIllustratio
      * get now date using within abstract class
      * */
 
-    private String getDate() {
+    protected String getDate() {
         return LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
     }
 
