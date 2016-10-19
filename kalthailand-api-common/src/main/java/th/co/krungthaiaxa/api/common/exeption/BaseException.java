@@ -13,7 +13,7 @@ public class BaseException extends RuntimeException {
 
     private final String errorMessage;
 
-    private final Object details;
+    private final transient Object details;
 
     public BaseException(String errorCode, String message) {
         super(message);

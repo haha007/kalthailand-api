@@ -13,9 +13,9 @@ public class BeanValidationException extends BaseException implements BeanValida
     private static final long serialVersionUID = -5046622369228818254L;
     public static final String ERROR_CODE = ErrorCode.ERROR_CODE_BEAN_VALIDATION;
 
-    private final Object errorTarget;
+    private final transient Object errorTarget;
 
-    private final Set<ConstraintViolation<Object>> violations;
+    private final transient Set<ConstraintViolation<Object>> violations;
 
     /**
      * @param message     general error message.
