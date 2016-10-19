@@ -18,6 +18,10 @@ public class ExcelIOUtils {
             String msg = "Cannot load file '" + classPath + "': " + e.getMessage();
             throw new FileNotFoundException(msg, e);
         }
+        //TODO Not sure should we close it or not.
+        /*finally {
+            IOUtil.closeIfPossible(inputStream);
+        }*/
     }
 
     public static byte[] writeToBytes(Workbook workbook) {

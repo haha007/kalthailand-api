@@ -19,34 +19,35 @@ import java.util.Date;
 @SpringBootApplication
 @EnableSwagger2
 public class KALApiAuth {
-	public static void main(String[] args) {
-		SpringApplication.run(KALApiAuth.class, args);
-	}
+    @SuppressWarnings("squid:S2095")//Ignore the wrong Sonar check.
+    public static void main(String[] args) {
+        SpringApplication.run(KALApiAuth.class, args);
+    }
 
-	@Bean
-	public Docket configureSwagger() {
-		return new Docket(DocumentationType.SWAGGER_2)
-				.select()
-				.apis(RequestHandlerSelectors.any())
-				.paths(paths())
-				.build()
-				.useDefaultResponseMessages(false)
-				.pathMapping("/")
-				.apiInfo(metadata())
-				.directModelSubstitute(LocalDate.class, Date.class);
-	}
+    @Bean
+    public Docket configureSwagger() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .select()
+                .apis(RequestHandlerSelectors.any())
+                .paths(paths())
+                .build()
+                .useDefaultResponseMessages(false)
+                .pathMapping("/")
+                .apiInfo(metadata())
+                .directModelSubstitute(LocalDate.class, Date.class);
+    }
 
-	private ApiInfo metadata() {
-		return new ApiInfoBuilder()
-				.title("Authentication API")
-				.description("Authentication API for Krunghtai Axa based on JWT")
-				.version("1.0.0")
-				.license("License")
-				.build();
-	}
+    private ApiInfo metadata() {
+        return new ApiInfoBuilder()
+                .title("Authentication API")
+                .description("Authentication API for Krunghtai Axa based on JWT")
+                .version("1.0.0")
+                .license("License")
+                .build();
+    }
 
-	private Predicate<String> paths() {
-		return Predicates.or(
-				PathSelectors.regex("/auth.*"));
-	}
+    private Predicate<String> paths() {
+        return Predicates.or(
+                PathSelectors.regex("/auth.*"));
+    }
 }

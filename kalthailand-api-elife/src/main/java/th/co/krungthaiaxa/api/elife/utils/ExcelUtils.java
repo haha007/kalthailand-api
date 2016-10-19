@@ -6,6 +6,8 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigInteger;
 import java.time.LocalDate;
@@ -14,6 +16,8 @@ import static com.google.common.collect.Lists.newArrayList;
 import static org.apache.poi.ss.usermodel.Cell.CELL_TYPE_FORMULA;
 
 public class ExcelUtils {
+    public static final Logger LOGGER = LoggerFactory.getLogger(ExcelUtils.class);
+
     public static Double getNumber(Row row, int cellIndex) {
         Cell cell = row.getCell(cellIndex, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
         if (cell != null) {
@@ -260,4 +264,5 @@ public class ExcelUtils {
             cell.setCellStyle(style);
         }
     }
+
 }

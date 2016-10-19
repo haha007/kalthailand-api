@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import th.co.krungthaiaxa.api.common.exeption.FileIOException;
 import th.co.krungthaiaxa.api.common.exeption.FileNotFoundException;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -17,7 +18,18 @@ import java.nio.charset.Charset;
  * @author khoi.tran on 7/26/16.
  */
 public class IOUtil {
-    public static final Logger LOG = LoggerFactory.getLogger(IOUtil.class);
+    public static final Logger LOGGER = LoggerFactory.getLogger(IOUtil.class);
+
+    public static void closeIfPossible(Closeable closeable) {
+        try {
+            if (closeable != null) {
+                closeable.close();
+            }
+        } catch (IOException e) {
+            //Only write log and then the flow is still processed as normal. Don't interrupt the process.
+            LOGGER.error("Cannot close object: " + e.getMessage(), e);
+        }
+    }
 
     /**
      * @param path a relative path in classpath. E.g. "images/email/logo.png"

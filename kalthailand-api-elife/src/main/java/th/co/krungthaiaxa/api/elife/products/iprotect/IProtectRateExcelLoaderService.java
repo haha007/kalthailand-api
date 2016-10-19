@@ -6,6 +6,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import th.co.krungthaiaxa.api.common.utils.IOUtil;
 import th.co.krungthaiaxa.api.elife.data.IProtectPackage;
 import th.co.krungthaiaxa.api.elife.data.ProductPremiumRate;
 import th.co.krungthaiaxa.api.elife.model.enums.GenderCode;
@@ -67,7 +68,7 @@ public class IProtectRateExcelLoaderService {
             }
             irow++;
         }
-
+        IOUtil.closeIfPossible(workbook);
         return Collections.unmodifiableList(result);
     }
 

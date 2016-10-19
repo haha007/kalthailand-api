@@ -5,6 +5,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.common.exeption.UnexpectedException;
+import th.co.krungthaiaxa.api.common.utils.IOUtil;
 import th.co.krungthaiaxa.api.elife.data.IProtectDiscountRate;
 import th.co.krungthaiaxa.api.elife.data.IProtectPackage;
 import th.co.krungthaiaxa.api.elife.repository.ProductIProtectDiscountRateRepository;
@@ -35,7 +36,6 @@ public class IProtectDiscountRateExcelLoaderService {
         return iProtectDiscountRates;
     }
 
-
     private List<IProtectDiscountRate> loadPredefinedRatesFromExcel(IProtectPackage iprotectPackage) {
         List<IProtectDiscountRate> result = new ArrayList<>();
         String sheetName = loadSheetNameForDiscountRate(iprotectPackage);
@@ -59,7 +59,7 @@ public class IProtectDiscountRateExcelLoaderService {
             result.add(iProtectDiscountRate);
             irow++;
         }
-
+        IOUtil.closeIfPossible(workbook);
         return Collections.unmodifiableList(result);
     }
 

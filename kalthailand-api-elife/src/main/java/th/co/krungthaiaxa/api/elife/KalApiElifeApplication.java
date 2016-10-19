@@ -5,7 +5,6 @@ import com.google.common.base.Predicates;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -28,8 +27,9 @@ import java.util.Date;
 @ComponentScan({ "th.co.krungthaiaxa.api.elife", "th.co.krungthaiaxa.api.common" })
 public class KalApiElifeApplication {
 
+    @SuppressWarnings("squid:S2095")//Ignore the wrong Sonar check.
     public static void main(String[] args) {
-        ConfigurableApplicationContext context = SpringApplication.run(KalApiElifeApplication.class, args);
+        SpringApplication.run(KalApiElifeApplication.class, args);
     }
 
     @Inject

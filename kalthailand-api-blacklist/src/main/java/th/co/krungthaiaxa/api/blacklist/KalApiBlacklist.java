@@ -21,6 +21,7 @@ import java.util.Date;
 @EnableSwagger2
 @ComponentScan({ "th.co.krungthaiaxa.api.blacklist", "th.co.krungthaiaxa.api.common" })
 public class KalApiBlacklist {
+    @SuppressWarnings("squid:S2095")//Ignore the wrong Sonar check.
     public static void main(String[] args) {
         SpringApplication.run(KalApiBlacklist.class, args);
     }

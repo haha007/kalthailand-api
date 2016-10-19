@@ -21,34 +21,35 @@ import java.util.Date;
 @EnableSwagger2
 @ComponentScan({ "th.co.krungthaiaxa.api.signing", "th.co.krungthaiaxa.api.common" })
 public class KALApiSigning {
-	public static void main(String[] args) {
-		SpringApplication.run(KALApiSigning.class, args);
-	}
+    @SuppressWarnings("squid:S2095")//Ignore the wrong Sonar check.
+    public static void main(String[] args) {
+        SpringApplication.run(KALApiSigning.class, args);
+    }
 
-	@Bean
-	public Docket configureSwagger() {
-		return new Docket(DocumentationType.SWAGGER_2)
-				.select()
-				.apis(RequestHandlerSelectors.any())
-				.paths(paths())
-				.build()
-				.useDefaultResponseMessages(false)
-				.pathMapping("/")
-				.apiInfo(metadata())
-				.directModelSubstitute(LocalDate.class, Date.class);
-	}
+    @Bean
+    public Docket configureSwagger() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .select()
+                .apis(RequestHandlerSelectors.any())
+                .paths(paths())
+                .build()
+                .useDefaultResponseMessages(false)
+                .pathMapping("/")
+                .apiInfo(metadata())
+                .directModelSubstitute(LocalDate.class, Date.class);
+    }
 
-	private ApiInfo metadata() {
-		return new ApiInfoBuilder()
-				.title("Signing API")
-				.description("Signing API for Krunghtai Axa")
-				.version("1.0.0")
-				.license("License")
-				.build();
-	}
+    private ApiInfo metadata() {
+        return new ApiInfoBuilder()
+                .title("Signing API")
+                .description("Signing API for Krunghtai Axa")
+                .version("1.0.0")
+                .license("License")
+                .build();
+    }
 
-	private Predicate<String> paths() {
-		return Predicates.or(
-				PathSelectors.regex("/documents.*"));
-	}
+    private Predicate<String> paths() {
+        return Predicates.or(
+                PathSelectors.regex("/documents.*"));
+    }
 }

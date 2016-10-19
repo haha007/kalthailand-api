@@ -12,6 +12,8 @@ import javax.inject.Inject;
 @SpringBootApplication
 @EnableScheduling
 public class KalAdminApplication {
+
+    @SuppressWarnings("squid:S2095")//Ignore the wrong Sonar check.
     public static void main(String[] args) {
         SpringApplication.run(KalAdminApplication.class, args);
     }

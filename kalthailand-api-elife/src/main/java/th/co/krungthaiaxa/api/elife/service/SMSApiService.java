@@ -3,9 +3,9 @@ package th.co.krungthaiaxa.api.elife.service;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import th.co.krungthaiaxa.api.common.utils.IOUtil;
 import th.co.krungthaiaxa.api.elife.exception.SMSException;
 import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.model.Policy;
@@ -89,7 +90,7 @@ public class SMSApiService {
 
         message = message.substring(1, message.length());
 
-        HttpClient httpclient = HttpClients.createDefault();
+        CloseableHttpClient httpclient = HttpClients.createDefault();
         HttpPost httppost = new HttpPost(smsUrl);
 
         // Request parameters and other properties.
@@ -104,6 +105,8 @@ public class SMSApiService {
         HttpResponse response = httpclient.execute(httppost);
         String responseAsString = EntityUtils.toString(response.getEntity());
         LOGGER.debug("SMS response as string: " + responseAsString);
+
+        IOUtil.closeIfPossible(httpclient);
         return toSMSResponse(responseAsString);
     }
 

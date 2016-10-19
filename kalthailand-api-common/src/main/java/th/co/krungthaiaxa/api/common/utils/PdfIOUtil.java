@@ -6,14 +6,16 @@ import com.itextpdf.text.PageSize;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import th.co.krungthaiaxa.api.common.exeption.FileIOException;
-
-import java.io.IOException;
 
 /**
  * @author khoi.tran on 10/3/16.
  */
 public class PdfIOUtil {
+    public static final Logger LOGGER = LoggerFactory.getLogger(PdfIOUtil.class);
+
     public static byte[] writeToBytes(PdfPTable pdfPTable) {
         ByteArrayOutputStream content = null;
         Document document = null;
@@ -29,13 +31,7 @@ public class PdfIOUtil {
         } catch (DocumentException e) {
             throw new FileIOException("Cannot write pdfpTable to bytes: " + pdfPTable.getSummary(), e);
         } finally {
-            try {
-                if (content != null) {
-                    content.close();
-                }
-            } catch (IOException e) {
-                throw new FileIOException("Cannot close Pdf writer", e);
-            }
+            IOUtil.closeIfPossible(content);
         }
     }
 }
