@@ -59,7 +59,7 @@ public class PolicyCDB implements Serializable {
         this.premiumValue = premiumValue;
     }
 
-    public static class InsuredCDB {
+    public static class InsuredCDB implements Serializable {
         private String firstName;
         private String fullName;
         private String mobilePhone;

@@ -120,6 +120,9 @@ public class JasperUtil {
             return new JsonDataSource(jsonInputStream, null);
         } catch (JRException e) {
             throw new JasperException("Cannot create jsonDataSource form dataSource: " + e.getMessage(), e);
+        } finally {
+            //TODO If there's something wrong, please remove this line!
+            IOUtil.closeIfPossible(jsonInputStream);
         }
     }
 }
