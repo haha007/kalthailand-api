@@ -54,24 +54,19 @@ public class JasperUtil {
 
     public static JasperPrint export(String jrxmlPath, Map<String, Object> parameters, JRDataSource dataSource) {
         JasperPrint jasperPrint = null;
-
-        InputStream inStream = IOUtil.loadInputStreamFileInClassPath(jrxmlPath);
-        if (inStream == null) {
-            String msg = String.format("Cannot find jrxmlPath '%s'", jrxmlPath);
-            throw new JasperException(msg);
-        }
-        try {
+        try (InputStream inStream = IOUtil.loadInputStreamFileInClassPath(jrxmlPath);) {
+            if (inStream == null) {
+                String msg = String.format("Cannot find jrxmlPath '%s'", jrxmlPath);
+                throw new JasperException(msg);
+            }
             JasperDesign jasperDesign = JRXmlLoader.load(inStream);
             JasperReport jasperReport = JasperCompileManager.compileReport(jasperDesign);
             jasperReport.setWhenNoDataType(WhenNoDataTypeEnum.ALL_SECTIONS_NO_DETAIL);
             jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
-        } catch (JRException jre) {
+        } catch (IOException | JRException jre) {
             String msg = String.format("Cannot create pdf from jrxmlPath '%s'. %s", jrxmlPath, jre.getMessage());
             throw new JasperException(msg, jre);
-        } finally {
-            closeInputStream(inStream);
         }
-
         return jasperPrint;
     }
 
@@ -91,38 +86,20 @@ public class JasperUtil {
     }
 
     public static JasperPrint exportFromCompiledTemplate(String compiledJasperReportPath, Map<String, Object> parameters, JsonDataSource jsonDataSource) {
-        InputStream compiledJasperReportInputStream = IOUtil.loadInputStreamFileInClassPath(compiledJasperReportPath);
-        try {
+        try (InputStream compiledJasperReportInputStream = IOUtil.loadInputStreamFileInClassPath(compiledJasperReportPath);) {
             JasperReport jasperReport = (JasperReport) JRLoader.loadObject(compiledJasperReportInputStream);
             jasperReport.setWhenNoDataType(WhenNoDataTypeEnum.ALL_SECTIONS_NO_DETAIL);
             return JasperFillManager.fillReport(jasperReport, parameters, jsonDataSource);
-        } catch (JRException e) {
+        } catch (IOException | JRException e) {
             throw new JasperException("Cannot load jasper report template from: " + compiledJasperReportPath + ":\n " + e.getMessage(), e);
-        } finally {
-            closeInputStream(compiledJasperReportInputStream);
-        }
-    }
-
-    private static void closeInputStream(InputStream inputStream) {
-        if (inputStream != null) {
-            try {
-                inputStream.close();
-            } catch (IOException e) {
-                String msg = String.format("Error closing stream from %s", e.getMessage());
-                LOGGER.error(msg, e);
-            }
         }
     }
 
     private static JsonDataSource toJsonDataSource(ObjectMapper objectMapper, Object dataSource) {
-        InputStream jsonInputStream = ObjectMapperUtil.toJsonInputStream(objectMapper, dataSource);
-        try {
+        try (InputStream jsonInputStream = ObjectMapperUtil.toJsonInputStream(objectMapper, dataSource);) {
             return new JsonDataSource(jsonInputStream, null);
-        } catch (JRException e) {
+        } catch (IOException | JRException e) {
             throw new JasperException("Cannot create jsonDataSource form dataSource: " + e.getMessage(), e);
-        } finally {
-            //TODO If there's something wrong, please remove this line!
-            IOUtil.closeIfPossible(jsonInputStream);
         }
     }
 }
