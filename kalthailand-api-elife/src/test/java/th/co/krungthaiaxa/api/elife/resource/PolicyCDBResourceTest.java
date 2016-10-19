@@ -2,6 +2,7 @@ package th.co.krungthaiaxa.api.elife.resource;
 
 import com.icegreen.greenmail.junit.GreenMailRule;
 import com.icegreen.greenmail.util.ServerSetupTest;
+import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -13,7 +14,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.TestRestTemplate;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +29,7 @@ import th.co.krungthaiaxa.api.elife.policyPremiumNotification.model.PolicyPremiu
 import th.co.krungthaiaxa.api.elife.policyPremiumNotification.model.PolicyPremiumNoticeSMSRequest;
 import th.co.krungthaiaxa.api.elife.utils.GreenMailUtil;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -71,32 +72,52 @@ public class PolicyCDBResourceTest extends ELifeTest {
     }
 
     @Test
-    public void can_send_email() throws IOException, URISyntaxException {
+    public void can_send_premium_notice_email() throws IOException, URISyntaxException {
         String policyNumber = "502-0123456";
-        URI paymentURI = new URI(baseUrl + "/policies/" + policyNumber + "/premium/email");
+        String urlString = baseUrl + "/policies/" + policyNumber + "/premium/email";
         PolicyPremiumNoticeRequest policyPremiumNoticeRequest = new PolicyPremiumNoticeRequest();
         policyPremiumNoticeRequest.setInsuredDob(LocalDate.now().minusYears(10));
 
-        UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromUri(paymentURI);
-        HttpEntity<PolicyPremiumNoticeRequest> httpEntity = new HttpEntity(policyPremiumNoticeRequest);
-        ResponseEntity<String> responseEntity = template.exchange(uriComponentsBuilder.toUriString(), HttpMethod.POST, httpEntity, String.class);
-        LOGGER.debug(responseEntity.getBody());
+        ResponseEntity<String> responseEntity = template.postForEntity(urlString, policyPremiumNoticeRequest, String.class);
+
+        LOGGER.debug("Response: " + responseEntity.getBody());
         Assert.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         GreenMailUtil.writeReceiveMessagesToFiles(greenMail, TestUtil.PATH_TEST_RESULT + "/emails");
     }
 
     @Test
-    public void can_send_sms() throws IOException, URISyntaxException {
+    public void can_send_premium_notice_sms() throws IOException, URISyntaxException {
         String policyNumber = "502-0123456";
-        URI paymentURI = new URI(baseUrl + "/policies/" + policyNumber + "/premium/email");
+        String urlString = baseUrl + "/policies/" + policyNumber + "/premium/sms";
+
         PolicyPremiumNoticeSMSRequest policyPremiumNoticeRequest = new PolicyPremiumNoticeSMSRequest();
         policyPremiumNoticeRequest.setInsuredDob(LocalDate.now().minusYears(10));
         policyPremiumNoticeRequest.setCompanyCode("MOCK_COMPANY_CODE");
 
-        UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromUri(paymentURI);
-        HttpEntity<PolicyPremiumNoticeSMSRequest> httpEntity = new HttpEntity(policyPremiumNoticeRequest);
-        ResponseEntity<String> responseEntity = template.exchange(uriComponentsBuilder.toUriString(), HttpMethod.POST, httpEntity, String.class);
-        LOGGER.debug(responseEntity.getBody());
+        ResponseEntity<String> responseEntity = template.postForEntity(urlString, policyPremiumNoticeRequest, String.class);
+
+        LOGGER.debug("Response: " + responseEntity.getBody());
+        Assert.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+    }
+
+    @Test
+    public void can_send_premium_notice_pdf() throws IOException, URISyntaxException {
+        String policyNumber = "502-0123456";
+        String urlString = baseUrl + "/policies/" + policyNumber + "/premium/pdf";
+
+        PolicyPremiumNoticeRequest policyPremiumNoticeRequest = new PolicyPremiumNoticeRequest();
+        policyPremiumNoticeRequest.setInsuredDob(LocalDate.now().minusYears(10));
+
+        ResponseEntity<byte[]> responseEntity = template.postForEntity(urlString, policyPremiumNoticeRequest, byte[].class);
+
+        //Write result to pdf file
+        String resultFilePath = TestUtil.PATH_TEST_RESULT + "pdf/policy-premium-notice_" + System.currentTimeMillis() + ".pdf";
+        FileUtils.writeByteArrayToFile(new File(resultFilePath), responseEntity.getBody());
+
+        //Assert
+        int fileSize = (responseEntity.getBody().length / 1204);
+        LOGGER.debug("Response: " + fileSize + " KB");
+        Assert.assertTrue(fileSize > 0);
         Assert.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
     }
 }
