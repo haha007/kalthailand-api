@@ -11,16 +11,12 @@ import java.io.InputStream;
 
 public class ExcelIOUtils {
     public static Workbook loadFileFromClassPath(String classPath) {
-        InputStream inputStream = IOUtil.loadInputStreamFileInClassPath(classPath);
-        try {
+
+        try (InputStream inputStream = IOUtil.loadInputStreamFileInClassPath(classPath);) {
             return new XSSFWorkbook(inputStream);
         } catch (IOException e) {
             String msg = "Cannot load file '" + classPath + "': " + e.getMessage();
             throw new FileNotFoundException(msg, e);
-        }
-        //TODO Not sure should we close it or not.
-        finally {
-            IOUtil.closeIfPossible(inputStream);
         }
     }
 
