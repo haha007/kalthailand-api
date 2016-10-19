@@ -19,9 +19,9 @@ public class ExcelIOUtils {
             throw new FileNotFoundException(msg, e);
         }
         //TODO Not sure should we close it or not.
-        /*finally {
+        finally {
             IOUtil.closeIfPossible(inputStream);
-        }*/
+        }
     }
 
     public static byte[] writeToBytes(Workbook workbook) {
