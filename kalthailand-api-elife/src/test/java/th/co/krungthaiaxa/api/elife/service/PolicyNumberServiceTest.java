@@ -30,7 +30,7 @@ public class PolicyNumberServiceTest extends ELifeTest {
     public void can_count_available_policies() {
         long quota = policyNumberService.countAllPolicyNumbers();
         long availablePolicies = policyNumberService.countAvailablePolicyNumbers();
-        logger.info(" Quota: {}.\n Remain policies: {}", quota, availablePolicies, availablePolicies);
+        logger.info(" Quota: {}.%n Remain policies: {}", quota, availablePolicies, availablePolicies);
         Assert.assertTrue(availablePolicies <= quota);
     }
 

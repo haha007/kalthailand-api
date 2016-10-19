@@ -27,7 +27,7 @@ public class ProductAssertUtil {
     public static final double DOUBLE_COMPARE_EXACT_VALUE = 0.01;
 
     public static void assertProductAmountsWithFullDetail(ProductAmounts productAmounts) {
-        LOGGER.debug("\nProductAmounts: " + ObjectMapperUtil.toJson(new ObjectMapper(), productAmounts));
+        LOGGER.debug("%nProductAmounts: " + ObjectMapperUtil.toJson(new ObjectMapper(), productAmounts));
 
         Assert.assertNotNull(productAmounts.getMaxSumInsured());
         Assert.assertNotNull(productAmounts.getMinPremium());
@@ -44,7 +44,7 @@ public class ProductAssertUtil {
     }
 
     public static void assertProductAmountsWithSumInsureLimits(ProductAmounts productAmounts) {
-        LOGGER.debug("\nProductAmounts: " + ObjectMapperUtil.toJson(new ObjectMapper(), productAmounts));
+        LOGGER.debug("%nProductAmounts: " + ObjectMapperUtil.toJson(new ObjectMapper(), productAmounts));
 
         Assert.assertNotNull(productAmounts.getMaxSumInsured());
         Assert.assertNotNull(productAmounts.getMinSumInsured());
@@ -57,7 +57,7 @@ public class ProductAssertUtil {
     }
 
     public static void assertAmountLimits(ProductAmounts productAmounts, Double expectedMinSumInsured, Double expectedMaxSumInsured, Double expectedMinPremium, Double expectedMaxPremium) {
-        LOGGER.debug("\nProductAmounts: " + ObjectMapperUtil.toJson(new ObjectMapper(), productAmounts));
+        LOGGER.debug("%nProductAmounts: " + ObjectMapperUtil.toJson(new ObjectMapper(), productAmounts));
         if (expectedMinSumInsured != null) {
             Assert.assertEquals(expectedMinSumInsured, productAmounts.getMinSumInsured().getValue());
         }
@@ -88,14 +88,14 @@ public class ProductAssertUtil {
     }
 
     public static void assertPremiumDataEnoughDataAfterQuoteCalculation(PremiumsData premiumsData) {
-        LOGGER.debug("\nPremiumsData: " + ObjectMapperUtil.toJson(new ObjectMapper(), premiumsData));
+        LOGGER.debug("%nPremiumsData: " + ObjectMapperUtil.toJson(new ObjectMapper(), premiumsData));
         assertAmountNotNull(premiumsData.getFinancialScheduler().getModalAmount());
         Assert.assertNotNull(premiumsData.getFinancialScheduler().getEndDate());
         Assert.assertNotNull(premiumsData.getFinancialScheduler().getPeriodicity());
     }
 
     public static void assertCommonDataEnoughDataAfterQuoteCalculation(CommonData commonData) {
-        LOGGER.debug("\nCommonData: " + ObjectMapperUtil.toJson(new ObjectMapper(), commonData));
+        LOGGER.debug("%nCommonData: " + ObjectMapperUtil.toJson(new ObjectMapper(), commonData));
         Assert.assertNotNull(commonData.getProductId());
 
         Assert.assertNotNull(commonData.getMaxSumInsured());
@@ -126,7 +126,7 @@ public class ProductAssertUtil {
         assertPremiumDataEnoughDataAfterQuoteCalculation(quote.getPremiumsData());
         assertCommonDataEnoughDataAfterQuoteCalculation(quote.getCommonData());
 
-        LOGGER.debug("\nQuote: " + ObjectMapperUtil.toJson(new ObjectMapper(), quote));
+        LOGGER.debug("%nQuote: " + ObjectMapperUtil.toJson(new ObjectMapper(), quote));
 
         Amount actualPremium = quote.getPremiumsData().getFinancialScheduler().getModalAmount();
         Amount actualTotalTaxDeduction = premiumDetail.getTotalTaxDeduction();

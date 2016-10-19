@@ -112,7 +112,7 @@ public class ExceptionTranslator {
     }
 
     private void loggingMessage(final Error error, final Exception ex) {
-        String errorMessage = String.format("Error code: %s\nUser message: %s.\nDeveloper message: %s", error.getCode(), error.getUserMessage(), error.getDeveloperMessage());
+        String errorMessage = String.format("Error code: %s%nUser message: %s.%nDeveloper message: %s", error.getCode(), error.getUserMessage(), error.getDeveloperMessage());
         String errorDetailString;
         try {
             errorDetailString = ObjectMapperUtil.toJson(JsonUtil.mapper, error);
@@ -120,7 +120,7 @@ public class ExceptionTranslator {
             errorDetailString = ObjectMapperUtil.toStringMultiLine(error);
             LOGGER.warn("Error when convert Error object to String:" + error);
         }
-        errorMessage += "\n" + errorDetailString;
+        errorMessage += "%n" + errorDetailString;
         if (error.getCode().equals(ErrorCode.ERROR_CODE_BEAN_VALIDATION)) {
             //Don't need to show full detail stacktrace message in this case because it usually mistake from user's input.
             //Should ignore the Sonar warning here.

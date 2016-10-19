@@ -21,17 +21,17 @@ public class LogUtil {
         long runTimeMilli = now.toEpochMilli() - startTime.toEpochMilli();
         long runTimeSeconds = runTimeMilli / 1000;
         //TODO should change to debug
-        LOGGER.info(String.format("\n%s\n\tStart time: %s, End time: %s\n\tRuntime: %s ms ~ %s s", msg, startTime, now, runTimeMilli, runTimeSeconds));
+        LOGGER.info(String.format("%n%s%n\tStart time: %s, End time: %s%n\tRuntime: %s ms ~ %s s", msg, startTime, now, runTimeMilli, runTimeSeconds));
         return now;
     }
 
     public static Instant logRequestStarting(HttpServletRequest request) {
         Instant startTime = Instant.now();
         StringBuilder sb = new StringBuilder("'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''");
-        sb.append("\n").append(toStringRequestURL(request));
-        sb.append("\n\tHeaders: ").append(toStringRequestHeaders(request));
-        sb.append("\n\tParams: ").append(toStringRequestParams(request));
-        sb.append("\n\tStart time: ").append(startTime);
+        sb.append("%n").append(toStringRequestURL(request));
+        sb.append("%n\tHeaders: ").append(toStringRequestHeaders(request));
+        sb.append("%n\tParams: ").append(toStringRequestParams(request));
+        sb.append("%n\tStart time: ").append(startTime);
         //TODO should change to debug
         LOGGER.info(sb.toString());
         return startTime;
@@ -60,7 +60,7 @@ public class LogUtil {
 //            String paramString = String.format("{%s:%s}", paramName, paramValue);
 //            paramStrings.add(paramString);
 //        }
-//        String result = paramStrings.stream().collect(Collectors.joining("\n,"));
+//        String result = paramStrings.stream().collect(Collectors.joining("%n,"));
 //        return result;
     }
 

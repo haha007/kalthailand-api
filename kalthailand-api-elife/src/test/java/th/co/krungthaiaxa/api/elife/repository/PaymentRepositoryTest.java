@@ -99,9 +99,9 @@ public class PaymentRepositoryTest {
         } else {
             rowOriginalData += "," + escape(plainText);
         }
-//        String row = String.format(",%s,%s,%s,%s\n", escape(regKeyEncryptedWithBase64), "" + regKeyEncryptedNoBase64Bytes.length, escape(regKeyEncryptedNoBase64), escape(plainText));
+//        String row = String.format(",%s,%s,%s,%s%n", escape(regKeyEncryptedWithBase64), "" + regKeyEncryptedNoBase64Bytes.length, escape(regKeyEncryptedNoBase64), escape(plainText));
 //        return rowOriginalData + row;
-        return rowOriginalData + "\n";
+        return rowOriginalData + "%n";
     }
 
     private String escape(String input) {

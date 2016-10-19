@@ -91,7 +91,7 @@ public class JasperUtil {
             jasperReport.setWhenNoDataType(WhenNoDataTypeEnum.ALL_SECTIONS_NO_DETAIL);
             return JasperFillManager.fillReport(jasperReport, parameters, jsonDataSource);
         } catch (IOException | JRException e) {
-            throw new JasperException("Cannot load jasper report template from: " + compiledJasperReportPath + ":\n " + e.getMessage(), e);
+            throw new JasperException("Cannot load jasper report template from: " + compiledJasperReportPath + ":%n " + e.getMessage(), e);
         }
     }
 

@@ -97,7 +97,7 @@ public class LineService {
             wr.close();
 
             int responseCode = conn.getResponseCode();
-            logger.info("\nSending 'POST' request to URL : " + url);
+            logger.info("%nSending 'POST' request to URL : " + url);
             logger.info("Response Code : " + responseCode);
 
             BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -256,7 +256,7 @@ public class LineService {
             wr.close();
 
             int responseCode = conn.getResponseCode();
-            //logger.info("\nSending 'POST' request to URL : " + url);
+            //logger.info("%nSending 'POST' request to URL : " + url);
             //logger.info("Response Code : " + responseCode);
 
             BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));

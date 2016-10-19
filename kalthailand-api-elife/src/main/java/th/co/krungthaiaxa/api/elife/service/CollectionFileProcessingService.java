@@ -361,7 +361,7 @@ public class CollectionFileProcessingService {
             payment.setOrderId(orderId);
             paymentService.updateByLinePayResponse(payment, linePayResponse);
         } catch (Exception ex) {
-            logger.error("Error when process collection line: " + ex.getMessage() + ". Collection line:\n" + ObjectMapperUtil.toStringMultiLine(collectionFileLine), ex);
+            logger.error("Error when process collection line: " + ex.getMessage() + ". Collection line:%n" + ObjectMapperUtil.toStringMultiLine(collectionFileLine), ex);
             resultCode = RESPONSE_CODE_ERROR_INTERNAL_LINEPAY;
             resultMessage = ex.getMessage();
             if (payment != null) {

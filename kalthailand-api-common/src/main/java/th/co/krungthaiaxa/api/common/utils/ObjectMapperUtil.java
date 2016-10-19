@@ -59,7 +59,7 @@ public final class ObjectMapperUtil {
             JavaType javaType = objectMapper.getTypeFactory().constructType(type);
             return objectMapper.readValue(jsonString, javaType);
         } catch (Exception e) {
-            String msg = String.format("Cannot json to object:\n\tType:%s\n\tJsonString:\t\n%s", type.getTypeName(), jsonString);
+            String msg = String.format("Cannot json to object:%n\tType:%s%n\tJsonString:\t%n%s", type.getTypeName(), jsonString);
             throw new JsonConverterException(msg, jsonString, e);
         }
     }
@@ -94,12 +94,12 @@ public final class ObjectMapperUtil {
         if (list == null) {
             return null;
         }
-        StringBuilder result = new StringBuilder("[\n");
+        StringBuilder result = new StringBuilder("[%n");
         for (Object element : list) {
             result.append(toStringMultiLine(element));
             result.append(", ");
         }
-        result.append("\n]");
+        result.append("%n]");
         return result.toString();
     }
 }

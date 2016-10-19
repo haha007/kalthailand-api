@@ -27,9 +27,9 @@ public class RequestLogUtil {
         long runningMilliseconds = endTime.toEpochMilli() - startTime.toEpochMilli();
         double runningSeconds = ((double) runningMilliseconds / 1000);
         String msg = new StringBuilder()
-                .append("\nStart time: ").append(startTime)
-                .append("\nEnd time: ").append(endTime)
-                .append(String.format("\nRunning time: %s ms (%.3f s)", runningMilliseconds, runningSeconds))
+                .append("%nStart time: ").append(startTime)
+                .append("%nEnd time: ").append(endTime)
+                .append(String.format("%nRunning time: %s ms (%.3f s)", runningMilliseconds, runningSeconds))
                 .toString();
         logger.debug(msg);
     }
@@ -39,7 +39,7 @@ public class RequestLogUtil {
         Enumeration headerNames = request.getHeaderNames();
         while (headerNames.hasMoreElements()) {
             String headerName = (String) headerNames.nextElement();
-            headersString.append("\n\t'").append(headerName).append("': ").append(request.getHeader(headerName));
+            headersString.append("%n\t'").append(headerName).append("': ").append(request.getHeader(headerName));
         }
 
         String paramsString = request.getParameterMap().entrySet().stream().map(
@@ -47,12 +47,12 @@ public class RequestLogUtil {
         ).collect(Collectors.joining(", "));
 
         String msg = new StringBuilder()
-                .append("\n|'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''|")
-                .append("\nURL:").append(request.getRequestURL())
-                .append("\nMethod:").append(request.getMethod())
-                .append("\nHeaders:").append(headersString)
-                .append("\nParams:").append(paramsString)
-                .append("\n|'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''|")
+                .append("%n|'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''|")
+                .append("%nURL:").append(request.getRequestURL())
+                .append("%nMethod:").append(request.getMethod())
+                .append("%nHeaders:").append(headersString)
+                .append("%nParams:").append(paramsString)
+                .append("%n|'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''|")
                 .toString();
         logger.debug(msg);
     }

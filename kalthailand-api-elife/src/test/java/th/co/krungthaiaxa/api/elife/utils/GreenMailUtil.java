@@ -30,20 +30,20 @@ public class GreenMailUtil {
                     BodyPart bodyPart = mimeMultipart.getBodyPart(i);
                     String partContentType = bodyPart.getContentType();
                     if (partContentType.contains("text/html")) {
-//                        content.append(String.format("\t[%s] %s\n", i, partContentType));
+//                        content.append(String.format("\t[%s] %s%n", i, partContentType));
                         content.append(bodyPart.getContent());
                     } else if (partContentType.contains("pdf")) {
                         content.append(bodyPart.getFileName());
                     }
                 }
 
-                String msg = String.format("-------------------------------\nSubject: '%s'\nContent: '\n%s\n'", mailMessage.getSubject(), content);
+                String msg = String.format("-------------------------------%nSubject: '%s'%nContent: '%n%s%n'", mailMessage.getSubject(), content);
                 msgs.add(msg);
             } catch (MessagingException | IOException e) {
                 throw new UnexpectedException("Cannot write green mail message: " + e.getMessage(), e);
             }
         }
-        return msgs.stream().collect(Collectors.joining("\n"));
+        return msgs.stream().collect(Collectors.joining("%n"));
     }
 
     /**

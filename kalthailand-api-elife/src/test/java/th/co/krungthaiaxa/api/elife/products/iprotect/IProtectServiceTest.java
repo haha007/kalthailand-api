@@ -126,7 +126,7 @@ public class IProtectServiceTest extends ELifeTest {
         //These testing numbers are calculated by Excel file from Business team. So the result from our program should match the number of business team.
         ProductQuotation productQuotation = initDefaultProductQuotation();
         ProductAmounts productAmounts = productService.calculateProductAmounts(productQuotation);
-        LOGGER.debug("ProductAmounts:\n" + ObjectMapperUtil.toStringMultiLine(productAmounts.getCommonData()));
+        LOGGER.debug("ProductAmounts:%n" + ObjectMapperUtil.toStringMultiLine(productAmounts.getCommonData()));
         testCreateQuotePremiumToSumInsured(Math.ceil(productAmounts.getCommonData().getMinPremium().getValue()), null);
         testCreateQuotePremiumToSumInsured(Math.floor(productAmounts.getCommonData().getMaxPremium().getValue()), null);
         testCreateQuoteSumInsuredToPremium(Math.floor(productAmounts.getCommonData().getMaxSumInsured().getValue()), null);
@@ -238,7 +238,7 @@ public class IProtectServiceTest extends ELifeTest {
 
     private Quote createQuote(boolean isInputSumInsured, double inputAmountValue) {
         ProductQuotation productQuotation = initDefaultProductQuotation(isInputSumInsured, inputAmountValue);
-        LOGGER.debug("ProductQuotation:\n" + ObjectMapperUtil.toStringMultiLine(productQuotation));
+        LOGGER.debug("ProductQuotation:%n" + ObjectMapperUtil.toStringMultiLine(productQuotation));
         Quote quote = quoteService.createQuote(randomNumeric(20), ChannelType.LINE, productQuotation);
         LOGGER.debug(ObjectMapperUtil.toStringMultiLine(quote));
         return quote;

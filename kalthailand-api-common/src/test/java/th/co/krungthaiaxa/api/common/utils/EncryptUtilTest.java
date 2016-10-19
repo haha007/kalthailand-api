@@ -15,10 +15,10 @@ public class EncryptUtilTest {
     public void should_encrypt_and_decrypt_success() {
         String originalText = "3101202780273";
         String encodedText = EncryptUtil.encrypt(originalText);
-        LOGGER.info("Encoded text: \n" + encodedText);
+        LOGGER.info("Encoded text: %n" + encodedText);
         Assert.assertNotEquals(originalText, encodedText);
         String plainText = EncryptUtil.decrypt(encodedText);
-        LOGGER.info("Plain text: \n" + plainText);
+        LOGGER.info("Plain text: %n" + plainText);
         Assert.assertEquals(originalText, plainText);
     }
 
@@ -34,7 +34,7 @@ public class EncryptUtilTest {
             String noBase64 = new String(noBase64Bytes);
             LOGGER.info("No base 64: {}. No base64 length: {}", noBase64, noBase64Bytes.length);
             String plainText = EncryptUtil.decrypt(encrypted);
-            LOGGER.info("Plain text: \n" + plainText);
+            LOGGER.info("Plain text: %n" + plainText);
         } catch (Exception ex) {
             LOGGER.info("" + ex.getMessage(), ex);
         }
@@ -56,7 +56,7 @@ public class EncryptUtilTest {
 //            String noBase64 = new String(noBase64Bytes);
 //            LOGGER.info("No base 64: {}. No base64 length: {}", noBase64, noBase64Bytes.length);
 //            String plainText = EncryptUtil.decrypt(encrypted);
-            LOGGER.info("Plain text: \n" + plainText);
+            LOGGER.info("Plain text: %n" + plainText);
         } catch (Exception ex) {
             LOGGER.info("" + ex.getMessage(), ex);
             Assert.assertFalse(true);
@@ -68,7 +68,7 @@ public class EncryptUtilTest {
         try {
             String plainText = EncryptUtil.encrypt(
                     "RK6C65719XTKZZP");
-            LOGGER.info("Plain text: \n" + plainText);
+            LOGGER.info("Plain text: %n" + plainText);
             Assert.assertTrue(true);
         } catch (Exception ex) {
             LOGGER.info("" + ex.getMessage(), ex);
