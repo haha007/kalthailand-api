@@ -2,16 +2,18 @@ package th.co.krungthaiaxa.api.elife.model;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.jsoup.helper.StringUtil;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import th.co.krungthaiaxa.api.common.utils.EncryptUtil;
 import th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 //import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -21,9 +23,9 @@ import java.util.Objects;
  */
 @ApiModel(description = "Data concerning the payment")
 @org.springframework.data.mongodb.core.mapping.Document(collection = "payment")
-public class Payment {
+public class Payment implements Serializable {
 
-    public static int REGISTRATION_KEY_PLAIN_TEXT_MAX_LENGTH = 100;
+    public static final int REGISTRATION_KEY_PLAIN_TEXT_MAX_LENGTH = 100;
     @Id
     private String paymentId;
     private String retryPaymentId;
@@ -170,21 +172,12 @@ public class Payment {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Payment payment = (Payment) o;
-        return Objects.equals(paymentId, payment.paymentId) &&
-                status == payment.status &&
-                Objects.equals(dueDate, payment.dueDate) &&
-                Objects.equals(effectiveDate, payment.effectiveDate) &&
-                Objects.equals(amount, payment.amount) &&
-                Objects.equals(registrationKey, payment.registrationKey) &&
-                Objects.equals(paymentInformations, payment.paymentInformations);
+        return EqualsBuilder.reflectionEquals(this, o);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(paymentId, status, dueDate, effectiveDate, amount, registrationKey, paymentInformations);
+        return HashCodeBuilder.reflectionHashCode(this);
     }
 
     public String getRetryPaymentId() {

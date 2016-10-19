@@ -108,7 +108,7 @@ public class IOUtil {
         try {
             FileUtils.writeByteArrayToFile(file, IOUtils.toByteArray(inputStream));
         } catch (IOException e) {
-            throw new FileIOException(String.format("Cannot write data to file '%s'", file.getAbsolutePath()));
+            throw new FileIOException(String.format("Cannot write data to file '%s'", file.getAbsolutePath()), e);
         }
 
     }
