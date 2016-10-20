@@ -1,9 +1,11 @@
 package th.co.krungthaiaxa.api.elife.policyPremiumNotification.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import th.co.krungthaiaxa.api.common.exeption.EmailException;
 import th.co.krungthaiaxa.api.common.utils.IOUtil;
 import th.co.krungthaiaxa.api.elife.exception.SMSException;
 import th.co.krungthaiaxa.api.elife.model.PolicyCDB;
@@ -41,6 +43,10 @@ public class PolicyPremiumNotificationService {
     public void sendSMS(PolicyPremiumNoticeSMSRequest policyPremiumNoticeSMSRequest) {
         PolicyCDB policy = policyCDBService.validateExistByPolicyNumberAndMainInsuredDOB(policyPremiumNoticeSMSRequest.getPolicyNumber(), policyPremiumNoticeSMSRequest.getInsuredDob());
         String phoneNumber = policy.getMainInsured().getMobilePhone();
+        if (StringUtils.isBlank(phoneNumber)) {
+            String msg = String.format("Cannot send SMS to main insured of policy. policyId: %s", policyPremiumNoticeSMSRequest.getPolicyNumber());
+            throw new SMSException(msg);
+        }
         String messageTemplate = IOUtil.loadTextFileInClassPath("/policy-premium/premium-notice-sms.txt");
         String message = fillNoticeSMS(messageTemplate, policyPremiumNoticeSMSRequest, policy);
         SMSResponse smsResponse = smsApiService.sendMessage(phoneNumber, message);
@@ -61,7 +67,10 @@ public class PolicyPremiumNotificationService {
     public void sendEmail(PolicyPremiumNoticeRequest policyPremiumNoticeRequest) {
         PolicyCDB policy = policyCDBService.validateExistByPolicyNumberAndMainInsuredDOB(policyPremiumNoticeRequest.getPolicyNumber(), policyPremiumNoticeRequest.getInsuredDob());
         String toEmail = policy.getMainInsured().getEmail();
-
+        if (StringUtils.isBlank(toEmail)) {
+            String msg = String.format("The email of main insured in policy is blank, so cannot send email. PolicyId: '%s', toEmail: '%s'", policyPremiumNoticeRequest.getPolicyNumber(), toEmail);
+            throw new EmailException(msg);
+        }
         //TODO need to be updated
         String emailSubject = "Policy Premium Notification";
         String emailTemplate = IOUtil.loadTextFileInClassPath("/policy-premium/premium-notice-email.html");

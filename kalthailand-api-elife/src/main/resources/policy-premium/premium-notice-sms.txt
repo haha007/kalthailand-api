@@ -1,4 +1,4 @@
-กรุงไทย-แอกซ่า ประกันชีวิต จำกัด(มหาชน)
+ กรุงไทย-แอกซ่า ประกันชีวิต จำกัด(มหาชน)
 Com.code : %COMPANY_CODE%
 Ref.no.1 : %POLICY_NUMBER%
 Ref.no.2 : %DUE_DATE%

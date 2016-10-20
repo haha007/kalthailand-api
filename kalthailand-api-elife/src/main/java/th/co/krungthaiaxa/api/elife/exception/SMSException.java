@@ -10,6 +10,10 @@ import th.co.krungthaiaxa.api.elife.model.sms.SMSResponse;
 public class SMSException extends BaseException {
     private static final String ERROR_CODE = ErrorCode.ERROR_CODE_SMS;
 
+    public SMSException(String message) {
+        super(ERROR_CODE, message);
+    }
+
     public SMSException(String message, Throwable throwable) {
         super(ERROR_CODE, message, throwable);
     }
