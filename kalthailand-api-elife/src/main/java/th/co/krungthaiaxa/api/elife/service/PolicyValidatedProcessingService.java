@@ -44,10 +44,11 @@ public class PolicyValidatedProcessingService {
     private LineService lineService;
 
     @Autowired
-    public PolicyValidatedProcessingService(PaymentService paymentService, PolicyService policyService, BeanValidator beanValidator) {
+    public PolicyValidatedProcessingService(PaymentService paymentService, PolicyService policyService, LineService lineService, BeanValidator beanValidator) {
         this.paymentService = paymentService;
         this.policyService = policyService;
         this.beanValidator = beanValidator;
+        this.lineService = lineService;
     }
 
     public Policy processValidatedPolicy(PolicyValidationRequest policyValidationRequest) {
