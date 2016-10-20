@@ -24,7 +24,7 @@ public class PolicyCDBRepository {
     private GeneralSettingService generalSettingService;
 
     @Autowired
-    @Qualifier("cdbTemplate")
+    @Qualifier("policyPremiumCdbTemplate")
     private JdbcTemplate jdbcTemplate;
 
     public PolicyCDB findOneByPolicyNumberAndDOB(String policyNumber, LocalDate insuredDob) {

@@ -11,6 +11,7 @@ import javax.sql.DataSource;
 
 @Configuration
 public class DataSourceConfiguration {
+    //CDB /////////////////////////////////////
     @Bean
     @Primary
     @ConfigurationProperties(prefix = "datasource.cdb")
@@ -23,6 +24,19 @@ public class DataSourceConfiguration {
         return new JdbcTemplate(cdbDataSource());
     }
 
+    //POLICY-PREMIUM POLICY /////////////////////////////////////
+    @Bean
+    @ConfigurationProperties(prefix = "datasource.policy-premium.cdb")
+    public DataSource policyPremiumCdbDataSource() {
+        return DataSourceBuilder.create().build();
+    }
+
+    @Bean(name = "policyPremiumCdbTemplate")
+    public JdbcTemplate policyPremiumCdbTemplate() {
+        return new JdbcTemplate(cdbDataSource());
+    }
+
+    //LINE-CB /////////////////////////////////////
     @Bean
     @ConfigurationProperties(prefix = "datasource.linebc")
     public DataSource lineBCDataSource() {
