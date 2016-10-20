@@ -10,7 +10,9 @@ import th.co.krungthaiaxa.api.elife.model.PolicyCDB;
 import th.co.krungthaiaxa.api.elife.service.GeneralSettingService;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author khoi.tran on 10/18/16.
@@ -35,11 +37,16 @@ public class PolicyCDBRepository {
 
         String query = " SELECT PNO, PDOB,PNAMF, PNAME, PPTD,PMPREM, "
                 + " PLMBNO, PIEMAL, PSTU FROM LFKLUDTA_LFPPML "
-                + " WHERE PNO = ? AND PDOB = ? "
+                + " WHERE PNO LIKE ? AND PDOB = ? "
                 + " AND PSTU IN ('1','2','5','6','B','F') ";
         String dobString = DateTimeUtil.formatLocalDate(insuredDob, CDB_DATE_PATTERN);
-        Map<String, Object> result = jdbcTemplate.queryForMap(query, policyNumber, dobString);
-        return toPolicy(result);
+        List<Map<String, Object>> results = jdbcTemplate.queryForList(query, policyNumber, dobString);
+        List<PolicyCDB> policyCDBs = toPolicies(results);
+        if (policyCDBs.size() > 0) {
+            return policyCDBs.get(0);
+        } else {
+            return null;
+        }
     }
 
     //TODO Just temporary
@@ -63,18 +70,20 @@ public class PolicyCDBRepository {
         return policyCDB;
     }
 
+    private List<PolicyCDB> toPolicies(List<Map<String, Object>> queryRows) {
+        return queryRows.stream().map(row -> toPolicy(row)).collect(Collectors.toList());
+    }
+
     private PolicyCDB toPolicy(Map<String, Object> queryRow) {
         if (queryRow == null) {
             return null;
         }
         String policyNumber = (String) queryRow.get("PNO");
-        String insuredDobString = (String) queryRow.get("PDOB");
-        LocalDate insuredDob = insuredDobString != null ? DateTimeUtil.toLocalDate(insuredDobString, CDB_DATE_PATTERN) : null;
+        LocalDate insuredDob = getLocalDateString(queryRow, "PDOB");
         String insuredFirstName = (String) queryRow.get("PNAMF");
         String insuredFullName = (String) queryRow.get("PNAM");
-        String dueDateString = (String) queryRow.get("PPTD");
-        LocalDate dueDate = dueDateString != null ? DateTimeUtil.toLocalDate(dueDateString, CDB_DATE_PATTERN) : null;
-        Double premiumValue = (Double) queryRow.get("PMPREM");
+        LocalDate dueDate = getLocalDateString(queryRow, "PPTD");
+        Double premiumValue = getDouble(queryRow, "PMPREM");
         String insuredMobileNumber = (String) queryRow.get("PLMBNO");
         String insuredEmail = (String) queryRow.get("PIEMAL");
         String status = (String) queryRow.get("PSTU");
@@ -96,4 +105,25 @@ public class PolicyCDBRepository {
         return policy;
     }
 
+    private String getBigDecimalString(Map<String, Object> queryRow, String propertyName) {
+        Object propertyValue = queryRow.get(propertyName);
+        return propertyValue == null ? null : String.valueOf(propertyValue);
+    }
+
+    private Double getDouble(Map<String, Object> queryRow, String propertyName) {
+        Object propertyValue = queryRow.get(propertyName);
+        if (propertyValue == null) {
+            return null;
+        } else if (propertyValue instanceof Number) {
+            return ((Number) propertyValue).doubleValue();
+        } else {
+            String numString = String.valueOf(propertyValue);
+            return Double.valueOf(numString);
+        }
+    }
+
+    private LocalDate getLocalDateString(Map<String, Object> queryRow, String propertyName) {
+        String propertyDateAsString = getBigDecimalString(queryRow, propertyName);
+        return propertyDateAsString != null ? DateTimeUtil.toLocalDate(propertyDateAsString, CDB_DATE_PATTERN) : null;
+    }
 }

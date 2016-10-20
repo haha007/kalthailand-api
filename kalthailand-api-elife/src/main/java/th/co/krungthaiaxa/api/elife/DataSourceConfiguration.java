@@ -26,7 +26,7 @@ public class DataSourceConfiguration {
 
     //POLICY-PREMIUM POLICY /////////////////////////////////////
     @Bean
-    @ConfigurationProperties(prefix = "datasource.policy-premium.cdb")
+    @ConfigurationProperties(prefix = "datasource.cdb.policy-premium")
     public DataSource policyPremiumCdbDataSource() {
         return DataSourceBuilder.create().build();
     }
