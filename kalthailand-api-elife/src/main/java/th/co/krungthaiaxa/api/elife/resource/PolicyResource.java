@@ -464,7 +464,7 @@ public class PolicyResource {
         return policyValidatedProcessingService.processValidatedPolicy(policyValidationRequest);
     }
 
-    @ApiOperation(value = "Notify policy's premium via SMS", notes = "Send the notification about premium information to client via SMS", response = Policy.class)
+    @ApiOperation(value = "Notify policy's premium via SMS", notes = "Send the notification about premium information to client via SMS")
     @ApiResponses({
             @ApiResponse(code = 500, message = "If there was some internal error", response = Error.class)
     })
@@ -478,7 +478,7 @@ public class PolicyResource {
         policyPremiumNotificationService.sendSMS(policyPremiumNoticeSMSRequest);
     }
 
-    @ApiOperation(value = "Notify policy's premium via Email", notes = "Send the notification about premium information to client via email", response = Policy.class)
+    @ApiOperation(value = "Notify policy's premium via Email", notes = "Send the notification about premium information to client via email")
     @ApiResponses({
             @ApiResponse(code = 500, message = "If there was some internal error", response = Error.class)
     })
@@ -492,7 +492,7 @@ public class PolicyResource {
         policyPremiumNotificationService.sendEmail(policyPremiumNoticeRequest);
     }
 
-    @ApiOperation(value = "Download policy's premium notification pdf", response = Policy.class)
+    @ApiOperation(value = "Download policy's premium notification pdf")
     @ApiResponses({
             @ApiResponse(code = 500, message = "If there was some internal error", response = Error.class)
     })
@@ -507,7 +507,7 @@ public class PolicyResource {
         DownloadUtil.writeBytesToResponse(httpServletResponse, pdf, "premium-notice.pdf", DownloadUtil.DownloadType.PDF);
     }
 
-    @ApiOperation(value = "Get policy detail from Core DB (CDB) system.", notes = "This method doesn't get policy detail from eLife DB, it will get detail from CDB.", response = Policy.class)
+    @ApiOperation(value = "Get policy detail from Core DB (CDB) system.", notes = "This method doesn't get policy detail from eLife DB, it will get detail from CDB.", response = PolicyCDB.class)
     @ApiResponses({
             @ApiResponse(code = 500, message = "If there was some internal error", response = Error.class)
     })

@@ -5,11 +5,12 @@ import io.swagger.annotations.ApiModelProperty;
 import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
 import th.co.krungthaiaxa.api.elife.model.enums.SuccessErrorStatus;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
 
 @ApiModel(description = "Data concerning the payment")
-public class PaymentInformation {
+public class PaymentInformation implements Serializable {
     private LocalDate date;
     private Amount amount;
     private ChannelType channel;

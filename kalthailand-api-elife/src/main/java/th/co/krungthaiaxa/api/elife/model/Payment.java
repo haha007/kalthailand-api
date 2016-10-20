@@ -47,8 +47,8 @@ public class Payment implements Serializable {
     @DBRef
     private Document receiptPdfDocument;
 
-    // Used by Jackson
     public Payment() {
+        // Used by Jackson
     }
 
     public Payment(String policyId, Double value, String currencyCode, LocalDateTime dueDate) {
