@@ -33,7 +33,7 @@ public class DataSourceConfiguration {
 
     @Bean(name = "policyPremiumCdbTemplate")
     public JdbcTemplate policyPremiumCdbTemplate() {
-        return new JdbcTemplate(cdbDataSource());
+        return new JdbcTemplate(policyPremiumCdbDataSource());
     }
 
     //LINE-CB /////////////////////////////////////
