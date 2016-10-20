@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import th.co.krungthaiaxa.api.common.model.DownloadFile;
 import th.co.krungthaiaxa.api.common.model.error.Error;
 import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
 import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
@@ -492,12 +493,31 @@ public class PolicyResource {
         policyPremiumNotificationService.sendEmail(policyPremiumNoticeRequest);
     }
 
-    @ApiOperation(value = "Download policy's premium notification pdf")
+    @ApiOperation(value = "Download policy's premium notification pdf", response = DownloadFile.class)
     @ApiResponses({
             @ApiResponse(code = 500, message = "If there was some internal error", response = Error.class)
     })
     @RequestMapping(value = "/policies/{policyId}/premium/pdf", produces = APPLICATION_JSON_VALUE, method = POST)
-    public void sendEmailPolicyPremium(
+    public DownloadFile getPolicyPremiumNoticePdf(
+            @ApiParam(value = "policyId", required = true)
+            @PathVariable("policyId") String policyNumber,
+            @RequestBody @Valid PolicyPremiumNoticeRequest policyPremiumNoticeRequest) {
+        policyPremiumNoticeRequest.setPolicyNumber(policyNumber);
+        byte[] pdf = policyPremiumNotificationService.exportPdf(policyPremiumNoticeRequest);
+        DownloadFile result = new DownloadFile();
+        String base64String = Base64.getEncoder().encodeToString(pdf);
+        result.setContent(base64String);
+        result.setFileName("premium-notice.pdf");
+        result.setMimeType(DownloadUtil.CONTENT_TYPE_PDF);
+        return result;
+    }
+
+    @ApiOperation(value = "Download policy's premium notification pdf")
+    @ApiResponses({
+            @ApiResponse(code = 500, message = "If there was some internal error", response = Error.class)
+    })
+    @RequestMapping(value = "/policies/{policyId}/premium/pdf/download", produces = APPLICATION_JSON_VALUE, method = POST)
+    public void downloadPolicyPremiumPdf(
             @ApiParam(value = "policyId", required = true)
             @PathVariable("policyId") String policyNumber,
             @RequestBody @Valid PolicyPremiumNoticeRequest policyPremiumNoticeRequest,
