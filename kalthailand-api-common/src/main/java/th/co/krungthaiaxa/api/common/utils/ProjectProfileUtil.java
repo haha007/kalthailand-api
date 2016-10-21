@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
  * @author khoi.tran on 10/6/16.
  */
 public class ProjectProfileUtil {
+    public static final String PROFILE_DEFAULT = "local";
     private static final Logger LOGGER = LoggerFactory.getLogger(ProjectProfileUtil.class);
 
     public static String getDefaultProfile() {
@@ -17,6 +18,6 @@ public class ProjectProfileUtil {
         }
 
         LOGGER.warn("No Spring profile configured, running with default configuration");
-        return "dev";
+        return PROFILE_DEFAULT;
     }
 }
