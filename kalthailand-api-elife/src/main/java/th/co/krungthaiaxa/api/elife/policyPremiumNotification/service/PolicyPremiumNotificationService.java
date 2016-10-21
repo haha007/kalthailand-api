@@ -48,6 +48,7 @@ public class PolicyPremiumNotificationService {
             throw new SMSException(msg);
         }
         String messageTemplate = IOUtil.loadTextFileInClassPath("/policy-premium/premium-notice-sms.txt");
+        //Note: the message loading from template must have a space character in the beginning. Otherwise, the first character will be lost when sending via SMS. (Don't know why's that!)
         String message = fillNoticeSMS(messageTemplate, policyPremiumNoticeSMSRequest, policy);
         SMSResponse smsResponse = smsApiService.sendMessage(phoneNumber, message);
         if (!smsResponse.getStatus().equals(SMSResponse.STATUS_SUCCESS)) {
