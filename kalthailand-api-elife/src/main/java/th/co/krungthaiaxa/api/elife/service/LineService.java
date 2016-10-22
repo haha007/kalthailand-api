@@ -40,7 +40,7 @@ import static th.co.krungthaiaxa.api.common.utils.JsonUtil.getJson;
 
 @Service
 public class LineService {
-    private final static Logger logger = LoggerFactory.getLogger(LineService.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(LineService.class);
     public static final String RESPONSE_CODE_ERROR_INTERNAL_LINEPAY = "9000";
     public static final String RESPONSE_CODE_SUCCESS = "0000";
     @Value("${line.pay.id}")
@@ -64,7 +64,7 @@ public class LineService {
 
     public void sendPushNotificationOld(String messageContent, String... mids) throws IOException {
         try {
-            logger.info("Sending POST to LINE Push Notification Message");
+            LOGGER.info("Sending POST to LINE Push Notification Message");
             URL url = new URL(lineAppNotificationUrl);
 
             //set object header
@@ -97,8 +97,8 @@ public class LineService {
             wr.close();
 
             int responseCode = conn.getResponseCode();
-            logger.info("%nSending 'POST' request to URL : " + url);
-            logger.info("Response Code : " + responseCode);
+            LOGGER.info("%nSending 'POST' request to URL : " + url);
+            LOGGER.info("Response Code : " + responseCode);
 
             BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             String inputLine;
@@ -108,8 +108,8 @@ public class LineService {
                 response.append(inputLine);
             }
             in.close();
-            logger.info(response.toString());
-            logger.info("Notification is sent with success");
+            LOGGER.info(response.toString());
+            LOGGER.info("Notification is sent with success");
         } catch (MalformedURLException e) {
             throw new IOException("Unable to send Line push notification.", e);
         } catch (IOException e) {
@@ -119,7 +119,7 @@ public class LineService {
 
     public void sendPushNotification(String messageContent, String... mids) throws IOException {
         if (StringUtils.isEmpty(lineAppNotificationUrl)) {
-            logger.info("Notification is not configured and won't be sent");
+            LOGGER.info("Notification is not configured and won't be sent");
             return;
         }
 
@@ -153,11 +153,11 @@ public class LineService {
         if (!response.getStatusCode().equals(OK)) {
             throw new IOException("Line's response for push notification is [" + response.getStatusCode() + "]. Response body is [" + response.getBody() + "]");
         }
-        logger.info("Notification is sent with success");
+        LOGGER.info("Notification is sent with success");
     }
 
     public LinePayResponse bookPayment(String mid, Policy policy, String amount, String currency) throws IOException {
-        logger.info("Booking payment");
+        LOGGER.info("Booking payment");
         LinePayBookingRequest linePayBookingRequest = new LinePayBookingRequest();
         //TODO Product name here is the product display name. Should never use it. Should use productId.
         linePayBookingRequest.setProductName(policy.getCommonData().getProductId());
@@ -190,12 +190,12 @@ public class LineService {
             throw new IOException("Line's response for booking payment is [" + response.getStatusCode() + "]. Response body is [" + response.getBody() + "]");
         }
 
-        logger.info("Payment is booked with success");
+        LOGGER.info("Payment is booked with success");
         return getBookingResponseFromJSon(response.getBody());
     }
 
     public LinePayResponse confirmPayment(String transactionId, Double amount, String currency) throws IOException {
-        logger.info("Confirming payment");
+        LOGGER.info("Confirming payment");
         LinePayConfirmingRequest linePayConfirmingRequest = new LinePayConfirmingRequest();
         linePayConfirmingRequest.setAmount(amount.toString());
         linePayConfirmingRequest.setCurrency(currency);
@@ -219,7 +219,7 @@ public class LineService {
             throw new IOException("Line's response for confirming payment is [" + response.getStatusCode() + "]. Response body is [" + response.getBody() + "]");
         }
 
-        logger.info("Payment is confirmed with success");
+        LOGGER.info("Payment is confirmed with success");
         return getBookingResponseFromJSon(response.getBody());
     }
 
@@ -227,9 +227,9 @@ public class LineService {
         LinePayRecurringResponse linePayResponse;
 
         try {
-            logger.debug("Start sending POST to LINE Pay for Recurring Payment --------------------------------------->");
+            LOGGER.debug("Start sending POST to LINE Pay for Recurring Payment --------------------------------------->");
             URL url = new URL(linePayUrl + "/preapprovedPay/" + regKey + "/payment");
-            //System.out.println("check url : " +url.toString());
+            //LOGGER.debug("check url : " +url.toString());
 
             //set object header
 
@@ -240,7 +240,7 @@ public class LineService {
             conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
             conn.setDoOutput(true);
             ObjectMapper mapper = new ObjectMapper();
-            //System.out.println("check header : " +conn.getRequestProperties().toString());
+            //LOGGER.debug("check header : " +conn.getRequestProperties().toString());
 
             //parameter
             Map<String, Object> data = new HashMap<>();
@@ -267,37 +267,37 @@ public class LineService {
                 response.append(inputLine);
             }
             in.close();
-            logger.info("check response : " + response.toString());
-            logger.info("Notification is sent with success");
+            LOGGER.info("check response : " + response.toString());
+            LOGGER.info("Notification is sent with success");
             linePayResponse = JsonUtil.mapper.readValue(response.toString(), LinePayRecurringResponse.class);
 
         } catch (Exception e) {
             throw new IOException("Error with preApproved: " + e.getMessage(), e);
         }
-        System.out.println("Stop sending POST to LINE Pay for Recurring Payment --------------------------------------->");
+        LOGGER.debug("Stop sending POST to LINE Pay for Recurring Payment --------------------------------------->");
 
         return linePayResponse;
     }
 
     public LinePayResponse preApprovedOld(String regKey, Double amount, String currency, String productName, String orderId) throws IOException {
-        logger.info("preApproved payment");
+        LOGGER.info("preApproved payment");
         LinePayPreApprovedRequest linePayPreApprovedRequest = new LinePayPreApprovedRequest();
         linePayPreApprovedRequest.setProductName(productName);
         linePayPreApprovedRequest.setAmount(amount);
         linePayPreApprovedRequest.setCurrency(currency);
         linePayPreApprovedRequest.setOrderId(orderId);
-        logger.info("linePayPreApprovedRequest : " + linePayPreApprovedRequest.toString());
+        LOGGER.info("linePayPreApprovedRequest : " + linePayPreApprovedRequest.toString());
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-LINE-ChannelId", linePayId);
         headers.set("X-LINE-ChannelSecret", linePaySecretKey);
         headers.set("Content-Type", "application/json; charset=UTF-8");
-        logger.info("headers : " + headers.toString());
+        LOGGER.info("headers : " + headers.toString());
 
         HttpEntity<String> entity = new HttpEntity<>(new String(getJson(linePayPreApprovedRequest), forName("UTF-8")), headers);
 
-        logger.info("entity.header : " + entity.getHeaders());
-        logger.info("entity.body : " + entity.getBody());
+        LOGGER.info("entity.header : " + entity.getHeaders());
+        LOGGER.info("entity.body : " + entity.getBody());
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(linePayUrl + "/preapprovedPay/" + regKey + "/payment");
         RestTemplate restTemplate = new RestTemplate();
@@ -311,16 +311,16 @@ public class LineService {
             throw new IOException("Line's response for preApproved payment is [" + response.getStatusCode() + "]. Response body is [" + response.getBody() + "]");
         }
 
-        logger.info("Payment is preApproved with success");
-        logger.info("response : " + response.getBody());
+        LOGGER.info("Payment is preApproved with success");
+        LOGGER.info("response : " + response.getBody());
         LinePayResponse linePayResponse = getBookingResponseFromJSon(response.getBody());
-        logger.info("Line Pay response has been read");
+        LOGGER.info("Line Pay response has been read");
 
         return linePayResponse;
     }
 
     public LinePayResponse capturePayment(String transactionId, Double amount, String currency) {
-        logger.info("Capturing payment");
+        LOGGER.info("Capturing payment");
         LinePayConfirmingRequest linePayConfirmingRequest = new LinePayConfirmingRequest();
         linePayConfirmingRequest.setAmount(amount.toString());
         linePayConfirmingRequest.setCurrency(currency);
@@ -344,9 +344,9 @@ public class LineService {
             throw new LinePaymentException("Line's response for capturing payment is [" + response.getStatusCode() + "]. Response body is [" + response.getBody() + "]");
         }
 
-        logger.info("Payment is captured with success");
+        LOGGER.info("Payment is captured with success");
         LinePayResponse linePayResponse = getBookingResponseFromJSon(response.getBody());
-        logger.info("Line Pay response has been read");
+        LOGGER.info("Line Pay response has been read");
 
         return linePayResponse;
     }
