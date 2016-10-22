@@ -28,10 +28,8 @@ import th.co.krungthaiaxa.api.elife.model.SessionQuoteCount;
 import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
 import th.co.krungthaiaxa.api.elife.products.ProductEmailService;
 import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
-import th.co.krungthaiaxa.api.elife.service.EmailService;
 import th.co.krungthaiaxa.api.elife.service.QuoteCountForAllProductsService;
 import th.co.krungthaiaxa.api.elife.service.QuoteService;
-import th.co.krungthaiaxa.api.elife.service.SessionQuoteService;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -57,19 +55,15 @@ public class QuoteResource {
     private final static Logger logger = LoggerFactory.getLogger(QuoteResource.class);
     private final QuoteService quoteService;
     private final QuoteCountForAllProductsService quoteCountForAllProductsService;
-    private final SessionQuoteService sessionQuoteService;
-    private final EmailService emailService;
 
     private final ProductEmailService productEmailService;
     @Value("${kal.api.auth.header}")
     private String tokenHeader;
 
     @Inject
-    public QuoteResource(QuoteService quoteService, QuoteCountForAllProductsService quoteCountForAllProductsService, SessionQuoteService sessionQuoteService, EmailService emailService, ProductEmailService productEmailService) {
+    public QuoteResource(QuoteService quoteService, QuoteCountForAllProductsService quoteCountForAllProductsService, ProductEmailService productEmailService) {
         this.quoteService = quoteService;
         this.quoteCountForAllProductsService = quoteCountForAllProductsService;
-        this.sessionQuoteService = sessionQuoteService;
-        this.emailService = emailService;
         this.productEmailService = productEmailService;
     }
 
