@@ -118,7 +118,7 @@ public class ExceptionTranslator {
             errorDetailString = ObjectMapperUtil.toJson(JsonUtil.mapper, error);
         } catch (Exception toStringEx) {
             errorDetailString = ObjectMapperUtil.toStringMultiLine(error);
-            LOGGER.warn("Error when convert Error object to String:" + error);
+            LOGGER.warn("Error when convert Error object to String:" + error + "%n" + toStringEx.getMessage(), toStringEx);
         }
         errorMessage += "%n" + errorDetailString;
         if (error.getCode().equals(ErrorCode.ERROR_CODE_BEAN_VALIDATION)) {

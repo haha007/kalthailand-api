@@ -3,6 +3,8 @@ package th.co.krungthaiaxa.api.auth.jwt;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,7 +27,7 @@ import static java.util.stream.Collectors.toList;
 
 @Component
 public class JwtTokenUtil implements Serializable {
-
+    public static final Logger LOGGER = LoggerFactory.getLogger(JwtTokenUtil.class);
     private static final long serialVersionUID = -3301605591108950415L;
 
     private static final String CLAIM_KEY_USERNAME = "sub";
@@ -36,7 +38,7 @@ public class JwtTokenUtil implements Serializable {
     private String secret;
 
     @Value("${jwt.expiration}")
-    private Long expiration;
+    private Long expirationDuration;
 
     public Optional<List> getRolesFromToken(String token) {
         Optional<Claims> claims = getClaimsFromToken(token);
@@ -115,13 +117,14 @@ public class JwtTokenUtil implements Serializable {
                     .parseClaimsJws(token)
                     .getBody();
         } catch (Exception e) {
+            LOGGER.error("Cannot claims token " + token + ": " + e.getMessage(), e);
             return Optional.empty();
         }
         return Optional.of(claims);
     }
 
     private LocalDateTime generateExpirationDate() {
-        return LocalDateTime.now().plus(expiration * 1000, ChronoUnit.MILLIS);
+        return LocalDateTime.now().plus(expirationDuration * 1000, ChronoUnit.MILLIS);
     }
 
     private String generateToken(Map<String, Object> claims) {

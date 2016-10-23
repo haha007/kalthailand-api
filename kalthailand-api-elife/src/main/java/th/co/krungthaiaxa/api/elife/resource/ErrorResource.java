@@ -37,7 +37,7 @@ public class ErrorResource implements ErrorController {
         if (parameter == null) {
             return false;
         }
-        return !"false".equals(parameter.toLowerCase());
+        return !"false".equalsIgnoreCase(parameter);
     }
 
     private Map<String, Object> getErrorAttributes(HttpServletRequest aRequest, boolean includeStackTrace) {

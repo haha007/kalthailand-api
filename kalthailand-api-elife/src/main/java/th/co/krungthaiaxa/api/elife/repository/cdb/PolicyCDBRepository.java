@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
+import th.co.krungthaiaxa.api.common.utils.ListUtil;
 import th.co.krungthaiaxa.api.elife.data.GeneralSetting;
 import th.co.krungthaiaxa.api.elife.model.PolicyCDB;
 import th.co.krungthaiaxa.api.elife.service.GeneralSettingService;
@@ -42,11 +43,7 @@ public class PolicyCDBRepository {
         String dobString = DateTimeUtil.formatLocalDate(insuredDob, CDB_DATE_PATTERN);
         List<Map<String, Object>> results = jdbcTemplate.queryForList(query, policyNumber, dobString);
         List<PolicyCDB> policyCDBs = toPolicies(results);
-        if (policyCDBs.size() > 0) {
-            return policyCDBs.get(0);
-        } else {
-            return null;
-        }
+        return ListUtil.hasOneElement(policyCDBs);
     }
 
     //TODO Just temporary

@@ -22,17 +22,24 @@ public class ElementEmailValidator implements ConstraintValidator<ElementEmail, 
         if (values == null || values.isEmpty()) return true;
 
         for (Object value : values) {
-            if (value == null) {
-                return true;
+            if (!isElementValid(value, context)) {
+                return false;
             }
-            if (value instanceof String) {
-                String str = (String) value;
-                if (StringUtils.isBlank(str)) {
-                    return true;
-                } else {
-                    if (!emailValidator.isValid(str, context)) {
-                        return false;
-                    }
+        }
+        return true;
+    }
+
+    private boolean isElementValid(Object value, ConstraintValidatorContext context) {
+        if (value == null) {
+            return true;
+        }
+        if (value instanceof String) {
+            String str = (String) value;
+            if (StringUtils.isBlank(str)) {
+                return true;
+            } else {
+                if (!emailValidator.isValid(str, context)) {
+                    return false;
                 }
             }
         }
