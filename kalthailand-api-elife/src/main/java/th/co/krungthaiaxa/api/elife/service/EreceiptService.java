@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.common.exeption.UnexpectedException;
 import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
+import th.co.krungthaiaxa.api.common.utils.IOUtil;
 import th.co.krungthaiaxa.api.elife.client.SigningClient;
 import th.co.krungthaiaxa.api.elife.exception.EreceiptDocumentException;
 import th.co.krungthaiaxa.api.elife.model.Document;
@@ -44,7 +45,7 @@ import static th.co.krungthaiaxa.api.elife.model.enums.DocumentType.ERECEIPT_PDF
 @Service
 public class EreceiptService {
     private final static Logger LOGGER = LoggerFactory.getLogger(DocumentService.class);
-    private final static String ERECEIPT_MERGED_FILE_NAME = "ereceipts_merged.png";
+    private final static String ERECEIPT_IMAGE_FILE_NAME_PREFIX = "ereceipts_merged";
     private final static String ERECEIPT_TEMPLATE_FILE_NAME = "AGENT-WHITE-FINAL.jpg";
     private final static int LINE_POS_REF2 = 576;//px
     private static final int LINE_POS_PERSON_REGID = 495;//px
@@ -107,14 +108,11 @@ public class EreceiptService {
     public byte[] createEreceiptImage(Policy policy, Payment payment, boolean firstPayment) throws IOException {
         LOGGER.info("[createEReceipt] quoteId : " + policy.getQuoteId());
         LOGGER.info("[createEReceipt] policyNumber : " + policy.getPolicyId());
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("ereceipt/" + ERECEIPT_TEMPLATE_FILE_NAME);
+        InputStream inputStream = IOUtil.loadInputStreamFileInClassPath("ereceipt/" + ERECEIPT_TEMPLATE_FILE_NAME);
 
         DecimalFormat formatter = new DecimalFormat("#,##0.00");
 
-        StringBuilder im = new StringBuilder();
-        im.append(ERECEIPT_MERGED_FILE_NAME);
-        im.insert(im.toString().indexOf("."), "_" + policy.getPolicyId());
-        String resultFileName = im.toString();
+        String resultFileName = ERECEIPT_IMAGE_FILE_NAME_PREFIX + "_" + policy.getPolicyId() + ".png";
         LOGGER.info("[createEReceipt] eReceipt file name:" + resultFileName);
 
         BufferedImage bufferedImage;
