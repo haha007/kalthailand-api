@@ -2,6 +2,8 @@ package th.co.krungthaiaxa.api.elife.commission.data;
 
 /**
  * @author khoi.tran on 8/30/16.
+ *         This is the result of comission calculation for one policy.
+ *         The class {@link CommissionCalculationSession} store calculation result of all policies in one session.
  */
 
 public class CommissionCalculation {
