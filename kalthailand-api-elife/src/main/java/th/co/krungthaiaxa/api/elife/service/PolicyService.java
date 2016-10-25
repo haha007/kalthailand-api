@@ -68,7 +68,7 @@ import static th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus.OVERPAID;
 import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.EVERY_MONTH;
 import static th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus.VALIDATED;
 import static th.co.krungthaiaxa.api.elife.products.ProductUtils.amount;
-
+//TODO need to be refactored.
 @Service
 public class PolicyService {
     private final static Logger logger = LoggerFactory.getLogger(PolicyService.class);
@@ -82,6 +82,7 @@ public class PolicyService {
     private final EmailService emailService;
     private final LineService lineService;
     private final DocumentService documentService;
+    private final PolicyDocumentService policyDocumentService;
     private final SMSApiService smsApiService;
     private final ProductServiceFactory productServiceFactory;
     private final CDBClient cdbClient;
@@ -97,10 +98,12 @@ public class PolicyService {
             PolicyNumberRepository policyNumberRepository,
             QuoteRepository quoteRepository,
             EmailService emailService,
-            LineService lineService, DocumentService documentService,
-            SMSApiService smsApiService,
+            LineService lineService,
+            DocumentService documentService,
+            PolicyDocumentService policyDocumentService, SMSApiService smsApiService,
             ProductServiceFactory productServiceFactory, CDBClient cdbClient) {
         this.tmcClient = tmcClient;
+        this.policyDocumentService = policyDocumentService;
         this.cdbClient = cdbClient;
         this.paymentRepository = paymentRepository;
         this.policyCriteriaRepository = policyCriteriaRepository;
@@ -232,7 +235,7 @@ public class PolicyService {
     public void updatePolicyAfterFirstPaymentValidated(Policy policy) {
         // Generate documents
         try {
-            documentService.generateNotValidatedPolicyDocuments(policy);
+            policyDocumentService.generateNotValidatedPolicyDocuments(policy);
         } catch (Exception e) {
             throw new ElifeException("Can't generate documents for the policy [" + policy.getPolicyId() + "]");
         }
@@ -330,7 +333,7 @@ public class PolicyService {
 
         // Generate documents
         try {
-            documentService.generateValidatedPolicyDocuments(policy, token);
+            policyDocumentService.generateValidatedPolicyDocuments(policy, token);
         } catch (Exception e) {
             throw new ElifeException("Can't generate documents for the policy [" + policy.getPolicyId() + "]: " + e.getMessage(), e);
         }

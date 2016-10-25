@@ -16,6 +16,7 @@ import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 import th.co.krungthaiaxa.api.elife.service.DocumentService;
+import th.co.krungthaiaxa.api.elife.service.PolicyDocumentService;
 import th.co.krungthaiaxa.api.elife.service.PolicyService;
 import th.co.krungthaiaxa.api.elife.service.QuoteService;
 
@@ -35,6 +36,8 @@ public class SigningClientTest extends ELifeTest {
     @Inject
     private DocumentService documentService;
     @Inject
+    private PolicyDocumentService policyDocumentService;
+    @Inject
     private PolicyService policyService;
     @Inject
     private QuoteService quoteService;
@@ -44,7 +47,7 @@ public class SigningClientTest extends ELifeTest {
     @Test
     public void should_get_signed_application_form() throws IOException {
         Policy policy = getPolicy();
-        documentService.generateNotValidatedPolicyDocuments(policy);
+        policyDocumentService.generateNotValidatedPolicyDocuments(policy);
         Optional<Document> applicationFormPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(APPLICATION_FORM)).findFirst();
         DocumentDownload documentDownload = documentService.findDocumentDownload(applicationFormPdf.get().getId());
         byte[] encodedSignedDocument = signingClient.getEncodedSignedPdfDocument(documentDownload.getContent().getBytes(), "token");

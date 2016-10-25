@@ -56,17 +56,18 @@ public class PaymentService {
      */
     private LineService lineService;
     private final EmailService emailService;
-    private final DocumentService documentService;
+    private final EreceiptService ereceiptService;
     private final MessageSource messageSource;
 
     @Inject
-    public PaymentService(GeneralSettingService generalSettingService, PaymentRepository paymentRepository, PolicyService policyService, LineService lineService, EmailService emailService, DocumentService documentService, MessageSource messageSource) {
+    public PaymentService(GeneralSettingService generalSettingService, PaymentRepository paymentRepository, PolicyService policyService, LineService lineService, EmailService emailService, EreceiptService ereceiptService,
+            MessageSource messageSource) {
         this.generalSettingService = generalSettingService;
         this.paymentRepository = paymentRepository;
         this.policyService = policyService;
         this.lineService = lineService;
         this.emailService = emailService;
-        this.documentService = documentService;
+        this.ereceiptService = ereceiptService;
         this.messageSource = messageSource;
     }
 
@@ -225,7 +226,7 @@ public class PaymentService {
         Policy policy = policyService.validateExistPolicy(payment.getPolicyId());
         Insured mainInsured = ProductUtils.validateExistMainInsured(policy);
 
-        Document ereceiptPdfDocument = documentService.addEreceiptPdf(policy, payment, false, accessToken);
+        Document ereceiptPdfDocument = ereceiptService.addEreceiptPdf(policy, payment, false, accessToken);
 
         String emailSubject = messageSource.getMessage("email.payment.retry.success.title", null, LocaleUtil.THAI_LOCALE);
         String emailContent = IOUtil.loadTextFileInClassPath("/email-content/email-retrypayment-success.html");

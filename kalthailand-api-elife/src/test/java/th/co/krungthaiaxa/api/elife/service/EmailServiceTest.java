@@ -89,6 +89,8 @@ public class EmailServiceTest extends ELifeTest {
     @Inject
     private DocumentService documentService;
     @Inject
+    private PolicyDocumentService policyDocumentService;
+    @Inject
     private EmailService emailService;
     @Inject
     private PolicyService policyService;
@@ -261,7 +263,7 @@ public class EmailServiceTest extends ELifeTest {
         Policy policy = policyService.createPolicy(quote);
         policy.getInsureds().get(0).getPerson().setEmail("tanawat_hemchua@hotmail.com");
 
-        documentService.generateValidatedPolicyDocuments(policy, "token");
+        policyDocumentService.generateValidatedPolicyDocuments(policy, "token");
         Optional<Document> documentPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(ERECEIPT_PDF)).findFirst();
         assertThat(documentPdf.isPresent()).isTrue();
         DocumentDownload documentDownload = documentService.findDocumentDownload(documentPdf.get().getId());
@@ -429,7 +431,7 @@ public class EmailServiceTest extends ELifeTest {
         policy(policy);
         policy.getPayments().get(0).setEffectiveDate(DateTimeUtil.nowLocalDateTimeInThaiZoneId());
 
-        documentService.generateValidatedPolicyDocuments(policy, "token");
+        policyDocumentService.generateValidatedPolicyDocuments(policy, "token");
         Optional<Document> documentPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(ERECEIPT_PDF)).findFirst();
         assertThat(documentPdf.isPresent()).isTrue();
 
@@ -473,7 +475,7 @@ public class EmailServiceTest extends ELifeTest {
         policy(policy);
         policy.getPayments().get(0).setEffectiveDate(DateTimeUtil.nowLocalDateTimeInThaiZoneId());
 
-        documentService.generateValidatedPolicyDocuments(policy, "token");
+        policyDocumentService.generateValidatedPolicyDocuments(policy, "token");
         Optional<Document> documentPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(ERECEIPT_PDF)).findFirst();
         assertThat(documentPdf.isPresent()).isTrue();
 
