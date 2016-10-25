@@ -8,11 +8,10 @@ import java.util.List;
 
 /**
  * @author khoi.tran on 8/30/16.
+ *         This is the result of commission calculation
  */
 @Document(collection = "commissionCalculationSession")
 public class CommissionCalculationSession extends BaseEntity {
-
-    @DBRef
     private List<CommissionPlan> commissionPlans;
     @DBRef
     private List<CommissionCalculation> commissionCalculations;

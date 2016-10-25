@@ -5,14 +5,23 @@ import th.co.krungthaiaxa.api.common.data.BaseEntity;
 
 import java.util.List;
 
+/**
+ * Should be replaced by new data structure.
+ */
 @Document(collection = "commissionResult")
+@Deprecated
 public class CommissionResult extends BaseEntity {
     @Deprecated
     private String rowId;
     @Deprecated
     //TODO should change to date
     private String commissionMonth;
+
+    //TODO should be renamed by commissionCalculation
+    @Deprecated
     private List<CommissionCalculation> policies;
+
+    @Deprecated
     private Integer commissionPoliciesCount;
 
     public String getRowId() {

@@ -51,7 +51,6 @@ public class CommissionCalculationSessionService {
     private final CommissionCalculationSessionRepository commissionCalculationSessionRepository;
     private final CDBRepository cdbRepository;
     private final CommissionResultRepository commissionResultRepository;
-    private List<CommissionPlan> commissionPlans;
     private final PolicyRepository policyRepository;
 
     @Autowired
@@ -99,11 +98,12 @@ public class CommissionCalculationSessionService {
         CommissionResult commissionResult = new CommissionResult();
         commissionResult.setCommissionMonth(String.valueOf(nowDate.getYear()) + String.valueOf((new DecimalFormat("00")).format((nowDate.getMonthValue() - 1))));
         commissionResult.setCreatedDateTime(nowDate);
+        //TODO rowId is unnecessary
         commissionResult.setRowId(getRowId(nowDate));
         commissionResultRepository.save(commissionResult);
 
-        commissionPlans = commissionPlanService.findAll();
-        List<String> channelIds = commissionPlans.stream().map(sc -> sc.getUnitCode()).collect(Collectors.toList());
+        List<CommissionPlan> commissionPlans = commissionPlanService.findAll();
+        List<String> channelIds = commissionPlans.stream().map(sc -> sc.getUnitCode()).collect(Collectors.toList());//list of UnitCode
         List<String> planCodes = commissionPlans.stream().map(sc -> sc.getPlanCode()).collect(Collectors.toList());
         List<String> channelIdsNoDup = channelIds.stream().distinct().collect(Collectors.toList());
         List<String> planCodesNoDup = planCodes.stream().distinct().collect(Collectors.toList());
@@ -114,24 +114,24 @@ public class CommissionCalculationSessionService {
             JdbcTemplate jdbcTemplate = new JdbcTemplate(cdbDataSource);
             jdbcTemplate.setQueryTimeout(600);
             try {
-                List<Map<String, Object>> list = jdbcTemplate.queryForList(
+                List<Map<String, Object>> policies = jdbcTemplate.queryForList(
                         generateSql(channelIdsNoDup, planCodesNoDup),
                         generateParameters(channelIdsNoDup, planCodesNoDup));
-                if (list.size() > 0) {
-                    for (Map<String, Object> m : list) {
-                        //check policy must not null
-                        Policy policy = policyRepository.findByPolicyId(String.valueOf(m.get("policyNo")));
+                if (policies.size() > 0) {
+                    for (Map<String, Object> policyMap : policies) {
+                        //check policy must not nullx
+                        Policy policy = policyRepository.findByPolicyId(String.valueOf(policyMap.get("policyNo")));
                         if (policy != null) {
                             CommissionCalculation c = new CommissionCalculation();
 
                             //cdb information
-                            c.setPolicyNo(String.valueOf(m.get("policyNo")));
-                            c.setPolicyStatus(String.valueOf(m.get("policyStatus")));
-                            c.setPlanCode(String.valueOf(m.get("planCode")));
-                            c.setPaymentCode(String.valueOf(m.get("paymentCode")));
-                            c.setAgentCode(String.valueOf(m.get("agentCode")));
-                            c.setFirstYearPremium(convertFormat(Double.valueOf(String.valueOf(m.get("firstYearPremium")))));
-                            c.setFirstYearCommission(convertFormat(Double.valueOf(String.valueOf(m.get("firstYearCommission")))));
+                            c.setPolicyNo(String.valueOf(policyMap.get("policyNo")));
+                            c.setPolicyStatus(String.valueOf(policyMap.get("policyStatus")));
+                            c.setPlanCode(String.valueOf(policyMap.get("planCode")));
+                            c.setPaymentCode(String.valueOf(policyMap.get("paymentCode")));
+                            c.setAgentCode(String.valueOf(policyMap.get("agentCode")));
+                            c.setFirstYearPremium(convertFormat(Double.valueOf(String.valueOf(policyMap.get("firstYearPremium")))));
+                            c.setFirstYearCommission(convertFormat(Double.valueOf(String.valueOf(policyMap.get("firstYearCommission")))));
 
                             //previously information
                             Insured insured = policy.getInsureds().get(0);
@@ -155,7 +155,7 @@ public class CommissionCalculationSessionService {
                             //calculation commission
 
                             //fy
-                            CommissionPlan plan = getCommissionPlanForCalculate(getProperAgentCodeNumber(c.getAgentCode(), 6), c.getPlanCode(), c.getCustomerCategory());
+                            CommissionPlan plan = getCommissionPlanForCalculate(getProperAgentCodeNumber(c.getAgentCode(), 6), c.getPlanCode(), c.getCustomerCategory(), commissionPlans);
                             CommissionTargetGroup fCtg = getCommissionTargetGroup(FY, plan.getTargetGroups());
                             CommissionTargetGroup oCtg = getCommissionTargetGroup(OV, plan.getTargetGroups());
                             c.setFyAffiliateCommission(convertFormat((c.getFirstYearCommission() * getTargetEntities(TARGET_ENTITY_AFF, fCtg).getPercentage()) / 100));
@@ -346,7 +346,7 @@ public class CommissionCalculationSessionService {
         return commissionCalculationSession;
     }
 
-    private CommissionPlan getCommissionPlanForCalculate(String channelCode, String planCode, String customerCategory) {
+    private CommissionPlan getCommissionPlanForCalculate(String channelCode, String planCode, String customerCategory, List<CommissionPlan> commissionPlans) {
         CommissionPlan commissionPlan = new CommissionPlan();
         for (CommissionPlan c : commissionPlans) {
             if (c.getUnitCode().equals(channelCode) &&
