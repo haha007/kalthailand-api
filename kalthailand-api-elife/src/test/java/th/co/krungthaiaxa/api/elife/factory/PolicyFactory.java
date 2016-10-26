@@ -7,9 +7,10 @@ import org.springframework.stereotype.Component;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.Quote;
+import th.co.krungthaiaxa.api.elife.model.line.LinePayCaptureMode;
 import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
 import th.co.krungthaiaxa.api.elife.service.PolicyService;
-import th.co.krungthaiaxa.api.elife.service.QuoteService;
+import th.co.krungthaiaxa.api.elife.service.PolicyValidatedProcessingService;
 
 import javax.inject.Inject;
 
@@ -21,7 +22,7 @@ public class PolicyFactory {
     @Inject
     private QuoteFactory quoteFactory;
     @Inject
-    private QuoteService quoteService;
+    private PolicyValidatedProcessingService policyValidatedProcessingService;
 
     @Inject
     private PolicyService policyService;
@@ -52,7 +53,15 @@ public class PolicyFactory {
         String regKey = PaymentFactory.generatePaymentRegKey();
         policyService.updatePayment(payment, orderId, transactionId, regKey);
         policyService.updatePolicyAfterFirstPaymentValidated(policy);
-        policy = policyService.updatePolicyAfterPolicyHasBeenValidated(policy, "999999-99-999999", "Mock Agent Name", RequestFactory.generateAccessToken());
+
+        PolicyValidatedProcessingService.PolicyValidationRequest policyValidationRequest = new PolicyValidatedProcessingService.PolicyValidationRequest();
+        policyValidationRequest.setAccessToken(RequestFactory.generateAccessToken());
+        policyValidationRequest.setAgentCode("123456-78-901234");
+        policyValidationRequest.setAgentName("Mock Agent Name");
+        policyValidationRequest.setLinePayCaptureMode(LinePayCaptureMode.FAKE_WITH_SUCCESS);
+        policyValidationRequest.setPolicyId(policy.getPolicyId());
+        policy = policyValidatedProcessingService.processValidatedPolicy(policyValidationRequest);
+//        policy = policyService.updatePolicyAfterPolicyHasBeenValidated(policy, "999999-99-999999", "Mock Agent Name", RequestFactory.generateAccessToken());
         return policy;
     }
 }

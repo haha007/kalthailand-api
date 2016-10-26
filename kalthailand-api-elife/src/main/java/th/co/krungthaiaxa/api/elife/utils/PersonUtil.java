@@ -24,8 +24,12 @@ public class PersonUtil {
         return StringUtil.joinNotBlankStrings(" ", person.getGivenName(), person.getSurName());
     }
 
+    public static String getMobilePhoneNumber(Person person) {
+        return person.getMobilePhoneNumber().getNumber();
+    }
+
     public static String validateExistMobilePhoneNumber(Person person) {
-        String mobilePhoneNumber = person.getMobilePhoneNumber().getNumber();
+        String mobilePhoneNumber = getMobilePhoneNumber(person);
         if (StringUtils.isBlank(mobilePhoneNumber)) {
             throw new UnexpectedException("Not exist mobile phone number of person: %n " + ObjectMapperUtil.toStringMultiLine(person));
         } else {

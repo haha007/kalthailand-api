@@ -12,7 +12,7 @@ import java.io.InputStream;
 public class ExcelIOUtils {
     public static Workbook loadFileFromClassPath(String classPath) {
 
-        try (InputStream inputStream = IOUtil.loadInputStreamFileInClassPath(classPath);) {
+        try (InputStream inputStream = IOUtil.loadInputStreamFromClassPath(classPath);) {
             return new XSSFWorkbook(inputStream);
         } catch (IOException e) {
             String msg = "Cannot load file '" + classPath + "': " + e.getMessage();

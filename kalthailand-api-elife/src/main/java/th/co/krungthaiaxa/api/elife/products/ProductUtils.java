@@ -67,6 +67,30 @@ public class ProductUtils {
         }
     };
 
+    public static String validateExistProductName(Policy policy) {
+        String productLogicName = policy.getCommonData().getProductId();
+        ProductType productType = ProductUtils.validateExistProductTypeByLogicName(productLogicName);
+        return productType.getDisplayName();
+    }
+
+    public static Amount getSumInsuredAmount(Policy policy) {
+        Amount amount;
+        if (policy.getCommonData().getProductId().equals(ProductType.PRODUCT_10_EC.getLogicName())) {
+            amount = policy.getPremiumsData().getProduct10ECPremium().getSumInsured();
+        } else if (policy.getCommonData().getProductId().equals(ProductType.PRODUCT_IFINE.getLogicName())) {
+            amount = policy.getPremiumsData().getProductIFinePremium().getSumInsured();
+        } else if (policy.getCommonData().getProductId().equals(ProductType.PRODUCT_IPROTECT.getLogicName())) {
+            amount = policy.getPremiumsData().getProductIProtectPremium().getSumInsured();
+        } else {
+            amount = policy.getPremiumsData().getPremiumDetail().getSumInsured();
+        }
+        return amount;
+    }
+
+    public static PeriodicityCode getPeriodicityCode(Policy policy) {
+        return policy.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode();
+    }
+
     public static double getModalFactor(PeriodicityCode periodicityCode) {
         return modalFactor.apply(periodicityCode);
     }
@@ -404,6 +428,7 @@ public class ProductUtils {
     public static Amount getPremiumAmount(Policy policy) {
         return policy.getPremiumsData().getFinancialScheduler().getModalAmount();
     }
+
     public static Periodicity getPremiumPeriodicity(Policy policy) {
         return policy.getPremiumsData().getFinancialScheduler().getPeriodicity();
     }
@@ -506,5 +531,9 @@ public class ProductUtils {
         destination.setMinSumInsured(commonData.getMinSumInsured());
         destination.setMinPremium(commonData.getMinPremium());
         destination.setMaxPremium(commonData.getMaxPremium());
+    }
+
+    public static String getRegistrationId(Insured insured) {
+        return insured.getPerson().getRegistrations().get(0).getId();
     }
 }

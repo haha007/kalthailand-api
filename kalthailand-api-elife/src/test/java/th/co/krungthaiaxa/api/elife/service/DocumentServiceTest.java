@@ -2,13 +2,13 @@ package th.co.krungthaiaxa.api.elife.service;
 
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfReader;
-import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import th.co.krungthaiaxa.api.common.utils.IOUtil;
 import th.co.krungthaiaxa.api.elife.ELifeTest;
 import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
 import th.co.krungthaiaxa.api.elife.TestUtil;
@@ -136,8 +136,7 @@ public class DocumentServiceTest extends ELifeTest {
         assertThat(new PdfReader(decodedContent)).isNotNull();
 
         // Creates pdf in target folder
-        File file = new File("target/documentServiceTest1-ereceipt.pdf");
-        FileUtils.writeByteArrayToFile(file, decodedContent);
+        File file = IOUtil.writeBytesToRelativeFile(TestUtil.PATH_TEST_RESULT + "documentServiceTest1-ereceipt.pdf", decodedContent);
         assertThat(file.exists()).isTrue();
     }
 

@@ -102,7 +102,7 @@ public class PolicyValidatedProcessingService {
         }
 
         // Update the payment if confirm is success
-        policyService.updatePayment(paymentHasTransaction, paymentHasTransaction.getAmount().getValue(), paymentHasTransaction.getAmount().getCurrencyCode(), LINE, linePayResponse);
+        policyService.updatePaymentAfterLinePay(paymentHasTransaction, paymentHasTransaction.getAmount().getValue(), paymentHasTransaction.getAmount().getCurrencyCode(), LINE, linePayResponse);
         String regKey = linePayResponse.getInfo().getRegKey();
         policyService.updateRegKeyForAllNotProcessedPayments(policy, regKey);
         policy = policyService.updatePolicyAfterPolicyHasBeenValidated(policy, agentCode, agentName, accessToken);

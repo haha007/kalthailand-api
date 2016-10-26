@@ -54,7 +54,7 @@ public class JasperUtil {
 
     public static JasperPrint export(String jrxmlPath, Map<String, Object> parameters, JRDataSource dataSource) {
         JasperPrint jasperPrint = null;
-        try (InputStream inStream = IOUtil.loadInputStreamFileInClassPath(jrxmlPath);) {
+        try (InputStream inStream = IOUtil.loadInputStreamFromClassPath(jrxmlPath);) {
             if (inStream == null) {
                 String msg = String.format("Cannot find jrxmlPath '%s'", jrxmlPath);
                 throw new JasperException(msg);
@@ -86,7 +86,7 @@ public class JasperUtil {
     }
 
     public static JasperPrint exportFromCompiledTemplate(String compiledJasperReportPath, Map<String, Object> parameters, JsonDataSource jsonDataSource) {
-        try (InputStream compiledJasperReportInputStream = IOUtil.loadInputStreamFileInClassPath(compiledJasperReportPath);) {
+        try (InputStream compiledJasperReportInputStream = IOUtil.loadInputStreamFromClassPath(compiledJasperReportPath);) {
             JasperReport jasperReport = (JasperReport) JRLoader.loadObject(compiledJasperReportInputStream);
             jasperReport.setWhenNoDataType(WhenNoDataTypeEnum.ALL_SECTIONS_NO_DETAIL);
             return JasperFillManager.fillReport(jasperReport, parameters, jsonDataSource);

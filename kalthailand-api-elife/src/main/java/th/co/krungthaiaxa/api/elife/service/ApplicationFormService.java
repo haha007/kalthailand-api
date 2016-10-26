@@ -5,7 +5,6 @@ import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfStamper;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -14,6 +13,8 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.common.exeption.FileIOException;
 import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
+import th.co.krungthaiaxa.api.common.utils.PdfIOUtil;
+import th.co.krungthaiaxa.api.common.utils.PdfUtil;
 import th.co.krungthaiaxa.api.elife.model.CoverageBeneficiary;
 import th.co.krungthaiaxa.api.elife.model.GeographicalAddress;
 import th.co.krungthaiaxa.api.elife.model.Insured;
@@ -518,11 +519,7 @@ public class ApplicationFormService {
     }
 
     private void writeText(PdfContentByte pdfContentByte, BaseFont font, String text, int x, int y, float fontSize) {
-        pdfContentByte.beginText();
-        pdfContentByte.setFontAndSize(font, fontSize);
-        pdfContentByte.setTextMatrix(x, y);
-        pdfContentByte.showText(text);
-        pdfContentByte.endText();
+        PdfUtil.writeText(pdfContentByte, font, text, x, y, fontSize);
     }
 
     private String solveNullValue(String s) {
@@ -539,15 +536,7 @@ public class ApplicationFormService {
     }
 
     private BaseFont getBaseFont() throws IOException {
-        BaseFont baseFont;
-        try {
-            byte[] bytes = IOUtils.toByteArray(getClass().getClassLoader().getResourceAsStream("ereceipt/ANGSAB_1.TTF"));
-            baseFont = BaseFont.createFont("ANGSAB_1.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED, true, bytes, null);
-        } catch (DocumentException e) {
-            logger.error("Unable to load embed font file", e);
-            throw new IOException(e);
-        }
-        return baseFont;
+        return PdfIOUtil.loadFontFromClassPath("ANGSAB_1.ttf", "/ereceipt/ANGSAB_1.TTF");
     }
 
 }

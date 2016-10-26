@@ -193,7 +193,7 @@ public class PolicyService {
 
     public void updatePaymentWithErrorStatus(Payment payment, Double amount, String currencyCode, ChannelType channelType,
             String errorCode, String errorMessage) {
-        updatePayment(payment, amount, currencyCode, channelType,
+        updatePaymentWithPaylineResponse(payment, amount, currencyCode, channelType,
                 errorCode,
                 errorMessage,
                 null,
@@ -201,7 +201,7 @@ public class PolicyService {
                 null);
     }
 
-    public void updatePayment(Payment payment, Double amount, String currencyCode, ChannelType channelType,
+    public void updatePaymentAfterLinePay(Payment payment, Double amount, String currencyCode, ChannelType channelType,
             LinePayResponse linePayResponse) {
         String creditCardName = null;
         String method = null;
@@ -210,7 +210,7 @@ public class PolicyService {
             method = linePayResponse.getInfo().getPayInfo().get(0).getMethod();
         }
         // Update the confirmed payment
-        updatePayment(payment, amount, currencyCode, channelType,
+        updatePaymentWithPaylineResponse(payment, amount, currencyCode, channelType,
                 linePayResponse.getReturnCode(),
                 linePayResponse.getReturnMessage(),
                 linePayResponse.getInfo().getRegKey(),
@@ -435,7 +435,7 @@ public class PolicyService {
         lineService.sendPushNotification(pushContent.replace("%POLICY_ID%", policy.getPolicyId()), mainInsured.getPerson().getLineId());
     }
 
-    private void updatePayment(Payment payment, Double value, String currencyCode, ChannelType channelType, String errorCode, String errorMessage, String registrationKey, String creditCardName, String paymentMethod) {
+    private void updatePaymentWithPaylineResponse(Payment payment, Double value, String currencyCode, ChannelType channelType, String errorCode, String errorMessage, String registrationKey, String creditCardName, String paymentMethod) {
         SuccessErrorStatus status;
         if (!currencyCode.equals(payment.getAmount().getCurrencyCode())) {
             status = SuccessErrorStatus.ERROR;

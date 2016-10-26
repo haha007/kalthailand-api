@@ -93,15 +93,36 @@ public class IOUtil {
      */
     public static byte[] loadBinaryFileInClassPath(String path) {
         try {
-            return IOUtils.toByteArray(IOUtil.class.getResourceAsStream(path));
+            return IOUtils.toByteArray(loadInputStreamFromClassPath(path));
         } catch (IOException e) {
             String msg = String.format("Cannot load String from '%s'", path);
             throw new FileNotFoundException(msg, e);
         }
     }
 
-    public static InputStream loadInputStreamFileInClassPath(String path) {
-        return IOUtil.class.getResourceAsStream(path);
+    /**
+     * This method never return null.
+     *
+     * @param path
+     * @return
+     */
+    public static InputStream loadInputStreamFromClassPath(String path) {
+        InputStream result = IOUtil.class.getResourceAsStream(path);
+        if (result == null) {
+            throw new FileIOException("Cannot load file from classpath: " + path);
+        }
+        return result;
+    }
+
+    public static File writeBytesToRelativeFile(String relativeFilePath, byte[] bytes) {
+        File file = new File(relativeFilePath);
+        try {
+            FileUtils.writeByteArrayToFile(file, bytes);
+            LOGGER.debug("Write bytes to file: " + file.getAbsolutePath());
+            return file;
+        } catch (IOException e) {
+            throw new FileIOException("Cannot write bytes to file " + file.getAbsolutePath() + ": " + e.getMessage(), e);
+        }
     }
 
     public static void writeInputStream(File file, InputStream inputStream) {

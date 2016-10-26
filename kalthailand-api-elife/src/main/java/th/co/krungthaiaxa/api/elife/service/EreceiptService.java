@@ -54,12 +54,14 @@ public class EreceiptService {
     private final DocumentService documentService;
     private final PaymentRepository paymentRepository;
     private final SigningClient signingClient;
+    private final EreceiptPdfService ereceiptPdfService;
 
     @Autowired
-    public EreceiptService(DocumentService documentService, PaymentRepository paymentRepository, SigningClient signingClient) {
+    public EreceiptService(DocumentService documentService, PaymentRepository paymentRepository, SigningClient signingClient, EreceiptPdfService ereceiptPdfService) {
         this.documentService = documentService;
         this.paymentRepository = paymentRepository;
         this.signingClient = signingClient;
+        this.ereceiptPdfService = ereceiptPdfService;
     }
 
     /**
@@ -71,18 +73,11 @@ public class EreceiptService {
      * @throws EreceiptDocumentException if there's something wrong while creating ereceipt pdf.
      */
     public Document addEreceiptPdf(Policy policy, Payment payment, boolean firstPayment, String accessToken) {
-        try {
-            byte[] ereceiptImage = createEreceiptImage(policy, payment, firstPayment);
-            addEReceiptDocument(policy, payment, ereceiptImage, "image/png", ERECEIPT_IMAGE);
-            byte[] decodedNonSignedPdf = createEreceiptPDF(ereceiptImage);
-            byte[] encodedNonSignedPdf = Base64.getEncoder().encode(decodedNonSignedPdf);
-            byte[] encodedSignedPdf = signingClient.getEncodedSignedPdfDocument(encodedNonSignedPdf, accessToken);
-            byte[] decodedSignedPdf = Base64.getDecoder().decode(encodedSignedPdf);
-            return addEReceiptDocument(policy, payment, decodedSignedPdf, "application/pdf", ERECEIPT_PDF);
-        } catch (IOException | DocumentException e) {
-            String msg = String.format("Error creating ereceipt pdf for policyId: %s, paymentId: %s, firstPayment: %s", policy.getPolicyId(), payment.getPaymentId(), firstPayment);
-            throw new EreceiptDocumentException(msg);
-        }
+        byte[] decodedNonSignedPdf = ereceiptPdfService.createEreceiptPdf(policy, payment, firstPayment);
+        byte[] encodedNonSignedPdf = Base64.getEncoder().encode(decodedNonSignedPdf);
+        byte[] encodedSignedPdf = signingClient.getEncodedSignedPdfDocument(encodedNonSignedPdf, accessToken);
+        byte[] decodedSignedPdf = Base64.getDecoder().decode(encodedSignedPdf);
+        return addEReceiptDocument(policy, payment, decodedSignedPdf, "application/pdf", ERECEIPT_PDF);
     }
 
     public Document addEReceiptDocument(Policy policy, Payment payment, byte[] decodedContent, String mimeType, DocumentType documentType) {
@@ -98,6 +93,17 @@ public class EreceiptService {
         return document;
     }
 
+    private byte[] createEreceiptPdf(Policy policy, Payment payment, boolean firstPayment) {
+        try {
+            byte[] ereceiptImage = createEreceiptImage(policy, payment, firstPayment);
+            addEReceiptDocument(policy, payment, ereceiptImage, "image/png", ERECEIPT_IMAGE);
+            return createEreceiptPdf(ereceiptImage);
+        } catch (IOException | DocumentException e) {
+            String msg = String.format("Error creating ereceipt pdf for policyId: %s, paymentId: %s, firstPayment: %s", policy.getPolicyId(), payment.getPaymentId(), firstPayment);
+            throw new EreceiptDocumentException(msg);
+        }
+    }
+
     /**
      * @param policy
      * @param payment
@@ -108,7 +114,7 @@ public class EreceiptService {
     public byte[] createEreceiptImage(Policy policy, Payment payment, boolean firstPayment) throws IOException {
         LOGGER.info("[createEReceipt] quoteId : " + policy.getQuoteId());
         LOGGER.info("[createEReceipt] policyNumber : " + policy.getPolicyId());
-        InputStream inputStream = IOUtil.loadInputStreamFileInClassPath("ereceipt/" + ERECEIPT_TEMPLATE_FILE_NAME);
+        InputStream inputStream = IOUtil.loadInputStreamFromClassPath("ereceipt/" + ERECEIPT_TEMPLATE_FILE_NAME);
 
         DecimalFormat formatter = new DecimalFormat("#,##0.00");
 
@@ -275,7 +281,7 @@ public class EreceiptService {
         return bytes;
     }
 
-    public byte[] createEreceiptPDF(byte[] eReceiptImage) throws DocumentException, IOException {
+    public byte[] createEreceiptPdf(byte[] eReceiptImage) throws DocumentException, IOException {
         ByteArrayOutputStream content = new ByteArrayOutputStream();
         com.itextpdf.text.Document document = new com.itextpdf.text.Document(A4.rotate());
         PdfWriter writer = PdfWriter.getInstance(document, content);

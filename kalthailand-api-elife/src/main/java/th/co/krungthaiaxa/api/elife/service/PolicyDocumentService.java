@@ -9,13 +9,11 @@ import th.co.krungthaiaxa.api.elife.model.Document;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 
-import java.util.Base64;
 import java.util.Optional;
 
 import static th.co.krungthaiaxa.api.elife.model.enums.DocumentType.APPLICATION_FORM;
 import static th.co.krungthaiaxa.api.elife.model.enums.DocumentType.APPLICATION_FORM_VALIDATED;
 import static th.co.krungthaiaxa.api.elife.model.enums.DocumentType.DA_FORM;
-import static th.co.krungthaiaxa.api.elife.model.enums.DocumentType.ERECEIPT_IMAGE;
 import static th.co.krungthaiaxa.api.elife.model.enums.DocumentType.ERECEIPT_PDF;
 import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.EVERY_MONTH;
 
@@ -72,6 +70,8 @@ public class PolicyDocumentService {
     }
 
     public void generateValidatedPolicyDocuments(Policy policy, String token) {
+        boolean isTheFirstPaymentSession = true;
+
         // In case previous documents were not generated
         generateNotValidatedPolicyDocuments(policy);
 
@@ -81,48 +81,49 @@ public class PolicyDocumentService {
             try {
                 byte[] content = applicationFormService.generateValidatedApplicationForm(policy);
                 documentService.addDocument(policy, content, "application/pdf", APPLICATION_FORM_VALIDATED);
-                LOGGER.info("Validated Application form has been added to Policy.");
+                LOGGER.debug("Validated Application form has been added to Policy.");
             } catch (Exception e) {
                 LOGGER.error("Validated Application form for Policy [" + policy.getPolicyId() + "] has not been generated.", e);
             }
         } else {
-            LOGGER.info("Validated Application form already exists.");
+            LOGGER.debug("Validated Application form already exists.");
         }
 
         // Generate Ereceipt as Image
         Payment firstPayment = paymentQueryService.validateExistFirstPaymentOrderById(policy.getPolicyId());
-        byte[] ereceiptImage = null;
-        Optional<Document> documentImage = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(ERECEIPT_IMAGE)).findFirst();
-        if (!documentImage.isPresent()) {
-            try {
-                ereceiptImage = ereceiptService.createEreceiptImage(policy, firstPayment, true);
-                ereceiptService.addEReceiptDocument(policy, firstPayment, ereceiptImage, "image/png", ERECEIPT_IMAGE);
-                LOGGER.info("Ereceipt image has been added to Policy.");
-            } catch (Exception e) {
-                LOGGER.error("Image Ereceipt for Policy [" + policy.getPolicyId() + "] has not been generated.", e);
-            }
-        } else {
-            LOGGER.info("ereceipt image already exists.");
-            ereceiptImage = Base64.getDecoder().decode(documentService.findDocumentDownload(documentImage.get().getId()).getContent().getBytes());
-        }
+//        byte[] ereceiptImage = null;
+//        Optional<Document> documentImage = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(ERECEIPT_IMAGE)).findFirst();
+//        if (!documentImage.isPresent()) {
+//            try {
+//                ereceiptImage = ereceiptService.createEreceiptImage(policy, firstPayment, true);
+//                ereceiptService.addEReceiptDocument(policy, firstPayment, ereceiptImage, "image/png", ERECEIPT_IMAGE);
+//                LOGGER.info("Ereceipt image has been added to Policy.");
+//            } catch (Exception e) {
+//                LOGGER.error("Image Ereceipt for Policy [" + policy.getPolicyId() + "] has not been generated.", e);
+//            }
+//        } else {
+//            LOGGER.info("ereceipt image already exists.");
+//            ereceiptImage = Base64.getDecoder().decode(documentService.findDocumentDownload(documentImage.get().getId()).getContent().getBytes());
+//        }
 
         // Generate Ereceipt as PDF
         Optional<Document> documentPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(ERECEIPT_PDF)).findFirst();
-        if (ereceiptImage != null && !documentPdf.isPresent()) {
-            try {
-                byte[] decodedNonSignedPdf = ereceiptService.createEreceiptPDF(ereceiptImage);
-                byte[] encodedNonSignedPdf = Base64.getEncoder().encode(decodedNonSignedPdf);
-                byte[] encodedSignedPdf = signingClient.getEncodedSignedPdfDocument(encodedNonSignedPdf, token);
-                byte[] decodedSignedPdf = Base64.getDecoder().decode(encodedSignedPdf);
-                ereceiptService.addEReceiptDocument(policy, firstPayment, decodedSignedPdf, "application/pdf", ERECEIPT_PDF);
-                LOGGER.info("Ereceipt pdf has been added to Policy.");
-            } catch (Exception e) {
-                LOGGER.error("PDF Ereceipt for Policy [" + policy.getPolicyId() + "] has not been generated.", e);
-            }
+        if (!documentPdf.isPresent()) {
+            ereceiptService.addEreceiptPdf(policy, firstPayment, isTheFirstPaymentSession, token);
+//            try {
+//                byte[] decodedNonSignedPdf = ereceiptService.createEreceiptPdf(ereceiptImage);
+//                byte[] encodedNonSignedPdf = Base64.getEncoder().encode(decodedNonSignedPdf);
+//                byte[] encodedSignedPdf = signingClient.getEncodedSignedPdfDocument(encodedNonSignedPdf, token);
+//                byte[] decodedSignedPdf = Base64.getDecoder().decode(encodedSignedPdf);
+//                ereceiptService.addEReceiptDocument(policy, firstPayment, decodedSignedPdf, "application/pdf", ERECEIPT_PDF);
+//                LOGGER.info("Ereceipt pdf has been added to Policy.");
+//            } catch (Exception e) {
+//                LOGGER.error("PDF Ereceipt for Policy [" + policy.getPolicyId() + "] has not been generated.", e);
+//            }
         } else {
-            LOGGER.info("Signed ereceipt pdf already exists.");
+            LOGGER.debug("Signed ereceipt pdf already exists.");
         }
-        LOGGER.info("Extra documents for policy [" + policy.getPolicyId() + "] have been created.");
+        LOGGER.debug("Extra documents for policy [" + policy.getPolicyId() + "] have been created.");
     }
 
 }

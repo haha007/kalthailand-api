@@ -10,52 +10,44 @@ import java.math.RoundingMode;
  */
 public final class ThaiBahtUtil {
 
-    private static final String[] SCALE_TH = {"ล้าน", "สิบ", "ร้อย", "พัน", "หมื่น", "แสน", ""};
-    private static final String[] DIGIT_TH = {"ศูนย์", "หนึ่ง", "สอง", "สาม", "สี่", "ห้า", "หก", "เจ็ด", "แปด", "เก้า"};
-    private static final String[] SYMBOLS_TH = {"ลบ", "บาท", "ถ้วน", "สตางค์", "ยี่", "เอ็ด", ",", " ", "฿"};
-
-    private String valueText;
+    private static final String[] SCALE_TH = { "ล้าน", "สิบ", "ร้อย", "พัน", "หมื่น", "แสน", "" };
+    private static final String[] DIGIT_TH = { "ศูนย์", "หนึ่ง", "สอง", "สาม", "สี่", "ห้า", "หก", "เจ็ด", "แปด", "เก้า" };
+    private static final String[] SYMBOLS_TH = { "ลบ", "บาท", "ถ้วน", "สตางค์", "ยี่", "เอ็ด", ",", " ", "฿" };
 
     // ···········Methods··············//
-    public String getText(double amount) {
+    public static String getText(double amount) {
         BigDecimal value = new BigDecimal(amount);
-        this.valueText = getThaiBaht(value);
-        return this.valueText;
+        return getThaiBaht(value);
     }
 
-    public String getText(float amount) {
+    public static String getText(float amount) {
         BigDecimal value = new BigDecimal(amount);
-        this.valueText = getThaiBaht(value);
-        return this.valueText;
+        return getThaiBaht(value);
     }
 
-    public String getText(int amount) {
+    public static String getText(int amount) {
         BigDecimal value = new BigDecimal(amount);
-        this.valueText = getThaiBaht(value);
-        return this.valueText;
+        return getThaiBaht(value);
     }
 
-    public String getText(long amount) {
+    public static String getText(long amount) {
         BigDecimal value = new BigDecimal(amount);
-        this.valueText = getThaiBaht(value);
-        return this.valueText;
+        return getThaiBaht(value);
     }
 
-    public String getText(String amount) {
+    public static String getText(String amount) {
         //ไม่ต้องการเครื่องหมายคอมมาร์, ไม่ต้องการช่องว่าง, ไม่ต้องการตัวหนังสือ บาท, ไม่ต้องการสัญลักษณ์สกุลเงินบาท
         for (String element : SYMBOLS_TH) {
             amount = amount.replace(element, "");
         }
 
         BigDecimal value = new BigDecimal(amount.trim());
-        this.valueText = getThaiBaht(value);
-        return this.valueText;
+        return getThaiBaht(value);
     }
 
-    public String getText(Number amount) {
+    public static String getText(Number amount) {
         BigDecimal value = new BigDecimal(String.valueOf(amount));
-        this.valueText = getThaiBaht(value);
-        return this.valueText;
+        return getThaiBaht(value);
     }
 
     private static String getThaiBaht(BigDecimal amount) {
@@ -104,15 +96,15 @@ public final class ThaiBahtUtil {
 
             if (1 == digit) {
                 switch (scale_idx) {
-                    case 0:
-                    case 6:
-                        buffer.append((index < digits.length) ? SYMBOLS_TH[5].toString() : digit_text);
-                        break;
-                    case 1:
-                        break;
-                    default:
-                        buffer.append(digit_text);
-                        break;
+                case 0:
+                case 6:
+                    buffer.append((index < digits.length) ? SYMBOLS_TH[5].toString() : digit_text);
+                    break;
+                case 1:
+                    break;
+                default:
+                    buffer.append(digit_text);
+                    break;
                 }
             } else if (0 == digit) {
                 if (0 == scale_idx) {

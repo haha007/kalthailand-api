@@ -30,6 +30,10 @@
         <priority value="DEBUG"/>
         <appender-ref ref="FILE_EMAIL"/>
     </category>
+    <category name="th.co.krungthaiaxa.api.elife.utils.EmailSender" additivity="false">
+        <priority value="DEBUG"/>
+        <appender-ref ref="FILE_EMAIL"/>
+    </category>
 
     <category name="org">
         <priority value="WARN"/>
@@ -38,7 +42,7 @@
         <priority value="WARN"/>
     </category>
     <root>
-        <priority value="INFO"/>
+        <priority value="DEBUG"/>
         <appender-ref ref="FILE"/>
     </root>
 </log4j:configuration>
