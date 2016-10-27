@@ -97,7 +97,16 @@ public class ExceptionTranslator {
         if (exception instanceof BeanValidationExceptionIfc) {
             result = this.beanValidationExceptionTranslator.toErrorDTO((BeanValidationExceptionIfc) exception);
         } else {
-            result = ErrorCode.UNKNOWN_ERROR.apply(exception.getMessage());
+            String message = exception.getMessage();
+            if (exception instanceof NullPointerException) {
+                StackTraceElement first = exception.getStackTrace()[0];
+                String fileName = first.getFileName();
+                String methodName = first.getMethodName();
+                int lineNumber = first.getLineNumber();
+                String errorRootCause = String.format("%s.%s():%s", fileName, methodName, lineNumber);
+                message += "Root: " + errorRootCause;
+            }
+            result = ErrorCode.UNKNOWN_ERROR.apply(message);
         }
         this.loggingMessage(result, exception);
         return result;

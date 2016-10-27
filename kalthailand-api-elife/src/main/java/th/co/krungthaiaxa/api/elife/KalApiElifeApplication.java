@@ -15,9 +15,7 @@ import springfox.documentation.service.ApiInfo;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
-import th.co.krungthaiaxa.api.elife.service.initdata.InitDataService;
 
-import javax.inject.Inject;
 import java.time.LocalDate;
 import java.util.Date;
 
@@ -31,15 +29,15 @@ public class KalApiElifeApplication {
     public static void main(String[] args) {
         SpringApplication.run(KalApiElifeApplication.class, args);
     }
-
-    @Inject
-    InitDataService initDataService;
-
-    @Bean
-    public InitDataService initDataServiceRunning() {
-        initDataService.createInitDataIfNecessary();
-        return initDataService;
-    }
+//
+//    @Inject
+//    InitDataService initDataService;
+//
+//    @Bean
+//    public InitDataService initDataServiceRunning() {
+//        initDataService.createInitDataIfNecessary();
+//        return initDataService;
+//    }
 
     @Value("${tmc.webservice.url}")
     private String tmcWebServiceUrl;
