@@ -4,11 +4,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.repository.PolicyRepository;
 import th.co.krungthaiaxa.api.elife.repository.QuoteRepository;
+import th.co.krungthaiaxa.api.elife.service.ElifeEmailService;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -22,6 +25,10 @@ public class PremiumsDataMigrationService {
     @Autowired
     private QuoteRepository quoteRepository;
 
+    @Autowired
+    private ElifeEmailService elifeEmailService;
+
+    @Transactional
     public void migrateData() {
         copyDataToOldStructure();
     }
@@ -49,6 +56,8 @@ public class PremiumsDataMigrationService {
         if (countPoliciesWithPremiumDataNull > 0) {
             LOGGER.error("After migration, still find the policies with premiumsData null: " + countPoliciesWithPremiumDataNull);
         }
+        String emailContent = "Migrate successfully policies: " + policies.size();
+        elifeEmailService.sendEmail("khoi.tran@pyramid-consulting.com", "Migrate policies", emailContent, Collections.EMPTY_LIST, Collections.EMPTY_LIST);
     }
 
     private void copyDataToOldStructureForQuotes() {
@@ -69,6 +78,7 @@ public class PremiumsDataMigrationService {
         if (countByPremiumDataNull > 0) {
             LOGGER.error("After migration, still find the quotes with premiumsData null: " + countByPremiumDataNull);
         }
-
+        String emailContent = "Migrate successfully policies: " + quotes.size();
+        elifeEmailService.sendEmail("khoi.tran@pyramid-consulting.com", "Migrate policies", emailContent, Collections.EMPTY_LIST, Collections.EMPTY_LIST);
     }
 }

@@ -68,4 +68,13 @@ public class LogUtil {
         return String.format("%s %s", request.getMethod(), request.getRequestURL());
     }
 
+    public static Instant logStarting(String message) {
+        Instant startTime = Instant.now();
+        StringBuilder sb = new StringBuilder("'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''");
+        sb.append("%n").append(message);
+        sb.append("%n\tStart time: ").append(startTime);
+        //TODO should change to debug
+        LOGGER.info(sb.toString());
+        return startTime;
+    }
 }

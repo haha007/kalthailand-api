@@ -47,8 +47,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
-import static java.time.ZoneId.SHORT_IDS;
-import static java.time.ZoneId.of;
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static org.apache.commons.codec.digest.DigestUtils.sha256Hex;
 import static org.springframework.util.Assert.isTrue;
@@ -65,7 +63,7 @@ import static th.co.krungthaiaxa.api.elife.utils.ExcelUtils.text;
  */
 @Service
 public class CollectionFileProcessingService {
-    private final static Logger logger = LoggerFactory.getLogger(CollectionFileProcessingService.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(CollectionFileProcessingService.class);
     public final static String COLLECTION_FILE_SHEET_NAME = "LFDISC6";
     private final static Integer COLLECTION_FILE_NUMBER_OF_COLUMNS = 6;
     public final static String COLLECTION_FILE_COLUMN_NAME_1 = "M92DOC6";
@@ -116,7 +114,7 @@ public class CollectionFileProcessingService {
 
     public void importCollectionFile(InputStream is) {
         CollectionFile collectionFile = readCollectionExcelFile(is);
-        collectionFile.getLines().forEach(this::addPaymentId);
+        collectionFile.getLines().forEach(this::importCollectionFileLine);
         collectionFileRepository.save(collectionFile);
     }
 
@@ -134,15 +132,13 @@ public class CollectionFileProcessingService {
     }
 
     public List<CollectionFile> processLatestCollectionFiles() {
-        Instant startTime = Instant.now();
+        Instant startTime = LogUtil.logStarting("Process collection files [start]");
         List<CollectionFile> collectionFiles = collectionFileRepository.findByJobStartedDateNull();
-        logger.info("<<<<<<<<<<<<<<<<<<<<<<<<<<<<< START PROCESS RECURRING PAYMENT WITH TIME (" + LocalDateTime.now(of(SHORT_IDS.get("VST"))) + ") >>>>>>>>>>>>>>>>>>>>>>>>>>>");
-        logger.info("Found [" + collectionFiles.size() + "] collection(s) file to process.");
+        LOGGER.info("Found [" + collectionFiles.size() + "] collection files to process.");
         for (CollectionFile collectionFile : collectionFiles) {
             processCollectionFile(collectionFile);
         }
-        LogUtil.logRuntime(startTime, "<<<<<<<<<<<<<<<<<<<<<<<<<<<<< STOP PROCESS RECURRING PAYMENT WITH TIME (" + LocalDateTime.now(of(SHORT_IDS.get("VST"))) + ") >>>>>>>>>>>>>>>>>>>>>>>>>>>");
-
+        LogUtil.logRuntime(startTime, "Process collection files [finished]");
         return collectionFiles;
     }
 
@@ -151,14 +147,14 @@ public class CollectionFileProcessingService {
             collectionFile.setJobStartedDate(DateTimeUtil.nowLocalDateTimeInThaiZoneId());
             DeductionFile deductionFile = new DeductionFile();
             collectionFile.setDeductionFile(deductionFile);
-            logger.info("Found [" + collectionFile.getLines().size() + "] collection(s) line(s) to process.");
+            LOGGER.info("Found [" + collectionFile.getLines().size() + "] collection(s) line(s) to process.");
             for (CollectionFileLine collectionFileLine : collectionFile.getLines()) {
                 processCollectionFileLine(deductionFile, collectionFileLine);
             }
             collectionFile.setJobEndedDate(DateTimeUtil.nowLocalDateTimeInThaiZoneId());
             collectionFileRepository.save(collectionFile);
         } catch (Exception ex) {
-            logger.error("Error while process collection file:" + ObjectMapperUtil.toStringMultiLine(collectionFile));
+            LOGGER.error("Error while process collection file: " + ex.getMessage() + " \nCollectionFile: " + ObjectMapperUtil.toStringMultiLine(collectionFile), ex);
         }
     }
 
@@ -232,7 +228,7 @@ public class CollectionFileProcessingService {
             Double premiumAmount = ExcelUtils.getCellValueAsDouble(currentRow.getCell(5));
 
             if (StringUtils.isBlank(collectionDate) || StringUtils.isBlank(collectionBank) || StringUtils.isBlank(bankCode) || StringUtils.isBlank(policyNumber) || StringUtils.isBlank(paymentMode) || premiumAmount == null) {
-                logger.warn("Ignore the row[{}] because there's not enough information.", rowId);
+                LOGGER.warn("Ignore the row[{}] because there's not enough information.", rowId);
                 continue;
             }
 
@@ -262,7 +258,8 @@ public class CollectionFileProcessingService {
         return collectionFile;
     }
 
-    void addPaymentId(CollectionFileLine collectionFileLine) {
+    void importCollectionFileLine(CollectionFileLine collectionFileLine) {
+        LOGGER.info("Import collectionFileLine [start]: policyNumber: {}", collectionFileLine.getPolicyNumber());
         String policyId = collectionFileLine.getPolicyNumber();
         isTrue(StringUtils.isNotBlank(policyId), "policyNumber must be notempty: " + ObjectMapperUtil.toStringMultiLine(collectionFileLine));
         Optional<Policy> policy = policyService.findPolicyByPolicyNumber(policyId);
@@ -281,7 +278,7 @@ public class CollectionFileProcessingService {
         Optional<Payment> notCompletedPaymentInThisMonth = paymentRepository.findOneByPolicyIdAndDueDateRangeAndInStatus(policyId, todayMinus28Days, tomorrow, PaymentStatus.NOT_PROCESSED);
         if (notCompletedPaymentInThisMonth.isPresent()) {
             collectionFileLine.setPaymentId(notCompletedPaymentInThisMonth.get().getPaymentId());
-            logger.info("Existing payment id [" + notCompletedPaymentInThisMonth.get().getPaymentId() + "] has been added for the " +
+            LOGGER.info("Existing payment id [" + notCompletedPaymentInThisMonth.get().getPaymentId() + "] has been added for the " +
                     "collection file line about policy [" + policy.get().getPolicyId() + "] ");
             return;
         }
@@ -296,12 +293,12 @@ public class CollectionFileProcessingService {
                 policy.get().getCommonData().getProductCurrency(),
                 DateTimeUtil.nowLocalDateTimeInThaiZoneId());
         if (StringUtils.isBlank(lastRegistrationKey)) {
-            logger.info("Unable to find a schedule payment for policy [" + policy.get().getPolicyId() + "] and a " +
+            LOGGER.info("Unable to find a schedule payment for policy [" + policy.get().getPolicyId() + "] and a " +
                     "previously used registration key, will create one payment from scratch, but payment will fail " +
                     "since it has no registration key");
         } else {
             newPayment.setRegistrationKey(lastRegistrationKey);
-            logger.info("Unable to find a schedule payment for policy [" + policy.get().getPolicyId() + "], will " +
+            LOGGER.info("Unable to find a schedule payment for policy [" + policy.get().getPolicyId() + "], will " +
                     "create one from scratch");
         }
         paymentRepository.save(newPayment);
@@ -309,8 +306,7 @@ public class CollectionFileProcessingService {
         policy.get().setLastUpdateDateTime(Instant.now());
         policyRepository.save(policy.get());
         collectionFileLine.setPaymentId(newPayment.getPaymentId());
-        logger.info("A new payment with id [" + newPayment.getPaymentId() + "] has been created and used for the " +
-                "collection file line about policy [" + policy.get().getPolicyId() + "] ");
+        LOGGER.info("Import collectionFileLine [finished]: policyNumber: {}, paymentId: {}", collectionFileLine.getPolicyNumber(), collectionFileLine.getPaymentId());
     }
 
     private String findLastRegistrationKey(String policyNumber) {
@@ -323,6 +319,7 @@ public class CollectionFileProcessingService {
     }
 
     void processCollectionFileLine(DeductionFile deductionFile, CollectionFileLine collectionFileLine) {
+        LOGGER.info("Processing collectionFileLine [start]: policyNumber: {}", collectionFileLine.getPolicyNumber());
 
         String paymentId = collectionFileLine.getPaymentId();
         String policyId = collectionFileLine.getPolicyNumber();
@@ -331,7 +328,7 @@ public class CollectionFileProcessingService {
         Payment payment = null;
         String currencyCode = null;
         String paymentModeString = null;
-        String resultMessage = "CollectionFileLine is not processed completely yet. " + ObjectMapperUtil.toStringMultiLine(collectionFileLine);
+        String resultMessage = "CollectionFileLine is not processed completely yet: " + ObjectMapperUtil.toStringMultiLine(collectionFileLine);
         String resultCode = RESPONSE_CODE_ERROR_INTERNAL_LINEPAY;
         try {
             policy = policyRepository.findByPolicyId(policyId);
@@ -361,7 +358,7 @@ public class CollectionFileProcessingService {
             payment.setOrderId(orderId);
             paymentService.updateByLinePayResponse(payment, linePayResponse);
         } catch (Exception ex) {
-            logger.error("Error when process collection line: " + ex.getMessage() + ". Collection line:%n" + ObjectMapperUtil.toStringMultiLine(collectionFileLine), ex);
+            LOGGER.error("Error when process collection line: " + ex.getMessage() + ". Collection line:%n" + ObjectMapperUtil.toStringMultiLine(collectionFileLine), ex);
             resultCode = RESPONSE_CODE_ERROR_INTERNAL_LINEPAY;
             resultMessage = ex.getMessage();
             if (payment != null) {
@@ -372,13 +369,13 @@ public class CollectionFileProcessingService {
             deductionFile.addLine(deductionFileLine);
             if (!resultCode.equals(RESPONSE_CODE_SUCCESS) && !resultCode.equals(RESPONSE_CODE_ERROR_INTERNAL_LINEPAY)) {
                 if (policy == null || policy.getPolicyId() == null) {
-                    logger.warn("Cannot find policyId " + policyId + ", so cannot get information of insured person. Therefore we cannot send inform email to insured customer.");
+                    LOGGER.warn("Cannot find policyId " + policyId + ", so cannot get information of insured person. Therefore we cannot send inform email to insured customer.");
                 } else {
                     setResultOfFailPaymentNotificationToDeductionFileLine(deductionFileLine, policy, payment);
                 }
             }
         }
-        logger.debug("Finished processing collection file line with payment id [" + paymentId + "]");
+        LOGGER.info("Process collectionFileLine [finished]: policyNumber: {}, paymentId: {}", collectionFileLine.getPolicyNumber(), collectionFileLine.getPaymentId());
     }
 
     private void setResultOfFailPaymentNotificationToDeductionFileLine(DeductionFileLine deductionFileLine, Policy policy, Payment payment) {
@@ -397,7 +394,7 @@ public class CollectionFileProcessingService {
                 informCustomerCode = ErrorCode.ERROR_CODE_UNKNOWN_ERROR;
                 informCustomerMessage = ex.getMessage();
             }
-            logger.error(ex.getMessage(), ex);
+            LOGGER.error(ex.getMessage(), ex);
         }
         deductionFileLine.setInformCustomerCode(informCustomerCode);
         deductionFileLine.setInformCustomerMessage(informCustomerMessage);

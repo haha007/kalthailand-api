@@ -151,7 +151,7 @@ public class CollectionFileProcessingServiceTest extends ELifeTest {
     public void should_not_find_a_payment_for_the_policy_when_policy_does_not_exist() {
         CollectionFileLine collectionFileLine = new CollectionFileLine();
         collectionFileLine.setPolicyNumber("123");
-        assertThatThrownBy(() -> rlsService.addPaymentId(collectionFileLine))
+        assertThatThrownBy(() -> rlsService.importCollectionFileLine(collectionFileLine))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -159,7 +159,7 @@ public class CollectionFileProcessingServiceTest extends ELifeTest {
     public void should_not_find_a_payment_for_the_policy_when_policy_is_not_monthly() {
         Policy policy = getValidatedPolicy(EVERY_YEAR);
         CollectionFileLine collectionFileLine = collectionFileLine(policy, 100.0);
-        assertThatThrownBy(() -> rlsService.addPaymentId(collectionFileLine))
+        assertThatThrownBy(() -> rlsService.importCollectionFileLine(collectionFileLine))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -170,7 +170,7 @@ public class CollectionFileProcessingServiceTest extends ELifeTest {
         policy.getPayments().stream().forEach(payment -> payment.setStatus(PaymentStatus.INCOMPLETE));
         paymentRepository.save(policy.getPayments());
         CollectionFileLine collectionFileLine = collectionFileLine(policy, 100.0);
-        rlsService.addPaymentId(collectionFileLine);
+        rlsService.importCollectionFileLine(collectionFileLine);
         Policy updatedPolicy = policyRepository.findByPolicyId(policy.getPolicyId());
 
         Optional<Payment> newPayment = updatedPolicy.getPayments().stream().filter(payment -> !policy.getPayments().contains(payment)).findFirst();
@@ -185,7 +185,7 @@ public class CollectionFileProcessingServiceTest extends ELifeTest {
         policy.getPayments().stream().forEach(payment -> payment.setStatus(PaymentStatus.INCOMPLETE));
         paymentRepository.save(policy.getPayments());
         CollectionFileLine collectionFileLine = collectionFileLine(policy, 100.0);
-        rlsService.addPaymentId(collectionFileLine);
+        rlsService.importCollectionFileLine(collectionFileLine);
         Policy updatedPolicy = policyRepository.findByPolicyId(policy.getPolicyId());
 
         Optional<Payment> newPayment = updatedPolicy.getPayments().stream().filter(payment -> !policy.getPayments().contains(payment)).findFirst();
@@ -200,7 +200,7 @@ public class CollectionFileProcessingServiceTest extends ELifeTest {
         policy.getPayments().stream().forEach(payment -> payment.setStatus(PaymentStatus.INCOMPLETE));
         paymentRepository.save(policy.getPayments());
         CollectionFileLine collectionFileLine = collectionFileLine(policy, 100.0);
-        rlsService.addPaymentId(collectionFileLine);
+        rlsService.importCollectionFileLine(collectionFileLine);
         Policy updatedPolicy = policyRepository.findByPolicyId(policy.getPolicyId());
 
         Optional<Payment> newPayment = updatedPolicy.getPayments().stream().filter(payment -> !policy.getPayments().contains(payment)).findFirst();
@@ -216,7 +216,7 @@ public class CollectionFileProcessingServiceTest extends ELifeTest {
         policy.getPayments().stream().forEach(payment -> payment.setDueDate(LocalDateTime.now().minusDays(30)));
         paymentRepository.save(policy.getPayments());
         CollectionFileLine collectionFileLine = collectionFileLine(policy, 100.0);
-        rlsService.addPaymentId(collectionFileLine);
+        rlsService.importCollectionFileLine(collectionFileLine);
         Policy updatedPolicy = policyRepository.findByPolicyId(policy.getPolicyId());
 
         Optional<Payment> newPayment = updatedPolicy.getPayments().stream().filter(payment -> !policy.getPayments().contains(payment)).findFirst();
@@ -230,7 +230,7 @@ public class CollectionFileProcessingServiceTest extends ELifeTest {
     public void should_find_a_payment_for_the_policy() {
         Policy policy = getValidatedPolicy(EVERY_MONTH);
         CollectionFileLine collectionFileLine = collectionFileLine(policy, 100.0);
-        rlsService.addPaymentId(collectionFileLine);
+        rlsService.importCollectionFileLine(collectionFileLine);
         assertThat(collectionFileLine.getPaymentId()).isNotNull();
     }
 
@@ -242,7 +242,7 @@ public class CollectionFileProcessingServiceTest extends ELifeTest {
         policy.getPayments().stream().forEach(payment -> payment.setRegistrationKey(null));
         paymentRepository.save(policy.getPayments());
         CollectionFileLine collectionFileLine = collectionFileLine(policy, 100.0);
-        rlsService.addPaymentId(collectionFileLine);
+        rlsService.importCollectionFileLine(collectionFileLine);
         DeductionFile deductionFile = new DeductionFile();
         rlsService.processCollectionFileLine(deductionFile, collectionFileLine);
 
@@ -268,7 +268,7 @@ public class CollectionFileProcessingServiceTest extends ELifeTest {
         Assert.assertNotNull(payment.getPaymentInformations().get(0).getRejectionErrorMessage());
     }
 
-//    Don't need to run it here, it will be tested in {@link PaymentRetryServiceTest}
+    //    Don't need to run it here, it will be tested in {@link PaymentRetryServiceTest}
 //    @Test
 //    public void run_cron_job() {
 //        InputStream inputStream = IOUtil.loadInputStreamFileInClassPath("/collection-file/LFDISC6_2016-09-01.xls");
@@ -444,7 +444,7 @@ public class CollectionFileProcessingServiceTest extends ELifeTest {
         CollectionFile collectionFile = new CollectionFile();
         collectionFile.setReceivedDate(now());
         for (CollectionFileLine collectionFileLine : collectionFileLines) {
-            rlsService.addPaymentId(collectionFileLine);
+            rlsService.importCollectionFileLine(collectionFileLine);
             collectionFile.addLine(collectionFileLine);
         }
 
