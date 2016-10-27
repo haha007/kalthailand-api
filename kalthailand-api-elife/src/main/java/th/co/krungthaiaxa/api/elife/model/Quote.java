@@ -5,7 +5,6 @@ import io.swagger.annotations.ApiModelProperty;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
 import th.co.krungthaiaxa.api.elife.model.product.PremiumsData;
 
 import java.io.Serializable;
@@ -25,7 +24,14 @@ public class Quote implements Serializable {
     private String policyId;
     private CommonData commonData;
 
-    @Field("premiumData")
+    /**
+     * This field is used only for migration. We won't need it in the future.
+     * Old structure use {@link #premiumsData}.
+     * New structure use {@link #premiumData}, but it not correct. So we will migrate the data of new structure to old structure.
+     */
+    @Deprecated
+    private PremiumsData premiumData;
+
     private PremiumsData premiumsData;
     private List<Insured> insureds = new ArrayList<>();
     private List<Coverage> coverages = new ArrayList<>();
@@ -131,5 +137,15 @@ public class Quote implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(id, quoteId, commonData, premiumsData, insureds, coverages, creationDateTime, lastUpdateDateTime);
+    }
+
+    @Deprecated
+    public PremiumsData getPremiumData() {
+        return premiumData;
+    }
+
+    @Deprecated
+    public void setPremiumData(PremiumsData premiumData) {
+        this.premiumData = premiumData;
     }
 }

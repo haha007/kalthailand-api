@@ -35,7 +35,15 @@ public class Policy implements Serializable {
     private PolicyStatus status;
     private CommonData commonData;
 
-    @Field("premiumData")
+    /**
+     * This field is used only for migration. We won't need it in the future.
+     * Old structure use {@link #premiumsData}.
+     * New structure use {@link #premiumData}, but it not correct. So we will migrate the data of new structure to old structure.
+     */
+    @Deprecated
+    private PremiumsData premiumData;
+
+    //    @Field("premiumData")
     private PremiumsData premiumsData;
     private List<Insured> insureds = new ArrayList<>();
     private List<Coverage> coverages = new ArrayList<>();
@@ -222,5 +230,15 @@ public class Policy implements Serializable {
 
     public void setValidationDateTime(Instant validationDateTime) {
         this.validationDateTime = validationDateTime;
+    }
+
+    @Deprecated
+    public PremiumsData getPremiumData() {
+        return premiumData;
+    }
+
+    @Deprecated
+    public void setPremiumData(PremiumsData premiumData) {
+        this.premiumData = premiumData;
     }
 }
