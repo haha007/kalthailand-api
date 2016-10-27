@@ -12,6 +12,7 @@ import th.co.krungthaiaxa.api.elife.service.ElifeEmailService;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author khoi.tran on 10/27/16.
@@ -27,6 +28,7 @@ public class PremiumsDataMigrationService {
     @Autowired
     private ElifeEmailService elifeEmailService;
 
+    //When you put @Transactional here, you cannot start web app when you cannot connect to CDB!
     //    @Transactional
     public void migrateData() {
         copyDataToOldStructure();
@@ -50,13 +52,7 @@ public class PremiumsDataMigrationService {
         if (!policies.isEmpty()) {
             policyRepository.save(policies);
         }
-        //TODO recheck there's no more policies with premiumsData is null.
-        long countPoliciesWithPremiumDataNull = policyRepository.countByPremiumsDataNull();
-        if (countPoliciesWithPremiumDataNull > 0) {
-            LOGGER.error("After migration, still find the policies with premiumsData null: " + countPoliciesWithPremiumDataNull);
-        }
-        String emailContent = "Migrate successfully policies: " + policies.size();
-        elifeEmailService.sendEmail("khoi.tran@pyramid-consulting.com", "Migrate policies", emailContent, Collections.EMPTY_LIST, Collections.EMPTY_LIST);
+        sendNotificationForMigrationSuccessPolicies(policies);
     }
 
     private void copyDataToOldStructureForQuotes() {
@@ -72,12 +68,33 @@ public class PremiumsDataMigrationService {
         if (!quotes.isEmpty()) {
             quoteRepository.save(quotes);
         }
-        //TODO recheck there's no more policies with premiumsData is null.
-        long countByPremiumDataNull = quoteRepository.countByPremiumsDataNull();
-        if (countByPremiumDataNull > 0) {
-            LOGGER.error("After migration, still find the quotes with premiumsData null: " + countByPremiumDataNull);
+        sendNotificationForMigrationSuccessQuotes(quotes);
+    }
+
+    private void sendNotificationForMigrationSuccessPolicies(List<Policy> policies) {
+        try {
+            List<String> policyNumbers = policies.stream().map(policy -> policy.getPolicyId()).collect(Collectors.toList());
+            sendNotificationForMigrationSuccess("Migrate policies", policyNumbers);
+        } catch (Exception ex) {
+            LOGGER.error("Unexpected exception when sending notification migration successfully. " + ex.getMessage(), ex);
         }
-        String emailContent = "Migrate successfully policies: " + quotes.size();
-        elifeEmailService.sendEmail("khoi.tran@pyramid-consulting.com", "Migrate policies", emailContent, Collections.EMPTY_LIST, Collections.EMPTY_LIST);
+    }
+
+    private void sendNotificationForMigrationSuccessQuotes(List<Quote> quotes) {
+        try {
+            List<String> policyNumbers = quotes.stream().map(policy -> policy.getPolicyId()).collect(Collectors.toList());
+            sendNotificationForMigrationSuccess("Migrate quotes", policyNumbers);
+        } catch (Exception ex) {
+            LOGGER.error("Unexpected exception when sending notification migration successfully. " + ex.getMessage(), ex);
+        }
+    }
+
+    private void sendNotificationForMigrationSuccess(String title, List<String> policyNumbers) {
+        if (!policyNumbers.isEmpty()) {
+            LOGGER.error("After migration, still find the quotes with premiumsData null: " + policyNumbers.size());
+        }
+        String policyNumbersString = policyNumbers.stream().collect(Collectors.joining("\n"));
+        String emailContent = "Migrate successfully: \n" + policyNumbersString;
+        elifeEmailService.sendEmail("khoi.tran@pyramid-consulting.com", title, emailContent, Collections.EMPTY_LIST, Collections.EMPTY_LIST);
     }
 }

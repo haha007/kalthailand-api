@@ -2,11 +2,11 @@ package th.co.krungthaiaxa.api.elife.service;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -184,14 +184,14 @@ public class CollectionFileProcessingService {
 
     CollectionFile readCollectionExcelFile(InputStream is) {
         notNull(is, "The excel file is not available");
-        HSSFWorkbook workbook;
+        Workbook workbook;
         try {
-            workbook = new HSSFWorkbook(is);
-        } catch (IOException e) {
-            throw new IllegalArgumentException("Unable to read the excel file", e);
+            workbook = WorkbookFactory.create(is);//new HSSFWorkbook(is);
+        } catch (InvalidFormatException | IOException e) {
+            throw new IllegalArgumentException("Unable to read the excel file: " + e.getMessage(), e);
         }
         // check if sheet is found
-        HSSFSheet sheet = workbook.getSheet(COLLECTION_FILE_SHEET_NAME);
+        Sheet sheet = workbook.getSheet(COLLECTION_FILE_SHEET_NAME);
         notNull(sheet, "The file does not contain the sheet [" + COLLECTION_FILE_SHEET_NAME + "]");
 
         // check if right number of columns
