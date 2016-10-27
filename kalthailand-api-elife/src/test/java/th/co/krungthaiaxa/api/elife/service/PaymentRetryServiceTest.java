@@ -54,6 +54,9 @@ public class PaymentRetryServiceTest extends ELifeTest {
     @Inject
     private CollectionFileProcessingService rlsService;
     private LineService lineService;
+
+    @Inject
+    private CollectionFileFactory collectionFileFactory;
     @Inject
     private MongoTemplate mongoTemplate;
 
@@ -120,7 +123,7 @@ public class PaymentRetryServiceTest extends ELifeTest {
 
         String mockLineResponseFailCode = "4000";
         setupLineServiceWithResponseCode(mockLineResponseFailCode);
-        InputStream inputStream = CollectionFileFactory.constructCollectionExcelFileWithFakeAmount(policy.getPolicyId());
+        InputStream inputStream = collectionFileFactory.constructCollectionExcelFile(policy.getPolicyId());
         rlsService.importCollectionFile(inputStream);
         List<CollectionFile> collectionFileList = rlsService.processLatestCollectionFiles();
         CollectionFile collectionFile = collectionFileList.get(0);

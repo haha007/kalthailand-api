@@ -5,8 +5,13 @@ import com.icegreen.greenmail.util.ServerSetupTest;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.junit.Rule;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
+import th.co.krungthaiaxa.api.common.utils.IOUtil;
+import th.co.krungthaiaxa.api.elife.TestUtil;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.repository.PolicyRepository;
 import th.co.krungthaiaxa.api.elife.service.CollectionFileProcessingService;
@@ -15,6 +20,7 @@ import th.co.krungthaiaxa.api.elife.utils.ExcelIOUtils;
 import th.co.krungthaiaxa.api.elife.utils.ExcelUtils;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.InputStream;
 
 /**
@@ -22,6 +28,7 @@ import java.io.InputStream;
  */
 @Component
 public class CollectionFileFactory {
+    public static final Logger LOGGER = LoggerFactory.getLogger(CollectionFileFactory.class);
 
     @Autowired
     private PolicyRepository policyRepository;
@@ -90,7 +97,9 @@ public class CollectionFileFactory {
             );
         }
         byte[] bytes = ExcelIOUtils.writeToBytes(workbook);
-        ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
-        return bis;
+        ByteArrayInputStream fileInputStream = new ByteArrayInputStream(bytes);
+        File file = new File(TestUtil.PATH_TEST_RESULT + "collection-file/LFDISC6_" + DateTimeUtil.formatNowForFilePath() + ".xls");
+        IOUtil.writeInputStream(file, fileInputStream);
+        return new ByteArrayInputStream(bytes);
     }
 }

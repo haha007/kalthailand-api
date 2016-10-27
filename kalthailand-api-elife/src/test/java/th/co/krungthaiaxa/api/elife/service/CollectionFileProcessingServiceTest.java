@@ -17,6 +17,9 @@ import th.co.krungthaiaxa.api.elife.TestUtil;
 import th.co.krungthaiaxa.api.elife.data.CollectionFile;
 import th.co.krungthaiaxa.api.elife.data.CollectionFileLine;
 import th.co.krungthaiaxa.api.elife.data.DeductionFile;
+import th.co.krungthaiaxa.api.elife.factory.CollectionFileFactory;
+import th.co.krungthaiaxa.api.elife.factory.PolicyFactory;
+import th.co.krungthaiaxa.api.elife.factory.ProductQuotationFactory;
 import th.co.krungthaiaxa.api.elife.mock.LineServiceMockFactory;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.Policy;
@@ -25,12 +28,14 @@ import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
 import th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 import th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus;
+import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
 import th.co.krungthaiaxa.api.elife.repository.CollectionFileRepository;
 import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
 import th.co.krungthaiaxa.api.elife.repository.PolicyRepository;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -51,6 +56,11 @@ import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.EVERY_YEA
 @WebAppConfiguration
 @ActiveProfiles("test")
 public class CollectionFileProcessingServiceTest extends ELifeTest {
+    @Inject
+    private PolicyFactory policyFactory;
+    @Inject
+    private CollectionFileFactory collectionFileFactory;
+
     @Inject
     private PaymentRepository paymentRepository;
     @Inject
@@ -268,14 +278,6 @@ public class CollectionFileProcessingServiceTest extends ELifeTest {
         Assert.assertNotNull(payment.getPaymentInformations().get(0).getRejectionErrorMessage());
     }
 
-    //    Don't need to run it here, it will be tested in {@link PaymentRetryServiceTest}
-//    @Test
-//    public void run_cron_job() {
-//        InputStream inputStream = IOUtil.loadInputStreamFileInClassPath("/collection-file/LFDISC6_2016-09-01.xls");
-//        rlsService.importCollectionFile(inputStream);
-//        rlsService.processLatestCollectionFiles();
-//    }
-
     /*
         @Test
         public void should_create_a_deduction_file_line_with_success() throws IOException {
@@ -360,6 +362,20 @@ public class CollectionFileProcessingServiceTest extends ELifeTest {
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
+    //    Don't need to run it here, it will be tested in {@link PaymentRetryServiceTest}
+    @Test
+    public void run_cron_job() {
+        ProductQuotation productQuotation01 = ProductQuotationFactory.constructIGenDefaultWithMonthlyPayment();
+        Policy policy01 = policyFactory.createPolicyWithValidatedStatus(productQuotation01, "dummy@gmail.com");
+        ProductQuotation productQuotation02 = ProductQuotationFactory.constructIProtectDefaultWithMonthlyPayment();
+        Policy policy02 = policyFactory.createPolicyWithValidatedStatus(productQuotation02, "dummy@gmail.com");
+
+        InputStream inputStream = collectionFileFactory.constructCollectionExcelFile(policy01.getPolicyId(), policy02.getPolicyId());
+
+        rlsService.importCollectionFile(inputStream);
+        rlsService.processLatestCollectionFiles();
+
+    }
     /*
         @Test
         public void should_create_deduction_file_with_proper_header() throws IOException, InvalidFormatException {
