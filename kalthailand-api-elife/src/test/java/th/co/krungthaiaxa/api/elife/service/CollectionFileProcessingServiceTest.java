@@ -386,49 +386,7 @@ public class CollectionFileProcessingServiceTest extends ELifeTest {
             assertThat(wb.getSheet("LFPATPTDR6").getRow(0).getCell(5).getStringCellValue()).isEqualTo("M93RJCD6");
         }
         */
-/*
-    @Test
-    public void should_create_deduction_file() throws IOException, InvalidFormatException {
-        when(lineService.capturePayment(anyString(), anyDouble(), anyString())).thenReturn(TestUtil.linePayResponse("0000", "success"));
-        Policy policy1 = getValidatedPolicy(EVERY_MONTH);
-        Policy policy2 = getValidatedPolicy(EVERY_MONTH);
 
-        CollectionFile collectionFile = getValidatedCollectionFile(
-                collectionFileLine(policy1, 100.0),
-                collectionFileLine(policy2, 150.0),
-                collectionFileLine(policy2, 200.0)
-        );
-        rlsService.processLatestCollectionFile();
-
-        CollectionFile updatedCollectionFile = collectionFileRepository.findOne(collectionFile.getId());
-        byte[] excelFileContent = rlsService.createDeductionExcelFile(updatedCollectionFile.getDeductionFile());
-
-        Workbook wb = WorkbookFactory.create(new ByteArrayInputStream(excelFileContent));
-        assertThat(wb.getSheet("LFPATPTDR6")).isNotNull();
-        assertThat(wb.getSheet("LFPATPTDR6").getLastRowNum()).isEqualTo(3);
-        Row row1 = wb.getSheet("LFPATPTDR6").getRow(1);
-        assertThat(row1.getCell(0).getStringCellValue()).isEqualTo(policy1.getPolicyId());
-        assertThat(row1.getCell(1).getStringCellValue()).isEqualTo("myBankCode");
-        assertThat(row1.getCell(2).getStringCellValue()).isEqualTo("M");
-        assertThat(row1.getCell(3).getStringCellValue()).isEqualTo("100.0");
-        assertThat(row1.getCell(4).getStringCellValue()).isNotNull();
-        assertThat(row1.getCell(5).getStringCellValue()).isEqualTo("0000");
-        Row row2 = wb.getSheet("LFPATPTDR6").getRow(2);
-        assertThat(row2.getCell(0).getStringCellValue()).isEqualTo(policy2.getPolicyId());
-        assertThat(row2.getCell(1).getStringCellValue()).isEqualTo("myBankCode");
-        assertThat(row2.getCell(2).getStringCellValue()).isEqualTo("M");
-        assertThat(row2.getCell(3).getStringCellValue()).isEqualTo("150.0");
-        assertThat(row2.getCell(4).getStringCellValue()).isNotNull();
-        assertThat(row2.getCell(5).getStringCellValue()).isEqualTo("0000");
-        Row row3 = wb.getSheet("LFPATPTDR6").getRow(3);
-        assertThat(row3.getCell(0).getStringCellValue()).isEqualTo(policy2.getPolicyId());
-        assertThat(row3.getCell(1).getStringCellValue()).isEqualTo("myBankCode");
-        assertThat(row3.getCell(2).getStringCellValue()).isEqualTo("M");
-        assertThat(row3.getCell(3).getStringCellValue()).isEqualTo("200.0");
-        assertThat(row3.getCell(4).getStringCellValue()).isNotNull();
-        assertThat(row3.getCell(5).getStringCellValue()).isEqualTo("0000");
-    }
-*/
     private static CollectionFileLine collectionFileLine(Policy policy, Double amount) {
         CollectionFileLine collectionFileLine = new CollectionFileLine();
         collectionFileLine.setPaymentMode("myPaymentMode");

@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.repository.PolicyRepository;
@@ -28,7 +27,7 @@ public class PremiumsDataMigrationService {
     @Autowired
     private ElifeEmailService elifeEmailService;
 
-    @Transactional
+    //    @Transactional
     public void migrateData() {
         copyDataToOldStructure();
     }
