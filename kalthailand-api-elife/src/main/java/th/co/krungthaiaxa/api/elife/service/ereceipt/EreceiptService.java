@@ -1,4 +1,4 @@
-package th.co.krungthaiaxa.api.elife.service;
+package th.co.krungthaiaxa.api.elife.service.ereceipt;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +13,7 @@ import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.enums.DocumentType;
 import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
+import th.co.krungthaiaxa.api.elife.service.DocumentService;
 
 import java.util.Base64;
 

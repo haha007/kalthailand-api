@@ -1,4 +1,4 @@
-package th.co.krungthaiaxa.api.elife.service;
+package th.co.krungthaiaxa.api.elife.service.ereceipt;
 
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.BaseFont;
@@ -22,6 +22,7 @@ import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 import th.co.krungthaiaxa.api.elife.products.ProductUtils;
+import th.co.krungthaiaxa.api.elife.service.DocumentService;
 import th.co.krungthaiaxa.api.elife.utils.PersonUtil;
 import th.co.krungthaiaxa.api.elife.utils.ThaiBahtUtil;
 
