@@ -29,9 +29,9 @@ public class Base36Number extends Number implements Comparable, Cloneable {
     }
 
     public Base36Number(@NotNull String base36Value) {
-        this.base36Value = base36Value.toLowerCase();
         this.decimalValue = Base36Util.toDecimalLong(base36Value);
-
+        //Don't use input base36Value because it may begin with "000"
+        this.base36Value = Base36Util.toBase36String(this.decimalValue);
     }
 
     public Base36Number(long decimalValue) {
@@ -44,8 +44,8 @@ public class Base36Number extends Number implements Comparable, Cloneable {
     }
 
     @Override
-    public Base36Number clone() {
-        return new Base36Number(this.decimalValue);
+    public Base36Number clone() throws CloneNotSupportedException {
+        return (Base36Number) super.clone();
     }
 
     @Override

@@ -55,4 +55,23 @@ public class Base36NumberTest {
         Assert.assertEquals(1295.0, new Base36Number("0zz").doubleValue(), 0.0001);
 
     }
+
+    @Test
+    public void test_hashcode() {
+        Assert.assertEquals(new Base36Number("9zab").hashCode(), new Base36Number("9zab").hashCode());
+        Assert.assertEquals(new Base36Number("00z").hashCode(), new Base36Number("z").hashCode());
+        Assert.assertEquals(new Base36Number("0z").hashCode(), new Base36Number(35).hashCode());
+        Assert.assertNotEquals(new Base36Number("a").hashCode(), new Base36Number("10").hashCode());
+    }
+
+    @Test
+    public void test_compare_and_equals() {
+        Assert.assertTrue(new Base36Number("a").compareTo(new Base36Number("10")) < 0);
+        Assert.assertTrue(new Base36Number("a").compareTo(new Base36Number(10)) == 0);
+        Assert.assertTrue(new Base36Number("a").compareTo(new Base36Number("9")) > 0);
+
+        Assert.assertTrue(new Base36Number("a").equals(new Base36Number(10)));
+        Assert.assertTrue(!new Base36Number("a").equals(new Base36Number("10")));
+
+    }
 }

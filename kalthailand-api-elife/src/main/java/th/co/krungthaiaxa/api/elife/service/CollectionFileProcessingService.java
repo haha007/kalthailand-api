@@ -182,80 +182,78 @@ public class CollectionFileProcessingService {
         }
     }
 
-    CollectionFile readCollectionExcelFile(InputStream is) {
-        notNull(is, "The excel file is not available");
-        Workbook workbook;
-        try {
-            workbook = WorkbookFactory.create(is);//new HSSFWorkbook(is);
+    CollectionFile readCollectionExcelFile(InputStream excelInputStream) {
+        notNull(excelInputStream, "The excel file is not available");
+        try (Workbook workbook = WorkbookFactory.create(excelInputStream)) {
+
+            // check if sheet is found
+            Sheet sheet = workbook.getSheet(COLLECTION_FILE_SHEET_NAME);
+            notNull(sheet, "The file does not contain the sheet [" + COLLECTION_FILE_SHEET_NAME + "]");
+
+            // check if right number of columns
+            int noOfColumns = sheet.getRow(0).getLastCellNum();
+            isTrue(noOfColumns == COLLECTION_FILE_NUMBER_OF_COLUMNS, "The file does not contain [" + COLLECTION_FILE_NUMBER_OF_COLUMNS + "] columns with data");
+
+            // first line does not contain data, but need to check for column header
+            Iterator<Row> rowIterator = sheet.rowIterator();
+            Row firstRow = rowIterator.next();
+            List<String> firstLine = new ArrayList<>();
+            for (int i = 0; i < COLLECTION_FILE_NUMBER_OF_COLUMNS; i++) {
+                firstLine.add(firstRow.getCell(i).getStringCellValue());
+            }
+            isTrue(firstLine.get(0).equals(COLLECTION_FILE_COLUMN_NAME_1), "The column #1 name is not [" + COLLECTION_FILE_COLUMN_NAME_1 + "]");
+            isTrue(firstLine.get(1).equals(COLLECTION_FILE_COLUMN_NAME_2), "The column #2 name is not [" + COLLECTION_FILE_COLUMN_NAME_2 + "]");
+            isTrue(firstLine.get(2).equals(COLLECTION_FILE_COLUMN_NAME_3), "The column #3 name is not [" + COLLECTION_FILE_COLUMN_NAME_3 + "]");
+            isTrue(firstLine.get(3).equals(COLLECTION_FILE_COLUMN_NAME_4), "The column #4 name is not [" + COLLECTION_FILE_COLUMN_NAME_4 + "]");
+            isTrue(firstLine.get(4).equals(COLLECTION_FILE_COLUMN_NAME_5), "The column #5 name is not [" + COLLECTION_FILE_COLUMN_NAME_5 + "]");
+            isTrue(firstLine.get(5).equals(COLLECTION_FILE_COLUMN_NAME_6), "The column #6 name is not [" + COLLECTION_FILE_COLUMN_NAME_6 + "]");
+
+            // copy all the lines
+            CollectionFile collectionFile = new CollectionFile();
+            collectionFile.setReceivedDate(LocalDateTime.now());
+            StringBuilder stringBuilder = new StringBuilder();
+            int rowId = 0;
+            while (rowIterator.hasNext()) {
+                rowId++;
+                Row currentRow = rowIterator.next();
+                String collectionDate = ExcelUtils.getCellValueAsString(currentRow.getCell(0));
+                String collectionBank = ExcelUtils.getCellValueAsString(currentRow.getCell(1));
+                String bankCode = ExcelUtils.getCellValueAsString(currentRow.getCell(2));
+                String policyNumber = ExcelUtils.getCellValueAsString(currentRow.getCell(3));
+                String paymentMode = ExcelUtils.getCellValueAsString(currentRow.getCell(4));
+                Double premiumAmount = ExcelUtils.getCellValueAsDouble(currentRow.getCell(5));
+
+                if (StringUtils.isBlank(collectionDate) || StringUtils.isBlank(collectionBank) || StringUtils.isBlank(bankCode) || StringUtils.isBlank(policyNumber) || StringUtils.isBlank(paymentMode) || premiumAmount == null) {
+                    LOGGER.warn("Ignore the row[{}] because there's not enough information.", rowId);
+                    continue;
+                }
+
+                stringBuilder.append(collectionDate);
+                stringBuilder.append(collectionBank);
+                stringBuilder.append(bankCode);
+                stringBuilder.append(policyNumber);
+                stringBuilder.append(paymentMode);
+                stringBuilder.append(premiumAmount);
+
+                CollectionFileLine collectionFileLine = new CollectionFileLine();
+                collectionFileLine.setCollectionDate(collectionDate);
+                collectionFileLine.setCollectionBank(collectionBank);
+                collectionFileLine.setBankCode(bankCode);
+                collectionFileLine.setPolicyNumber(policyNumber);
+                collectionFileLine.setPaymentMode(paymentMode);
+                collectionFileLine.setPremiumAmount(premiumAmount);
+                collectionFile.addLine(collectionFileLine);
+            }
+            String sha256 = sha256Hex(stringBuilder.toString());
+            collectionFile.setFileHashCode(sha256);
+            CollectionFile previousFile = collectionFileRepository.findByFileHashCode(collectionFile.getFileHashCode());
+            if (previousFile != null) {
+                throw new IllegalArgumentException("The file has already been uploaded");
+            }
+            return collectionFile;
         } catch (InvalidFormatException | IOException e) {
             throw new IllegalArgumentException("Unable to read the excel file: " + e.getMessage(), e);
         }
-        // check if sheet is found
-        Sheet sheet = workbook.getSheet(COLLECTION_FILE_SHEET_NAME);
-        notNull(sheet, "The file does not contain the sheet [" + COLLECTION_FILE_SHEET_NAME + "]");
-
-        // check if right number of columns
-        int noOfColumns = sheet.getRow(0).getLastCellNum();
-        isTrue(noOfColumns == COLLECTION_FILE_NUMBER_OF_COLUMNS, "The file does not contain [" + COLLECTION_FILE_NUMBER_OF_COLUMNS + "] columns with data");
-
-        // first line does not contain data, but need to check for column header
-        Iterator<Row> rowIterator = sheet.rowIterator();
-        Row firstRow = rowIterator.next();
-        List<String> firstLine = new ArrayList<>();
-        for (int i = 0; i < COLLECTION_FILE_NUMBER_OF_COLUMNS; i++) {
-            firstLine.add(firstRow.getCell(i).getStringCellValue());
-        }
-        isTrue(firstLine.get(0).equals(COLLECTION_FILE_COLUMN_NAME_1), "The column #1 name is not [" + COLLECTION_FILE_COLUMN_NAME_1 + "]");
-        isTrue(firstLine.get(1).equals(COLLECTION_FILE_COLUMN_NAME_2), "The column #2 name is not [" + COLLECTION_FILE_COLUMN_NAME_2 + "]");
-        isTrue(firstLine.get(2).equals(COLLECTION_FILE_COLUMN_NAME_3), "The column #3 name is not [" + COLLECTION_FILE_COLUMN_NAME_3 + "]");
-        isTrue(firstLine.get(3).equals(COLLECTION_FILE_COLUMN_NAME_4), "The column #4 name is not [" + COLLECTION_FILE_COLUMN_NAME_4 + "]");
-        isTrue(firstLine.get(4).equals(COLLECTION_FILE_COLUMN_NAME_5), "The column #5 name is not [" + COLLECTION_FILE_COLUMN_NAME_5 + "]");
-        isTrue(firstLine.get(5).equals(COLLECTION_FILE_COLUMN_NAME_6), "The column #6 name is not [" + COLLECTION_FILE_COLUMN_NAME_6 + "]");
-
-        // copy all the lines
-        CollectionFile collectionFile = new CollectionFile();
-        collectionFile.setReceivedDate(LocalDateTime.now());
-        StringBuilder stringBuilder = new StringBuilder();
-        int rowId = 0;
-        while (rowIterator.hasNext()) {
-            rowId++;
-            Row currentRow = rowIterator.next();
-            String collectionDate = ExcelUtils.getCellValueAsString(currentRow.getCell(0));
-            String collectionBank = ExcelUtils.getCellValueAsString(currentRow.getCell(1));
-            String bankCode = ExcelUtils.getCellValueAsString(currentRow.getCell(2));
-            String policyNumber = ExcelUtils.getCellValueAsString(currentRow.getCell(3));
-            String paymentMode = ExcelUtils.getCellValueAsString(currentRow.getCell(4));
-            Double premiumAmount = ExcelUtils.getCellValueAsDouble(currentRow.getCell(5));
-
-            if (StringUtils.isBlank(collectionDate) || StringUtils.isBlank(collectionBank) || StringUtils.isBlank(bankCode) || StringUtils.isBlank(policyNumber) || StringUtils.isBlank(paymentMode) || premiumAmount == null) {
-                LOGGER.warn("Ignore the row[{}] because there's not enough information.", rowId);
-                continue;
-            }
-
-            stringBuilder.append(collectionDate);
-            stringBuilder.append(collectionBank);
-            stringBuilder.append(bankCode);
-            stringBuilder.append(policyNumber);
-            stringBuilder.append(paymentMode);
-            stringBuilder.append(premiumAmount);
-
-            CollectionFileLine collectionFileLine = new CollectionFileLine();
-            collectionFileLine.setCollectionDate(collectionDate);
-            collectionFileLine.setCollectionBank(collectionBank);
-            collectionFileLine.setBankCode(bankCode);
-            collectionFileLine.setPolicyNumber(policyNumber);
-            collectionFileLine.setPaymentMode(paymentMode);
-            collectionFileLine.setPremiumAmount(premiumAmount);
-            collectionFile.addLine(collectionFileLine);
-        }
-        String sha256 = sha256Hex(stringBuilder.toString());
-        collectionFile.setFileHashCode(sha256);
-        CollectionFile previousFile = collectionFileRepository.findByFileHashCode(collectionFile.getFileHashCode());
-        if (previousFile != null) {
-            throw new IllegalArgumentException("The file has already been uploaded");
-        }
-
-        return collectionFile;
     }
 
     void importCollectionFileLine(CollectionFileLine collectionFileLine) {
