@@ -32,6 +32,7 @@ public class ProjectInfoService {
             projectInfoProperties.setGitBuildNumber(props.getProperty("git.build.number"));
             projectInfoProperties.setProjectVersion(props.getProperty("project.version"));
             projectInfoProperties.setGitRevision(props.getProperty("git.revision"));
+            projectInfoProperties.setGitTag(props.getProperty("git.tag"));
             projectInfoProperties.setProjectBuildTime(props.getProperty("project.build.time"));
         } catch (IOException e) {
             LOGGER.warn("Cannot load properties from {}. But don't worry, the program can start normally. You only need to recheck why the file is not generated automatically (configured by Maven plugin).", propertiesFile);

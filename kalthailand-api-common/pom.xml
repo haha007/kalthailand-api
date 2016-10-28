@@ -55,6 +55,7 @@
                                     <entry key="project.build.time" value="${build.time}"/>
                                     <entry key="git.build.number" value="${git.buildnumber}"/>
                                     <entry key="git.revision" value="${git.revision}"/>
+                                    <entry key="git.tag" value="${git.tag}"/>
                                 </propertyfile>
                                 <!-- <echo file="${build.file}" message="build.time=${last.updated}"/> -->
                             </tasks>

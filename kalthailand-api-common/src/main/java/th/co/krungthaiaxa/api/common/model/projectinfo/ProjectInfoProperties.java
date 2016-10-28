@@ -8,6 +8,7 @@ public class ProjectInfoProperties implements Serializable {
     private String projectBuildTime;
     private String gitBuildNumber;
     private String gitRevision;
+    private String gitTag;
 
     public String getProjectVersion() {
         return projectVersion;
@@ -47,5 +48,13 @@ public class ProjectInfoProperties implements Serializable {
 
     public void setProfiles(String[] profiles) {
         this.profiles = profiles;
+    }
+
+    public String getGitTag() {
+        return gitTag;
+    }
+
+    public void setGitTag(String gitTag) {
+        this.gitTag = gitTag;
     }
 }
