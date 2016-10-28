@@ -20,7 +20,7 @@ import java.util.Objects;
 
 @ApiModel(description = "Data concerning the policy")
 @Document(collection = "policy")
-public class Policy implements Serializable {
+public class Policy implements Serializable, Quotable {
     @Id
     private String id;
     /**
@@ -65,11 +65,13 @@ public class Policy implements Serializable {
         this.id = id;
     }
 
+    @Override
     @ApiModelProperty(required = true, value = "ID of the policy. This may be displayed to user")
     public String getPolicyId() {
         return policyId;
     }
 
+    @Override
     public void setPolicyId(String policyId) {
         this.policyId = policyId;
     }
@@ -92,38 +94,46 @@ public class Policy implements Serializable {
         this.status = status;
     }
 
+    @Override
     @ApiModelProperty(required = true, value = "Data common to all policies commercial types")
     public CommonData getCommonData() {
         return commonData;
     }
 
+    @Override
     public void setCommonData(CommonData commonData) {
         this.commonData = commonData;
     }
 
+    @Override
     @ApiModelProperty(value = "Data concerning premiums (price for the coverage and benefit agreed for the policy)")
     public PremiumsData getPremiumsData() {
         return premiumsData;
     }
 
+    @Override
     public void setPremiumsData(PremiumsData premiumsData) {
         this.premiumsData = premiumsData;
     }
 
+    @Override
     @ApiModelProperty(value = "List of all insured parties stated on the policy")
     public List<Insured> getInsureds() {
         return Collections.unmodifiableList(insureds);
     }
 
+    @Override
     public void addInsured(Insured insured) {
         insureds.add(insured);
     }
 
+    @Override
     @ApiModelProperty(value = "List of all coverages of the policy")
     public List<Coverage> getCoverages() {
         return coverages;
     }
 
+    @Override
     public void addCoverage(Coverage coverage) {
         coverages.add(coverage);
     }

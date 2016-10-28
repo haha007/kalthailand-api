@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.elife.model.Policy;
+import th.co.krungthaiaxa.api.elife.model.Quotable;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.repository.PolicyRepository;
 import th.co.krungthaiaxa.api.elife.repository.QuoteRepository;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 @Service
 public class PremiumsDataMigrationService {
     public static final Logger LOGGER = LoggerFactory.getLogger(PremiumsDataMigrationService.class);
+    private static final String INFORM_EMAIL = "khoi.tran@pyramid-consulting.com";
     @Autowired
     private PolicyRepository policyRepository;
     @Autowired
@@ -41,60 +43,53 @@ public class PremiumsDataMigrationService {
 
     private void copyDataToOldStructureForPolicies() {
         List<Policy> policies = policyRepository.findByPremiumsDataNull();
-        for (Policy policy : policies) {
-            if (policy.getPremiumData() != null) {
-                policy.setPremiumsData(policy.getPremiumData());
-                policy.setPremiumData(null);
-            } else {
-                LOGGER.error("The data of policy is wrong: there's no both premiumsData and premiumData: policyId: {}", policy.getPolicyId());
-            }
-        }
+        copyDataToOldStructureForQuotableItems(policies);
         if (!policies.isEmpty()) {
             policyRepository.save(policies);
         }
-        sendNotificationForMigrationSuccessPolicies(policies);
+        sendNotificationForMigrationSuccess("[eLife] Migrate policies", policies);
     }
 
     private void copyDataToOldStructureForQuotes() {
         List<Quote> quotes = quoteRepository.findByPremiumsDataNull();
-        for (Quote quote : quotes) {
-            if (quote.getPremiumData() != null) {
-                quote.setPremiumsData(quote.getPremiumData());
-                quote.setPremiumData(null);
-            } else {
-                LOGGER.error("The data of quote is wrong: there's no both premiumsData and premiumData: policyId: {}, quoteId: {}", quote.getPolicyId(), quote.getQuoteId());
-            }
-        }
+        copyDataToOldStructureForQuotableItems(quotes);
         if (!quotes.isEmpty()) {
             quoteRepository.save(quotes);
         }
-        sendNotificationForMigrationSuccessQuotes(quotes);
+        sendNotificationForMigrationSuccess("[eLife] Migrate quotes", quotes);
     }
 
-    private void sendNotificationForMigrationSuccessPolicies(List<Policy> policies) {
+    private void copyDataToOldStructureForQuotableItems(List<? extends Quotable> quotableItems) {
+        String quotableItemsString = quotableItems.stream().map(o -> String.format("\t%s: {policyId: %s, quoteId: %s}", o.getClass().getSimpleName(), o.getPolicyId(), o.getQuoteId())).collect(Collectors.joining("\n"));
+        LOGGER.debug("Migrate quotable items [start] \n" + quotableItemsString);
+        for (Quotable policy : quotableItems) {
+            if (policy.getPremiumData() != null) {
+                policy.setPremiumsData(policy.getPremiumData());
+                policy.setPremiumData(null);
+            } else {
+                String msg = String.format("The data is wrong: there's no both premiumsData and premiumData: %s: {policyId: %s, quoteId: %s}", policy.getClass().getSimpleName(), policy.getPolicyId(), policy.getQuoteId());
+                LOGGER.error(msg);
+            }
+        }
+        LOGGER.debug("Migrate quotable items [stop] \n" + quotableItemsString);
+    }
+
+    private void sendNotificationForMigrationSuccess(String emailSubject, List<? extends Quotable> quotableItems) {
         try {
-            List<String> policyNumbers = policies.stream().map(policy -> policy.getPolicyId()).collect(Collectors.toList());
-            sendNotificationForMigrationSuccess("Migrate policies", policyNumbers);
+            String quotableItemRows = quotableItems.stream()
+                    .map(quotableItem -> String.format("<tr><td>%s</td><td>%s</td></tr>\n", quotableItem.getPolicyId(), quotableItem.getQuoteId()))
+                    .collect(Collectors.joining());
+            String emailContent = String.join(""
+                    , "<h2>", emailSubject, "<h2><br/>\n"
+                    , "<table>\n"
+                    , "<tr><td>Policy number</td><td>Quote number</td></tr>\n"
+                    , quotableItemRows
+                    , "</table>"
+            );
+            elifeEmailService.sendEmail(INFORM_EMAIL, emailSubject, emailContent, Collections.EMPTY_LIST, Collections.EMPTY_LIST);
         } catch (Exception ex) {
             LOGGER.error("Unexpected exception when sending notification migration successfully. " + ex.getMessage(), ex);
         }
     }
 
-    private void sendNotificationForMigrationSuccessQuotes(List<Quote> quotes) {
-        try {
-            List<String> policyNumbers = quotes.stream().map(policy -> policy.getPolicyId()).collect(Collectors.toList());
-            sendNotificationForMigrationSuccess("Migrate quotes", policyNumbers);
-        } catch (Exception ex) {
-            LOGGER.error("Unexpected exception when sending notification migration successfully. " + ex.getMessage(), ex);
-        }
-    }
-
-    private void sendNotificationForMigrationSuccess(String title, List<String> policyNumbers) {
-        if (!policyNumbers.isEmpty()) {
-            LOGGER.error("After migration, still find the quotes with premiumsData null: " + policyNumbers.size());
-        }
-        String policyNumbersString = policyNumbers.stream().collect(Collectors.joining("\n"));
-        String emailContent = "Migrate successfully: \n" + policyNumbersString;
-        elifeEmailService.sendEmail("khoi.tran@pyramid-consulting.com", title, emailContent, Collections.EMPTY_LIST, Collections.EMPTY_LIST);
-    }
 }

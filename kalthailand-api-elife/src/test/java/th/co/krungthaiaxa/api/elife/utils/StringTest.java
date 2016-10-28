@@ -22,7 +22,19 @@ public class StringTest {
         StringUtil.maskEmail(" ");
         Assert.assertTrue(StringUtils.isBlank(result));
 
-        String string = StringUtil.maskEmail("abcdef.xyzt@12345.com");
-        LOGGER.info(string);
+        result = StringUtil.maskEmail("abcdef.xyzt@12345.com");
+        Assert.assertEquals("abc****************om", result);
+
+        result = StringUtil.maskEmail("abc@ab");
+        Assert.assertEquals("abc*ab", result);
+
+        result = StringUtil.maskEmail("abc@ab ");
+        Assert.assertEquals("abc**b ", result);
+
+        result = StringUtil.maskEmail("abc@b");
+        Assert.assertEquals("abc@b", result);
+
+        result = StringUtil.maskEmail("a@b");
+        Assert.assertEquals("a@b", result);
     }
 }
