@@ -45,4 +45,14 @@ public class Base36NumberTest {
         Assert.assertEquals(Long.MIN_VALUE, Base36Number.MIN_VALUE.longValue());
 
     }
+
+    @Test
+    public void test_convert_overflow_number() {
+        Assert.assertEquals(Long.MAX_VALUE, Base36Number.MAX_VALUE.longValue());
+        Assert.assertEquals(-1, Base36Number.MAX_VALUE.intValue());//because of overflow number
+        Assert.assertEquals(9.0f, new Base36Number("9").floatValue(), 0.0001);
+        Assert.assertEquals(35.0, new Base36Number("00z").doubleValue(), 0.0001);
+        Assert.assertEquals(1295.0, new Base36Number("0zz").doubleValue(), 0.0001);
+
+    }
 }
