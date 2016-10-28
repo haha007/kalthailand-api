@@ -43,7 +43,6 @@ public class Policy implements Serializable {
     @Deprecated
     private PremiumsData premiumData;
 
-    //    @Field("premiumData")
     private PremiumsData premiumsData;
     private List<Insured> insureds = new ArrayList<>();
     private List<Coverage> coverages = new ArrayList<>();

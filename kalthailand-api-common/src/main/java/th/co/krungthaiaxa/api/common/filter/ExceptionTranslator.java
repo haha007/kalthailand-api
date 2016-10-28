@@ -103,8 +103,8 @@ public class ExceptionTranslator {
                 String fileName = first.getFileName();
                 String methodName = first.getMethodName();
                 int lineNumber = first.getLineNumber();
-                String errorRootCause = String.format("%s.%s():%s", fileName, methodName, lineNumber);
-                message += "Root: " + errorRootCause;
+                String errorRootCause = String.format("%s#%s():%s", fileName, methodName, lineNumber);
+                message += ". Root: " + errorRootCause;
             }
             result = ErrorCode.UNKNOWN_ERROR.apply(message);
         }
