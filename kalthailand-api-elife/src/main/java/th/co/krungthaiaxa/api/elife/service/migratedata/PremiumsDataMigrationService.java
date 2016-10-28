@@ -86,7 +86,7 @@ public class PremiumsDataMigrationService {
                     , quotableItemRows
                     , "</table>"
             );
-            elifeEmailService.sendEmail(INFORM_EMAIL, emailSubject, emailContent, Collections.EMPTY_LIST, Collections.EMPTY_LIST);
+            elifeEmailService.sendEmail(INFORM_EMAIL, emailSubject, emailContent, Collections.emptyList(), Collections.emptyList());
         } catch (Exception ex) {
             LOGGER.error("Unexpected exception when sending notification migration successfully. " + ex.getMessage(), ex);
         }
