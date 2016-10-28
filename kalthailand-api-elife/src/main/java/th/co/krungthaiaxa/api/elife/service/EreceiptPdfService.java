@@ -49,10 +49,6 @@ public class EreceiptPdfService {
      */
     private static final float Y_TOP_INSPECT = 97.48f;
 
-    private final static int LINE_POS_REF2 = 576;//px
-    private static final int LINE_POS_PERSON_REGID = 495;//px
-    private final static double CELL_WIDTH = 28.0;
-
     //PAGE 01 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //LEFT ...................................................................
     //line 1:
@@ -147,8 +143,6 @@ public class EreceiptPdfService {
             PdfReader pdfReader = new PdfReader(pdfTemplateInputStream);
             PdfStamper pdfStamper = new PdfStamper(pdfReader, content);
             writePage01(pdfStamper.getOverContent(1), policy, payment, firstPayment);
-//            writePagePosition(pdfStamper.getOverContent(1), policy, payment, firstPayment);
-
             //page02 is the same as template file, we don't need to change anything.
             pdfStamper.close();
             content.close();
@@ -287,34 +281,6 @@ public class EreceiptPdfService {
 
     private BaseFont getBaseFont() {
         return PdfIOUtil.loadFontFromClassPath("ANGSAB_1.ttf", "/ereceipt/ANGSAB_1.TTF");
-    }
-
-    private void drawPersonRegistrationId(Graphics graphics, char... chars) {
-        drawCharsInLine(graphics, 892, LINE_POS_PERSON_REGID, CELL_WIDTH, 13, chars);
-    }
-
-    private void drawCharsInLine(Graphics graphics, int startCharPos, int linePos, Double charWidth, int maxChar, char... chars) {
-        int length = Math.min(chars.length, maxChar);
-        for (int i = 0; i < length; i++) {
-            char ichar = chars[i];
-            graphics.drawString(String.valueOf(ichar), startCharPos + (int) Math.round(charWidth * i), linePos);
-        }
-    }
-
-    /**
-     * @param graphics
-     * @param prefixChars 7 chars
-     */
-    private void drawRef2Prefix(Graphics graphics, char... prefixChars) {
-        drawCharsInLine(graphics, 973, LINE_POS_REF2, CELL_WIDTH, 7, prefixChars);
-    }
-
-    /**
-     * @param graphics
-     * @param suffixChars 2 chars. For new business, it should be 01, for renewal, it should be 02.
-     */
-    private void drawRef2Suffix(Graphics graphics, char... suffixChars) {
-        drawCharsInLine(graphics, 1197, LINE_POS_REF2, CELL_WIDTH, 2, suffixChars);
     }
 
     private String getThaiDate(LocalDate localDate) {
