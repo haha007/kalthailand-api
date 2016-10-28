@@ -29,4 +29,7 @@ public interface QuoteRepository extends MongoRepository<Quote, String> {
 
     Quote findByQuoteId(String quoteId);
 
+    List<Quote> findByPremiumsDataNull();
+
+    long countByPremiumsDataNull();
 }

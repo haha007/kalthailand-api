@@ -16,7 +16,7 @@ import static java.time.format.DateTimeFormatter.ofPattern;
  * @author khoi.tran on 8/17/16.
  */
 public class DateTimeUtil {
-    public static final String PATTERN_FILEPATH = "yyyyMMdd";
+    public static final String PATTERN_FILEPATH = "yyyy-MM-dd_HH-mm-ss";
     public static final String PATTERN_THAI_DATE = "dd/MM/yyyy";
     public static final String PATTERN_THAI_DATE_TIME = "dd/MM/yyyy hh:mm:ss";
 
@@ -83,7 +83,7 @@ public class DateTimeUtil {
     }
 
     public static String formatNowForFilePath() {
-        return formatLocalDate(LocalDate.now(), PATTERN_FILEPATH);
+        return formatLocalDateTime(LocalDateTime.now(), PATTERN_FILEPATH);
     }
 
     public static Instant plusYears(Instant instant, int year) {

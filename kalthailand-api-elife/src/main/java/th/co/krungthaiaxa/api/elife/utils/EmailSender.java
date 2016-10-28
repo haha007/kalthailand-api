@@ -40,16 +40,21 @@ public class EmailSender {
 
     public void sendEmail(String fromEmailAddress, String toEmailAddress, String emailSubject, String emailContent,
             List<Pair<byte[], String>> images, List<Pair<byte[], String>> attachments) {
+        String maskFromMail = StringUtil.maskEmail(fromEmailAddress);
+        String maskToMail = StringUtil.maskEmail(toEmailAddress);
+        String msg = String.format("Sending email [start]: fromEmail: '%s', toEmail: '%s'", maskFromMail, maskToMail);
+        logger.info(msg);
+
         hasText(smtpHost, "smtpHost is a mandatory value and cannot be null/blank");
         hasText(smtpPort, "smtpPort is a mandatory value and cannot be null/blank");
-
         try {
             send(generateMessage(fromEmailAddress, toEmailAddress, emailSubject, emailContent, images, attachments));
+            msg = String.format("Sending email [success]: fromEmail: '%s', toEmail: '%s'", maskFromMail, maskToMail);
+            logger.info(msg);
         } catch (MessagingException | IOException e) {
-            String msg = String.format("Error sending email. fromEmail: '%s', toEmail: '%s'", StringUtil.maskEmail(fromEmailAddress), StringUtil.maskEmail(toEmailAddress));
+            msg = String.format("Sending email [error]: fromEmail: '%s', toEmail: '%s'", maskFromMail, maskToMail);
             throw new EmailException(msg, e);
         }
-        logger.info("Email successfully sent");
     }
 
     private MimeMessage generateMessage(String fromEmailAddress, String toEmailAddress, String emailSubject,

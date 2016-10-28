@@ -5,7 +5,6 @@ import io.swagger.annotations.ApiModelProperty;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
 import th.co.krungthaiaxa.api.elife.model.product.PremiumsData;
 
 import java.io.Serializable;
@@ -17,7 +16,7 @@ import java.util.Objects;
 @ApiModel(description = "This is the description of a quote and only a quote. It holds all properties gathered from " +
         "user before the quote got transformed into a Policy")
 @Document(collection = "quote")
-public class Quote implements Serializable {
+public class Quote implements Serializable, Quotable {
     @Id
     private String id;
     @Indexed(unique = true)
@@ -25,7 +24,14 @@ public class Quote implements Serializable {
     private String policyId;
     private CommonData commonData;
 
-    @Field("premiumData")
+    /**
+     * This field is used only for migration. We won't need it in the future.
+     * Old structure use {@link #premiumsData}.
+     * New structure use {@link #premiumData}, but it not correct. So we will migrate the data of new structure to old structure.
+     */
+    @Deprecated
+    private PremiumsData premiumData;
+
     private PremiumsData premiumsData;
     private List<Insured> insureds = new ArrayList<>();
     private List<Coverage> coverages = new ArrayList<>();
@@ -50,47 +56,57 @@ public class Quote implements Serializable {
         this.quoteId = quoteId;
     }
 
+    @Override
     @ApiModelProperty(required = true, value = "ID of the Policy if the quote has been transformed to a Policy")
     public String getPolicyId() {
         return policyId;
     }
 
+    @Override
     public void setPolicyId(String policyId) {
         this.policyId = policyId;
     }
 
+    @Override
     @ApiModelProperty(required = true, value = "Data common to all quotes commercial types")
     public CommonData getCommonData() {
         return commonData;
     }
 
+    @Override
     public void setCommonData(CommonData commonData) {
         this.commonData = commonData;
     }
 
+    @Override
     @ApiModelProperty(value = "Data concerning premiums (price for the coverage and benefit agreed for the quote)")
     public PremiumsData getPremiumsData() {
         return premiumsData;
     }
 
+    @Override
     public void setPremiumsData(PremiumsData premiumsData) {
         this.premiumsData = premiumsData;
     }
 
+    @Override
     @ApiModelProperty(value = "List of all insured parties stated on the quote")
     public List<Insured> getInsureds() {
         return insureds;
     }
 
+    @Override
     public void addInsured(Insured insured) {
         insureds.add(insured);
     }
 
+    @Override
     @ApiModelProperty(value = "List of all coverages of the quote. This is calculated by back end API and cannot be set by client.")
     public List<Coverage> getCoverages() {
         return coverages;
     }
 
+    @Override
     public void addCoverage(Coverage coverage) {
         coverages.add(coverage);
     }
@@ -131,5 +147,17 @@ public class Quote implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(id, quoteId, commonData, premiumsData, insureds, coverages, creationDateTime, lastUpdateDateTime);
+    }
+
+    @Override
+    @Deprecated
+    public PremiumsData getPremiumData() {
+        return premiumData;
+    }
+
+    @Override
+    @Deprecated
+    public void setPremiumData(PremiumsData premiumData) {
+        this.premiumData = premiumData;
     }
 }
