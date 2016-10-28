@@ -80,7 +80,7 @@ public class PremiumsDataMigrationService {
                     .map(quotableItem -> String.format("<tr><td>%s</td><td>%s</td></tr>\n", quotableItem.getPolicyId(), quotableItem.getQuoteId()))
                     .collect(Collectors.joining());
             String emailContent = String.join(""
-                    , "<h2>", emailSubject, "<h2><br/>\n"
+                    , "<h2>", emailSubject, "</h2><br/>\n"
                     , "<table>\n"
                     , "<tr><td>Policy number</td><td>Quote number</td></tr>\n"
                     , quotableItemRows
