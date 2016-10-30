@@ -15,6 +15,7 @@ public class EreceiptOldNumberCollectionService {
     }
 
     public boolean checkDuplicateIncrementalInOldData(long ereceiptNumber) {
-
+        //TODO
+        return false;
     }
 }
