@@ -1,5 +1,7 @@
 package th.co.krungthaiaxa.api.common.utils.base36;
 
+import th.co.krungthaiaxa.api.common.exeption.UnexpectedException;
+
 import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
@@ -12,7 +14,7 @@ import java.util.Objects;
  *         <p>
  *         Note: There's no support for MongoDB convert or Json convert for this class yet. So please careful when using this class.
  */
-public class Base36Number extends Number implements Comparable, Cloneable {
+public class Base36Number extends Number implements Comparable<Base36Number>, Cloneable {
     public static final int RADIX = 36;
     public static final String MAX_BASE36_VALUE = "1y2p0ij32e8e7";
     public static final String MIN_BASE36_VALUE = "-1y2p0ij32e8e8";
@@ -39,13 +41,21 @@ public class Base36Number extends Number implements Comparable, Cloneable {
         this.decimalValue = decimalValue;
     }
 
+    public String getBase36Value() {
+        return this.base36Value;
+    }
+
     public String toString() {
         return this.base36Value;
     }
 
     @Override
-    public Base36Number clone() throws CloneNotSupportedException {
-        return (Base36Number) super.clone();
+    public Base36Number clone() {
+        try {
+            return (Base36Number) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new UnexpectedException("Not support clone: " + e.getMessage(), e);
+        }
     }
 
     @Override
@@ -69,11 +79,10 @@ public class Base36Number extends Number implements Comparable, Cloneable {
     }
 
     @Override
-    public int compareTo(Object o) {
-        if (o == null || !(o instanceof Base36Number)) {
+    public int compareTo(Base36Number number) {
+        if (number == null) {
             return 1;
         }
-        Base36Number number = (Base36Number) o;
         long thisLong = this.longValue();
         long thatLong = number.longValue();
         if (thisLong > thatLong) {
@@ -87,7 +96,12 @@ public class Base36Number extends Number implements Comparable, Cloneable {
 
     @Override
     public boolean equals(Object o) {
-        return (this.compareTo(o) == 0);
+        if (!(o instanceof Base36Number)) {
+            return false;
+        } else {
+            Base36Number base36Number = (Base36Number) o;
+            return (this.compareTo(base36Number) == 0);
+        }
     }
 
     @Override

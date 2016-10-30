@@ -3,6 +3,7 @@ package th.co.krungthaiaxa.api.elife.model;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.hibernate.validator.constraints.NotBlank;
+import th.co.krungthaiaxa.api.common.exeption.UnexpectedException;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -65,7 +66,14 @@ public class Amount implements Serializable, Cloneable {
 
     @Override
     public Amount clone() {
-        return new Amount(value, currencyCode);
+        try {
+            Amount amount = (Amount) super.clone();
+            amount.setCurrencyCode(currencyCode);
+            amount.setValue(value);
+            return amount;
+        } catch (CloneNotSupportedException e) {
+            throw new UnexpectedException("Cannot clone: " + e.getMessage(), e);
+        }
     }
 
     @Override

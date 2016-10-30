@@ -9,7 +9,7 @@ import java.math.RoundingMode;
  * Created by WuttichaiSri on 1/22/2016.
  */
 public final class ThaiBahtUtil {
-
+    public static final String CURRENCY_THB = "THB";
     private static final String[] SCALE_TH = { "ล้าน", "สิบ", "ร้อย", "พัน", "หมื่น", "แสน", "" };
     private static final String[] DIGIT_TH = { "ศูนย์", "หนึ่ง", "สอง", "สาม", "สี่", "ห้า", "หก", "เจ็ด", "แปด", "เก้า" };
     private static final String[] SYMBOLS_TH = { "ลบ", "บาท", "ถ้วน", "สตางค์", "ยี่", "เอ็ด", ",", " ", "฿" };

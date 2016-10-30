@@ -72,6 +72,15 @@ public class Base36NumberTest {
 
         Assert.assertTrue(new Base36Number("a").equals(new Base36Number(10)));
         Assert.assertTrue(!new Base36Number("a").equals(new Base36Number("10")));
+    }
 
+    @Test
+    public void test_clone() {
+        Base36Number base36Number = new Base36Number(145);
+        Base36Number cloned = base36Number.clone();
+        Assert.assertEquals(base36Number, cloned);
+        Assert.assertEquals(base36Number.getBase36Value(), cloned.getBase36Value());
+        Assert.assertEquals(base36Number.longValue(), cloned.longValue());
+        Assert.assertNotSame(base36Number, cloned);
     }
 }
