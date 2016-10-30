@@ -2,6 +2,7 @@ package th.co.krungthaiaxa.api.elife.products;
 
 import org.apache.commons.lang3.StringUtils;
 import th.co.krungthaiaxa.api.common.exeption.BadArgumentException;
+import th.co.krungthaiaxa.api.common.exeption.UnexpectedException;
 import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
 import th.co.krungthaiaxa.api.elife.exception.ElifeException;
 import th.co.krungthaiaxa.api.elife.exception.MainInsuredException;
@@ -62,8 +63,7 @@ public class ProductUtils {
         case EVERY_YEAR:
             return 1.0;
         default:
-            //TODO should create a specific Exception, using RuntimeException is not a good practices.
-            throw new RuntimeException("The periodicity [" + periodicityCode.name() + "] is invalid to get modal factor");
+            throw new UnexpectedException("The periodicity [" + periodicityCode.name() + "] is invalid to get modal factor");
         }
     };
 
@@ -122,7 +122,7 @@ public class ProductUtils {
      * @return
      */
     public static Amount getPaymentInAYear(Amount premium, PeriodicityCode periodicityCode) {
-        return premium.multiply(PeriodicityCode.EVERY_YEAR.getNbOfMonths() / periodicityCode.getNbOfMonths());
+        return premium.multiply((double) PeriodicityCode.EVERY_YEAR.getNbOfMonths() / periodicityCode.getNbOfMonths());
     }
 
     /**
@@ -180,7 +180,7 @@ public class ProductUtils {
         IntStream.range(0, nbOfPayments).forEach(i -> policy.addPayment(new Payment(policy.getPolicyId(),
                 amountValue,
                 amountCurrency,
-                startDateTime.plusMonths(i * periodicityCode.getNbOfMonths()))
+                startDateTime.plusMonths((long) i * periodicityCode.getNbOfMonths()))
         ));
     }
 
@@ -267,13 +267,13 @@ public class ProductUtils {
 
     public static void validateNumberOfCoverages(List<Coverage> coverages) {
         notNull(coverages, coverageExpected);
-        isFalse(coverages.size() == 0, coverageExpected);
+        isFalse(coverages.isEmpty(), coverageExpected);
         isTrue(coverages.size() == 1, coverageMoreThanOne);
     }
 
     public static void checkBeneficiaries(Insured insured, List<CoverageBeneficiary> beneficiaries) {
         notNull(beneficiaries, beneficiariesNone);
-        isFalse(beneficiaries.size() == 0, beneficiariesNone);
+        isFalse(beneficiaries.isEmpty(), beneficiariesNone);
         isFalse(beneficiaries.size() > MAX_BENEFICIARIES, beneficiariesTooMany);
         isEqual(beneficiaries.stream().mapToDouble(CoverageBeneficiary::getCoverageBenefitPercentage).sum(), 100.0, beneficiariesPercentSumNot100);
         isFalse(beneficiaries.stream().filter(coverageBeneficiary -> coverageBeneficiary.getAgeAtSubscription() == null).findFirst().isPresent(), beneficiariesAgeAtSubscriptionEmpty);
@@ -285,17 +285,8 @@ public class ProductUtils {
                 .collect(toList());
 
         //Edit by santi to ignore benefit id blank value ======================>
-        
-        /*
         List<String> beneficiaryRegistrationIds = beneficiaries.stream()
-                .map(coverageBeneficiary -> coverageBeneficiary.getPerson().getRegistrations())
-                .flatMap(Collection::stream)
-                .map(Registration::getId)
-                .collect(toList());
-                */
-
-        List<String> beneficiaryRegistrationIds = beneficiaries.stream()
-                .filter(p -> !p.getPerson().getRegistrations().get(0).getId().equals(""))
+                .filter(p -> StringUtils.isNotBlank(p.getPerson().getRegistrations().get(0).getId()))
                 .map(p -> p.getPerson().getRegistrations())
                 .flatMap(Collection::stream)
                 .map(Registration::getId)

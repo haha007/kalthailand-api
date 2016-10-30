@@ -17,21 +17,19 @@ public class IncrementalService {
     @Autowired
     public IncrementalService(IncrementalRepository incrementalRepository) {this.incrementalRepository = incrementalRepository;}
 
-    public long next(String incrementalKey) {
-        synchronized (incrementalKey) {
-            Long value = INCREMENTAL_MAP.get(incrementalKey);
+    public synchronized long next(String incrementalKey) {
+        Long value = INCREMENTAL_MAP.get(incrementalKey);
+        if (value == null) {
+            value = loadIncremental(incrementalKey);
             if (value == null) {
-                value = loadIncremental(incrementalKey);
-                if (value == null) {
-                    value = 0l;
-                }
-            } else {
-                value++;
+                value = 0l;
             }
-            INCREMENTAL_MAP.put(incrementalKey, value);
-            saveIncremental(incrementalKey, value);
-            return value;
+        } else {
+            value++;
         }
+        INCREMENTAL_MAP.put(incrementalKey, value);
+        saveIncremental(incrementalKey, value);
+        return value;
     }
 
     private void saveIncremental(String incrementalKey, long value) {

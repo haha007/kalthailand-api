@@ -19,7 +19,7 @@ import java.util.List;
  * The converting to json will be helpful when working with messaging (e.g. SQS, SNS).
  */
 public final class ObjectMapperUtil {
-    private static final Logger LOG = LoggerFactory.getLogger(ObjectMapperUtil.class);
+    public static final Logger LOG = LoggerFactory.getLogger(ObjectMapperUtil.class);
 
     private ObjectMapperUtil() {
     }

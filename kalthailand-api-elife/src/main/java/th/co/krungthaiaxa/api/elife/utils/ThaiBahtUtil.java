@@ -16,22 +16,22 @@ public final class ThaiBahtUtil {
 
     // ···········Methods··············//
     public static String getText(double amount) {
-        BigDecimal value = new BigDecimal(amount);
+        BigDecimal value = BigDecimal.valueOf(amount);
         return getThaiBaht(value);
     }
 
     public static String getText(float amount) {
-        BigDecimal value = new BigDecimal(amount);
+        BigDecimal value = BigDecimal.valueOf(amount);
         return getThaiBaht(value);
     }
 
     public static String getText(int amount) {
-        BigDecimal value = new BigDecimal(amount);
+        BigDecimal value = BigDecimal.valueOf(amount);
         return getThaiBaht(value);
     }
 
     public static String getText(long amount) {
-        BigDecimal value = new BigDecimal(amount);
+        BigDecimal value = BigDecimal.valueOf(amount);
         return getThaiBaht(value);
     }
 
