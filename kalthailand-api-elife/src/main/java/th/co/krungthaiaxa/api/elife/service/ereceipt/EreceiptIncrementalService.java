@@ -17,11 +17,12 @@ import java.util.List;
  */
 @Service
 public class EreceiptIncrementalService {
-    private final static Logger LOGGER = LoggerFactory.getLogger(EreceiptIncrementalService.class);
+    public static final Logger LOGGER = LoggerFactory.getLogger(EreceiptIncrementalService.class);
     public static final int MAX_RETRY_FINDING_NEXT_RECEIPT_NUMBER = 100;
     public static final String INCREMENTAL_KEY = "ERECEIPT_NUMBER";
-    public static final String MAX_BASE36_VALUE = "zzzzzz";
-    public static final long MAX_DECIMAL_VALUE = Base36Util.toDecimalLong(MAX_BASE36_VALUE);
+    //In eReceipt pdf, there's maximum 6 digit.
+    public static final String MAX_MAIN_NUMBER_BASE36 = "zzzzzz";
+    public static final long MAX_MAIN_NUMBER_DECIMAL = Base36Util.toDecimalLong(MAX_MAIN_NUMBER_BASE36);
 
     private final IncrementalService incrementalService;
     private final EreceiptOldNumberCollectionService ereceiptOldNumberCollectionService;
@@ -46,7 +47,7 @@ public class EreceiptIncrementalService {
             }
             nextDecimal = incrementalService.next(INCREMENTAL_KEY);
             foundReceiptNumbers.add(nextDecimal);
-            if (nextDecimal > MAX_DECIMAL_VALUE) {
+            if (nextDecimal > MAX_MAIN_NUMBER_DECIMAL) {
                 throw new UnexpectedException(String.format("Cannot increase incremental number for EreceiptNumber anymore because it reach the maximum value (%s). So it will be reset to 1", nextDecimal));
             }
             needNewDecimal = ereceiptOldNumberCollectionService.checkDuplicateIncrementalInOldData(nextDecimal);

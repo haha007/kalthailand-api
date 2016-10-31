@@ -6,6 +6,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.jsoup.helper.StringUtil;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import th.co.krungthaiaxa.api.common.utils.EncryptUtil;
 import th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus;
@@ -46,6 +47,13 @@ public class Payment implements Serializable {
     private Document receiptImageDocument;
     @DBRef
     private Document receiptPdfDocument;
+
+    @Indexed
+    private String receiptNumberBase36;
+    @Indexed
+    private Long receiptNumber;
+    @Indexed
+    private Boolean receiptNumberOldPattern;
 
     public Payment() {
         // Used by Jackson
@@ -202,5 +210,29 @@ public class Payment implements Serializable {
 
     public void setReceiptPdfDocument(Document receiptPdfDocument) {
         this.receiptPdfDocument = receiptPdfDocument;
+    }
+
+    public Long getReceiptNumber() {
+        return receiptNumber;
+    }
+
+    public void setReceiptNumber(Long receiptNumber) {
+        this.receiptNumber = receiptNumber;
+    }
+
+    public Boolean getReceiptNumberOldPattern() {
+        return receiptNumberOldPattern;
+    }
+
+    public void setReceiptNumberOldPattern(Boolean receiptNumberOldPattern) {
+        this.receiptNumberOldPattern = receiptNumberOldPattern;
+    }
+
+    public String getReceiptNumberBase36() {
+        return receiptNumberBase36;
+    }
+
+    public void setReceiptNumberBase36(String receiptNumberBase36) {
+        this.receiptNumberBase36 = receiptNumberBase36;
     }
 }
