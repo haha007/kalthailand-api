@@ -48,4 +48,19 @@ public interface PaymentRepository extends MongoRepository<Payment, String> {
     Payment findOneByPolicyAndNewerDueDate(String policyId, LocalDateTime dueDate);
 
     List<Payment> findByPolicyIdAndTransactionIdNotNull(String policyId, Pageable pageable);
+
+    List<Payment> findByRetryPaymentIdNotNull();
+
+    @Query(value = "{'$and': [{'retryPaymentId':{'$ne': null}}, {'retryPaymentId':{'$ne': ''}}]}", fields = "{'retryPaymentId':1, 'paymentId':0}")
+    List<Payment> findRetryPaymentIdByRetryPaymentIdNotNull();
+
+    List<Payment> findByReceiptPdfDocumentNotNullAndReceiptFullNumberBase36Null();
+
+    List<Payment> findByPaymentIdIn(List<String> paymentIds);
+
+    List<Payment> findByReceiptPdfDocumentNotNullAndReceiptFullNumberBase36NullAndPaymentIdNotIn(List<String> paymentIds);
+
+    List<Payment> findByReceiptPdfDocumentNotNullAndReceiptFullNumberBase36NullAndPaymentIdIn(List<String> paymentIds);
+
+    List<Payment> findByReceiptPdfDocumentNotNull();
 }

@@ -29,7 +29,11 @@ public class Payment implements Serializable {
     public static final int REGISTRATION_KEY_PLAIN_TEXT_MAX_LENGTH = 100;
     @Id
     private String paymentId;
+    @ApiModelProperty(value = "If this payment is fail, the user will retry with new payment. That retry paymentId will be stored in this field.")
+    @Indexed
     private String retryPaymentId;
+    @ApiModelProperty(value = "If this payment is the retry from an original payment, this value is true.")
+    private Boolean retried;
     private String policyId;
     private String orderId;
     private String transactionId;
@@ -41,7 +45,9 @@ public class Payment implements Serializable {
      */
     private LocalDateTime effectiveDate;
     private Amount amount;
-
+    @ApiModelProperty(value = "List of payment status done for the specific payment. If not empty, " +
+            "should contain 0 to N payments with status SUCCESS for which the sum of the amounts is equal to " +
+            "expected amount. May contain 0 to N unsuccessful payments.")
     private List<PaymentInformation> paymentInformations = new ArrayList<>();
     @DBRef
     private Document receiptImageDocument;
@@ -49,9 +55,15 @@ public class Payment implements Serializable {
     private Document receiptPdfDocument;
 
     @Indexed
-    private String receiptNumberBase36;
+    private String receiptFullNumberBase36;
+//    @Indexed
+//    private Long receiptFullNumber;
+
     @Indexed
-    private Long receiptNumber;
+    private Long receiptMainNumber;
+    @Indexed
+    private String receiptMainNumberBase36;
+
     @Indexed
     private Boolean receiptNumberOldPattern;
 
@@ -167,9 +179,6 @@ public class Payment implements Serializable {
         this.amount = amount;
     }
 
-    @ApiModelProperty(value = "List of payment status done for the specific payment. If not empty, " +
-            "should contain 0 to N payments with status SUCCESS for whcih the sum of the amounts is equal to " +
-            "expected amount. May contain 0 to N unsuccessful payments.")
     public List<PaymentInformation> getPaymentInformations() {
         return paymentInformations;
     }
@@ -212,14 +221,6 @@ public class Payment implements Serializable {
         this.receiptPdfDocument = receiptPdfDocument;
     }
 
-    public Long getReceiptNumber() {
-        return receiptNumber;
-    }
-
-    public void setReceiptNumber(Long receiptNumber) {
-        this.receiptNumber = receiptNumber;
-    }
-
     public Boolean getReceiptNumberOldPattern() {
         return receiptNumberOldPattern;
     }
@@ -228,11 +229,35 @@ public class Payment implements Serializable {
         this.receiptNumberOldPattern = receiptNumberOldPattern;
     }
 
-    public String getReceiptNumberBase36() {
-        return receiptNumberBase36;
+    public String getReceiptFullNumberBase36() {
+        return receiptFullNumberBase36;
     }
 
-    public void setReceiptNumberBase36(String receiptNumberBase36) {
-        this.receiptNumberBase36 = receiptNumberBase36;
+    public void setReceiptFullNumberBase36(String receiptFullNumberBase36) {
+        this.receiptFullNumberBase36 = receiptFullNumberBase36;
+    }
+
+    public Long getReceiptMainNumber() {
+        return receiptMainNumber;
+    }
+
+    public void setReceiptMainNumber(Long receiptMainNumber) {
+        this.receiptMainNumber = receiptMainNumber;
+    }
+
+    public String getReceiptMainNumberBase36() {
+        return receiptMainNumberBase36;
+    }
+
+    public void setReceiptMainNumberBase36(String receiptMainNumberBase36) {
+        this.receiptMainNumberBase36 = receiptMainNumberBase36;
+    }
+
+    public Boolean getRetried() {
+        return retried;
+    }
+
+    public void setRetried(Boolean retried) {
+        this.retried = retried;
     }
 }

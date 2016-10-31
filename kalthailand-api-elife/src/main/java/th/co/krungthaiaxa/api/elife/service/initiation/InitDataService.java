@@ -1,8 +1,7 @@
-package th.co.krungthaiaxa.api.elife.service.initdata;
+package th.co.krungthaiaxa.api.elife.service.initiation;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import th.co.krungthaiaxa.api.elife.service.migratedata.PremiumsDataMigrationService;
 
 import javax.annotation.PostConstruct;
 
@@ -14,13 +13,10 @@ import javax.annotation.PostConstruct;
 @Service
 public class InitDataService {
     @Autowired
-    private PremiumsDataMigrationService premiumsDataMigrationService;
-    @Autowired
     private InitProduct initProduct;
 
     @PostConstruct
     public void createInitDataIfNecessary() {
         initProduct.createInitData();
-        premiumsDataMigrationService.migrateData();
     }
 }

@@ -1,4 +1,4 @@
-package th.co.krungthaiaxa.api.elife.service.initdata;
+package th.co.krungthaiaxa.api.elife.service.initiation;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

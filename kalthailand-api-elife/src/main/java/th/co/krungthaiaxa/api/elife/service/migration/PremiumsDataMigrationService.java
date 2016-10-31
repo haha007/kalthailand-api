@@ -1,4 +1,4 @@
-package th.co.krungthaiaxa.api.elife.service.migratedata;
+package th.co.krungthaiaxa.api.elife.service.migration;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +11,7 @@ import th.co.krungthaiaxa.api.elife.repository.PolicyRepository;
 import th.co.krungthaiaxa.api.elife.repository.QuoteRepository;
 import th.co.krungthaiaxa.api.elife.service.ElifeEmailService;
 
+import javax.annotation.PostConstruct;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,6 +33,7 @@ public class PremiumsDataMigrationService {
 
     //When you put @Transactional here, you cannot start web app when you cannot connect to CDB!
     //    @Transactional
+    @PostConstruct
     public void migrateData() {
         copyDataToOldStructure();
     }

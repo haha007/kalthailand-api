@@ -21,7 +21,7 @@ public class LoggingAspect {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LoggingAspect.class);
 
-    @Pointcut("within(th.co.krungthaiaxa.api.elife.service.initdata..*) || within(th.co.krungthaiaxa.api.elife.products.*..*)")
+    @Pointcut("within(th.co.krungthaiaxa.api.elife.service.initiation..*) || within(th.co.krungthaiaxa.api.elife.products.*..*)")
     public void loggingPointcut() {
     }
 

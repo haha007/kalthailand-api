@@ -39,6 +39,10 @@ public class DocumentService {
         return documentDownloadRepository.findByDocumentId(documentId);
     }
 
+    public byte[] getDocumentDownloadContent(DocumentDownload documentDownload) {
+        return Base64.getDecoder().decode(documentDownload.getContent());
+    }
+
     /**
      * This moethods encodes the content in Base64 by default
      *
