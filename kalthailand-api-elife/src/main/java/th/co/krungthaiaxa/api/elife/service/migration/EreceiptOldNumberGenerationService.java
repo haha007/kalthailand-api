@@ -5,8 +5,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.common.utils.LogUtil;
+import th.co.krungthaiaxa.api.common.utils.base36.Base36Util;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
+import th.co.krungthaiaxa.api.elife.service.ereceipt.EreceiptNumber;
 
 import java.time.Instant;
 import java.util.List;
@@ -30,6 +32,7 @@ public class EreceiptOldNumberGenerationService {
      * This method will run only one time.
      */
 //    @PostConstruct
+    //FIXME change method name
     public EreceiptOldNumberResult generateEreceiptNumbersByOldPatternForOldPayments() {
         List<Payment> paymentsInCludedRetryPayments = paymentRepository.findByReceiptPdfDocumentNotNullAndReceiptFullNumberBase36Null();
         LogUtil.logStarting("Payments included retryPayments: " + paymentsInCludedRetryPayments.size() + " \n" + toStringPaymentWithReceiptNumber(paymentsInCludedRetryPayments));
@@ -56,7 +59,7 @@ public class EreceiptOldNumberGenerationService {
     }
 
     private String toStringPaymentWithReceiptNumber(List<Payment> payments) {
-        return payments.stream().map(payment -> String.format("%s, receiptNumber: %s", payment.getPaymentId(), payment.getReceiptFullNumberBase36())).collect(Collectors.joining("\n"));
+        return payments.stream().map(payment -> String.format("%s, receiptNumber: %s", payment.getPaymentId(), payment.getReceiptNumber().getFullNumberBase36())).collect(Collectors.joining("\n"));
     }
 
     private void saveEreceiptNumbersByOldPattern(List<Payment> payments, boolean newBusiness) {
@@ -68,15 +71,17 @@ public class EreceiptOldNumberGenerationService {
 
     private void generateEreceiptNumbersByOldPattern(Payment payment, boolean newBusiness) {
         String policyNumber = payment.getPolicyId();
-        String receiptNumberBase36 = generateReceiptNumberOldPattern(policyNumber, newBusiness);
-        payment.setReceiptFullNumberBase36(receiptNumberBase36);
+        EreceiptNumber ereceiptNumber = generateReceiptNumberOldPattern(policyNumber, newBusiness);
+        payment.setReceiptNumber(ereceiptNumber);
         payment.setReceiptNumberOldPattern(true);
         if (!newBusiness) {
             payment.setRetried(true);
         }
     }
 
-    public static String generateReceiptNumberOldPattern(String policyNumber, boolean newBusiness) {
+    public static EreceiptNumber generateReceiptNumberOldPattern(String policyNumber, boolean newBusiness) {
+        EreceiptNumber ereceiptNumber = new EreceiptNumber();
+
         String[] policyNumberParts = policyNumber.split("-");
         String policyNumberPrefix = policyNumberParts[0];
         String policyNumberSuffix = policyNumberParts[1];
@@ -86,6 +91,10 @@ public class EreceiptOldNumberGenerationService {
         } else {
             receiptNumberBase36 = policyNumberPrefix.charAt(2) + policyNumberSuffix.substring(0, 5) + "02";
         }
-        return receiptNumberBase36;
+        ereceiptNumber.setFullNumberBase36(receiptNumberBase36);
+        ereceiptNumber.setMainNumberBase36(receiptNumberBase36.substring(0, 6));
+        ereceiptNumber.setMainNumberDecimal(Base36Util.toDecimalLong(ereceiptNumber.getMainNumberBase36()));
+        ereceiptNumber.setSuffixNumberBase36(receiptNumberBase36.substring(6));
+        return ereceiptNumber;
     }
 }

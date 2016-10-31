@@ -17,6 +17,8 @@ import th.co.krungthaiaxa.api.elife.model.line.LinePayCaptureMode;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayResponse;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayResponseInfo;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayResponsePaymentInfo;
+import th.co.krungthaiaxa.api.elife.service.ereceipt.EreceiptNumber;
+import th.co.krungthaiaxa.api.elife.service.ereceipt.EreceiptService;
 
 import javax.validation.constraints.NotNull;
 
@@ -42,18 +44,20 @@ public class PolicyValidatedProcessingService {
     private final PolicyService policyService;
     private final BeanValidator beanValidator;
     private LineService lineService;
+    private final EreceiptService ereceiptService;
 
     @Autowired
-    public PolicyValidatedProcessingService(PaymentService paymentService, PolicyService policyService, LineService lineService, BeanValidator beanValidator) {
+    public PolicyValidatedProcessingService(PaymentService paymentService, PolicyService policyService, LineService lineService, BeanValidator beanValidator, EreceiptService ereceiptService) {
         this.paymentService = paymentService;
         this.policyService = policyService;
         this.beanValidator = beanValidator;
         this.lineService = lineService;
+        this.ereceiptService = ereceiptService;
     }
 
     public Policy processValidatedPolicy(PolicyValidationRequest policyValidationRequest) {
         beanValidator.validate(policyValidationRequest);
-
+        boolean newBusiness = true;
         String agentCode = policyValidationRequest.getAgentCode();
         String policyId = policyValidationRequest.getPolicyId();
         String agentName = policyValidationRequest.getAgentName();
@@ -102,7 +106,13 @@ public class PolicyValidatedProcessingService {
         }
 
         // Update the payment if confirm is success
+        //TODO should put in some common method: update payment after recap success from linePay.
+        EreceiptNumber ereceiptNumber = ereceiptService.generateEreceiptFullNumber(newBusiness);
+        paymentHasTransaction.setReceiptNumber(ereceiptNumber);
+        paymentHasTransaction.setNewBusiness(newBusiness);
+        paymentHasTransaction.setReceiptNumberOldPattern(false);
         policyService.updatePaymentAfterLinePay(paymentHasTransaction, paymentHasTransaction.getAmount().getValue(), paymentHasTransaction.getAmount().getCurrencyCode(), LINE, linePayResponse);
+
         String regKey = linePayResponse.getInfo().getRegKey();
         policyService.updateRegKeyForAllNotProcessedPayments(policy, regKey);
         policy = policyService.updatePolicyAfterPolicyHasBeenValidated(policy, agentCode, agentName, accessToken);

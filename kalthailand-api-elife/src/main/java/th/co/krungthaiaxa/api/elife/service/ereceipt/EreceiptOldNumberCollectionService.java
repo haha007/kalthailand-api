@@ -14,7 +14,11 @@ public class EreceiptOldNumberCollectionService {
 
     }
 
-    public boolean checkDuplicateIncrementalInOldData(long ereceiptNumber) {
+    /**
+     * @param ereceiptFullNumberBase36 the full number in base36 format. (Doesn't include {@link EreceiptPdfService#ERECEIPT_NUMBER_PREFIX}).
+     * @return
+     */
+    public boolean checkDuplicateIncrementalInOldData(String ereceiptFullNumberBase36) {
         //TODO
         return false;
     }

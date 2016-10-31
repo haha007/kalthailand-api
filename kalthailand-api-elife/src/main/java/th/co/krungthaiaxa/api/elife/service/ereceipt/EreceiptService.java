@@ -35,25 +35,31 @@ public class EreceiptService {
     private final PaymentRepository paymentRepository;
     private final SigningClient signingClient;
     private final EreceiptPdfService ereceiptPdfService;
+    private final EreceiptIncrementalService ereceiptIncrementalService;
 
     @Autowired
-    public EreceiptService(DocumentService documentService, PaymentRepository paymentRepository, SigningClient signingClient, EreceiptPdfService ereceiptPdfService) {
+    public EreceiptService(DocumentService documentService, PaymentRepository paymentRepository, SigningClient signingClient, EreceiptPdfService ereceiptPdfService, EreceiptIncrementalService ereceiptIncrementalService) {
         this.documentService = documentService;
         this.paymentRepository = paymentRepository;
         this.signingClient = signingClient;
         this.ereceiptPdfService = ereceiptPdfService;
+        this.ereceiptIncrementalService = ereceiptIncrementalService;
+    }
+
+    public EreceiptNumber generateEreceiptFullNumber(boolean newBusiness) {
+        return ereceiptIncrementalService.nextValue(newBusiness);
     }
 
     /**
      * @param policy
      * @param payment
-     * @param firstPayment
-     * @param accessToken  it will be used for sign document
+     * @param newBusiness
+     * @param accessToken it will be used for sign document
      * @return
      * @throws EreceiptDocumentException if there's something wrong while creating ereceipt pdf.
      */
-    public Document addEreceiptPdf(Policy policy, Payment payment, boolean firstPayment, String accessToken) {
-        byte[] decodedNonSignedPdf = ereceiptPdfService.createEreceiptPdf(policy, payment, firstPayment);
+    public Document addEreceiptPdf(Policy policy, Payment payment, boolean newBusiness, String accessToken) {
+        byte[] decodedNonSignedPdf = ereceiptPdfService.createEreceiptPdf(policy, payment, newBusiness);
         byte[] encodedNonSignedPdf = Base64.getEncoder().encode(decodedNonSignedPdf);
         byte[] encodedSignedPdf = signingClient.getEncodedSignedPdfDocument(encodedNonSignedPdf, accessToken);
         byte[] decodedSignedPdf = Base64.getDecoder().decode(encodedSignedPdf);

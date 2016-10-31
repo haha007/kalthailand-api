@@ -105,7 +105,8 @@ public class EreceiptPdfService {
     private static final Point POS_REF1_ID_CARD = new Point(497, 343);
 
     //line 4:
-    private static final Point POS_REF2_RECEIPT_NUMBER = new Point(560, 386);
+    private static final Point POS_REF2_RECEIPT_NUMBER_01 = new Point(560, 386);
+    private static final Point POS_REF2_RECEIPT_NUMBER_02 = new Point(651, 386);
 
     //line 5: Should on the same line of POS_PREMIUM_VALUE_IN_THAI_LETTERS
     private static final Point POS_PREMIUM_VALUE_IN_NUMBERS = new Point(560, 417);
@@ -119,43 +120,49 @@ public class EreceiptPdfService {
     private static final Point POS_TMC_AGENCY_CODE_PART02 = new Point(563, 541);
     private static final Point POS_TMC_AGENCY_CODE_PART03 = new Point(595, 541);
 
-    private final DocumentService documentService;
-    private BaseFont baseFont = getBaseFont();
+    /**
+     * For eReceipt number which is generated from eLife, the prefix is always 'M'
+     * For eReceipt number which is generated from RLS, the prefix can be different (e.g. 'R', 'S'...)
+     */
+    private static final String ERECEIPT_NUMBER_PREFIX = "M";
+
+    private final EreceiptIncrementalService ereceiptIncrementalService;
+    private final BaseFont baseFont = getBaseFont();
 
     @Autowired
-    public EreceiptPdfService(DocumentService documentService) {
-        this.documentService = documentService;
+    public EreceiptPdfService(EreceiptIncrementalService ereceiptIncrementalService) {
+        this.ereceiptIncrementalService = ereceiptIncrementalService;
     }
 
     /**
      * @param policy
      * @param payment
-     * @param firstPayment If this is the new business payment, the value is "true". If this is the renewal payment, it's "false".
+     * @param newBusiness If this is the new business payment, the value is "true". If this is the renewal payment, it's "false".
      * @return
      */
-    public byte[] createEreceiptPdf(Policy policy, Payment payment, boolean firstPayment) {
+    public byte[] createEreceiptPdf(Policy policy, Payment payment, boolean newBusiness) {
         InputStream pdfTemplateInputStream = IOUtil.loadInputStreamFromClassPath(ERECEIPT_TEMPLATE_FILE_NAME);
-        return createEreceiptPdf(pdfTemplateInputStream, policy, payment, firstPayment);
+        return createEreceiptPdf(pdfTemplateInputStream, policy, payment, newBusiness);
     }
 
-    public byte[] createEreceiptPdf(InputStream pdfTemplateInputStream, Policy policy, Payment payment, boolean firstPayment) {
-        LOGGER.debug("Generate eReceipt pdf [started]: %n\t policyId: {}%n\t payment: {}%n\t firstPayment: {}", policy.getPolicyId(), payment.getPaymentId(), firstPayment);
+    public byte[] createEreceiptPdf(InputStream pdfTemplateInputStream, Policy policy, Payment payment, boolean newBusiness) {
+        LOGGER.debug("Generate eReceipt pdf [started]: %n\t policyId: {}%n\t payment: {}%n\t firstPayment: {}", policy.getPolicyId(), payment.getPaymentId(), newBusiness);
         try (ByteArrayOutputStream content = new ByteArrayOutputStream()) {
+
             PdfReader pdfReader = new PdfReader(pdfTemplateInputStream);
             PdfStamper pdfStamper = new PdfStamper(pdfReader, content);
-            writePage01(pdfStamper.getOverContent(1), policy, payment, firstPayment);
+            writePage01(pdfStamper.getOverContent(1), policy, payment, newBusiness);
             //page02 is the same as template file, we don't need to change anything.
             pdfStamper.close();
             content.close();
-            byte[] result = content.toByteArray();
-            LOGGER.debug("Generate eReceipt pdf [finished]: %n\t policyId: {}%n\t payment: {}%n\t firstPayment: {}", policy.getPolicyId(), payment.getPaymentId(), firstPayment);
-            return result;
+            LOGGER.debug("Generate eReceipt pdf [finished]: %n\t policyId: {}%n\t payment: {}%n\t firstPayment: {}", policy.getPolicyId(), payment.getPaymentId(), newBusiness);
+            return content.toByteArray();
         } catch (DocumentException | IOException ex) {
-            throw new FileIOException(String.format("Generate eReceipt pdf [error]: %n\t policyId: %s %n\t payment: %s %n\t firstPayment: %s %n\tError message: %s", policy.getPolicyId(), payment.getPaymentId(), firstPayment, ex.getMessage()), ex);
+            throw new FileIOException(String.format("Generate eReceipt pdf [error]: %n\t policyId: %s %n\t payment: %s %n\t firstPayment: %s %n\tError message: %s", policy.getPolicyId(), payment.getPaymentId(), newBusiness, ex.getMessage()), ex);
         }
     }
 
-    private void writePage01(PdfContentByte page, Policy policy, Payment payment, boolean firstPayment) {
+    private void writePage01(PdfContentByte page, Policy policy, Payment payment, boolean newBusiness) {
         Insured mainInsured = ProductUtils.validateExistMainInsured(policy);
         String mainInsuredFullName = PersonUtil.getFullName(mainInsured.getPerson());
         writeText(page, mainInsuredFullName, POS_MAIN_INSURED_FULL_NAME);
@@ -171,7 +178,7 @@ public class EreceiptPdfService {
 
         writePaymentPeriodicity(page, policy);
 
-        writePaymentRenewalMode(page, firstPayment);
+        writePaymentRenewalMode(page, newBusiness);
 
         writePaymentMethod(page);
 
@@ -184,7 +191,7 @@ public class EreceiptPdfService {
         String mainInsuredRegistrationIdCard = ProductUtils.getRegistrationId(mainInsured);
         writeChars(page, POS_REF1_ID_CARD, 13.94, 13, mainInsuredRegistrationIdCard.toCharArray());
 
-//        writeReceiptNumber(page);
+        writeReceiptNumber(page, payment);
 
         String agentName = policy.getValidationAgentName();
         if (StringUtils.isNotBlank(agentName)) {
@@ -193,6 +200,14 @@ public class EreceiptPdfService {
         }
 
         writeAgentCode(page, policy);
+    }
+
+    //TODO
+    private void writeReceiptNumber(PdfContentByte page, Payment payment) {
+        EreceiptNumber ereceiptNumber = payment.getReceiptNumber();
+        String ereceiptNumberPart01 = ERECEIPT_NUMBER_PREFIX + ereceiptNumber.getMainNumberBase36();
+        writeChars(page, POS_REF2_RECEIPT_NUMBER_01, 11.45, 7, ereceiptNumberPart01.toCharArray());
+        writeChars(page, POS_REF2_RECEIPT_NUMBER_02, 11.45, 2, ereceiptNumber.getSuffixNumberBase36().toCharArray());
     }
 
     private void writeAgentCode(PdfContentByte page, Policy policy) {
@@ -266,8 +281,8 @@ public class EreceiptPdfService {
         writeText(page, "X", posPeriodicity);
     }
 
-    private void writePaymentRenewalMode(PdfContentByte page, boolean firstPayment) {
-        Point pos = firstPayment ? POS_PAYMENT_MODE_NEW_BUSINESS : POS_PAYMENT_MODE_RENEWAL;
+    private void writePaymentRenewalMode(PdfContentByte page, boolean newBusiness) {
+        Point pos = newBusiness ? POS_PAYMENT_MODE_NEW_BUSINESS : POS_PAYMENT_MODE_RENEWAL;
         writeText(page, "X", pos);
     }
 
@@ -290,5 +305,26 @@ public class EreceiptPdfService {
 
     private String getThaiDate(LocalDateTime localDate) {
         return DateTimeUtil.formatBuddhistThaiDate(localDate);
+    }
+
+    public static class EreceiptDocumentResult {
+        private byte[] receiptPdf;
+        private EreceiptNumber ereceiptNumber;
+
+        public byte[] getReceiptPdf() {
+            return receiptPdf;
+        }
+
+        public void setReceiptPdf(byte[] receiptPdf) {
+            this.receiptPdf = receiptPdf;
+        }
+
+        public EreceiptNumber getEreceiptNumber() {
+            return ereceiptNumber;
+        }
+
+        public void setEreceiptNumber(EreceiptNumber ereceiptNumber) {
+            this.ereceiptNumber = ereceiptNumber;
+        }
     }
 }

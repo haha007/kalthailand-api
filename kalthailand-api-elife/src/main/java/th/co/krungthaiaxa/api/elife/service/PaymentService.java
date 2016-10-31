@@ -30,6 +30,7 @@ import th.co.krungthaiaxa.api.elife.model.line.BaseLineResponse;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayResponse;
 import th.co.krungthaiaxa.api.elife.products.ProductUtils;
 import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
+import th.co.krungthaiaxa.api.elife.service.ereceipt.EreceiptNumber;
 import th.co.krungthaiaxa.api.elife.service.ereceipt.EreceiptService;
 import th.co.krungthaiaxa.api.elife.utils.EmailUtil;
 import th.co.krungthaiaxa.api.elife.utils.PersonUtil;
@@ -148,14 +149,17 @@ public class PaymentService {
      */
     public Payment retryFailedPayment(String policyId, String oldPaymentId, String orderId, String transactionId, String regKey, String accessToken) {
         Payment oldPayment = validateNotExistNewerPayment(oldPaymentId);
-        Payment payment = new Payment();
-        payment.setPolicyId(policyId);
-        payment.setRegistrationKey(regKey);
-        payment.setDueDate(DateTimeUtil.nowLocalDateTimeInThaiZoneId());
-        payment.setAmount(oldPayment.getAmount());
-        payment.setEffectiveDate(DateTimeUtil.nowLocalDateTimeInThaiZoneId());
-        payment.setTransactionId(transactionId);
-        payment.setOrderId(orderId);
+        boolean newBusiness = false;
+
+        Payment retryPayment = new Payment();
+        retryPayment.setPolicyId(policyId);
+        retryPayment.setRegistrationKey(regKey);
+        retryPayment.setDueDate(DateTimeUtil.nowLocalDateTimeInThaiZoneId());
+        retryPayment.setAmount(oldPayment.getAmount());
+        retryPayment.setEffectiveDate(DateTimeUtil.nowLocalDateTimeInThaiZoneId());
+        retryPayment.setTransactionId(transactionId);
+        retryPayment.setOrderId(orderId);
+        retryPayment.setRetried(true);
 
         // If no transaction id, then in error, nothing else should be done since we don't have a status (error / success)
         if (StringUtils.isBlank(transactionId)) {
@@ -165,25 +169,29 @@ public class PaymentService {
         LinePayResponse linePayResponse = null;
         try {
             LOGGER.debug("Will try to confirm payment with transation ID [" + transactionId + "] on the policy with ID [" + policyId + "]");
-            linePayResponse = lineService.capturePayment(transactionId, payment.getAmount().getValue(), payment.getAmount().getCurrencyCode());
+            linePayResponse = lineService.capturePayment(transactionId, retryPayment.getAmount().getValue(), retryPayment.getAmount().getCurrencyCode());
         } catch (Exception e) {
             throw new LinePaymentException("Unable to confirm the payment in the policy with ID [" + policyId + "]", e);
         } finally {
             if (linePayResponse != null && linePayResponse.getReturnCode().equals(LineService.RESPONSE_CODE_SUCCESS)) {
-                payment.setStatus(PaymentStatus.COMPLETED);
+                EreceiptNumber ereceiptNumber = ereceiptService.generateEreceiptFullNumber(newBusiness);
+                retryPayment.setReceiptNumber(ereceiptNumber);
+                retryPayment.setNewBusiness(newBusiness);
+                retryPayment.setReceiptNumberOldPattern(false);
+                retryPayment.setStatus(PaymentStatus.COMPLETED);
             } else {
-                payment.setStatus(PaymentStatus.INCOMPLETE);
+                retryPayment.setStatus(PaymentStatus.INCOMPLETE);
                 LOGGER.warn("The retry payment also not successed yet. policyId: {}, oldPaymentId: {}, orderId: {}, transactionId: {}", policyId, oldPaymentId, orderId, transactionId);
                 //Don't need to resend another fail email to user. When backend return error, FE will show error page to customer.
             }
             //TODO payment with response
-            payment = policyService.updatePayment(payment, orderId, transactionId, StringUtils.isBlank(regKey) ? "" : regKey);
-            payment = updateByLinePayResponse(payment, linePayResponse);
-            oldPayment.setRetryPaymentId(payment.getPaymentId());
+            retryPayment = policyService.updatePayment(retryPayment, orderId, transactionId, StringUtils.isBlank(regKey) ? "" : regKey);
+            retryPayment = updateByLinePayResponse(retryPayment, linePayResponse);
+            oldPayment.setRetryPaymentId(retryPayment.getPaymentId());
             paymentRepository.save(oldPayment);
         }
-        sendRetryPaymentSuccessToMarketingTeam(payment, accessToken);
-        return payment;
+        sendRetryPaymentSuccessToMarketingTeam(retryPayment, accessToken);
+        return retryPayment;
     }
 
     /**
@@ -228,7 +236,6 @@ public class PaymentService {
         Insured mainInsured = ProductUtils.validateExistMainInsured(policy);
 
         Document ereceiptPdfDocument = ereceiptService.addEreceiptPdf(policy, payment, false, accessToken);
-
         String emailSubject = messageSource.getMessage("email.payment.retry.success.title", null, LocaleUtil.THAI_LOCALE);
         String emailContent = IOUtil.loadTextFileInClassPath("/email-content/email-retrypayment-success.html");
 

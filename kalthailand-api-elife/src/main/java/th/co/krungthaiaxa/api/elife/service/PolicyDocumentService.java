@@ -8,6 +8,8 @@ import th.co.krungthaiaxa.api.elife.client.SigningClient;
 import th.co.krungthaiaxa.api.elife.model.Document;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.Policy;
+import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
+import th.co.krungthaiaxa.api.elife.service.ereceipt.EreceiptNumber;
 import th.co.krungthaiaxa.api.elife.service.ereceipt.EreceiptService;
 
 import java.util.Optional;
@@ -29,15 +31,18 @@ public class PolicyDocumentService {
     private final SigningClient signingClient;
     private final PaymentQueryService paymentQueryService;
     private final EreceiptService ereceiptService;
+    private final PaymentRepository paymentRepository;
 
     @Autowired
-    public PolicyDocumentService(DocumentService documentService, ApplicationFormService applicationFormService, DAFormService daFormService, SigningClient signingClient, PaymentQueryService paymentQueryService, EreceiptService ereceiptService) {
+    public PolicyDocumentService(DocumentService documentService, ApplicationFormService applicationFormService, DAFormService daFormService, SigningClient signingClient, PaymentQueryService paymentQueryService, EreceiptService ereceiptService,
+            PaymentRepository paymentRepository) {
         this.documentService = documentService;
         this.applicationFormService = applicationFormService;
         this.daFormService = daFormService;
         this.signingClient = signingClient;
         this.paymentQueryService = paymentQueryService;
         this.ereceiptService = ereceiptService;
+        this.paymentRepository = paymentRepository;
     }
 
     public void generateNotValidatedPolicyDocuments(Policy policy) {
@@ -71,7 +76,7 @@ public class PolicyDocumentService {
     }
 
     public void generateValidatedPolicyDocuments(Policy policy, String token) {
-        boolean isTheFirstPaymentSession = true;
+        boolean newBusiness = true;
 
         // In case previous documents were not generated
         generateNotValidatedPolicyDocuments(policy);
@@ -108,9 +113,9 @@ public class PolicyDocumentService {
 //        }
 
         // Generate Ereceipt as PDF
-        Optional<Document> documentPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(ERECEIPT_PDF)).findFirst();
-        if (!documentPdf.isPresent()) {
-            ereceiptService.addEreceiptPdf(policy, firstPayment, isTheFirstPaymentSession, token);
+        Optional<Document> ereceiptPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(ERECEIPT_PDF)).findFirst();
+        if (!ereceiptPdf.isPresent()) {
+            ereceiptService.addEreceiptPdf(policy, firstPayment, newBusiness, token);
 //            try {
 //                byte[] decodedNonSignedPdf = ereceiptService.createEreceiptPdf(ereceiptImage);
 //                byte[] encodedNonSignedPdf = Base64.getEncoder().encode(decodedNonSignedPdf);

@@ -68,6 +68,7 @@ import static th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus.OVERPAID;
 import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.EVERY_MONTH;
 import static th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus.VALIDATED;
 import static th.co.krungthaiaxa.api.elife.products.ProductUtils.amount;
+
 //TODO need to be refactored.
 @Service
 public class PolicyService {

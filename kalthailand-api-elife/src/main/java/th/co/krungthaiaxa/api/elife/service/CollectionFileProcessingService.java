@@ -32,6 +32,8 @@ import th.co.krungthaiaxa.api.elife.model.line.LinePayRecurringResponse;
 import th.co.krungthaiaxa.api.elife.repository.CollectionFileRepository;
 import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
 import th.co.krungthaiaxa.api.elife.repository.PolicyRepository;
+import th.co.krungthaiaxa.api.elife.service.ereceipt.EreceiptNumber;
+import th.co.krungthaiaxa.api.elife.service.ereceipt.EreceiptService;
 import th.co.krungthaiaxa.api.elife.utils.ExcelUtils;
 
 import javax.inject.Inject;
@@ -60,6 +62,7 @@ import static th.co.krungthaiaxa.api.elife.utils.ExcelUtils.text;
 /**
  * This class contains methods for processing the collectionFile.
  * After processing collection files, the result (Excel) file will be updated into RLS system (manually).
+ * Collection always process only the 'renewal' payments. The 'new business' payments were already handled by FE.
  */
 @Service
 public class CollectionFileProcessingService {
@@ -79,6 +82,7 @@ public class CollectionFileProcessingService {
     private final PolicyRepository policyRepository;
     private final PolicyService policyService;
     private final PaymentService paymentService;
+    private final EreceiptService ereceiptService;
 
     //    private final DeductionFileRepository deductionFileRepository;
     /**
@@ -88,13 +92,15 @@ public class CollectionFileProcessingService {
     private final PaymentFailEmailService paymentInformService;
 
     @Inject
-    public CollectionFileProcessingService(CollectionFileRepository collectionFileRepository, PaymentRepository paymentRepository, PolicyRepository policyRepository, PolicyService policyService, PaymentService paymentService, LineService lineService,
+    public CollectionFileProcessingService(CollectionFileRepository collectionFileRepository, PaymentRepository paymentRepository, PolicyRepository policyRepository, PolicyService policyService, PaymentService paymentService, EreceiptService ereceiptService,
+            LineService lineService,
             PaymentFailEmailService paymentInformService) {
         this.collectionFileRepository = collectionFileRepository;
         this.paymentRepository = paymentRepository;
         this.policyRepository = policyRepository;
         this.policyService = policyService;
         this.paymentService = paymentService;
+        this.ereceiptService = ereceiptService;
 //        this.deductionFileRepository = deductionFileRepository;
         this.lineService = lineService;
         this.paymentInformService = paymentInformService;
@@ -317,6 +323,7 @@ public class CollectionFileProcessingService {
     }
 
     void processCollectionFileLine(DeductionFile deductionFile, CollectionFileLine collectionFileLine) {
+        boolean newBusiness = false;
         LOGGER.info("Processing collectionFileLine [start]: policyNumber: {}", collectionFileLine.getPolicyNumber());
 
         String paymentId = collectionFileLine.getPaymentId();
@@ -354,6 +361,10 @@ public class CollectionFileProcessingService {
 
             payment.getAmount().setValue(premiumAmount);
             payment.setOrderId(orderId);
+            //FIXME recheck when LinePay response fail.
+            EreceiptNumber ereceiptNumber = ereceiptService.generateEreceiptFullNumber(newBusiness);
+            payment.setReceiptNumber(ereceiptNumber);
+            payment.setReceiptNumberOldPattern(false);
             paymentService.updateByLinePayResponse(payment, linePayResponse);
         } catch (Exception ex) {
             LOGGER.error("Error when process collection line: " + ex.getMessage() + ". Collection line:%n" + ObjectMapperUtil.toStringMultiLine(collectionFileLine), ex);
