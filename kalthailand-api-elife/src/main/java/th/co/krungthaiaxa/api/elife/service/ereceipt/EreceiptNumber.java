@@ -1,15 +1,24 @@
 package th.co.krungthaiaxa.api.elife.service.ereceipt;
 
+import org.hibernate.validator.constraints.NotBlank;
+
+import javax.validation.constraints.NotNull;
+
 /**
  * @author khoi.tran on 10/31/16.
  */
 public class EreceiptNumber {
+
     /**
      * Note: the full number doesn't include the prefix character ({@link EreceiptPdfService#ERECEIPT_NUMBER_PREFIX}).
      */
+    @NotBlank
     private String fullNumberBase36;
+    @NotBlank
     private String mainNumberBase36;
+    @NotNull
     private Long mainNumberDecimal;
+    @NotBlank
     private String suffixNumberBase36;
 
     public String getFullNumberBase36() {

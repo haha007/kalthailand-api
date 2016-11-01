@@ -137,6 +137,7 @@ public class CollectionFileProcessingService {
         processLatestCollectionFiles();
     }
 
+    //TODO avoid process one collectionFile many times by multi-submit.
     public List<CollectionFile> processLatestCollectionFiles() {
         Instant startTime = LogUtil.logStarting("Process collection files [start]");
         List<CollectionFile> collectionFiles = collectionFileRepository.findByJobStartedDateNull();

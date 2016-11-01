@@ -72,6 +72,9 @@ public class PaymentRetryServiceTest extends ELifeTest {
     private PaymentService paymentService;
 
     @Inject
+    private PaymentRetryService paymentRetryService;
+
+    @Inject
     private PaymentRepository paymentRepository;
 
     private static Policy POLICY;
@@ -243,7 +246,7 @@ public class PaymentRetryServiceTest extends ELifeTest {
         String newRegKey = PaymentFactory.generatePaymentRegKey();
         String transId = PaymentFactory.generateTransactionId();
         String accessToken = RequestFactory.generateAccessToken();
-        Payment retryPayment = paymentService.retryFailedPayment(policy.getPolicyId(), oldPaymentId, orderId, transId, newRegKey, accessToken);
+        Payment retryPayment = paymentRetryService.retryFailedPayment(policy.getPolicyId(), oldPaymentId, orderId, transId, newRegKey, accessToken);
 
         Assert.assertEquals(orderId, retryPayment.getOrderId());
         Assert.assertEquals(transId, retryPayment.getTransactionId());
@@ -272,6 +275,7 @@ public class PaymentRetryServiceTest extends ELifeTest {
     private void setupLineServiceWithResponseCode(String lineResponseCode) {
         lineService = LineServiceMockFactory.initServiceWithResponseCode(lineResponseCode);
         paymentService.setLineService(lineService);
+        paymentRetryService.setLineService(lineService);
         rlsService.setLineService(lineService);
     }
 

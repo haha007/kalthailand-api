@@ -38,7 +38,7 @@ public class EreceiptOldNumberGenerationServiceTest {
         EreceiptOldNumberResult result = ereceiptOldNumberGenerationService.generateEreceiptNumbersByOldPatternForOldPayments();
         List<Payment> payments = paymentRepository.findByReceiptPdfDocumentNotNull();
         for (Payment payment : payments) {
-            String ereceiptFullNumberBase36 = payment.getReceiptFullNumberBase36();
+            String ereceiptFullNumberBase36 = payment.getReceiptNumber().getFullNumberBase36();
             Assert.assertNotNull(ereceiptFullNumberBase36);
 //            if (payment.getRetried())
         }
@@ -57,6 +57,6 @@ public class EreceiptOldNumberGenerationServiceTest {
         String ereceiptPdfDocumentId = payment.getReceiptPdfDocument().getId();
         DocumentDownload documentDownload = documentService.findDocumentDownload(ereceiptPdfDocumentId);
         byte[] pdfContent = documentService.getDocumentDownloadContent(documentDownload);
-        IOUtil.writeBytesToRelativeFile(TestUtil.PATH_TEST_RESULT + "paymentereceipt/" + subFolder + "/" + payment.getReceiptFullNumberBase36() + ".pdf", pdfContent);
+        IOUtil.writeBytesToRelativeFile(TestUtil.PATH_TEST_RESULT + "paymentereceipt/" + subFolder + "/" + payment.getReceiptNumber().getFullNumberBase36() + ".pdf", pdfContent);
     }
 }

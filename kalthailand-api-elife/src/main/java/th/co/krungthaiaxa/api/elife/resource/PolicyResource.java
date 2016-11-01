@@ -44,6 +44,7 @@ import th.co.krungthaiaxa.api.elife.policyPremiumNotification.service.PolicyCDBS
 import th.co.krungthaiaxa.api.elife.policyPremiumNotification.service.PolicyPremiumNotificationService;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
 import th.co.krungthaiaxa.api.elife.service.DocumentService;
+import th.co.krungthaiaxa.api.elife.service.PaymentRetryService;
 import th.co.krungthaiaxa.api.elife.service.PaymentService;
 import th.co.krungthaiaxa.api.elife.service.PolicyService;
 import th.co.krungthaiaxa.api.elife.service.PolicyValidatedProcessingService;
@@ -87,6 +88,7 @@ public class PolicyResource {
     private final PolicyService policyService;
     private final QuoteService quoteService;
     private final PaymentService paymentService;
+    private final PaymentRetryService paymentRetryService;
     private final PolicyValidatedProcessingService policyValidatedProcessingService;
     private final PolicyPremiumNotificationService policyPremiumNotificationService;
     private final PolicyCDBService policyCDBService;
@@ -97,12 +99,13 @@ public class PolicyResource {
     private String accessTokenHeader;
 
     @Inject
-    public PolicyResource(DocumentService documentService, PolicyService policyService, QuoteService quoteService, PaymentService paymentService, PolicyValidatedProcessingService policyValidatedProcessingService,
+    public PolicyResource(DocumentService documentService, PolicyService policyService, QuoteService quoteService, PaymentService paymentService, PaymentRetryService paymentRetryService, PolicyValidatedProcessingService policyValidatedProcessingService,
             PolicyPremiumNotificationService policyPremiumNotificationService, PolicyCDBService policyCDBService) {
         this.documentService = documentService;
         this.policyService = policyService;
         this.quoteService = quoteService;
         this.paymentService = paymentService;
+        this.paymentRetryService = paymentRetryService;
         this.policyValidatedProcessingService = policyValidatedProcessingService;
         this.policyPremiumNotificationService = policyPremiumNotificationService;
         this.policyCDBService = policyCDBService;
@@ -432,7 +435,7 @@ public class PolicyResource {
             return new ResponseEntity<>(getJson(ErrorCode.POLICY_IS_NOT_VALIDATED_FOR_PAYMENT.apply(policyId)), NOT_ACCEPTABLE);
         }
         String accessToken = httpServletRequest.getHeader(accessTokenHeader);
-        paymentService.retryFailedPayment(policyId, paymentId, orderId, transactionId, regKey, accessToken);
+        paymentRetryService.retryFailedPayment(policyId, paymentId, orderId, transactionId, regKey, accessToken);
 
         return new ResponseEntity<>(getJson(policy), OK);
     }
