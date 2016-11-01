@@ -3,6 +3,7 @@ package th.co.krungthaiaxa.api.elife.resource;
 import com.icegreen.greenmail.junit.GreenMailRule;
 import com.icegreen.greenmail.util.ServerSetupTest;
 import org.assertj.core.api.Assertions;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -122,9 +123,11 @@ public class PolicyResourceTest extends ELifeTest {
 
         Policy updatedPolicy = TestUtil.getPolicyFromJSon(updatePaymentResponse.getBody());
         assertThat(updatePaymentResponse.getStatusCode().value()).isEqualTo(OK.value());
-        Assertions.assertThat(updatedPolicy.getPayments().get(0).getStatus()).isEqualTo(PaymentStatus.NOT_PROCESSED);
-        assertThat(updatedPolicy.getPayments().get(0).getTransactionId()).isEqualTo("myTransactionId");
-        assertThat(updatedPolicy.getPayments().get(0).getRegistrationKey()).isEqualTo("myRegistrationKey");
+        Payment firstPayment = updatedPolicy.getPayments().get(0);
+        Assertions.assertThat(firstPayment.getStatus()).isEqualTo(PaymentStatus.NOT_PROCESSED);
+        assertThat(firstPayment.getTransactionId()).isEqualTo("myTransactionId");
+        assertThat(firstPayment.getRegistrationKey()).isEqualTo("myRegistrationKey");
+        Assert.assertEquals("myOrderId", firstPayment.getOrderId());
     }
 
     @Test
@@ -142,7 +145,8 @@ public class PolicyResourceTest extends ELifeTest {
 
         Policy updatedPolicy = TestUtil.getPolicyFromJSon(updatePaymentResponse.getBody());
         assertThat(updatePaymentResponse.getStatusCode().value()).isEqualTo(OK.value());
-        Assertions.assertThat(updatedPolicy.getPayments().get(0).getStatus()).isEqualTo(PaymentStatus.NOT_PROCESSED);
+        Payment firstPayment = updatedPolicy.getPayments().get(0);
+        Assertions.assertThat(firstPayment.getStatus()).isEqualTo(PaymentStatus.NOT_PROCESSED);
     }
 
     private Policy getPolicy() throws IOException {
