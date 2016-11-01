@@ -4,11 +4,12 @@ import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.mongodb.core.index.Indexed;
 
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 /**
  * @author khoi.tran on 10/31/16.
  */
-public class EreceiptNumber {
+public class EreceiptNumber implements Serializable {
 
     /**
      * Note: the full number doesn't include the prefix character ({@link EreceiptPdfService#ERECEIPT_NUMBER_PREFIX}).
