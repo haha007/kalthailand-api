@@ -24,9 +24,8 @@ public class IncrementalService {
             if (value == null) {
                 value = 0l;
             }
-        } else {
-            value++;
         }
+        value++;
         INCREMENTAL_MAP.put(incrementalKey, value);
         saveIncremental(incrementalKey, value);
         return value;
@@ -34,6 +33,10 @@ public class IncrementalService {
 
     private void saveIncremental(String incrementalKey, long value) {
         Incremental incremental = incrementalRepository.findOneByKey(incrementalKey);
+        if (incremental == null) {
+            incremental = new Incremental();
+            incremental.setKey(incrementalKey);
+        }
         incremental.setValue(value);
         incrementalRepository.save(incremental);
     }

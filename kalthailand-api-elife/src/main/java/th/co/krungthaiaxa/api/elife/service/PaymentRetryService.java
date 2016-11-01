@@ -95,7 +95,7 @@ public class PaymentRetryService {
         } catch (Exception e) {
             throw new LinePaymentException("Unable to confirm the payment in the policy with ID [" + policyId + "]", e);
         } finally {
-            if (linePayResponse != null && linePayResponse.getReturnCode().equals(LineService.RESPONSE_CODE_SUCCESS)) {
+            if (linePayResponse != null && LineService.RESPONSE_CODE_SUCCESS.equals(linePayResponse.getReturnCode())) {
                 EreceiptNumber ereceiptNumber = ereceiptService.generateEreceiptFullNumber(newBusiness);
                 retryPayment.setReceiptNumber(ereceiptNumber);
                 retryPayment.setNewBusiness(newBusiness);
@@ -107,8 +107,10 @@ public class PaymentRetryService {
                 //Don't need to resend another fail email to user. When backend return error, FE will show error page to customer.
             }
             //TODO payment with response
-            retryPayment = paymentService.updatePayment(retryPayment, orderId, transactionId, StringUtils.isBlank(regKey) ? "" : regKey);
-            retryPayment = paymentService.updateByLinePayResponse(retryPayment, linePayResponse);
+            //TODO following line is redundant.
+//            retryPayment = paymentService.updatePayment(retryPayment, orderId, transactionId, StringUtils.isBlank(regKey) ? "" : regKey); //Unnessary
+            retryPayment = paymentService.updateByLinePayResponse(retryPayment, linePayResponse);//Old code: missing some information, but still correct
+//            paymentService.updatePaymentAfterLinePay(retryPayment, retryPayment.getAmount().getValue(), retryPayment.getAmount().getCurrencyCode(), ChannelType.LINE, linePayResponse);//New method with correct information.
             oldPayment.setRetryPaymentId(retryPayment.getPaymentId());
             paymentRepository.save(oldPayment);
         }

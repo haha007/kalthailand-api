@@ -244,7 +244,7 @@ public class PolicyServiceTest extends ELifeTest {
     public void should_update_policy_status_to_pending_validation_and_attach_2_documents() {
         Policy policy = getPolicy();
 
-        policyService.updatePolicyAfterFirstPaymentValidated(policy);
+        policyService.updatePolicyToPendingValidation(policy);
 
         Assertions.assertThat(policy.getStatus()).isEqualTo(PolicyStatus.PENDING_VALIDATION);
         Assertions.assertThat(policy.getDocuments()).hasSize(2);
@@ -254,7 +254,7 @@ public class PolicyServiceTest extends ELifeTest {
     public void should_send_one_email_when_policy_status_is_set_to_pending_validation() {
         Policy policy = getPolicy();
 
-        policyService.updatePolicyAfterFirstPaymentValidated(policy);
+        policyService.updatePolicyToPendingValidation(policy);
 
         assertThat(greenMail.getReceivedMessages()).hasSize(1);
     }
@@ -264,8 +264,8 @@ public class PolicyServiceTest extends ELifeTest {
         Instant beforeValidate = Instant.now();
 
         Policy policy = getPolicy();
-        policyService.updatePolicyAfterFirstPaymentValidated(policy);
-        policyService.updatePolicyAfterPolicyHasBeenValidated(policy, "999999-99-999999", "agentName", "token");
+        policyService.updatePolicyToPendingValidation(policy);
+        policyService.updatePolicyToValidated(policy, "999999-99-999999", "agentName", "token");
 
         Policy policyAfterUpdate = policyService.findPolicyByPolicyNumber(policy.getPolicyId()).get();
         Assertions.assertThat(policyAfterUpdate.getStatus()).isEqualTo(PolicyStatus.VALIDATED);
@@ -280,8 +280,8 @@ public class PolicyServiceTest extends ELifeTest {
     public void should_send_two_emails_when_policy_status_is_set_to_validated() {
         Policy policy = getPolicy();
 
-        policyService.updatePolicyAfterFirstPaymentValidated(policy);
-        policyService.updatePolicyAfterPolicyHasBeenValidated(policy, "999999-99-999999", "agentName", "token");
+        policyService.updatePolicyToPendingValidation(policy);
+        policyService.updatePolicyToValidated(policy, "999999-99-999999", "agentName", "token");
 
         assertThat(greenMail.getReceivedMessages()).hasSize(2);
     }
@@ -290,7 +290,7 @@ public class PolicyServiceTest extends ELifeTest {
     public void should_not_update_policy_status_to_validated_when_previous_status_is_not_pending_validation() {
         Policy policy = getPolicy();
 
-        assertThatThrownBy(() -> policyService.updatePolicyAfterPolicyHasBeenValidated(policy, "999999-99-999999", "agentName", "token"))
+        assertThatThrownBy(() -> policyService.updatePolicyToValidated(policy, "999999-99-999999", "agentName", "token"))
                 .isInstanceOf(ElifeException.class);
         Assertions.assertThat(policy.getDocuments()).hasSize(0);
     }

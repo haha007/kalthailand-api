@@ -32,4 +32,6 @@ public interface QuoteRepository extends MongoRepository<Quote, String> {
     List<Quote> findByPremiumsDataNull();
 
     long countByPremiumsDataNull();
+
+    List<Quote> findByPremiumsDataNullAndPremiumDataNotNull();
 }

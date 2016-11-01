@@ -10,6 +10,7 @@ import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
 import th.co.krungthaiaxa.api.elife.service.ereceipt.EreceiptNumber;
 
+import javax.annotation.PostConstruct;
 import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,8 +32,7 @@ public class EreceiptOldNumberGenerationService {
     /**
      * This method will run only one time.
      */
-//    @PostConstruct
-    //FIXME change method name
+    @PostConstruct
     public EreceiptOldNumberResult generateEreceiptNumbersByOldPatternForOldPayments() {
         List<Payment> paymentsInCludedRetryPayments = paymentRepository.findByReceiptPdfDocumentNotNullAndReceiptNumberNull();
         LogUtil.logStarting("Payments included retryPayments: " + paymentsInCludedRetryPayments.size() + " \n" + toStringPaymentWithReceiptNumber(paymentsInCludedRetryPayments));

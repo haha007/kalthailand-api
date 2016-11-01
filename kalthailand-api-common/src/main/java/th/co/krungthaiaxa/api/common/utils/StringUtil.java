@@ -99,4 +99,8 @@ public class StringUtil {
         }
         return result;
     }
+
+    public static String formatNumberLength(String numberString, int length) {
+        return StringUtils.leftPad(numberString, length, '0');
+    }
 }

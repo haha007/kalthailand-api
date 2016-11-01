@@ -1,6 +1,7 @@
 package th.co.krungthaiaxa.api.elife.service.ereceipt;
 
 import org.hibernate.validator.constraints.NotBlank;
+import org.springframework.data.mongodb.core.index.Indexed;
 
 import javax.validation.constraints.NotNull;
 
@@ -12,15 +13,18 @@ public class EreceiptNumber {
     /**
      * Note: the full number doesn't include the prefix character ({@link EreceiptPdfService#ERECEIPT_NUMBER_PREFIX}).
      */
+    @Indexed
     @NotBlank
     private String fullNumberBase36;
     @NotBlank
     private String mainNumberBase36;
+    @Indexed
     @NotNull
     private Long mainNumberDecimal;
     @NotBlank
     private String suffixNumberBase36;
 
+    @Override
     public String toString() {
         return fullNumberBase36;
     }

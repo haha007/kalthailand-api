@@ -9,7 +9,6 @@ import th.co.krungthaiaxa.api.elife.model.Document;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
-import th.co.krungthaiaxa.api.elife.service.ereceipt.EreceiptNumber;
 import th.co.krungthaiaxa.api.elife.service.ereceipt.EreceiptService;
 
 import java.util.Optional;
@@ -45,7 +44,7 @@ public class PolicyDocumentService {
         this.paymentRepository = paymentRepository;
     }
 
-    public void generateNotValidatedPolicyDocuments(Policy policy) {
+    public void generateDocumentsForPendingValidation(Policy policy) {
         // Generate NOT validated Application Form
         Optional<Document> notValidatedApplicationForm = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(APPLICATION_FORM)).findFirst();
         if (!notValidatedApplicationForm.isPresent()) {
@@ -79,7 +78,7 @@ public class PolicyDocumentService {
         boolean newBusiness = true;
 
         // In case previous documents were not generated
-        generateNotValidatedPolicyDocuments(policy);
+        generateDocumentsForPendingValidation(policy);
 
         // Generate validated Application Form
         Optional<Document> validatedApplicationForm = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(APPLICATION_FORM_VALIDATED)).findFirst();

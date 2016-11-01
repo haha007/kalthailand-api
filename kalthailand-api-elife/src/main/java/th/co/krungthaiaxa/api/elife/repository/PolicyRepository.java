@@ -16,4 +16,6 @@ public interface PolicyRepository extends MongoRepository<Policy, String> {
     List<Policy> findByPremiumsDataNull();
 
     long countByPremiumsDataNull();
+
+    List<Policy> findByPremiumsDataNullAndPremiumDataNotNull();
 }

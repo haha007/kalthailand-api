@@ -284,10 +284,10 @@ public class CollectionFileProcessingService {
         LocalDateTime tomorrow = now.plusDays(1);
 
         // There should be a scheduled payment for which due date is within the last 28 days
-        Optional<Payment> notCompletedPaymentInThisMonth = paymentRepository.findOneByPolicyIdAndDueDateRangeAndInStatus(policyId, todayMinus28Days, tomorrow, PaymentStatus.NOT_PROCESSED);
-        if (notCompletedPaymentInThisMonth.isPresent()) {
-            collectionFileLine.setPaymentId(notCompletedPaymentInThisMonth.get().getPaymentId());
-            LOGGER.info("Existing payment id [" + notCompletedPaymentInThisMonth.get().getPaymentId() + "] has been added for the " +
+        Optional<Payment> notProcessedPaymentInThisMonth = paymentRepository.findOneByPolicyIdAndDueDateRangeAndInStatus(policyId, todayMinus28Days, tomorrow, PaymentStatus.NOT_PROCESSED);
+        if (notProcessedPaymentInThisMonth.isPresent()) {
+            collectionFileLine.setPaymentId(notProcessedPaymentInThisMonth.get().getPaymentId());
+            LOGGER.info("Existing payment id [" + notProcessedPaymentInThisMonth.get().getPaymentId() + "] has been added for the " +
                     "collection file line about policy [" + policy.get().getPolicyId() + "] ");
             return;
         }
@@ -363,7 +363,11 @@ public class CollectionFileProcessingService {
             LinePayRecurringResponse linePayResponse = lineService.preApproved(lastRegistrationKey, premiumAmount, currencyCode, productId, orderId);
             resultCode = linePayResponse.getReturnCode();
             resultMessage = linePayResponse.getReturnMessage();
-
+            //TODO need to recheck with business team
+            if (Math.abs(premiumAmount - payment.getAmount().getValue()) >= 1) {
+                String msg = String.format("The money in collection file %s is not match with the predefined amount %s", premiumAmount, payment.getAmount());
+                throw new UnexpectedException(msg);
+            }
             payment.getAmount().setValue(premiumAmount);
             payment.setOrderId(orderId);
             //FIXME recheck when LinePay response fail.

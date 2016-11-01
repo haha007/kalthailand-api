@@ -10,7 +10,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
 import th.co.krungthaiaxa.api.elife.client.CDBClient;
 import th.co.krungthaiaxa.api.elife.data.PolicyNumber;
 import th.co.krungthaiaxa.api.elife.exception.ElifeException;
@@ -19,16 +18,11 @@ import th.co.krungthaiaxa.api.elife.exception.PolicyValidationException;
 import th.co.krungthaiaxa.api.elife.model.Document;
 import th.co.krungthaiaxa.api.elife.model.DocumentDownload;
 import th.co.krungthaiaxa.api.elife.model.Insured;
-import th.co.krungthaiaxa.api.elife.model.Payment;
-import th.co.krungthaiaxa.api.elife.model.PaymentInformation;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.Registration;
-import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
 import th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus;
 import th.co.krungthaiaxa.api.elife.model.enums.RegistrationTypeName;
-import th.co.krungthaiaxa.api.elife.model.enums.SuccessErrorStatus;
-import th.co.krungthaiaxa.api.elife.model.line.LinePayResponse;
 import th.co.krungthaiaxa.api.elife.model.sms.SMSResponse;
 import th.co.krungthaiaxa.api.elife.products.ProductService;
 import th.co.krungthaiaxa.api.elife.products.ProductServiceFactory;
@@ -47,27 +41,20 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.notNull;
 import static th.co.krungthaiaxa.api.elife.model.enums.DocumentType.APPLICATION_FORM;
 import static th.co.krungthaiaxa.api.elife.model.enums.DocumentType.APPLICATION_FORM_VALIDATED;
 import static th.co.krungthaiaxa.api.elife.model.enums.DocumentType.DA_FORM;
 import static th.co.krungthaiaxa.api.elife.model.enums.DocumentType.ERECEIPT_PDF;
-import static th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus.COMPLETED;
-import static th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus.INCOMPLETE;
 import static th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus.NOT_PROCESSED;
-import static th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus.OVERPAID;
 import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.EVERY_MONTH;
 import static th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus.VALIDATED;
-import static th.co.krungthaiaxa.api.elife.products.ProductUtils.amount;
 
 //TODO need to be refactored.
 @Service
@@ -183,7 +170,6 @@ public class PolicyService {
         return policy;
     }
 
-
     public void updateRegKeyForAllNotProcessedPayments(Policy policy, String newRegistrationKey) {
         if (isBlank(newRegistrationKey)) {
             return;
@@ -198,10 +184,22 @@ public class PolicyService {
         });
     }
 
-    public void updatePolicyAfterFirstPaymentValidated(Policy policy) {
+    /**
+     * This method is called only after the first payment was set orderId, transactionId and regKey.
+     * TODO should refactor: before change the status of policy, the first payment must always has orderId, transactionId and regKey. So we should put the updatePayment inside this method.
+     * Flow:
+     * 1) A quote is created
+     * 2) A policy is created from quote
+     * 3) The first payment is paid by customer via FE & LINE pay (normal process - not preApproval process).
+     * 4) Then we will have orderId, transactionId, and regKey (from LINE service). Those information will be updated into payment and the policy status is PENDING_PAYMENT (this method)
+     * 5) Call method {@link #updatePolicyToValidated(Policy, String, String, String)} so that the payment is captured to LINE service and the status of the policy become VALIDATED.
+     *
+     * @param policy
+     */
+    public void updatePolicyToPendingValidation(Policy policy) {
         // Generate documents
         try {
-            policyDocumentService.generateNotValidatedPolicyDocuments(policy);
+            policyDocumentService.generateDocumentsForPendingValidation(policy);
         } catch (Exception e) {
             throw new ElifeException("Can't generate documents for the policy [" + policy.getPolicyId() + "]");
         }
@@ -288,7 +286,7 @@ public class PolicyService {
         }
     }
 
-    public Policy updatePolicyAfterPolicyHasBeenValidated(Policy policy, String agentCode, String agentName, String token) {
+    public Policy updatePolicyToValidated(Policy policy, String agentCode, String agentName, String token) {
         if (!PolicyStatus.PENDING_VALIDATION.equals(policy.getStatus())) {
             throw new ElifeException("Can't validate policy [" + policy.getPolicyId() + "], it is not pending for validation, it's " + policy.getStatus());
         }

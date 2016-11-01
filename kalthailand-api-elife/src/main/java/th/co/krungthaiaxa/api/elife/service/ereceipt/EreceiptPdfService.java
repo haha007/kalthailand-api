@@ -17,6 +17,7 @@ import th.co.krungthaiaxa.api.common.utils.IOUtil;
 import th.co.krungthaiaxa.api.common.utils.NumberUtil;
 import th.co.krungthaiaxa.api.common.utils.PdfIOUtil;
 import th.co.krungthaiaxa.api.common.utils.PdfUtil;
+import th.co.krungthaiaxa.api.common.utils.StringUtil;
 import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.Policy;
@@ -98,15 +99,15 @@ public class EreceiptPdfService {
     private static final Point POS_PAYMENT_EFFECTIVE_DATE = new Point(547, 279);
 
     //line 2:
-    private static final Point POS_REF1_POLICY_NUMBER_PREFIX = new Point(524, 312);
-    private static final Point POS_REF1_POLICY_NUMBER_SUFFIX = new Point(580, 312);
+    private static final Point POS_REF1_POLICY_NUMBER_PREFIX = new Point(525, 312);
+    private static final Point POS_REF1_POLICY_NUMBER_SUFFIX = new Point(581, 312);
 
     //line 3:
     private static final Point POS_REF1_ID_CARD = new Point(497, 343);
 
     //line 4:
-    private static final Point POS_REF2_RECEIPT_NUMBER_01 = new Point(560, 386);
-    private static final Point POS_REF2_RECEIPT_NUMBER_02 = new Point(651, 386);
+    private static final Point POS_REF2_RECEIPT_NUMBER_01 = new Point(561, 383);
+    private static final Point POS_REF2_RECEIPT_NUMBER_02 = new Point(653, 383);
 
     //line 5: Should on the same line of POS_PREMIUM_VALUE_IN_THAI_LETTERS
     private static final Point POS_PREMIUM_VALUE_IN_NUMBERS = new Point(560, 417);
@@ -205,9 +206,13 @@ public class EreceiptPdfService {
     //TODO
     private void writeReceiptNumber(PdfContentByte page, Payment payment) {
         EreceiptNumber ereceiptNumber = payment.getReceiptNumber();
-        String ereceiptNumberPart01 = ERECEIPT_NUMBER_PREFIX + ereceiptNumber.getMainNumberBase36();
-        writeChars(page, POS_REF2_RECEIPT_NUMBER_01, 11.45, 7, ereceiptNumberPart01.toCharArray());
-        writeChars(page, POS_REF2_RECEIPT_NUMBER_02, 11.45, 2, ereceiptNumber.getSuffixNumberBase36().toCharArray());
+        if (ereceiptNumber == null) {
+            String msg = String.format("Cannot find ereceiptNumber for the payment %s, policyId: %s", payment.getPaymentId(), payment.getPolicyId());
+            throw new UnexpectedException(msg);
+        }
+        String ereceiptNumberPart01 = ERECEIPT_NUMBER_PREFIX + StringUtil.formatNumberLength(ereceiptNumber.getMainNumberBase36(), 6);
+        writeChars(page, POS_REF2_RECEIPT_NUMBER_01, 11.45, 7, ereceiptNumberPart01.toUpperCase().toCharArray());
+        writeChars(page, POS_REF2_RECEIPT_NUMBER_02, 11.45, 2, ereceiptNumber.getSuffixNumberBase36().toUpperCase().toCharArray());
     }
 
     private void writeAgentCode(PdfContentByte page, Policy policy) {

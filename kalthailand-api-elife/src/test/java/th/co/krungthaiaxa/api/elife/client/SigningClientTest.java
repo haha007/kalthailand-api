@@ -47,7 +47,7 @@ public class SigningClientTest extends ELifeTest {
     @Test
     public void should_get_signed_application_form() throws IOException {
         Policy policy = getPolicy();
-        policyDocumentService.generateNotValidatedPolicyDocuments(policy);
+        policyDocumentService.generateDocumentsForPendingValidation(policy);
         Optional<Document> applicationFormPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(APPLICATION_FORM)).findFirst();
         DocumentDownload documentDownload = documentService.findDocumentDownload(applicationFormPdf.get().getId());
         byte[] encodedSignedDocument = signingClient.getEncodedSignedPdfDocument(documentDownload.getContent().getBytes(), "token");

@@ -1,5 +1,6 @@
 package th.co.krungthaiaxa.api.elife.service;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
@@ -18,6 +19,8 @@ import th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus;
 import th.co.krungthaiaxa.api.elife.model.enums.SuccessErrorStatus;
 import th.co.krungthaiaxa.api.elife.model.line.BaseLineResponse;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayResponse;
+import th.co.krungthaiaxa.api.elife.model.line.LinePayResponseInfo;
+import th.co.krungthaiaxa.api.elife.model.line.LinePayResponsePaymentInfo;
 import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
 
 import javax.inject.Inject;
@@ -54,7 +57,8 @@ public class PaymentService {
 
     //TODO should move to {@link PaymentQueryService}
     public Payment findFirstPaymentHasTransactionId(String policyNumber) {
-        Pageable pageable = new PageRequest(0, 1);
+        Sort sort = new Sort(Sort.Direction.ASC, "dueDate");
+        Pageable pageable = new PageRequest(0, 1, sort); //TODO need to test short by dueDate
         List<Payment> payments = paymentRepository.findByPolicyIdAndTransactionIdNotNull(policyNumber, pageable);
         if (payments.isEmpty()) {
             return null;
@@ -75,6 +79,15 @@ public class PaymentService {
         Payment payment = paymentRepository.findOne(paymentId);
         if (payment == null) {
             throw new PaymentNotFoundException("Not found payment with Id " + paymentId);
+        }
+        return payment;
+    }
+
+    public Payment validateExistPaymentInPolicy(String policyId, String paymentId) {
+        Payment payment = validateExistPayment(paymentId);
+        if (!policyId.equals(payment.getPolicyId())) {
+            String message = "The payment [" + paymentId + "] has policyId [" + payment.getPolicyId() + "], which is different from required the policy [" + policyId + "]";
+            throw new PaymentNotFoundException(message);
         }
         return payment;
     }
@@ -171,29 +184,35 @@ public class PaymentService {
             LinePayResponse linePayResponse) {
         String creditCardName = null;
         String method = null;
-        if (linePayResponse.getInfo().getPayInfo().size() > 0) {
-            creditCardName = linePayResponse.getInfo().getPayInfo().get(0).getCreditCardName();
-            method = linePayResponse.getInfo().getPayInfo().get(0).getMethod();
+        LinePayResponseInfo linePayResponseInfo = linePayResponse.getInfo();
+        String regKey = linePayResponseInfo.getRegKey();
+        regKey = StringUtils.isNotBlank(regKey) ? regKey : null;
+        List<LinePayResponsePaymentInfo> linePayResponsePaymentInfoList = linePayResponseInfo.getPayInfo();
+        if (!linePayResponsePaymentInfoList.isEmpty()) {
+            LinePayResponsePaymentInfo linePayResponsePaymentInfo = linePayResponsePaymentInfoList.get(0);
+            creditCardName = linePayResponsePaymentInfo.getCreditCardName();
+            method = linePayResponsePaymentInfo.getMethod();
         }
+
         // Update the confirmed payment
         updatePaymentWithPaylineResponse(payment, amount, currencyCode, channelType,
                 linePayResponse.getReturnCode(),
                 linePayResponse.getReturnMessage(),
-                linePayResponse.getInfo().getRegKey(),
+                regKey,
                 creditCardName,
                 method);
     }
 
     private void updatePaymentWithPaylineResponse(Payment payment, Double value, String currencyCode, ChannelType channelType, String errorCode, String errorMessage, String registrationKey, String creditCardName, String paymentMethod) {
-        SuccessErrorStatus status;
+        SuccessErrorStatus paymentInformationStatus;
         if (!currencyCode.equals(payment.getAmount().getCurrencyCode())) {
-            status = SuccessErrorStatus.ERROR;
+            paymentInformationStatus = SuccessErrorStatus.ERROR;
             errorMessage = "Currencies are different";
             errorCode = LineService.RESPONSE_CODE_ERROR_INTERNAL_LINEPAY;
         } else if (!isEmpty(errorCode) && !errorCode.equals("0000")) {
-            status = SuccessErrorStatus.ERROR;
+            paymentInformationStatus = SuccessErrorStatus.ERROR;
         } else {
-            status = SuccessErrorStatus.SUCCESS;
+            paymentInformationStatus = SuccessErrorStatus.SUCCESS;
         }
 
         // registration key might have to be updated
@@ -211,7 +230,7 @@ public class PaymentService {
         paymentInformation.setMethod(paymentMethod);
         paymentInformation.setRejectionErrorCode(errorCode);
         paymentInformation.setRejectionErrorMessage(errorMessage);
-        paymentInformation.setStatus(status);
+        paymentInformation.setStatus(paymentInformationStatus);
         payment.getPaymentInformations().add(paymentInformation);
 
         Double totalSuccesfulPayments = payment.getPaymentInformations()
@@ -237,5 +256,44 @@ public class PaymentService {
 
     public void setLineService(LineService lineService) {
         this.lineService = lineService;
+    }
+
+    /**
+     * TODO same as {@link PaymentService#updateByLinePayResponse(Payment, BaseLineResponse)} .
+     */
+    public Payment updatePaymentWithLineResponse(Payment payment, ChannelType line, LinePayResponse linePayResponse) {
+        //Same as {@link #updatePaymentWithPaylineResponse(...)}
+        String creditCardName = null;
+        String method = null;
+        LinePayResponseInfo linePayResponseInfo = linePayResponse.getInfo();
+        String regKey = linePayResponseInfo.getRegKey();
+        regKey = StringUtils.isNotBlank(regKey) ? regKey : null;
+        List<LinePayResponsePaymentInfo> linePayResponsePaymentInfoList = linePayResponseInfo.getPayInfo();
+        if (!linePayResponsePaymentInfoList.isEmpty()) {
+            LinePayResponsePaymentInfo linePayResponsePaymentInfo = linePayResponsePaymentInfoList.get(0);
+            creditCardName = linePayResponsePaymentInfo.getCreditCardName();
+            method = linePayResponsePaymentInfo.getMethod();
+        }
+
+        PaymentInformation paymentInformation = new PaymentInformation();
+        paymentInformation.setChannel(line);
+        paymentInformation.setCreditCardName(creditCardName);
+        paymentInformation.setMethod(method);
+
+        //Same as {@link PaymentService#updateByLinePayResponse(Payment, BaseLineResponse)}
+        paymentInformation.setRejectionErrorCode(linePayResponse.getReturnCode());
+        paymentInformation.setRejectionErrorMessage(linePayResponse.getReturnMessage());
+        if (LineService.RESPONSE_CODE_SUCCESS.equals(linePayResponse.getReturnCode())) {
+            String msg = "Success payment " + ObjectMapperUtil.toString(payment) + ". Response: " + ObjectMapperUtil.toString(linePayResponse);
+            paymentInformation.setStatus(SuccessErrorStatus.SUCCESS);
+            paymentInformation.setRejectionErrorMessage(msg);
+            payment.setStatus(COMPLETED);
+        } else {
+            payment.setStatus(INCOMPLETE);
+        }
+        payment.setEffectiveDate(DateTimeUtil.nowLocalDateTimeInThaiZoneId());
+        payment.addPaymentInformation(paymentInformation);
+        payment.setRegistrationKey(regKey);
+        return paymentRepository.save(payment);
     }
 }

@@ -1,7 +1,10 @@
 package th.co.krungthaiaxa.api.elife.service;
 
+import com.icegreen.greenmail.junit.GreenMailRule;
+import com.icegreen.greenmail.util.ServerSetupTest;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfReader;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.SpringApplicationConfiguration;
@@ -12,12 +15,14 @@ import th.co.krungthaiaxa.api.common.utils.IOUtil;
 import th.co.krungthaiaxa.api.elife.ELifeTest;
 import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
 import th.co.krungthaiaxa.api.elife.TestUtil;
+import th.co.krungthaiaxa.api.elife.factory.PolicyFactory;
 import th.co.krungthaiaxa.api.elife.model.Document;
 import th.co.krungthaiaxa.api.elife.model.DocumentDownload;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
+import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
 import th.co.krungthaiaxa.api.elife.repository.DocumentDownloadRepository;
 
 import javax.inject.Inject;
@@ -46,11 +51,15 @@ public class DocumentServiceTest extends ELifeTest {
     @Inject
     private PolicyDocumentService policyDocumentService;
     @Inject
-    private PolicyService policyService;
-    @Inject
     private QuoteService quoteService;
     @Inject
+    private PolicyService policyService;
+    @Inject
     private DocumentDownloadRepository documentDownloadRepository;
+    @Inject
+    private PolicyFactory policyFactory;
+    @Rule
+    public final GreenMailRule greenMail = new GreenMailRule(ServerSetupTest.SMTP_IMAP);
 
     @Test
     public void should_add_2_documents_in_policy() {
@@ -86,16 +95,16 @@ public class DocumentServiceTest extends ELifeTest {
     @Test
     public void should_have_2_documents_generated_when_policy_is_waiting_for_payment() throws Exception {
         Policy policy = getPolicy(EVERY_MONTH);
-        policyDocumentService.generateNotValidatedPolicyDocuments(policy);
+        policyDocumentService.generateDocumentsForPendingValidation(policy);
         assertThat(policy.getDocuments()).extracting("typeName").containsExactly(APPLICATION_FORM, DA_FORM);
     }
 
     @Test
     public void should_still_have_only_2_documents_even_after_generating_more_than_once() throws Exception {
         Policy policy = getPolicy(EVERY_MONTH);
-        policyDocumentService.generateNotValidatedPolicyDocuments(policy);
-        policyDocumentService.generateNotValidatedPolicyDocuments(policy);
-        policyDocumentService.generateNotValidatedPolicyDocuments(policy);
+        policyDocumentService.generateDocumentsForPendingValidation(policy);
+        policyDocumentService.generateDocumentsForPendingValidation(policy);
+        policyDocumentService.generateDocumentsForPendingValidation(policy);
         assertThat(policy.getDocuments()).extracting("typeName").containsExactly(APPLICATION_FORM, DA_FORM);
     }
 
@@ -141,10 +150,12 @@ public class DocumentServiceTest extends ELifeTest {
     }
 
     private Policy getPolicy(PeriodicityCode periodicityCode) {
-        Quote quote = quoteService.createQuote(randomNumeric(20), ChannelType.LINE, TestUtil.productQuotation(25, periodicityCode));
+        ProductQuotation productQuotation = TestUtil.productQuotation(25, periodicityCode);
+        Quote quote = quoteService.createQuote(randomNumeric(20), ChannelType.LINE, productQuotation);
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
         quote = quoteService.updateQuote(quote, "token");
-
         return policyService.createPolicy(quote);
+        //        return policyFactory.createPolicyWithValidatedStatus(productQuotation, "dummy.test.ags@gmail.com");
+
     }
 }

@@ -44,7 +44,7 @@ public class PremiumsDataMigrationService {
     }
 
     private void copyDataToOldStructureForPolicies() {
-        List<Policy> policies = policyRepository.findByPremiumsDataNull();
+        List<Policy> policies = policyRepository.findByPremiumsDataNullAndPremiumDataNotNull();
         copyDataToOldStructureForQuotableItems(policies);
         if (!policies.isEmpty()) {
             policyRepository.save(policies);
@@ -53,7 +53,7 @@ public class PremiumsDataMigrationService {
     }
 
     private void copyDataToOldStructureForQuotes() {
-        List<Quote> quotes = quoteRepository.findByPremiumsDataNull();
+        List<Quote> quotes = quoteRepository.findByPremiumsDataNullAndPremiumDataNotNull();
         copyDataToOldStructureForQuotableItems(quotes);
         if (!quotes.isEmpty()) {
             quoteRepository.save(quotes);

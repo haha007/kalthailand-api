@@ -111,11 +111,12 @@ public class PolicyValidatedProcessingService {
         paymentHasTransaction.setReceiptNumber(ereceiptNumber);
         paymentHasTransaction.setNewBusiness(newBusiness);
         paymentHasTransaction.setReceiptNumberOldPattern(false);
-        paymentService.updatePaymentAfterLinePay(paymentHasTransaction, paymentHasTransaction.getAmount().getValue(), paymentHasTransaction.getAmount().getCurrencyCode(), LINE, linePayResponse);
+        paymentService.updatePaymentWithLineResponse(paymentHasTransaction, LINE, linePayResponse);
+//        paymentService.updatePaymentAfterLinePay(paymentHasTransaction, paymentHasTransaction.getAmount().getValue(), paymentHasTransaction.getAmount().getCurrencyCode(), LINE, linePayResponse);
 
         String regKey = linePayResponse.getInfo().getRegKey();
         policyService.updateRegKeyForAllNotProcessedPayments(policy, regKey);
-        policy = policyService.updatePolicyAfterPolicyHasBeenValidated(policy, agentCode, agentName, accessToken);
+        policy = policyService.updatePolicyToValidated(policy, agentCode, agentName, accessToken);
         return policy;
     }
 

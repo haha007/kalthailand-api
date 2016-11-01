@@ -11,7 +11,7 @@ import javax.annotation.PostConstruct;
 public class EreceiptOldNumberCollectionService {
     @PostConstruct
     private void collectAllOldEreceiptNumbers() {
-
+        
     }
 
     /**

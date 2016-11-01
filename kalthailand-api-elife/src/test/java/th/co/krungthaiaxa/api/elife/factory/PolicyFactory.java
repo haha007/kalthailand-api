@@ -54,9 +54,11 @@ public class PolicyFactory {
         String orderId = PaymentFactory.generateOrderId();
         String transactionId = PaymentFactory.generateTransactionId();
         String regKey = PaymentFactory.generatePaymentRegKey();
+        //Change status to PendingValidation
         paymentService.updatePayment(payment, orderId, transactionId, regKey);
-        policyService.updatePolicyAfterFirstPaymentValidated(policy);
+        policyService.updatePolicyToPendingValidation(policy);
 
+        //Change status to Validated
         PolicyValidatedProcessingService.PolicyValidationRequest policyValidationRequest = new PolicyValidatedProcessingService.PolicyValidationRequest();
         policyValidationRequest.setAccessToken(RequestFactory.generateAccessToken());
         policyValidationRequest.setAgentCode("123456-78-901234");

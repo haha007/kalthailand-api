@@ -385,21 +385,18 @@ public class PolicyResource {
             return new ResponseEntity<>(getJson(ErrorCode.POLICY_IS_NOT_PENDING_FOR_PAYMENT.apply(policyId)), NOT_ACCEPTABLE);
         }
 
-        Optional<Payment> payment = policy.getPayments().stream().filter(tmp -> tmp.getPaymentId().equals(paymentId)).findFirst();
-        if (!payment.isPresent()) {
-            logger.error("Unable to find the payment with ID [" + paymentId + "] in the policy with ID [" + policyId + "]");
-            return new ResponseEntity<>(getJson(ErrorCode.POLICY_DOES_NOT_CONTAIN_A_PAYMENT_WITH_TRANSACTION_ID), NOT_ACCEPTABLE);
-        }
-
         // If no transaction id, then in error, nothing else should be done since we don't have a status (error / success)
         if (!transactionId.isPresent() || isEmpty(transactionId.get())) {
             return new ResponseEntity<>(getJson(policy), OK);
         }
+        
+        //TODO need to check is this the first payment in policy or not. If not, throw exception.
+        Payment payment = paymentService.validateExistPaymentInPolicy(policyId, paymentId);
 
-        paymentService.updatePayment(payment.get(), orderId, transactionId.get(), (!regKey.isPresent() ? "" : regKey.get()));
+        paymentService.updatePayment(payment, orderId, transactionId.get(), (!regKey.isPresent() ? "" : regKey.get()));
 
         // Update the policy status
-        policyService.updatePolicyAfterFirstPaymentValidated(policy);
+        policyService.updatePolicyToPendingValidation(policy);
 
         return new ResponseEntity<>(getJson(policy), OK);
     }

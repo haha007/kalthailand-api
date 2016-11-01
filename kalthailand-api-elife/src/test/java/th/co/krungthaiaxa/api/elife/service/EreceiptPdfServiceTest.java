@@ -1,5 +1,8 @@
 package th.co.krungthaiaxa.api.elife.service;
 
+import com.icegreen.greenmail.junit.GreenMailRule;
+import com.icegreen.greenmail.util.ServerSetupTest;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +41,8 @@ public class EreceiptPdfServiceTest extends ELifeTest {
     private QuoteFactory quoteFactory;
     @Autowired
     private PaymentService paymentService;
+    @Rule
+    public final GreenMailRule greenMail = new GreenMailRule(ServerSetupTest.SMTP_IMAP);
 
     @Test
     public void testGeneratePdf() {
@@ -55,7 +60,7 @@ public class EreceiptPdfServiceTest extends ELifeTest {
 
         Payment payment = paymentService.findFirstPaymentHasTransactionId(policy.getPolicyId());
         byte[] pdfBytes = ereceiptPdfService.createEreceiptPdf(policy, payment, true);
-        IOUtil.writeBytesToRelativeFile(TestUtil.PATH_TEST_RESULT + "/pdf/ereceipt_" + DateTimeUtil.formatNowForFilePath() + "_" + policy.getPolicyId() + ".pdf", pdfBytes);
+        IOUtil.writeBytesToRelativeFile(TestUtil.PATH_TEST_RESULT + "/pdf/ereceipt_" + DateTimeUtil.formatNowForFilePath() + "_" + policy.getPolicyId() + "_quarter.pdf", pdfBytes);
     }
 
     @Test
@@ -65,7 +70,7 @@ public class EreceiptPdfServiceTest extends ELifeTest {
         Policy policy = policyFactory.createPolicyWithValidatedStatus(quoteResult.getQuote());
         Payment payment = paymentService.findFirstPaymentHasTransactionId(policy.getPolicyId());
         byte[] pdfBytes = ereceiptPdfService.createEreceiptPdf(policy, payment, true);
-        IOUtil.writeBytesToRelativeFile(TestUtil.PATH_TEST_RESULT + "/pdf/ereceipt_" + DateTimeUtil.formatNowForFilePath() + "_" + policy.getPolicyId() + ".pdf", pdfBytes);
+        IOUtil.writeBytesToRelativeFile(TestUtil.PATH_TEST_RESULT + "/pdf/ereceipt_" + DateTimeUtil.formatNowForFilePath() + "_" + policy.getPolicyId() + "_halfyear.pdf", pdfBytes);
 
     }
 
