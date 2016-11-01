@@ -24,12 +24,7 @@ import static th.co.krungthaiaxa.api.elife.model.enums.DocumentType.ERECEIPT_PDF
  */
 @Service
 public class EreceiptService {
-    private final static Logger LOGGER = LoggerFactory.getLogger(DocumentService.class);
-    private final static String ERECEIPT_IMAGE_FILE_NAME_PREFIX = "ereceipts_merged";
-    private final static String ERECEIPT_TEMPLATE_FILE_NAME = "AGENT-WHITE-FINAL.jpg";
-    private final static int LINE_POS_REF2 = 576;//px
-    private static final int LINE_POS_PERSON_REGID = 495;//px
-    private final static double CELL_WIDTH = 28.0;
+    public final static Logger LOGGER = LoggerFactory.getLogger(DocumentService.class);
 
     private final DocumentService documentService;
     private final PaymentRepository paymentRepository;

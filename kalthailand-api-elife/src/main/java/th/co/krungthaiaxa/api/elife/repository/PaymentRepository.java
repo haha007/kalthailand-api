@@ -54,13 +54,13 @@ public interface PaymentRepository extends MongoRepository<Payment, String> {
     @Query(value = "{'$and': [{'retryPaymentId':{'$ne': null}}, {'retryPaymentId':{'$ne': ''}}]}", fields = "{'retryPaymentId':1, 'paymentId':0}")
     List<Payment> findRetryPaymentIdByRetryPaymentIdNotNull();
 
-    List<Payment> findByReceiptPdfDocumentNotNullAndReceiptFullNumberBase36Null();
+    List<Payment> findByReceiptPdfDocumentNotNullAndReceiptNumberNull();
 
     List<Payment> findByPaymentIdIn(List<String> paymentIds);
 
-    List<Payment> findByReceiptPdfDocumentNotNullAndReceiptFullNumberBase36NullAndPaymentIdNotIn(List<String> paymentIds);
+    List<Payment> findByReceiptPdfDocumentNotNullAndReceiptNumberNullAndPaymentIdNotIn(List<String> paymentIds);
 
-    List<Payment> findByReceiptPdfDocumentNotNullAndReceiptFullNumberBase36NullAndPaymentIdIn(List<String> paymentIds);
+    List<Payment> findByReceiptPdfDocumentNotNullAndReceiptNumberNullAndPaymentIdIn(List<String> paymentIds);
 
     List<Payment> findByReceiptPdfDocumentNotNull();
 }

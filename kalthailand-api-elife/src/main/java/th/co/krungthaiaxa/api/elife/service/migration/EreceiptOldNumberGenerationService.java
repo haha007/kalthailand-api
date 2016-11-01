@@ -34,7 +34,7 @@ public class EreceiptOldNumberGenerationService {
 //    @PostConstruct
     //FIXME change method name
     public EreceiptOldNumberResult generateEreceiptNumbersByOldPatternForOldPayments() {
-        List<Payment> paymentsInCludedRetryPayments = paymentRepository.findByReceiptPdfDocumentNotNullAndReceiptFullNumberBase36Null();
+        List<Payment> paymentsInCludedRetryPayments = paymentRepository.findByReceiptPdfDocumentNotNullAndReceiptNumberNull();
         LogUtil.logStarting("Payments included retryPayments: " + paymentsInCludedRetryPayments.size() + " \n" + toStringPaymentWithReceiptNumber(paymentsInCludedRetryPayments));
 
         Instant start = LogUtil.logStarting("Generate receipt numbers [start]");
@@ -42,13 +42,13 @@ public class EreceiptOldNumberGenerationService {
         List<String> retryPaymentIds = paymentsWithRetryPaymentIdNotNull.stream().map(payment -> payment.getRetryPaymentId()).collect(Collectors.toList());
 
         //Handle for normal case
-        List<Payment> payments = paymentRepository.findByReceiptPdfDocumentNotNullAndReceiptFullNumberBase36NullAndPaymentIdNotIn(retryPaymentIds);
+        List<Payment> payments = paymentRepository.findByReceiptPdfDocumentNotNullAndReceiptNumberNullAndPaymentIdNotIn(retryPaymentIds);
         saveEreceiptNumbersByOldPattern(payments, true);
         start = LogUtil.logRuntime(start, "Generate receipt numbers for payments [finish]: " + payments.size() + "\n" + toStringPaymentWithReceiptNumber(payments));
 
         //Handle for retry payment
 
-        List<Payment> retryPayments = paymentRepository.findByReceiptPdfDocumentNotNullAndReceiptFullNumberBase36NullAndPaymentIdIn(retryPaymentIds);
+        List<Payment> retryPayments = paymentRepository.findByReceiptPdfDocumentNotNullAndReceiptNumberNullAndPaymentIdIn(retryPaymentIds);
         saveEreceiptNumbersByOldPattern(retryPayments, false);
         LogUtil.logRuntime(start, "Generate receipt numbers for retry payments [finish]: " + retryPayments.size() + "\n" + toStringPaymentWithReceiptNumber(retryPayments));
 
@@ -59,7 +59,7 @@ public class EreceiptOldNumberGenerationService {
     }
 
     private String toStringPaymentWithReceiptNumber(List<Payment> payments) {
-        return payments.stream().map(payment -> String.format("%s, receiptNumber: %s", payment.getPaymentId(), payment.getReceiptNumber().getFullNumberBase36())).collect(Collectors.joining("\n"));
+        return payments.stream().map(payment -> String.format("%s, receiptNumber: %s", payment.getPaymentId(), payment.getReceiptNumber())).collect(Collectors.joining("\n"));
     }
 
     private void saveEreceiptNumbersByOldPattern(List<Payment> payments, boolean newBusiness) {

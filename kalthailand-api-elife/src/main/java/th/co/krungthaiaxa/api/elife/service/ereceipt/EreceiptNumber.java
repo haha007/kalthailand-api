@@ -21,6 +21,10 @@ public class EreceiptNumber {
     @NotBlank
     private String suffixNumberBase36;
 
+    public String toString() {
+        return fullNumberBase36;
+    }
+
     public String getFullNumberBase36() {
         return fullNumberBase36;
     }
