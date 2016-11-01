@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import th.co.krungthaiaxa.api.common.utils.JsonUtil;
+import th.co.krungthaiaxa.api.common.utils.LogUtil;
 import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
 import th.co.krungthaiaxa.api.elife.exception.LinePaymentException;
 import th.co.krungthaiaxa.api.elife.model.Policy;
@@ -24,8 +25,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -40,15 +41,22 @@ import static th.co.krungthaiaxa.api.common.utils.JsonUtil.getJson;
 
 @Service
 public class LineService {
-    private final static Logger LOGGER = LoggerFactory.getLogger(LineService.class);
+    public final static Logger LOGGER = LoggerFactory.getLogger(LineService.class);
     public static final String RESPONSE_CODE_ERROR_INTERNAL_LINEPAY = "9000";
     public static final String RESPONSE_CODE_SUCCESS = "0000";
+
+    public static final int LINE_PUSH_NOTIFICATION_CHANNEL = 1383378250;
+    public static final String LINE_PUSH_NOTIFICATION_EVENT_TYPE = "138311608800106203";
+
     @Value("${line.pay.id}")
     private String linePayId;
     @Value("${line.pay.secret.key}")
     private String linePaySecretKey;
     @Value("${line.pay.url}")
-    private String linePayUrl;
+    private String linePayHost;
+    /**
+     * true or false
+     */
     @Value("${line.pay.capture}")
     private String linePayCapture;
     @Value("${line.app.id}")
@@ -60,61 +68,6 @@ public class LineService {
     @Inject
     public LineService(LineTokenService lineTokenService) {
         this.lineTokenService = lineTokenService;
-    }
-
-    public void sendPushNotificationOld(String messageContent, String... mids) throws IOException {
-        try {
-            LOGGER.info("Sending POST to LINE Push Notification Message");
-            URL url = new URL(lineAppNotificationUrl);
-
-            //set object header
-
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("POST");
-            conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-            conn.setRequestProperty("X-Line-ChannelToken", lineTokenService.getLineToken().getAccessToken());
-            conn.setDoOutput(true);
-            ObjectMapper mapper = new ObjectMapper();
-
-            //parameter
-
-            Map<String, Object> content = new HashMap<>();
-            content.put("contentType", 1);
-            content.put("toType", 1);
-            content.put("text", messageContent);
-
-            Map<String, Object> data = new HashMap<String, Object>();
-            data.put("to", mids);
-            data.put("toChannel", 1383378250);
-            data.put("eventType", "138311608800106203");
-            data.put("content", content);
-
-            //set object to get response
-
-            DataOutputStream wr = new DataOutputStream(conn.getOutputStream());
-            mapper.writeValue(wr, data);
-            wr.flush();
-            wr.close();
-
-            int responseCode = conn.getResponseCode();
-            LOGGER.info("%nSending 'POST' request to URL : " + url);
-            LOGGER.info("Response Code : " + responseCode);
-
-            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            String inputLine;
-            StringBuffer response = new StringBuffer();
-
-            while ((inputLine = in.readLine()) != null) {
-                response.append(inputLine);
-            }
-            in.close();
-            LOGGER.info(response.toString());
-            LOGGER.info("Notification is sent with success");
-        } catch (MalformedURLException e) {
-            throw new IOException("Unable to send Line push notification.", e);
-        } catch (IOException e) {
-            throw new IOException("Unexpected to send Line push notification.", e);
-        }
     }
 
     public void sendPushNotification(String messageContent, String... mids) throws IOException {
@@ -129,8 +82,8 @@ public class LineService {
         linePushNotificationContentRequest.setText(messageContent);
 
         LinePushNotificationRequest linePushNotificationRequest = new LinePushNotificationRequest();
-        linePushNotificationRequest.setToChannel(1383378250);
-        linePushNotificationRequest.setEventType("138311608800106203");
+        linePushNotificationRequest.setToChannel(LINE_PUSH_NOTIFICATION_CHANNEL);
+        linePushNotificationRequest.setEventType(LINE_PUSH_NOTIFICATION_EVENT_TYPE);
         for (String mid : mids) {
             linePushNotificationRequest.addTo(mid);
         }
@@ -178,7 +131,7 @@ public class LineService {
 
         HttpEntity<String> entity = new HttpEntity<>(new String(getJson(linePayBookingRequest), forName("UTF-8")), headers);
 
-        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(linePayUrl + "/request");
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(linePayHost + "/request");
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> response;
         try {
@@ -207,7 +160,7 @@ public class LineService {
 
         HttpEntity<String> entity = new HttpEntity<>(new String(getJson(linePayConfirmingRequest), forName("UTF-8")), headers);
 
-        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(linePayUrl + "/" + transactionId + "/confirm");
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(linePayHost + "/" + transactionId + "/confirm");
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> response;
         try {
@@ -224,15 +177,13 @@ public class LineService {
     }
 
     public LinePayRecurringResponse preApproved(String regKey, Double amount, String currency, String productName, String orderId) throws IOException {
+        Instant start = LogUtil.logStarting(String.format("PreApprovePay [start]: ProductName: %s, orderId: %s", productName, orderId));
         LinePayRecurringResponse linePayResponse;
 
         try {
-            LOGGER.debug("Start sending POST to LINE Pay for Recurring Payment --------------------------------------->");
-            URL url = new URL(linePayUrl + "/preapprovedPay/" + regKey + "/payment");
-            //LOGGER.debug("check url : " +url.toString());
-
-            //set object header
-
+            String preApprovePayUrlString = linePayHost + "/preapprovedPay/" + regKey + "/payment";
+            LOGGER.debug("PreApprovePay URL: " + preApprovePayUrlString);
+            URL url = new URL(preApprovePayUrlString);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setRequestProperty("X-LINE-ChannelId", linePayId);
@@ -240,7 +191,6 @@ public class LineService {
             conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
             conn.setDoOutput(true);
             ObjectMapper mapper = new ObjectMapper();
-            //LOGGER.debug("check header : " +conn.getRequestProperties().toString());
 
             //parameter
             Map<String, Object> data = new HashMap<>();
@@ -267,55 +217,13 @@ public class LineService {
                 response.append(inputLine);
             }
             in.close();
-            LOGGER.info("check response : " + response.toString());
-            LOGGER.info("Notification is sent with success");
-            linePayResponse = JsonUtil.mapper.readValue(response.toString(), LinePayRecurringResponse.class);
+            String responseString = response.toString();
+            LogUtil.logRuntime(start, "PreApprovePay [finish]: " + preApprovePayUrlString + "\n\t Response: \n" + responseString);
+            linePayResponse = JsonUtil.mapper.readValue(responseString, LinePayRecurringResponse.class);
 
         } catch (Exception e) {
-            throw new IOException("Error with preApproved: " + e.getMessage(), e);
+            throw new IOException("PreApprovePay [error]: " + e.getMessage(), e);
         }
-        LOGGER.debug("Stop sending POST to LINE Pay for Recurring Payment --------------------------------------->");
-
-        return linePayResponse;
-    }
-
-    public LinePayResponse preApprovedOld(String regKey, Double amount, String currency, String productName, String orderId) throws IOException {
-        LOGGER.info("preApproved payment");
-        LinePayPreApprovedRequest linePayPreApprovedRequest = new LinePayPreApprovedRequest();
-        linePayPreApprovedRequest.setProductName(productName);
-        linePayPreApprovedRequest.setAmount(amount);
-        linePayPreApprovedRequest.setCurrency(currency);
-        linePayPreApprovedRequest.setOrderId(orderId);
-        LOGGER.info("linePayPreApprovedRequest : " + linePayPreApprovedRequest.toString());
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("X-LINE-ChannelId", linePayId);
-        headers.set("X-LINE-ChannelSecret", linePaySecretKey);
-        headers.set("Content-Type", "application/json; charset=UTF-8");
-        LOGGER.info("headers : " + headers.toString());
-
-        HttpEntity<String> entity = new HttpEntity<>(new String(getJson(linePayPreApprovedRequest), forName("UTF-8")), headers);
-
-        LOGGER.info("entity.header : " + entity.getHeaders());
-        LOGGER.info("entity.body : " + entity.getBody());
-
-        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(linePayUrl + "/preapprovedPay/" + regKey + "/payment");
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<String> response;
-        try {
-            response = restTemplate.exchange(builder.toUriString(), POST, entity, String.class);
-        } catch (RuntimeException e) {
-            throw new IOException("Unable to preApproved payment", e);
-        }
-        if (!response.getStatusCode().equals(OK)) {
-            throw new IOException("Line's response for preApproved payment is [" + response.getStatusCode() + "]. Response body is [" + response.getBody() + "]");
-        }
-
-        LOGGER.info("Payment is preApproved with success");
-        LOGGER.info("response : " + response.getBody());
-        LinePayResponse linePayResponse = getBookingResponseFromJSon(response.getBody());
-        LOGGER.info("Line Pay response has been read");
-
         return linePayResponse;
     }
 
@@ -332,7 +240,7 @@ public class LineService {
 
         HttpEntity<String> entity = new HttpEntity<>(new String(getJson(linePayConfirmingRequest), forName("UTF-8")), headers);
 
-        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(linePayUrl + "/authorizations/" + transactionId + "/capture");
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(linePayHost + "/authorizations/" + transactionId + "/capture");
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> response;
         try {

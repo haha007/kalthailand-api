@@ -46,22 +46,11 @@ public class LogUtil {
             String headerString = String.format("{%s:%s}", headerName, headerValue);
             headerStrings.add(headerString);
         }
-        String result = headerStrings.stream().collect(Collectors.joining(","));
-        return result;
+        return headerStrings.stream().collect(Collectors.joining(","));
     }
 
     public static String toStringRequestParams(HttpServletRequest request) {
         return request.getParameterMap().toString();
-//        Enumeration<String> names = request.getParameterNames();
-//        List<String> paramStrings = new ArrayList<>();
-//        while (names.hasMoreElements()) {
-//            String paramName = names.nextElement();
-//            String paramValue = request.getParameterMap(paramName);
-//            String paramString = String.format("{%s:%s}", paramName, paramValue);
-//            paramStrings.add(paramString);
-//        }
-//        String result = paramStrings.stream().collect(Collectors.joining("\n,"));
-//        return result;
     }
 
     public static String toStringRequestURL(HttpServletRequest request) {
