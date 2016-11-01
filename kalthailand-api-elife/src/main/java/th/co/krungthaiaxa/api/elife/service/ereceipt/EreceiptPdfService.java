@@ -8,7 +8,6 @@ import com.itextpdf.text.pdf.PdfStamper;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.common.exeption.FileIOException;
 import th.co.krungthaiaxa.api.common.exeption.UnexpectedException;
@@ -31,7 +30,6 @@ import java.awt.*;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
@@ -39,7 +37,7 @@ import java.time.LocalDateTime;
  */
 @Service
 public class EreceiptPdfService {
-    private final static Logger LOGGER = LoggerFactory.getLogger(DocumentService.class);
+    public final static Logger LOGGER = LoggerFactory.getLogger(DocumentService.class);
     private final static String ERECEIPT_TEMPLATE_FILE_NAME = "/ereceipt/EreceiptTemplate.pdf";
 
     /**
@@ -127,13 +125,7 @@ public class EreceiptPdfService {
      */
     private static final String ERECEIPT_NUMBER_PREFIX = "M";
 
-    private final EreceiptIncrementalService ereceiptIncrementalService;
     private final BaseFont baseFont = getBaseFont();
-
-    @Autowired
-    public EreceiptPdfService(EreceiptIncrementalService ereceiptIncrementalService) {
-        this.ereceiptIncrementalService = ereceiptIncrementalService;
-    }
 
     /**
      * @param policy
@@ -304,32 +296,8 @@ public class EreceiptPdfService {
         return PdfIOUtil.loadFontFromClassPath("ANGSAB_1.ttf", "/ereceipt/ANGSAB_1.TTF");
     }
 
-    private String getThaiDate(LocalDate localDate) {
-        return DateTimeUtil.formatBuddhistThaiDate(localDate);
-    }
-
     private String getThaiDate(LocalDateTime localDate) {
         return DateTimeUtil.formatBuddhistThaiDate(localDate);
     }
 
-    public static class EreceiptDocumentResult {
-        private byte[] receiptPdf;
-        private EreceiptNumber ereceiptNumber;
-
-        public byte[] getReceiptPdf() {
-            return receiptPdf;
-        }
-
-        public void setReceiptPdf(byte[] receiptPdf) {
-            this.receiptPdf = receiptPdf;
-        }
-
-        public EreceiptNumber getEreceiptNumber() {
-            return ereceiptNumber;
-        }
-
-        public void setEreceiptNumber(EreceiptNumber ereceiptNumber) {
-            this.ereceiptNumber = ereceiptNumber;
-        }
-    }
 }

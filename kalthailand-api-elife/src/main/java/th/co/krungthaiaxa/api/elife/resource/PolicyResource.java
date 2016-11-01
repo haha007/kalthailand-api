@@ -392,12 +392,12 @@ public class PolicyResource {
 
         //TODO need to check is this the first payment in policy or not. If not, throw exception.
         Payment payment = paymentService.validateExistPaymentInPolicy(policyId, paymentId);
-
         paymentService.updatePayment(payment, orderId, transactionId.get(), (!regKey.isPresent() ? "" : regKey.get()));
 
         // Update the policy status
         policyService.updatePolicyStatusToPendingValidation(policy);
-
+        //Return policy with updated payment
+        policy = policyService.validateExistPolicy(policyId);
         return new ResponseEntity<>(getJson(policy), OK);
     }
 

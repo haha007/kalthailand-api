@@ -202,7 +202,7 @@ public class PolicyService {
      *
      * @param policy
      */
-    public void updatePolicyStatusToPendingValidation(Policy policy) {
+    public Policy updatePolicyStatusToPendingValidation(Policy policy) {
         // Generate documents
         try {
             policyDocumentService.generateDocumentsForPendingValidationPolicy(policy);
@@ -242,7 +242,7 @@ public class PolicyService {
 
         policy.setStatus(PolicyStatus.PENDING_VALIDATION);
         policy.setLastUpdateDateTime(Instant.now());
-        policyRepository.save(policy);
+        policy = policyRepository.save(policy);
 
         // Send Email
         try {
@@ -290,6 +290,7 @@ public class PolicyService {
                 logger.error("Unable to send DA Form to TMC on policy [" + policy.getPolicyId() + "]: " + e.getMessage(), e);
             }
         }
+        return policy;
     }
 
     public Policy updatePolicyStatusToValidated(Policy policy, String agentCode, String agentName, String token) {

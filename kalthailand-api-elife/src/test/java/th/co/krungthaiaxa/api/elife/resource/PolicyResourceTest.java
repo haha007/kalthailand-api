@@ -18,19 +18,21 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+import th.co.krungthaiaxa.api.common.model.error.Error;
+import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
 import th.co.krungthaiaxa.api.elife.ELifeTest;
+import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
 import th.co.krungthaiaxa.api.elife.TestUtil;
+import th.co.krungthaiaxa.api.elife.factory.PolicyFactory;
+import th.co.krungthaiaxa.api.elife.factory.ProductQuotationFactory;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
 import th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
-import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
-import th.co.krungthaiaxa.api.elife.service.QuoteService;
-import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
-import th.co.krungthaiaxa.api.common.model.error.Error;
 import th.co.krungthaiaxa.api.elife.repository.PolicyRepository;
+import th.co.krungthaiaxa.api.elife.service.QuoteService;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -49,7 +51,7 @@ import static org.springframework.http.HttpStatus.OK;
 @SpringApplicationConfiguration(classes = KalApiElifeApplication.class)
 @WebAppConfiguration
 @ActiveProfiles("test")
-@IntegrationTest({"server.port=0"})
+@IntegrationTest({ "server.port=0" })
 public class PolicyResourceTest extends ELifeTest {
     @Rule
     public final GreenMailRule greenMail = new GreenMailRule(ServerSetupTest.SMTP_IMAP);
@@ -62,6 +64,8 @@ public class PolicyResourceTest extends ELifeTest {
     private PolicyRepository policyRepository;
     @Inject
     private QuoteService quoteService;
+    @Inject
+    private PolicyFactory policyFactory;
 
     @Before
     public void setUp() throws Exception {
@@ -105,13 +109,13 @@ public class PolicyResourceTest extends ELifeTest {
 
     @Test
     public void should_update_payment_transaction_id_and_registration_key_but_not_the_status() throws IOException, URISyntaxException {
-        Policy policy = getPolicy();
+        Policy policy = policyFactory.createPolicyWithPendingPaymentStatus(ProductQuotationFactory.constructIGenDefault());
 
         URI paymentURI = new URI("http://localhost:" + port + "/policies/" + policy.getPolicyId() + "/update/status/pendingValidation");
         UriComponentsBuilder updatePaymentBuilder = UriComponentsBuilder.fromUri(paymentURI)
                 .queryParam("paymentId", policy.getPayments().get(0).getPaymentId())
                 .queryParam("orderId", "myOrderId")
-                .queryParam("registrationKey", "myRegistrationKey")
+                .queryParam("regKey", "myRegistrationKey")
                 .queryParam("transactionId", "myTransactionId");
         ResponseEntity<String> updatePaymentResponse = template.exchange(updatePaymentBuilder.toUriString(), PUT, null, String.class);
         assertThat(updatePaymentResponse.getStatusCode().value()).isEqualTo(OK.value());
@@ -120,7 +124,7 @@ public class PolicyResourceTest extends ELifeTest {
         assertThat(updatePaymentResponse.getStatusCode().value()).isEqualTo(OK.value());
         Assertions.assertThat(updatedPolicy.getPayments().get(0).getStatus()).isEqualTo(PaymentStatus.NOT_PROCESSED);
         assertThat(updatedPolicy.getPayments().get(0).getTransactionId()).isEqualTo("myTransactionId");
-        //assertThat(updatedPolicy.getPayments().get(0).getRegistrationKey()).isEqualTo("myRegistrationKey");
+        assertThat(updatedPolicy.getPayments().get(0).getRegistrationKey()).isEqualTo("myRegistrationKey");
     }
 
     @Test
