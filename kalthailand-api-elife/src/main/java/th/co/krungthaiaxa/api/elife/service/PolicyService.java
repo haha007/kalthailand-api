@@ -198,7 +198,7 @@ public class PolicyService {
      * 2) A policy is created from quote
      * 3) The first payment is paid by customer via FE & LINE pay (normal process - not preApproval process).
      * 4) Then we will have orderId, transactionId, and regKey (from LINE service). Those information will be updated into payment and the policy status is PENDING_PAYMENT (this method)
-     * 5) Call method {@link #updatePolicyToValidated(Policy, String, String, String)} so that the payment is captured to LINE service and the status of the policy become VALIDATED.
+     * 5) Call method {@link #updatePolicyStatusToValidated(Policy, String, String, String)} so that the payment is captured to LINE service and the status of the policy become VALIDATED.
      *
      * @param policy
      */
@@ -292,7 +292,7 @@ public class PolicyService {
         }
     }
 
-    public Policy updatePolicyToValidated(Policy policy, String agentCode, String agentName, String token) {
+    public Policy updatePolicyStatusToValidated(Policy policy, String agentCode, String agentName, String token) {
         if (!PolicyStatus.PENDING_VALIDATION.equals(policy.getStatus())) {
             throw new ElifeException("Can't validate policy [" + policy.getPolicyId() + "], it is not pending for validation, it's " + policy.getStatus());
         }

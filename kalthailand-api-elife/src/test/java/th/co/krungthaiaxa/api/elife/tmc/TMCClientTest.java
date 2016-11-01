@@ -1,6 +1,5 @@
 package th.co.krungthaiaxa.api.elife.tmc;
 
-
 import com.icegreen.greenmail.junit.GreenMailRule;
 import com.icegreen.greenmail.util.ServerSetupTest;
 import org.junit.Rule;
@@ -13,6 +12,9 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.api.elife.ELifeTest;
 import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
 import th.co.krungthaiaxa.api.elife.TestUtil;
+import th.co.krungthaiaxa.api.elife.factory.PolicyFactory;
+import th.co.krungthaiaxa.api.elife.factory.ProductQuotationFactory;
+import th.co.krungthaiaxa.api.elife.factory.QuoteFactory;
 import th.co.krungthaiaxa.api.elife.model.Document;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.Quote;
@@ -39,16 +41,17 @@ public class TMCClientTest extends ELifeTest {
     @Inject
     private QuoteService quoteService;
     @Inject
+    private QuoteFactory quoteFactory;
+    @Inject
+    private PolicyFactory policyFactory;
+    @Inject
     private TMCClient tmcClient;
     @Rule
     public final GreenMailRule greenMail = new GreenMailRule(ServerSetupTest.SMTP_IMAP);
 
     @Test
     public void should_send_ereceipt_to_tmc() {
-        Policy policy = getPolicy();
-
-        policyService.updatePolicyStatusToPendingValidation(policy);
-        policyService.updatePolicyToValidated(policy, "999999-99-999999", "agentName", "token");
+        Policy policy = policyFactory.createPolicyWithValidatedStatus(ProductQuotationFactory.constructIGenDefault());
         Document document = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(DocumentType.ERECEIPT_PDF)).findFirst().get();
         String documentContent = documentService.findDocumentDownload(document.getId()).getContent();
 
@@ -56,11 +59,4 @@ public class TMCClientTest extends ELifeTest {
         tmcClient.sendPDFToTMC(policy, documentContent, DocumentType.ERECEIPT_PDF);
     }
 
-    private Policy getPolicy() {
-        Quote quote = quoteService.createQuote(randomNumeric(20), ChannelType.LINE, TestUtil.productQuotation(PeriodicityCode.EVERY_MONTH, 100000.0, 5));
-        TestUtil.quote(quote, TestUtil.beneficiary(100.0));
-        quote = quoteService.updateQuote(quote, "token");
-
-        return policyService.createPolicy(quote);
-    }
 }

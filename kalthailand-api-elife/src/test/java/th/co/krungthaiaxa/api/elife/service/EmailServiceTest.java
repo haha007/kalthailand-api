@@ -3,7 +3,6 @@ package th.co.krungthaiaxa.api.elife.service;
 import com.icegreen.greenmail.junit.GreenMailRule;
 import com.icegreen.greenmail.util.ServerSetupTest;
 import com.itextpdf.text.pdf.PdfReader;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -20,9 +19,9 @@ import org.springframework.context.MessageSource;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
 import th.co.krungthaiaxa.api.elife.ELifeTest;
 import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
+import th.co.krungthaiaxa.api.elife.factory.PolicyFactory;
 import th.co.krungthaiaxa.api.elife.factory.ProductQuotationFactory;
 import th.co.krungthaiaxa.api.elife.factory.QuoteFactory;
 import th.co.krungthaiaxa.api.elife.model.Amount;
@@ -47,10 +46,8 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeUtility;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
 import java.text.DecimalFormat;
 import java.util.Base64;
 import java.util.Locale;
@@ -60,12 +57,10 @@ import static com.icegreen.greenmail.util.GreenMailUtil.getBody;
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static th.co.krungthaiaxa.api.elife.TestUtil.beneficiary;
-import static th.co.krungthaiaxa.api.elife.TestUtil.policy;
 import static th.co.krungthaiaxa.api.elife.TestUtil.productQuotation;
 import static th.co.krungthaiaxa.api.elife.TestUtil.quote;
 import static th.co.krungthaiaxa.api.elife.model.enums.ChannelType.LINE;
 import static th.co.krungthaiaxa.api.elife.model.enums.DocumentType.ERECEIPT_PDF;
-import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.EVERY_MONTH;
 import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.EVERY_YEAR;
 import static th.co.krungthaiaxa.api.elife.products.ProductType.PRODUCT_IFINE;
 
@@ -96,6 +91,8 @@ public class EmailServiceTest extends ELifeTest {
     private PolicyService policyService;
     @Inject
     private QuoteService quoteService;
+    @Inject
+    private PolicyFactory policyFactory;
 
     private String base64Graph;
 
@@ -256,29 +253,22 @@ public class EmailServiceTest extends ELifeTest {
 
     @Test
     public void should_send_ereceipt_email() throws Exception {
-
-        Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation());
-        quote(quote, beneficiary(100.0));
-        quote = quoteService.updateQuote(quote, "token");
-        Policy policy = policyService.createPolicy(quote);
-        policy.getInsureds().get(0).getPerson().setEmail("tanawat_hemchua@hotmail.com");
-
-        policyDocumentService.generateDocumentsForValidatedPolicy(policy, "token");
+        Policy policy = policyFactory.createPolicyWithValidatedStatus(ProductQuotationFactory.constructIGenDefault());
+        //TODO assert ereceipt pdf: should put in a common Assert
         Optional<Document> documentPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(ERECEIPT_PDF)).findFirst();
         assertThat(documentPdf.isPresent()).isTrue();
         DocumentDownload documentDownload = documentService.findDocumentDownload(documentPdf.get().getId());
         byte[] bytes = Base64.getDecoder().decode(documentDownload.getContent());
         assertThat(new PdfReader(bytes)).isNotNull();
+
+        //Test sending email and then assert
+        greenMail.purgeEmailFromAllMailboxes();
         emailService.sendEreceiptEmail(policy, Pair.of(bytes, "emailServiceTest-e-receipt-10ec.pdf"));
-
         assertThat(greenMail.getReceivedMessages()).hasSize(1);
-        MimeMessage email4 = greenMail.getReceivedMessages()[0];
-        String bodyAsString4 = decodeSimpleBody(getBody(email4));
-        //assertThat(bodyAsString4).contains("บริษัท กรุงไทย-แอกซ่า ประกันชีวิต จำกัด (มหาชน) ขอขอบคุณท่านที่วางใจโดยทำการสมัครแบบประกันชีวิต " + messageSource.getMessage("product.id." + policy.getCommonData().getProductId(), null, thLocale) + " (" + policy.getCommonData().getProductId() + ")" + " ผ่าน LINE Pay");
-        assertThat("<tr><td align=\"center\" class=\"header-text\">ที่วางใจ และทำการสมัครแบบประกัน messageSource.getMessage(\"product.id.\" + policy.getCommonData().getProductId(), null, thLocale) + \" (\" + policy.getCommonData().getProductId() + \")\"</td></tr>");
-        assertThat("<tr><td>เรียนคุณ " + policy.getInsureds().get(0).getPerson().getGivenName() + " " + policy.getInsureds().get(0).getPerson().getSurName() + " </td></tr>");
 
-        Multipart multipart = (Multipart) email4.getContent();
+        MimeMessage emailMessage = greenMail.getReceivedMessages()[0];
+
+        Multipart multipart = (Multipart) emailMessage.getContent();
         for (int i = 0; i < multipart.getCount(); i++) {
             BodyPart bodyPart = multipart.getBodyPart(i);
             if (!Part.ATTACHMENT.equalsIgnoreCase(bodyPart.getDisposition()) &&
@@ -420,94 +410,6 @@ public class EmailServiceTest extends ELifeTest {
         assertThat(greenMail.getReceivedMessages()).hasSize(1);
         MimeMessage email = greenMail.getReceivedMessages()[0];
         assertThat(email.getFrom()).containsOnly(new InternetAddress(emailName));
-    }
-
-    @Test
-    public void should_send_10ec_ereceipt_pdf_file_attachment_in_email() throws Exception {
-        Quote quote = quoteService.createQuote(RandomStringUtils.randomNumeric(20), LINE, productQuotation());
-        quote(quote, beneficiary(100.0));
-        quote = quoteService.updateQuote(quote, "token");
-        Policy policy = policyService.createPolicy(quote);
-        policy(policy);
-        policy.getPayments().get(0).setEffectiveDate(DateTimeUtil.nowLocalDateTimeInThaiZoneId());
-
-        policyDocumentService.generateDocumentsForValidatedPolicy(policy, "token");
-        Optional<Document> documentPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(ERECEIPT_PDF)).findFirst();
-        assertThat(documentPdf.isPresent()).isTrue();
-
-        DocumentDownload documentDownload = documentService.findDocumentDownload(documentPdf.get().getId());
-        byte[] bytes = Base64.getDecoder().decode(documentDownload.getContent());
-        assertThat(new PdfReader(bytes)).isNotNull();
-
-        FileUtils.writeByteArrayToFile(new File("target/e-receipt-10ec.pdf"), bytes);
-
-        emailService.sendEreceiptEmail(policy, Pair.of(bytes, "emailServiceTest-e-receipt-10ec.pdf"));
-
-        assertThat(greenMail.getReceivedMessages()).hasSize(1);
-        MimeMessage email = greenMail.getReceivedMessages()[0];
-        String testSubject = IOUtils.toString(this.getClass().getResourceAsStream("/email-content/email-ereceipt-subject.txt"), Charset.forName("UTF-8"));
-        testSubject = testSubject.replace("%PRODUCT%", messageSource.getMessage("product.id." + policy.getCommonData().getProductId(), null, thLocale));
-        assertThat(email.getSubject()).isEqualTo(testSubject);
-        assertThat(email.getFrom()).containsOnly(new InternetAddress(emailName));
-
-        String bodyAsString = decodeSimpleBody(getBody(email));
-        //assertThat(bodyAsString).contains("<tr><td align=\"center\" class=\"header-text\">กรุงไทย-แอกซ่า ประกันชีวิต ขอขอบคุณ</td></tr>");
-        //assertThat(bodyAsString).contains("กรุงไทย-แอกซ่า ประกันชีวิต");
-
-        Multipart multipart = (Multipart) email.getContent();
-        for (int i = 0; i < multipart.getCount(); i++) {
-            BodyPart bodyPart = multipart.getBodyPart(i);
-            if (!Part.ATTACHMENT.equalsIgnoreCase(bodyPart.getDisposition()) &&
-                    !StringUtils.isNotBlank(bodyPart.getFileName())) {
-                //null file value
-            } else {
-                assertThat(bodyPart.getFileName()).isEqualTo("emailServiceTest-e-receipt-10ec.pdf");
-            }
-        }
-    }
-
-    @Test
-    public void should_send_ifine_ereceipt_pdf_file_attachment_in_email() throws Exception {
-        Quote quote = quoteService.createQuote("xxx", LINE, productQuotation(PRODUCT_IFINE, 50, EVERY_MONTH, 10000.0));
-        quote(quote, beneficiary(100.0));
-        quote = quoteService.updateQuote(quote, "token");
-        Policy policy = policyService.createPolicy(quote);
-        policy(policy);
-        policy.getPayments().get(0).setEffectiveDate(DateTimeUtil.nowLocalDateTimeInThaiZoneId());
-
-        policyDocumentService.generateDocumentsForValidatedPolicy(policy, "token");
-        Optional<Document> documentPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(ERECEIPT_PDF)).findFirst();
-        assertThat(documentPdf.isPresent()).isTrue();
-
-        DocumentDownload documentDownload = documentService.findDocumentDownload(documentPdf.get().getId());
-        byte[] bytes = Base64.getDecoder().decode(documentDownload.getContent());
-        assertThat(new PdfReader(bytes)).isNotNull();
-
-        FileUtils.writeByteArrayToFile(new File("target/e-receipt-ifine.pdf"), bytes);
-
-        emailService.sendEreceiptEmail(policy, Pair.of(bytes, "emailServiceTest-e-receipt-ifine.pdf"));
-
-        assertThat(greenMail.getReceivedMessages()).hasSize(1);
-        MimeMessage email = greenMail.getReceivedMessages()[0];
-        String testSubject = IOUtils.toString(this.getClass().getResourceAsStream("/email-content/email-ereceipt-subject.txt"), Charset.forName("UTF-8"));
-        testSubject = testSubject.replace("%PRODUCT%", messageSource.getMessage("product.id." + policy.getCommonData().getProductId(), null, thLocale));
-        assertThat(email.getSubject()).isEqualTo(testSubject);
-        assertThat(email.getFrom()).containsOnly(new InternetAddress(emailName));
-
-        String bodyAsString = decodeSimpleBody(getBody(email));
-        //assertThat(bodyAsString).contains("<tr><td align=\"center\" class=\"header-text\">กรุงไทย-แอกซ่า ประกันชีวิต ขอขอบคุณ</td></tr>");
-        //assertThat(bodyAsString).contains("กรุงไทย-แอกซ่า ประกันชีวิต");
-
-        Multipart multipart = (Multipart) email.getContent();
-        for (int i = 0; i < multipart.getCount(); i++) {
-            BodyPart bodyPart = multipart.getBodyPart(i);
-            if (!Part.ATTACHMENT.equalsIgnoreCase(bodyPart.getDisposition()) &&
-                    !StringUtils.isNotBlank(bodyPart.getFileName())) {
-                //null file value
-            } else {
-                assertThat(bodyPart.getFileName()).isEqualTo("emailServiceTest-e-receipt-ifine.pdf");
-            }
-        }
     }
 
     private static String decodeSimpleBody(String encodedBody) throws MessagingException, IOException {

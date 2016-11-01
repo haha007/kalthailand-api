@@ -116,7 +116,7 @@ public class PolicyValidatedProcessingService {
 
         String regKey = linePayResponse.getInfo().getRegKey();
         policyService.updateRegKeyForAllNotProcessedPayments(policy, regKey);
-        policy = policyService.updatePolicyToValidated(policy, agentCode, agentName, accessToken);
+        policy = policyService.updatePolicyStatusToValidated(policy, agentCode, agentName, accessToken);
         return policy;
     }
 
