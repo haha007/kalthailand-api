@@ -84,4 +84,9 @@ public class ProductQuotationFactory {
     public static ProductQuotation constructIGenDefaultWithMonthlyPayment() {
         return ProductQuotationFactory.constructIGen(33, PeriodicityCode.EVERY_MONTH, 1000000.0, true, 35, ProductDividendOption.END_OF_CONTRACT_PAY_BACK);
     }
+
+    public static ProductQuotation constructIProtectDefault(PeriodicityCode periodicityCode) {
+        return ProductQuotationFactory.constructIGen(33, periodicityCode, 100000.0, true, 35, ProductDividendOption.END_OF_CONTRACT_PAY_BACK);
+
+    }
 }

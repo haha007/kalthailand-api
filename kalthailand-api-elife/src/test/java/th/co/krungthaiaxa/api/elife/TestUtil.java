@@ -59,6 +59,7 @@ import static th.co.krungthaiaxa.api.elife.products.ProductUtils.amountTHB;
 
 public class TestUtil {
     public static final String PATH_TEST_RESULT = "target/testresult/";
+    public static final String DUMMY_EMAIL = "dummy.test.ags@gmail.com";
 
     public static ProductQuotation productQuotation(Integer age, PeriodicityCode periodicityCode) {
         return productQuotation(ProductType.PRODUCT_10_EC, age, periodicityCode, 350000.0, true, 23, GenderCode.FEMALE);

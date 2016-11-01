@@ -47,7 +47,7 @@ public class TMCClientTest extends ELifeTest {
     public void should_send_ereceipt_to_tmc() {
         Policy policy = getPolicy();
 
-        policyService.updatePolicyToPendingValidation(policy);
+        policyService.updatePolicyStatusToPendingValidation(policy);
         policyService.updatePolicyToValidated(policy, "999999-99-999999", "agentName", "token");
         Document document = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(DocumentType.ERECEIPT_PDF)).findFirst().get();
         String documentContent = documentService.findDocumentDownload(document.getId()).getContent();

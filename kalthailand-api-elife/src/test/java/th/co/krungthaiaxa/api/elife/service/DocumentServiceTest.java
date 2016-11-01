@@ -16,6 +16,8 @@ import th.co.krungthaiaxa.api.elife.ELifeTest;
 import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
 import th.co.krungthaiaxa.api.elife.TestUtil;
 import th.co.krungthaiaxa.api.elife.factory.PolicyFactory;
+import th.co.krungthaiaxa.api.elife.factory.ProductQuotationFactory;
+import th.co.krungthaiaxa.api.elife.factory.RequestFactory;
 import th.co.krungthaiaxa.api.elife.model.Document;
 import th.co.krungthaiaxa.api.elife.model.DocumentDownload;
 import th.co.krungthaiaxa.api.elife.model.Policy;
@@ -38,8 +40,6 @@ import static th.co.krungthaiaxa.api.elife.model.enums.DocumentType.APPLICATION_
 import static th.co.krungthaiaxa.api.elife.model.enums.DocumentType.DA_FORM;
 import static th.co.krungthaiaxa.api.elife.model.enums.DocumentType.ERECEIPT_IMAGE;
 import static th.co.krungthaiaxa.api.elife.model.enums.DocumentType.ERECEIPT_PDF;
-import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.EVERY_MONTH;
-import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.EVERY_YEAR;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiElifeApplication.class)
@@ -62,10 +62,8 @@ public class DocumentServiceTest extends ELifeTest {
     public final GreenMailRule greenMail = new GreenMailRule(ServerSetupTest.SMTP_IMAP);
 
     @Test
-    public void should_add_2_documents_in_policy() {
-        Policy policy = getPolicy(EVERY_MONTH);
-        TestUtil.policy(policy);
-
+    public void test_documentService_addDocument() {
+        Policy policy = policyFactory.createPolicyWithPendingPaymentStatus(ProductQuotationFactory.constructIProtectDefault());
         assertThat(policy.getDocuments()).hasSize(0);
         Document document1 = documentService.addDocument(policy, Base64.getEncoder().encode("something".getBytes()), "image/jpg", ERECEIPT_IMAGE);
         Document document2 = documentService.addDocument(policy, Base64.getEncoder().encode("something".getBytes()), "image/jpg", ERECEIPT_PDF);
@@ -75,8 +73,8 @@ public class DocumentServiceTest extends ELifeTest {
 
     @Test
     public void should_get_1_document_in_policy() {
-        Policy policy = getPolicy(EVERY_MONTH);
-        TestUtil.policy(policy);
+        ProductQuotation productQuotation = ProductQuotationFactory.constructIProtectDefaultWithMonthlyPayment();
+        Policy policy = policyFactory.createPolicyWithPendingPaymentStatus(productQuotation);
 
         assertThat(policy.getDocuments()).hasSize(0);
         Document document = documentService.addDocument(policy, Base64.getEncoder().encode("something".getBytes()), "image/png", ERECEIPT_IMAGE);
@@ -94,49 +92,55 @@ public class DocumentServiceTest extends ELifeTest {
 
     @Test
     public void should_have_2_documents_generated_when_policy_is_waiting_for_payment() throws Exception {
-        Policy policy = getPolicy(EVERY_MONTH);
-        policyDocumentService.generateDocumentsForPendingValidation(policy);
+        ProductQuotation productQuotation = ProductQuotationFactory.constructIGenDefaultWithMonthlyPayment();
+        Policy policy = policyFactory.createPolicyWithPendingValidationStatus(productQuotation);
+        policyDocumentService.generateDocumentsForPendingValidationPolicy(policy);
         assertThat(policy.getDocuments()).extracting("typeName").containsExactly(APPLICATION_FORM, DA_FORM);
     }
 
     @Test
     public void should_still_have_only_2_documents_even_after_generating_more_than_once() throws Exception {
-        Policy policy = getPolicy(EVERY_MONTH);
-        policyDocumentService.generateDocumentsForPendingValidation(policy);
-        policyDocumentService.generateDocumentsForPendingValidation(policy);
-        policyDocumentService.generateDocumentsForPendingValidation(policy);
+        ProductQuotation productQuotation = ProductQuotationFactory.constructIGenDefaultWithMonthlyPayment();
+        Policy policy = policyFactory.createPolicyWithPendingValidationStatus(productQuotation);
+        policyDocumentService.generateDocumentsForPendingValidationPolicy(policy);
+        policyDocumentService.generateDocumentsForPendingValidationPolicy(policy);
+        policyDocumentService.generateDocumentsForPendingValidationPolicy(policy);
         assertThat(policy.getDocuments()).extracting("typeName").containsExactly(APPLICATION_FORM, DA_FORM);
     }
 
     @Test
-    public void should_have_4_documents_generated_when_policy_is_validated_and_not_monthly() throws Exception {
-        Policy policy = getPolicy(EVERY_YEAR);
-        policyDocumentService.generateValidatedPolicyDocuments(policy, "token");
-        assertThat(policy.getDocuments()).extracting("typeName").containsExactly(APPLICATION_FORM, APPLICATION_FORM_VALIDATED, ERECEIPT_IMAGE, ERECEIPT_PDF);
+    public void should_have_3_documents_generated_when_policy_is_validated_and_not_monthly() throws Exception {
+        ProductQuotation productQuotation = ProductQuotationFactory.constructIProtectDefault(PeriodicityCode.EVERY_YEAR);
+        Policy policy = policyFactory.createPolicyWithValidatedStatus(productQuotation);
+        policyDocumentService.generateDocumentsForValidatedPolicy(policy, RequestFactory.generateAccessToken());
+        assertThat(policy.getDocuments()).extracting("typeName").containsExactly(APPLICATION_FORM, APPLICATION_FORM_VALIDATED, ERECEIPT_PDF);
     }
 
     @Test
-    public void should_have_5_documents_generated_when_policy_is_validated_and_monthly() throws Exception {
-        Policy policy = getPolicy(EVERY_MONTH);
-        policyDocumentService.generateValidatedPolicyDocuments(policy, "token");
-        assertThat(policy.getDocuments()).extracting("typeName").containsExactly(APPLICATION_FORM, DA_FORM, APPLICATION_FORM_VALIDATED, ERECEIPT_IMAGE, ERECEIPT_PDF);
+    public void should_have_4_documents_generated_when_policy_is_validated_and_monthly() throws Exception {
+        ProductQuotation productQuotation = ProductQuotationFactory.constructIProtectDefaultWithMonthlyPayment();
+        Policy policy = policyFactory.createPolicyWithValidatedStatus(productQuotation);
+        policyDocumentService.generateDocumentsForValidatedPolicy(policy, RequestFactory.generateAccessToken());
+        assertThat(policy.getDocuments()).extracting("typeName").containsExactly(APPLICATION_FORM, DA_FORM, APPLICATION_FORM_VALIDATED, ERECEIPT_PDF);
     }
 
     @Test
-    public void should_still_have_only_5_documents_even_after_generating_more_than_once() throws Exception {
-        Policy policy = getPolicy(EVERY_MONTH);
-        policyDocumentService.generateValidatedPolicyDocuments(policy, "token");
-        policyDocumentService.generateValidatedPolicyDocuments(policy, "token");
-        policyDocumentService.generateValidatedPolicyDocuments(policy, "token");
-        assertThat(policy.getDocuments()).extracting("typeName").containsExactly(APPLICATION_FORM, DA_FORM, APPLICATION_FORM_VALIDATED, ERECEIPT_IMAGE, ERECEIPT_PDF);
+    public void should_still_have_only_4_documents_even_after_generating_more_than_once() throws Exception {
+        ProductQuotation productQuotation = ProductQuotationFactory.constructIProtectDefaultWithMonthlyPayment();
+        Policy policy = policyFactory.createPolicyWithValidatedStatus(productQuotation);
+
+        policyDocumentService.generateDocumentsForValidatedPolicy(policy, RequestFactory.generateAccessToken());
+        policyDocumentService.generateDocumentsForValidatedPolicy(policy, RequestFactory.generateAccessToken());
+        policyDocumentService.generateDocumentsForValidatedPolicy(policy, RequestFactory.generateAccessToken());
+        assertThat(policy.getDocuments()).extracting("typeName").containsExactly(APPLICATION_FORM, DA_FORM, APPLICATION_FORM_VALIDATED, ERECEIPT_PDF);
     }
 
     @Test
     public void should_create_bytes_for_eReceipt() throws IOException, DocumentException {
-        Policy policy = getPolicy(EVERY_MONTH);
-        TestUtil.policy(policy);
+        ProductQuotation productQuotation = ProductQuotationFactory.constructIProtectDefaultWithMonthlyPayment();
+        Policy policy = policyFactory.createPolicyWithValidatedStatus(productQuotation);
 
-        policyDocumentService.generateValidatedPolicyDocuments(policy, "token");
+        policyDocumentService.generateDocumentsForValidatedPolicy(policy, RequestFactory.generateAccessToken());
         Optional<Document> documentPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(ERECEIPT_PDF)).findFirst();
         assertThat(documentPdf.isPresent()).isTrue();
 

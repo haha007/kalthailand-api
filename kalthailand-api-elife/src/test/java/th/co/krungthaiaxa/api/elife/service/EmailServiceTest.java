@@ -263,7 +263,7 @@ public class EmailServiceTest extends ELifeTest {
         Policy policy = policyService.createPolicy(quote);
         policy.getInsureds().get(0).getPerson().setEmail("tanawat_hemchua@hotmail.com");
 
-        policyDocumentService.generateValidatedPolicyDocuments(policy, "token");
+        policyDocumentService.generateDocumentsForValidatedPolicy(policy, "token");
         Optional<Document> documentPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(ERECEIPT_PDF)).findFirst();
         assertThat(documentPdf.isPresent()).isTrue();
         DocumentDownload documentDownload = documentService.findDocumentDownload(documentPdf.get().getId());
@@ -431,7 +431,7 @@ public class EmailServiceTest extends ELifeTest {
         policy(policy);
         policy.getPayments().get(0).setEffectiveDate(DateTimeUtil.nowLocalDateTimeInThaiZoneId());
 
-        policyDocumentService.generateValidatedPolicyDocuments(policy, "token");
+        policyDocumentService.generateDocumentsForValidatedPolicy(policy, "token");
         Optional<Document> documentPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(ERECEIPT_PDF)).findFirst();
         assertThat(documentPdf.isPresent()).isTrue();
 
@@ -475,7 +475,7 @@ public class EmailServiceTest extends ELifeTest {
         policy(policy);
         policy.getPayments().get(0).setEffectiveDate(DateTimeUtil.nowLocalDateTimeInThaiZoneId());
 
-        policyDocumentService.generateValidatedPolicyDocuments(policy, "token");
+        policyDocumentService.generateDocumentsForValidatedPolicy(policy, "token");
         Optional<Document> documentPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(ERECEIPT_PDF)).findFirst();
         assertThat(documentPdf.isPresent()).isTrue();
 

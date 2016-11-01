@@ -21,9 +21,11 @@ import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.Registration;
+import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
 import th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus;
 import th.co.krungthaiaxa.api.elife.model.enums.RegistrationTypeName;
 import th.co.krungthaiaxa.api.elife.model.sms.SMSResponse;
+import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
 import th.co.krungthaiaxa.api.elife.products.ProductService;
 import th.co.krungthaiaxa.api.elife.products.ProductServiceFactory;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
@@ -138,6 +140,10 @@ public class PolicyService {
         return policyNumbers.iterator().next();
     }
 
+    /**
+     * @param quote the quote must be calculated ({@link QuoteService#createQuote(String, ChannelType, ProductQuotation)}
+     * @return After creating policy, its status will be {@link PolicyStatus#PENDING_PAYMENT}.
+     */
     public Policy createPolicy(Quote quote) {
         notNull(quote, PolicyValidationException.emptyQuote);
         notNull(quote.getId(), PolicyValidationException.noneExistingQuote);
@@ -196,10 +202,10 @@ public class PolicyService {
      *
      * @param policy
      */
-    public void updatePolicyToPendingValidation(Policy policy) {
+    public void updatePolicyStatusToPendingValidation(Policy policy) {
         // Generate documents
         try {
-            policyDocumentService.generateDocumentsForPendingValidation(policy);
+            policyDocumentService.generateDocumentsForPendingValidationPolicy(policy);
         } catch (Exception e) {
             throw new ElifeException("Can't generate documents for the policy [" + policy.getPolicyId() + "]");
         }
@@ -297,7 +303,7 @@ public class PolicyService {
 
         // Generate documents
         try {
-            policyDocumentService.generateValidatedPolicyDocuments(policy, token);
+            policyDocumentService.generateDocumentsForValidatedPolicy(policy, token);
         } catch (Exception e) {
             throw new ElifeException("Can't generate documents for the policy [" + policy.getPolicyId() + "]: " + e.getMessage(), e);
         }

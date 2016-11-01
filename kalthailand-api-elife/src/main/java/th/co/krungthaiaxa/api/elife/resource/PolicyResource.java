@@ -389,14 +389,14 @@ public class PolicyResource {
         if (!transactionId.isPresent() || isEmpty(transactionId.get())) {
             return new ResponseEntity<>(getJson(policy), OK);
         }
-        
+
         //TODO need to check is this the first payment in policy or not. If not, throw exception.
         Payment payment = paymentService.validateExistPaymentInPolicy(policyId, paymentId);
 
         paymentService.updatePayment(payment, orderId, transactionId.get(), (!regKey.isPresent() ? "" : regKey.get()));
 
         // Update the policy status
-        policyService.updatePolicyToPendingValidation(policy);
+        policyService.updatePolicyStatusToPendingValidation(policy);
 
         return new ResponseEntity<>(getJson(policy), OK);
     }
@@ -462,7 +462,7 @@ public class PolicyResource {
             HttpServletRequest httpServletRequest) {
         String accessToken = httpServletRequest.getHeader(accessTokenHeader);
         PolicyValidationRequest policyValidationRequest = new PolicyValidationRequest(policyId, agentCode, agentName, linePayCaptureMode, accessToken);
-        return policyValidatedProcessingService.processValidatedPolicy(policyValidationRequest);
+        return policyValidatedProcessingService.updatePolicyStatusToValidated(policyValidationRequest);
     }
 
     @ApiOperation(value = "Notify policy's premium via SMS", notes = "Send the notification about premium information to client via SMS")

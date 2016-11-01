@@ -55,7 +55,7 @@ public class PolicyValidatedProcessingService {
         this.ereceiptService = ereceiptService;
     }
 
-    public Policy processValidatedPolicy(PolicyValidationRequest policyValidationRequest) {
+    public Policy updatePolicyStatusToValidated(PolicyValidationRequest policyValidationRequest) {
         beanValidator.validate(policyValidationRequest);
         boolean newBusiness = true;
         String agentCode = policyValidationRequest.getAgentCode();

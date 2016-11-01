@@ -56,6 +56,15 @@ public class DocumentService {
         return addDocument(policy, decodedContent, mimeType, documentType, null, null);
     }
 
+    /**
+     * @param policy
+     * @param decodedContent
+     * @param mimeType
+     * @param documentType
+     * @param documentReferenceType this can be either the policy, or the quote,...
+     * @param referenceId           this can be either the policyId,or quoteId...
+     * @return
+     */
     public Document addDocument(Policy policy, byte[] decodedContent, String mimeType, DocumentType documentType, DocumentReferenceType documentReferenceType, String referenceId) {
         LocalDateTime now = DateTimeUtil.nowLocalDateTimeInThaiZoneId();
 

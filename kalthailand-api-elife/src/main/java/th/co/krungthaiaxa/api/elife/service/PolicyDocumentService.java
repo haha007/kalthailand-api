@@ -44,7 +44,7 @@ public class PolicyDocumentService {
         this.paymentRepository = paymentRepository;
     }
 
-    public void generateDocumentsForPendingValidation(Policy policy) {
+    public void generateDocumentsForPendingValidationPolicy(Policy policy) {
         // Generate NOT validated Application Form
         Optional<Document> notValidatedApplicationForm = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(APPLICATION_FORM)).findFirst();
         if (!notValidatedApplicationForm.isPresent()) {
@@ -74,11 +74,11 @@ public class PolicyDocumentService {
         LOGGER.info("Default documents for policy [" + policy.getPolicyId() + "] have been created.");
     }
 
-    public void generateValidatedPolicyDocuments(Policy policy, String token) {
+    public void generateDocumentsForValidatedPolicy(Policy policy, String token) {
         boolean newBusiness = true;
 
         // In case previous documents were not generated
-        generateDocumentsForPendingValidation(policy);
+        generateDocumentsForPendingValidationPolicy(policy);
 
         // Generate validated Application Form
         Optional<Document> validatedApplicationForm = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(APPLICATION_FORM_VALIDATED)).findFirst();

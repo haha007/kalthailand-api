@@ -76,7 +76,7 @@ public class IGenApplicationFormTest extends ELifeTest {
     public void test_generate_applicationForm_for_not_validated_quote() throws IOException {
         QuoteFactory.QuoteResult quoteResult = quoteFactory.createDefaultIGen();
         Policy policy = policyService.createPolicy(quoteResult.getQuote());
-        policyDocumentService.generateDocumentsForPendingValidation(policy);
+        policyDocumentService.generateDocumentsForPendingValidationPolicy(policy);
 
         byte[] pdfContent = applicationFormService.generateNotValidatedApplicationForm(policy);
         File file = new File(TestUtil.PATH_TEST_RESULT + System.currentTimeMillis() + "_applicationform_" + policy.getPolicyId() + ".pdf");
