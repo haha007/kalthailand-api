@@ -9,6 +9,7 @@ import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayCaptureMode;
 import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
+import th.co.krungthaiaxa.api.elife.service.PaymentService;
 import th.co.krungthaiaxa.api.elife.service.PolicyService;
 import th.co.krungthaiaxa.api.elife.service.PolicyValidatedProcessingService;
 
@@ -26,6 +27,8 @@ public class PolicyFactory {
 
     @Inject
     private PolicyService policyService;
+    @Inject
+    private PaymentService paymentService;
 
     @Rule
     public final GreenMailRule greenMail = new GreenMailRule(ServerSetupTest.SMTP_IMAP);
@@ -51,7 +54,7 @@ public class PolicyFactory {
         String orderId = PaymentFactory.generateOrderId();
         String transactionId = PaymentFactory.generateTransactionId();
         String regKey = PaymentFactory.generatePaymentRegKey();
-        policyService.updatePayment(payment, orderId, transactionId, regKey);
+        paymentService.updatePayment(payment, orderId, transactionId, regKey);
         policyService.updatePolicyAfterFirstPaymentValidated(policy);
 
         PolicyValidatedProcessingService.PolicyValidationRequest policyValidationRequest = new PolicyValidatedProcessingService.PolicyValidationRequest();

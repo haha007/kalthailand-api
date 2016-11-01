@@ -40,7 +40,8 @@ public class PolicyServiceTest extends ELifeTest {
     private PolicyService policyService;
     @Inject
     private QuoteService quoteService;
-
+    @Inject
+    private PaymentService paymentService;
     @Rule
     public final GreenMailRule greenMail = new GreenMailRule(ServerSetupTest.SMTP_IMAP);
 
@@ -89,7 +90,7 @@ public class PolicyServiceTest extends ELifeTest {
         Policy policy = getPolicy();
 
         Payment payment = policy.getPayments().get(0);
-        policyService.updatePaymentAfterLinePay(payment, 50.0, "THB", ChannelType.LINE, TestUtil.linePayResponse("0000", "OK"));
+        paymentService.updatePaymentAfterLinePay(payment, 50.0, "THB", ChannelType.LINE, TestUtil.linePayResponse("0000", "OK"));
         Assertions.assertThat(policy.getDocuments()).hasSize(0);
     }
 
@@ -108,10 +109,10 @@ public class PolicyServiceTest extends ELifeTest {
         Payment payment2 = policy.getPayments().get(1);
         Payment payment3 = policy.getPayments().get(2);
 
-        policyService.updatePaymentAfterLinePay(payment1, 50.0, "THB", ChannelType.LINE, TestUtil.linePayResponse("0000", "OK"));
-        policyService.updatePaymentAfterLinePay(payment1, 50.0, "THB", ChannelType.LINE, TestUtil.linePayResponse("0000", "OK"));
-        policyService.updatePaymentAfterLinePay(payment2, 50.0, "THB", ChannelType.LINE, TestUtil.linePayResponse("0000", "OK"));
-        policyService.updatePaymentAfterLinePay(payment3, 50.0, "THB", ChannelType.LINE, TestUtil.linePayResponse("0000", "OK"));
+        paymentService.updatePaymentAfterLinePay(payment1, 50.0, "THB", ChannelType.LINE, TestUtil.linePayResponse("0000", "OK"));
+        paymentService.updatePaymentAfterLinePay(payment1, 50.0, "THB", ChannelType.LINE, TestUtil.linePayResponse("0000", "OK"));
+        paymentService.updatePaymentAfterLinePay(payment2, 50.0, "THB", ChannelType.LINE, TestUtil.linePayResponse("0000", "OK"));
+        paymentService.updatePaymentAfterLinePay(payment3, 50.0, "THB", ChannelType.LINE, TestUtil.linePayResponse("0000", "OK"));
 
         Assertions.assertThat(policy.getDocuments()).hasSize(0);
     }
@@ -124,7 +125,7 @@ public class PolicyServiceTest extends ELifeTest {
         payment.getAmount().setValue(100.0);
         Assertions.assertThat(payment.getStatus()).isEqualTo(PaymentStatus.NOT_PROCESSED);
 
-        policyService.updatePaymentAfterLinePay(payment, 50.0, "THB", ChannelType.LINE, TestUtil.linePayResponse("Error code", "Error msg"));
+        paymentService.updatePaymentAfterLinePay(payment, 50.0, "THB", ChannelType.LINE, TestUtil.linePayResponse("Error code", "Error msg"));
         policy.getPayments().get(0);
 
 //        assertThat(payment.getEffectiveDate()).isNull();
@@ -142,7 +143,7 @@ public class PolicyServiceTest extends ELifeTest {
         payment.getAmount().setValue(100.0);
         Assertions.assertThat(payment.getStatus()).isEqualTo(PaymentStatus.NOT_PROCESSED);
 
-        policyService.updatePaymentAfterLinePay(payment, 100.0, "THB", ChannelType.LINE, TestUtil.linePayResponse("0000", "OK"));
+        paymentService.updatePaymentAfterLinePay(payment, 100.0, "THB", ChannelType.LINE, TestUtil.linePayResponse("0000", "OK"));
 
         assertEffectiveDateSameDueDate(payment);
         assertThat(payment.getPaymentInformations()).hasSize(1);
@@ -158,8 +159,8 @@ public class PolicyServiceTest extends ELifeTest {
         payment.getAmount().setValue(100.0);
         Assertions.assertThat(payment.getStatus()).isEqualTo(PaymentStatus.NOT_PROCESSED);
 
-        policyService.updatePaymentAfterLinePay(payment, 50.0, "THB", ChannelType.LINE, TestUtil.linePayResponse("0000", "OK"));
-        policyService.updatePaymentAfterLinePay(payment, 50.0, "THB", ChannelType.LINE, TestUtil.linePayResponse("0000", "OK"));
+        paymentService.updatePaymentAfterLinePay(payment, 50.0, "THB", ChannelType.LINE, TestUtil.linePayResponse("0000", "OK"));
+        paymentService.updatePaymentAfterLinePay(payment, 50.0, "THB", ChannelType.LINE, TestUtil.linePayResponse("0000", "OK"));
 
         assertEffectiveDateSameDueDate(payment);
         assertThat(payment.getPaymentInformations()).hasSize(2);
@@ -175,9 +176,9 @@ public class PolicyServiceTest extends ELifeTest {
         payment.getAmount().setValue(100.0);
         Assertions.assertThat(payment.getStatus()).isEqualTo(PaymentStatus.NOT_PROCESSED);
 
-        policyService.updatePaymentAfterLinePay(payment, 50.0, "THB", ChannelType.LINE, TestUtil.linePayResponse("0000", "OK"));
-        policyService.updatePaymentAfterLinePay(payment, 75.0, "THB", ChannelType.LINE, TestUtil.linePayResponse("0000", "OK"));
-        policyService.updatePaymentAfterLinePay(payment, -25.0, "THB", ChannelType.LINE, TestUtil.linePayResponse("0000", "OK"));
+        paymentService.updatePaymentAfterLinePay(payment, 50.0, "THB", ChannelType.LINE, TestUtil.linePayResponse("0000", "OK"));
+        paymentService.updatePaymentAfterLinePay(payment, 75.0, "THB", ChannelType.LINE, TestUtil.linePayResponse("0000", "OK"));
+        paymentService.updatePaymentAfterLinePay(payment, -25.0, "THB", ChannelType.LINE, TestUtil.linePayResponse("0000", "OK"));
 
         assertEffectiveDateSameDueDate(payment);
         assertThat(payment.getPaymentInformations()).hasSize(3);
@@ -197,9 +198,9 @@ public class PolicyServiceTest extends ELifeTest {
         payment.getAmount().setValue(100.0);
         Assertions.assertThat(payment.getStatus()).isEqualTo(PaymentStatus.NOT_PROCESSED);
 
-        policyService.updatePaymentAfterLinePay(payment, 50.0, "THB", ChannelType.LINE, TestUtil.linePayResponse("0000", "OK"));
-        policyService.updatePaymentAfterLinePay(payment, 50.0, "THB", ChannelType.LINE, TestUtil.linePayResponse("someErrorCode", "someErrorMessage"));
-        policyService.updatePaymentAfterLinePay(payment, 50.0, "THB", ChannelType.LINE, TestUtil.linePayResponse("0000", "OK"));
+        paymentService.updatePaymentAfterLinePay(payment, 50.0, "THB", ChannelType.LINE, TestUtil.linePayResponse("0000", "OK"));
+        paymentService.updatePaymentAfterLinePay(payment, 50.0, "THB", ChannelType.LINE, TestUtil.linePayResponse("someErrorCode", "someErrorMessage"));
+        paymentService.updatePaymentAfterLinePay(payment, 50.0, "THB", ChannelType.LINE, TestUtil.linePayResponse("0000", "OK"));
 
         assertEffectiveDateSameDueDate(payment);
         assertThat(payment.getPaymentInformations()).hasSize(3);
@@ -215,7 +216,7 @@ public class PolicyServiceTest extends ELifeTest {
         payment.getAmount().setValue(100.0);
         Assertions.assertThat(payment.getStatus()).isEqualTo(PaymentStatus.NOT_PROCESSED);
 
-        policyService.updatePaymentAfterLinePay(payment, 100.0, "EUR", ChannelType.LINE, TestUtil.linePayResponse("0000", "OK"));
+        paymentService.updatePaymentAfterLinePay(payment, 100.0, "EUR", ChannelType.LINE, TestUtil.linePayResponse("0000", "OK"));
 
 //        assertThat(payment.getEffectiveDate()).isNull();
         assertThat(payment.getPaymentInformations()).hasSize(1);
@@ -231,7 +232,7 @@ public class PolicyServiceTest extends ELifeTest {
         payment.getAmount().setValue(100.0);
         Assertions.assertThat(payment.getStatus()).isEqualTo(PaymentStatus.NOT_PROCESSED);
 
-        policyService.updatePaymentAfterLinePay(payment, 150.0, "THB", ChannelType.LINE, TestUtil.linePayResponse("0000", "OK"));
+        paymentService.updatePaymentAfterLinePay(payment, 150.0, "THB", ChannelType.LINE, TestUtil.linePayResponse("0000", "OK"));
 
         assertEffectiveDateSameDueDate(payment);
         assertThat(payment.getPaymentInformations()).hasSize(1);

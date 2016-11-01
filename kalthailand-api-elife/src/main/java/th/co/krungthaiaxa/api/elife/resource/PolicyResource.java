@@ -396,7 +396,7 @@ public class PolicyResource {
             return new ResponseEntity<>(getJson(policy), OK);
         }
 
-        policyService.updatePayment(payment.get(), orderId, transactionId.get(), (!regKey.isPresent() ? "" : regKey.get()));
+        paymentService.updatePayment(payment.get(), orderId, transactionId.get(), (!regKey.isPresent() ? "" : regKey.get()));
 
         // Update the policy status
         policyService.updatePolicyAfterFirstPaymentValidated(policy);

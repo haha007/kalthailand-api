@@ -376,7 +376,7 @@ public class CollectionFileProcessingService {
             resultCode = RESPONSE_CODE_ERROR_INTERNAL_LINEPAY;
             resultMessage = ex.getMessage();
             if (payment != null) {
-                policyService.updatePaymentWithErrorStatus(payment, premiumAmount, currencyCode, LINE, resultCode, resultMessage);
+                paymentService.updatePaymentWithErrorStatus(payment, premiumAmount, currencyCode, LINE, resultCode, resultMessage);
             }
         } finally {
             DeductionFileLine deductionFileLine = initDeductionFileLine(collectionFileLine, paymentModeString, resultCode, resultMessage);

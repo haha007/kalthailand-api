@@ -111,7 +111,7 @@ public class PolicyValidatedProcessingService {
         paymentHasTransaction.setReceiptNumber(ereceiptNumber);
         paymentHasTransaction.setNewBusiness(newBusiness);
         paymentHasTransaction.setReceiptNumberOldPattern(false);
-        policyService.updatePaymentAfterLinePay(paymentHasTransaction, paymentHasTransaction.getAmount().getValue(), paymentHasTransaction.getAmount().getCurrencyCode(), LINE, linePayResponse);
+        paymentService.updatePaymentAfterLinePay(paymentHasTransaction, paymentHasTransaction.getAmount().getValue(), paymentHasTransaction.getAmount().getCurrencyCode(), LINE, linePayResponse);
 
         String regKey = linePayResponse.getInfo().getRegKey();
         policyService.updateRegKeyForAllNotProcessedPayments(policy, regKey);

@@ -183,41 +183,6 @@ public class PolicyService {
         return policy;
     }
 
-    public Payment updatePayment(Payment payment, String orderId, String transactionId, String regKey) {
-        payment.setTransactionId(transactionId);
-        payment.setOrderId(orderId);
-        payment.setRegistrationKey(regKey);
-        Payment result = paymentRepository.save(payment);
-        logger.info("Payment [" + payment.getPaymentId() + "] has been booked with transactionId [" + payment.getTransactionId() + "]");
-        return result;
-    }
-
-    public void updatePaymentWithErrorStatus(Payment payment, Double amount, String currencyCode, ChannelType channelType,
-            String errorCode, String errorMessage) {
-        updatePaymentWithPaylineResponse(payment, amount, currencyCode, channelType,
-                errorCode,
-                errorMessage,
-                null,
-                null,
-                null);
-    }
-
-    public void updatePaymentAfterLinePay(Payment payment, Double amount, String currencyCode, ChannelType channelType,
-            LinePayResponse linePayResponse) {
-        String creditCardName = null;
-        String method = null;
-        if (linePayResponse.getInfo().getPayInfo().size() > 0) {
-            creditCardName = linePayResponse.getInfo().getPayInfo().get(0).getCreditCardName();
-            method = linePayResponse.getInfo().getPayInfo().get(0).getMethod();
-        }
-        // Update the confirmed payment
-        updatePaymentWithPaylineResponse(payment, amount, currencyCode, channelType,
-                linePayResponse.getReturnCode(),
-                linePayResponse.getReturnMessage(),
-                linePayResponse.getInfo().getRegKey(),
-                creditCardName,
-                method);
-    }
 
     public void updateRegKeyForAllNotProcessedPayments(Policy policy, String newRegistrationKey) {
         if (isBlank(newRegistrationKey)) {
@@ -436,50 +401,4 @@ public class PolicyService {
         lineService.sendPushNotification(pushContent.replace("%POLICY_ID%", policy.getPolicyId()), mainInsured.getPerson().getLineId());
     }
 
-    private void updatePaymentWithPaylineResponse(Payment payment, Double value, String currencyCode, ChannelType channelType, String errorCode, String errorMessage, String registrationKey, String creditCardName, String paymentMethod) {
-        SuccessErrorStatus status;
-        if (!currencyCode.equals(payment.getAmount().getCurrencyCode())) {
-            status = SuccessErrorStatus.ERROR;
-            errorMessage = "Currencies are different";
-            errorCode = LineService.RESPONSE_CODE_ERROR_INTERNAL_LINEPAY;
-        } else if (!isEmpty(errorCode) && !errorCode.equals("0000")) {
-            status = SuccessErrorStatus.ERROR;
-        } else {
-            status = SuccessErrorStatus.SUCCESS;
-        }
-
-        // registration key might have to be updated
-        if (!isBlank(registrationKey) && !registrationKey.equals(payment.getRegistrationKey())) {
-            payment.setRegistrationKey(registrationKey);
-        }
-        LocalDate nowInThai = DateTimeUtil.nowLocalDateInThaiZoneId();
-        LocalDateTime nowDateTimeInThai = DateTimeUtil.nowLocalDateTimeInThaiZoneId();
-
-        PaymentInformation paymentInformation = new PaymentInformation();
-        paymentInformation.setAmount(amount(value, currencyCode));
-        paymentInformation.setChannel(channelType);
-        paymentInformation.setCreditCardName(creditCardName);
-        paymentInformation.setDate(nowInThai);
-        paymentInformation.setMethod(paymentMethod);
-        paymentInformation.setRejectionErrorCode(errorCode);
-        paymentInformation.setRejectionErrorMessage(errorMessage);
-        paymentInformation.setStatus(status);
-        payment.getPaymentInformations().add(paymentInformation);
-
-        Double totalSuccesfulPayments = payment.getPaymentInformations()
-                .stream()
-                .filter(tmp -> tmp.getStatus() != null && tmp.getStatus().equals(SuccessErrorStatus.SUCCESS))
-                .mapToDouble(tmp -> tmp.getAmount().getValue())
-                .sum();
-        if (totalSuccesfulPayments < payment.getAmount().getValue()) {
-            payment.setStatus(INCOMPLETE);
-        } else if (Objects.equals(totalSuccesfulPayments, payment.getAmount().getValue())) {
-            payment.setStatus(COMPLETED);
-        } else if (totalSuccesfulPayments > payment.getAmount().getValue()) {
-            payment.setStatus(OVERPAID);
-        }
-        payment.setEffectiveDate(nowDateTimeInThai);
-        paymentRepository.save(payment);
-        logger.info("Payment [" + payment.getPaymentId() + "] has been updated");
-    }
 }

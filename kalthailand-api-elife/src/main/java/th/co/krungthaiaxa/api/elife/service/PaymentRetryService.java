@@ -107,7 +107,7 @@ public class PaymentRetryService {
                 //Don't need to resend another fail email to user. When backend return error, FE will show error page to customer.
             }
             //TODO payment with response
-            retryPayment = policyService.updatePayment(retryPayment, orderId, transactionId, StringUtils.isBlank(regKey) ? "" : regKey);
+            retryPayment = paymentService.updatePayment(retryPayment, orderId, transactionId, StringUtils.isBlank(regKey) ? "" : regKey);
             retryPayment = paymentService.updateByLinePayResponse(retryPayment, linePayResponse);
             oldPayment.setRetryPaymentId(retryPayment.getPaymentId());
             paymentRepository.save(oldPayment);
