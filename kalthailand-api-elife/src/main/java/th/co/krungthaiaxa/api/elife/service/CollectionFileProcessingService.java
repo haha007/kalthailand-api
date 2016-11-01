@@ -118,7 +118,7 @@ public class CollectionFileProcessingService {
         }
     };
 
-    public void importCollectionFile(InputStream is) {
+    public synchronized void importCollectionFile(InputStream is) {
         CollectionFile collectionFile = readCollectionExcelFile(is);
         collectionFile.getLines().forEach(this::importCollectionFileLine);
         collectionFileRepository.save(collectionFile);
@@ -137,8 +137,12 @@ public class CollectionFileProcessingService {
         processLatestCollectionFiles();
     }
 
-    //TODO avoid process one collectionFile many times by multi-submit.
-    public List<CollectionFile> processLatestCollectionFiles() {
+    /**
+     * This method must be synchronized to avoid process one collectionFile many times by multi-submit.
+     *
+     * @return
+     */
+    public synchronized List<CollectionFile> processLatestCollectionFiles() {
         Instant startTime = LogUtil.logStarting("Process collection files [start]");
         List<CollectionFile> collectionFiles = collectionFileRepository.findByJobStartedDateNull();
         LOGGER.info("Found [" + collectionFiles.size() + "] collection files to process.");
