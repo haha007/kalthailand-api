@@ -228,7 +228,7 @@ public class LineService {
     }
 
     public LinePayResponse capturePayment(String transactionId, Double amount, String currency) {
-        LOGGER.info("Capturing payment");
+        Instant start = LogUtil.logStarting(String.format("capturePayment [start]: transactionId: %s, amount: %s, currency: %s", transactionId, amount, currency));
         LinePayConfirmingRequest linePayConfirmingRequest = new LinePayConfirmingRequest();
         linePayConfirmingRequest.setAmount(amount.toString());
         linePayConfirmingRequest.setCurrency(currency);
@@ -251,11 +251,10 @@ public class LineService {
         if (!response.getStatusCode().equals(OK)) {
             throw new LinePaymentException("Line's response for capturing payment is [" + response.getStatusCode() + "]. Response body is [" + response.getBody() + "]");
         }
-
-        LOGGER.info("Payment is captured with success");
-        LinePayResponse linePayResponse = getBookingResponseFromJSon(response.getBody());
-        LOGGER.info("Line Pay response has been read");
-
+        String responseBody = response.getBody();
+        LOGGER.debug(String.format("capturePayment [response]: transactionId: %s, amount: %s, currency: %s, \t\nresponse: \n%s", transactionId, amount, currency, responseBody));
+        LinePayResponse linePayResponse = getBookingResponseFromJSon(responseBody);
+        LogUtil.logRuntime(start, String.format("capturePayment [finish]: transactionId: %s, amount: %s, currency: %s", transactionId, amount, currency));
         return linePayResponse;
     }
 

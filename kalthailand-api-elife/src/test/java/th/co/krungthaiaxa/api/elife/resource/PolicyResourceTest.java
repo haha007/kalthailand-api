@@ -134,21 +134,22 @@ public class PolicyResourceTest extends ELifeTest {
     }
 
     @Test
-    public void should_be_able_to_update_payment_with_error_message() throws IOException, URISyntaxException {
+    public void cannot_update_status_policy_to_pendingValidation_when_missing_regKey() throws IOException, URISyntaxException {
         Policy policy = policyFactory.createPolicyWithPendingPaymentStatus(ProductQuotationFactory.constructIProtectDefaultWithMonthlyPayment());
 
         URI paymentURI = new URI("http://localhost:" + port + "/policies/" + policy.getPolicyId() + "/update/status/pendingValidation");
         UriComponentsBuilder updatePaymentBuilder = UriComponentsBuilder.fromUri(paymentURI)
                 .queryParam("paymentId", policy.getPayments().get(0).getPaymentId())
                 .queryParam("orderId", "myOrderId")
-                .queryParam("registrationKey", "")
+                .queryParam("regKey", "")
                 .queryParam("transactionId", "myTransactionId");
         ResponseEntity<String> updatePaymentResponse = template.exchange(updatePaymentBuilder.toUriString(), PUT, null, String.class);
         Assert.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, updatePaymentResponse.getStatusCode());
 
         String responsBody = updatePaymentResponse.getBody();
         Error error = ObjectMapperUtil.toObject(JsonUtil.mapper, responsBody, Error.class);
-
+        Assert.assertEquals(ErrorCode.ERROR_CODE_BAD_ARGUMENT, error.getCode());
+        Assert.assertEquals("regKey", error.getDetails());
     }
 
     private Policy getPolicy() throws IOException {

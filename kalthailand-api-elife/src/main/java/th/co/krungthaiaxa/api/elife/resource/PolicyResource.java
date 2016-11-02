@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import th.co.krungthaiaxa.api.common.exeption.UnexpectedException;
+import th.co.krungthaiaxa.api.common.exeption.BadArgumentException;
 import th.co.krungthaiaxa.api.common.model.DownloadFile;
 import th.co.krungthaiaxa.api.common.model.error.Error;
 import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
@@ -396,7 +396,7 @@ public class PolicyResource {
         //TODO need to check is this the first payment in policy or not. If not, throw exception.
         Payment payment = paymentService.validateExistPaymentInPolicy(policyId, paymentId);
         if (StringUtils.isBlank(regKey) && PeriodicityCode.EVERY_MONTH.equals(ProductUtils.getPeriodicityCode(policy))) {
-            throw new UnexpectedException("The periodicity of payment is MONTHLY, but regKey is blank. policyId:" + policyId);
+            throw new BadArgumentException("The periodicity of payment is MONTHLY, but regKey is blank. policyId:" + policyId, "regKey");
         }
         paymentService.updatePayment(payment, orderId, transactionId.get(), (regKey == null ? "" : regKey));
 

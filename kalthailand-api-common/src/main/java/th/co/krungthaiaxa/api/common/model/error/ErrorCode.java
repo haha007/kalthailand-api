@@ -9,6 +9,7 @@ public class ErrorCode {
 
     //Bean Validation (0010 -> 0019)
     public static final String ERROR_CODE_BEAN_VALIDATION = "0010";
+    public static final String ERROR_CODE_BAD_ARGUMENT = "0011";
 
     //File Exception (0020 -> 0029)
     public static final String ERROR_CODE_FILE_NOT_FOUND = "0020";
