@@ -275,8 +275,6 @@ public class PaymentService {
         String creditCardName = null;
         String method = null;
         LinePayResponseInfo linePayResponseInfo = linePayResponse.getInfo();
-        String regKey = linePayResponseInfo.getRegKey();
-        regKey = StringUtils.isNotBlank(regKey) ? regKey : null;
         List<LinePayResponsePaymentInfo> linePayResponsePaymentInfoList = linePayResponseInfo.getPayInfo();
         if (!linePayResponsePaymentInfoList.isEmpty()) {
             LinePayResponsePaymentInfo linePayResponsePaymentInfo = linePayResponsePaymentInfoList.get(0);
@@ -302,7 +300,7 @@ public class PaymentService {
         }
         payment.setEffectiveDate(DateTimeUtil.nowLocalDateTimeInThaiZoneId());
         payment.addPaymentInformation(paymentInformation);
-        payment.setRegistrationKey(regKey);
+        //NOTE: Never get the regKey from linePayResponse and set to payment because the result from linePayResponse is always null. So it can remove the previous regKey of payment.
         return paymentRepository.save(payment);
     }
 }

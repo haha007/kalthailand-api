@@ -13,6 +13,7 @@ import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -21,6 +22,8 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import th.co.krungthaiaxa.api.common.model.error.Error;
 import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
+import th.co.krungthaiaxa.api.common.utils.JsonUtil;
+import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
 import th.co.krungthaiaxa.api.elife.ELifeTest;
 import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
 import th.co.krungthaiaxa.api.elife.TestUtil;
@@ -132,21 +135,20 @@ public class PolicyResourceTest extends ELifeTest {
 
     @Test
     public void should_be_able_to_update_payment_with_error_message() throws IOException, URISyntaxException {
-        Policy policy = getPolicy();
+        Policy policy = policyFactory.createPolicyWithPendingPaymentStatus(ProductQuotationFactory.constructIProtectDefaultWithMonthlyPayment());
 
         URI paymentURI = new URI("http://localhost:" + port + "/policies/" + policy.getPolicyId() + "/update/status/pendingValidation");
         UriComponentsBuilder updatePaymentBuilder = UriComponentsBuilder.fromUri(paymentURI)
                 .queryParam("paymentId", policy.getPayments().get(0).getPaymentId())
                 .queryParam("orderId", "myOrderId")
-                .queryParam("registrationKey", "myRegistrationKey")
+                .queryParam("registrationKey", "")
                 .queryParam("transactionId", "myTransactionId");
         ResponseEntity<String> updatePaymentResponse = template.exchange(updatePaymentBuilder.toUriString(), PUT, null, String.class);
-        assertThat(updatePaymentResponse.getStatusCode().value()).isEqualTo(OK.value());
+        Assert.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, updatePaymentResponse.getStatusCode());
 
-        Policy updatedPolicy = TestUtil.getPolicyFromJSon(updatePaymentResponse.getBody());
-        assertThat(updatePaymentResponse.getStatusCode().value()).isEqualTo(OK.value());
-        Payment firstPayment = updatedPolicy.getPayments().get(0);
-        Assertions.assertThat(firstPayment.getStatus()).isEqualTo(PaymentStatus.NOT_PROCESSED);
+        String responsBody = updatePaymentResponse.getBody();
+        Error error = ObjectMapperUtil.toObject(JsonUtil.mapper, responsBody, Error.class);
+
     }
 
     private Policy getPolicy() throws IOException {

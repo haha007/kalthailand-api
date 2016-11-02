@@ -2,6 +2,7 @@ package th.co.krungthaiaxa.api.elife.factory;
 
 import com.icegreen.greenmail.junit.GreenMailRule;
 import com.icegreen.greenmail.util.ServerSetupTest;
+import org.junit.Assert;
 import org.junit.Rule;
 import org.springframework.stereotype.Component;
 import th.co.krungthaiaxa.api.elife.TestUtil;
@@ -98,7 +99,16 @@ public class PolicyFactory {
         policyValidationRequest.setLinePayCaptureMode(LinePayCaptureMode.FAKE_WITH_SUCCESS);
         policyValidationRequest.setPolicyId(policy.getPolicyId());
         policy = policyValidatedProcessingService.updatePolicyStatusToValidated(policyValidationRequest);
+        assertFirstPaymentAfterValidatedPolicy(policy);
 //        policy = policyService.updatePolicyAfterPolicyHasBeenValidated(policy, "999999-99-999999", "Mock Agent Name", RequestFactory.generateAccessToken());
         return policy;
+    }
+
+    private void assertFirstPaymentAfterValidatedPolicy(Policy policy) {
+        Payment payment = paymentService.findFirstPaymentHasTransactionId(policy.getPolicyId());
+        Assert.assertNotNull(payment.getTransactionId());
+        Assert.assertNotNull(payment.getOrderId());
+        Assert.assertNotNull(payment.getRegistrationKey());
+
     }
 }

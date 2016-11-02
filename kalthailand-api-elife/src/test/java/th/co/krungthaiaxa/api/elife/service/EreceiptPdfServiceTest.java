@@ -45,8 +45,8 @@ public class EreceiptPdfServiceTest extends ELifeTest {
     public final GreenMailRule greenMail = new GreenMailRule(ServerSetupTest.SMTP_IMAP);
 
     @Test
-    public void testGeneratePdf() {
-        Policy policy = policyFactory.createPolicyWithValidatedStatus(ProductQuotationFactory.constructIGenDefault(), "dummy@gmail.com");
+    public void testGeneratePdf_by_monthly() {
+        Policy policy = policyFactory.createPolicyWithValidatedStatus(ProductQuotationFactory.constructIGenDefaultWithMonthlyPayment(), "dummy@gmail.com");
         Payment payment = paymentService.findFirstPaymentHasTransactionId(policy.getPolicyId());
         byte[] pdfBytes = ereceiptPdfService.createEreceiptPdf(policy, payment, true);
         IOUtil.writeBytesToRelativeFile(TestUtil.PATH_TEST_RESULT + "/pdf/ereceipt_" + DateTimeUtil.formatNowForFilePath() + "_" + policy.getPolicyId() + ".pdf", pdfBytes);
