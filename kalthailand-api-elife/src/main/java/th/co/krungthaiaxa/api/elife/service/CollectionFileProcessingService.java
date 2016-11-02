@@ -375,10 +375,13 @@ public class CollectionFileProcessingService {
             }
             payment.getAmount().setValue(premiumAmount);
             payment.setOrderId(orderId);
-            //FIXME recheck when LinePay response fail.
-            EreceiptNumber ereceiptNumber = ereceiptService.generateEreceiptFullNumber(newBusiness);
-            payment.setReceiptNumber(ereceiptNumber);
-            payment.setReceiptNumberOldPattern(false);
+            if (LineService.RESPONSE_CODE_SUCCESS.equals(resultCode)) {
+                //Only generate new ereceiptNumber when payment success.
+                EreceiptNumber ereceiptNumber = ereceiptService.generateEreceiptFullNumber(newBusiness);
+                payment.setReceiptNumber(ereceiptNumber);
+                payment.setNewBusiness(newBusiness);
+                payment.setReceiptNumberOldPattern(false);
+            }
             paymentService.updateByLinePayResponse(payment, linePayResponse);
         } catch (Exception ex) {
             LOGGER.error("Error when process collection line: " + ex.getMessage() + ". Collection line:%n" + ObjectMapperUtil.toStringMultiLine(collectionFileLine), ex);

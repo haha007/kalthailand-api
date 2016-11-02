@@ -20,6 +20,8 @@ public class EreceiptIncrementalService {
     public static final Logger LOGGER = LoggerFactory.getLogger(EreceiptIncrementalService.class);
     public static final int MAX_RETRY_FINDING_NEXT_RECEIPT_NUMBER = 100;
     public static final String INCREMENTAL_KEY = "ERECEIPT_NUMBER";
+    public static final String ERECEIPT_NUMBER_SUFFIX_NEWBUSINESS = "01";
+    public static final String ERECEIPT_NUMBER_SUFFIX_RENEWAL = "02";
     //In eReceipt pdf, there's maximum 6 digit.
     public static final String MAX_MAIN_NUMBER_BASE36 = "zzzzzz";
     public static final long MAX_MAIN_NUMBER_DECIMAL = Base36Util.toDecimalLong(MAX_MAIN_NUMBER_BASE36);
@@ -46,7 +48,7 @@ public class EreceiptIncrementalService {
             }
             long nextMainDecimal = incrementalService.next(INCREMENTAL_KEY);
             String nextMainBase36 = Base36Util.toBase36String(nextMainDecimal);
-            String ereceiptNumberSuffix = newBusiness ? "01" : "02";
+            String ereceiptNumberSuffix = newBusiness ? ERECEIPT_NUMBER_SUFFIX_NEWBUSINESS : ERECEIPT_NUMBER_SUFFIX_RENEWAL;
             String nextFullBase36 = nextMainBase36 + ereceiptNumberSuffix;
 
             ereceiptNumber = new EreceiptNumber();

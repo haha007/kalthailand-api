@@ -110,10 +110,12 @@ public class PolicyValidatedProcessingService {
 
         // Update the payment if confirm is success
         //TODO should put in some common method: update payment after recap success from linePay.
-        EreceiptNumber ereceiptNumber = ereceiptService.generateEreceiptFullNumber(newBusiness);
-        paymentHasTransaction.setReceiptNumber(ereceiptNumber);
-        paymentHasTransaction.setNewBusiness(newBusiness);
-        paymentHasTransaction.setReceiptNumberOldPattern(false);
+        if (LineService.RESPONSE_CODE_SUCCESS.equals(linePayResponse.getReturnCode())) {
+            EreceiptNumber ereceiptNumber = ereceiptService.generateEreceiptFullNumber(newBusiness);
+            paymentHasTransaction.setReceiptNumber(ereceiptNumber);
+            paymentHasTransaction.setNewBusiness(newBusiness);
+            paymentHasTransaction.setReceiptNumberOldPattern(false);
+        }
         paymentService.updatePaymentWithLineResponse(paymentHasTransaction, LINE, linePayResponse);
 //        paymentService.updatePaymentAfterLinePay(paymentHasTransaction, paymentHasTransaction.getAmount().getValue(), paymentHasTransaction.getAmount().getCurrencyCode(), LINE, linePayResponse);
 
