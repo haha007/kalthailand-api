@@ -38,11 +38,12 @@
 
             <table class="table table-bordered table-striped table-hover table-condensed">
                 <tr>
+                    <td></td>
                     <td>Collection File<br>Received Date</td>
                     <td>Collection File<br>Nb Line</td>
                     <td>Job Starting Date</td>
                     <td>Job Ending Date</td>
-                    <td>Generated lines</td>
+                    <td>Proccessed lines</td>
                     <td>Deduction File</td>
                 </tr>
                 <tr ng-repeat="collectionFile in collectionFiles"
@@ -50,12 +51,15 @@
                         'success': collectionFile.deductionFile.lines.length && collectionFile.lines.length == collectionFile.deductionFile.lines.length,
                         'danger': collectionFile.deductionFile.lines.length && collectionFile.lines.length != collectionFile.deductionFile.lines.length
                     }">
-                    <td><span class="label label-default">{{$index + 1}}</span> {{ collectionFile.receivedDate | date:'yyyy-MM-dd HH:mm:ss Z'}}</td>
+                    <td><span class="label label-default">{{$index + 1}}</span></td>
+                    <td>{{ collectionFile.receivedDate | date:'yyyy-MM-dd HH:mm:ss Z'}}</td>
                     <td>{{ collectionFile.lines.length }}</td>
                     <td>{{ collectionFile.jobStartedDate | date:'yyyy-MM-dd HH:mm:ss Z'}}</td>
                     <td>{{ collectionFile.jobEndedDate | date:'yyyy-MM-dd HH:mm:ss Z'}}</td>
                     <td>{{ collectionFile.deductionFile.lines.length }}</td>
-                    <td><a href="/api-elife/RLS/deduction/download/{{collectionFile.id}}" ng-show="collectionFile.deductionFile.lines && collectionFile.deductionFile.lines.length != 0">Download</a></td>
+                    <td><a href="/api-elife/RLS/deduction/download/{{collectionFile.id}}" ng-show="collectionFile.deductionFile.lines && collectionFile.deductionFile.lines.length != 0">
+                        <span class="glyphicon glyphicon-download"></span><span class="glyphicon-class"> Download</span>
+                    </a></td>
                 </tr>
             </table>
             <div>
