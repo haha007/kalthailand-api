@@ -36,7 +36,10 @@ import static th.co.krungthaiaxa.api.elife.model.line.LinePayCaptureMode.REAL;
 @Service
 public class PolicyValidatedProcessingService {
     public static final Logger LOGGER = LoggerFactory.getLogger(PolicyValidatedProcessingService.class);
-
+    /**
+     * For updating policy from PendingValidation to Validated, it's always applied for the first payment only. So it's only the newBusiness.
+     */
+    private static final boolean NEW_BUSINESS = true;
     @Value("${environment.name}")
     private String environmentName;
 
@@ -57,7 +60,7 @@ public class PolicyValidatedProcessingService {
 
     public Policy updatePolicyStatusToValidated(PolicyValidationRequest policyValidationRequest) {
         beanValidator.validate(policyValidationRequest);
-        boolean newBusiness = true;
+        boolean newBusiness = NEW_BUSINESS;
         String agentCode = policyValidationRequest.getAgentCode();
         String policyId = policyValidationRequest.getPolicyId();
         String agentName = policyValidationRequest.getAgentName();

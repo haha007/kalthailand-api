@@ -67,6 +67,11 @@ import static th.co.krungthaiaxa.api.elife.utils.ExcelUtils.text;
 @Service
 public class CollectionFileProcessingService {
     private final static Logger LOGGER = LoggerFactory.getLogger(CollectionFileProcessingService.class);
+    /**
+     * For processing collection file, it's always Renewal payment, so the NewBusiness is always false.
+     */
+    private static final boolean NEW_BUSINESS = false;
+
     public final static String COLLECTION_FILE_SHEET_NAME = "LFDISC6";
     private final static Integer COLLECTION_FILE_NUMBER_OF_COLUMNS = 6;
     public final static String COLLECTION_FILE_COLUMN_NAME_1 = "M92DOC6";
@@ -328,7 +333,7 @@ public class CollectionFileProcessingService {
     }
 
     void processCollectionFileLine(DeductionFile deductionFile, CollectionFileLine collectionFileLine) {
-        boolean newBusiness = false;
+        boolean newBusiness = NEW_BUSINESS;
         LOGGER.info("Processing collectionFileLine [start]: policyNumber: {}", collectionFileLine.getPolicyNumber());
 
         String paymentId = collectionFileLine.getPaymentId();

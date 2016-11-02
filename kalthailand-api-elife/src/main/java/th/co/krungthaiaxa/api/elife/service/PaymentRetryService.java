@@ -36,6 +36,10 @@ import java.util.List;
 public class PaymentRetryService {
     public final static Logger LOGGER = LoggerFactory.getLogger(PaymentService.class);
     /**
+     * For retry payment, it's always Renewal payment, so the NewBusiness is alwasy false.
+     */
+    private static final boolean NEW_BUSINESS = false;
+    /**
      * Need getter-setter for mocking.
      */
     private LineService lineService;
@@ -71,7 +75,7 @@ public class PaymentRetryService {
      */
     public Payment retryFailedPayment(String policyId, String oldPaymentId, String orderId, String transactionId, String regKey, String accessToken) {
         Payment oldPayment = paymentService.validateNotExistNewerPayment(oldPaymentId);
-        boolean newBusiness = false;
+        boolean newBusiness = NEW_BUSINESS;
 
         Payment retryPayment = new Payment();
         retryPayment.setPolicyId(policyId);

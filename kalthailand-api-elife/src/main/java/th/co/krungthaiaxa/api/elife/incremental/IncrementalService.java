@@ -17,12 +17,16 @@ public class IncrementalService {
     @Autowired
     public IncrementalService(IncrementalRepository incrementalRepository) {this.incrementalRepository = incrementalRepository;}
 
+    /**
+     * @param incrementalKey
+     * @return For new key, it will start by 0.
+     */
     public synchronized long next(String incrementalKey) {
         Long value = INCREMENTAL_MAP.get(incrementalKey);
         if (value == null) {
             value = loadIncremental(incrementalKey);
             if (value == null) {
-                value = 0l;
+                value = -1l;
             }
         }
         value++;
