@@ -236,7 +236,7 @@ public class PaymentService {
         Double totalSuccesfulPayments = payment.getPaymentInformations()
                 .stream()
                 .filter(tmp -> tmp.getStatus() != null && tmp.getStatus().equals(SuccessErrorStatus.SUCCESS))
-                .mapToDouble(tmp -> tmp.getAmount().getValue())
+                .mapToDouble(ipaymentInformation -> getAmountOfPaymentInformation(ipaymentInformation))
                 .sum();
         if (totalSuccesfulPayments < payment.getAmount().getValue()) {
             payment.setStatus(INCOMPLETE);
@@ -248,6 +248,14 @@ public class PaymentService {
         payment.setEffectiveDate(nowDateTimeInThai);
         paymentRepository.save(payment);
         LOGGER.info("Payment [" + payment.getPaymentId() + "] has been updated");
+    }
+
+    private double getAmountOfPaymentInformation(PaymentInformation paymentInformation) {
+        if (paymentInformation == null || paymentInformation.getAmount() == null || paymentInformation.getAmount().getValue() == null) {
+            return 0.0;
+        } else {
+            return paymentInformation.getAmount().getValue();
+        }
     }
 
     public LineService getLineService() {
