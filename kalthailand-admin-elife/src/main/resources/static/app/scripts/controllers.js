@@ -254,6 +254,7 @@
         $scope.upload = function (event) {
             event.preventDefault();
             $scope.isUploading = true;
+            $scope.errorMessage = null;
             var newCollectionFile = new CollectionFile;
             newCollectionFile.file = $scope.file;
 
@@ -273,6 +274,7 @@
 
         $scope.processLastCollectionFiles = function (event) {
             $scope.isProcessing = true;
+            $scope.errorMessage = null;
             $http.get(window.location.origin + '/api-elife/RLS/collectionFile/process', {}).then(
                 function (successResponse) {
                     //$scope.collectionFiles = successResponse.data;
@@ -283,6 +285,7 @@
                 function (errorResponse) {
                     console.log(errorResponse);
                     $scope.isProcessing = null;
+                    $scope.errorMessage = errorResponse.data.userMessage;
                 });
         }
 

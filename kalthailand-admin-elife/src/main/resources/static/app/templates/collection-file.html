@@ -6,28 +6,39 @@
 
         <!-- BEGIN Page specific stuff -->
         <style>
-            .form-upload {
+            /*.form-upload {
                 border: 1px solid #eee;
                 margin-bottom: 20px;
                 padding: 5px;
-            }
+            }*/
         </style>
 
         <div ng-cloak class="col-sm-9 col-sm-offset-3 col-md-12 col-md-offset-1 main ng-cloak" id="collectionFileListContainer">
             <div class="page-header">
                 <h1>Collection files</h1>
             </div>
-            <div class="progress" ng-show="isUploading">
-                <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:100%">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Upload collection file
+                </div>
+                <div class="panel-body">
+                    <div class="progress" ng-show="isUploading">
+                        <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:100%">
+                        </div>
+                    </div>
+                    <form ng-hide="isUploading" name="formUpload" ng-submit="upload($event)" class="form-inline form-upload">
+                        <div class="input-group">
+                            <input type="file" class="form-control" file-model="file" id="fileToUpload">
+
+                            <div class="input-group-btn">
+                                <button type="submit" class="btn btn-primary btn-danger">Submit</button>
+                            </div>
+                        </div>
+                    </form>
+
+
                 </div>
             </div>
-            <form ng-hide="isUploading" name="formUpload" ng-submit="upload($event)" class="form-inline form-upload">
-                <div class="form-group">
-                    <label for="fileToUpload">Choose a collection file to upload</label>
-                    <input type="file" file-model="file" id="fileToUpload">
-                </div>
-                <button type="submit" class="btn btn-primary btn-danger">Submit</button>
-            </form>
             <div class="alert alert-danger" role="alert" ng-show="errorMessage">
                 <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
                 {{ errorMessage }}
