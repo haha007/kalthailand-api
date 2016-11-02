@@ -253,35 +253,45 @@
         $scope.file = null;
         $scope.upload = function (event) {
             event.preventDefault();
+            $scope.isUploading = true;
             var newCollectionFile = new CollectionFile;
             newCollectionFile.file = $scope.file;
 
             newCollectionFile.$save()
                 .then(function (successResponse) {
                     // For successfully state
+                    $scope.isUploading = null;
                     $scope.errorMessage = null;
                     fetchCollectionFileDetails();
                 })
                 .catch(function (errorResponse) {
                     // For error state
+                    $scope.isUploading = null;
                     $scope.errorMessage = errorResponse.data.userMessage;
                 });
         }
 
         $scope.processLastCollectionFiles = function (event) {
+            $scope.isProcessing = true;
             $http.get(window.location.origin + '/api-elife/RLS/collectionFile/process', {}).then(
                 function (successResponse) {
                     //$scope.collectionFiles = successResponse.data;
-                    fetchCollectionFileDetails();
+                    fetchCollectionFileDetails(function () {
+                        $scope.isProcessing = null;
+                    });
                 },
                 function (errorResponse) {
                     console.log(errorResponse);
+                    $scope.isProcessing = null;
                 });
         }
 
-        function fetchCollectionFileDetails() {
+        function fetchCollectionFileDetails(callback) {
             CollectionFile.query(function (response) {
                 $scope.collectionFiles = response;
+                if (hasValue(callback)) {
+                    callback.call(this);
+                }
             });
         }
     });

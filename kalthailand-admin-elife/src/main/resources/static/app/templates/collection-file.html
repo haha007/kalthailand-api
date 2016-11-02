@@ -17,7 +17,11 @@
             <div class="page-header">
                 <h1>Collection files</h1>
             </div>
-            <form name="formUpload" ng-submit="upload($event)" class="form-inline form-upload">
+            <div class="progress" ng-show="isUploading">
+                <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:100%">
+                </div>
+            </div>
+            <form ng-hide="isUploading" name="formUpload" ng-submit="upload($event)" class="form-inline form-upload">
                 <div class="form-group">
                     <label for="fileToUpload">Choose a collection file to upload</label>
                     <input type="file" file-model="file" id="fileToUpload">
@@ -58,12 +62,19 @@
                 <div class="page-header">
                     <h3></h3>
                 </div>
+
                 <div>
-                    <button type="button" class="btn btn-default" style="margin-right:10px;" ng-click="processLastCollectionFiles()">Process Last Collection Files</button>
+                    <div class="progress" ng-show="isProcessing">
+                        <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:100%">
+                        </div>
+                    </div>
+                    <button ng-hide="isProcessing" type="button" class="btn btn-default" style="margin-right:10px;" ng-click="processLastCollectionFiles()">Process Last Collection Files</button>
                 </div>
                 <div>&nbsp;</div>
-                <div ng-repeat="collectionFile in collectionFiles">
-                    <div>Collection file: {{collectionFile.receivedDate | date:'yyyy-MM-dd HH:MM:ss Z'}}</div>
+                <div ng-repeat="collectionFile in collectionFiles" class="panel panel-default">
+                    <div class="panel-heading">
+                        <div class="panel-title">Collection file {{collectionFile.receivedDate | date:'yyyy-MM-dd HH:mm:ss Z'}}</div>
+                    </div>
                     <table ng-show="collectionFile.deductionFile.lines.length > 0" class="table table-bordered table-striped table-hover table-condensed">
                         <tr>
                             <td>Policy Number</td>
