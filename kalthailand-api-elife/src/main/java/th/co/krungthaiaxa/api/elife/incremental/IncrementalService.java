@@ -26,7 +26,7 @@ public class IncrementalService {
         if (value == null) {
             value = loadIncremental(incrementalKey);
             if (value == null) {
-                value = -1l;
+                value = 0l;
             }
         }
         value++;
