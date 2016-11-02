@@ -7,10 +7,10 @@ import java.util.Objects;
 
 /**
  * @author khoi.tran on 10/28/16.
- *         This system uses value from 0 -> 9, then A, B, C,... Z
- *         10 decimal = A base36
- *         16 decimal = F base36
- *         35 decimal = Z base36
+ *         This system uses value from 0 -> 9, then a, b, c,... z
+ *         10 decimal = a base36
+ *         16 decimal = f base36
+ *         35 decimal = z base36
  *         <p>
  *         Note: There's no support for MongoDB convert or Json convert for this class yet. So please careful when using this class.
  */
@@ -24,11 +24,6 @@ public class Base36Number extends Number implements Comparable<Base36Number>, Cl
     @NotNull
     private final String base36Value;
     private final long decimalValue;
-
-    public Base36Number() {
-        this.base36Value = "0";
-        this.decimalValue = Base36Util.toDecimalLong(base36Value);
-    }
 
     public Base36Number(@NotNull String base36Value) {
         this.decimalValue = Base36Util.toDecimalLong(base36Value);

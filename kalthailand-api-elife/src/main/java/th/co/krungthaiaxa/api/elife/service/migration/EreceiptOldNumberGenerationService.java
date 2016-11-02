@@ -34,17 +34,19 @@ public class EreceiptOldNumberGenerationService {
      */
     @PostConstruct
     public EreceiptOldNumberResult generateEreceiptNumbersByOldPatternForOldPayments() {
-        List<Payment> paymentsInCludedRetryPayments = paymentRepository.findByReceiptPdfDocumentNotNullAndReceiptNumberNull();
-        LogUtil.logStarting("Payments included retryPayments: " + paymentsInCludedRetryPayments.size() + " \n" + toStringPaymentWithReceiptNumber(paymentsInCludedRetryPayments));
+        Instant startMethod = LogUtil.logStarting("Generate receiptNumbers for old payments [start]");
 
-        Instant start = LogUtil.logStarting("Generate receipt numbers [start]");
+        List<Payment> paymentsInCludedRetryPayments = paymentRepository.findByReceiptPdfDocumentNotNullAndReceiptNumberNull();
+        LOGGER.debug("Payments included retryPayments: " + paymentsInCludedRetryPayments.size() + " \n" + toStringPaymentWithReceiptNumber(paymentsInCludedRetryPayments));
+
+        Instant start = LogUtil.logStarting("Generate receipt numbers for normal payments [start]");
         List<Payment> paymentsWithRetryPaymentIdNotNull = paymentRepository.findRetryPaymentIdByRetryPaymentIdNotNull();
         List<String> retryPaymentIds = paymentsWithRetryPaymentIdNotNull.stream().map(payment -> payment.getRetryPaymentId()).collect(Collectors.toList());
 
         //Handle for normal case
         List<Payment> payments = paymentRepository.findByReceiptPdfDocumentNotNullAndReceiptNumberNullAndPaymentIdNotIn(retryPaymentIds);
         saveEreceiptNumbersByOldPattern(payments, true);
-        start = LogUtil.logRuntime(start, "Generate receipt numbers for payments [finish]: " + payments.size() + "\n" + toStringPaymentWithReceiptNumber(payments));
+        start = LogUtil.logRuntime(start, "Generate receipt numbers for normal payments [finish]: " + payments.size() + "\n" + toStringPaymentWithReceiptNumber(payments));
 
         //Handle for retry payment
 
@@ -55,6 +57,7 @@ public class EreceiptOldNumberGenerationService {
         EreceiptOldNumberResult result = new EreceiptOldNumberResult();
         result.setNewBusinessPayments(payments);
         result.setRetryPayments(retryPayments);
+        LogUtil.logRuntime(startMethod, "Generate receiptNumbers for old payments [finish]");
         return result;
     }
 
