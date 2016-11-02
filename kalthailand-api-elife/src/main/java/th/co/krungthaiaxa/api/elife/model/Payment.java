@@ -61,16 +61,6 @@ public class Payment implements Serializable {
     @Indexed
     private EreceiptNumber receiptNumber;
 
-//    @Indexed
-//    private String receiptFullNumberBase36;
-//    @Indexed
-//    private Long receiptFullNumber;
-//
-//    @Indexed
-//    private Long receiptMainNumberDecimal;
-//    @Indexed
-//    private String receiptMainNumberBase36;
-
     @Indexed
     private Boolean receiptNumberOldPattern;
 

@@ -17,6 +17,7 @@ public class EreceiptNumber implements Serializable {
     @Indexed
     @NotBlank
     private String fullNumberBase36;
+    @Indexed
     @NotBlank
     private String mainNumberBase36;
     @Indexed

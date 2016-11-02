@@ -1,6 +1,8 @@
 package th.co.krungthaiaxa.api.elife.service.ereceipt;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import th.co.krungthaiaxa.api.elife.service.migration.EreceiptOldNumberGenerationService;
 
 import javax.annotation.PostConstruct;
 
@@ -9,9 +11,16 @@ import javax.annotation.PostConstruct;
  */
 @Service
 public class EreceiptOldNumberCollectionService {
+    //TODO we can remove this injection after Running the OldReceiptNumber in the first time.
+    //This injection will make sure that the oldReceiptNumber will be generated before this class is constructed.
+    @Autowired
+    private final EreceiptOldNumberGenerationService ereceiptOldNumberGenerationService;
+
+    public EreceiptOldNumberCollectionService(EreceiptOldNumberGenerationService ereceiptOldNumberGenerationService) {this.ereceiptOldNumberGenerationService = ereceiptOldNumberGenerationService;}
+
     @PostConstruct
     private void collectAllOldEreceiptNumbers() {
-        
+
     }
 
     /**

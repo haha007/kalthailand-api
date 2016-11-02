@@ -54,7 +54,7 @@ import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.EVERY_YEA
 
 @Service
 public class ApplicationFormService {
-    private final static Logger logger = LoggerFactory.getLogger(ApplicationFormService.class);
+    public static final Logger LOGGER = LoggerFactory.getLogger(ApplicationFormService.class);
     private static final float VERY_SMALL_SIZE = 7f;
     private static final float SMALL_SIZE = 10f;
     private static final float MEDIUM_SIZE = 13f;

@@ -39,9 +39,4 @@ public interface Quotable {
 
     void addCoverage(Coverage coverage);
 
-    @Deprecated
-    PremiumsData getPremiumData();
-
-    @Deprecated
-    void setPremiumData(PremiumsData premiumData);
 }
