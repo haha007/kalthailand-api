@@ -13,7 +13,7 @@
             }
         </style>
 
-        <div ng-cloak class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main ng-cloak" id="collectionFileListContainer">
+        <div ng-cloak class="col-sm-9 col-sm-offset-3 col-md-12 col-md-offset-1 main ng-cloak" id="collectionFileListContainer">
             <div class="page-header">
                 <h1>Collection files</h1>
             </div>
@@ -50,7 +50,7 @@
                         'success': collectionFile.deductionFile.lines.length && collectionFile.lines.length == collectionFile.deductionFile.lines.length,
                         'danger': collectionFile.deductionFile.lines.length && collectionFile.lines.length != collectionFile.deductionFile.lines.length
                     }">
-                    <td>{{ collectionFile.receivedDate | date:'yyyy-MM-dd HH:mm:ss Z'}}</td>
+                    <td>[{{$index}}] {{ collectionFile.receivedDate | date:'yyyy-MM-dd HH:mm:ss Z'}}</td>
                     <td>{{ collectionFile.lines.length }}</td>
                     <td>{{ collectionFile.jobStartedDate | date:'yyyy-MM-dd HH:mm:ss Z'}}</td>
                     <td>{{ collectionFile.jobEndedDate | date:'yyyy-MM-dd HH:mm:ss Z'}}</td>
@@ -68,12 +68,12 @@
                         <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:100%">
                         </div>
                     </div>
-                    <button ng-hide="isProcessing" type="button" class="btn btn-default" style="margin-right:10px;" ng-click="processLastCollectionFiles()">Process Last Collection Files</button>
+                    <button ng-hide="isProcessing" type="button" class="btn btn-primary" style="margin-right:10px;" ng-click="processLastCollectionFiles()">Process Last Collection Files</button>
                 </div>
                 <div>&nbsp;</div>
-                <div ng-repeat="collectionFile in collectionFiles" class="panel panel-default">
+                <div ng-repeat="collectionFile in collectionFiles" class="panel panel-default" ng-show="$index <= 5">
                     <div class="panel-heading">
-                        <div class="panel-title">Collection file {{collectionFile.receivedDate | date:'yyyy-MM-dd HH:mm:ss Z'}}</div>
+                        <div class="panel-title"><strong>[{{$index}}]</strong> {{collectionFile.receivedDate | date:'yyyy-MM-dd HH:mm:ss Z'}}</div>
                     </div>
                     <table ng-show="collectionFile.deductionFile.lines.length > 0" class="table table-bordered table-striped table-hover table-condensed">
                         <tr>
