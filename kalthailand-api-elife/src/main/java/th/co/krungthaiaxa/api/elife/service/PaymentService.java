@@ -167,6 +167,7 @@ public class PaymentService {
         payment.setRegistrationKey(regKey);
         Payment result = paymentRepository.save(payment);
         LOGGER.info("Payment [" + payment.getPaymentId() + "] has been booked with transactionId [" + payment.getTransactionId() + "]");
+        LOGGER.debug("Saved payment: " + ObjectMapperUtil.toStringMultiLine(payment));
         return result;
     }
 

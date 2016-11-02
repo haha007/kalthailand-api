@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import th.co.krungthaiaxa.api.common.exeption.UnexpectedException;
 import th.co.krungthaiaxa.api.common.model.DownloadFile;
 import th.co.krungthaiaxa.api.common.model.error.Error;
 import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
@@ -36,6 +37,7 @@ import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.PolicyCDB;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
+import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 import th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayCaptureMode;
 import th.co.krungthaiaxa.api.elife.policyPremiumNotification.model.PolicyPremiumNoticeRequest;
@@ -43,6 +45,7 @@ import th.co.krungthaiaxa.api.elife.policyPremiumNotification.model.PolicyPremiu
 import th.co.krungthaiaxa.api.elife.policyPremiumNotification.service.PolicyCDBService;
 import th.co.krungthaiaxa.api.elife.policyPremiumNotification.service.PolicyPremiumNotificationService;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
+import th.co.krungthaiaxa.api.elife.products.ProductUtils;
 import th.co.krungthaiaxa.api.elife.service.DocumentService;
 import th.co.krungthaiaxa.api.elife.service.PaymentRetryService;
 import th.co.krungthaiaxa.api.elife.service.PaymentService;
@@ -373,7 +376,7 @@ public class PolicyResource {
             @ApiParam(value = "The transaction id to use to confirm the payment. Must be sent of status id SUCCESS", required = false)
             @RequestParam(required = false) Optional<String> transactionId,
             @ApiParam(value = "The RegKey for Monthly Mode Payment Only", required = false)
-            @RequestParam(required = false) Optional<String> regKey) {
+            @RequestParam(required = false) String regKey) {
         if (isEmpty(orderId)) {
             logger.error("The order ID was not received");
             return new ResponseEntity<>(getJson(ErrorCode.ORDER_ID_NOT_PROVIDED), NOT_ACCEPTABLE);
@@ -392,7 +395,10 @@ public class PolicyResource {
 
         //TODO need to check is this the first payment in policy or not. If not, throw exception.
         Payment payment = paymentService.validateExistPaymentInPolicy(policyId, paymentId);
-        paymentService.updatePayment(payment, orderId, transactionId.get(), (!regKey.isPresent() ? "" : regKey.get()));
+        if (StringUtils.isBlank(regKey) && PeriodicityCode.EVERY_MONTH.equals(ProductUtils.getPeriodicityCode(policy))) {
+            throw new UnexpectedException("The periodicity of payment is MONTHLY, but regKey is blank. policyId:" + policyId);
+        }
+        paymentService.updatePayment(payment, orderId, transactionId.get(), (regKey == null ? "" : regKey));
 
         // Update the policy status
         policyService.updatePolicyStatusToPendingValidation(policy);
