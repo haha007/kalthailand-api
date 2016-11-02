@@ -68,6 +68,6 @@ public interface PaymentRepository extends MongoRepository<Payment, String> {
      * @param receiptNumberOldPattern
      * @return the payments only contain receiptNumber and paymentId.
      */
-    @Query(value = "{'$and': [{'receiptNumberOldPattern': ?0}, {'receiptNumber': {'$ne': null}}]}", fields = "{'receiptNumber':1, 'paymentId':1}")
+    @Query(value = "{'$and': [{'receiptNumberOldPattern': ?0}, {'receiptNumber': {'$ne': null}}]}", fields = "{'receiptNumber':1, 'paymentId':1, 'policyId': 1}")
     List<Payment> findReceiptNumbersByReceiptNumberOldPatternAndReceiptNumberNotNull(boolean receiptNumberOldPattern);
 }

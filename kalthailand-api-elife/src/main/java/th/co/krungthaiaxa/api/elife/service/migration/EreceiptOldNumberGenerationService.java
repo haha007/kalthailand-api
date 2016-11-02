@@ -62,7 +62,7 @@ public class EreceiptOldNumberGenerationService {
     }
 
     private String toStringPaymentWithReceiptNumber(List<Payment> payments) {
-        return payments.stream().map(payment -> String.format("%s, receiptNumber: %s", payment.getPaymentId(), payment.getReceiptNumber())).collect(Collectors.joining("\n"));
+        return payments.stream().map(payment -> String.format("%s\t, receiptNumber: %s\t, policyNumber: %s", payment.getPaymentId(), payment.getReceiptNumber(), payment.getPolicyId())).collect(Collectors.joining("\n"));
     }
 
     private void saveEreceiptNumbersByOldPattern(List<Payment> payments, boolean newBusiness) {

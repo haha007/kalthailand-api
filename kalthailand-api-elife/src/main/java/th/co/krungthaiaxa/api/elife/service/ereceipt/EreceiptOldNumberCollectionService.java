@@ -50,11 +50,11 @@ public class EreceiptOldNumberCollectionService {
     private void logPaymentsWithOldReceiptNumbers(List<Payment> payments) {
         if (!LOGGER.isDebugEnabled()) return;
         String result = payments.stream().map(payment -> toStringPaymentWithOldReceiptNumber(payment)).collect(Collectors.joining("\n"));
-        LOGGER.debug("Old payments with old receiptNumbers\n[" + result + "\n]");
+        LOGGER.debug("Old payments with old receiptNumbers:\n[\n" + result + "\n]");
     }
 
     private String toStringPaymentWithOldReceiptNumber(Payment payment) {
-        return String.format("ReceiptNumber: %s\t, PaymentId: %s\t, PolicyId: %s", "" + payment.getReceiptNumber(), payment.getPaymentId(), payment.getPolicyId());
+        return String.format("ReceiptNumber: %s\t, PolicyId: %s\t, PaymentId: %s", "" + payment.getReceiptNumber(), payment.getPolicyId(), payment.getPaymentId());
     }
 
     /**
