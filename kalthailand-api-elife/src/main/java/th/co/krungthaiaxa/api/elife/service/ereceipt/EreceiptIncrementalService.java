@@ -47,20 +47,24 @@ public class EreceiptIncrementalService {
                 throw new UnexpectedException(msg);
             }
             long nextMainDecimal = incrementalService.next(INCREMENTAL_KEY);
+            if (nextMainDecimal > MAX_MAIN_NUMBER_DECIMAL) {
+                //Reset to 01, not throw Exception now.
+                nextMainDecimal = 1;
+                //throw new UnexpectedException(String.format("Cannot increase incremental number for EreceiptNumber anymore because it reach the maximum value (%s). So it will be reset to 1", nextMainDecimal));
+            }
             String nextMainBase36 = Base36Util.toBase36String(nextMainDecimal);
             String ereceiptNumberSuffix = newBusiness ? ERECEIPT_NUMBER_SUFFIX_NEWBUSINESS : ERECEIPT_NUMBER_SUFFIX_RENEWAL;
             String nextFullBase36 = nextMainBase36 + ereceiptNumberSuffix;
 
             ereceiptNumber = new EreceiptNumber();
+            ereceiptNumber.setFullDisplayNumber(nextMainDecimal + ereceiptNumberSuffix);
             ereceiptNumber.setFullNumberBase36(nextFullBase36);
             ereceiptNumber.setMainNumberBase36(nextMainBase36);
             ereceiptNumber.setMainNumberDecimal(nextMainDecimal);
             ereceiptNumber.setSuffixNumberBase36(ereceiptNumberSuffix);
             foundReceiptNumbers.add(ereceiptNumber);
-            if (nextMainDecimal > MAX_MAIN_NUMBER_DECIMAL) {
-                throw new UnexpectedException(String.format("Cannot increase incremental number for EreceiptNumber anymore because it reach the maximum value (%s). So it will be reset to 1", nextMainDecimal));
-            }
-            needNewDecimal = ereceiptOldNumberCollectionService.checkDuplicateIncrementalInOldData(nextFullBase36);
+
+            needNewDecimal = ereceiptOldNumberCollectionService.checkDuplicateIncrementalInOldData(ereceiptNumber.getFullDisplayNumber());
             i++;
         }
         return ereceiptNumber;

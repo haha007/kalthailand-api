@@ -29,7 +29,7 @@ public class EreceiptOldNumberCollectionService {
     private final PaymentRepository paymentRepository;
 
     //This class should use TreeSet so that we can use binarySort when using contains() operator.
-    private Set<String> receiptFullNumberBase36s;
+    private Set<String> receiptFullDisplayNumbers;
 
     @Autowired
     public EreceiptOldNumberCollectionService(EreceiptOldNumberGenerationService ereceiptOldNumberGenerationService, PaymentRepository paymentRepository) {
@@ -42,8 +42,8 @@ public class EreceiptOldNumberCollectionService {
         Instant start = LogUtil.logStarting("Collect old receiptNumber of old payments [start]");
         List<Payment> payments = paymentRepository.findReceiptNumbersByReceiptNumberOldPatternAndReceiptNumberNotNull(true);
         logPaymentsWithOldReceiptNumbers(payments);
-        receiptFullNumberBase36s = payments.stream().map(payment -> payment.getReceiptNumber().getFullNumberBase36()).collect(Collectors.toCollection(TreeSet<String>::new));
-        receiptFullNumberBase36s = UnmodifiableSet.decorate(receiptFullNumberBase36s);
+        receiptFullDisplayNumbers = payments.stream().map(payment -> payment.getReceiptNumber().getFullDisplayNumber()).collect(Collectors.toCollection(TreeSet<String>::new));
+        receiptFullDisplayNumbers = UnmodifiableSet.decorate(receiptFullDisplayNumbers);
         LogUtil.logRuntime(start, "Collect old receiptNumber of old payments [finish]");
     }
 
@@ -58,10 +58,10 @@ public class EreceiptOldNumberCollectionService {
     }
 
     /**
-     * @param ereceiptFullNumberBase36 the full number in base36 format. (Doesn't include {@link EreceiptPdfService#ERECEIPT_NUMBER_PREFIX}).
+     * @param ereceiptFullDisplayNumber the full number in base36 format. (Doesn't include {@link EreceiptPdfService#ERECEIPT_NUMBER_PREFIX}).
      * @return
      */
-    public boolean checkDuplicateIncrementalInOldData(String ereceiptFullNumberBase36) {
-        return this.receiptFullNumberBase36s.contains(ereceiptFullNumberBase36);
+    public boolean checkDuplicateIncrementalInOldData(String ereceiptFullDisplayNumber) {
+        return this.receiptFullDisplayNumbers.contains(ereceiptFullDisplayNumber);
     }
 }

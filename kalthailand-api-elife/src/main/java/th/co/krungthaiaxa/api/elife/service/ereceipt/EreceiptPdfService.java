@@ -202,9 +202,12 @@ public class EreceiptPdfService {
             String msg = String.format("Cannot find ereceiptNumber for the payment %s, policyId: %s", payment.getPaymentId(), payment.getPolicyId());
             throw new UnexpectedException(msg);
         }
-        String ereceiptNumberPart01 = ERECEIPT_NUMBER_PREFIX + StringUtil.formatNumberLength(ereceiptNumber.getMainNumberBase36(), 6);
+        String ereceiptFullDisplayNumber = ERECEIPT_NUMBER_PREFIX + StringUtil.formatNumberLength(ereceiptNumber.getFullDisplayNumber(), 8);
+        String ereceiptNumberPart01 = ereceiptFullDisplayNumber.substring(0, ereceiptFullDisplayNumber.length() - 2);
+        String ereceiptNumberPart02 = ereceiptFullDisplayNumber.substring(ereceiptFullDisplayNumber.length() - 2);
+
         writeChars(page, POS_REF2_RECEIPT_NUMBER_01, 11.45, 7, ereceiptNumberPart01.toUpperCase().toCharArray());
-        writeChars(page, POS_REF2_RECEIPT_NUMBER_02, 11.45, 2, ereceiptNumber.getSuffixNumberBase36().toUpperCase().toCharArray());
+        writeChars(page, POS_REF2_RECEIPT_NUMBER_02, 11.45, 2, ereceiptNumberPart02.toUpperCase().toCharArray());
     }
 
     private void writeAgentCode(PdfContentByte page, Policy policy) {

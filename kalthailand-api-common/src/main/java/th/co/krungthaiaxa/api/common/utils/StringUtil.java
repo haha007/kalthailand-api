@@ -100,6 +100,15 @@ public class StringUtil {
         return result;
     }
 
+    public static String formatNumberLength(long numberString, int length) {
+        return StringUtils.leftPad(String.valueOf((int) numberString), length, '0');
+
+    }
+
+    public static String formatNumberLength(int numberString, int length) {
+        return StringUtils.leftPad(String.valueOf(numberString), length, '0');
+    }
+
     public static String formatNumberLength(String numberString, int length) {
         return StringUtils.leftPad(numberString, length, '0');
     }

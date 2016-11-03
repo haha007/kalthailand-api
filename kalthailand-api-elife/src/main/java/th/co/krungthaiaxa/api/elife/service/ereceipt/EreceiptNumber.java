@@ -1,5 +1,6 @@
 package th.co.krungthaiaxa.api.elife.service.ereceipt;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.mongodb.core.index.Indexed;
 
@@ -25,6 +26,8 @@ public class EreceiptNumber implements Serializable {
     private Long mainNumberDecimal;
     @NotBlank
     private String suffixNumberBase36;
+    @NotBlank
+    private String fullDisplayNumber;
 
     @Override
     public String toString() {
@@ -61,5 +64,16 @@ public class EreceiptNumber implements Serializable {
 
     public void setSuffixNumberBase36(String suffixNumberBase36) {
         this.suffixNumberBase36 = suffixNumberBase36;
+    }
+
+    public String getFullDisplayNumber() {
+        if (StringUtils.isBlank(fullDisplayNumber)) {
+            fullDisplayNumber = mainNumberDecimal + suffixNumberBase36;
+        }
+        return fullDisplayNumber;
+    }
+
+    public void setFullDisplayNumber(String fullDisplayNumber) {
+        this.fullDisplayNumber = fullDisplayNumber;
     }
 }
