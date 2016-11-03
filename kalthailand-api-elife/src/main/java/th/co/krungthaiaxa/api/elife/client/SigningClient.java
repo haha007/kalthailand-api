@@ -10,7 +10,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import th.co.krungthaiaxa.api.common.utils.LogUtil;
 import th.co.krungthaiaxa.api.elife.exception.ElifeException;
+
+import java.time.Instant;
 
 import static org.springframework.http.HttpMethod.POST;
 
@@ -24,6 +27,7 @@ public class SigningClient {
     private RestTemplate template = new RestTemplate();
 
     public byte[] getEncodedSignedPdfDocument(byte[] encodedNonSignedPdf, String token) {
+        Instant start = LogUtil.logStarting("EncodedSignedPdf [start] URL: " + signingApiURL + ", token: " + token);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add("Content-Type", "application/json");
         httpHeaders.add(tokenHeader, token);
@@ -34,7 +38,7 @@ public class SigningClient {
         try {
             authResponse = template.exchange(signingApiURL, POST, entity, String.class);
         } catch (RestClientException e) {
-            throw new ElifeException("Unknown error, unable to sign PDF document.", e);
+            throw new ElifeException("Unable to sign PDF document:" + e.getMessage(), e);
         }
 
         if (authResponse.getStatusCode() != HttpStatus.OK) {
@@ -42,6 +46,7 @@ public class SigningClient {
         }
 
         logger.info("Got signed document from signing API");
+        LogUtil.logRuntime(start, "EncodedSignedPdf [finished] URL: " + signingApiURL + ", token: " + token);
         return authResponse.getBody().getBytes();
     }
 

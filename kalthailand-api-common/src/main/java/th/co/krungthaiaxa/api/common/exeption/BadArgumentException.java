@@ -17,6 +17,10 @@ public class BadArgumentException extends BaseException {
         super(ERROR_CODE, message, details);
     }
 
+    public BadArgumentException(String message, Object details, String detailsType) {
+        super(ERROR_CODE, message, details, detailsType);
+    }
+
     public BadArgumentException(String message, Throwable throwable) {
         super(ERROR_CODE, message, throwable);
     }

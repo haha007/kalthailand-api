@@ -3,6 +3,8 @@ package th.co.krungthaiaxa.api.common.model.error;
 import java.util.function.Function;
 
 public class ErrorCode {
+    public static final String DETAILS_TYPE_DUPLICATE = "Duplicate";
+
     public static final String ERROR_CODE_UNKNOWN_ERROR = "0000";
     public static final Function<String, Error> UNKNOWN_ERROR = msg -> new Error(ERROR_CODE_UNKNOWN_ERROR, "Unknown error: " + msg, "This is an unknown error. Please contact administrator to get more information.");
     public static final Function<String, Error> BAD_REQUEST = msg -> new Error("0001", "Bad request error: " + msg, "Your request is not compatible with server. Please recheck the API");
@@ -73,7 +75,8 @@ public class ErrorCode {
             "There was an error wh ile trying to validate the policy after validating the payment. Error is [" + msg + "].");
     public static final Error AGENT_CODE_FORMAT_ERROR = new Error("0410", "Agent code is not in format '123456-12-123456'.", "Agent code is not in format '123456-12-123456'.");
     public static final String ERROR_CODE_REAL_CAPTURE_API_HAS_TO_BE_USED = "0411";
-    public static final Error REAL_CAPTURE_API_HAS_TO_BE_USED = new Error(ERROR_CODE_REAL_CAPTURE_API_HAS_TO_BE_USED, "When validating a Policy in Production, only real call to Line Pay is allowed.", "When validating a Policy in Production, only real call to Line Pay is allowed.");
+    public static final Error REAL_CAPTURE_API_HAS_TO_BE_USED = new Error(ERROR_CODE_REAL_CAPTURE_API_HAS_TO_BE_USED, "When validating a Policy in Production, only real call to Line Pay is allowed.",
+            "When validating a Policy in Production, only real call to Line Pay is allowed.");
 
     // Line
     public static final Error UNABLE_TO_DECRYPT = new Error("0501", "Unable to get your user ID", "The provided text could not be decrypted");

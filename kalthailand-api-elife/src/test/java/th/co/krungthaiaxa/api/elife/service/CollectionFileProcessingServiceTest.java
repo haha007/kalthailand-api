@@ -11,6 +11,8 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import th.co.krungthaiaxa.api.common.exeption.BadArgumentException;
+import th.co.krungthaiaxa.api.common.utils.IOUtil;
 import th.co.krungthaiaxa.api.elife.ELifeTest;
 import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
 import th.co.krungthaiaxa.api.elife.TestUtil;
@@ -138,6 +140,12 @@ public class CollectionFileProcessingServiceTest extends ELifeTest {
         collectionFileRepository.save(collectionFile);
         assertThatThrownBy(() -> rlsService.readCollectionExcelFile(this.getClass().getResourceAsStream("/collectionFile_full.xls")))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    public void should_throw_exception_when_duplicate_policies() {
+        InputStream inputStream = IOUtil.loadInputStreamFromClassPath("/collection-file/LFDISC6_duplicate_policies.xlsx");
+        assertThatThrownBy(() -> rlsService.importCollectionFile(inputStream)).isInstanceOf(BadArgumentException.class);
     }
 
     @Test

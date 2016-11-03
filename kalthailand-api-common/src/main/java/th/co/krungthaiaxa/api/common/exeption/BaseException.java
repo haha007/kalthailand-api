@@ -1,5 +1,7 @@
 package th.co.krungthaiaxa.api.common.exeption;
 
+import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
+
 /**
  * This is the base exception of this project.
  */
@@ -13,6 +15,7 @@ public class BaseException extends RuntimeException {
 
     private final String errorMessage;
 
+    private final String detailsType;
     private final transient Object details;
 
     public BaseException(String errorCode, String message) {
@@ -20,6 +23,21 @@ public class BaseException extends RuntimeException {
         this.errorMessage = message;
         this.errorCode = errorCode;
         this.details = null;
+        this.detailsType = null;
+    }
+
+    /**
+     * @param errorCode   view in {@link ErrorCode}#ERROR_CODE_XXX
+     * @param message
+     * @param details
+     * @param detailsType view in {@link ErrorCode}#DETAILS_TYPE_XXX
+     */
+    public BaseException(String errorCode, String message, Object details, String detailsType) {
+        super(message);
+        this.errorMessage = message;
+        this.errorCode = errorCode;
+        this.details = details;
+        this.detailsType = detailsType;
     }
 
     public BaseException(String errorCode, String message, Object details) {
@@ -27,6 +45,7 @@ public class BaseException extends RuntimeException {
         this.errorMessage = message;
         this.errorCode = errorCode;
         this.details = details;
+        this.detailsType = null;
     }
 
     public BaseException(String errorCode, Throwable throwable) {
@@ -34,6 +53,7 @@ public class BaseException extends RuntimeException {
         this.errorCode = errorCode;
         this.errorMessage = throwable.getMessage();
         this.details = null;
+        this.detailsType = null;
     }
 
     public BaseException(String errorCode, String message, Throwable throwable) {
@@ -41,6 +61,7 @@ public class BaseException extends RuntimeException {
         this.errorCode = errorCode;
         this.errorMessage = message;
         this.details = null;
+        this.detailsType = null;
     }
 
     public BaseException(String errorCode, String message, Object details, Throwable throwable) {
@@ -48,6 +69,7 @@ public class BaseException extends RuntimeException {
         this.errorCode = errorCode;
         this.errorMessage = message;
         this.details = details;
+        this.detailsType = null;
     }
 
     public String getErrorCode() {
@@ -60,5 +82,9 @@ public class BaseException extends RuntimeException {
 
     public Object getDetails() {
         return this.details;
+    }
+
+    public String getDetailsType() {
+        return detailsType;
     }
 }

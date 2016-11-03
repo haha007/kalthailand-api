@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import th.co.krungthaiaxa.api.common.exeption.BadArgumentException;
 import th.co.krungthaiaxa.api.common.exeption.BaseException;
 import th.co.krungthaiaxa.api.common.exeption.UnexpectedException;
 import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
@@ -29,6 +30,7 @@ import th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 import th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayRecurringResponse;
+import th.co.krungthaiaxa.api.elife.products.ProductUtils;
 import th.co.krungthaiaxa.api.elife.repository.CollectionFileRepository;
 import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
 import th.co.krungthaiaxa.api.elife.repository.PolicyRepository;
@@ -44,8 +46,10 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -125,6 +129,7 @@ public class CollectionFileProcessingService {
 
     public synchronized void importCollectionFile(InputStream is) {
         CollectionFile collectionFile = readCollectionExcelFile(is);
+        validateNotDuplicatePolicies(collectionFile);
         collectionFile.getLines().forEach(this::importCollectionFileLine);
         collectionFileRepository.save(collectionFile);
     }
@@ -278,11 +283,8 @@ public class CollectionFileProcessingService {
         isTrue(StringUtils.isNotBlank(policyId), "policyNumber must be notempty: " + ObjectMapperUtil.toStringMultiLine(collectionFileLine));
         Optional<Policy> policy = policyService.findPolicyByPolicyNumber(policyId);
         isTrue(policy.isPresent(), "Unable to find a policy [" + collectionFileLine.getPolicyNumber() + "]");
-        isTrue(policy.get().getStatus().equals(PolicyStatus.VALIDATED), "The policy [" +
-                collectionFileLine.getPolicyNumber() + "] has not been validated and payments can't go through without validation");
-        isTrue(policy.get().getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().equals(PeriodicityCode.EVERY_MONTH),
-                "Policy [" + collectionFileLine.getPolicyNumber() + "] is not a monthly payment policy");
-
+        isTrue(policy.get().getStatus().equals(PolicyStatus.VALIDATED), "The policy [" + collectionFileLine.getPolicyNumber() + "] has not been validated and payments can't go through without validation");
+        isTrue(PeriodicityCode.EVERY_MONTH.equals(ProductUtils.getPeriodicityCode(policy.get())), "Policy [" + collectionFileLine.getPolicyNumber() + "] is not a monthly payment policy");
         // 28 is the maximum nb of days between a scheduled payment and collection file first cycle start date
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime todayMinus28Days = now.minusDays(28);
@@ -321,6 +323,36 @@ public class CollectionFileProcessingService {
         policyRepository.save(policy.get());
         collectionFileLine.setPaymentId(newPayment.getPaymentId());
         LOGGER.info("Import collectionFileLine [finished]: policyNumber: {}, paymentId: {}", collectionFileLine.getPolicyNumber(), collectionFileLine.getPaymentId());
+    }
+
+    /**
+     * @param collectionFile
+     * @return key: policyNumber, value: counts of duplicated lines
+     */
+    private Map<String, Integer> validateNotDuplicatePolicies(CollectionFile collectionFile) {
+        Map<String, Integer> duplicatedLines = new HashMap<>();
+        CollectionFileLine[] lines = collectionFile.getLines().toArray(new CollectionFileLine[0]);//Convert to Array to improve performance.
+        for (int i = 0; i < lines.length; i++) {
+            CollectionFileLine iline = lines[i];
+            String ipolicyNumber = iline.getPolicyNumber();
+            if (StringUtils.isNotBlank(ipolicyNumber)) {
+                for (int j = i + 1; j < lines.length; j++) {
+                    CollectionFileLine jline = lines[j];
+                    if (ipolicyNumber.equals(jline.getPolicyNumber())) {
+                        Integer count = duplicatedLines.get(ipolicyNumber);
+                        if (count == null) {
+                            count = 1;
+                        }
+                        count++;
+                        duplicatedLines.put(ipolicyNumber, count);
+                    }
+                }
+            }
+        }
+        if (duplicatedLines.size() > 0) {
+            throw new BadArgumentException("Duplicated policies " + duplicatedLines.keySet() + "", duplicatedLines, ErrorCode.DETAILS_TYPE_DUPLICATE);
+        }
+        return duplicatedLines;
     }
 
     private String findLastRegistrationKey(String policyNumber) {

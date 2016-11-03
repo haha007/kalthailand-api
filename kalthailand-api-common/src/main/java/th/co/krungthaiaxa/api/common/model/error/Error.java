@@ -5,6 +5,7 @@ import java.util.List;
 public class Error {
     private String code;
     private Object details;
+    private Object detailsType;
     private String userMessage;
     private String developerMessage;
     private List<FieldError> fieldErrors;
@@ -57,5 +58,13 @@ public class Error {
 
     public void setDetails(Object details) {
         this.details = details;
+    }
+
+    public Object getDetailsType() {
+        return detailsType;
+    }
+
+    public void setDetailsType(Object detailsType) {
+        this.detailsType = detailsType;
     }
 }

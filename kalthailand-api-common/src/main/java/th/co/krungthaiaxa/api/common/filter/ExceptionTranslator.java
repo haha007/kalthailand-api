@@ -85,6 +85,7 @@ public class ExceptionTranslator {
     public Error processInternalException(final BaseException exception) {
         final Error result = new Error(exception.getErrorCode(), exception.getMessage(), exception.getMessage());
         result.setDetails(exception.getDetails());
+        result.setDetailsType(exception.getDetailsType());
         this.loggingMessage(result, exception);
         return result;
     }
