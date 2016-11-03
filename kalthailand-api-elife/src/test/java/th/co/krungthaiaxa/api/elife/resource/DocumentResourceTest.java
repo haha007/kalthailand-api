@@ -19,18 +19,20 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+import th.co.krungthaiaxa.api.common.model.error.Error;
+import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
 import th.co.krungthaiaxa.api.elife.ELifeTest;
+import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
 import th.co.krungthaiaxa.api.elife.TestUtil;
+import th.co.krungthaiaxa.api.elife.factory.PolicyFactory;
+import th.co.krungthaiaxa.api.elife.factory.ProductQuotationFactory;
 import th.co.krungthaiaxa.api.elife.model.Document;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 import th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus;
-import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
 import th.co.krungthaiaxa.api.elife.service.QuoteService;
-import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
-import th.co.krungthaiaxa.api.common.model.error.Error;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -44,13 +46,17 @@ import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpMethod.PUT;
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.NOT_ACCEPTABLE;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.UNSUPPORTED_MEDIA_TYPE;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiElifeApplication.class)
 @WebAppConfiguration
 @ActiveProfiles("test")
-@IntegrationTest({"server.port=0"})
+@IntegrationTest({ "server.port=0" })
 public class DocumentResourceTest extends ELifeTest {
     @Rule
     public final GreenMailRule greenMail = new GreenMailRule(ServerSetupTest.SMTP_IMAP);
@@ -59,6 +65,8 @@ public class DocumentResourceTest extends ELifeTest {
     private RestTemplate template;
     @Inject
     private QuoteService quoteService;
+    @Inject
+    private PolicyFactory policyFactory;
 
     @Before
     public void setUp() throws Exception {
@@ -187,13 +195,13 @@ public class DocumentResourceTest extends ELifeTest {
 
     @Test
     public void should_return_2_document_when_policy_monthly() throws IOException, URISyntaxException {
-        Policy policy = getPolicy();
+        Policy policy = policyFactory.createPolicyWithPendingPaymentStatus(ProductQuotationFactory.constructIGenDefaultWithMonthlyPayment());
 
         URI paymentURI = new URI("http://localhost:" + port + "/policies/" + policy.getPolicyId() + "/update/status/pendingValidation");
         UriComponentsBuilder updatePaymentBuilder = UriComponentsBuilder.fromUri(paymentURI)
                 .queryParam("paymentId", policy.getPayments().get(0).getPaymentId())
                 .queryParam("orderId", "myOrderId")
-                .queryParam("registrationKey", "myRegistrationKey")
+                .queryParam("regKey", "myRegistrationKey")
                 .queryParam("transactionId", "myTransactionId");
         ResponseEntity<String> paymentResponse = template.exchange(updatePaymentBuilder.toUriString(), PUT, null, String.class);
         assertThat(paymentResponse.getStatusCode().value()).isEqualTo(OK.value());
