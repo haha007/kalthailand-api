@@ -57,14 +57,14 @@ public class EreceiptIncrementalService {
             String nextFullBase36 = nextMainBase36 + ereceiptNumberSuffix;
 
             ereceiptNumber = new EreceiptNumber();
-            ereceiptNumber.setFullDisplayNumber(nextMainDecimal + ereceiptNumberSuffix);
+            ereceiptNumber.setFullNumberForDisplay(nextMainDecimal + ereceiptNumberSuffix);
             ereceiptNumber.setFullNumberBase36(nextFullBase36);
             ereceiptNumber.setMainNumberBase36(nextMainBase36);
             ereceiptNumber.setMainNumberDecimal(nextMainDecimal);
             ereceiptNumber.setSuffixNumberBase36(ereceiptNumberSuffix);
             foundReceiptNumbers.add(ereceiptNumber);
 
-            needNewDecimal = ereceiptOldNumberCollectionService.checkDuplicateIncrementalInOldData(ereceiptNumber.getFullDisplayNumber());
+            needNewDecimal = ereceiptOldNumberCollectionService.checkDuplicateIncrementalInOldData(ereceiptNumber.getFullNumberForDisplay());
             i++;
         }
         return ereceiptNumber;

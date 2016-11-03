@@ -27,7 +27,7 @@ public class EreceiptNumber implements Serializable {
     @NotBlank
     private String suffixNumberBase36;
     @NotBlank
-    private String fullDisplayNumber;
+    private String fullNumberForDisplay;
 
     @Override
     public String toString() {
@@ -66,14 +66,17 @@ public class EreceiptNumber implements Serializable {
         this.suffixNumberBase36 = suffixNumberBase36;
     }
 
-    public String getFullDisplayNumber() {
-        if (StringUtils.isBlank(fullDisplayNumber)) {
-            fullDisplayNumber = mainNumberDecimal + suffixNumberBase36;
+    public String getFullNumberForDisplay() {
+        if (StringUtils.isBlank(fullNumberForDisplay)) {
+            if (mainNumberDecimal == null || StringUtils.isBlank(suffixNumberBase36)) {
+                return null;
+            }
+            fullNumberForDisplay = mainNumberDecimal + suffixNumberBase36;
         }
-        return fullDisplayNumber;
+        return fullNumberForDisplay;
     }
 
-    public void setFullDisplayNumber(String fullDisplayNumber) {
-        this.fullDisplayNumber = fullDisplayNumber;
+    public void setFullNumberForDisplay(String fullNumberForDisplay) {
+        this.fullNumberForDisplay = fullNumberForDisplay;
     }
 }

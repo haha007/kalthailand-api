@@ -202,7 +202,7 @@ public class EreceiptPdfService {
             String msg = String.format("Cannot find ereceiptNumber for the payment %s, policyId: %s", payment.getPaymentId(), payment.getPolicyId());
             throw new UnexpectedException(msg);
         }
-        String ereceiptFullDisplayNumber = ERECEIPT_NUMBER_PREFIX + StringUtil.formatNumberLength(ereceiptNumber.getFullDisplayNumber(), 8);
+        String ereceiptFullDisplayNumber = ERECEIPT_NUMBER_PREFIX + StringUtil.formatNumberLength(ereceiptNumber.getFullNumberForDisplay(), 8);
         String ereceiptNumberPart01 = ereceiptFullDisplayNumber.substring(0, ereceiptFullDisplayNumber.length() - 2);
         String ereceiptNumberPart02 = ereceiptFullDisplayNumber.substring(ereceiptFullDisplayNumber.length() - 2);
 

@@ -42,7 +42,7 @@ public class EreceiptOldNumberCollectionService {
         Instant start = LogUtil.logStarting("Collect old receiptNumber of old payments [start]");
         List<Payment> payments = paymentRepository.findReceiptNumbersByReceiptNumberOldPatternAndReceiptNumberNotNull(true);
         logPaymentsWithOldReceiptNumbers(payments);
-        receiptFullDisplayNumbers = payments.stream().map(payment -> payment.getReceiptNumber().getFullDisplayNumber()).collect(Collectors.toCollection(TreeSet<String>::new));
+        receiptFullDisplayNumbers = payments.stream().map(payment -> payment.getReceiptNumber().getFullNumberForDisplay()).collect(Collectors.toCollection(TreeSet<String>::new));
         receiptFullDisplayNumbers = UnmodifiableSet.decorate(receiptFullDisplayNumbers);
         LogUtil.logRuntime(start, "Collect old receiptNumber of old payments [finish]");
     }
