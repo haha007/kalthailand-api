@@ -74,6 +74,9 @@ CommissionService.prototype.addCommissionPlan = function () {
 };
 CommissionService.prototype.removeCommissionPlan = function (commissionPlan) {
     var self = this;
+    if (self.isCommissionPlanReadonly(commissionPlan)) {
+        return;
+    }
     self.commissionPlans.remove(commissionPlan);
     self.validateCommissionPlans();
 };

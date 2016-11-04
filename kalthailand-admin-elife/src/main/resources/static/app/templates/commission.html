@@ -57,7 +57,7 @@
                         <span>{{commissionGroupType.label}} %</span><span ng-show="!commissionGroupType.isRequired"> (Optional)</span>
                     </th>
                     <th rowspan="2">
-                        <button class="btn btn-sm btn-primary" ng-click="service.addCommissionPlan()"><i class="glyphicon glyphicon-plus"></i></button>
+                        <button class="btn btn-xs btn-primary glyphicon glyphicon-plus" ng-click="service.addCommissionPlan()"></button>
                     </th>
                 </tr>
                 <tr>
@@ -96,7 +96,8 @@
                     </td>
                     <td ng-repeat-end ng-if="false"><!--Never show this column--></td>
                     <td>
-                        <button class="btn btn-sm btn-danger" ng-click="service.removeCommissionPlan(commissionPlan)" ng-disabled="service.isCommissionPlanReadonly(commissionPlan)"><i class="glyphicon glyphicon-minus"></i></button>
+                        <button ng-class="{'btn-danger': !service.isCommissionPlanReadonly(commissionPlan)}" class="align-middle btn btn-xs btn-default glyphicon glyphicon-minus" ng-click="service.removeCommissionPlan(commissionPlan)"
+                                ng-disabled="service.isCommissionPlanReadonly(commissionPlan)"></button>
                         <!--ng-disabled="service.isCommissionPlanReadonly(commissionPlan)"-->
                     </td>
                 </tr>
