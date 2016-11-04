@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.common.exeption.BaseException;
 import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
+import th.co.krungthaiaxa.api.common.utils.LogUtil;
 import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
 import th.co.krungthaiaxa.api.common.validator.BeanValidator;
 import th.co.krungthaiaxa.api.elife.exception.LinePaymentException;
@@ -22,6 +23,7 @@ import th.co.krungthaiaxa.api.elife.service.ereceipt.EreceiptNumber;
 import th.co.krungthaiaxa.api.elife.service.ereceipt.EreceiptService;
 
 import javax.validation.constraints.NotNull;
+import java.time.Instant;
 
 import static th.co.krungthaiaxa.api.elife.model.enums.ChannelType.LINE;
 import static th.co.krungthaiaxa.api.elife.model.line.LinePayCaptureMode.FAKE_WITH_ERROR;
@@ -60,6 +62,7 @@ public class PolicyValidatedProcessingService {
     }
 
     public Policy updatePolicyStatusToValidated(PolicyValidationRequest policyValidationRequest) {
+        Instant start = LogUtil.logStarting("Validate policy [start] " + ObjectMapperUtil.toStringMultiLine(policyValidationRequest));
         beanValidator.validate(policyValidationRequest);
         boolean newBusiness = NEW_BUSINESS;
         String agentCode = policyValidationRequest.getAgentCode();
@@ -121,9 +124,9 @@ public class PolicyValidatedProcessingService {
 //        paymentService.updatePaymentAfterLinePay(paymentHasTransaction, paymentHasTransaction.getAmount().getValue(), paymentHasTransaction.getAmount().getCurrencyCode(), LINE, linePayResponse);
 
         String regKey = linePayResponse.getInfo().getRegKey();
-        LOGGER.debug("Response from linePay after validated policy: LinePayResponse: " + ObjectMapperUtil.toStringMultiLine(linePayResponse.getInfo()));
         policyService.updateRegKeyForAllNotProcessedPayments(policy, regKey);
         policy = policyService.updatePolicyStatusToValidated(policy, agentCode, agentName, accessToken);
+        LogUtil.logRuntime(start, "Validate policy [finish] " + ObjectMapperUtil.toStringMultiLine(policyValidationRequest));
         return policy;
     }
 

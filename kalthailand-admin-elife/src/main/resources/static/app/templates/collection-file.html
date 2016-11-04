@@ -5,35 +5,27 @@
         <div ng-include="'app/templates/partials/sidebar.html'"></div>
 
         <!-- BEGIN Page specific stuff -->
-        <style>
-            /*.form-upload {
-                border: 1px solid #eee;
-                margin-bottom: 20px;
-                padding: 5px;
-            }*/
-        </style>
-
         <div ng-cloak class="col-sm-9 col-sm-offset-3 col-md-12 col-md-offset-1 main ng-cloak" id="collectionFileListContainer">
             <div class="page-header">
                 <h1>Collection files</h1>
             </div>
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    Upload collection file
+                    <h3 class="panel-title">Upload collection file</h3>
                 </div>
                 <div class="panel-body">
-                    <div class="progress" ng-show="isUploading">
-                        <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:100%">
-                        </div>
-                    </div>
-                    <form ng-hide="isUploading" name="formUpload" ng-submit="upload($event)" class="form-inline form-upload">
-                        <div class="input-group">
+                    <form name="formUpload" ng-submit="upload($event)" class="form-inline form-upload">
+                        <div ng-hide="isUploading" class="input-group">
                             <input type="file" class="form-control" file-model="file" id="fileToUpload">
 
                             <div class="input-group-btn">
                                 <button type="submit" class="btn btn-danger"><span class="glyphicon glyphicon-upload"></span> Upload</button>
                             </div>
                         </div>
+                        <div ng-show="isUploading" class="input-group">
+                            <i class="fa fa-spinner fa-spin" style="font-size:24px"></i>
+                        </div>
+
                     </form>
 
 
@@ -50,7 +42,7 @@
             <table class="table table-bordered table-hover table-condensed">
                 <thead>
                 <tr>
-                    <th></th>
+                    <th>#</th>
                     <th>Received Date</th>
                     <th>Job Starting Date</th>
                     <th>Job Ending Date</th>
@@ -87,13 +79,16 @@
                         <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:100%">
                         </div>
                     </div>
-                    <button ng-hide="isProcessing" type="button" class="btn btn-primary" style="margin-right:10px;" ng-click="processLastCollectionFiles()">Process Last Collection Files</button>
+                    <button ng-hide="isProcessing" type="button" class="btn btn-danger" style="margin-right:10px;" ng-click="processLastCollectionFiles()">Process Last Collection Files</button>
                 </div>
                 <div><span class="help-block">It will show result of maximum 5 collection files.</span></div>
                 <div ng-repeat="collectionFile in collectionFiles" class="panel panel-default" ng-show="$index < 5">
                     <div class="panel-heading">
-                        <span class="label label-default">{{$index+1}}</span> {{collectionFile.receivedDate | date:'yyyy-MM-dd HH:mm:ss Z'}}
+                        <div class="pull-left"><span class="label label-default">{{$index+1}}</span></div>
+                        <div class="pull-right"><span>{{collectionFile.receivedDate | date:'yyyy-MM-dd HH:mm:ss Z'}}</span></div>
+                        <div class="clearfix"></div>
                     </div>
+
                     <table ng-show="collectionFile.deductionFile.lines.length > 0" class="table table-bordered table-condensed">
                         <thead>
                         <tr style="background-color: #f5f5f5">

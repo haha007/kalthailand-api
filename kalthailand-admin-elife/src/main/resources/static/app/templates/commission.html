@@ -46,7 +46,6 @@
                 <h1>Commission Setting</h1>
             </div>
             <div ng-include="'app/templates/partials/message.html'"></div>
-
             <table class="table table-bordered table-striped table-hover table-condensed">
                 <thead>
                 <tr>
@@ -58,7 +57,7 @@
                         <span>{{commissionGroupType.label}} %</span><span ng-show="!commissionGroupType.isRequired"> (Optional)</span>
                     </th>
                     <th rowspan="2">
-                        <button class="btn btn-sm btn-primary" ng-click="service.addCommissionPlan()">+</button>
+                        <button class="btn btn-sm btn-primary" ng-click="service.addCommissionPlan()"><i class="glyphicon glyphicon-plus"></i></button>
                     </th>
                 </tr>
                 <tr>
@@ -97,14 +96,13 @@
                     </td>
                     <td ng-repeat-end ng-if="false"><!--Never show this column--></td>
                     <td>
-                        <button class="btn btn-sm btn-danger" ng-click="service.removeCommissionPlan(commissionPlan)" ng-disabled="service.isCommissionPlanReadonly(commissionPlan)">-</button>
+                        <button class="btn btn-sm btn-danger" ng-click="service.removeCommissionPlan(commissionPlan)" ng-disabled="service.isCommissionPlanReadonly(commissionPlan)"><i class="glyphicon glyphicon-minus"></i></button>
                         <!--ng-disabled="service.isCommissionPlanReadonly(commissionPlan)"-->
                     </td>
                 </tr>
                 </tbody>
             </table>
-            <button class="btn btn-default" ng-click="service.saveAllCommissionPlans()">Save all</button>
-
+            <button title="After saving, you will not be able to remove saved rows. But you can update their percentage numbers." class="btn btn-default btn-danger" ng-click="service.saveAllCommissionPlans()">Save all</button>
         </div>
         <!-- END Page specific stuff -->
     </div>
