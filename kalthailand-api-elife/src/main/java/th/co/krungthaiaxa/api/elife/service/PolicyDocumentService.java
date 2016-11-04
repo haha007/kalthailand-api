@@ -94,37 +94,10 @@ public class PolicyDocumentService {
             LOGGER.debug("Validated Application form already exists.");
         }
 
-        // Generate Ereceipt as Image
         Payment firstPayment = paymentQueryService.validateExistFirstPaymentOrderById(policy.getPolicyId());
-//        byte[] ereceiptImage = null;
-//        Optional<Document> documentImage = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(ERECEIPT_IMAGE)).findFirst();
-//        if (!documentImage.isPresent()) {
-//            try {
-//                ereceiptImage = ereceiptService.createEreceiptImage(policy, firstPayment, true);
-//                ereceiptService.addEReceiptDocument(policy, firstPayment, ereceiptImage, "image/png", ERECEIPT_IMAGE);
-//                LOGGER.info("Ereceipt image has been added to Policy.");
-//            } catch (Exception e) {
-//                LOGGER.error("Image Ereceipt for Policy [" + policy.getPolicyId() + "] has not been generated.", e);
-//            }
-//        } else {
-//            LOGGER.info("ereceipt image already exists.");
-//            ereceiptImage = Base64.getDecoder().decode(documentService.findDocumentDownload(documentImage.get().getId()).getContent().getBytes());
-//        }
-
-        // Generate Ereceipt as PDF
         Optional<Document> ereceiptPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(ERECEIPT_PDF)).findFirst();
         if (!ereceiptPdf.isPresent()) {
             ereceiptService.addEreceiptPdf(policy, firstPayment, newBusiness, token);
-//            try {
-//                byte[] decodedNonSignedPdf = ereceiptService.createEreceiptPdf(ereceiptImage);
-//                byte[] encodedNonSignedPdf = Base64.getEncoder().encode(decodedNonSignedPdf);
-//                byte[] encodedSignedPdf = signingClient.getEncodedSignedPdfDocument(encodedNonSignedPdf, token);
-//                byte[] decodedSignedPdf = Base64.getDecoder().decode(encodedSignedPdf);
-//                ereceiptService.addEReceiptDocument(policy, firstPayment, decodedSignedPdf, "application/pdf", ERECEIPT_PDF);
-//                LOGGER.info("Ereceipt pdf has been added to Policy.");
-//            } catch (Exception e) {
-//                LOGGER.error("PDF Ereceipt for Policy [" + policy.getPolicyId() + "] has not been generated.", e);
-//            }
         } else {
             LOGGER.debug("Signed ereceipt pdf already exists.");
         }

@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import th.co.krungthaiaxa.api.common.exeption.UnexpectedException;
 import th.co.krungthaiaxa.api.elife.client.SigningClient;
 import th.co.krungthaiaxa.api.elife.exception.EreceiptDocumentException;
 import th.co.krungthaiaxa.api.elife.model.Document;
@@ -16,8 +15,6 @@ import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
 import th.co.krungthaiaxa.api.elife.service.DocumentService;
 
 import java.util.Base64;
-
-import static th.co.krungthaiaxa.api.elife.model.enums.DocumentType.ERECEIPT_PDF;
 
 /**
  * @author khoi.tran on 10/25/16.
@@ -58,20 +55,13 @@ public class EreceiptService {
         byte[] encodedNonSignedPdf = Base64.getEncoder().encode(decodedNonSignedPdf);
         byte[] encodedSignedPdf = signingClient.getEncodedSignedPdfDocument(encodedNonSignedPdf, accessToken);
         byte[] decodedSignedPdf = Base64.getDecoder().decode(encodedSignedPdf);
-        return addEReceiptDocument(policy, payment, decodedSignedPdf, "application/pdf", ERECEIPT_PDF);
+        return addEreceiptPdf(policy, payment, decodedSignedPdf, "application/pdf");
     }
 
-    public Document addEReceiptDocument(Policy policy, Payment payment, byte[] decodedContent, String mimeType, DocumentType documentType) {
-        Document document = documentService.addDocument(policy, decodedContent, mimeType, documentType, DocumentReferenceType.PAYMENT, payment.getPaymentId());
-        if (documentType == DocumentType.ERECEIPT_IMAGE) {
-            payment.setReceiptImageDocument(document);
-        } else if (documentType == DocumentType.ERECEIPT_PDF) {
-            payment.setReceiptPdfDocument(document);
-        } else {
-            throw new UnexpectedException("There's something really wrong here. You can only call this method if your documentType is either " + DocumentType.ERECEIPT_IMAGE + " or " + DocumentType.ERECEIPT_PDF);
-        }
+    public Document addEreceiptPdf(Policy policy, Payment payment, byte[] decodedContent, String mimeType) {
+        Document document = documentService.addDocument(policy, decodedContent, mimeType, DocumentType.ERECEIPT_PDF, DocumentReferenceType.PAYMENT, payment.getPaymentId());
+        payment.setReceiptPdfDocument(document);
         paymentRepository.save(payment);
         return document;
     }
-
 }

@@ -14,23 +14,34 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.soap.client.core.SoapActionCallback;
-import th.co.krungthaiaxa.api.elife.client.*;
+import th.co.krungthaiaxa.api.common.utils.JsonUtil;
+import th.co.krungthaiaxa.api.elife.client.BlackListClient;
+import th.co.krungthaiaxa.api.elife.client.CDBClient;
+import th.co.krungthaiaxa.api.elife.client.LineBCClient;
+import th.co.krungthaiaxa.api.elife.client.SigningClient;
+import th.co.krungthaiaxa.api.elife.client.Token;
 import th.co.krungthaiaxa.api.elife.filter.KalApiTokenFilter;
-import th.co.krungthaiaxa.api.elife.repository.cdb.CDBRepository;
 import th.co.krungthaiaxa.api.elife.repository.LineBCRepository;
+import th.co.krungthaiaxa.api.elife.repository.cdb.CDBRepository;
 import th.co.krungthaiaxa.api.elife.tmc.TMCClient;
 import th.co.krungthaiaxa.api.elife.tmc.TMCSendingPDFResponse;
 import th.co.krungthaiaxa.api.elife.tmc.TMCSendingPDFResponseRemark;
 import th.co.krungthaiaxa.api.elife.tmc.wsdl.ReceivePDFJSON;
 import th.co.krungthaiaxa.api.elife.tmc.wsdl.ReceivePDFJSONResponse;
-import th.co.krungthaiaxa.api.common.utils.JsonUtil;
 
 import javax.inject.Inject;
+import java.io.File;
 import java.net.URI;
 import java.nio.charset.Charset;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
-import static org.mockito.Matchers.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.OK;
@@ -52,6 +63,8 @@ public class ELifeTest {
 
     @Before
     public void setupFakeTemplateAndRepository() {
+        String catalinaHome = new File("").getAbsolutePath();
+        System.setProperty("catalina.home", catalinaHome);
         // Faking signing by returning pdf document as received and 200 response
         RestTemplate fakeSigningRestTemplate = mock(RestTemplate.class);
         signingClient.setTemplate(fakeSigningRestTemplate);
@@ -82,8 +95,7 @@ public class ELifeTest {
             if ("existingThaiId".equals(id) && "existingDOB".equals(dob)) {
                 Triple<String, String, String> result = Triple.of("previousPolicyNumber", "agentCode1", "agentCode2");
                 return Optional.of(result);
-            }
-            else {
+            } else {
                 return Optional.empty();
             }
         });
@@ -97,8 +109,7 @@ public class ELifeTest {
             List<NameValuePair> params = URLEncodedUtils.parse(new URI(url), "UTF-8");
             if (params != null && params.size() > 0 && "aMockedBlackListedThaiID".equals(params.get(0).getValue())) {
                 return new ResponseEntity<>("true", HttpStatus.OK);
-            }
-            else {
+            } else {
                 return new ResponseEntity<>("false", HttpStatus.OK);
             }
         });
@@ -118,12 +129,11 @@ public class ELifeTest {
                 map.put("first_name", "พิมพมภรณ์");
                 map.put("last_name", "อาภาศิริผล");
 
-                List<Map<String,Object>> result = new ArrayList<>();
+                List<Map<String, Object>> result = new ArrayList<>();
                 result.add(map);
 
                 return Optional.of(result);
-            }
-            else {
+            } else {
                 return Optional.empty();
             }
         });
