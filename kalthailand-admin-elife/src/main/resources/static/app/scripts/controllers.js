@@ -197,6 +197,7 @@
 
 
         function searchForPolicies() {
+            $scope.isSearching = true;
             Dashboard.get(
                 {
                     pageNumber: $scope.currentPage - 1,
@@ -209,6 +210,8 @@
                     toDate: $scope.toDateSearch
                 },
                 function (successResponse) {
+                    $scope.isSearching = null;
+
                     $scope.totalPages = successResponse.totalPages;
                     $scope.totalItems = successResponse.totalElements;
                     $scope.currentPage = successResponse.number + 1;
@@ -236,6 +239,8 @@
                     }
                 },
                 function (errorResponse) {
+                    $scope.isSearching = null;
+
                     $scope.policies = null;
                     $scope.errorMessage = errorResponse.data.userMessage;
                     $scope.downloadUrl = null;
