@@ -103,7 +103,9 @@
                 </tr>
                 </tbody>
             </table>
-            <button ng-disabled="!service.isValidateSuccess" title="After saving, you will not be able to remove saved rows. But you can update their percentage numbers." class="btn btn-default btn-danger" ng-click="service.saveAllCommissionPlans()">Save all</button>
+            <button ng-disabled="!service.isValidateSuccess" ng-class="{'btn-danger': service.isValidateSuccess}" class="btn btn-default" ng-click="service.saveAllCommissionPlans()"
+                    title="After saving, you will not be able to remove saved rows. But you can update their percentage numbers.">Save all
+            </button>
         </div>
         <!-- END Page specific stuff -->
     </div>

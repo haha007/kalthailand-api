@@ -294,6 +294,9 @@
                 });
         }
 
+        $scope.isProccessed = function (collectionFile) {
+            return collectionFile.deductionFile.lines && collectionFile.deductionFile.lines.length != 0;
+        }
         function fetchCollectionFileDetails(callback) {
             CollectionFile.query(function (response) {
                 $scope.collectionFiles = response;

@@ -49,12 +49,13 @@
                     <th>Uploaded lines</th>
                     <th>Processed lines</th>
                     <th>Deduction File</th>
+                    <th></th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr ng-repeat="collectionFile in collectionFiles"
                     ng-class="{
-                        'success': collectionFile.deductionFile.lines.length && collectionFile.lines.length == collectionFile.deductionFile.lines.length,
+                        '': collectionFile.deductionFile.lines.length && collectionFile.lines.length == collectionFile.deductionFile.lines.length,
                         'danger': collectionFile.deductionFile.lines.length && collectionFile.lines.length != collectionFile.deductionFile.lines.length,
                         'warning': collectionFile.lines.length != collectionFile.deductionFile.lines.length
                     }">
@@ -64,9 +65,13 @@
                     <td>{{ collectionFile.jobEndedDate | date:'yyyy-MM-dd HH:mm:ss Z'}}</td>
                     <td>{{ collectionFile.lines.length }}</td>
                     <td>{{ collectionFile.deductionFile.lines.length }}</td>
-                    <td><a href="/api-elife/RLS/deduction/download/{{collectionFile.id}}" ng-show="collectionFile.deductionFile.lines && collectionFile.deductionFile.lines.length != 0">
+                    <td><a href="/api-elife/RLS/deduction/download/{{collectionFile.id}}" ng-show="isProccessed(collectionFile)">
                         <span class="glyphicon glyphicon-download"></span><span class="glyphicon-class"> Download</span>
                     </a></td>
+                    <td>
+                        <i style="color: #dbc59e" ng-hide="isProccessed(collectionFile)" class="glyphicon glyphicon-asterisk"></i>
+                        <i style="color: #3e8f3e" ng-show="isProccessed(collectionFile)" class="glyphicon glyphicon-ok-sign"></i>
+                    </td>
                 </tr>
                 </tbody>
             </table>
