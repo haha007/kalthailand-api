@@ -1,3 +1,17 @@
+<style>
+    .status-success {
+        color: #3e8f3e;
+    }
+
+    .status-new {
+        color: #a47e3c;
+    }
+
+    .status-error {
+        color: #b92c28;
+    }
+</style>
+
 <div ng-include="'app/templates/partials/header.html'"></div>
 
 <div class="container-fluid">
@@ -69,8 +83,8 @@
                         <span class="glyphicon glyphicon-download"></span><span class="glyphicon-class"> Download</span>
                     </a></td>
                     <td>
-                        <i style="color: #dbc59e" ng-hide="isProccessed(collectionFile)" class="glyphicon glyphicon-asterisk"></i>
-                        <i style="color: #3e8f3e" ng-show="isProccessed(collectionFile)" class="glyphicon glyphicon-ok-sign"></i>
+                        <i ng-hide="isProccessed(collectionFile)" class="status-new glyphicon glyphicon-asterisk"></i>
+                        <i ng-show="isProccessed(collectionFile)" class="status-success glyphicon glyphicon-ok-sign"></i>
                     </td>
                 </tr>
                 </tbody>
@@ -102,11 +116,10 @@
                             <td>Payment Mode</td>
                             <td>Amount</td>
                             <td>Process Date</td>
-                            <td>Result code</td>
+                            <td style="min-width: 70px">Result code</td>
                             <td>Result Message</td>
                             <td>Inform customer code</td>
                             <td>Inform customer message</td>
-                            <td></td>
                         </tr>
                         </thead>
                         <tbody>
@@ -116,14 +129,19 @@
                             <td>{{deductiveLine.paymentMode}}</td>
                             <td>{{deductiveLine.amount}}</td>
                             <td>{{deductiveLine.processDate | date:'yyyy-MM-dd HH:mm:ss'}}</td>
-                            <td>{{deductiveLine.rejectionCode}}</td>
+                            <td ng-class="{
+                                    'status-success': deductiveLine.rejectionCode == '0000',
+                                    'status-error': deductiveLine.rejectionCode != '0000'
+
+                                }">
+                                <i ng-show="deductiveLine.rejectionCode == '0000'" class="glyphicon glyphicon-ok"></i>
+                                <i ng-show="deductiveLine.rejectionCode != '0000'" class="glyphicon glyphicon-remove"></i>
+                                {{ deductiveLine.rejectionCode}}
+                            </td>
                             <td>{{deductiveLine.rejectionMessage}}</td>
                             <td>{{deductiveLine.informCustomerCode}}</td>
                             <td>{{deductiveLine.informCustomerMessage}}</td>
-                            <td>
-                                <span style="color: #b92c28" ng-show="deductiveLine.rejectionCode != '0000'" class="glyphicon glyphicon-exclamation-sign"></span>
-                                <span style="color: #adadad" ng-show="deductiveLine.rejectionCode == '0000'" class="glyphicon glyphicon-ok-sign"></span>
-                            </td>
+
                         </tr>
                         </tbody>
                     </table>

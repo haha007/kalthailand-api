@@ -13,7 +13,7 @@
             }
         </style>
 
-        <div ng-cloak class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main ng-cloak" id="policyDetailContainer">
+        <div ng-cloak class="col-sm-9 col-sm-offset-3 col-md-12 col-md-offset-1 main ng-cloak" id="policyDetailContainer">
             <form class="form-horizontal" ng-submit="search($event)">
                 <div class="form-group">
                     <label for="policyID" class="col-sm-4 control-label">Policy number</label>
@@ -205,17 +205,21 @@
                     <h3>Documents</h3>
                 </div>
                 <div class="row" ng-show="policyDetail">
-                    <div class="col-sm-4">
-                        <a ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/APPLICATION_FORM/download">Application Form (not validated)</a>
+                    <div class="col-sm-3">
+                        <a ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/APPLICATION_FORM/download">
+                            <i class="fa fa-paperclip" aria-hidden="true"></i> Application Form (not validated)
+                        </a>
                     </div>
-                    <div class="col-sm-4" ng-show="policyDetail.status == 'VALIDATED'">
-                        <a ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/APPLICATION_FORM_VALIDATED/download">Application Form (validated)</a>
+                    <div class="col-sm-3" ng-show="policyDetail.status == 'VALIDATED'">
+                        <a ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/APPLICATION_FORM_VALIDATED/download">
+                            <i class="fa fa-paperclip" aria-hidden="true"></i> Application Form (validated)
+                        </a>
                     </div>
-                    <div class="col-sm-2" ng-show="policyDetail.premiumsData.financialScheduler.periodicity.code == 'EVERY_MONTH'">
-                        <a ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/DA_FORM/download">DA Form</a>
+                    <div class="col-sm-3" ng-show="policyDetail.premiumsData.financialScheduler.periodicity.code == 'EVERY_MONTH'">
+                        <a ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/DA_FORM/download"><i class="fa fa-paperclip" aria-hidden="true"></i> DA Form</a>
                     </div>
-                    <div class="col-sm-2" ng-show="policyDetail.status == 'VALIDATED'">
-                        <a ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/ERECEIPT_PDF/download">eReceipt</a>
+                    <div class="col-sm-3" ng-show="policyDetail.status == 'VALIDATED'">
+                        <a ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/ERECEIPT_PDF/download"><i class="fa fa-paperclip" aria-hidden="true"></i> eReceipt</a>
                     </div>
                 </div>
                 <div class="page-header" ng-show="policyDetail && policyDetail.status != 'VALIDATED'">

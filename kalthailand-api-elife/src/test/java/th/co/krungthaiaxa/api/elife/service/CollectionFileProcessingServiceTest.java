@@ -93,9 +93,10 @@ public class CollectionFileProcessingServiceTest extends ELifeTest {
 
     @Test
     public void should_not_save_collection_file_when_there_is_an_error() {
+        long before = collectionFileRepository.count();
         assertThatThrownBy(() -> rlsService.readCollectionExcelFile(this.getClass().getResourceAsStream("/graph.jpg")))
                 .isInstanceOf(IllegalArgumentException.class);
-        Assertions.assertThat(collectionFileRepository.findAll()).hasSize(0);
+        Assertions.assertThat(collectionFileRepository.count()).isEqualTo(before);
     }
 
     @Test
