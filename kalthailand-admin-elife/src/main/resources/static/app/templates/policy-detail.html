@@ -210,25 +210,25 @@
                         <li class="img-thumbnail">
                             <i class="fa fa-paperclip" aria-hidden="true"></i>
                             <a class="glyphicon-class" ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/APPLICATION_FORM/download">
-                                <span class="glyphicon-class">Application Form (not validated)</span>
+                                <span class="attachment-item">Application Form (not validated)</span>
                             </a>
                         </li>
                         <li class="img-thumbnail" ng-show="policyDetail.status == 'VALIDATED'">
                             <i class="fa fa-paperclip" aria-hidden="true"></i>
                             <a ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/APPLICATION_FORM_VALIDATED/download">
-                                <span class="glyphicon-class">Application Form (validated)</span>
+                                <span class="attachment-item">Application Form (validated)</span>
                             </a>
                         </li>
                         <li class="img-thumbnail" ng-show="policyDetail.premiumsData.financialScheduler.periodicity.code == 'EVERY_MONTH'">
                             <i class="fa fa-paperclip" aria-hidden="true"></i>
                             <a ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/DA_FORM/download">
-                                <span class="glyphicon-class">DA Form</span>
+                                <span class="attachment-item">DA Form</span>
                             </a>
                         </li>
                         <li class="img-thumbnail" ng-show="policyDetail.status == 'VALIDATED'">
                             <i class="fa fa-paperclip fa-3" aria-hidden="true"></i>
                             <a ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/ERECEIPT_PDF/download">
-                                <span class="glyphicon-class">eReceipt</span>
+                                <span class="attachment-item">eReceipt</span>
                             </a>
                         </li>
                     </ul>
