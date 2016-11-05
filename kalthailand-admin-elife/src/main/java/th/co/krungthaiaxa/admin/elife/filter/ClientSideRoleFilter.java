@@ -43,7 +43,7 @@ import static org.springframework.http.HttpStatus.OK;
 
 @Component
 public class ClientSideRoleFilter implements Filter {
-    public static final String UI_ROLE_FILTER_CONFIG_FILE = "/static/uiRleFilter.properties";
+    public static final String UI_ROLE_FILTER_CONFIG_FILE = "/static/uiRoleFilter.properties";
     private final static Logger logger = LoggerFactory.getLogger(ClientSideRoleFilter.class);
     private final Properties uiRoleConfiguration = loadUiRoleConfiguration();
     @Value("${kal.api.auth.header}")
