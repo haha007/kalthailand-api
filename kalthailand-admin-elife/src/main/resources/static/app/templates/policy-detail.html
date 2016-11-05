@@ -204,10 +204,42 @@
                 <div class="page-header" ng-show="policyDetail">
                     <h3>Documents</h3>
                 </div>
+
+                <div class="bs-glyphicons" ng-show="policyDetail">
+                    <ul class="bs-glyphicons-list">
+                        <li class="img-thumbnail">
+                            <i class="fa fa-paperclip" aria-hidden="true"></i>
+                            <a class="glyphicon-class" ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/APPLICATION_FORM/download">
+                                <span class="glyphicon-class">Application Form (not validated)</span>
+                            </a>
+                        </li>
+                        <li class="img-thumbnail" ng-show="policyDetail.status == 'VALIDATED'">
+                            <i class="fa fa-paperclip" aria-hidden="true"></i>
+                            <a ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/APPLICATION_FORM_VALIDATED/download">
+                                <span class="glyphicon-class">Application Form (validated)</span>
+                            </a>
+                        </li>
+                        <li class="img-thumbnail" ng-show="policyDetail.premiumsData.financialScheduler.periodicity.code == 'EVERY_MONTH'">
+                            <i class="fa fa-paperclip" aria-hidden="true"></i>
+                            <a ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/DA_FORM/download">
+                                <span class="glyphicon-class">DA Form</span>
+                            </a>
+                        </li>
+                        <li class="img-thumbnail" ng-show="policyDetail.status == 'VALIDATED'">
+                            <i class="fa fa-paperclip fa-3" aria-hidden="true"></i>
+                            <a ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/ERECEIPT_PDF/download">
+                                <span class="glyphicon-class">eReceipt</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!--
                 <div class="row" ng-show="policyDetail">
-                    <div class="col-sm-3">
-                        <a ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/APPLICATION_FORM/download">
-                            <i class="fa fa-paperclip" aria-hidden="true"></i> Application Form (not validated)
+                    <div class="col-sm-3 img-thumbnail glyphicon-class">
+                        <i class="fa fa-paperclip" aria-hidden="true"></i>
+                        <a class="glyphicon-class" ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/APPLICATION_FORM/download">
+                            <span class="glyphicon-class">Application Form (not validated)</span>
                         </a>
                     </div>
                     <div class="col-sm-3" ng-show="policyDetail.status == 'VALIDATED'">
@@ -219,9 +251,12 @@
                         <a ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/DA_FORM/download"><i class="fa fa-paperclip" aria-hidden="true"></i> DA Form</a>
                     </div>
                     <div class="col-sm-3" ng-show="policyDetail.status == 'VALIDATED'">
-                        <a ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/ERECEIPT_PDF/download"><i class="fa fa-paperclip" aria-hidden="true"></i> eReceipt</a>
+                        <a ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/ERECEIPT_PDF/download">
+                            <i class="fa fa-paperclip" aria-hidden="true"></i>
+                            <span class="glyphicon-class">eReceipt</span>
+                        </a>
                     </div>
-                </div>
+                </div>-->
                 <div class="page-header" ng-show="policyDetail && policyDetail.status != 'VALIDATED'">
                     <h3>Notifications</h3>
                 </div>

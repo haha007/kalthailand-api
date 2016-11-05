@@ -152,3 +152,29 @@ body {
 .tooltip:hover .tooltiptext {
     visibility: visible;
 }
+
+/*/////////////////////////*/
+.bs-glyphicons {
+    /*margin: 0 -10px 20px;*/
+    overflow: hidden;
+}
+
+.bs-glyphicons-list {
+    padding-left: 0;
+    list-style: none;
+}
+
+.bs-glyphicons li {
+    float: left;
+    width: 25%;
+    padding: 10px;
+    text-align: center;
+    background-color: #f9f9f9;
+    border: 1px solid #fff;
+}
+
+.glyphicon-class {
+    display: block;
+    text-align: center;
+    word-wrap: break-word;
+}
