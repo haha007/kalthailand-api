@@ -14,8 +14,17 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import th.co.krungthaiaxa.admin.elife.log.RequestLogUtil;
+import th.co.krungthaiaxa.api.common.exeption.UnexpectedException;
+import th.co.krungthaiaxa.api.common.utils.IOUtil;
 
-import javax.servlet.*;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
@@ -26,20 +35,17 @@ import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Instant;
-import java.time.Period;
-import java.util.Date;
 import java.util.Enumeration;
-import java.util.Map;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.OK;
 
 @Component
 public class ClientSideRoleFilter implements Filter {
+    public static final String UI_ROLE_FILTER_CONFIG_FILE = "/static/uiRleFilter.properties";
     private final static Logger logger = LoggerFactory.getLogger(ClientSideRoleFilter.class);
-
+    private final Properties uiRoleConfiguration = loadUiRoleConfiguration();
     @Value("${kal.api.auth.header}")
     private String tokenHeader;
     @Value("${kal.api.auth.token.validation.url}")
@@ -51,12 +57,31 @@ public class ClientSideRoleFilter implements Filter {
     public void init(FilterConfig filterConfig) throws ServletException {
     }
 
+    private boolean isHtml(String uri) {
+        if (uri == null) {
+            return false;
+        }
+        String uriLowerCase = uri.toLowerCase();
+        return uriLowerCase.endsWith(".htm") || uriLowerCase.endsWith(".html");
+    }
+
+    private Properties loadUiRoleConfiguration() {
+
+        try (InputStream inputStream = IOUtil.loadInputStreamFromClassPath(UI_ROLE_FILTER_CONFIG_FILE)) {
+            Properties properties = new Properties();
+            properties.load(inputStream);
+            return properties;
+        } catch (IOException e) {
+            throw new UnexpectedException("Cannot load uiRoleFilter " + UI_ROLE_FILTER_CONFIG_FILE + ": " + e.getMessage(), e);
+        }
+    }
+
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
 
         Instant startTime = Instant.now();
-        if (!httpServletRequest.getRequestURI().endsWith(".htm") && !httpServletRequest.getRequestURI().endsWith(".html")) {
+        if (!isHtml(httpServletRequest.getRequestURI())) {
             // nothing to do on any request that is not to an html file
             filterChain.doFilter(servletRequest, servletResponse);
             return;
@@ -68,19 +93,10 @@ public class ClientSideRoleFilter implements Filter {
             return;
         }
 
-        InputStream inputStream = this.getClass().getResourceAsStream("/static/uiRoleFilter.properties");
-        if (inputStream == null) {
-            logger.info("There is no file [/static/uiRoleFilter.properties]. Filter chain will resume without any alterations in request result.");
-            filterChain.doFilter(servletRequest, servletResponse);
-            return;
-        }
-        Properties properties = new Properties();
-        properties.load(inputStream);
-
         CharResponseWrapper wrappedResponse = new CharResponseWrapper((HttpServletResponse) servletResponse);
         filterChain.doFilter(servletRequest, wrappedResponse);
 
-        String modifiedResponse = modify(httpServletRequest, new String(wrappedResponse.getByteArray()), properties);
+        String modifiedResponse = modify(httpServletRequest, new String(wrappedResponse.getByteArray()), uiRoleConfiguration);
         servletResponse.setContentLength(modifiedResponse.length());
 
         RequestLogUtil.logRequestWithRunningTime(httpServletRequest, startTime);
