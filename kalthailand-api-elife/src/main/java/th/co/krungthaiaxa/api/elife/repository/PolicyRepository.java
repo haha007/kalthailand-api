@@ -18,6 +18,6 @@ public interface PolicyRepository extends MongoRepository<Policy, String> {
 
     long countByPremiumsDataNull();
 
-    @Query("{'premiumsData.financialScheduler.periodicity.code': ?0}")
-    List<Policy> findByPeriodicityCode(PeriodicityCode periodicityCode);
+    @Query("{$and: [{'premiumsData.financialScheduler.periodicity.code': ?0},{'premiumsData.financialScheduler.periodicity.code': {$exists: false}}]}")
+    List<Policy> findByPeriodicityCodeAndAtpModeNull(PeriodicityCode periodicityCode);
 }

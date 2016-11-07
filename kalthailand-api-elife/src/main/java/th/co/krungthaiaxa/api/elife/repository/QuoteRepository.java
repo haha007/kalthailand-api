@@ -30,6 +30,6 @@ public interface QuoteRepository extends MongoRepository<Quote, String> {
 
     Quote findByQuoteId(String quoteId);
 
-    @Query("{'premiumsData.financialScheduler.periodicity.code': ?0}")
-    List<Quote> findByPeriodicityCode(PeriodicityCode everyMonth);
+    @Query("{$and: [{'premiumsData.financialScheduler.periodicity.code': ?0},{'premiumsData.financialScheduler.periodicity.code': {$exists: false}}]}")
+    List<Quote> findByPeriodicityCodeAndAtpModeNull(PeriodicityCode everyMonth);
 }

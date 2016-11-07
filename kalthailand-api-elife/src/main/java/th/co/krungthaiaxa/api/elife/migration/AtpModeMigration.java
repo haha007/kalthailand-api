@@ -40,14 +40,15 @@ public class AtpModeMigration {
     }
 
     public void migrateAtpModeForMonthlyPaymentForPolicies() {
-        List<Policy> quotables = policyRepository.findByPeriodicityCode(PeriodicityCode.EVERY_MONTH);
+        //TODO must seclect by periodicity and atpMode is null
+        List<Policy> quotables = policyRepository.findByPeriodicityCodeAndAtpModeNull(PeriodicityCode.EVERY_MONTH);
         migrateForQuotables(quotables);
         policyRepository.save(quotables);
         printMigrate(quotables);
     }
 
     public void migrateAtpModeForMonthlyPaymentForQuotes() {
-        List<Quote> quotables = quoteRepository.findByPeriodicityCode(PeriodicityCode.EVERY_MONTH);
+        List<Quote> quotables = quoteRepository.findByPeriodicityCodeAndAtpModeNull(PeriodicityCode.EVERY_MONTH);
         migrateForQuotables(quotables);
         quoteRepository.save(quotables);
         printMigrate(quotables);
