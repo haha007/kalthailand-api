@@ -24,6 +24,8 @@ import th.co.krungthaiaxa.api.elife.data.CollectionFile;
 import th.co.krungthaiaxa.api.elife.data.CollectionFileLine;
 import th.co.krungthaiaxa.api.elife.data.DeductionFile;
 import th.co.krungthaiaxa.api.elife.data.DeductionFileLine;
+import th.co.krungthaiaxa.api.elife.ereceipt.EreceiptNumber;
+import th.co.krungthaiaxa.api.elife.ereceipt.EreceiptService;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus;
@@ -34,8 +36,6 @@ import th.co.krungthaiaxa.api.elife.products.ProductUtils;
 import th.co.krungthaiaxa.api.elife.repository.CollectionFileRepository;
 import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
 import th.co.krungthaiaxa.api.elife.repository.PolicyRepository;
-import th.co.krungthaiaxa.api.elife.ereceipt.EreceiptNumber;
-import th.co.krungthaiaxa.api.elife.ereceipt.EreceiptService;
 import th.co.krungthaiaxa.api.elife.utils.ExcelUtils;
 
 import javax.inject.Inject;
@@ -150,7 +150,7 @@ public class CollectionFileProcessingService {
     /**
      * This method must be synchronized to avoid process one collectionFile many times by multi-submit.
      *
-     * @return
+     * @return the collection files which has just processed.
      */
     public synchronized List<CollectionFile> processLatestCollectionFiles() {
         Instant startTime = LogUtil.logStarting("Process collection files [start]");

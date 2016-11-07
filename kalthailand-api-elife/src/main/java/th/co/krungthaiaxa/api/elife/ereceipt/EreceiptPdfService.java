@@ -254,6 +254,7 @@ public class EreceiptPdfService {
 
     private void writePaymentMethod(PdfContentByte page) {
         //For now (2016-10-26), this method only support payment by linePay, so the "Other" option is always selected.
+        //2016-11-07, we have option atpMode (view {@link AtpMode}): when the atpMode is NO_AUTOPAY,
         Point posPaymentMethod = POS_PAYMENT_METHOD_OTHER_OPTION;
         writeText(page, "X", posPaymentMethod);
         writeText(page, "ไลน์เพย์(LINE Pay)", POS_PAYMENT_METHOD_OTHER_TEXT);

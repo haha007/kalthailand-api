@@ -282,15 +282,21 @@
             $scope.errorMessage = null;
             $http.get(window.location.origin + '/api-elife/RLS/collectionFile/process', {}).then(
                 function (successResponse) {
+                    var newProcessedCollectionFiles = successResponse.data;
                     //$scope.collectionFiles = successResponse.data;
                     fetchCollectionFileDetails(function () {
                         $scope.isProcessing = null;
+                        if (hasValue(newProcessedCollectionFiles) && newProcessedCollectionFiles.length > 0) {
+                            $scope.showSuccessMessage("Processed " + newProcessedCollectionFiles.length + " collection files!")
+                        } else {
+                            $scope.showInfoMessage("There's no new collection file to process.")
+                        }
                     });
                 },
                 function (errorResponse) {
                     console.log(errorResponse);
                     $scope.isProcessing = null;
-                    $scope.errorMessage = errorResponse.data.userMessage;
+                    $scope.showErrorMessage(errorResponse.data.userMessage);
                 });
         }
 
@@ -304,6 +310,22 @@
                     callback.call(this);
                 }
             });
+        }
+
+        $scope.showInfoMessage = function (msg) {
+            $scope.infoMessage = msg;
+            $scope.successMessage = null;
+            $scope.errorMessage = null;
+        }
+        $scope.showErrorMessage = function (msg) {
+            $scope.infoMessage = null;
+            $scope.successMessage = null;
+            $scope.errorMessage = msg;
+        }
+        $scope.showSuccessMessage = function (msg) {
+            $scope.infoMessage = null;
+            $scope.successMessage = msg;
+            $scope.errorMessage = null;
         }
     });
 

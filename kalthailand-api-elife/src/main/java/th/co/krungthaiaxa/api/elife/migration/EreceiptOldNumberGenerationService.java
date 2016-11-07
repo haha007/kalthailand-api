@@ -6,9 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.common.utils.LogUtil;
 import th.co.krungthaiaxa.api.common.utils.base36.Base36Util;
+import th.co.krungthaiaxa.api.elife.ereceipt.EreceiptNumber;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
-import th.co.krungthaiaxa.api.elife.ereceipt.EreceiptNumber;
 
 import javax.annotation.PostConstruct;
 import java.time.Instant;
@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 /**
  * @author khoi.tran on 10/31/16.
  *         This class will generate the ereceipt numbers in the old ways (before 1.8.4 - 31-10-2016)
+ *         Migrate for version 1.9.0
  */
 @Service
 public class EreceiptOldNumberGenerationService {

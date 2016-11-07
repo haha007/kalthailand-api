@@ -4,6 +4,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 import th.co.krungthaiaxa.api.elife.model.Quote;
+import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,8 +30,6 @@ public interface QuoteRepository extends MongoRepository<Quote, String> {
 
     Quote findByQuoteId(String quoteId);
 
-    List<Quote> findByPremiumsDataNull();
-
-    long countByPremiumsDataNull();
-
+    @Query("{'premiumsData.financialScheduler.periodicity.code': ?0}")
+    List<Quote> findByPeriodicityCode(PeriodicityCode everyMonth);
 }

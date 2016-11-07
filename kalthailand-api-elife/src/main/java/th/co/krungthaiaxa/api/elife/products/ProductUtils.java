@@ -19,6 +19,7 @@ import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.Periodicity;
 import th.co.krungthaiaxa.api.elife.model.Person;
 import th.co.krungthaiaxa.api.elife.model.Policy;
+import th.co.krungthaiaxa.api.elife.model.Quotable;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.Registration;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
@@ -87,7 +88,7 @@ public class ProductUtils {
         return amount;
     }
 
-    public static PeriodicityCode getPeriodicityCode(Policy policy) {
+    public static PeriodicityCode getPeriodicityCode(Quotable policy) {
         return policy.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode();
     }
 
