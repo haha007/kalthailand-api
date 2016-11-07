@@ -45,6 +45,14 @@
 
                 </div>
             </div>
+            <div class="alert alert-info" role="alert" ng-show="infoMessage">
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                {{ infoMessage }}
+            </div>
+            <div class="alert alert-success" role="alert" ng-show="successMessage">
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                {{ successMessage }}
+            </div>
             <div class="alert alert-danger" role="alert" ng-show="errorMessage">
                 <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
                 {{ errorMessage }}

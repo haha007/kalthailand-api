@@ -273,7 +273,7 @@
                 .catch(function (errorResponse) {
                     // For error state
                     $scope.isUploading = null;
-                    $scope.errorMessage = errorResponse.data.userMessage;
+                    $scope.showErrorMessage(errorResponse.data.userMessage);
                 });
         }
 
