@@ -115,7 +115,7 @@ public class CollectionFileProcessingService {
         this.paymentInformService = paymentInformService;
     }
 
-    private Function<PeriodicityCode, String> paymentMode = periodicityCode -> {
+    public static final Function<PeriodicityCode, String> PAYMENT_MODE = periodicityCode -> {
         if (periodicityCode.equals(PeriodicityCode.EVERY_YEAR)) {
             return "A";
         } else if (periodicityCode.equals(PeriodicityCode.EVERY_HALF_YEAR)) {
@@ -127,11 +127,11 @@ public class CollectionFileProcessingService {
         }
     };
 
-    public synchronized void importCollectionFile(InputStream is) {
-        CollectionFile collectionFile = readCollectionExcelFile(is);
+    public synchronized CollectionFile importCollectionFile(InputStream inputStream) {
+        CollectionFile collectionFile = readCollectionExcelFile(inputStream);
         validateNotDuplicatePolicies(collectionFile);
         collectionFile.getLines().forEach(this::importCollectionFileLine);
-        collectionFileRepository.save(collectionFile);
+        return collectionFileRepository.save(collectionFile);
     }
 
     public CollectionFile findOne(String collectionFileId) {
@@ -203,7 +203,7 @@ public class CollectionFileProcessingService {
         }
     }
 
-    CollectionFile readCollectionExcelFile(InputStream excelInputStream) {
+    private CollectionFile readCollectionExcelFile(InputStream excelInputStream) {
         notNull(excelInputStream, "The excel file is not available");
         try (Workbook workbook = WorkbookFactory.create(excelInputStream)) {
 
@@ -277,7 +277,7 @@ public class CollectionFileProcessingService {
         }
     }
 
-    void importCollectionFileLine(CollectionFileLine collectionFileLine) {
+    private void importCollectionFileLine(CollectionFileLine collectionFileLine) {
         LOGGER.info("Import collectionFileLine [start]: policyNumber: {}", collectionFileLine.getPolicyNumber());
         String policyId = collectionFileLine.getPolicyNumber();
         isTrue(StringUtils.isNotBlank(policyId), "policyNumber must be notempty: " + ObjectMapperUtil.toStringMultiLine(collectionFileLine));
@@ -364,7 +364,7 @@ public class CollectionFileProcessingService {
         }
     }
 
-    void processCollectionFileLine(DeductionFile deductionFile, CollectionFileLine collectionFileLine) {
+    private void processCollectionFileLine(DeductionFile deductionFile, CollectionFileLine collectionFileLine) {
         boolean newBusiness = NEW_BUSINESS;
         LOGGER.info("Processing collectionFileLine [start]: policyNumber: {}", collectionFileLine.getPolicyNumber());
 
@@ -383,7 +383,7 @@ public class CollectionFileProcessingService {
                 throw new UnexpectedException("Not found policy " + policyId);
             }
             PeriodicityCode periodicityCode = policy.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode();
-            paymentModeString = paymentMode.apply(periodicityCode);
+            paymentModeString = PAYMENT_MODE.apply(periodicityCode);
             String productId = policy.getCommonData().getProductId();
 
             payment = paymentRepository.findOne(paymentId);
