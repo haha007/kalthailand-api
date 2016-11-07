@@ -9,7 +9,7 @@ import th.co.krungthaiaxa.api.elife.model.Document;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
-import th.co.krungthaiaxa.api.elife.service.ereceipt.EreceiptService;
+import th.co.krungthaiaxa.api.elife.ereceipt.EreceiptService;
 
 import java.util.Optional;
 

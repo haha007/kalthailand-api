@@ -10,7 +10,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import th.co.krungthaiaxa.api.common.utils.EncryptUtil;
 import th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus;
-import th.co.krungthaiaxa.api.elife.service.ereceipt.EreceiptNumber;
+import th.co.krungthaiaxa.api.elife.ereceipt.EreceiptNumber;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;

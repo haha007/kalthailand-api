@@ -10,8 +10,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
-import th.co.krungthaiaxa.api.elife.service.ereceipt.EreceiptIncrementalService;
-import th.co.krungthaiaxa.api.elife.service.ereceipt.EreceiptNumber;
+import th.co.krungthaiaxa.api.elife.ereceipt.EreceiptIncrementalService;
+import th.co.krungthaiaxa.api.elife.ereceipt.EreceiptNumber;
 
 /**
  * @author khoi.tran on 11/2/16.

@@ -19,8 +19,8 @@ import th.co.krungthaiaxa.api.elife.model.line.LinePayCaptureMode;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayResponse;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayResponseInfo;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayResponsePaymentInfo;
-import th.co.krungthaiaxa.api.elife.service.ereceipt.EreceiptNumber;
-import th.co.krungthaiaxa.api.elife.service.ereceipt.EreceiptService;
+import th.co.krungthaiaxa.api.elife.ereceipt.EreceiptNumber;
+import th.co.krungthaiaxa.api.elife.ereceipt.EreceiptService;
 
 import javax.validation.constraints.NotNull;
 import java.time.Instant;

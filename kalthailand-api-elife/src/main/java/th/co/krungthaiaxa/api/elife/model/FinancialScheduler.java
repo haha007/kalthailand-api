@@ -21,6 +21,8 @@ public class FinancialScheduler implements Serializable {
     private Amount modalAmount;
     @ApiModelProperty(value = "End date of the financial scheduler, e.g. date of end premium payment. This is calculated by back end API and cannot be set by client.")
     private LocalDate endDate;
+    //TODO migrate: all monthly payment must has atpMode is checked (AUTOPAY)
+    private Integer atpMode;
 
     public Periodicity getPeriodicity() {
         return periodicity;
@@ -72,5 +74,13 @@ public class FinancialScheduler implements Serializable {
 
     public void setModalAmountBeforeDiscount(Amount modalAmountBeforeDiscount) {
         this.modalAmountBeforeDiscount = modalAmountBeforeDiscount;
+    }
+
+    public Integer getAtpMode() {
+        return atpMode;
+    }
+
+    public void setAtpMode(Integer atpMode) {
+        this.atpMode = atpMode;
     }
 }

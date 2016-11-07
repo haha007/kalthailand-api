@@ -24,7 +24,7 @@ import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 import th.co.krungthaiaxa.api.elife.model.enums.ProductDividendOption;
 import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
 import th.co.krungthaiaxa.api.elife.service.PaymentService;
-import th.co.krungthaiaxa.api.elife.service.ereceipt.EreceiptPdfService;
+import th.co.krungthaiaxa.api.elife.ereceipt.EreceiptPdfService;
 
 /**
  * @author khoi.tran on 10/25/16.

@@ -15,8 +15,8 @@ import th.co.krungthaiaxa.api.elife.model.DocumentDownload;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
 import th.co.krungthaiaxa.api.elife.service.DocumentService;
-import th.co.krungthaiaxa.api.elife.service.migration.EreceiptOldNumberGenerationService;
-import th.co.krungthaiaxa.api.elife.service.migration.EreceiptOldNumberResult;
+import th.co.krungthaiaxa.api.elife.migration.EreceiptOldNumberGenerationService;
+import th.co.krungthaiaxa.api.elife.migration.EreceiptOldNumberResult;
 
 import java.util.List;
 

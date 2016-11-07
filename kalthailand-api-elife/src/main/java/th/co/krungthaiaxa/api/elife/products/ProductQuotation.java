@@ -29,6 +29,12 @@ public class ProductQuotation {
     private Amount premiumAmount;
     private Amount sumInsuredAmount;
     private PeriodicityCode periodicityCode;
+    /**
+     * ATP: auto-pay
+     * If {@link #periodicityCode} is {@link PeriodicityCode#EVERY_MONTH}, the value must be always {@link th.co.krungthaiaxa.api.elife.model.enums.AtpMode#AUTOPAY}.
+     * Otherwise, the value is optional.
+     */
+    private Integer atpMode;
     private Integer nbOfYearsOfPayment;
     private Integer occupationId;
     /**
@@ -134,5 +140,13 @@ public class ProductQuotation {
 
     public void setDividendOptionId(String dividendOptionId) {
         this.dividendOptionId = dividendOptionId;
+    }
+
+    public Integer getAtpMode() {
+        return atpMode;
+    }
+
+    public void setAtpMode(Integer atpMode) {
+        this.atpMode = atpMode;
     }
 }
