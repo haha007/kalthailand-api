@@ -113,8 +113,7 @@ public class Product10ECService implements ProductService {
             resetCalculatedStuff(quote, has10ECCoverage);
             return;
         }
-        ProductQuotationUtils.validateAtpMode(productQuotation);
-
+        ProductQuotationUtils.setValidAtpModeToQuote(quote, productQuotation);
         Insured insured = quote.getInsureds().stream().filter(Insured::getMainInsuredIndicator).findFirst().get();
 
         // copy data already gathered in ProductQuotation

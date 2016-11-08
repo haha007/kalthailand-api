@@ -78,7 +78,7 @@ public abstract class AbstractQuoteCalculationService implements ProductService 
             resetCalculatedStuff(quote);
             return;
         }
-        ProductQuotationUtils.validateAtpMode(productQuotation);
+
 
         //Get data from productQuotation
         String packageName = productQuotation.getPackageName();
@@ -90,6 +90,7 @@ public abstract class AbstractQuoteCalculationService implements ProductService 
         commonData.setPackageName(productQuotation.getPackageName());
         PremiumsData premiumsData = quote.getPremiumsData();
         PremiumDetail premiumDetail = getPremiumDetail(premiumsData);
+        ProductQuotationUtils.setValidAtpModeToQuote(quote, productQuotation);
         Insured mainInsured = ProductUtils.validateExistMainInsured(quote);
 
         // Copy data from ProductQuotation to Quote

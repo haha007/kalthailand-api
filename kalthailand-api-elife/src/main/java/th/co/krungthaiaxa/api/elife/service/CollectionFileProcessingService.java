@@ -332,7 +332,7 @@ public class CollectionFileProcessingService {
             String msg = String.format("The payment mode in policy and payment mode in collection file is not match: policyID: %s, paymentMode: %s vs. collection's paymentMode: %s", policy.getPolicyId(), policyPaymentPeriodicityCode, collectionFileLine.getPaymentMode());
             throw new BadArgumentException(msg);
         }
-        if (ProductUtils.isAtpModeEnable(policy)) {
+        if (!ProductUtils.isAtpModeEnable(policy)) {
             String msg = String.format("The policy doesn't have ATP mode: policyID: %s, paymentMode: %s", policy.getPolicyId(), policyPaymentPeriodicityCode);
             throw new BadArgumentException(msg);
         }

@@ -66,8 +66,7 @@ public class ProductIFineService implements ProductService {
             resetCalculatedStuff(quote, hasIFineCoverage);
             return;
         }
-        ProductQuotationUtils.validateAtpMode(productQuotation);
-
+        ProductQuotationUtils.setValidAtpModeToQuote(quote, productQuotation);
         OccupationType occupationType = occupationTypeRepository.findByOccId(productQuotation.getOccupationId());
 
         Insured mainInsured = quote.getInsureds().stream().filter(Insured::getMainInsuredIndicator).findFirst().get();
