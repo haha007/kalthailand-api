@@ -8,7 +8,6 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import th.co.krungthaiaxa.api.elife.test.ELifeTest;
 import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
 import th.co.krungthaiaxa.api.elife.TestUtil;
 import th.co.krungthaiaxa.api.elife.factory.ProductQuotationFactory;
@@ -22,6 +21,7 @@ import th.co.krungthaiaxa.api.elife.products.iprotect.IProtectSaleIllustrationSe
 import th.co.krungthaiaxa.api.elife.service.QuoteService;
 import th.co.krungthaiaxa.api.elife.service.SaleIllustration10ECService;
 import th.co.krungthaiaxa.api.elife.service.SaleIllustrationiFineService;
+import th.co.krungthaiaxa.api.elife.test.ELifeTest;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -32,7 +32,6 @@ import static th.co.krungthaiaxa.api.elife.TestUtil.beneficiary;
 import static th.co.krungthaiaxa.api.elife.TestUtil.productQuotation;
 import static th.co.krungthaiaxa.api.elife.TestUtil.quote;
 import static th.co.krungthaiaxa.api.elife.model.enums.ChannelType.LINE;
-import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.EVERY_MONTH;
 import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.EVERY_YEAR;
 import static th.co.krungthaiaxa.api.elife.products.ProductType.PRODUCT_IFINE;
 
@@ -50,9 +49,9 @@ public class SaleIllustrationServiceTest extends ELifeTest {
     private IProtectSaleIllustrationService iProtectSaleIllustrationService;
     @Inject
     private QuoteService quoteService;
-
     @Inject
     private QuoteFactory quoteFactory;
+
     private final String base64 = "";
 
     //TODO recheck logic here
@@ -129,9 +128,7 @@ public class SaleIllustrationServiceTest extends ELifeTest {
 
     @Test
     public void should_generate_sale_illustration_ifine_with_autopay_from_line_pay_wording_pdf_file() throws Exception {
-        Quote quote = quoteService.createQuote("xxx", LINE, productQuotation(PRODUCT_IFINE, 50, EVERY_MONTH, 10000.0));
-        quote(quote, beneficiary(100.0));
-        quote = quoteService.updateProfessionNameAndCheckBlackList(quote, "token");
+        Quote quote = quoteFactory.createQuote(ProductQuotationFactory.constructIFineDefault()).getQuote();
 
         Pair<byte[], String> pair = saleIllustrationiFineService.generatePDF(quote);
         assertThat(pair.getLeft()).isNotEmpty();

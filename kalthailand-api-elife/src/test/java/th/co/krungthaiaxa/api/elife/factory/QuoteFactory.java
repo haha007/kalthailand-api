@@ -51,6 +51,10 @@ public class QuoteFactory {
         return createQuote(sessionId, productQuotation, email);
     }
 
+    public QuoteResult createQuote(ProductQuotation productQuotation) {
+        return createQuote(productQuotation, TestUtil.DUMMY_EMAIL);
+    }
+
     public QuoteResult createQuote(String sessionId, ProductQuotation productQuotation, String email) {
         ChannelType channelType = ChannelType.LINE;
         Quote quote = quoteService.createQuote(sessionId, channelType, productQuotation);

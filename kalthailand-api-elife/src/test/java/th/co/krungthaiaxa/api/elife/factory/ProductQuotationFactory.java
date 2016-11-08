@@ -111,11 +111,11 @@ public class ProductQuotationFactory {
         return constructQuotation(ProductType.PRODUCT_10_EC, null, 32, PeriodicityCode.EVERY_MONTH, 10000.0, false, 35, GenderCode.MALE, 1, ProductDividendOption.ANNUAL_PAY_BACK_CASH);
     }
 
-    private static ProductQuotation constructIBeginECDefault() {
+    public static ProductQuotation constructIBeginECDefault() {
         return constructQuotation(ProductType.PRODUCT_IBEGIN, null, 32, PeriodicityCode.EVERY_MONTH, 10000.0, false, 35, GenderCode.MALE, 1, ProductDividendOption.ANNUAL_PAY_BACK_CASH);
     }
 
-    private static ProductQuotation constructIFineDefault() {
+    public static ProductQuotation constructIFineDefault() {
         return constructQuotation(ProductType.PRODUCT_IFINE, ProductIFinePackage.IFINE1.name(), 32, PeriodicityCode.EVERY_MONTH, ProductIFinePackage.IFINE1.getSumInsured(), true, 35, GenderCode.MALE, 1, ProductDividendOption.ANNUAL_PAY_BACK_CASH);
     }
 
