@@ -15,7 +15,7 @@ import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.product.ProductIFinePremium;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
-import th.co.krungthaiaxa.api.elife.products.ProductUtils;
+import th.co.krungthaiaxa.api.elife.products.utils.ProductUtils;
 import th.co.krungthaiaxa.api.elife.products.iprotect.IProtectQuoteEmailService;
 import th.co.krungthaiaxa.api.elife.utils.EmailSender;
 import th.co.krungthaiaxa.api.elife.utils.EmailUtil;

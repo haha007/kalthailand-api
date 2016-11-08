@@ -29,7 +29,7 @@ import th.co.krungthaiaxa.api.elife.products.ProductAmounts;
 import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
 import th.co.krungthaiaxa.api.elife.test.products.ProductAssertUtil;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
-import th.co.krungthaiaxa.api.elife.products.ProductUtils;
+import th.co.krungthaiaxa.api.elife.products.utils.ProductUtils;
 import th.co.krungthaiaxa.api.elife.products.iprotect.IProtectDiscountRateExcelLoaderService;
 import th.co.krungthaiaxa.api.elife.products.iprotect.IProtectQuoteCalculationService;
 import th.co.krungthaiaxa.api.elife.service.PolicyService;

@@ -13,7 +13,7 @@ import th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 import th.co.krungthaiaxa.api.elife.products.Product10ECService;
 import th.co.krungthaiaxa.api.elife.products.ProductAmounts;
-import th.co.krungthaiaxa.api.elife.products.ProductUtils;
+import th.co.krungthaiaxa.api.elife.products.utils.ProductUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

@@ -35,7 +35,7 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus.COMPLETED;
 import static th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus.INCOMPLETE;
 import static th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus.OVERPAID;
-import static th.co.krungthaiaxa.api.elife.products.ProductUtils.amount;
+import static th.co.krungthaiaxa.api.elife.products.utils.ProductUtils.amount;
 
 /**
  * @author khoi.tran on 8/29/16.

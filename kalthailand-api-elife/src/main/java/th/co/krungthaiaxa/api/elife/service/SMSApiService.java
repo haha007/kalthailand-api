@@ -18,7 +18,7 @@ import th.co.krungthaiaxa.api.elife.exception.SMSException;
 import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.sms.SMSResponse;
-import th.co.krungthaiaxa.api.elife.products.ProductUtils;
+import th.co.krungthaiaxa.api.elife.products.utils.ProductUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;

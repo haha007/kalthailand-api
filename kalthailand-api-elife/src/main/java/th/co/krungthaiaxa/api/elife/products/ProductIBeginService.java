@@ -11,6 +11,7 @@ import th.co.krungthaiaxa.api.elife.model.product.PremiumsData;
 import th.co.krungthaiaxa.api.elife.model.product.ProductIBeginPremium;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.enums.GenderCode;
+import th.co.krungthaiaxa.api.elife.products.utils.ProductUtils;
 import th.co.krungthaiaxa.api.elife.repository.ProductIBeginRateRepository;
 
 import javax.inject.Inject;
@@ -19,8 +20,8 @@ import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 
-import static th.co.krungthaiaxa.api.elife.products.ProductUtils.amount;
-import static th.co.krungthaiaxa.api.elife.products.ProductUtils.amountTHB;
+import static th.co.krungthaiaxa.api.elife.products.utils.ProductUtils.amount;
+import static th.co.krungthaiaxa.api.elife.products.utils.ProductUtils.amountTHB;
 
 @Component
 public class ProductIBeginService implements ProductService {

@@ -10,7 +10,7 @@ import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
 
 import static java.time.LocalDate.now;
-import static th.co.krungthaiaxa.api.elife.products.ProductUtils.amountTHB;
+import static th.co.krungthaiaxa.api.elife.products.utils.ProductUtils.amountTHB;
 
 /**
  * @author khoi.tran on 9/19/16.

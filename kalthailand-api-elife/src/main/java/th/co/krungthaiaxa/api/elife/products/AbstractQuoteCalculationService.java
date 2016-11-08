@@ -19,13 +19,15 @@ import th.co.krungthaiaxa.api.elife.model.FinancialScheduler;
 import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.model.Periodicity;
 import th.co.krungthaiaxa.api.elife.model.Policy;
-import th.co.krungthaiaxa.api.elife.model.product.PremiumsData;
-import th.co.krungthaiaxa.api.elife.model.product.PremiumDetail;
-import th.co.krungthaiaxa.api.elife.model.product.ProductSpec;
-import th.co.krungthaiaxa.api.elife.model.product.ProductSpecId;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.enums.GenderCode;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
+import th.co.krungthaiaxa.api.elife.model.product.PremiumDetail;
+import th.co.krungthaiaxa.api.elife.model.product.PremiumsData;
+import th.co.krungthaiaxa.api.elife.model.product.ProductSpec;
+import th.co.krungthaiaxa.api.elife.model.product.ProductSpecId;
+import th.co.krungthaiaxa.api.elife.products.utils.ProductQuotationUtils;
+import th.co.krungthaiaxa.api.elife.products.utils.ProductUtils;
 import th.co.krungthaiaxa.api.elife.repository.OccupationTypeRepository;
 
 import java.time.Instant;
@@ -76,6 +78,7 @@ public abstract class AbstractQuoteCalculationService implements ProductService 
             resetCalculatedStuff(quote);
             return;
         }
+        ProductQuotationUtils.validateAtpMode(productQuotation);
 
         //Get data from productQuotation
         String packageName = productQuotation.getPackageName();
@@ -370,6 +373,8 @@ public abstract class AbstractQuoteCalculationService implements ProductService 
         Integer mainInsuredAge = ProductUtils.getAge(productQuotation.getDateOfBirth());
         GenderCode mainInsuredGenderCode = productQuotation.getGenderCode();
         double premiumRate = validateExistPremiumRate(productSpec, mainInsuredAge, mainInsuredGenderCode).getPremiumRate();
+
+        ProductQuotationUtils.validateAtpMode(productQuotation);
 
         double occupationRate = validateExistOccupationRateIfNecessary(productQuotation);
         AmountLimits amountLimits = calculateAmountLimits(productSpec, premiumRate, occupationRate, productQuotation.getPeriodicityCode());

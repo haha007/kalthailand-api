@@ -45,7 +45,7 @@ import th.co.krungthaiaxa.api.elife.policyPremiumNotification.model.PolicyPremiu
 import th.co.krungthaiaxa.api.elife.policyPremiumNotification.service.PolicyCDBService;
 import th.co.krungthaiaxa.api.elife.policyPremiumNotification.service.PolicyPremiumNotificationService;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
-import th.co.krungthaiaxa.api.elife.products.ProductUtils;
+import th.co.krungthaiaxa.api.elife.products.utils.ProductUtils;
 import th.co.krungthaiaxa.api.elife.service.DocumentService;
 import th.co.krungthaiaxa.api.elife.service.PaymentRetryService;
 import th.co.krungthaiaxa.api.elife.service.PaymentService;

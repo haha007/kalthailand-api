@@ -55,7 +55,7 @@ import static th.co.krungthaiaxa.api.elife.model.enums.DividendOption.YEARLY_FOR
 import static th.co.krungthaiaxa.api.elife.model.enums.MaritalStatus.MARRIED;
 import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.EVERY_HALF_YEAR;
 import static th.co.krungthaiaxa.api.elife.model.enums.USPermanentResident.NOT_PR;
-import static th.co.krungthaiaxa.api.elife.products.ProductUtils.amountTHB;
+import static th.co.krungthaiaxa.api.elife.products.utils.ProductUtils.amountTHB;
 
 public class TestUtil {
     public static final String PATH_TEST_RESULT = "target/testresult/";

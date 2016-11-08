@@ -1,5 +1,7 @@
 package th.co.krungthaiaxa.api.elife.exception;
 
+import th.co.krungthaiaxa.api.common.exeption.BaseException;
+import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
 import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
@@ -14,7 +16,9 @@ import java.util.function.Function;
  * <p>
  * Besides, I don't want to create exception for each fields, similar to {@link PolicyValidationException}.
  */
-public class QuoteCalculationException extends ElifeException {
+public class QuoteCalculationException extends BaseException {
+    public static final String ERROR_CODE = ErrorCode.ERROR_CODE_QUOTE_CALCULATION;
+
     //    public static Function<String, QuoteCalculationException> mainInsuredNotExistException = message -> new QuoteCalculationException("Not found main insured: " + message + ".");
     public static Function<Integer, QuoteCalculationException> occupationNotExistException = occupationId -> new QuoteCalculationException("Not found occupation " + occupationId + ".");
     public static Function<String, QuoteCalculationException> sumInsuredCurrencyException = currency -> new QuoteCalculationException("Sum insured must be in currency " + currency + ".");
@@ -32,6 +36,6 @@ public class QuoteCalculationException extends ElifeException {
     public static Function<String, QuoteCalculationException> discountRateNotFound = message -> new QuoteCalculationException("Cannot find discount rate: " + message + ".");
 
     public QuoteCalculationException(String message) {
-        super(message);
+        super(ERROR_CODE, message);
     }
 }

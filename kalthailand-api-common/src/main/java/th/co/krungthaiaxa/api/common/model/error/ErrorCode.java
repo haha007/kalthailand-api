@@ -54,6 +54,7 @@ public class ErrorCode {
     public static final Function<String, Error> QUOTE_NOT_UPDATED = msg -> new Error("0303", "The quote has not been updated", "The quote has not been updated. Error is: " + msg);
     public static final String ERROR_CODE_QUOTE_NOT_EXIST = "0304";
     public static final Error QUOTE_DOES_NOT_EXIST = new Error(ERROR_CODE_QUOTE_NOT_EXIST, "Unable to access given quote", "The quote could not be found or given sessionId does not have access to the quote");
+    public static final String ERROR_CODE_QUOTE_CALCULATION = "0305";
 
     // Policy
     public static final String ERROR_CODE_POLICY_NOT_EXIST = "0401";

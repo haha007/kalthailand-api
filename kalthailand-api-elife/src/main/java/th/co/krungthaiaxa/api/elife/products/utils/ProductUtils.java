@@ -1,4 +1,4 @@
-package th.co.krungthaiaxa.api.elife.products;
+package th.co.krungthaiaxa.api.elife.products.utils;
 
 import org.apache.commons.lang3.StringUtils;
 import th.co.krungthaiaxa.api.common.exeption.BadArgumentException;
@@ -24,6 +24,9 @@ import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.Registration;
 import th.co.krungthaiaxa.api.elife.model.enums.AtpMode;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
+import th.co.krungthaiaxa.api.elife.products.ProductAmounts;
+import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
+import th.co.krungthaiaxa.api.elife.products.ProductType;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -106,10 +109,14 @@ public class ProductUtils {
         return quotable.getPremiumsData().getFinancialScheduler().getAtpMode();
     }
 
-    public static boolean isAtpModeEnable(Quotable quotable) {
-        Integer atpMode = ProductUtils.getAtpMode(quotable);
+    public static boolean isAtpModeEnable(Integer atpMode) {
         boolean result = atpMode != null && atpMode.equals(AtpMode.AUTOPAY.getNumValue());
         return result;
+    }
+
+    public static boolean isAtpModeEnable(Quotable quotable) {
+        Integer atpMode = ProductUtils.getAtpMode(quotable);
+        return isAtpModeEnable(atpMode);
     }
 
     public static double getModalFactor(PeriodicityCode periodicityCode) {

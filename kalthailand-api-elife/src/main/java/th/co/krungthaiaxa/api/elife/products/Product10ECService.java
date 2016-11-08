@@ -11,9 +11,11 @@ import th.co.krungthaiaxa.api.elife.model.FinancialScheduler;
 import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.model.Periodicity;
 import th.co.krungthaiaxa.api.elife.model.Policy;
+import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.product.PremiumsData;
 import th.co.krungthaiaxa.api.elife.model.product.Product10ECPremium;
-import th.co.krungthaiaxa.api.elife.model.Quote;
+import th.co.krungthaiaxa.api.elife.products.utils.ProductQuotationUtils;
+import th.co.krungthaiaxa.api.elife.products.utils.ProductUtils;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -28,10 +30,10 @@ import static java.lang.Boolean.TRUE;
 import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.isEqual;
 import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.isTrue;
 import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.notNull;
-import static th.co.krungthaiaxa.api.elife.products.ProductUtils.addPayments;
-import static th.co.krungthaiaxa.api.elife.products.ProductUtils.amount;
-import static th.co.krungthaiaxa.api.elife.products.ProductUtils.getPremiumFromSumInsured;
-import static th.co.krungthaiaxa.api.elife.products.ProductUtils.getSumInsuredFromPremium;
+import static th.co.krungthaiaxa.api.elife.products.utils.ProductUtils.addPayments;
+import static th.co.krungthaiaxa.api.elife.products.utils.ProductUtils.amount;
+import static th.co.krungthaiaxa.api.elife.products.utils.ProductUtils.getPremiumFromSumInsured;
+import static th.co.krungthaiaxa.api.elife.products.utils.ProductUtils.getSumInsuredFromPremium;
 
 public class Product10ECService implements ProductService {
     public final static int DURATION_COVERAGE_IN_YEAR = 10;
@@ -111,6 +113,7 @@ public class Product10ECService implements ProductService {
             resetCalculatedStuff(quote, has10ECCoverage);
             return;
         }
+        ProductQuotationUtils.validateAtpMode(productQuotation);
 
         Insured insured = quote.getInsureds().stream().filter(Insured::getMainInsuredIndicator).findFirst().get();
 

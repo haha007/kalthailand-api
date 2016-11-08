@@ -10,9 +10,11 @@ import th.co.krungthaiaxa.api.elife.model.FinancialScheduler;
 import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.model.Periodicity;
 import th.co.krungthaiaxa.api.elife.model.Policy;
+import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.product.PremiumsData;
 import th.co.krungthaiaxa.api.elife.model.product.ProductIFinePremium;
-import th.co.krungthaiaxa.api.elife.model.Quote;
+import th.co.krungthaiaxa.api.elife.products.utils.ProductQuotationUtils;
+import th.co.krungthaiaxa.api.elife.products.utils.ProductUtils;
 import th.co.krungthaiaxa.api.elife.repository.OccupationTypeRepository;
 import th.co.krungthaiaxa.api.elife.repository.ProductIFineRateRepository;
 
@@ -24,7 +26,7 @@ import static java.time.ZoneId.SHORT_IDS;
 import static java.time.ZoneId.of;
 import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.isEqual;
 import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.notNull;
-import static th.co.krungthaiaxa.api.elife.products.ProductUtils.amountTHB;
+import static th.co.krungthaiaxa.api.elife.products.utils.ProductUtils.amountTHB;
 
 @Component
 public class ProductIFineService implements ProductService {
@@ -52,7 +54,6 @@ public class ProductIFineService implements ProductService {
         if (productQuotation == null) {
             return;
         }
-
         Optional<Coverage> hasIFineCoverage = quote.getCoverages()
                 .stream()
                 .filter(coverage -> coverage.getName() != null)
@@ -65,6 +66,7 @@ public class ProductIFineService implements ProductService {
             resetCalculatedStuff(quote, hasIFineCoverage);
             return;
         }
+        ProductQuotationUtils.validateAtpMode(productQuotation);
 
         OccupationType occupationType = occupationTypeRepository.findByOccId(productQuotation.getOccupationId());
 
@@ -201,6 +203,7 @@ public class ProductIFineService implements ProductService {
 
     @Override
     public ProductAmounts calculateProductAmounts(ProductQuotation productQuotation) {
+        ProductQuotationUtils.validateAtpMode(productQuotation);
         ProductAmounts productAmounts = new ProductAmounts();
         productAmounts.setCommonData(initCommonData(productQuotation));
         productAmounts.setMaxPremium(amountTHB(PREMIUM_MAX));

@@ -2,7 +2,7 @@ package th.co.krungthaiaxa.api.elife.model.product;
 
 import th.co.krungthaiaxa.api.elife.model.Amount;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
-import th.co.krungthaiaxa.api.elife.products.ProductUtils;
+import th.co.krungthaiaxa.api.elife.products.utils.ProductUtils;
 
 /**
  * @author khoi.tran on 9/30/16.
