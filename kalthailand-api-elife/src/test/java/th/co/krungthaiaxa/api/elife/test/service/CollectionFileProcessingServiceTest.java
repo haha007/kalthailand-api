@@ -19,6 +19,7 @@ import th.co.krungthaiaxa.api.elife.data.CollectionFile;
 import th.co.krungthaiaxa.api.elife.data.CollectionFileLine;
 import th.co.krungthaiaxa.api.elife.data.DeductionFile;
 import th.co.krungthaiaxa.api.elife.data.DeductionFileLine;
+import th.co.krungthaiaxa.api.elife.exception.PolicyNotFoundException;
 import th.co.krungthaiaxa.api.elife.factory.CollectionFileFactory;
 import th.co.krungthaiaxa.api.elife.factory.PolicyFactory;
 import th.co.krungthaiaxa.api.elife.factory.ProductQuotationFactory;
@@ -182,7 +183,7 @@ public class CollectionFileProcessingServiceTest extends ELifeTest {
     public void should_not_find_a_payment_for_the_policy_when_policy_does_not_exist() {
         InputStream collectionFile = CollectionFileFactory.constructCollectionExcelFileWithDefaultPayment("123", "456");
         assertThatThrownBy(() -> rlsService.importCollectionFile(collectionFile))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(PolicyNotFoundException.class);
     }
 
     @Test

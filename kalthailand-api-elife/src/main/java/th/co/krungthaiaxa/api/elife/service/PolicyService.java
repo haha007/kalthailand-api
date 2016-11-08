@@ -55,7 +55,6 @@ import static th.co.krungthaiaxa.api.elife.model.enums.DocumentType.APPLICATION_
 import static th.co.krungthaiaxa.api.elife.model.enums.DocumentType.DA_FORM;
 import static th.co.krungthaiaxa.api.elife.model.enums.DocumentType.ERECEIPT_PDF;
 import static th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus.NOT_PROCESSED;
-import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.EVERY_MONTH;
 import static th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus.VALIDATED;
 
 //TODO need to be refactored.
@@ -218,7 +217,7 @@ public class PolicyService {
 
         // Should block if DA form is not generated when Policy is monthly payment
         Optional<Document> daFormPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(DA_FORM)).findFirst();
-        if (!daFormPdf.isPresent() && policy.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().equals(EVERY_MONTH)) {
+        if (!daFormPdf.isPresent() && ProductUtils.isAtpModeEnable(policy)) {
             throw new ElifeException("Can't find DA form for the policy [" + policy.getPolicyId() + "] while it is mandatory for Monthly Policy");
         }
 

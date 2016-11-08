@@ -3,11 +3,13 @@ package th.co.krungthaiaxa.api.elife.factory;
 import org.springframework.stereotype.Component;
 import th.co.krungthaiaxa.api.elife.data.IProtectPackage;
 import th.co.krungthaiaxa.api.elife.model.Amount;
+import th.co.krungthaiaxa.api.elife.model.enums.AtpMode;
 import th.co.krungthaiaxa.api.elife.model.enums.GenderCode;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 import th.co.krungthaiaxa.api.elife.model.enums.ProductDividendOption;
 import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
+import th.co.krungthaiaxa.api.elife.products.utils.ProductUtils;
 
 import static java.time.LocalDate.now;
 import static th.co.krungthaiaxa.api.elife.products.utils.ProductUtils.amountTHB;
@@ -19,8 +21,9 @@ import static th.co.krungthaiaxa.api.elife.products.utils.ProductUtils.amountTHB
 public class ProductQuotationFactory {
     public static final String DUMMY_EMAIL = "dummy@krungthai-axa.co.th";
 
-    public static ProductQuotation constructQuotation(ProductType productType, String packageName, Integer age, PeriodicityCode periodicityCode, Double amountValue, Boolean isSumInsured, Integer taxRate, GenderCode genderCode, Integer occupationTypeId,
-            ProductDividendOption productDividendOption) {
+    public static ProductQuotation constructQuotation(
+            ProductType productType, String packageName, Integer age, PeriodicityCode periodicityCode, Double amountValue, Boolean isSumInsured, Integer taxRate, GenderCode genderCode, Integer occupationTypeId,
+            ProductDividendOption productDividendOption, AtpMode atpMode) {
         Amount amount = amountTHB(amountValue);
 
         ProductQuotation productQuotation = new ProductQuotation();
@@ -40,6 +43,19 @@ public class ProductQuotationFactory {
             productQuotation.setSumInsuredAmount(amount);
         } else {
             productQuotation.setPremiumAmount(amount);
+        }
+
+        return productQuotation;
+    }
+
+    public static ProductQuotation constructQuotation(
+            ProductType productType, String packageName, Integer age, PeriodicityCode periodicityCode, Double amountValue, Boolean isSumInsured,
+            Integer taxRate, GenderCode genderCode, Integer occupationTypeId, ProductDividendOption productDividendOption) {
+        ProductQuotation productQuotation = constructQuotation(productType, packageName, age, periodicityCode, amountValue, isSumInsured, taxRate, genderCode, occupationTypeId, productDividendOption, null);
+        if (!ProductUtils.isAtpModeEnable(productQuotation.getAtpMode())) {
+            if (PeriodicityCode.EVERY_MONTH.equals(periodicityCode)) {
+                productQuotation.setAtpMode(AtpMode.AUTOPAY.getNumValue());
+            }
         }
         return productQuotation;
     }
