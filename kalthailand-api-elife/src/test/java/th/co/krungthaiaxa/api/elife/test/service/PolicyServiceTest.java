@@ -72,11 +72,11 @@ public class PolicyServiceTest extends ELifeTest {
 
         Quote quote1 = quoteService.createQuote(sessionId, ChannelType.LINE, TestUtil.productQuotation());
         TestUtil.quote(quote1, TestUtil.beneficiary(100.0));
-        quote1 = quoteService.updateQuote(quote1, "token");
+        quote1 = quoteService.updateProfessionNameAndCheckBlackList(quote1, "token");
 
         Quote quote2 = quoteService.createQuote(sessionId, ChannelType.LINE, TestUtil.productQuotation());
         TestUtil.quote(quote2, TestUtil.beneficiary(100.0));
-        quote2 = quoteService.updateQuote(quote2, "token");
+        quote2 = quoteService.updateProfessionNameAndCheckBlackList(quote2, "token");
         Policy policy = policyService.createPolicy(quote2);
 
         assertThat(quoteService.findByQuoteId(quote1.getQuoteId(), sessionId, ChannelType.LINE).get().getPolicyId()).isNull();

@@ -161,7 +161,7 @@ public class DocumentServiceTest extends ELifeTest {
         ProductQuotation productQuotation = TestUtil.productQuotation(25, periodicityCode);
         Quote quote = quoteService.createQuote(randomNumeric(20), ChannelType.LINE, productQuotation);
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
-        quote = quoteService.updateQuote(quote, "token");
+        quote = quoteService.updateProfessionNameAndCheckBlackList(quote, "token");
         return policyService.createPolicy(quote);
         //        return policyFactory.createPolicyWithValidatedStatus(productQuotation, "dummy.test.ags@gmail.com");
 

@@ -138,7 +138,7 @@ public class EmailServiceTest extends ELifeTest {
         ProductQuotation productQuotation = ProductQuotationFactory.constructIProtect(55, PeriodicityCode.EVERY_YEAR, 100000.0, false, 35, GenderCode.MALE);
         Quote quote = quoteService.createQuote("xxx", LINE, productQuotation);
         quote(quote, beneficiary(100.0));
-        quote = quoteService.updateQuote(quote, "token");
+        quote = quoteService.updateProfessionNameAndCheckBlackList(quote, "token");
         //quote.getInsureds().get(0).getPerson().setEmail("chr_biz@hotmail.com");
         quote.getInsureds().get(0).getPerson().setEmail("santi.lik@krungthai-axa.co.th");
         Amount am = new Amount(1000.0, "THB");
@@ -161,7 +161,7 @@ public class EmailServiceTest extends ELifeTest {
     public void should_send_quote_ifine_email_with_proper_from_address() throws Exception {
         Quote quote = quoteService.createQuote("xxx", LINE, productQuotation(PRODUCT_IFINE, 55, EVERY_YEAR, 100000.0));
         quote(quote, beneficiary(100.0));
-        quote = quoteService.updateQuote(quote, "token");
+        quote = quoteService.updateProfessionNameAndCheckBlackList(quote, "token");
         quote.getInsureds().get(0).getPerson().setEmail("santi.lik@krungthai-axa.co.th");
         //quote.getInsureds().get(0).getPerson().setEmail("chr_biz@hotmail.com");
         emailService.sendQuoteiFineEmail(quote);
@@ -174,7 +174,7 @@ public class EmailServiceTest extends ELifeTest {
     public void should_send_quote_10ec_email_with_proper_from_address() throws Exception {
         Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation());
         quote(quote, beneficiary(100.0));
-        quote = quoteService.updateQuote(quote, "token");
+        quote = quoteService.updateProfessionNameAndCheckBlackList(quote, "token");
 
         emailService.sendQuote10ECEmail(quote, base64Graph);
 
@@ -190,7 +190,7 @@ public class EmailServiceTest extends ELifeTest {
 
         Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation());
         quote(quote, beneficiary(100.0));
-        quote = quoteService.updateQuote(quote, "token");
+        quote = quoteService.updateProfessionNameAndCheckBlackList(quote, "token");
         Policy policy = policyService.createPolicy(quote);
         policy.getInsureds().get(0).getPerson().setEmail("tanawat_hemchua@hotmail.com");
         emailService.sendPolicyBookedEmail(policy);
@@ -223,7 +223,7 @@ public class EmailServiceTest extends ELifeTest {
 
         Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation());
         quote(quote, beneficiary(100.0));
-        quote = quoteService.updateQuote(quote, "token");
+        quote = quoteService.updateProfessionNameAndCheckBlackList(quote, "token");
         Policy policy = policyService.createPolicy(quote);
         policy.getInsureds().get(0).getPerson().setEmail("tanawat_hemchua@hotmail.com");
         emailService.sendPhoneNumberIsWrongEmail(policy);
@@ -242,7 +242,7 @@ public class EmailServiceTest extends ELifeTest {
 
         Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation());
         quote(quote, beneficiary(100.0));
-        quote = quoteService.updateQuote(quote, "token");
+        quote = quoteService.updateProfessionNameAndCheckBlackList(quote, "token");
         Policy policy = policyService.createPolicy(quote);
         policy.getInsureds().get(0).getPerson().setEmail("tanawat_hemchua@hotmail.com");
         emailService.sendUserNotRespondingEmail(policy);
@@ -290,7 +290,7 @@ public class EmailServiceTest extends ELifeTest {
     public void should_send_quote_10ec_email_to_insured_email_address() throws Exception {
         Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation());
         quote(quote, beneficiary(100.0));
-        quote = quoteService.updateQuote(quote, "token");
+        quote = quoteService.updateProfessionNameAndCheckBlackList(quote, "token");
 
         emailService.sendQuote10ECEmail(quote, base64Graph);
 
@@ -303,7 +303,7 @@ public class EmailServiceTest extends ELifeTest {
     public void should_send_quote_10ec_email_containing_amounts_for_1_million_baht_with_insured_of_35_years_old() throws Exception {
         Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation());
         quote(quote, beneficiary(100.0));
-        quote = quoteService.updateQuote(quote, "token");
+        quote = quoteService.updateProfessionNameAndCheckBlackList(quote, "token");
 
         emailService.sendQuote10ECEmail(quote, base64Graph);
 
@@ -320,7 +320,7 @@ public class EmailServiceTest extends ELifeTest {
     public void should_send_quote_10ec_email_containing_amounts_for_500_thousand_baht_with_insured_of_55_years_old() throws Exception {
         Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation(55, EVERY_YEAR, 500000.0));
         quote(quote, beneficiary(100.0));
-        quote = quoteService.updateQuote(quote, "token");
+        quote = quoteService.updateProfessionNameAndCheckBlackList(quote, "token");
 
         emailService.sendQuote10ECEmail(quote, base64Graph);
 
@@ -337,7 +337,7 @@ public class EmailServiceTest extends ELifeTest {
     public void should_send_quote_email_containing_links_to_line_app() throws Exception {
         Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation(55, EVERY_YEAR, 500000.0));
         quote(quote, beneficiary(100.0));
-        quote = quoteService.updateQuote(quote, "token");
+        quote = quoteService.updateProfessionNameAndCheckBlackList(quote, "token");
 
         emailService.sendQuote10ECEmail(quote, base64Graph);
 
@@ -354,7 +354,7 @@ public class EmailServiceTest extends ELifeTest {
     public void should_send_quote_10ec_email_with_product_information() throws Exception {
         Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation(55, EVERY_YEAR, 500000.0));
         quote(quote, beneficiary(100.0));
-        quote = quoteService.updateQuote(quote, "token");
+        quote = quoteService.updateProfessionNameAndCheckBlackList(quote, "token");
 
         emailService.sendQuote10ECEmail(quote, base64Graph);
 
@@ -381,7 +381,7 @@ public class EmailServiceTest extends ELifeTest {
     public void generate_sale_illustration_10ec_pdf_file() throws Exception {
         Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation());
         quote(quote, beneficiary(100.0));
-        quote = quoteService.updateQuote(quote, "token");
+        quote = quoteService.updateProfessionNameAndCheckBlackList(quote, "token");
 
         emailService.sendQuote10ECEmail(quote, base64Graph);
 
@@ -408,7 +408,7 @@ public class EmailServiceTest extends ELifeTest {
     public void should_send_policy_booked_email_with_proper_from_address() throws Exception {
         Quote quote = quoteService.createQuote(RandomStringUtils.randomNumeric(20), LINE, productQuotation());
         quote(quote, beneficiary(100.0));
-        quote = quoteService.updateQuote(quote, "token");
+        quote = quoteService.updateProfessionNameAndCheckBlackList(quote, "token");
         Policy policy = policyService.createPolicy(quote);
 
         emailService.sendPolicyBookedEmail(policy);

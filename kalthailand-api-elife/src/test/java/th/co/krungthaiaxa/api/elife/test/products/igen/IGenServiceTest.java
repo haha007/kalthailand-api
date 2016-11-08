@@ -107,7 +107,7 @@ public class IGenServiceTest extends ELifeTest {
     public void update_quote_success_without_changing_any_thing() {
         ProductQuotation productQuotation = constructDefaultIGen();
         Quote quote = createAndFindQuote(productQuotation);
-        quote = quoteService.updateQuote(quote, RequestFactory.generateAccessToken());
+        quote = quoteService.updateProfessionNameAndCheckBlackList(quote, RequestFactory.generateAccessToken());
         assertDefaultCalculationNumbersAreCorrect(quote);
     }
 
@@ -116,7 +116,7 @@ public class IGenServiceTest extends ELifeTest {
         ProductQuotation productQuotation = constructDefaultIGen();
         Quote quote = createAndFindQuote(productQuotation);
         InsuredFactory.setDefaultValuesToMainInsuredAnd2Beneficiaries(quote);
-        quote = quoteService.updateQuote(quote, RequestFactory.generateAccessToken());
+        quote = quoteService.updateProfessionNameAndCheckBlackList(quote, RequestFactory.generateAccessToken());
         assertDefaultCalculationNumbersAreCorrect(quote);
     }
 
@@ -125,7 +125,7 @@ public class IGenServiceTest extends ELifeTest {
         ProductQuotation productQuotation = constructDefaultIGen();
         Quote quote = createAndFindQuote(productQuotation);
         InsuredFactory.setDefaultValuesToMainInsuredAnd2Beneficiaries(quote);
-        quote = quoteService.updateQuote(quote, RequestFactory.generateAccessToken());
+        quote = quoteService.updateProfessionNameAndCheckBlackList(quote, RequestFactory.generateAccessToken());
         assertDefaultCalculationNumbersAreCorrect(quote);
 
         Policy policy = policyService.createPolicy(quote);

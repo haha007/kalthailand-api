@@ -57,7 +57,7 @@ public class QuoteFactory {
         TestUtil.quote(quote, BeneficiaryFactory.constructDefaultBeneficiary());
         PersonFactory.setValuesToFirstInsuredPerson(quote, "MockInsuredPerson", email);
         String accessToken = RequestFactory.generateAccessToken();
-        quote = quoteService.updateQuote(quote, accessToken);
+        quote = quoteService.updateProfessionNameAndCheckBlackList(quote, accessToken);
         return new QuoteResult(quote, sessionId, accessToken, channelType);
     }
 
@@ -69,7 +69,7 @@ public class QuoteFactory {
         Quote quote = quoteService.createQuote(RequestFactory.generateSession(), ChannelType.LINE, productQuotation);
         TestUtil.quote(quote, BeneficiaryFactory.constructDefaultBeneficiary());
         PersonFactory.setValuesToFirstInsuredPerson(quote, age, "MockInsuredPerson", email);
-        quote = quoteService.updateQuote(quote, RequestFactory.generateAccessToken());
+        quote = quoteService.updateProfessionNameAndCheckBlackList(quote, RequestFactory.generateAccessToken());
         return quote;
     }
 

@@ -110,7 +110,7 @@ public class QuoteService {
         return quote;
     }
 
-    public Quote updateQuote(Quote quote, String token) {
+    public Quote updateProfessionNameAndCheckBlackList(Quote quote, String token) {
         // For some products, professionId is given after quote calculation
         // In this case, profession name has to be calculated
         if (quote.getInsureds().get(0).getProfessionId() != null) {

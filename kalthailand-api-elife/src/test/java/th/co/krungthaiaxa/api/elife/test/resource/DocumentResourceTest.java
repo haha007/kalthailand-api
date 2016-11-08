@@ -21,18 +21,19 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import th.co.krungthaiaxa.api.common.model.error.Error;
 import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
-import th.co.krungthaiaxa.api.elife.test.ELifeTest;
 import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
 import th.co.krungthaiaxa.api.elife.TestUtil;
 import th.co.krungthaiaxa.api.elife.factory.PolicyFactory;
 import th.co.krungthaiaxa.api.elife.factory.ProductQuotationFactory;
+import th.co.krungthaiaxa.api.elife.factory.QuoteFactory;
 import th.co.krungthaiaxa.api.elife.model.Document;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
-import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 import th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus;
+import th.co.krungthaiaxa.api.elife.service.PolicyService;
 import th.co.krungthaiaxa.api.elife.service.QuoteService;
+import th.co.krungthaiaxa.api.elife.test.ELifeTest;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -67,6 +68,10 @@ public class DocumentResourceTest extends ELifeTest {
     private QuoteService quoteService;
     @Inject
     private PolicyFactory policyFactory;
+    @Inject
+    private QuoteFactory quoteFactory;
+    @Inject
+    private PolicyService policyService;
 
     @Before
     public void setUp() throws Exception {
@@ -218,9 +223,11 @@ public class DocumentResourceTest extends ELifeTest {
 
     private Policy getPolicy() throws URISyntaxException, IOException {
         String sessionId = randomNumeric(20);
-        Quote quote = quoteService.createQuote(sessionId, ChannelType.LINE, TestUtil.productQuotation(25, PeriodicityCode.EVERY_MONTH));
-        TestUtil.quote(quote, TestUtil.beneficiary(100.0));
-        quote = quoteService.updateQuote(quote, "token");
+        QuoteFactory.QuoteResult quoteResult = quoteFactory.createQuote(ProductQuotationFactory.constructIGenDefault(), TestUtil.DUMMY_EMAIL);
+        Quote quote = quoteResult.getQuote();
+//        Quote quote = quoteService.createQuote(sessionId, ChannelType.LINE, TestUtil.productQuotation(25, PeriodicityCode.EVERY_MONTH));
+//        TestUtil.quote(quote, TestUtil.beneficiary(100.0));
+//        quote = quoteService.updateProfessionNameAndCheckBlackList(quote, "token");
 
         URI quoteCreationURI = new URI("http://localhost:" + port + "/policies");
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(quoteCreationURI)

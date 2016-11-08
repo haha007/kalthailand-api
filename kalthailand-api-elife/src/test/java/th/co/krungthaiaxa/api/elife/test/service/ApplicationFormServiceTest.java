@@ -361,7 +361,7 @@ public class ApplicationFormServiceTest extends ELifeTest {
         Quote quote = quoteService.createQuote(randomNumeric(20), ChannelType.LINE,
                 createDefaultProductQuotation());
         quote(quote, BeneficiaryFactory.constructDefaultBeneficiary());
-        quote = quoteService.updateQuote(quote, "token");
+        quote = quoteService.updateProfessionNameAndCheckBlackList(quote, "token");
 
         return policyService.createPolicy(quote);
     }
@@ -373,7 +373,7 @@ public class ApplicationFormServiceTest extends ELifeTest {
     private Policy getPolicyiFine() {
         Quote quote = quoteService.createQuote("xxx", ChannelType.LINE, productQuotation(ProductType.PRODUCT_IFINE, 55, EVERY_YEAR, 100000.0));
         quote(quote, BeneficiaryFactory.constructDefaultBeneficiary());
-        quote = quoteService.updateQuote(quote, "token");
+        quote = quoteService.updateProfessionNameAndCheckBlackList(quote, "token");
 
         return policyService.createPolicy(quote);
     }
@@ -381,7 +381,7 @@ public class ApplicationFormServiceTest extends ELifeTest {
     private Policy getPolicy10EC() {
         Quote quote = quoteService.createQuote(randomNumeric(20), ChannelType.LINE, productQuotation());
         quote(quote, BeneficiaryFactory.constructDefaultBeneficiary());
-        quote = quoteService.updateQuote(quote, "token");
+        quote = quoteService.updateProfessionNameAndCheckBlackList(quote, "token");
 
         return policyService.createPolicy(quote);
     }

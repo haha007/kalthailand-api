@@ -157,7 +157,7 @@ public class PolicyResourceTest extends ELifeTest {
 
         Quote quote = quoteService.createQuote(sessionId, ChannelType.LINE, TestUtil.productQuotation(35, PeriodicityCode.EVERY_YEAR));
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
-        quote = quoteService.updateQuote(quote, "token");
+        quote = quoteService.updateProfessionNameAndCheckBlackList(quote, "token");
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(base)
                 .queryParam("sessionId", sessionId)

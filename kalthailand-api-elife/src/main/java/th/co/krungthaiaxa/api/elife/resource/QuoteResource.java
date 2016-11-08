@@ -170,8 +170,8 @@ public class QuoteResource {
             @ApiParam(value = "The json of the quote. This quote will be updated with given values and will go through minimal validations", required = true)
             @RequestBody String jsonQuote,
             HttpServletRequest httpServletRequest) {
-        Optional<Quote> tmp = quoteService.findByQuoteId(quoteId, sessionId, channelType);
-        if (!tmp.isPresent()) {
+        Optional<Quote> quoteOptional = quoteService.findByQuoteId(quoteId, sessionId, channelType);
+        if (!quoteOptional.isPresent()) {
             return new ResponseEntity<>(getJson(ErrorCode.QUOTE_DOES_NOT_EXIST), NOT_FOUND);
         }
 
@@ -182,12 +182,12 @@ public class QuoteResource {
             logger.error("Unable to get a quote out of [" + jsonQuote + "]", e);
             return new ResponseEntity<>(getJson(ErrorCode.INVALID_QUOTE_PROVIDED), NOT_ACCEPTABLE);
         }
-        quote.setId(tmp.get().getId());
-        quote.setQuoteId(tmp.get().getQuoteId());
+        quote.setId(quoteOptional.get().getId());
+        quote.setQuoteId(quoteOptional.get().getQuoteId());
 
         Quote updatedQuote;
         try {
-            updatedQuote = quoteService.updateQuote(quote, httpServletRequest.getHeader(tokenHeader));
+            updatedQuote = quoteService.updateProfessionNameAndCheckBlackList(quote, httpServletRequest.getHeader(tokenHeader));
         } catch (ElifeException e) {
             logger.error("Unable to update quote", e);
             return new ResponseEntity<>(getJson(ErrorCode.QUOTE_NOT_UPDATED.apply(e.getMessage())), INTERNAL_SERVER_ERROR);

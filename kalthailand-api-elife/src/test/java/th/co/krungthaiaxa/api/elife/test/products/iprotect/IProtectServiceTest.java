@@ -88,7 +88,7 @@ public class IProtectServiceTest extends ELifeTest {
         if (quote == null) {
             test_01_createQuote_with_default_value_01();
         }
-        quote = quoteService.updateQuote(quote, "token");
+        quote = quoteService.updateProfessionNameAndCheckBlackList(quote, "token");
     }
 
     @Test

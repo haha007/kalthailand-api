@@ -72,7 +72,7 @@ public class SMSApiServiceTest extends ELifeTest {
     private Policy getPolicy() throws QuoteCalculationException, PolicyValidationException {
         Quote quote = quoteService.createQuote(randomNumeric(20), ChannelType.LINE, TestUtil.productQuotation());
         TestUtil.quote(quote, TestUtil.beneficiary(100.0));
-        quote = quoteService.updateQuote(quote, "token");
+        quote = quoteService.updateProfessionNameAndCheckBlackList(quote, "token");
         return policyService.createPolicy(quote);
     }
 
