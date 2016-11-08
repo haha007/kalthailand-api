@@ -1,13 +1,12 @@
 <!DOCTYPE HTML>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <!-- Meta, title, CSS, favicons, etc. -->
     <meta charset="utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
-
-    <title>Greeting</title>
+    <title th:text="'Hello, ' + ${name} + '"></title>
 
     <!-- Bootstrap core CSS -->
     <!--<link rel="stylesheet" href="bower_components/bootstrap-css-only/css/bootstrap.min.css"/>
@@ -32,8 +31,8 @@
     <link href="libs/bootstrap-gentellena/build/css/custom.min.css" rel="stylesheet"/>
 
     <!-- Custom styles for this template -->
-    <link href="app/css/login.css" rel="stylesheet"/>
-    <link href="app/css/elife.css" rel="stylesheet"/>
+    <!--<link href="app/css/login.css" rel="stylesheet"/>-->
+    <!--<link href="app/css/elife.css" rel="stylesheet"/>-->
 
 
 </head>
@@ -1024,21 +1023,21 @@
     </div>
 </div>
 
-<script src="bower_components/angular/angular.min.js"></script>
-<script src="bower_components/angular-route/angular-route.min.js"></script>
-<script src="bower_components/angular-resource/angular-resource.min.js"></script>
-<script src="bower_components/angular-file-model/angular-file-model.js"></script>
-<script src="bower_components/angular-animate/angular-animate.min.js"></script>
-<script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
-<script src="bower_components/ngstorage/ngStorage.min.js"></script>
-<script src='bower_components/ngMask/dist/ngMask.min.js'></script>
-<script src="bower_components/sockjs/sockjs.min.js"></script>
-<script src="bower_components/stomp-websocket/lib/stomp.min.js"></script>
-<script src="bower_components/jquery/dist/jquery.min.js"></script>
+<!--<script src="bower_components/angular/angular.min.js"></script>-->
+<!--<script src="bower_components/angular-route/angular-route.min.js"></script>-->
+<!--<script src="bower_components/angular-resource/angular-resource.min.js"></script>-->
+<!--<script src="bower_components/angular-file-model/angular-file-model.js"></script>-->
+<!--<script src="bower_components/angular-animate/angular-animate.min.js"></script>-->
+<!--<script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>-->
+<!--<script src="bower_components/ngstorage/ngStorage.min.js"></script>-->
+<!--<script src='bower_components/ngMask/dist/ngMask.min.js'></script>-->
+<!--<script src="bower_components/sockjs/sockjs.min.js"></script>-->
+<!--<script src="bower_components/stomp-websocket/lib/stomp.min.js"></script>-->
+<!--<script src="bower_components/jquery/dist/jquery.min.js"></script>-->
 
 <!-- BOOTSTRAP THEME -->
 <!-- jQuery -->
-<!--<script src="libs/bootstrap-gentellena/vendors/jquery/dist/jquery.min.js"></script>-->
+<script src="libs/bootstrap-gentellena/vendors/jquery/dist/jquery.min.js"></script>
 <!-- Bootstrap -->
 <script src="libs/bootstrap-gentellena/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
 <!-- FastClick -->
