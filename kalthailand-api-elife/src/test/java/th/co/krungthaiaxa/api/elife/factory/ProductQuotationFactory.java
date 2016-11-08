@@ -136,4 +136,11 @@ public class ProductQuotationFactory {
 
     }
 
+    public static ProductQuotation construct10ECDefault(int age, PeriodicityCode periodicityCode) {
+        return constructQuotation(ProductType.PRODUCT_10_EC, null, age, periodicityCode, 350000.0, true, 23, GenderCode.MALE, 1, ProductDividendOption.ANNUAL_PAY_BACK_CASH);
+    }
+
+    public static ProductQuotation construct10ECDefault(int age, PeriodicityCode periodicityCode, double amount, boolean isSumInsured, int tax) {
+        return constructQuotation(ProductType.PRODUCT_10_EC, null, age, periodicityCode, amount, isSumInsured, tax, GenderCode.MALE, 1, ProductDividendOption.ANNUAL_PAY_BACK_CASH);
+    }
 }

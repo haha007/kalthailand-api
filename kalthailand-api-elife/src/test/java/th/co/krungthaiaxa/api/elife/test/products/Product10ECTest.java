@@ -1,20 +1,33 @@
 package th.co.krungthaiaxa.api.elife.test.products;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
+import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
 import th.co.krungthaiaxa.api.elife.TestUtil;
 import th.co.krungthaiaxa.api.elife.exception.MainInsuredException;
 import th.co.krungthaiaxa.api.elife.exception.PolicyValidationException;
 import th.co.krungthaiaxa.api.elife.exception.QuoteCalculationException;
+import th.co.krungthaiaxa.api.elife.factory.BeneficiaryFactory;
+import th.co.krungthaiaxa.api.elife.factory.ProductQuotationFactory;
+import th.co.krungthaiaxa.api.elife.factory.RequestFactory;
 import th.co.krungthaiaxa.api.elife.model.Amount;
 import th.co.krungthaiaxa.api.elife.model.DatedAmount;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.Quote;
+import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
 import th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 import th.co.krungthaiaxa.api.elife.products.Product10ECService;
 import th.co.krungthaiaxa.api.elife.products.ProductAmounts;
+import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
 import th.co.krungthaiaxa.api.elife.products.utils.ProductUtils;
+import th.co.krungthaiaxa.api.elife.service.QuoteService;
 
+import javax.inject.Inject;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -29,10 +42,19 @@ import static java.time.ZoneId.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringApplicationConfiguration(classes = KalApiElifeApplication.class)
+@WebAppConfiguration
+@ActiveProfiles("test")
 public class Product10ECTest {
+    
+    @Inject
+    private QuoteService quoteService;
+
     @Test
     public void should_return_amount_for_30_yo_monthly() throws Exception {
-        ProductAmounts productAmounts = TestUtil.product10ECService().calculateProductAmounts(TestUtil.productQuotation(30, PeriodicityCode.EVERY_MONTH));
+        ProductQuotation productQuotation = ProductQuotationFactory.construct10ECDefault(30, PeriodicityCode.EVERY_MONTH);
+        ProductAmounts productAmounts = TestUtil.product10ECService().calculateProductAmounts(productQuotation);
         assertThat(productAmounts.getMinPremium().getValue()).isEqualTo(2772.0);
         assertThat(productAmounts.getMaxPremium().getValue()).isEqualTo(27720.0);
         assertThat(productAmounts.getMinSumInsured().getValue()).isEqualTo(100000.0);
@@ -41,7 +63,8 @@ public class Product10ECTest {
 
     @Test
     public void should_return_amount_for_30_yo_quarterly() throws Exception {
-        ProductAmounts productAmounts = TestUtil.product10ECService().calculateProductAmounts(TestUtil.productQuotation(30, PeriodicityCode.EVERY_QUARTER));
+        ProductQuotation productQuotation = ProductQuotationFactory.construct10ECDefault(30, PeriodicityCode.EVERY_QUARTER);
+        ProductAmounts productAmounts = TestUtil.product10ECService().calculateProductAmounts(productQuotation);
         assertThat(productAmounts.getMinPremium().getValue()).isEqualTo(8316.0);
         assertThat(productAmounts.getMaxPremium().getValue()).isEqualTo(83160.0);
         assertThat(productAmounts.getMinSumInsured().getValue()).isEqualTo(100000.0);
@@ -50,7 +73,8 @@ public class Product10ECTest {
 
     @Test
     public void should_return_amount_for_30_yo_half_yearly() throws Exception {
-        ProductAmounts productAmounts = TestUtil.product10ECService().calculateProductAmounts(TestUtil.productQuotation(30, PeriodicityCode.EVERY_HALF_YEAR));
+        ProductQuotation productQuotation = ProductQuotationFactory.construct10ECDefault(30, PeriodicityCode.EVERY_HALF_YEAR);
+        ProductAmounts productAmounts = TestUtil.product10ECService().calculateProductAmounts(productQuotation);
         assertThat(productAmounts.getMinPremium().getValue()).isEqualTo(16016.0);
         assertThat(productAmounts.getMaxPremium().getValue()).isEqualTo(160160.0);
         assertThat(productAmounts.getMinSumInsured().getValue()).isEqualTo(100000.0);
@@ -59,7 +83,8 @@ public class Product10ECTest {
 
     @Test
     public void should_return_amount_for_30_yo_yearly() throws Exception {
-        ProductAmounts productAmounts = TestUtil.product10ECService().calculateProductAmounts(TestUtil.productQuotation(30, PeriodicityCode.EVERY_YEAR));
+        ProductQuotation productQuotation = ProductQuotationFactory.construct10ECDefault(30, PeriodicityCode.EVERY_YEAR);
+        ProductAmounts productAmounts = TestUtil.product10ECService().calculateProductAmounts(productQuotation);
         assertThat(productAmounts.getMinPremium().getValue()).isEqualTo(30800.0);
         assertThat(productAmounts.getMaxPremium().getValue()).isEqualTo(308000.0);
         assertThat(productAmounts.getMinSumInsured().getValue()).isEqualTo(100000.0);
@@ -68,7 +93,8 @@ public class Product10ECTest {
 
     @Test
     public void should_return_amount_for_48_yo_yearly() throws Exception {
-        ProductAmounts productAmounts = TestUtil.product10ECService().calculateProductAmounts(TestUtil.productQuotation(48, PeriodicityCode.EVERY_YEAR));
+        ProductQuotation productQuotation = ProductQuotationFactory.construct10ECDefault(48, PeriodicityCode.EVERY_YEAR);
+        ProductAmounts productAmounts = TestUtil.product10ECService().calculateProductAmounts(productQuotation);
         assertThat(productAmounts.getMinPremium().getValue()).isEqualTo(30600.0);
         assertThat(productAmounts.getMaxPremium().getValue()).isEqualTo(306000.0);
         assertThat(productAmounts.getMinSumInsured().getValue()).isEqualTo(100000.0);
@@ -77,7 +103,8 @@ public class Product10ECTest {
 
     @Test
     public void should_return_amount_for_53_yo_yearly() throws Exception {
-        ProductAmounts productAmounts = TestUtil.product10ECService().calculateProductAmounts(TestUtil.productQuotation(53, PeriodicityCode.EVERY_YEAR));
+        ProductQuotation productQuotation = ProductQuotationFactory.construct10ECDefault(53, PeriodicityCode.EVERY_YEAR);
+        ProductAmounts productAmounts = TestUtil.product10ECService().calculateProductAmounts(productQuotation);
         assertThat(productAmounts.getMinPremium().getValue()).isEqualTo(30400.0);
         assertThat(productAmounts.getMaxPremium().getValue()).isEqualTo(304000.0);
         assertThat(productAmounts.getMinSumInsured().getValue()).isEqualTo(100000.0);
@@ -86,7 +113,8 @@ public class Product10ECTest {
 
     @Test
     public void should_return_amount_for_58_yo_yearly() throws Exception {
-        ProductAmounts productAmounts = TestUtil.product10ECService().calculateProductAmounts(TestUtil.productQuotation(58, PeriodicityCode.EVERY_YEAR));
+        ProductQuotation productQuotation = ProductQuotationFactory.construct10ECDefault(58, PeriodicityCode.EVERY_YEAR);
+        ProductAmounts productAmounts = TestUtil.product10ECService().calculateProductAmounts(productQuotation);
         assertThat(productAmounts.getMinPremium().getValue()).isEqualTo(30100.0);
         assertThat(productAmounts.getMaxPremium().getValue()).isEqualTo(301000.0);
         assertThat(productAmounts.getMinSumInsured().getValue()).isEqualTo(100000.0);
@@ -95,7 +123,8 @@ public class Product10ECTest {
 
     @Test
     public void should_return_amount_for_63_yo_yearly() throws Exception {
-        ProductAmounts productAmounts = TestUtil.product10ECService().calculateProductAmounts(TestUtil.productQuotation(63, PeriodicityCode.EVERY_YEAR));
+        ProductQuotation productQuotation = ProductQuotationFactory.construct10ECDefault(63, PeriodicityCode.EVERY_YEAR);
+        ProductAmounts productAmounts = TestUtil.product10ECService().calculateProductAmounts(productQuotation);
         assertThat(productAmounts.getMinPremium().getValue()).isEqualTo(30000.0);
         assertThat(productAmounts.getMaxPremium().getValue()).isEqualTo(300000.0);
         assertThat(productAmounts.getMinSumInsured().getValue()).isEqualTo(100000.0);
@@ -104,7 +133,8 @@ public class Product10ECTest {
 
     @Test
     public void should_return_amount_for_68_yo_yearly() throws Exception {
-        ProductAmounts productAmounts = TestUtil.product10ECService().calculateProductAmounts(TestUtil.productQuotation(68, PeriodicityCode.EVERY_YEAR));
+        ProductQuotation productQuotation = ProductQuotationFactory.construct10ECDefault(68, PeriodicityCode.EVERY_YEAR);
+        ProductAmounts productAmounts = TestUtil.product10ECService().calculateProductAmounts(productQuotation);
         assertThat(productAmounts.getMinPremium().getValue()).isEqualTo(29800.0);
         assertThat(productAmounts.getMaxPremium().getValue()).isEqualTo(298000.0);
         assertThat(productAmounts.getMinSumInsured().getValue()).isEqualTo(100000.0);
@@ -236,8 +266,8 @@ public class Product10ECTest {
     @Test
     public void should_calculate_premium_from_sum_insured_with_monthly_periodicity_and_age_25() throws Exception {
         Quote quote = TestUtil.quote(TestUtil.product10ECService());
-
-        TestUtil.product10ECService().calculateQuote(quote, TestUtil.productQuotation(25, PeriodicityCode.EVERY_MONTH, 1000000.0));
+        ProductQuotation productQuotation = ProductQuotationFactory.construct10ECDefault(25, PeriodicityCode.EVERY_MONTH, 1000000.0, true, 23);
+        TestUtil.product10ECService().calculateQuote(quote, productQuotation);
         Amount result = quote.getPremiumsData().getFinancialScheduler().getModalAmount();
         assertThat(result.getCurrencyCode()).isEqualTo("THB");
         assertThat(result.getValue()).isEqualTo(27720.0);
@@ -363,8 +393,8 @@ public class Product10ECTest {
     @Test
     public void should_calculate_tax_return_for_1_thousand_sum_insured_and_20_percent_tax_rate() throws Exception {
         Quote quote = TestUtil.quote(TestUtil.product10ECService());
-
-        TestUtil.product10ECService().calculateQuote(quote, TestUtil.productQuotation(PeriodicityCode.EVERY_MONTH, 100000.0, 20));
+        ProductQuotation productQuotation = ProductQuotationFactory.construct10ECDefault(25, PeriodicityCode.EVERY_MONTH, 100000.0, true, 20);
+        TestUtil.product10ECService().calculateQuote(quote, productQuotation);
         Amount result = quote.getPremiumsData().getProduct10ECPremium().getYearlyTaxDeduction();
         assertThat(result.getCurrencyCode()).isEqualTo("THB");
         assertThat(result.getValue()).isEqualTo(6653.0);
@@ -1432,9 +1462,9 @@ public class Product10ECTest {
 
     @Test
     public void should_get_72_payments_when_choosing_monthly_schedule() throws Exception {
-        Quote quote = TestUtil.quote(TestUtil.product10ECService());
-        TestUtil.product10ECService().calculateQuote(quote, TestUtil.productQuotation(25, PeriodicityCode.EVERY_MONTH, 1000000.0));
-        TestUtil.quote(quote, TestUtil.beneficiary(100.0));
+        ProductQuotation productQuotation = ProductQuotationFactory.construct10ECDefault(25, PeriodicityCode.EVERY_MONTH, 1000000.0, true, 23);
+        Quote quote = quoteService.createQuote(RequestFactory.generateSession(), ChannelType.LINE, productQuotation);
+        TestUtil.quote(quote, BeneficiaryFactory.constructDefaultBeneficiary());
 
         Policy policy = new Policy();
         TestUtil.product10ECService().createPolicyFromQuote(policy, quote);
