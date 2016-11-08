@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.model.Person;
 import th.co.krungthaiaxa.api.elife.model.Policy;
+import th.co.krungthaiaxa.api.elife.products.ProductUtils;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -42,7 +43,7 @@ public class DAFormService {
     private final String MARK = "X";
     private final DecimalFormat MONEY_FORMAT = new DecimalFormat("#,##0.00");
 
-    public byte[] generateDAForm(Policy pol) throws Exception {
+    public byte[] generateDAForm(Policy policy) throws Exception {
 
         ByteArrayOutputStream content = new ByteArrayOutputStream();
 
@@ -50,7 +51,7 @@ public class DAFormService {
         PdfReader pdfReader = new PdfReader(inputStream);
         PdfStamper pdfStamper = new PdfStamper(pdfReader, content);
 
-        Insured insured = pol.getInsureds().get(0);
+        Insured insured = ProductUtils.validateExistMainInsured(policy);
         Person person = insured.getPerson();
 
         BaseFont font = getBaseFont();
@@ -81,7 +82,7 @@ public class DAFormService {
 
         writeText(pdfStamper.getOverContent(1), font, person.getEmail(), 350, 654, MEDIUM_SIZE);
 
-        char[] numberPNO = pol.getPolicyId().toCharArray();
+        char[] numberPNO = policy.getPolicyId().toCharArray();
         writeText(pdfStamper.getOverContent(1), font, String.valueOf(numberPNO[0]), 100, 618, MEDIUM_SIZE);
         writeText(pdfStamper.getOverContent(1), font, String.valueOf(numberPNO[1]), 112, 618, MEDIUM_SIZE);
         writeText(pdfStamper.getOverContent(1), font, String.valueOf(numberPNO[2]), 128, 618, MEDIUM_SIZE);

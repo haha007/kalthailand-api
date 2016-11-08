@@ -5,11 +5,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.elife.client.SigningClient;
+import th.co.krungthaiaxa.api.elife.ereceipt.EreceiptService;
 import th.co.krungthaiaxa.api.elife.model.Document;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.Policy;
+import th.co.krungthaiaxa.api.elife.products.ProductUtils;
 import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
-import th.co.krungthaiaxa.api.elife.ereceipt.EreceiptService;
 
 import java.util.Optional;
 
@@ -17,7 +18,6 @@ import static th.co.krungthaiaxa.api.elife.model.enums.DocumentType.APPLICATION_
 import static th.co.krungthaiaxa.api.elife.model.enums.DocumentType.APPLICATION_FORM_VALIDATED;
 import static th.co.krungthaiaxa.api.elife.model.enums.DocumentType.DA_FORM;
 import static th.co.krungthaiaxa.api.elife.model.enums.DocumentType.ERECEIPT_PDF;
-import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.EVERY_MONTH;
 
 //TODO need to be refactored.
 @Service
@@ -57,7 +57,7 @@ public class PolicyDocumentService {
         }
 
         // Generate DA Form if necessary
-        if (policy.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().equals(EVERY_MONTH)) {
+        if (ProductUtils.isAtpModeEnable(policy)) {
             Optional<Document> daForm = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(DA_FORM)).findFirst();
             if (!daForm.isPresent()) {
                 try {
@@ -68,10 +68,9 @@ public class PolicyDocumentService {
                 }
             }
         } else {
-            LOGGER.info("Policy is not in monthly payment and DA Form should not be generated.");
+            LOGGER.debug("The ATP of this policy is not enable, so the DA Form will not be generated.\n policyId: {}", policy.getPolicyId());
         }
-
-        LOGGER.info("Default documents for policy [" + policy.getPolicyId() + "] have been created.");
+        LOGGER.debug("Default documents for policy [" + policy.getPolicyId() + "] have been created.");
     }
 
     public void generateDocumentsForValidatedPolicy(Policy policy, String token) {

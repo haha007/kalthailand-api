@@ -22,6 +22,7 @@ import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.Quotable;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.Registration;
+import th.co.krungthaiaxa.api.elife.model.enums.AtpMode;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 
 import java.time.LocalDate;
@@ -88,8 +89,27 @@ public class ProductUtils {
         return amount;
     }
 
-    public static PeriodicityCode getPeriodicityCode(Quotable policy) {
-        return policy.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode();
+    public static PeriodicityCode validateExistPeriodicityCode(Quotable quotable) {
+        PeriodicityCode periodicityCode = getPeriodicityCode(quotable);
+        if (periodicityCode == null) {
+            String msg = String.format("Periodicity of %s doesn't exist. policyId: %s, quoteId: %s", quotable.getClass().getSimpleName(), quotable.getPolicyId(), quotable.getQuoteId());
+            throw new UnexpectedException(msg);
+        }
+        return periodicityCode;
+    }
+
+    public static PeriodicityCode getPeriodicityCode(Quotable quotable) {
+        return quotable.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode();
+    }
+
+    public static Integer getAtpMode(Quotable quotable) {
+        return quotable.getPremiumsData().getFinancialScheduler().getAtpMode();
+    }
+
+    public static boolean isAtpModeEnable(Quotable quotable) {
+        Integer atpMode = ProductUtils.getAtpMode(quotable);
+        boolean result = atpMode != null && atpMode.equals(AtpMode.AUTOPAY.getNumValue());
+        return result;
     }
 
     public static double getModalFactor(PeriodicityCode periodicityCode) {
@@ -452,16 +472,10 @@ public class ProductUtils {
         isEqual(filteredDates.size(), 0, premiumsCalculatedAmountInvalidDate.apply(filteredDates.stream().map(LocalDate::toString).collect(joining(", "))));
     }
 
-    public static Insured validateExistMainInsured(Quote quote) {
-        return quote.getInsureds().stream().filter(Insured::getMainInsuredIndicator)
+    public static Insured validateExistMainInsured(Quotable quotable) {
+        return quotable.getInsureds().stream().filter(Insured::getMainInsuredIndicator)
                 .findFirst()
-                .orElseThrow(() -> new MainInsuredException("Insured size: " + quote.getInsureds().size()));
-    }
-
-    public static Insured validateExistMainInsured(Policy policy) {
-        return policy.getInsureds().stream().filter(Insured::getMainInsuredIndicator)
-                .findFirst()
-                .orElseThrow(() -> new MainInsuredException("Insured size: " + policy.getInsureds().size()));
+                .orElseThrow(() -> new MainInsuredException("Insured size: " + quotable.getInsureds().size()));
     }
 
     private static boolean isValidEmailAddress(String email) {

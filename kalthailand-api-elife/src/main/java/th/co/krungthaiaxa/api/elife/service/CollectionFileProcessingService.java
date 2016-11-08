@@ -281,10 +281,10 @@ public class CollectionFileProcessingService {
         LOGGER.info("Import collectionFileLine [start]: policyNumber: {}", collectionFileLine.getPolicyNumber());
         String policyId = collectionFileLine.getPolicyNumber();
         isTrue(StringUtils.isNotBlank(policyId), "policyNumber must be notempty: " + ObjectMapperUtil.toStringMultiLine(collectionFileLine));
-        Optional<Policy> policy = policyService.findPolicyByPolicyNumber(policyId);
-        isTrue(policy.isPresent(), "Unable to find a policy [" + collectionFileLine.getPolicyNumber() + "]");
-        isTrue(policy.get().getStatus().equals(PolicyStatus.VALIDATED), "The policy [" + collectionFileLine.getPolicyNumber() + "] has not been validated and payments can't go through without validation");
-        isTrue(PeriodicityCode.EVERY_MONTH.equals(ProductUtils.getPeriodicityCode(policy.get())), "Policy [" + collectionFileLine.getPolicyNumber() + "] is not a monthly payment policy");
+        Policy policy = policyService.validateExistPolicy(policyId);
+        isTrue(policy.getStatus().equals(PolicyStatus.VALIDATED), "The policy [" + collectionFileLine.getPolicyNumber() + "] has not been validated and payments can't go through without validation");
+        validatePaymentModeWithAtpEnable(collectionFileLine, policy);
+
         // 28 is the maximum nb of days between a scheduled payment and collection file first cycle start date
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime todayMinus28Days = now.minusDays(28);
@@ -295,7 +295,7 @@ public class CollectionFileProcessingService {
         if (notProcessedPaymentInThisMonth.isPresent()) {
             collectionFileLine.setPaymentId(notProcessedPaymentInThisMonth.get().getPaymentId());
             LOGGER.info("Existing payment id [" + notProcessedPaymentInThisMonth.get().getPaymentId() + "] has been added for the " +
-                    "collection file line about policy [" + policy.get().getPolicyId() + "] ");
+                    "collection file line about policy [" + policy.getPolicyId() + "] ");
             return;
         }
 
@@ -304,25 +304,38 @@ public class CollectionFileProcessingService {
         String lastRegistrationKey = findLastRegistrationKey(policyId);
 
         //Create the predefined payment. The user has not really payed yet. That's why it doesn't have effective date.
-        Payment newPayment = new Payment(policy.get().getPolicyId(),
+        Payment newPayment = new Payment(policy.getPolicyId(),
                 collectionFileLine.getPremiumAmount(),
-                policy.get().getCommonData().getProductCurrency(),
+                policy.getCommonData().getProductCurrency(),
                 DateTimeUtil.nowLocalDateTimeInThaiZoneId());
         if (StringUtils.isBlank(lastRegistrationKey)) {
-            LOGGER.info("Unable to find a schedule payment for policy [" + policy.get().getPolicyId() + "] and a " +
+            LOGGER.info("Unable to find a schedule payment for policy [" + policy.getPolicyId() + "] and a " +
                     "previously used registration key, will create one payment from scratch, but payment will fail " +
                     "since it has no registration key");
         } else {
             newPayment.setRegistrationKey(lastRegistrationKey);
-            LOGGER.info("Unable to find a schedule payment for policy [" + policy.get().getPolicyId() + "], will " +
+            LOGGER.info("Unable to find a schedule payment for policy [" + policy.getPolicyId() + "], will " +
                     "create one from scratch");
         }
         paymentRepository.save(newPayment);
-        policy.get().addPayment(newPayment);
-        policy.get().setLastUpdateDateTime(Instant.now());
-        policyRepository.save(policy.get());
+        policy.addPayment(newPayment);
+        policy.setLastUpdateDateTime(Instant.now());
+        policyRepository.save(policy);
         collectionFileLine.setPaymentId(newPayment.getPaymentId());
         LOGGER.info("Import collectionFileLine [finished]: policyNumber: {}, paymentId: {}", collectionFileLine.getPolicyNumber(), collectionFileLine.getPaymentId());
+    }
+
+    private void validatePaymentModeWithAtpEnable(CollectionFileLine collectionFileLine, Policy policy) {
+        PeriodicityCode policyPeriodicityCode = ProductUtils.validateExistPeriodicityCode(policy);
+        String policyPaymentPeriodicityCode = PAYMENT_MODE.apply(policyPeriodicityCode);
+        if (!policyPaymentPeriodicityCode.equalsIgnoreCase(collectionFileLine.getPaymentMode())) {
+            String msg = String.format("The payment mode in policy and payment mode in collection file is not match: policyID: %s, paymentMode: %s vs. collection's paymentMode: %s", policy.getPolicyId(), policyPaymentPeriodicityCode, collectionFileLine.getPaymentMode());
+            throw new BadArgumentException(msg);
+        }
+        if (ProductUtils.isAtpModeEnable(policy)) {
+            String msg = String.format("The policy doesn't have ATP mode: policyID: %s, paymentMode: %s", policy.getPolicyId(), policyPaymentPeriodicityCode);
+            throw new BadArgumentException(msg);
+        }
     }
 
     /**
