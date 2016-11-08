@@ -7,22 +7,24 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
-import th.co.krungthaiaxa.api.elife.TestUtil;
-import th.co.krungthaiaxa.api.elife.model.product.ProductIFinePremium;
+import th.co.krungthaiaxa.api.elife.factory.ProductQuotationFactory;
+import th.co.krungthaiaxa.api.elife.factory.RequestFactory;
 import th.co.krungthaiaxa.api.elife.model.Quote;
+import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
 import th.co.krungthaiaxa.api.elife.model.enums.GenderCode;
-import th.co.krungthaiaxa.api.elife.products.ProductIFineService;
+import th.co.krungthaiaxa.api.elife.model.product.ProductIFinePremium;
+import th.co.krungthaiaxa.api.elife.service.QuoteService;
 
 import javax.inject.Inject;
 
-import static java.lang.Boolean.FALSE;
-import static java.lang.Boolean.TRUE;
 import static org.assertj.core.api.Assertions.assertThat;
-import static th.co.krungthaiaxa.api.elife.TestUtil.productQuotation;
-import static th.co.krungthaiaxa.api.elife.TestUtil.quote;
 import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.EVERY_MONTH;
 import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.EVERY_YEAR;
-import static th.co.krungthaiaxa.api.elife.products.ProductIFinePackage.*;
+import static th.co.krungthaiaxa.api.elife.products.ProductIFinePackage.IFINE1;
+import static th.co.krungthaiaxa.api.elife.products.ProductIFinePackage.IFINE2;
+import static th.co.krungthaiaxa.api.elife.products.ProductIFinePackage.IFINE3;
+import static th.co.krungthaiaxa.api.elife.products.ProductIFinePackage.IFINE4;
+import static th.co.krungthaiaxa.api.elife.products.ProductIFinePackage.IFINE5;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiElifeApplication.class)
@@ -30,12 +32,12 @@ import static th.co.krungthaiaxa.api.elife.products.ProductIFinePackage.*;
 @ActiveProfiles("test")
 public class ProductIFineTest {
     @Inject
-    private ProductIFineService productIFine;
+    private QuoteService quoteService;
 
     @Test
     public void should_create_ifine_quote_with_default_structure() throws Exception {
-        Quote quote = quote(TestUtil.productIFineService());
-        productIFine.calculateQuote(quote, productQuotation(IFINE1, 20, EVERY_YEAR, GenderCode.MALE, FALSE));
+
+        Quote quote = quoteService.createQuote(RequestFactory.generateSession(), ChannelType.LINE, ProductQuotationFactory.constructIFine(IFINE1, 20, EVERY_YEAR, GenderCode.MALE, false));
         assertThat(quote.getCoverages()).extracting("name").containsExactly("Product iFine");
         assertThat(quote.getPremiumsData().getProductIFinePremium()).isNotNull();
         assertThat(quote.getPremiumsData().getProductIFinePremium().getSumInsured().getValue()).isNotNull();
@@ -43,8 +45,8 @@ public class ProductIFineTest {
 
     @Test
     public void should_get_sum_insured_from_package_name_ifine1() throws Exception {
-        Quote quote = quote(TestUtil.productIFineService());
-        productIFine.calculateQuote(quote, productQuotation(IFINE1, 20, EVERY_YEAR, GenderCode.MALE, FALSE));
+
+        Quote quote = quoteService.createQuote(RequestFactory.generateSession(), ChannelType.LINE, ProductQuotationFactory.constructIFine(IFINE1, 20, EVERY_YEAR, GenderCode.MALE, false));
         ProductIFinePremium premium = quote.getPremiumsData().getProductIFinePremium();
         assertThat(premium.getSumInsured().getValue()).isEqualTo(100000.0);
         assertThat(premium.getAccidentSumInsured().getValue()).isEqualTo(500000.0);
@@ -71,8 +73,8 @@ public class ProductIFineTest {
 
     @Test
     public void should_get_sum_insured_from_package_name_ifine2() throws Exception {
-        Quote quote = quote(TestUtil.productIFineService());
-        productIFine.calculateQuote(quote, productQuotation(IFINE2, 20, EVERY_YEAR, GenderCode.MALE, FALSE));
+
+        Quote quote = quoteService.createQuote(RequestFactory.generateSession(), ChannelType.LINE, ProductQuotationFactory.constructIFine(IFINE2, 20, EVERY_YEAR, GenderCode.MALE, false));
         ProductIFinePremium premium = quote.getPremiumsData().getProductIFinePremium();
         assertThat(premium.getSumInsured().getValue()).isEqualTo(150000.0);
         assertThat(premium.getAccidentSumInsured().getValue()).isEqualTo(750000.0);
@@ -99,8 +101,8 @@ public class ProductIFineTest {
 
     @Test
     public void should_get_sum_insured_from_package_name_ifine3() throws Exception {
-        Quote quote = quote(TestUtil.productIFineService());
-        productIFine.calculateQuote(quote, productQuotation(IFINE3, 20, EVERY_YEAR, GenderCode.MALE, FALSE));
+
+        Quote quote = quoteService.createQuote(RequestFactory.generateSession(), ChannelType.LINE, ProductQuotationFactory.constructIFine(IFINE3, 20, EVERY_YEAR, GenderCode.MALE, false));
         ProductIFinePremium premium = quote.getPremiumsData().getProductIFinePremium();
         assertThat(premium.getSumInsured().getValue()).isEqualTo(200000.0);
         assertThat(premium.getAccidentSumInsured().getValue()).isEqualTo(1000000.0);
@@ -127,8 +129,8 @@ public class ProductIFineTest {
 
     @Test
     public void should_get_sum_insured_from_package_name_ifine4() throws Exception {
-        Quote quote = quote(TestUtil.productIFineService());
-        productIFine.calculateQuote(quote, productQuotation(IFINE4, 20, EVERY_YEAR, GenderCode.MALE, FALSE));
+
+        Quote quote = quoteService.createQuote(RequestFactory.generateSession(), ChannelType.LINE, ProductQuotationFactory.constructIFine(IFINE4, 20, EVERY_YEAR, GenderCode.MALE, false));
         ProductIFinePremium premium = quote.getPremiumsData().getProductIFinePremium();
         assertThat(premium.getSumInsured().getValue()).isEqualTo(250000.0);
         assertThat(premium.getAccidentSumInsured().getValue()).isEqualTo(2000000.0);
@@ -155,8 +157,8 @@ public class ProductIFineTest {
 
     @Test
     public void should_get_sum_insured_from_package_name_ifine5() throws Exception {
-        Quote quote = quote(TestUtil.productIFineService());
-        productIFine.calculateQuote(quote, productQuotation(IFINE5, 20, EVERY_YEAR, GenderCode.MALE, FALSE));
+
+        Quote quote = quoteService.createQuote(RequestFactory.generateSession(), ChannelType.LINE, ProductQuotationFactory.constructIFine(IFINE5, 20, EVERY_YEAR, GenderCode.MALE, false));
         ProductIFinePremium premium = quote.getPremiumsData().getProductIFinePremium();
         assertThat(premium.getSumInsured().getValue()).isEqualTo(300000.0);
         assertThat(premium.getAccidentSumInsured().getValue()).isEqualTo(3000000.0);
@@ -183,8 +185,8 @@ public class ProductIFineTest {
 
     @Test
     public void should_calculate_from_yearly_periodicity_male_age_20_not_risky_ifine1() throws Exception {
-        Quote quote = quote(TestUtil.productIFineService());
-        productIFine.calculateQuote(quote, productQuotation(IFINE1, 20, EVERY_YEAR, GenderCode.MALE, FALSE));
+
+        Quote quote = quoteService.createQuote(RequestFactory.generateSession(), ChannelType.LINE, ProductQuotationFactory.constructIFine(IFINE1, 20, EVERY_YEAR, GenderCode.MALE, false));
         ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
         assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(3183.0);
         assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(5.84);
@@ -196,8 +198,8 @@ public class ProductIFineTest {
 
     @Test
     public void should_calculate_from_yearly_periodicity_male_age_20_risky_ifine1() throws Exception {
-        Quote quote = quote(TestUtil.productIFineService());
-        productIFine.calculateQuote(quote, productQuotation(IFINE1, 20, EVERY_YEAR, GenderCode.MALE, TRUE));
+
+        Quote quote = quoteService.createQuote(RequestFactory.generateSession(), ChannelType.LINE, ProductQuotationFactory.constructIFine(IFINE1, 20, EVERY_YEAR, GenderCode.MALE, true));
         ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
         assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(7082.0);
         assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(5.84);
@@ -209,8 +211,8 @@ public class ProductIFineTest {
 
     @Test
     public void should_calculate_from_yearly_periodicity_male_age_20_not_risky_ifine2() throws Exception {
-        Quote quote = quote(TestUtil.productIFineService());
-        productIFine.calculateQuote(quote, productQuotation(IFINE2, 20, EVERY_YEAR, GenderCode.MALE, FALSE));
+
+        Quote quote = quoteService.createQuote(RequestFactory.generateSession(), ChannelType.LINE, ProductQuotationFactory.constructIFine(IFINE2, 20, EVERY_YEAR, GenderCode.MALE, false));
         ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
         assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(4566.0);
         assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(5.84);
@@ -222,8 +224,8 @@ public class ProductIFineTest {
 
     @Test
     public void should_calculate_from_yearly_periodicity_male_age_20_risky_ifine2() throws Exception {
-        Quote quote = quote(TestUtil.productIFineService());
-        productIFine.calculateQuote(quote, productQuotation(IFINE2, 20, EVERY_YEAR, GenderCode.MALE, TRUE));
+
+        Quote quote = quoteService.createQuote(RequestFactory.generateSession(), ChannelType.LINE, ProductQuotationFactory.constructIFine(IFINE2, 20, EVERY_YEAR, GenderCode.MALE, true));
         ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
         assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(10101.0);
         assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(5.84);
@@ -235,8 +237,8 @@ public class ProductIFineTest {
 
     @Test
     public void should_calculate_from_yearly_periodicity_male_age_20_not_risky_ifine3() throws Exception {
-        Quote quote = quote(TestUtil.productIFineService());
-        productIFine.calculateQuote(quote, productQuotation(IFINE3, 20, EVERY_YEAR, GenderCode.MALE, FALSE));
+
+        Quote quote = quoteService.createQuote(RequestFactory.generateSession(), ChannelType.LINE, ProductQuotationFactory.constructIFine(IFINE3, 20, EVERY_YEAR, GenderCode.MALE, false));
         ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
         assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(5950.0);
         assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(5.84);
@@ -248,8 +250,8 @@ public class ProductIFineTest {
 
     @Test
     public void should_calculate_from_yearly_periodicity_male_age_20_risky_ifine3() throws Exception {
-        Quote quote = quote(TestUtil.productIFineService());
-        productIFine.calculateQuote(quote, productQuotation(IFINE3, 20, EVERY_YEAR, GenderCode.MALE, TRUE));
+
+        Quote quote = quoteService.createQuote(RequestFactory.generateSession(), ChannelType.LINE, ProductQuotationFactory.constructIFine(IFINE3, 20, EVERY_YEAR, GenderCode.MALE, true));
         ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
         assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(13120.0);
         assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(5.84);
@@ -261,8 +263,8 @@ public class ProductIFineTest {
 
     @Test
     public void should_calculate_from_yearly_periodicity_male_age_20_not_risky_ifine4() throws Exception {
-        Quote quote = quote(TestUtil.productIFineService());
-        productIFine.calculateQuote(quote, productQuotation(IFINE4, 20, EVERY_YEAR, GenderCode.MALE, FALSE));
+
+        Quote quote = quoteService.createQuote(RequestFactory.generateSession(), ChannelType.LINE, ProductQuotationFactory.constructIFine(IFINE4, 20, EVERY_YEAR, GenderCode.MALE, false));
         ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
         assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(10547.5);
         assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(5.84);
@@ -274,8 +276,8 @@ public class ProductIFineTest {
 
     @Test
     public void should_calculate_from_yearly_periodicity_male_age_20_risky_ifine4() throws Exception {
-        Quote quote = quote(TestUtil.productIFineService());
-        productIFine.calculateQuote(quote, productQuotation(IFINE4, 20, EVERY_YEAR, GenderCode.MALE, TRUE));
+
+        Quote quote = quoteService.createQuote(RequestFactory.generateSession(), ChannelType.LINE, ProductQuotationFactory.constructIFine(IFINE4, 20, EVERY_YEAR, GenderCode.MALE, true));
         ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
         assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(24180.0);
         assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(5.84);
@@ -287,8 +289,8 @@ public class ProductIFineTest {
 
     @Test
     public void should_calculate_from_yearly_periodicity_male_age_20_not_risky_ifine5() throws Exception {
-        Quote quote = quote(TestUtil.productIFineService());
-        productIFine.calculateQuote(quote, productQuotation(IFINE5, 20, EVERY_YEAR, GenderCode.MALE, FALSE));
+
+        Quote quote = quoteService.createQuote(RequestFactory.generateSession(), ChannelType.LINE, ProductQuotationFactory.constructIFine(IFINE5, 20, EVERY_YEAR, GenderCode.MALE, false));
         ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
         assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(15147.0);
         assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(5.84);
@@ -300,8 +302,8 @@ public class ProductIFineTest {
 
     @Test
     public void should_calculate_from_yearly_periodicity_male_age_20_risky_ifine5() throws Exception {
-        Quote quote = quote(TestUtil.productIFineService());
-        productIFine.calculateQuote(quote, productQuotation(IFINE5, 20, EVERY_YEAR, GenderCode.MALE, TRUE));
+
+        Quote quote = quoteService.createQuote(RequestFactory.generateSession(), ChannelType.LINE, ProductQuotationFactory.constructIFine(IFINE5, 20, EVERY_YEAR, GenderCode.MALE, true));
         ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
         assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(35241.0);
         assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(5.84);
@@ -313,8 +315,8 @@ public class ProductIFineTest {
 
     @Test
     public void should_calculate_from_monthly_periodicity_female_age_45_not_risky_ifine1() throws Exception {
-        Quote quote = quote(TestUtil.productIFineService());
-        productIFine.calculateQuote(quote, productQuotation(IFINE1, 45, EVERY_MONTH, GenderCode.FEMALE, FALSE));
+
+        Quote quote = quoteService.createQuote(RequestFactory.generateSession(), ChannelType.LINE, ProductQuotationFactory.constructIFine(IFINE1, 45, EVERY_MONTH, GenderCode.FEMALE, false));
         ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
         assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(293.04);
         assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(6.57);
@@ -326,8 +328,8 @@ public class ProductIFineTest {
 
     @Test
     public void should_calculate_from_monthly_periodicity_female_age_45_risky_ifine1() throws Exception {
-        Quote quote = quote(TestUtil.productIFineService());
-        productIFine.calculateQuote(quote, productQuotation(IFINE1, 45, EVERY_MONTH, GenderCode.FEMALE, TRUE));
+
+        Quote quote = quoteService.createQuote(RequestFactory.generateSession(), ChannelType.LINE, ProductQuotationFactory.constructIFine(IFINE1, 45, EVERY_MONTH, GenderCode.FEMALE, true));
         ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
         assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(643.95);
         assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(6.57);
@@ -339,8 +341,8 @@ public class ProductIFineTest {
 
     @Test
     public void should_calculate_from_monthly_periodicity_female_age_45_not_risky_ifine2() throws Exception {
-        Quote quote = quote(TestUtil.productIFineService());
-        productIFine.calculateQuote(quote, productQuotation(IFINE2, 45, EVERY_MONTH, GenderCode.FEMALE, FALSE));
+
+        Quote quote = quoteService.createQuote(RequestFactory.generateSession(), ChannelType.LINE, ProductQuotationFactory.constructIFine(IFINE2, 45, EVERY_MONTH, GenderCode.FEMALE, false));
         ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
         assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(420.79);
         assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(6.57);
@@ -352,8 +354,8 @@ public class ProductIFineTest {
 
     @Test
     public void should_calculate_from_monthly_periodicity_female_age_45_risky_ifine2() throws Exception {
-        Quote quote = quote(TestUtil.productIFineService());
-        productIFine.calculateQuote(quote, productQuotation(IFINE2, 45, EVERY_MONTH, GenderCode.FEMALE, TRUE));
+
+        Quote quote = quoteService.createQuote(RequestFactory.generateSession(), ChannelType.LINE, ProductQuotationFactory.constructIFine(IFINE2, 45, EVERY_MONTH, GenderCode.FEMALE, true));
         ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
         assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(918.94);
         assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(6.57);
@@ -365,8 +367,8 @@ public class ProductIFineTest {
 
     @Test
     public void should_calculate_from_monthly_periodicity_female_age_45_not_risky_ifine3() throws Exception {
-        Quote quote = quote(TestUtil.productIFineService());
-        productIFine.calculateQuote(quote, productQuotation(IFINE3, 45, EVERY_MONTH, GenderCode.FEMALE, FALSE));
+
+        Quote quote = quoteService.createQuote(RequestFactory.generateSession(), ChannelType.LINE, ProductQuotationFactory.constructIFine(IFINE3, 45, EVERY_MONTH, GenderCode.FEMALE, false));
         ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
         assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(548.64);
         assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(6.57);
@@ -378,8 +380,8 @@ public class ProductIFineTest {
 
     @Test
     public void should_calculate_from_monthly_periodicity_female_age_45_risky_ifine3() throws Exception {
-        Quote quote = quote(TestUtil.productIFineService());
-        productIFine.calculateQuote(quote, productQuotation(IFINE3, 45, EVERY_MONTH, GenderCode.FEMALE, TRUE));
+
+        Quote quote = quoteService.createQuote(RequestFactory.generateSession(), ChannelType.LINE, ProductQuotationFactory.constructIFine(IFINE3, 45, EVERY_MONTH, GenderCode.FEMALE, true));
         ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
         assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(1193.94);
         assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(6.57);
@@ -391,8 +393,8 @@ public class ProductIFineTest {
 
     @Test
     public void should_calculate_from_monthly_periodicity_female_age_45_not_risky_ifine4() throws Exception {
-        Quote quote = quote(TestUtil.productIFineService());
-        productIFine.calculateQuote(quote, productQuotation(IFINE4, 45, EVERY_MONTH, GenderCode.FEMALE, FALSE));
+
+        Quote quote = quoteService.createQuote(RequestFactory.generateSession(), ChannelType.LINE, ProductQuotationFactory.constructIFine(IFINE4, 45, EVERY_MONTH, GenderCode.FEMALE, false));
         ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
         assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(965.7);
         assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(6.57);
@@ -404,8 +406,8 @@ public class ProductIFineTest {
 
     @Test
     public void should_calculate_from_monthly_periodicity_female_age_45_risky_ifine4() throws Exception {
-        Quote quote = quote(TestUtil.productIFineService());
-        productIFine.calculateQuote(quote, productQuotation(IFINE4, 45, EVERY_MONTH, GenderCode.FEMALE, TRUE));
+
+        Quote quote = quoteService.createQuote(RequestFactory.generateSession(), ChannelType.LINE, ProductQuotationFactory.constructIFine(IFINE4, 45, EVERY_MONTH, GenderCode.FEMALE, true));
         ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
         assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(2192.63);
         assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(6.57);
@@ -417,8 +419,8 @@ public class ProductIFineTest {
 
     @Test
     public void should_calculate_from_monthly_periodicity_female_age_45_not_risky_ifine5() throws Exception {
-        Quote quote = quote(TestUtil.productIFineService());
-        productIFine.calculateQuote(quote, productQuotation(IFINE5, 45, EVERY_MONTH, GenderCode.FEMALE, FALSE));
+
+        Quote quote = quoteService.createQuote(RequestFactory.generateSession(), ChannelType.LINE, ProductQuotationFactory.constructIFine(IFINE5, 45, EVERY_MONTH, GenderCode.FEMALE, false));
         ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
         assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(1382.94);
         assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(6.57);
@@ -430,8 +432,8 @@ public class ProductIFineTest {
 
     @Test
     public void should_calculate_from_monthly_periodicity_female_age_45_risky_ifine5() throws Exception {
-        Quote quote = quote(TestUtil.productIFineService());
-        productIFine.calculateQuote(quote, productQuotation(IFINE5, 45, EVERY_MONTH, GenderCode.FEMALE, TRUE));
+
+        Quote quote = quoteService.createQuote(RequestFactory.generateSession(), ChannelType.LINE, ProductQuotationFactory.constructIFine(IFINE5, 45, EVERY_MONTH, GenderCode.FEMALE, true));
         ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
         assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(3191.4);
         assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(6.57);
@@ -443,8 +445,8 @@ public class ProductIFineTest {
 
     @Test
     public void should_calculate_from_yearly_periodicity_male_age_48_not_risky_ifine1() throws Exception {
-        Quote quote = quote(TestUtil.productIFineService());
-        productIFine.calculateQuote(quote, productQuotation(IFINE1, 48, EVERY_MONTH, GenderCode.MALE, FALSE));
+
+        Quote quote = quoteService.createQuote(RequestFactory.generateSession(), ChannelType.LINE, ProductQuotationFactory.constructIFine(IFINE1, 48, EVERY_MONTH, GenderCode.MALE, false));
         ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
         assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(368.55);
         assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(14.96);

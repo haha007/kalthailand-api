@@ -47,7 +47,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @WebAppConfiguration
 @ActiveProfiles("test")
 public class Product10ECTest {
-    
+
     @Inject
     private QuoteService quoteService;
 

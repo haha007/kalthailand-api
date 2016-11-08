@@ -116,7 +116,7 @@ public class ProductQuotationFactory {
     }
 
     private static ProductQuotation constructIFineDefault() {
-        return constructQuotation(ProductType.PRODUCT_IFINE, ProductIFinePackage.IFINE1.name(), 32, PeriodicityCode.EVERY_MONTH, 10000.0, false, 35, GenderCode.MALE, 1, ProductDividendOption.ANNUAL_PAY_BACK_CASH);
+        return constructQuotation(ProductType.PRODUCT_IFINE, ProductIFinePackage.IFINE1.name(), 32, PeriodicityCode.EVERY_MONTH, ProductIFinePackage.IFINE1.getSumInsured(), true, 35, GenderCode.MALE, 1, ProductDividendOption.ANNUAL_PAY_BACK_CASH);
     }
 
     public static ProductQuotation constructDefault(ProductType productType) {
@@ -142,5 +142,18 @@ public class ProductQuotationFactory {
 
     public static ProductQuotation construct10ECDefault(int age, PeriodicityCode periodicityCode, double amount, boolean isSumInsured, int tax) {
         return constructQuotation(ProductType.PRODUCT_10_EC, null, age, periodicityCode, amount, isSumInsured, tax, GenderCode.MALE, 1, ProductDividendOption.ANNUAL_PAY_BACK_CASH);
+    }
+
+    public static ProductQuotation constructIBeginDefault(int age, PeriodicityCode periodicityCode, double amount, boolean isSumInsurd, GenderCode genderCode) {
+        return constructQuotation(ProductType.PRODUCT_IBEGIN, null, age, periodicityCode, amount, isSumInsurd, 23, genderCode, 1, ProductDividendOption.ANNUAL_PAY_BACK_CASH);
+    }
+
+    public static ProductQuotation constructIFine(ProductIFinePackage productIFinePackage, int age, PeriodicityCode periodicityCode, GenderCode genderCode, boolean riskOccupation) {
+        int occupationId = 1;
+        if (riskOccupation) {
+            occupationId = 21;
+        }
+        ProductQuotation productQuotation = constructQuotation(ProductType.PRODUCT_IFINE, productIFinePackage.name(), age, periodicityCode, productIFinePackage.getSumInsured(), true, 23, genderCode, occupationId, null);
+        return productQuotation;
     }
 }
