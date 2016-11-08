@@ -600,7 +600,10 @@
         if ($scope.policyID) {
             searchForPolicyDetail();
         }
-
+        $scope.AtpMode = {
+            NO_AUTOPAY: 0,
+            AUTOPAY: 1
+        }
         // AKT-820
         $scope.onSubmitPaymentDetails = function () {
             $scope.isFetching = true;

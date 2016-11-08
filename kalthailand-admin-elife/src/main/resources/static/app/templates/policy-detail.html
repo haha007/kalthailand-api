@@ -37,9 +37,9 @@
                 {{ successMessage }}
             </div>
             <div id="paymentDetailContainer">
-                <div
-                        class="page-header"
-                        ng-show="policyDetail && policyDetail.status == 'PENDING_PAYMENT'">
+                <!-- PAYMENT DETAILS -->
+                <div class="page-header"
+                     ng-show="policyDetail && policyDetail.status == 'PENDING_PAYMENT'">
                     <h3>Payment details</h3>
                 </div>
                 <form
@@ -80,6 +80,8 @@
                     </div>
                 </form>
             </div>
+
+            <!-- INSURED DETAILS -->
             <div class="page-header" ng-show="policyDetail">
                 <h3>Insured details</h3>
             </div>
@@ -133,6 +135,7 @@
                     </div>
                 </div>
             </form>
+            <!-- POLICY DETAILS -->
             <div class="page-header" ng-show="policyDetail">
                 <h3>Policy details</h3>
             </div>
@@ -201,10 +204,10 @@
                 </div>
             </form>
             <div ng-hide="policyDetail && policyDetail.status == 'PENDING_PAYMENT'">
+                <!-- DOCUMENTS -->
                 <div class="page-header" ng-show="policyDetail">
                     <h3>Documents</h3>
                 </div>
-
                 <div class="bs-glyphicons" ng-show="policyDetail">
                     <ul class="bs-glyphicons-list">
                         <li class="img-thumbnail">
@@ -219,7 +222,7 @@
                                 <span class="attachment-item">Application Form (validated)</span>
                             </a>
                         </li>
-                        <li class="img-thumbnail" ng-show="policyDetail.premiumsData.financialScheduler.periodicity.code == 'EVERY_MONTH'">
+                        <li class="img-thumbnail" ng-show="policyDetail.premiumsData.financialScheduler.atpMode == AtpMode.AUTOPAY">
                             <i class="fa fa-paperclip" aria-hidden="true"></i>
                             <a ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/DA_FORM/download">
                                 <span class="attachment-item">DA Form</span>
@@ -234,29 +237,7 @@
                     </ul>
                 </div>
 
-                <!--
-                <div class="row" ng-show="policyDetail">
-                    <div class="col-sm-3 img-thumbnail glyphicon-class">
-                        <i class="fa fa-paperclip" aria-hidden="true"></i>
-                        <a class="glyphicon-class" ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/APPLICATION_FORM/download">
-                            <span class="glyphicon-class">Application Form (not validated)</span>
-                        </a>
-                    </div>
-                    <div class="col-sm-3" ng-show="policyDetail.status == 'VALIDATED'">
-                        <a ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/APPLICATION_FORM_VALIDATED/download">
-                            <i class="fa fa-paperclip" aria-hidden="true"></i> Application Form (validated)
-                        </a>
-                    </div>
-                    <div class="col-sm-3" ng-show="policyDetail.premiumsData.financialScheduler.periodicity.code == 'EVERY_MONTH'">
-                        <a ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/DA_FORM/download"><i class="fa fa-paperclip" aria-hidden="true"></i> DA Form</a>
-                    </div>
-                    <div class="col-sm-3" ng-show="policyDetail.status == 'VALIDATED'">
-                        <a ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/ERECEIPT_PDF/download">
-                            <i class="fa fa-paperclip" aria-hidden="true"></i>
-                            <span class="glyphicon-class">eReceipt</span>
-                        </a>
-                    </div>
-                </div>-->
+                <!-- NOTIFICATION -->
                 <div class="page-header" ng-show="policyDetail && policyDetail.status != 'VALIDATED'">
                     <h3>Notifications</h3>
                 </div>
@@ -277,6 +258,8 @@
                         </div>
                     </form>
                 </div>
+
+                <!-- VALIDATION -->
                 <div class="page-header" ng-show="policyDetail && policyDetail.status != 'VALIDATED'">
                     <h3>Validation</h3>
                 </div>
