@@ -1,12 +1,14 @@
 package th.co.krungthaiaxa.api.elife.factory;
 
 import org.springframework.stereotype.Component;
+import th.co.krungthaiaxa.api.common.exeption.UnexpectedException;
 import th.co.krungthaiaxa.api.elife.data.IProtectPackage;
 import th.co.krungthaiaxa.api.elife.model.Amount;
 import th.co.krungthaiaxa.api.elife.model.enums.AtpMode;
 import th.co.krungthaiaxa.api.elife.model.enums.GenderCode;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 import th.co.krungthaiaxa.api.elife.model.enums.ProductDividendOption;
+import th.co.krungthaiaxa.api.elife.products.ProductIFinePackage;
 import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
 import th.co.krungthaiaxa.api.elife.products.utils.ProductUtils;
@@ -103,6 +105,35 @@ public class ProductQuotationFactory {
 
     public static ProductQuotation constructIProtectDefault(PeriodicityCode periodicityCode) {
         return ProductQuotationFactory.constructIGen(33, periodicityCode, 100000.0, true, 35, ProductDividendOption.END_OF_CONTRACT_PAY_BACK);
+    }
+
+    public static ProductQuotation construct10ECDefault() {
+        return constructQuotation(ProductType.PRODUCT_10_EC, null, 32, PeriodicityCode.EVERY_MONTH, 10000.0, false, 35, GenderCode.MALE, 1, ProductDividendOption.ANNUAL_PAY_BACK_CASH);
+    }
+
+    private static ProductQuotation constructIBeginECDefault() {
+        return constructQuotation(ProductType.PRODUCT_IBEGIN, null, 32, PeriodicityCode.EVERY_MONTH, 10000.0, false, 35, GenderCode.MALE, 1, ProductDividendOption.ANNUAL_PAY_BACK_CASH);
+    }
+
+    private static ProductQuotation constructIFineDefault() {
+        return constructQuotation(ProductType.PRODUCT_IFINE, ProductIFinePackage.IFINE1.name(), 32, PeriodicityCode.EVERY_MONTH, 10000.0, false, 35, GenderCode.MALE, 1, ProductDividendOption.ANNUAL_PAY_BACK_CASH);
+    }
+
+    public static ProductQuotation constructDefault(ProductType productType) {
+        if (productType == ProductType.PRODUCT_IGEN) {
+            return constructIGenDefault();
+        } else if (productType == ProductType.PRODUCT_IPROTECT) {
+            return constructIProtectDefault();
+        } else if (productType == ProductType.PRODUCT_10_EC) {
+            return construct10ECDefault();
+        } else if (productType == ProductType.PRODUCT_IBEGIN) {
+            return constructIBeginECDefault();
+        } else if (productType == ProductType.PRODUCT_IFINE) {
+            return constructIFineDefault();
+        } else {
+            throw new UnexpectedException("Not support " + productType);
+        }
 
     }
+
 }

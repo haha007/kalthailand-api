@@ -11,7 +11,6 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import th.co.krungthaiaxa.api.elife.test.ELifeTest;
 import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
 import th.co.krungthaiaxa.api.elife.TestUtil;
 import th.co.krungthaiaxa.api.elife.exception.ElifeException;
@@ -23,11 +22,11 @@ import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
 import th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus;
-import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 import th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus;
 import th.co.krungthaiaxa.api.elife.service.PaymentService;
 import th.co.krungthaiaxa.api.elife.service.PolicyService;
 import th.co.krungthaiaxa.api.elife.service.QuoteService;
+import th.co.krungthaiaxa.api.elife.test.ELifeTest;
 
 import javax.inject.Inject;
 
@@ -282,11 +281,7 @@ public class PolicyServiceTest extends ELifeTest {
     }
 
     private Policy getPolicy() {
-        Quote quote = quoteService.createQuote(randomNumeric(20), ChannelType.LINE, TestUtil.productQuotation(25, PeriodicityCode.EVERY_MONTH));
-        TestUtil.quote(quote, TestUtil.beneficiary(100.0));
-        quote = quoteService.updateQuote(quote, "token");
-
-        return policyService.createPolicy(quote);
+        return policyFactory.createPolicyWithPendingPaymentStatus(ProductQuotationFactory.constructIGenDefaultWithMonthlyPayment());
     }
 
 }

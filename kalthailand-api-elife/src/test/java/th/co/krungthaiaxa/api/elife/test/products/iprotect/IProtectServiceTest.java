@@ -12,28 +12,29 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
-import th.co.krungthaiaxa.api.elife.test.ELifeTest;
 import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
 import th.co.krungthaiaxa.api.elife.TestUtil;
 import th.co.krungthaiaxa.api.elife.data.IProtectPackage;
 import th.co.krungthaiaxa.api.elife.exception.QuoteCalculationException;
+import th.co.krungthaiaxa.api.elife.factory.ProductQuotationFactory;
 import th.co.krungthaiaxa.api.elife.model.Amount;
 import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.model.Policy;
-import th.co.krungthaiaxa.api.elife.model.product.ProductIProtectPremium;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
 import th.co.krungthaiaxa.api.elife.model.enums.GenderCode;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
+import th.co.krungthaiaxa.api.elife.model.product.ProductIProtectPremium;
 import th.co.krungthaiaxa.api.elife.products.ProductAmounts;
 import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
-import th.co.krungthaiaxa.api.elife.test.products.ProductAssertUtil;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
-import th.co.krungthaiaxa.api.elife.products.utils.ProductUtils;
 import th.co.krungthaiaxa.api.elife.products.iprotect.IProtectDiscountRateExcelLoaderService;
 import th.co.krungthaiaxa.api.elife.products.iprotect.IProtectQuoteCalculationService;
+import th.co.krungthaiaxa.api.elife.products.utils.ProductUtils;
 import th.co.krungthaiaxa.api.elife.service.PolicyService;
 import th.co.krungthaiaxa.api.elife.service.QuoteService;
+import th.co.krungthaiaxa.api.elife.test.ELifeTest;
+import th.co.krungthaiaxa.api.elife.test.products.ProductAssertUtil;
 
 import javax.inject.Inject;
 import java.time.LocalDate;
@@ -250,25 +251,11 @@ public class IProtectServiceTest extends ELifeTest {
         int age = 32;
         PeriodicityCode periodicityCode = PeriodicityCode.EVERY_MONTH;
         int taxPercentage = 35;
+        return ProductQuotationFactory.constructIProtect(age, periodicityCode, null, true, taxPercentage, GenderCode.MALE);
 
-        return TestUtil.productQuotation(
-                ProductType.PRODUCT_IPROTECT,
-                IProtectPackage.IPROTECT10.name(),
-                age,
-                periodicityCode,
-                null, true,
-                taxPercentage,
-                GenderCode.MALE);
     }
 
     private ProductQuotation initDefaultProductQuotation(boolean isInputSumInsured, double inputAmountValue) {
-        ProductQuotation productQuotation = initDefaultProductQuotation();
-        Amount inputAmount = ProductUtils.amountTHB(inputAmountValue);
-        if (isInputSumInsured) {
-            productQuotation.setSumInsuredAmount(inputAmount);
-        } else {
-            productQuotation.setPremiumAmount(inputAmount);
-        }
-        return productQuotation;
+        return ProductQuotationFactory.constructIProtect(32, PeriodicityCode.EVERY_MONTH, inputAmountValue, isInputSumInsured, 35, GenderCode.MALE);
     }
 }

@@ -7,10 +7,11 @@ import th.co.krungthaiaxa.api.elife.model.FinancialScheduler;
 import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.model.Periodicity;
 import th.co.krungthaiaxa.api.elife.model.Policy;
-import th.co.krungthaiaxa.api.elife.model.product.PremiumsData;
-import th.co.krungthaiaxa.api.elife.model.product.ProductIBeginPremium;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.enums.GenderCode;
+import th.co.krungthaiaxa.api.elife.model.product.PremiumsData;
+import th.co.krungthaiaxa.api.elife.model.product.ProductIBeginPremium;
+import th.co.krungthaiaxa.api.elife.products.utils.ProductQuotationUtils;
 import th.co.krungthaiaxa.api.elife.products.utils.ProductUtils;
 import th.co.krungthaiaxa.api.elife.repository.ProductIBeginRateRepository;
 
@@ -59,6 +60,7 @@ public class ProductIBeginService implements ProductService {
         }
 
         Insured insured = quote.getInsureds().stream().filter(Insured::getMainInsuredIndicator).findFirst().get();
+        ProductQuotationUtils.setValidAtpModeToQuote(quote, productQuotation);
 
         // copy data already gathered in ProductQuotation
         quote.getPremiumsData().getFinancialScheduler().getPeriodicity().setCode(productQuotation.getPeriodicityCode());
@@ -110,6 +112,7 @@ public class ProductIBeginService implements ProductService {
     @Override
     public CommonData initCommonData(ProductQuotation productQuotation) {
         CommonData commonData = new CommonData();
+        ProductQuotationUtils.validateAtpMode(productQuotation);
         commonData.setMaxAge(MAX_AGE);
         commonData.setMaxPremium(amountTHB(PREMIUM_MAX));
         commonData.setMaxSumInsured(amountTHB(SUM_INSURED_MAX));

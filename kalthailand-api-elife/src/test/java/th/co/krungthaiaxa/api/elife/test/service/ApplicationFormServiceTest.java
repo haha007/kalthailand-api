@@ -11,11 +11,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.api.common.utils.IOUtil;
-import th.co.krungthaiaxa.api.elife.test.ELifeTest;
 import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
-import th.co.krungthaiaxa.api.elife.TestUtil;
-import th.co.krungthaiaxa.api.elife.data.IProtectPackage;
 import th.co.krungthaiaxa.api.elife.factory.BeneficiaryFactory;
+import th.co.krungthaiaxa.api.elife.factory.ProductQuotationFactory;
 import th.co.krungthaiaxa.api.elife.model.CoverageBeneficiary;
 import th.co.krungthaiaxa.api.elife.model.GeographicalAddress;
 import th.co.krungthaiaxa.api.elife.model.Periodicity;
@@ -36,6 +34,7 @@ import th.co.krungthaiaxa.api.elife.products.ProductType;
 import th.co.krungthaiaxa.api.elife.service.ApplicationFormService;
 import th.co.krungthaiaxa.api.elife.service.PolicyService;
 import th.co.krungthaiaxa.api.elife.service.QuoteService;
+import th.co.krungthaiaxa.api.elife.test.ELifeTest;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -368,18 +367,7 @@ public class ApplicationFormServiceTest extends ELifeTest {
     }
 
     private ProductQuotation createDefaultProductQuotation() {
-        int age = 32;
-        PeriodicityCode periodicityCode = PeriodicityCode.EVERY_MONTH;
-        int taxPercentage = 35;
-
-        return TestUtil.productQuotation(
-                ProductType.PRODUCT_IPROTECT,
-                IProtectPackage.IPROTECT10.name(),
-                age,
-                periodicityCode,
-                282797.43, true,
-                taxPercentage,
-                GenderCode.MALE);
+        return ProductQuotationFactory.constructIProtectDefault();
     }
 
     private Policy getPolicyiFine() {

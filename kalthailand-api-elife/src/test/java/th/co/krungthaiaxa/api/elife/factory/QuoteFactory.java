@@ -5,13 +5,11 @@ import com.icegreen.greenmail.util.ServerSetupTest;
 import org.junit.Rule;
 import org.springframework.stereotype.Component;
 import th.co.krungthaiaxa.api.elife.TestUtil;
-import th.co.krungthaiaxa.api.elife.data.IProtectPackage;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
 import th.co.krungthaiaxa.api.elife.model.enums.GenderCode;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
-import th.co.krungthaiaxa.api.elife.products.ProductType;
 import th.co.krungthaiaxa.api.elife.service.PolicyService;
 import th.co.krungthaiaxa.api.elife.service.QuoteService;
 
@@ -29,14 +27,6 @@ public class QuoteFactory {
 
     @Rule
     public final GreenMailRule greenMail = new GreenMailRule(ServerSetupTest.SMTP_IMAP);
-
-    public Quote createDefaultQuoteForLine(int age, String email) {
-        Quote quote = quoteService.createQuote(RequestFactory.generateSession(), ChannelType.LINE, TestUtil.productQuotation(age, PeriodicityCode.EVERY_MONTH));
-        TestUtil.quote(quote, BeneficiaryFactory.constructDefaultBeneficiary());
-        PersonFactory.setValuesToFirstInsuredPerson(quote, age, "MockInsuredPerson", email);
-        quote = quoteService.updateQuote(quote, RequestFactory.generateAccessToken());
-        return quote;
-    }
 
     public QuoteResult createDefaultIGen() {
         return createDefaultIGen(ProductQuotationFactory.DUMMY_EMAIL);
@@ -66,22 +56,15 @@ public class QuoteFactory {
         Quote quote = quoteService.createQuote(sessionId, channelType, productQuotation);
         TestUtil.quote(quote, BeneficiaryFactory.constructDefaultBeneficiary());
         PersonFactory.setValuesToFirstInsuredPerson(quote, "MockInsuredPerson", email);
-        quote = quoteService.updateQuote(quote, RequestFactory.generateAccessToken());
-        return new QuoteResult(quote, sessionId, channelType);
+        String accessToken = RequestFactory.generateAccessToken();
+        quote = quoteService.updateQuote(quote, accessToken);
+        return new QuoteResult(quote, sessionId, accessToken, channelType);
     }
 
     public Quote createDefaultIProtectQuoteForLine(int age, String email) {
         PeriodicityCode periodicityCode = PeriodicityCode.EVERY_MONTH;
         int taxPercentage = 35;
-
-        ProductQuotation productQuotation = TestUtil.productQuotation(
-                ProductType.PRODUCT_IPROTECT,
-                IProtectPackage.IPROTECT10.name(),
-                age,
-                periodicityCode,
-                2000.0, false,
-                taxPercentage,
-                GenderCode.MALE);
+        ProductQuotation productQuotation = ProductQuotationFactory.constructIProtect(age, periodicityCode, 2000.0, false, taxPercentage, GenderCode.MALE);
 
         Quote quote = quoteService.createQuote(RequestFactory.generateSession(), ChannelType.LINE, productQuotation);
         TestUtil.quote(quote, BeneficiaryFactory.constructDefaultBeneficiary());
@@ -93,14 +76,13 @@ public class QuoteFactory {
     public static class QuoteResult {
         private Quote quote;
         private String sessionId;
+        private String accessToken;
         private ChannelType channelType;
 
-        public QuoteResult() {
-        }
-
-        public QuoteResult(Quote quote, String sessionId, ChannelType channelType) {
+        public QuoteResult(Quote quote, String sessionId, String accessToken, ChannelType channelType) {
             this.quote = quote;
             this.sessionId = sessionId;
+            this.accessToken = accessToken;
             this.channelType = channelType;
         }
 
@@ -126,6 +108,14 @@ public class QuoteFactory {
 
         public void setQuote(Quote quote) {
             this.quote = quote;
+        }
+
+        public String getAccessToken() {
+            return accessToken;
+        }
+
+        public void setAccessToken(String accessToken) {
+            this.accessToken = accessToken;
         }
     }
 }

@@ -191,7 +191,7 @@ public class CollectionFileProcessingServiceTest extends ELifeTest {
         Policy policy = createValidatedIGenPolicyWithDefaultPayment(EVERY_YEAR);
         InputStream inputStream = CollectionFileFactory.constructCollectionExcelFileByPolicy(policy);
         assertThatThrownBy(() -> rlsService.importCollectionFile(inputStream))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(BadArgumentException.class);
     }
 
     //TODO miss testing logic
