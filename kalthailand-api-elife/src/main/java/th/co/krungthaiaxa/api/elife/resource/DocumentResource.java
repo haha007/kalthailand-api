@@ -1,10 +1,22 @@
 package th.co.krungthaiaxa.api.elife.resource;
 
-import io.swagger.annotations.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+import th.co.krungthaiaxa.api.common.model.error.Error;
+import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
+import th.co.krungthaiaxa.api.common.utils.IOUtil;
+import th.co.krungthaiaxa.api.common.utils.JsonUtil;
 import th.co.krungthaiaxa.api.elife.exception.ImageTooSmallException;
 import th.co.krungthaiaxa.api.elife.exception.InputImageException;
 import th.co.krungthaiaxa.api.elife.exception.OutputImageException;
@@ -13,11 +25,8 @@ import th.co.krungthaiaxa.api.elife.model.Document;
 import th.co.krungthaiaxa.api.elife.model.DocumentDownload;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.enums.DocumentType;
-import th.co.krungthaiaxa.api.common.model.error.Error;
-import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
 import th.co.krungthaiaxa.api.elife.service.DocumentService;
 import th.co.krungthaiaxa.api.elife.service.PolicyService;
-import th.co.krungthaiaxa.api.common.utils.JsonUtil;
 import th.co.krungthaiaxa.api.elife.utils.WatermarkUtil;
 
 import javax.inject.Inject;
@@ -28,7 +37,12 @@ import java.net.URLConnection;
 import java.util.Base64;
 import java.util.Optional;
 
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.NOT_ACCEPTABLE;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.UNSUPPORTED_MEDIA_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
@@ -37,6 +51,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 @Api(value = "Documents")
 public class DocumentResource {
     private final static Logger logger = LoggerFactory.getLogger(DocumentResource.class);
+    public static final InputStream WATER_MARK = IOUtil.loadInputStreamFromClassPath("/watermark_white.png");
     private final DocumentService documentService;
     private final PolicyService policyService;
 
@@ -127,7 +142,7 @@ public class DocumentResource {
         }
 
         InputStream in = new ByteArrayInputStream(inputImage);
-        InputStream watermarkImage = this.getClass().getResourceAsStream("/watermark_white.png");
+        InputStream WATER_MARK_IMAGE = this.getClass().getResourceAsStream("/watermark_white.png");
 
         String mimeType;
         try {
@@ -138,7 +153,7 @@ public class DocumentResource {
 
         byte[] content;
         try {
-            content = WatermarkUtil.addTextWatermark(watermarkImage, mimeType, in);
+            content = WatermarkUtil.addTextWatermark(WATER_MARK_IMAGE, mimeType, in);
         } catch (InputImageException e) {
             return new ResponseEntity<>(JsonUtil.getJson(ErrorCode.WATERMARK_IMAGE_INPUT_NOT_BUFFERABLE), BAD_REQUEST);
         } catch (OutputImageException e) {

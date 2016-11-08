@@ -43,7 +43,6 @@ import java.util.Base64;
 import java.util.List;
 
 import static java.nio.charset.Charset.forName;
-import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpMethod.PUT;
@@ -222,16 +221,12 @@ public class DocumentResourceTest extends ELifeTest {
     }
 
     private Policy getPolicy() throws URISyntaxException, IOException {
-        String sessionId = randomNumeric(20);
         QuoteFactory.QuoteResult quoteResult = quoteFactory.createQuote(ProductQuotationFactory.constructIGenDefault(), TestUtil.DUMMY_EMAIL);
         Quote quote = quoteResult.getQuote();
-//        Quote quote = quoteService.createQuote(sessionId, ChannelType.LINE, TestUtil.productQuotation(25, PeriodicityCode.EVERY_MONTH));
-//        TestUtil.quote(quote, TestUtil.beneficiary(100.0));
-//        quote = quoteService.updateProfessionNameAndCheckBlackList(quote, "token");
 
         URI quoteCreationURI = new URI("http://localhost:" + port + "/policies");
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(quoteCreationURI)
-                .queryParam("sessionId", sessionId)
+                .queryParam("sessionId", quoteResult.getSessionId())
                 .queryParam("channelType", ChannelType.LINE.name());
         ResponseEntity<String> response = template.exchange(builder.toUriString(), POST, new HttpEntity<>(TestUtil.getJSon(quote)), String.class);
         return TestUtil.getPolicyFromJSon(response.getBody());
