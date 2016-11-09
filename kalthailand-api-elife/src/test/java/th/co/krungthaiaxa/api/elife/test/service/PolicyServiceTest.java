@@ -12,7 +12,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
-import th.co.krungthaiaxa.api.elife.exception.ElifeException;
+import th.co.krungthaiaxa.api.elife.exception.PolicyValidatedProcessException;
 import th.co.krungthaiaxa.api.elife.exception.PolicyValidationException;
 import th.co.krungthaiaxa.api.elife.factory.PolicyFactory;
 import th.co.krungthaiaxa.api.elife.factory.productquotation.ProductQuotationFactory;
@@ -278,7 +278,7 @@ public class PolicyServiceTest extends ELifeTest {
     public void should_not_update_policy_status_to_validated_when_previous_status_is_not_pending_validation() {
         Policy policy = getPolicy();
         assertThatThrownBy(() -> policyFactory.updateFromPendingValidationToValidated(policy))
-                .isInstanceOf(ElifeException.class);
+                .isInstanceOf(PolicyValidatedProcessException.class);
         Assertions.assertThat(policy.getDocuments()).hasSize(0);
     }
 
