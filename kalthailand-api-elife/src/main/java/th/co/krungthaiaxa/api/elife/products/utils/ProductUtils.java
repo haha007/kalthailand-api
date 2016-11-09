@@ -105,8 +105,13 @@ public class ProductUtils {
         return quotable.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode();
     }
 
-    public static Integer getAtpMode(Quotable quotable) {
+    public static Integer getAtpModeValue(Quotable quotable) {
         return quotable.getPremiumsData().getFinancialScheduler().getAtpMode();
+    }
+
+    public static AtpMode getAtpMode(Quotable quotable) {
+        Integer atpModeValue = getAtpModeValue(quotable);
+        return AtpMode.enumOfNumValue(atpModeValue);
     }
 
     public static boolean isAtpModeEnable(Integer atpMode) {
@@ -115,7 +120,7 @@ public class ProductUtils {
     }
 
     public static boolean isAtpModeEnable(Quotable quotable) {
-        Integer atpMode = ProductUtils.getAtpMode(quotable);
+        Integer atpMode = ProductUtils.getAtpModeValue(quotable);
         return isAtpModeEnable(atpMode);
     }
 

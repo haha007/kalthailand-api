@@ -5,6 +5,7 @@ import org.junit.Assert;
 import org.springframework.stereotype.Component;
 import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
 import th.co.krungthaiaxa.api.common.utils.IOUtil;
+import th.co.krungthaiaxa.api.common.utils.StringUtil;
 import th.co.krungthaiaxa.api.elife.model.DocumentDownload;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.enums.DocumentType;
@@ -27,13 +28,15 @@ public class DocumentAssertHelper {
         Assert.assertNotNull(msg, documentDownload);
         byte[] pdfContent = documentService.getDocumentDownloadContent(documentDownload);
         PeriodicityCode periodicityCode = ProductUtils.getPeriodicityCode(policy);
-        String fileName = String.format("%s_%s_%s_%s_%s_%s.pdf",
+
+        String fileName = String.format("%s_%s_%s_%s_%s_%s_%s.pdf",
                 DateTimeUtil.formatNowForFileShortPath(),
                 policy.getPolicyId(),
                 policy.getCommonData().getProductId(),
-                policy.getStatus(),
-                periodicityCode,
-                documentType);
+                StringUtil.toCamelCaseWithoutDelimiter(policy.getStatus().name(), '_'),
+                periodicityCode.getNbOfMonths() + "M",
+                StringUtil.toCamelCaseWithoutDelimiter(ProductUtils.getAtpMode(policy).name(), '_'),
+                StringUtil.toCamelCaseWithoutDelimiter(documentType.name(), '_'));
         IOUtil.writeBytesToRelativeFile(TestUtil.PATH_TEST_RESULT + "/documents/" + fileName, pdfContent);
         Assert.assertTrue(msg, StringUtils.isNotBlank(documentDownload.getContent()));
     }

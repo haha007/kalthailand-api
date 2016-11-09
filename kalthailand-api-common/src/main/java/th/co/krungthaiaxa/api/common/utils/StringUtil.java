@@ -1,6 +1,7 @@
 package th.co.krungthaiaxa.api.common.utils;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.text.WordUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -98,6 +99,14 @@ public class StringUtil {
             }
         }
         return result;
+    }
+
+    public static String toCamelCaseWithoutDelimiter(String string, Character delimiter) {
+        if (StringUtils.isBlank(string)) {
+            return string;
+        }
+        String result = WordUtils.capitalize(string.toLowerCase(), delimiter);
+        return result.replace(delimiter.toString(), "");
     }
 
     public static String formatNumberLength(long numberString, int length) {
