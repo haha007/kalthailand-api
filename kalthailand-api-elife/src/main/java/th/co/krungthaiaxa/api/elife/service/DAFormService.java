@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.common.exeption.FileIOException;
-import th.co.krungthaiaxa.api.common.utils.PdfIOUtil;
 import th.co.krungthaiaxa.api.common.utils.PdfUtil;
 import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.model.Person;
@@ -31,7 +30,7 @@ public class DAFormService {
     public final static Logger LOGGER = LoggerFactory.getLogger(DAFormService.class);
     public static final String DA_FORM_PDF_PATH = "da-form/da-form-empty.pdf";
     private static final float MEDIUM_SIZE = 13f;
-    private final BaseFont baseFont = getBaseFont();
+    private final BaseFont baseFont = PdfUtil.loadBaseFont();
 
     public byte[] generateDAFormPdf(Policy policy) {
         try (ByteArrayOutputStream content = new ByteArrayOutputStream()) {
@@ -111,9 +110,5 @@ public class DAFormService {
         PdfUtil.writeText(page, baseFont, "0", 490, 488, MEDIUM_SIZE);
         PdfUtil.writeText(page, baseFont, "0", 512, 488, MEDIUM_SIZE);
 
-    }
-
-    private BaseFont getBaseFont() {
-        return PdfIOUtil.loadFontFromClassPath("ANGSAB_1.ttf", "/ereceipt/ANGSAB_1.TTF");
     }
 }

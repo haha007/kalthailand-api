@@ -20,4 +20,8 @@ public class PdfUtil {
         pdfContentByte.showText(text);
         pdfContentByte.endText();
     }
+
+    public static BaseFont loadBaseFont() {
+        return PdfIOUtil.loadFontFromClassPath("ANGSAB_1.ttf", "/ereceipt/ANGSAB_1.TTF");
+    }
 }

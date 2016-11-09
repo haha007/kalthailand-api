@@ -72,8 +72,8 @@ public class ProductUtils {
         }
     };
 
-    public static String validateExistProductName(Policy policy) {
-        String productLogicName = policy.getCommonData().getProductId();
+    public static String validateExistProductName(Quotable quotable) {
+        String productLogicName = quotable.getCommonData().getProductId();
         ProductType productType = ProductUtils.validateExistProductTypeByLogicName(productLogicName);
         return productType.getDisplayName();
     }
@@ -218,7 +218,7 @@ public class ProductUtils {
         isFalse(insured.getAgeAtSubscription() < minAge, ageIsTooLowException.apply(minAge));
     }
 
-    public static Insured validateMainInsured(Quote quote) {
+    public static Insured validateMainInsured(Quotable quote) {
         notNull(quote.getInsureds(), noInsured);
         isNotEqual(quote.getInsureds().size(), 0, noInsured);
         isEqual(quote.getInsureds().size(), 1, insuredMoreThanOne);
