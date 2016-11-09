@@ -605,6 +605,9 @@
             AUTOPAY: 1
         };
         $scope.isEnabledAutoPay = function (policy) {
+            if (!hasValue(policy)) {
+                return false;
+            }
             return policy.premiumsData.financialScheduler.atpMode == $scope.AtpMode.AUTOPAY;
         };
         // AKT-820
