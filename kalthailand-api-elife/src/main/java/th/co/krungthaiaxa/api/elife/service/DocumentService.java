@@ -13,6 +13,7 @@ import th.co.krungthaiaxa.api.elife.model.enums.DocumentType;
 import th.co.krungthaiaxa.api.elife.repository.DocumentDownloadRepository;
 import th.co.krungthaiaxa.api.elife.repository.DocumentRepository;
 import th.co.krungthaiaxa.api.elife.repository.PolicyRepository;
+import th.co.krungthaiaxa.api.elife.utils.DocumentUtils;
 
 import java.nio.charset.Charset;
 import java.time.Instant;
@@ -37,6 +38,15 @@ public class DocumentService {
 
     public DocumentDownload findDocumentDownload(String documentId) {
         return documentDownloadRepository.findByDocumentId(documentId);
+    }
+
+    public DocumentDownload findDocumentDownload(Policy policy, DocumentType documentType) {
+        DocumentDownload result = null;
+        Document document = DocumentUtils.findDocument(policy, documentType);
+        if (document != null) {
+            result = findDocumentDownload(document.getId());
+        }
+        return result;
     }
 
     public byte[] getDocumentDownloadContent(DocumentDownload documentDownload) {

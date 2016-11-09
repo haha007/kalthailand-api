@@ -1,4 +1,4 @@
-package th.co.krungthaiaxa.api.elife;
+package th.co.krungthaiaxa.api.elife.utils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import th.co.krungthaiaxa.api.common.model.error.Error;
@@ -31,21 +31,12 @@ import th.co.krungthaiaxa.api.elife.model.line.LinePayResponseInfo;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayResponsePaymentInfo;
 import th.co.krungthaiaxa.api.elife.products.Product10ECService;
 import th.co.krungthaiaxa.api.elife.products.ProductAmounts;
-import th.co.krungthaiaxa.api.elife.products.ProductIBeginService;
 import th.co.krungthaiaxa.api.elife.products.ProductIFinePackage;
-import th.co.krungthaiaxa.api.elife.products.ProductIFineService;
 import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
 import th.co.krungthaiaxa.api.elife.products.ProductService;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
-import th.co.krungthaiaxa.api.elife.products.igen.IGenQuoteCalculationService;
-import th.co.krungthaiaxa.api.elife.utils.BeneficiaryUtils;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeUtility;
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
 import static java.lang.Boolean.FALSE;
@@ -250,18 +241,6 @@ public class TestUtil {
         return new Product10ECService();
     }
 
-    public static ProductIBeginService productIBeginService() {
-        return new ProductIBeginService();
-    }
-
-    public static ProductIFineService productIFineService() {
-        return new ProductIFineService();
-    }
-
-    public static IGenQuoteCalculationService productIGenService() {
-        return new IGenQuoteCalculationService();
-    }
-
     //TODO use BeneficiaryFactory
     @Deprecated
     public static CoverageBeneficiary beneficiary(Double benefitPercent) {
@@ -290,22 +269,6 @@ public class TestUtil {
 
     public static Insured insured(int ageAtSubscription) {
         return insured(ageAtSubscription, TRUE, "3841200364454", 5, GenderCode.FEMALE);
-    }
-
-    public static Insured insured(int ageAtSubscription, GenderCode genderCode) {
-        return insured(ageAtSubscription, TRUE, "3841200364454", 5, genderCode);
-    }
-
-    public static Insured insured(int ageAtSubscription, Integer taxRate) {
-        return insured(ageAtSubscription, TRUE, "3841200364454", taxRate, GenderCode.FEMALE);
-    }
-
-    public static Insured insured(int ageAtSubscription, String registrationId) {
-        return insured(ageAtSubscription, TRUE, registrationId, 5, GenderCode.FEMALE);
-    }
-
-    public static Insured insured(int ageAtSubscription, boolean mainInsured) {
-        return insured(ageAtSubscription, mainInsured, "3841200364454", 5, GenderCode.FEMALE);
     }
 
     /**
@@ -410,13 +373,5 @@ public class TestUtil {
         linePayResponse.setInfo(info);
 
         return linePayResponse;
-    }
-
-    public static String decodeSimpleBody(String encodedBody) throws MessagingException, IOException {
-        InputStream inputStream = MimeUtility.decode(new ByteArrayInputStream(encodedBody.getBytes("UTF-8")), "quoted-printable");
-        BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
-        byte[] bytes = new byte[encodedBody.length()];
-        int last = bufferedInputStream.read(bytes);
-        return new String(bytes, 0, last);
     }
 }

@@ -5,7 +5,6 @@ import com.icegreen.greenmail.util.ServerSetupTest;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.springframework.stereotype.Component;
-import th.co.krungthaiaxa.api.elife.TestUtil;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.Quote;
@@ -14,6 +13,7 @@ import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
 import th.co.krungthaiaxa.api.elife.service.PaymentService;
 import th.co.krungthaiaxa.api.elife.service.PolicyService;
 import th.co.krungthaiaxa.api.elife.service.PolicyValidatedProcessingService;
+import th.co.krungthaiaxa.api.elife.utils.TestUtil;
 
 import javax.inject.Inject;
 
@@ -34,16 +34,6 @@ public class PolicyFactory {
 
     @Rule
     public final GreenMailRule greenMail = new GreenMailRule(ServerSetupTest.SMTP_IMAP);
-
-    public Policy createPolicyForLineWithPendingValidation(int age, String email) {
-        Quote quote = quoteFactory.createDefaultIProtectQuoteForLine(age, email);
-        return policyService.createPolicy(quote);
-    }
-
-    public Policy createPolicyForLineWithValidated(int age, String email) {
-        Quote quote = quoteFactory.createDefaultIProtectQuoteForLine(age, email);
-        return createPolicyWithValidatedStatus(quote);
-    }
 
     public Policy createPolicyWithValidatedStatus(ProductQuotation productQuotation) {
         return createPolicyWithValidatedStatus(productQuotation, TestUtil.DUMMY_EMAIL);
@@ -88,20 +78,25 @@ public class PolicyFactory {
         return policy;
     }
 
-    public Policy createPolicyWithValidatedStatus(Quote quote) {
-        Policy policy = createPolicyWithPendingValidationStatus(quote);
+    public Policy updateFromPendingValidationToValidated(Policy policy) {
+        return updateFromPendingValidationToValidated(policy.getPolicyId());
+    }
 
-        //Change status to Validated
+    public Policy updateFromPendingValidationToValidated(String policyId) {
         PolicyValidatedProcessingService.PolicyValidationRequest policyValidationRequest = new PolicyValidatedProcessingService.PolicyValidationRequest();
         policyValidationRequest.setAccessToken(RequestFactory.generateAccessToken());
         policyValidationRequest.setAgentCode("123456-78-901234");
         policyValidationRequest.setAgentName("Mock Agent Name");
         policyValidationRequest.setLinePayCaptureMode(LinePayCaptureMode.FAKE_WITH_SUCCESS);
-        policyValidationRequest.setPolicyId(policy.getPolicyId());
-        policy = policyValidatedProcessingService.updatePolicyStatusToValidated(policyValidationRequest);
+        policyValidationRequest.setPolicyId(policyId);
+        Policy policy = policyValidatedProcessingService.updatePolicyStatusToValidated(policyValidationRequest);
         assertFirstPaymentAfterValidatedPolicy(policy);
-//        policy = policyService.updatePolicyAfterPolicyHasBeenValidated(policy, "999999-99-999999", "Mock Agent Name", RequestFactory.generateAccessToken());
         return policy;
+    }
+
+    public Policy createPolicyWithValidatedStatus(Quote quote) {
+        Policy policy = createPolicyWithPendingValidationStatus(quote);
+        return updateFromPendingValidationToValidated(policy.getPolicyId());
     }
 
     private void assertFirstPaymentAfterValidatedPolicy(Policy policy) {
@@ -111,4 +106,5 @@ public class PolicyFactory {
         Assert.assertNotNull(payment.getRegistrationKey());
 
     }
+
 }

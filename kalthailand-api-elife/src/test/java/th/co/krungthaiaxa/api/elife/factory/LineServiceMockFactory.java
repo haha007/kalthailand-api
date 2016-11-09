@@ -1,4 +1,4 @@
-package th.co.krungthaiaxa.api.elife.mock;
+package th.co.krungthaiaxa.api.elife.factory;
 
 import org.mockito.exceptions.misusing.MockitoConfigurationException;
 import org.mockito.invocation.InvocationOnMock;

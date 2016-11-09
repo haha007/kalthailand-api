@@ -17,7 +17,7 @@ import th.co.krungthaiaxa.api.elife.test.ELifeTest;
 import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
 import th.co.krungthaiaxa.api.elife.data.ProductPremiumRate;
 import th.co.krungthaiaxa.api.elife.factory.InsuredFactory;
-import th.co.krungthaiaxa.api.elife.factory.ProductQuotationFactory;
+import th.co.krungthaiaxa.api.elife.factory.productquotation.ProductQuotationFactory;
 import th.co.krungthaiaxa.api.elife.factory.RequestFactory;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.product.ProductIGenPremium;

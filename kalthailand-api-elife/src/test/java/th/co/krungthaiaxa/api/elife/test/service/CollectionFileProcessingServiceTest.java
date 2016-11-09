@@ -14,7 +14,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.api.common.exeption.BadArgumentException;
 import th.co.krungthaiaxa.api.common.utils.IOUtil;
 import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
-import th.co.krungthaiaxa.api.elife.TestUtil;
+import th.co.krungthaiaxa.api.elife.utils.TestUtil;
 import th.co.krungthaiaxa.api.elife.data.CollectionFile;
 import th.co.krungthaiaxa.api.elife.data.CollectionFileLine;
 import th.co.krungthaiaxa.api.elife.data.DeductionFile;
@@ -22,9 +22,9 @@ import th.co.krungthaiaxa.api.elife.data.DeductionFileLine;
 import th.co.krungthaiaxa.api.elife.exception.PolicyNotFoundException;
 import th.co.krungthaiaxa.api.elife.factory.CollectionFileFactory;
 import th.co.krungthaiaxa.api.elife.factory.PolicyFactory;
-import th.co.krungthaiaxa.api.elife.factory.ProductQuotationFactory;
+import th.co.krungthaiaxa.api.elife.factory.productquotation.ProductQuotationFactory;
 import th.co.krungthaiaxa.api.elife.factory.QuoteFactory;
-import th.co.krungthaiaxa.api.elife.mock.LineServiceMockFactory;
+import th.co.krungthaiaxa.api.elife.factory.LineServiceMockFactory;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
@@ -389,7 +389,6 @@ public class CollectionFileProcessingServiceTest extends ELifeTest {
     }
 */
 
-    //    Don't need to run it here, it will be tested in {@link PaymentRetryServiceTest}
     @Test
     public void run_cron_job() {
         ProductQuotation productQuotation01 = ProductQuotationFactory.constructIGenDefaultWithMonthlyPayment();
@@ -401,7 +400,6 @@ public class CollectionFileProcessingServiceTest extends ELifeTest {
 
         rlsService.importCollectionFile(inputStream);
         rlsService.processLatestCollectionFiles();
-
     }
 
     /*

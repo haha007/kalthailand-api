@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
 import th.co.krungthaiaxa.api.common.utils.IOUtil;
-import th.co.krungthaiaxa.api.elife.TestUtil;
+import th.co.krungthaiaxa.api.elife.utils.TestUtil;
 import th.co.krungthaiaxa.api.elife.data.CollectionFileLine;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;

@@ -3,6 +3,7 @@ package th.co.krungthaiaxa.api.elife.test.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import th.co.krungthaiaxa.api.elife.service.JasperService;
+import th.co.krungthaiaxa.api.elife.utils.TestUtil;
 
 /**
  * @author khoi.tran on 8/31/16.
@@ -17,7 +18,7 @@ public class JasperServiceTest {
         sampleData.setFirstname("Khoi");
         sampleData.setLastname("Tran");
 
-        jasperService.exportPdfFile("/jasper/sample.jrxml", sampleData, "testresult/jasper/sample-output.pdf");
+        jasperService.exportPdfFile("/jasper/sample.jrxml", sampleData, TestUtil.PATH_TEST_RESULT + "/jasper/sample-output.pdf");
     }
 
     private static class SampleData {

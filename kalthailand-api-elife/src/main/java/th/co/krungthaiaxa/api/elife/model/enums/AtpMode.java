@@ -1,5 +1,7 @@
 package th.co.krungthaiaxa.api.elife.model.enums;
 
+import th.co.krungthaiaxa.api.common.exeption.UnexpectedException;
+
 /**
  * @author khoi.tran on 11/7/16.
  */
@@ -18,5 +20,17 @@ public enum AtpMode {
 
     public int getNumValue() {
         return numValue;
+    }
+
+    public static AtpMode enumOfNumValue(Integer numValue) {
+        if (numValue == null) {
+            return null;
+        }
+        for (AtpMode atpMode : values()) {
+            if (atpMode.getNumValue() == numValue) {
+                return atpMode;
+            }
+        }
+        throw new UnexpectedException(AtpMode.class.getSimpleName() + " doesn't have numValue '" + numValue + "'");
     }
 }

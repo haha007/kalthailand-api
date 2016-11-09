@@ -10,7 +10,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.api.common.utils.IOUtil;
 import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
-import th.co.krungthaiaxa.api.elife.TestUtil;
+import th.co.krungthaiaxa.api.elife.utils.TestUtil;
 import th.co.krungthaiaxa.api.elife.model.DocumentDownload;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;

@@ -26,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
-import static th.co.krungthaiaxa.api.elife.TestUtil.*;
+import static th.co.krungthaiaxa.api.elife.utils.TestUtil.*;
 import static th.co.krungthaiaxa.api.elife.model.enums.ChannelType.LINE;
 
 @RunWith(SpringJUnit4ClassRunner.class)

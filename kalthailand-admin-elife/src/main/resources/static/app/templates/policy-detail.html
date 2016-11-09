@@ -49,7 +49,7 @@
                         ng-show="policyDetail && policyDetail.status == 'PENDING_PAYMENT'">
                     <div
                             class="form-group"
-                            ng-if="policyDetail.premiumsData.financialScheduler.periodicity.code == 'EVERY_MONTH'">
+                            ng-if="isEnabledAutoPay(policy)">
                         <label for="regKey" class="col-sm-3 control-label">regKey</label>
 
                         <div class="col-sm-9">
@@ -222,7 +222,7 @@
                                 <span class="attachment-item">Application Form (validated)</span>
                             </a>
                         </li>
-                        <li class="img-thumbnail" ng-show="policyDetail.premiumsData.financialScheduler.atpMode == AtpMode.AUTOPAY">
+                        <li class="img-thumbnail" ng-show="isEnabledAutoPay(policyDetail)">
                             <i class="fa fa-paperclip" aria-hidden="true"></i>
                             <a ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/DA_FORM/download">
                                 <span class="attachment-item">DA Form</span>

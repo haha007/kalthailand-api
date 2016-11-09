@@ -8,14 +8,15 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import th.co.krungthaiaxa.api.elife.test.ELifeTest;
 import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
-import th.co.krungthaiaxa.api.elife.factory.ProductQuotationFactory;
+import th.co.krungthaiaxa.api.elife.utils.TestUtil;
+import th.co.krungthaiaxa.api.elife.factory.productquotation.ProductQuotationFactory;
 import th.co.krungthaiaxa.api.elife.factory.QuoteFactory;
 import th.co.krungthaiaxa.api.elife.model.QuoteCount;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
 import th.co.krungthaiaxa.api.elife.service.QuoteCountForAllProductsService;
 import th.co.krungthaiaxa.api.elife.service.QuoteService;
+import th.co.krungthaiaxa.api.elife.test.ELifeTest;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -50,7 +51,7 @@ public class QuoteCountsServiceTest extends ELifeTest {
         //Create new iGen
         QuoteFactory.QuoteResult quoteResult = quoteFactory.createDefaultIGen();
         //Create another iGen with the same quoteSessionId
-        quoteFactory.createQuote(quoteResult.getSessionId(), ProductQuotationFactory.constructIGenDefault(), ProductQuotationFactory.DUMMY_EMAIL);
+        quoteFactory.createQuote(quoteResult.getSessionId(), ProductQuotationFactory.constructIGenDefault(), TestUtil.DUMMY_EMAIL);
 
         toDateTime = LocalDateTime.now();
         List<QuoteCount> quoteCountListAfter = quoteCountForAllProductsService.countQuotesOfAllProducts(fromDateTime, toDateTime);

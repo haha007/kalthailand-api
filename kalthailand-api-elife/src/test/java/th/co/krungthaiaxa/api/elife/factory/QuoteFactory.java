@@ -4,7 +4,8 @@ import com.icegreen.greenmail.junit.GreenMailRule;
 import com.icegreen.greenmail.util.ServerSetupTest;
 import org.junit.Rule;
 import org.springframework.stereotype.Component;
-import th.co.krungthaiaxa.api.elife.TestUtil;
+import th.co.krungthaiaxa.api.elife.utils.TestUtil;
+import th.co.krungthaiaxa.api.elife.factory.productquotation.ProductQuotationFactory;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
 import th.co.krungthaiaxa.api.elife.model.enums.GenderCode;
@@ -29,7 +30,7 @@ public class QuoteFactory {
     public final GreenMailRule greenMail = new GreenMailRule(ServerSetupTest.SMTP_IMAP);
 
     public QuoteResult createDefaultIGen() {
-        return createDefaultIGen(ProductQuotationFactory.DUMMY_EMAIL);
+        return createDefaultIGen(TestUtil.DUMMY_EMAIL);
     }
 
     public QuoteResult createDefaultIGen(String email) {
@@ -38,7 +39,7 @@ public class QuoteFactory {
     }
 
     public QuoteResult createDefaultIProtect() {
-        return createDefaultIProtect(ProductQuotationFactory.DUMMY_EMAIL);
+        return createDefaultIProtect(TestUtil.DUMMY_EMAIL);
     }
 
     public QuoteResult createDefaultIProtect(String email) {

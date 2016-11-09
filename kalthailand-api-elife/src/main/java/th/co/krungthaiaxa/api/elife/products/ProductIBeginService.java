@@ -24,7 +24,11 @@ import java.util.Optional;
 import static th.co.krungthaiaxa.api.elife.products.utils.ProductUtils.amount;
 import static th.co.krungthaiaxa.api.elife.products.utils.ProductUtils.amountTHB;
 
+/**
+ * @deprecated IBegin is not used in our system anymore.
+ */
 @Component
+@Deprecated
 public class ProductIBeginService implements ProductService {
     public final static Integer DURATION_COVERAGE_IN_YEAR = null;
     public final static Integer DURATION_PAYMENT_IN_YEAR = 10;
@@ -121,7 +125,7 @@ public class ProductIBeginService implements ProductService {
         commonData.setMinSumInsured(amountTHB(SUM_INSURED_MIN));
         commonData.setNbOfYearsOfCoverage(DURATION_COVERAGE_IN_YEAR);
         commonData.setNbOfYearsOfPremium(DURATION_PAYMENT_IN_YEAR);
-        commonData.setProductId(ProductType.PRODUCT_IBEGIN.name());
+        commonData.setProductId(ProductType.PRODUCT_IBEGIN.getLogicName());
         commonData.setProductCurrency(PRODUCT_IBEGIN_CURRENCY);
         commonData.setProductName(PRODUCT_IBEGIN_NAME);
         return commonData;

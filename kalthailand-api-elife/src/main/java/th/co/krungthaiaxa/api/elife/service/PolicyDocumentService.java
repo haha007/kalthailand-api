@@ -4,13 +4,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import th.co.krungthaiaxa.api.elife.client.SigningClient;
 import th.co.krungthaiaxa.api.elife.ereceipt.EreceiptService;
 import th.co.krungthaiaxa.api.elife.model.Document;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.products.utils.ProductUtils;
-import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
 
 import java.util.Optional;
 
@@ -27,21 +25,16 @@ public class PolicyDocumentService {
     private final DocumentService documentService;
     private final ApplicationFormService applicationFormService;
     private final DAFormService daFormService;
-    private final SigningClient signingClient;
     private final PaymentQueryService paymentQueryService;
     private final EreceiptService ereceiptService;
-    private final PaymentRepository paymentRepository;
 
     @Autowired
-    public PolicyDocumentService(DocumentService documentService, ApplicationFormService applicationFormService, DAFormService daFormService, SigningClient signingClient, PaymentQueryService paymentQueryService, EreceiptService ereceiptService,
-            PaymentRepository paymentRepository) {
+    public PolicyDocumentService(DocumentService documentService, ApplicationFormService applicationFormService, DAFormService daFormService, PaymentQueryService paymentQueryService, EreceiptService ereceiptService) {
         this.documentService = documentService;
         this.applicationFormService = applicationFormService;
         this.daFormService = daFormService;
-        this.signingClient = signingClient;
         this.paymentQueryService = paymentQueryService;
         this.ereceiptService = ereceiptService;
-        this.paymentRepository = paymentRepository;
     }
 
     public void generateDocumentsForPendingValidationPolicy(Policy policy) {
@@ -61,7 +54,7 @@ public class PolicyDocumentService {
             Optional<Document> daForm = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(DA_FORM)).findFirst();
             if (!daForm.isPresent()) {
                 try {
-                    byte[] content = daFormService.generateDAForm(policy);
+                    byte[] content = daFormService.generateDAFormPdf(policy);
                     documentService.addDocument(policy, content, "application/pdf", DA_FORM);
                 } catch (Exception e) {
                     LOGGER.error("DA form for Policy [" + policy.getPolicyId() + "] has not been generated.", e);

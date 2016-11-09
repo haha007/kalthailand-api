@@ -1,4 +1,4 @@
-package th.co.krungthaiaxa.api.elife.test.utils;
+package th.co.krungthaiaxa.api.elife.utils;
 
 import com.icegreen.greenmail.junit.GreenMailRule;
 import org.apache.commons.io.FileUtils;

@@ -1,7 +1,6 @@
-package th.co.krungthaiaxa.api.elife.factory;
+package th.co.krungthaiaxa.api.elife.factory.productquotation;
 
 import org.springframework.stereotype.Component;
-import th.co.krungthaiaxa.api.common.exeption.UnexpectedException;
 import th.co.krungthaiaxa.api.elife.data.IProtectPackage;
 import th.co.krungthaiaxa.api.elife.model.Amount;
 import th.co.krungthaiaxa.api.elife.model.enums.AtpMode;
@@ -11,7 +10,6 @@ import th.co.krungthaiaxa.api.elife.model.enums.ProductDividendOption;
 import th.co.krungthaiaxa.api.elife.products.ProductIFinePackage;
 import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
-import th.co.krungthaiaxa.api.elife.products.utils.ProductUtils;
 
 import static java.time.LocalDate.now;
 import static th.co.krungthaiaxa.api.elife.products.utils.ProductUtils.amountTHB;
@@ -21,7 +19,6 @@ import static th.co.krungthaiaxa.api.elife.products.utils.ProductUtils.amountTHB
  */
 @Component
 public class ProductQuotationFactory {
-    public static final String DUMMY_EMAIL = "dummy@krungthai-axa.co.th";
 
     public static ProductQuotation constructQuotation(
             ProductType productType, String packageName, Integer age, PeriodicityCode periodicityCode, Double amountValue, Boolean isSumInsured, Integer taxRate, GenderCode genderCode, Integer occupationTypeId,
@@ -46,32 +43,34 @@ public class ProductQuotationFactory {
         } else {
             productQuotation.setPremiumAmount(amount);
         }
-
+        if (atpMode != null) {
+            productQuotation.setAtpMode(atpMode.getNumValue());
+        } else {
+            productQuotation.setAtpMode(null);
+        }
         return productQuotation;
     }
 
     public static ProductQuotation constructQuotation(
             ProductType productType, String packageName, Integer age, PeriodicityCode periodicityCode, Double amountValue, Boolean isSumInsured,
             Integer taxRate, GenderCode genderCode, Integer occupationTypeId, ProductDividendOption productDividendOption) {
-        ProductQuotation productQuotation = constructQuotation(productType, packageName, age, periodicityCode, amountValue, isSumInsured, taxRate, genderCode, occupationTypeId, productDividendOption, null);
-        if (!ProductUtils.isAtpModeEnable(productQuotation.getAtpMode())) {
-            if (PeriodicityCode.EVERY_MONTH.equals(periodicityCode)) {
-                productQuotation.setAtpMode(AtpMode.AUTOPAY.getNumValue());
-            }
-        }
-        return productQuotation;
+        return constructQuotation(productType, packageName, age, periodicityCode, amountValue, isSumInsured, taxRate, genderCode, occupationTypeId, productDividendOption, getDefaultAtpModeByPeriodicity(periodicityCode));
     }
 
     public static ProductQuotation constructIProtectDefault() {
-        return constructIProtect(33, PeriodicityCode.EVERY_MONTH, 2000.0, false, 35, GenderCode.MALE);
+        return constructIProtect(33, PeriodicityCode.EVERY_MONTH, 300000.0, true, 35, GenderCode.MALE);
     }
 
     public static ProductQuotation constructIProtectDefaultWithMonthlyPayment() {
-        return constructIProtect(33, PeriodicityCode.EVERY_MONTH, 2000.0, false, 35, GenderCode.MALE);
+        return constructIProtect(33, PeriodicityCode.EVERY_MONTH, 300000.0, true, 35, GenderCode.MALE);
     }
 
     public static ProductQuotation constructIProtect(Integer age, PeriodicityCode periodicityCode, Double amountValue, Boolean isSumInsured, Integer taxRate, GenderCode genderCode) {
-        return constructQuotation(ProductType.PRODUCT_IPROTECT, IProtectPackage.IPROTECT10.name(), age, periodicityCode, amountValue, isSumInsured, taxRate, genderCode, 1, null);
+        return constructIProtect(age, periodicityCode, amountValue, isSumInsured, taxRate, genderCode, getDefaultAtpModeByPeriodicity(periodicityCode));
+    }
+
+    public static ProductQuotation constructIProtect(Integer age, PeriodicityCode periodicityCode, Double amountValue, Boolean isSumInsured, Integer taxRate, GenderCode genderCode, AtpMode atpMode) {
+        return constructQuotation(ProductType.PRODUCT_IPROTECT, IProtectPackage.IPROTECT10.name(), age, periodicityCode, amountValue, isSumInsured, taxRate, genderCode, 1, null, atpMode);
     }
 
     /**
@@ -85,8 +84,12 @@ public class ProductQuotationFactory {
      * @return
      */
     public static ProductQuotation constructIGen(Integer age, PeriodicityCode periodicityCode, Double amountValue, Boolean isSumInsured, Integer taxRate, ProductDividendOption productDividendOption) {
-        //This product always required occupation to stored in DB, but don't need it for calculation.
+        //This product always required occupation to stored in DB, but it doesn't impact the calculation.
         return constructQuotation(ProductType.PRODUCT_IGEN, null, age, periodicityCode, amountValue, isSumInsured, taxRate, GenderCode.MALE, 1, productDividendOption);
+    }
+
+    public static ProductQuotation constructIGen(Integer age, PeriodicityCode periodicityCode, Double amountValue, Boolean isSumInsured, Integer taxRate, ProductDividendOption productDividendOption, AtpMode atpMode) {
+        return constructQuotation(ProductType.PRODUCT_IGEN, null, age, periodicityCode, amountValue, isSumInsured, taxRate, GenderCode.MALE, 1, productDividendOption, atpMode);
     }
 
     /**
@@ -108,32 +111,8 @@ public class ProductQuotationFactory {
     }
 
     public static ProductQuotation construct10ECDefault() {
+
         return constructQuotation(ProductType.PRODUCT_10_EC, null, 32, PeriodicityCode.EVERY_MONTH, 10000.0, false, 35, GenderCode.MALE, 1, ProductDividendOption.ANNUAL_PAY_BACK_CASH);
-    }
-
-    public static ProductQuotation constructIBeginECDefault() {
-        return constructQuotation(ProductType.PRODUCT_IBEGIN, null, 32, PeriodicityCode.EVERY_MONTH, 10000.0, false, 35, GenderCode.MALE, 1, ProductDividendOption.ANNUAL_PAY_BACK_CASH);
-    }
-
-    public static ProductQuotation constructIFineDefault() {
-        return constructQuotation(ProductType.PRODUCT_IFINE, ProductIFinePackage.IFINE1.name(), 32, PeriodicityCode.EVERY_MONTH, ProductIFinePackage.IFINE1.getSumInsured(), true, 35, GenderCode.MALE, 1, ProductDividendOption.ANNUAL_PAY_BACK_CASH);
-    }
-
-    public static ProductQuotation constructDefault(ProductType productType) {
-        if (productType == ProductType.PRODUCT_IGEN) {
-            return constructIGenDefault();
-        } else if (productType == ProductType.PRODUCT_IPROTECT) {
-            return constructIProtectDefault();
-        } else if (productType == ProductType.PRODUCT_10_EC) {
-            return construct10ECDefault();
-        } else if (productType == ProductType.PRODUCT_IBEGIN) {
-            return constructIBeginECDefault();
-        } else if (productType == ProductType.PRODUCT_IFINE) {
-            return constructIFineDefault();
-        } else {
-            throw new UnexpectedException("Not support " + productType);
-        }
-
     }
 
     public static ProductQuotation construct10ECDefault(int age, PeriodicityCode periodicityCode) {
@@ -144,16 +123,53 @@ public class ProductQuotationFactory {
         return constructQuotation(ProductType.PRODUCT_10_EC, null, age, periodicityCode, amount, isSumInsured, tax, GenderCode.MALE, 1, ProductDividendOption.ANNUAL_PAY_BACK_CASH);
     }
 
-    public static ProductQuotation constructIBeginDefault(int age, PeriodicityCode periodicityCode, double amount, boolean isSumInsurd, GenderCode genderCode) {
+    public static ProductQuotation construct10ECDefault(int age, PeriodicityCode periodicityCode, double amount, boolean isSumInsured, int tax, AtpMode atpMode) {
+        return constructQuotation(ProductType.PRODUCT_10_EC, null, age, periodicityCode, amount, isSumInsured, tax, GenderCode.MALE, 1, ProductDividendOption.ANNUAL_PAY_BACK_CASH, atpMode);
+    }
+
+    public static ProductQuotation constructIFineDefault() {
+        return constructQuotation(ProductType.PRODUCT_IFINE, ProductIFinePackage.IFINE1.name(), 32, PeriodicityCode.EVERY_MONTH, ProductIFinePackage.IFINE1.getSumInsured(), true, 35, GenderCode.MALE, 1, ProductDividendOption.ANNUAL_PAY_BACK_CASH);
+    }
+
+    public static ProductQuotation constructDefault(ProductType productType) {
+        return ProductFactoryForProductQuotation.getFactory(productType).constructDefault();
+    }
+
+    public static ProductQuotation constructDefault(ProductType productType, PeriodicityCode periodicityCode, AtpMode atpMode) {
+        return ProductFactoryForProductQuotation.getFactory(productType).constructDefault(periodicityCode, atpMode);
+    }
+
+    public static ProductQuotation constructIBeginDefault() {
+        return constructQuotation(ProductType.PRODUCT_IBEGIN, null, 32, PeriodicityCode.EVERY_MONTH, 10000.0, false, 35, GenderCode.MALE, 1, ProductDividendOption.ANNUAL_PAY_BACK_CASH);
+    }
+
+    public static ProductQuotation constructIBegin(int age, PeriodicityCode periodicityCode, double amount, boolean isSumInsurd, GenderCode genderCode) {
         return constructQuotation(ProductType.PRODUCT_IBEGIN, null, age, periodicityCode, amount, isSumInsurd, 23, genderCode, 1, ProductDividendOption.ANNUAL_PAY_BACK_CASH);
     }
 
-    public static ProductQuotation constructIFine(ProductIFinePackage productIFinePackage, int age, PeriodicityCode periodicityCode, GenderCode genderCode, boolean riskOccupation) {
+    public static ProductQuotation constructIBegin(int age, PeriodicityCode periodicityCode, double amount, boolean isSumInsurd, GenderCode genderCode, AtpMode atpMode) {
+        return constructQuotation(ProductType.PRODUCT_IBEGIN, null, age, periodicityCode, amount, isSumInsurd, 23, genderCode, 1, ProductDividendOption.ANNUAL_PAY_BACK_CASH, atpMode);
+    }
+
+    public static ProductQuotation constructIFine(ProductIFinePackage productIFinePackage, int age, PeriodicityCode periodicityCode, GenderCode genderCode, boolean riskOccupation, AtpMode atpMode) {
         int occupationId = 1;
         if (riskOccupation) {
             occupationId = 21;
         }
-        ProductQuotation productQuotation = constructQuotation(ProductType.PRODUCT_IFINE, productIFinePackage.name(), age, periodicityCode, productIFinePackage.getSumInsured(), true, 23, genderCode, occupationId, null);
+        ProductQuotation productQuotation = constructQuotation(ProductType.PRODUCT_IFINE, productIFinePackage.name(), age, periodicityCode, productIFinePackage.getSumInsured(), true, 23, genderCode, occupationId, null, atpMode);
         return productQuotation;
+    }
+
+    public static ProductQuotation constructIFine(ProductIFinePackage productIFinePackage, int age, PeriodicityCode periodicityCode, GenderCode genderCode, boolean riskOccupation) {
+        AtpMode atpMode = getDefaultAtpModeByPeriodicity(periodicityCode);
+        return constructIFine(productIFinePackage, age, periodicityCode, genderCode, riskOccupation, atpMode);
+    }
+
+    private static AtpMode getDefaultAtpModeByPeriodicity(PeriodicityCode periodicityCode) {
+        AtpMode atpMode = null;
+        if (PeriodicityCode.EVERY_MONTH.equals(periodicityCode)) {
+            atpMode = AtpMode.AUTOPAY;
+        }
+        return atpMode;
     }
 }

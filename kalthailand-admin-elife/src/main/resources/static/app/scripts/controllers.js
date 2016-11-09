@@ -603,7 +603,10 @@
         $scope.AtpMode = {
             NO_AUTOPAY: 0,
             AUTOPAY: 1
-        }
+        };
+        $scope.isEnabledAutoPay = function (policy) {
+            return policy.premiumsData.financialScheduler.atpMode == AtpMode.AUTOPAY;
+        };
         // AKT-820
         $scope.onSubmitPaymentDetails = function () {
             $scope.isFetching = true;

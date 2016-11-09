@@ -40,7 +40,7 @@ public class AtpModeMigration {
     }
 
     public void migrateAtpModeForMonthlyPaymentForPolicies() {
-        //TODO must seclect by periodicity and atpMode is null
+        //TODO must seclect by periodicity and atpMode is null: implemented but not tested yet.
         List<Policy> quotables = policyRepository.findByPeriodicityCodeAndAtpModeNull(PeriodicityCode.EVERY_MONTH);
         migrateForQuotables(quotables);
         policyRepository.save(quotables);

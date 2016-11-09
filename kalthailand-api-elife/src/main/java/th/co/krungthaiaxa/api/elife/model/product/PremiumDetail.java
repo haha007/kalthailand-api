@@ -2,6 +2,8 @@ package th.co.krungthaiaxa.api.elife.model.product;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.swagger.annotations.ApiModelProperty;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import th.co.krungthaiaxa.api.elife.model.Amount;
 import th.co.krungthaiaxa.api.elife.model.DateTimeAmount;
 import th.co.krungthaiaxa.api.elife.model.enums.ProductDividendOption;
@@ -62,6 +64,16 @@ public class PremiumDetail implements Serializable {
             + "ANNUAL_PAY_BACK_CASH(2): dividend is given yearly in cash."
             + "ANNUAL_PAY_BACK_NEXT_PREMIUM(3): dividend is given for next premium.")
     private String dividendOptionId;
+
+    @Override
+    public boolean equals(Object o) {
+        return EqualsBuilder.reflectionEquals(this, o);
+    }
+
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }
 
     public List<DateTimeAmount> getYearlyCashBacksForEndOfContract() {
         return yearlyCashBacksForEndOfContract;

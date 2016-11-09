@@ -292,7 +292,17 @@ public class PolicyService {
         return policy;
     }
 
-    public Policy updatePolicyStatusToValidated(Policy policy, String agentCode, String agentName, String token) {
+    /**
+     * Note: this method only update status of policy. It doesn't check other constraints.
+     * If you want to upgrade status from PendingValidation to Validated, please use {@link PolicyValidatedProcessingService#updatePolicyStatusToValidated(PolicyValidatedProcessingService.PolicyValidationRequest)}
+     *
+     * @param policy
+     * @param agentCode
+     * @param agentName
+     * @param token
+     * @return
+     */
+    protected Policy updatePolicyStatusToValidated(Policy policy, String agentCode, String agentName, String token) {
         if (!PolicyStatus.PENDING_VALIDATION.equals(policy.getStatus())) {
             throw new ElifeException("Can't validate policy [" + policy.getPolicyId() + "], it is not pending for validation, it's " + policy.getStatus());
         }

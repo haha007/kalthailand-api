@@ -11,8 +11,7 @@ import java.io.Serializable;
 /**
  * This is the premium data which will be applied for all products.
  */
-@ApiModel(description = "Data concerning premiums (price for the coverage and benefit agreed) to all commercial types",
-        subTypes = { Product10ECPremium.class })//TODO change it to PremiumsData.class or remove it.
+@ApiModel(description = "Data concerning premiums (price for the coverage and benefit agreed) to all commercial types")
 public class PremiumsData implements Serializable {
     private FinancialScheduler financialScheduler;
     private Product10ECPremium product10ECPremium;

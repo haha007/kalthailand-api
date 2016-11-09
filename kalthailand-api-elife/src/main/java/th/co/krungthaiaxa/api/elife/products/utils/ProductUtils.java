@@ -72,8 +72,8 @@ public class ProductUtils {
         }
     };
 
-    public static String validateExistProductName(Policy policy) {
-        String productLogicName = policy.getCommonData().getProductId();
+    public static String validateExistProductName(Quotable quotable) {
+        String productLogicName = quotable.getCommonData().getProductId();
         ProductType productType = ProductUtils.validateExistProductTypeByLogicName(productLogicName);
         return productType.getDisplayName();
     }
@@ -105,8 +105,13 @@ public class ProductUtils {
         return quotable.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode();
     }
 
-    public static Integer getAtpMode(Quotable quotable) {
+    public static Integer getAtpModeValue(Quotable quotable) {
         return quotable.getPremiumsData().getFinancialScheduler().getAtpMode();
+    }
+
+    public static AtpMode getAtpMode(Quotable quotable) {
+        Integer atpModeValue = getAtpModeValue(quotable);
+        return AtpMode.enumOfNumValue(atpModeValue);
     }
 
     public static boolean isAtpModeEnable(Integer atpMode) {
@@ -115,7 +120,7 @@ public class ProductUtils {
     }
 
     public static boolean isAtpModeEnable(Quotable quotable) {
-        Integer atpMode = ProductUtils.getAtpMode(quotable);
+        Integer atpMode = ProductUtils.getAtpModeValue(quotable);
         return isAtpModeEnable(atpMode);
     }
 
@@ -218,7 +223,7 @@ public class ProductUtils {
         isFalse(insured.getAgeAtSubscription() < minAge, ageIsTooLowException.apply(minAge));
     }
 
-    public static Insured validateMainInsured(Quote quote) {
+    public static Insured validateMainInsured(Quotable quote) {
         notNull(quote.getInsureds(), noInsured);
         isNotEqual(quote.getInsureds().size(), 0, noInsured);
         isEqual(quote.getInsureds().size(), 1, insuredMoreThanOne);
@@ -482,7 +487,7 @@ public class ProductUtils {
     public static Insured validateExistMainInsured(Quotable quotable) {
         return quotable.getInsureds().stream().filter(Insured::getMainInsuredIndicator)
                 .findFirst()
-                .orElseThrow(() -> new MainInsuredException("Insured size: " + quotable.getInsureds().size()));
+                .orElseThrow(() -> new MainInsuredException(String.format("Main insured not found: %s insured persons in %s. policyId: %s, quoteId: %s", quotable.getInsureds().size(), quotable.getClass().getSimpleName(), quotable.getPolicyId(), quotable.getQuoteId())));
     }
 
     private static boolean isValidEmailAddress(String email) {

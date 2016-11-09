@@ -14,7 +14,6 @@ import th.co.krungthaiaxa.api.common.exeption.UnexpectedException;
 import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
 import th.co.krungthaiaxa.api.common.utils.IOUtil;
 import th.co.krungthaiaxa.api.common.utils.NumberUtil;
-import th.co.krungthaiaxa.api.common.utils.PdfIOUtil;
 import th.co.krungthaiaxa.api.common.utils.PdfUtil;
 import th.co.krungthaiaxa.api.common.utils.StringUtil;
 import th.co.krungthaiaxa.api.elife.model.Insured;
@@ -125,7 +124,7 @@ public class EreceiptPdfService {
      */
     private static final String ERECEIPT_NUMBER_PREFIX = "M";
 
-    private final BaseFont baseFont = getBaseFont();
+    private final BaseFont baseFont = PdfUtil.loadBaseFont();
 
     /**
      * @param policy
@@ -296,9 +295,7 @@ public class EreceiptPdfService {
         PdfUtil.writeText(page, baseFont, text, (float) point.getX(), actualYInTemplate, PdfUtil.MEDIUM_SIZE);
     }
 
-    private BaseFont getBaseFont() {
-        return PdfIOUtil.loadFontFromClassPath("ANGSAB_1.ttf", "/ereceipt/ANGSAB_1.TTF");
-    }
+
 
     private String getThaiDate(LocalDateTime localDate) {
         return DateTimeUtil.formatBuddhistThaiDate(localDate);
