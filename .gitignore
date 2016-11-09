@@ -15,3 +15,6 @@ kalthailand-api-elife/test
 kalthailand-api-elife/testresult
 kalthailand-admin-elife/bin/
 .sonar
+
+kalthailand-admin-elife/src/main/resources/static/libs/bootstrap-gentellena/*/.gitignore
+*.json
