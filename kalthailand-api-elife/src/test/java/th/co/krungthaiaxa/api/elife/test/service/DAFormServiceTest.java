@@ -47,7 +47,7 @@ public class DAFormServiceTest extends ELifeTest {
         phone.setNumber("0899999999");
         policy.getInsureds().get(0).getPerson().setMobilePhoneNumber(phone);
 
-        byte[] pdfContent = DAFormService.generateDAForm(policy);
+        byte[] pdfContent = DAFormService.generateDAFormPdf(policy);
         File pdfFile = new File("target/da-form.pdf");
         writeByteArrayToFile(pdfFile, pdfContent);
 
