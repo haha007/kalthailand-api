@@ -21,7 +21,7 @@ import th.co.krungthaiaxa.api.elife.factory.QuoteFactory;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.products.ProductEmailService;
 import th.co.krungthaiaxa.api.elife.service.QuoteService;
-import th.co.krungthaiaxa.api.elife.test.utils.GreenMailUtil;
+import th.co.krungthaiaxa.api.elife.utils.GreenMailUtil;
 
 import javax.inject.Inject;
 import javax.mail.MessagingException;

@@ -28,7 +28,7 @@ import th.co.krungthaiaxa.api.elife.factory.PolicyFactory;
 import th.co.krungthaiaxa.api.elife.factory.productquotation.ProductQuotationFactory;
 import th.co.krungthaiaxa.api.elife.factory.QuoteFactory;
 import th.co.krungthaiaxa.api.elife.factory.RequestFactory;
-import th.co.krungthaiaxa.api.elife.mock.LineServiceMockFactory;
+import th.co.krungthaiaxa.api.elife.factory.LineServiceMockFactory;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.PaymentInformation;
 import th.co.krungthaiaxa.api.elife.model.PaymentNewerCompletedResult;
@@ -42,7 +42,7 @@ import th.co.krungthaiaxa.api.elife.service.PaymentFailEmailService;
 import th.co.krungthaiaxa.api.elife.service.PaymentRetryService;
 import th.co.krungthaiaxa.api.elife.service.PaymentService;
 import th.co.krungthaiaxa.api.elife.test.ELifeTest;
-import th.co.krungthaiaxa.api.elife.test.utils.GreenMailUtil;
+import th.co.krungthaiaxa.api.elife.utils.GreenMailUtil;
 
 import javax.inject.Inject;
 import java.io.InputStream;

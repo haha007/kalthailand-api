@@ -29,7 +29,7 @@ import th.co.krungthaiaxa.api.elife.service.DocumentService;
 import th.co.krungthaiaxa.api.elife.service.PolicyDocumentService;
 import th.co.krungthaiaxa.api.elife.service.PolicyService;
 import th.co.krungthaiaxa.api.elife.test.ELifeTest;
-import th.co.krungthaiaxa.api.elife.test.utils.GreenMailUtil;
+import th.co.krungthaiaxa.api.elife.utils.GreenMailUtil;
 
 import java.io.File;
 import java.io.IOException;

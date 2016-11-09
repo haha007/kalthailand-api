@@ -27,7 +27,7 @@ import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
 import th.co.krungthaiaxa.api.elife.TestUtil;
 import th.co.krungthaiaxa.api.elife.policyPremiumNotification.model.PolicyPremiumNoticeRequest;
 import th.co.krungthaiaxa.api.elife.policyPremiumNotification.model.PolicyPremiumNoticeSMSRequest;
-import th.co.krungthaiaxa.api.elife.test.utils.GreenMailUtil;
+import th.co.krungthaiaxa.api.elife.utils.GreenMailUtil;
 
 import java.io.File;
 import java.io.IOException;

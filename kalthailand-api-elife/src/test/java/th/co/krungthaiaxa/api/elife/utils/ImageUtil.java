@@ -1,4 +1,4 @@
-package th.co.krungthaiaxa.api.elife.test.utils;
+package th.co.krungthaiaxa.api.elife.utils;
 
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
