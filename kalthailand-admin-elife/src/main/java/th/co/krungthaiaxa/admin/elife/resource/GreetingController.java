@@ -18,4 +18,9 @@ public class GreetingController {
         return "greeting";
     }
 
+    @RequestMapping("/layout")
+    public String layout(@RequestParam(value = "name", required = false, defaultValue = "World") String name, Model model) {
+        model.addAttribute("name", name);
+        return "layout";
+    }
 }
