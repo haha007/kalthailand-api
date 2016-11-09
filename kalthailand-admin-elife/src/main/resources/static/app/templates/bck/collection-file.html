@@ -1,0 +1,163 @@
+<style>
+    .status-success {
+        color: #3e8f3e;
+    }
+
+    .status-new {
+        color: #a47e3c;
+    }
+
+    .status-error {
+        color: #b92c28;
+    }
+</style>
+
+<div ng-include="'app/templates/partials/header.html'"></div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div ng-include="'app/templates/partials/sidebar.html'"></div>
+
+        <!-- BEGIN Page specific stuff -->
+        <div ng-cloak class="col-sm-9 col-sm-offset-3 col-md-12 col-md-offset-1 main ng-cloak" id="collectionFileListContainer">
+            <div class="page-header">
+                <h1>Collection files</h1>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Upload collection file</h3>
+                </div>
+                <div class="panel-body">
+                    <form name="formUpload" ng-submit="upload($event)" class="form-inline form-upload">
+                        <div ng-hide="isUploading" class="input-group">
+                            <input type="file" class="form-control" file-model="file" id="fileToUpload">
+
+                            <div class="input-group-btn">
+                                <button type="submit" class="btn btn-danger"><span class="glyphicon glyphicon-upload"></span> Upload</button>
+                            </div>
+                        </div>
+                        <div ng-show="isUploading" class="input-group">
+                            <i class="fa fa-spinner fa-spin" style="font-size:24px"></i>
+                        </div>
+
+                    </form>
+
+
+                </div>
+            </div>
+            <div class="alert alert-info" role="alert" ng-show="infoMessage">
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                {{ infoMessage }}
+            </div>
+            <div class="alert alert-success" role="alert" ng-show="successMessage">
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                {{ successMessage }}
+            </div>
+            <div class="alert alert-danger" role="alert" ng-show="errorMessage">
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                {{ errorMessage }}
+            </div>
+            <div class="alert alert-info" role="alert" ng-hide="collectionFiles && collectionFiles.length > 0">
+                There are no collection file yet.
+            </div>
+
+            <table class="table table-bordered table-hover table-condensed">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Received Date</th>
+                    <th>Job Starting Date</th>
+                    <th>Job Ending Date</th>
+                    <th>Uploaded lines</th>
+                    <th>Processed lines</th>
+                    <th>Deduction File</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="collectionFile in collectionFiles"
+                    ng-class="{
+                        '': collectionFile.deductionFile.lines.length && collectionFile.lines.length == collectionFile.deductionFile.lines.length,
+                        'danger': collectionFile.deductionFile.lines.length && collectionFile.lines.length != collectionFile.deductionFile.lines.length,
+                        'warning': collectionFile.lines.length != collectionFile.deductionFile.lines.length
+                    }">
+                    <td><span class="label label-default">{{$index + 1}}</span></td>
+                    <td>{{ collectionFile.receivedDate | date:'yyyy-MM-dd HH:mm:ss Z'}}</td>
+                    <td>{{ collectionFile.jobStartedDate | date:'yyyy-MM-dd HH:mm:ss Z'}}</td>
+                    <td>{{ collectionFile.jobEndedDate | date:'yyyy-MM-dd HH:mm:ss Z'}}</td>
+                    <td>{{ collectionFile.lines.length }}</td>
+                    <td>{{ collectionFile.deductionFile.lines.length }}</td>
+                    <td><a href="/api-elife/RLS/deduction/download/{{collectionFile.id}}" ng-show="isProccessed(collectionFile)">
+                        <span class="glyphicon glyphicon-download"></span><span class="glyphicon-class"> Download</span>
+                    </a></td>
+                    <td>
+                        <i ng-hide="isProccessed(collectionFile)" class="status-new glyphicon glyphicon-asterisk"></i>
+                        <i ng-show="isProccessed(collectionFile)" class="status-success glyphicon glyphicon-ok-sign"></i>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <div>
+                <div class="page-header">
+                    <h3></h3>
+                </div>
+                <div>
+                    <div class="progress" ng-show="isProcessing">
+                        <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:100%">
+                        </div>
+                    </div>
+                    <button ng-hide="isProcessing" type="button" class="btn btn-danger" style="margin-right:10px;" ng-click="processLastCollectionFiles()">Process Last Collection Files</button>
+                </div>
+                <div><span class="help-block">It will show result of maximum 5 collection files.</span></div>
+                <div ng-repeat="collectionFile in collectionFiles" class="panel panel-default" ng-show="$index < 5">
+                    <div class="panel-heading">
+                        <div class="pull-left"><span class="label label-default">{{$index+1}}</span></div>
+                        <div class="pull-right"><span>{{collectionFile.receivedDate | date:'yyyy-MM-dd HH:mm:ss Z'}}</span></div>
+                        <div class="clearfix"></div>
+                    </div>
+
+                    <table ng-show="collectionFile.deductionFile.lines.length > 0" class="table table-bordered table-condensed">
+                        <thead>
+                        <tr style="background-color: #f5f5f5">
+                            <td style="min-width: 100px">Policy Number</td>
+                            <td>Bank Code</td>
+                            <td>Payment Mode</td>
+                            <td>Amount</td>
+                            <td>Process Date</td>
+                            <td style="min-width: 70px">Result code</td>
+                            <td>Result Message</td>
+                            <td>Inform customer code</td>
+                            <td>Inform customer message</td>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="deductiveLine in collectionFile.deductionFile.lines">
+                            <td>{{deductiveLine.policyNumber}}</td>
+                            <td>{{deductiveLine.bankCode}}</td>
+                            <td>{{deductiveLine.paymentMode}}</td>
+                            <td>{{deductiveLine.amount}}</td>
+                            <td>{{deductiveLine.processDate | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+                            <td ng-class="{
+                                    'status-success': deductiveLine.rejectionCode == '0000',
+                                    'status-error': deductiveLine.rejectionCode != '0000'
+
+                                }">
+                                <i ng-show="deductiveLine.rejectionCode == '0000'" class="glyphicon glyphicon-ok"></i>
+                                <i ng-show="deductiveLine.rejectionCode != '0000'" class="glyphicon glyphicon-remove"></i>
+                                {{ deductiveLine.rejectionCode}}
+                            </td>
+                            <td>{{deductiveLine.rejectionMessage}}</td>
+                            <td>{{deductiveLine.informCustomerCode}}</td>
+                            <td>{{deductiveLine.informCustomerMessage}}</td>
+
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+        <!-- END Page specific stuff -->
+
+    </div>
+</div>

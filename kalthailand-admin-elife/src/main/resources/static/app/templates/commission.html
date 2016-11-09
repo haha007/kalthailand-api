@@ -34,79 +34,71 @@
     }
 </style>
 
-<div ng-include="'app/templates/partials/header.html'"></div>
-
-<div class="container-fluid">
-    <div class="row">
-        <div ng-include="'app/templates/partials/sidebar.html'"></div>
-
-        <!-- BEGIN Page specific stuff -->
-        <div ng-cloak class="col-sm-9 col-sm-offset-3 col-md-12 col-md-offset-1 main ng-cloak" id="collectionFileListContainer">
-            <div class="page-header">
-                <h1>Commission Setting</h1>
-            </div>
-            <div ng-include="'app/templates/partials/message.html'"></div>
-            <table class="table table-bordered table-striped table-hover table-condensed">
-                <thead>
-                <tr>
-                    <th rowspan="2"></th>
-                    <th rowspan="2">Unit Code</th>
-                    <th rowspan="2">Plan Code</th>
-                    <th rowspan="2">Customer Category</th>
-                    <th style="text-align: center" ng-repeat="commissionGroupType in service.commissionGroupTypes" colspan="{{service.commissionTargetEntityTypes.length}}">
-                        <span>{{commissionGroupType.label}} %</span><span ng-show="!commissionGroupType.isRequired"> (Optional)</span>
-                    </th>
-                    <th rowspan="2">
-                        <button class="btn btn-xs btn-primary glyphicon glyphicon-plus" ng-click="service.addCommissionPlan()"></button>
-                    </th>
-                </tr>
-                <tr>
-                    <th ng-repeat-start="commissionGroupType in service.commissionGroupTypes" ng-if='false'>
-                    </th>
-                    <th ng-repeat-end ng-repeat-start="targetEntityType in service.commissionTargetEntityTypes" style="text-transform: capitalize;"><!--{{$index}}-->{{targetEntityType | lowercase}}</th>
-                    <th ng-repeat-end ng-if='false'><!--{{$index}} Never show this column--></th>
-                    <!--<th></th>-->
-                </tr>
-                </thead>
-                <tbody>
-                <tr ng-repeat="commissionPlan in service.commissionPlans" class="form-group" ng-class="commissionPlan.styleClass">
-                    <td>
-                        <span class="indexnumber" ng-click="service.addCommissionPlan()">{{($index + 1)}}</span>
-                        <!--<button class="btn btn-sm btn-default" ng-click="service.addCommissionPlan()">{{($index + 1)}}</button>-->
-                    </td>
-                    <td>
-                        <input type="text"
-                               limit-to="6"
-                               ng-model="commissionPlan.unitCode" class="form-control commission-unitcode" ng-disabled="service.isCommissionPlanReadonly(commissionPlan)" ng-change="service.validateCommissionPlans()"/>
-                    </td>
-                    <td>
-                        <input limit-to="7"
-                               type="text" ng-model="commissionPlan.planCode" class="form-control commission-plancode" ng-disabled="service.isCommissionPlanReadonly(commissionPlan)" ng-change="service.validateCommissionPlans()"/>
-                    </td>
-                    <td>
-                        <select class="form-control commission-customercategory" ng-disabled="service.isCommissionPlanReadonly(commissionPlan)"
-                                ng-change="service.validateCommissionPlans()"
-                                ng-model="commissionPlan.customerCategory"
-                                ng-options="customerCategory.value as customerCategory.label for customerCategory in service.customerCategories">
-                        </select>
-                    </td>
-                    <td ng-repeat-start="commissionGroupType in service.commissionGroupTypes" ng-if="false"><!--Never show this column--></td>
-                    <td ng-repeat-end ng-repeat-start="commissionEntityType in service.commissionTargetEntityTypes">
-                        <input type="text" class="form-control commission-percentage" ng-model="service.findCommissionTargetEntityInPlan(commissionPlan, commissionGroupType, commissionEntityType).percentage" ng-change="service.validateCommissionPlans()"/>
-                    </td>
-                    <td ng-repeat-end ng-if="false"><!--Never show this column--></td>
-                    <td>
-                        <button ng-class="{'btn-danger': !service.isCommissionPlanReadonly(commissionPlan)}" class="align-middle btn btn-xs btn-default glyphicon glyphicon-minus" ng-click="service.removeCommissionPlan(commissionPlan)"
-                                ng-disabled="service.isCommissionPlanReadonly(commissionPlan)"></button>
-                        <!--ng-disabled="service.isCommissionPlanReadonly(commissionPlan)"-->
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-            <button ng-disabled="!service.isValidateSuccess" ng-class="{'btn-danger': service.isValidateSuccess}" class="btn btn-default" ng-click="service.saveAllCommissionPlans()"
-                    title="After saving, you will not be able to remove saved rows. But you can update their percentage numbers.">Save all
-            </button>
-        </div>
-        <!-- END Page specific stuff -->
+<!-- BEGIN Page specific stuff -->
+<div ng-cloak class="col-md-12 col-sm-12 col-xs-12 main ng-cloak" id="collectionFileListContainer">
+    <div class="page-header">
+        <h1>Commission Setting</h1>
     </div>
+    <div ng-include="'app/templates/partials/message.html'"></div>
+    <table class="table table-bordered table-striped table-hover table-condensed">
+        <thead>
+        <tr>
+            <th rowspan="2"></th>
+            <th rowspan="2">Unit Code</th>
+            <th rowspan="2">Plan Code</th>
+            <th rowspan="2">Customer Category</th>
+            <th style="text-align: center" ng-repeat="commissionGroupType in service.commissionGroupTypes" colspan="{{service.commissionTargetEntityTypes.length}}">
+                <span>{{commissionGroupType.label}} %</span><span ng-show="!commissionGroupType.isRequired"> (Optional)</span>
+            </th>
+            <th rowspan="2">
+                <button class="btn btn-xs btn-primary glyphicon glyphicon-plus" ng-click="service.addCommissionPlan()"></button>
+            </th>
+        </tr>
+        <tr>
+            <th ng-repeat-start="commissionGroupType in service.commissionGroupTypes" ng-if='false'>
+            </th>
+            <th ng-repeat-end ng-repeat-start="targetEntityType in service.commissionTargetEntityTypes" style="text-transform: capitalize;"><!--{{$index}}-->{{targetEntityType | lowercase}}</th>
+            <th ng-repeat-end ng-if='false'><!--{{$index}} Never show this column--></th>
+            <!--<th></th>-->
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="commissionPlan in service.commissionPlans" class="form-group" ng-class="commissionPlan.styleClass">
+            <td>
+                <span class="indexnumber" ng-click="service.addCommissionPlan()">{{($index + 1)}}</span>
+                <!--<button class="btn btn-sm btn-default" ng-click="service.addCommissionPlan()">{{($index + 1)}}</button>-->
+            </td>
+            <td>
+                <input type="text"
+                       limit-to="6"
+                       ng-model="commissionPlan.unitCode" class="form-control commission-unitcode" ng-disabled="service.isCommissionPlanReadonly(commissionPlan)" ng-change="service.validateCommissionPlans()"/>
+            </td>
+            <td>
+                <input limit-to="7"
+                       type="text" ng-model="commissionPlan.planCode" class="form-control commission-plancode" ng-disabled="service.isCommissionPlanReadonly(commissionPlan)" ng-change="service.validateCommissionPlans()"/>
+            </td>
+            <td>
+                <select class="form-control commission-customercategory" ng-disabled="service.isCommissionPlanReadonly(commissionPlan)"
+                        ng-change="service.validateCommissionPlans()"
+                        ng-model="commissionPlan.customerCategory"
+                        ng-options="customerCategory.value as customerCategory.label for customerCategory in service.customerCategories">
+                </select>
+            </td>
+            <td ng-repeat-start="commissionGroupType in service.commissionGroupTypes" ng-if="false"><!--Never show this column--></td>
+            <td ng-repeat-end ng-repeat-start="commissionEntityType in service.commissionTargetEntityTypes">
+                <input type="text" class="form-control commission-percentage" ng-model="service.findCommissionTargetEntityInPlan(commissionPlan, commissionGroupType, commissionEntityType).percentage" ng-change="service.validateCommissionPlans()"/>
+            </td>
+            <td ng-repeat-end ng-if="false"><!--Never show this column--></td>
+            <td>
+                <button ng-class="{'btn-danger': !service.isCommissionPlanReadonly(commissionPlan)}" class="align-middle btn btn-xs btn-default glyphicon glyphicon-minus" ng-click="service.removeCommissionPlan(commissionPlan)"
+                        ng-disabled="service.isCommissionPlanReadonly(commissionPlan)"></button>
+                <!--ng-disabled="service.isCommissionPlanReadonly(commissionPlan)"-->
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <button ng-disabled="!service.isValidateSuccess" ng-class="{'btn-danger': service.isValidateSuccess}" class="btn btn-default" ng-click="service.saveAllCommissionPlans()"
+            title="After saving, you will not be able to remove saved rows. But you can update their percentage numbers.">Save all
+    </button>
 </div>
+<!-- END Page specific stuff -->

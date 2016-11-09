@@ -1,117 +1,105 @@
-<div ng-include="'app/templates/partials/header.html'"></div>
+<!-- BEGIN Page specific stuff -->
+<style>
+    .form-upload {
+        border: 1px solid #eee;
+        margin-bottom: 20px;
+        padding: 5px;
+    }
+</style>
 
-<div class="container-fluid">
-    <div class="row">
-        <div ng-include="'app/templates/partials/sidebar.html'"></div>
+<div ng-cloak class="col-md-12 col-sm-12 col-xs-12 main ng-cloak" id="configurationContainer">
+    <div class="alert alert-danger" role="alert" ng-show="errorMessage">
+        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+        An error occured. {{ errorMessage }}
+    </div>
+    <div class="alert alert-success" role="alert" ng-show="successMessage">
+        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+        {{ successMessage }}
+    </div>
+    <div class="page-header">
+        <h1>Policy Alerts</h1>
+    </div>
+    <div class="col-sm-12">
+        <h3 class="pull-left">Remaining Policies: {{availablePolicyCount}}</h5>
+            <h3 class="pull-right">Quota: {{policyQuota}}</h5>
+    </div>
 
-        <!-- BEGIN Page specific stuff -->
-        <style>
-            .form-upload {
-                border: 1px solid #eee;
-                margin-bottom: 20px;
-                padding: 5px;
-            }
-        </style>
+    <div class="col-sm-12">
+        <div class="page-header">
+            <h3>Settings</h3>
+        </div>
+        <form class="form-horizontal" ng-submit="updateQuotaAlert($event)">
+            <div class="form-group">
+                <label class="col-sm-4 control-label">Notify at</label>
 
-        <div ng-cloak class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main ng-cloak" id="configurationContainer">
-            <div class="alert alert-danger" role="alert" ng-show="errorMessage">
-                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-                An error occured. {{ errorMessage }}
-            </div>
-            <div class="alert alert-success" role="alert" ng-show="successMessage">
-                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-                {{ successMessage }}
-            </div>
-            <div class="page-header">
-                <h1>Policy Alerts</h1>
-            </div>
-            <div class="col-sm-12">
-                <h3 class="pull-left">Remaining Policies: {{availablePolicyCount}}</h5>
-                    <h3 class="pull-right">Quota: {{policyQuota}}</h5>
-            </div>
-
-            <div class="col-sm-12">
-                <div class="page-header">
-                    <h3>Settings</h3>
+                <div class="col-sm-4">
+                    <div class="input-group">
+                        <input type="text" class="form-control" ng-model="settings.triggerPercent" placeholder="Percentage"/>
+                        <span class="input-group-addon">%</span>
+                    </div>
                 </div>
-                <form class="form-horizontal" ng-submit="updateQuotaAlert($event)">
-                    <div class="form-group">
-                        <label class="col-sm-4 control-label">Notify at</label>
+            </div>
+            <div class="form-group">
+                <label for="timeTrigger" class="col-sm-4 control-label">Notify when</label>
 
-                        <div class="col-sm-4">
-                            <div class="input-group">
-                                <input type="text" class="form-control" ng-model="settings.triggerPercent" placeholder="Percentage"/>
-                                <span class="input-group-addon">%</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="timeTrigger" class="col-sm-4 control-label">Notify when</label>
+                <div class="col-sm-4">
+                    <select class="form-control" id="timeTrigger"
+                            ng-model="settings.timeTrigger"
+                            ng-options="ttl.value as ttl.name for ttl in timeTriggerList">
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="emailList" class="col-sm-4 control-label">Notify to</label>
 
-                        <div class="col-sm-4">
-                            <select class="form-control" id="timeTrigger"
-                                    ng-model="settings.timeTrigger"
-                                    ng-options="ttl.value as ttl.name for ttl in timeTriggerList">
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="emailList" class="col-sm-4 control-label">Notify to</label>
-
-                        <div class="col-sm-4">
+                <div class="col-sm-4">
 	                        <textarea class="form-control" rows="5" id="emailList" ng-model="settings.emailList" required placeholder="Email seperated by commas" autofocus>
 	                        </textarea>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-sm-offset-4 col-sm-8">
-                            <button type="submit" class="btn btn-default">Save</button>
-                        </div>
-                    </div>
-                </form>
-
+                </div>
             </div>
-
-            <div class="col-sm-12">
-                <div class="page-header">
-                    <h3>New Policy Numbers Upload</h3>
+            <div class="form-group">
+                <div class="col-sm-offset-4 col-sm-8">
+                    <button type="submit" class="btn btn-default">Save</button>
                 </div>
-                <form name="formUpload" ng-submit="uploadNewPolicyNumbers($event)" class="form-inline form-upload">
-                    <div class="form-group">
-                        <label for="fileToUpload">Choose a black list file to upload</label>
-                        <input type="file" file-model="file" id="fileToUpload">
-                    </div>
-                    <button type="submit" class="btn btn-primary btn-danger" ng-disabled="isUploading">Submit</button>
-                </form>
-                <div class="alert alert-danger" role="alert" ng-show="uploadErrorMessage">
-                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-                    {{ uploadErrorMessage }}
-                </div>
-
-                <div ng-show="hasUploaded">
-                    <div>&nbsp;</div>
-                    <uib-progress animate="true" max="numberOfLines">
-                        <uib-bar ng-repeat="bar in stacked track by $index" value="bar.value" type="{{bar.type}}"><span>{{bar.value}}</span></uib-bar>
-                    </uib-progress>
-                    <div>
-                        <span class="label label-success">{{numberOfLinesAdded}}</span> lines added with valid data
-                    </div>
-                    <div>
-                        <span class="label label-warning">{{numberOfDuplicateLines}}</span> lines ignored (duplicate + sheet header)
-                    </div>
-                    <div>
-                        <span class="label label-info">{{numberOfEmptyLines}}</span> empty lines
-                    </div>
-                    <div>Total of <span class="label label-default">{{numberOfLinesAdded + numberOfDuplicateLines + numberOfEmptyLines}}</span> lines processed (some other empty lines might have not been counted)</div>
-                    <div>Total of <span class="label label-default">{{numberOfLines}}</span> lines in the excel file</div>
-                </div>
-
             </div>
+        </form>
+
+    </div>
+
+    <div class="col-sm-12">
+        <div class="page-header">
+            <h3>New Policy Numbers Upload</h3>
         </div>
-        <!-- END Page specific stuff -->
+        <form name="formUpload" ng-submit="uploadNewPolicyNumbers($event)" class="form-inline form-upload">
+            <div class="form-group">
+                <label for="fileToUpload">Choose a black list file to upload</label>
+                <input type="file" file-model="file" id="fileToUpload">
+            </div>
+            <button type="submit" class="btn btn-primary btn-danger" ng-disabled="isUploading">Submit</button>
+        </form>
+        <div class="alert alert-danger" role="alert" ng-show="uploadErrorMessage">
+            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+            {{ uploadErrorMessage }}
+        </div>
+
+        <div ng-show="hasUploaded">
+            <div>&nbsp;</div>
+            <uib-progress animate="true" max="numberOfLines">
+                <uib-bar ng-repeat="bar in stacked track by $index" value="bar.value" type="{{bar.type}}"><span>{{bar.value}}</span></uib-bar>
+            </uib-progress>
+            <div>
+                <span class="label label-success">{{numberOfLinesAdded}}</span> lines added with valid data
+            </div>
+            <div>
+                <span class="label label-warning">{{numberOfDuplicateLines}}</span> lines ignored (duplicate + sheet header)
+            </div>
+            <div>
+                <span class="label label-info">{{numberOfEmptyLines}}</span> empty lines
+            </div>
+            <div>Total of <span class="label label-default">{{numberOfLinesAdded + numberOfDuplicateLines + numberOfEmptyLines}}</span> lines processed (some other empty lines might have not been counted)</div>
+            <div>Total of <span class="label label-default">{{numberOfLines}}</span> lines in the excel file</div>
+        </div>
 
     </div>
 </div>
-
-</body>
-</html>
+<!-- END Page specific stuff -->

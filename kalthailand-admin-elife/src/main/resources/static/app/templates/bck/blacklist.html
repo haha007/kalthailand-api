@@ -1,0 +1,97 @@
+<div ng-include="'app/templates/partials/header.html'"></div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div ng-include="'app/templates/partials/sidebar.html'"></div>
+
+        <!-- BEGIN Page specific stuff -->
+        <style>
+            .form-upload {
+                border: 1px solid #eee;
+                padding: 5px;
+            }
+        </style>
+
+        <div ng-cloak class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main ng-cloak" id="blackListContainer">
+            <div class="page-header">
+                <h1>Customer Black List</h1>
+            </div>
+            <form name="formUpload" ng-submit="uploadBlackList($event)" class="form-inline form-upload">
+                <div class="form-group">
+                    <label for="fileToUpload">Choose a black list file to upload</label>
+                    <input type="file" file-model="file" id="fileToUpload">
+                </div>
+                <button type="submit" class="btn btn-primary btn-danger" ng-disabled="isUploading">Submit</button>
+            </form>
+            <div class="alert alert-danger" role="alert" ng-show="errorMessage">
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                {{ errorMessage }}
+            </div>
+
+            <div ng-show="hasUploaded">
+                <div>&nbsp;</div>
+                <uib-progress animate="true" max="numberOfLines">
+                    <uib-bar ng-repeat="bar in stacked track by $index" value="bar.value" type="{{bar.type}}"><span>{{bar.value}}</span></uib-bar>
+                </uib-progress>
+                <div>
+                    <span class="label label-success">{{numberOfLinesAdded}}</span> lines added with valid data
+                </div>
+                <div>
+                    <span class="label label-warning">{{numberOfDuplicateLines}}</span> lines ignored (duplicate + sheet header)
+                </div>
+                <div>
+                    <span class="label label-info">{{numberOfEmptyLines}}</span> empty lines
+                </div>
+                <div>Total of <span class="label label-default">{{numberOfLinesAdded + numberOfDuplicateLines + numberOfEmptyLines}}</span> lines processed (some other empty lines might have not been counted)</div>
+                <div>Total of <span class="label label-default">{{numberOfLines}}</span> lines in the excel file</div>
+            </div>
+
+            <div>
+                <div class="pull-left" ng-show="blackList">
+                    <uib-pagination
+                            total-items="totalItems"
+                            ng-model="currentPage"
+                            max-size="8"
+                            class="pagination-md"
+                            force-ellipses="true"
+                            boundary-link-numbers="true"
+                            ng-change="pageChanged()"
+                            items-per-page="20">
+                    </uib-pagination>
+                </div>
+                <div class="pull-right" style="margin-top: 26px" ng-show="blackList">
+                    <form name="formSearch" ng-submit="search()" class="form-inline">
+                        <label for="search">Search</label>
+                        <input type="text" id="search" ng-model="searchContent">
+                    </form>
+                </div>
+            </div>
+
+            <div ng-show="blackList">
+                <table class="table table-bordered table-striped table-hover table-condensed">
+                    <tr>
+                        <th>Name</th>
+                        <th>Thai ID</th>
+                        <th>Description</th>
+                        <th>Type</th>
+                        <th>As Of</th>
+                        <th>Report Date</th>
+                        <th>Address</th>
+                    </tr>
+                    <tr ng-repeat="item in blackList.content">
+                        <td>{{ item.name }}</td>
+                        <td>{{ item.idNumber }}</td>
+                        <td>{{ item.description }}</td>
+                        <td>{{ item.type }}</td>
+                        <td>{{ item.asOf }}</td>
+                        <td>{{ item.reportDate }}</td>
+                        <td>{{ item.address }}</td>
+                    </tr>
+                </table>
+                Page {{ currentPage }} / {{ totalPages }}. Number of items: {{ totalItems }}
+            </div>
+        </div>
+        <!-- END Page specific stuff -->
+
+    </div>
+</div>

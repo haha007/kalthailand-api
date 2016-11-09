@@ -1,0 +1,96 @@
+<div ng-include="'app/templates/partials/header.html'"></div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div ng-include="'app/templates/partials/sidebar.html'"></div>
+
+        <!-- BEGIN Page specific stuff -->
+
+        <div ng-cloak class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main ng-cloak" id="totalQuoteCountContainer">
+            <div class="page-header">
+                <h1>Total Quotes Count</h1>
+            </div>
+            <form class="form-horizontal" ng-submit="search($event)">
+                <div class="alert alert-danger" role="alert" ng-show="errorMessage">
+                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                    An error occured. {{ errorMessage }}
+                </div>
+                <div class="alert alert-success" role="alert" ng-show="successMessage">
+                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                    {{ successMessage }}
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Counting filter</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-md-1  text-right">
+                                <label for="fromDateSearch" class="control-label">From</label>
+                            </div>
+                            <div class="col-md-3">
+                                <p class="input-group">
+                                    <input readonly type="text" id="fromDateSearch" class="form-control" uib-datepicker-popup="dd-MM-yyyy" ng-model="fromDateSearch" ng-required="true" is-open="fromDateSearch.opened" close-text="Close" datepicker-options="dateOptions"/>
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-default" ng-click="fromDateSearchOpen()"><i class="glyphicon glyphicon-calendar"></i></button>
+                            </span>
+                                </p>
+                            </div>
+                            <div class="col-md-1 text-right">
+                                <label for="toDateSearch" class="control-label">To</label>
+                            </div>
+                            <div class="col-md-3">
+                                <p class="input-group">
+                                    <input readonly type="text" id="toDateSearch" class="form-control" uib-datepicker-popup="dd-MM-yyyy" ng-model="toDateSearch" ng-required="true" is-open="toDateSearch.opened" close-text="Close" datepicker-options="dateOptions"/>
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-default" ng-click="toDateSearchOpen()"><i class="glyphicon glyphicon-calendar"></i></button>
+                            </span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <div class="col-md-8">
+                        <button type="submit" class="btn btn-default" style="margin-right:10px;">
+                            <i class="glyphicon glyphicon-zoom-in"></i>
+                            Count Quotes
+                        </button>
+                        <button type="button" class="btn btn-default" ng-click="downloadExcelFile()">
+                            <i class="glyphicon glyphicon-download"></i>
+                            Download Export Excel
+                        </button>
+                    </div>
+                </div>
+            </form>
+            <div ng-show="sessionQuoteCounts !=null && sessionQuoteCounts.length > 0" class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Counting result</h3>
+                </div>
+                <table class="table table-bordered table-hover table-condensed">
+                    <thead style="background-color: #f5f5f5">
+                    <tr>
+                        <th>Product</th>
+                        <th>Session Quotes</th>
+                        <th>Quotes</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="item in sessionQuoteCounts">
+                        <td>{{ item.productId }}</td>
+                        <td>{{ item.sessionQuoteCount | number }}</td>
+                        <td>{{ item.quoteCount | number }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- END Page specific stuff -->
+
+    </div>
+</div>
+
+</body>
+</html>
