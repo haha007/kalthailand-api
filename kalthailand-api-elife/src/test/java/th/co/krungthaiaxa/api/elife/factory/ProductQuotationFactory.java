@@ -46,7 +46,7 @@ public class ProductQuotationFactory {
         } else {
             productQuotation.setPremiumAmount(amount);
         }
-
+        productQuotation.setAtpMode(atpMode.getNumValue());
         return productQuotation;
     }
 
@@ -85,7 +85,7 @@ public class ProductQuotationFactory {
      * @return
      */
     public static ProductQuotation constructIGen(Integer age, PeriodicityCode periodicityCode, Double amountValue, Boolean isSumInsured, Integer taxRate, ProductDividendOption productDividendOption) {
-        //This product always required occupation to stored in DB, but don't need it for calculation.
+        //This product always required occupation to stored in DB, but it doesn't impact the calculation.
         return constructQuotation(ProductType.PRODUCT_IGEN, null, age, periodicityCode, amountValue, isSumInsured, taxRate, GenderCode.MALE, 1, productDividendOption);
     }
 
