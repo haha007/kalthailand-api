@@ -35,16 +35,6 @@ public class PolicyFactory {
     @Rule
     public final GreenMailRule greenMail = new GreenMailRule(ServerSetupTest.SMTP_IMAP);
 
-    public Policy createPolicyForLineWithPendingValidation(int age, String email) {
-        Quote quote = quoteFactory.createDefaultIProtectQuoteForLine(age, email);
-        return policyService.createPolicy(quote);
-    }
-
-    public Policy createPolicyForLineWithValidated(int age, String email) {
-        Quote quote = quoteFactory.createDefaultIProtectQuoteForLine(age, email);
-        return createPolicyWithValidatedStatus(quote);
-    }
-
     public Policy createPolicyWithValidatedStatus(ProductQuotation productQuotation) {
         return createPolicyWithValidatedStatus(productQuotation, TestUtil.DUMMY_EMAIL);
     }

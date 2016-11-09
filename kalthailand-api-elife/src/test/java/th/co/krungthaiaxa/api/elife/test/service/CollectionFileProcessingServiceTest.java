@@ -389,7 +389,6 @@ public class CollectionFileProcessingServiceTest extends ELifeTest {
     }
 */
 
-    //    Don't need to run it here, it will be tested in {@link PaymentRetryServiceTest}
     @Test
     public void run_cron_job() {
         ProductQuotation productQuotation01 = ProductQuotationFactory.constructIGenDefaultWithMonthlyPayment();
@@ -401,7 +400,6 @@ public class CollectionFileProcessingServiceTest extends ELifeTest {
 
         rlsService.importCollectionFile(inputStream);
         rlsService.processLatestCollectionFiles();
-
     }
 
     /*

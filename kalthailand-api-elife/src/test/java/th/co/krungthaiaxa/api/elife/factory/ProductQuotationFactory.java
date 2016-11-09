@@ -45,7 +45,9 @@ public class ProductQuotationFactory {
         } else {
             productQuotation.setPremiumAmount(amount);
         }
-        productQuotation.setAtpMode(atpMode.getNumValue());
+        if (atpMode != null) {
+            productQuotation.setAtpMode(atpMode.getNumValue());
+        }
         return productQuotation;
     }
 

@@ -24,6 +24,13 @@ import java.util.Locale;
 
 import static java.time.format.DateTimeFormatter.ofPattern;
 
+/**
+ * When policy status is {@link th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus#PENDING_PAYMENT}, you can change its status to {@link th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus#PENDING_VALIDATION}, and when changing the status, DAForm will be generated.
+ * <p>
+ * 2016-11-09: v.1.10.0:
+ * Only generated DAForm for policy with {@link th.co.krungthaiaxa.api.elife.model.enums.AtpMode#AUTOPAY}. Don't care about paymentMode is {@link th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode} is Month, Year,....
+ * However, with {@link th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode#EVERY_MONTH}, the atpMode is always enabled (true).
+ */
 @Service
 public class DAFormService {
 
