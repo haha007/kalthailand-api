@@ -58,11 +58,11 @@ public class ProductQuotationFactory {
     }
 
     public static ProductQuotation constructIProtectDefault() {
-        return constructIProtect(33, PeriodicityCode.EVERY_MONTH, 2000.0, false, 35, GenderCode.MALE);
+        return constructIProtect(33, PeriodicityCode.EVERY_MONTH, 300000.0, true, 35, GenderCode.MALE);
     }
 
     public static ProductQuotation constructIProtectDefaultWithMonthlyPayment() {
-        return constructIProtect(33, PeriodicityCode.EVERY_MONTH, 2000.0, false, 35, GenderCode.MALE);
+        return constructIProtect(33, PeriodicityCode.EVERY_MONTH, 300000.0, true, 35, GenderCode.MALE);
     }
 
     public static ProductQuotation constructIProtect(Integer age, PeriodicityCode periodicityCode, Double amountValue, Boolean isSumInsured, Integer taxRate, GenderCode genderCode) {

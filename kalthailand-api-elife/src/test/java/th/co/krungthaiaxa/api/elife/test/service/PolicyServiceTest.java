@@ -12,7 +12,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
-import th.co.krungthaiaxa.api.elife.utils.TestUtil;
 import th.co.krungthaiaxa.api.elife.exception.ElifeException;
 import th.co.krungthaiaxa.api.elife.exception.PolicyValidationException;
 import th.co.krungthaiaxa.api.elife.factory.PolicyFactory;
@@ -25,8 +24,10 @@ import th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus;
 import th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus;
 import th.co.krungthaiaxa.api.elife.service.PaymentService;
 import th.co.krungthaiaxa.api.elife.service.PolicyService;
+import th.co.krungthaiaxa.api.elife.service.PolicyValidatedProcessingService;
 import th.co.krungthaiaxa.api.elife.service.QuoteService;
 import th.co.krungthaiaxa.api.elife.test.ELifeTest;
+import th.co.krungthaiaxa.api.elife.utils.TestUtil;
 
 import javax.inject.Inject;
 
@@ -41,6 +42,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 public class PolicyServiceTest extends ELifeTest {
     @Inject
     private PolicyService policyService;
+    @Inject
+    private PolicyValidatedProcessingService policyValidatedProcessingService;
     @Inject
     private QuoteService quoteService;
     @Inject
@@ -274,8 +277,7 @@ public class PolicyServiceTest extends ELifeTest {
     @Test
     public void should_not_update_policy_status_to_validated_when_previous_status_is_not_pending_validation() {
         Policy policy = getPolicy();
-
-        assertThatThrownBy(() -> policyService.updatePolicyStatusToValidated(policy, "999999-99-999999", "agentName", "token"))
+        assertThatThrownBy(() -> policyFactory.updateFromPendingValidationToValidated(policy))
                 .isInstanceOf(ElifeException.class);
         Assertions.assertThat(policy.getDocuments()).hasSize(0);
     }

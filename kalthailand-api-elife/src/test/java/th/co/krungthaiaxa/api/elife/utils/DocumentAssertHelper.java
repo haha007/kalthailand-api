@@ -8,6 +8,7 @@ import th.co.krungthaiaxa.api.common.utils.IOUtil;
 import th.co.krungthaiaxa.api.elife.model.DocumentDownload;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.enums.DocumentType;
+import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 import th.co.krungthaiaxa.api.elife.products.utils.ProductUtils;
 import th.co.krungthaiaxa.api.elife.service.DocumentService;
 
@@ -25,12 +26,15 @@ public class DocumentAssertHelper {
         DocumentDownload documentDownload = documentService.findDocumentDownload(policy, documentType);
         Assert.assertNotNull(msg, documentDownload);
         byte[] pdfContent = documentService.getDocumentDownloadContent(documentDownload);
-        String fileName = String.format("%s_%s_%s_%s.pdf",
-                DateTimeUtil.formatNowForFilePath(),
+        PeriodicityCode periodicityCode = ProductUtils.getPeriodicityCode(policy);
+        String fileName = String.format("%s_%s_%s_%s_%s_%s.pdf",
+                DateTimeUtil.formatNowForFileShortPath(),
                 policy.getPolicyId(),
-                ProductUtils.validateExistProductName(policy),
+                policy.getCommonData().getProductId(),
+                policy.getStatus(),
+                periodicityCode,
                 documentType);
-        IOUtil.writeBytesToRelativeFile(TestUtil.PATH_TEST_RESULT + "/documentType/" + fileName, pdfContent);
+        IOUtil.writeBytesToRelativeFile(TestUtil.PATH_TEST_RESULT + "/documents/" + fileName, pdfContent);
         Assert.assertTrue(msg, StringUtils.isNotBlank(documentDownload.getContent()));
     }
 

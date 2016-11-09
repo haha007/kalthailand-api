@@ -16,7 +16,7 @@ public class IProtectFactoryForProductQuotation extends AbstractFactoryForProduc
 
     @Override
     public ProductQuotation constructDefault(PeriodicityCode periodicityCode, AtpMode atpMode) {
-        return ProductQuotationFactory.constructIProtect(33, periodicityCode, 2000.0, false, 35, GenderCode.MALE, atpMode);
+        return ProductQuotationFactory.constructIProtect(33, periodicityCode, 300000.0, true, 35, GenderCode.MALE, atpMode);
     }
 
 //    @Override

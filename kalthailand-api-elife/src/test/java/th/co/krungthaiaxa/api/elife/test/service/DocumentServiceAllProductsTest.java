@@ -29,8 +29,8 @@ import javax.inject.Inject;
 @SpringApplicationConfiguration(classes = KalApiElifeApplication.class)
 @WebAppConfiguration
 @ActiveProfiles("test")
-public class DAFormServiceTest extends ELifeTest {
-    public static final Logger LOGGER = LoggerFactory.getLogger(DAFormServiceTest.class);
+public class DocumentServiceAllProductsTest extends ELifeTest {
+    public static final Logger LOGGER = LoggerFactory.getLogger(DocumentServiceAllProductsTest.class);
     @Inject
     private th.co.krungthaiaxa.api.elife.service.DAFormService DAFormService;
     @Inject
@@ -51,9 +51,18 @@ public class DAFormServiceTest extends ELifeTest {
             documentAssertHelper.assertHasDocument(policy, DocumentType.APPLICATION_FORM, msg + " Must contain ApplicationForm (not validated)");
             documentAssertHelper.assertHasNoDocument(policy, DocumentType.APPLICATION_FORM_VALIDATED, msg + " Must not contain ApplicationForm (validated)");
             documentAssertHelper.assertHasNoDocument(policy, DocumentType.ERECEIPT_PDF, msg + " Must not contain eReceiptPdf");
+
+            policy = policyFactory.updateFromPendingValidationToValidated(policy);
+            assertMustHaveDAFormWhenAtpModeIsEnabled(policy, productType, periodicityCode, atpMode);
+            documentAssertHelper.assertHasDocument(policy, DocumentType.APPLICATION_FORM, msg + " Must contain ApplicationForm (not validated)");
+            documentAssertHelper.assertHasDocument(policy, DocumentType.APPLICATION_FORM_VALIDATED, msg + " Must contain ApplicationForm (validated)");
+            documentAssertHelper.assertHasDocument(policy, DocumentType.ERECEIPT_PDF, msg + " Must contain eReceiptPdf");
         } catch (Exception e) {
             if (PeriodicityCode.EVERY_MONTH.equals(periodicityCode) && AtpMode.NO_AUTOPAY.equals(atpMode)) {
                 Assert.assertTrue(e instanceof QuoteCalculationException);
+            } else {
+                LOGGER.error(msg + e.getMessage(), e);
+                Assert.assertFalse(true);
             }
         }
     }
@@ -68,7 +77,13 @@ public class DAFormServiceTest extends ELifeTest {
     }
 
     @Test
-    public void test_generate_DAForm_for_all_kind_of_products() {
+    public void test() {
+        testWith(ProductType.PRODUCT_IPROTECT, PeriodicityCode.EVERY_QUARTER, AtpMode.NO_AUTOPAY);
+    }
+
+    @Test
+    public void test_generate_documents_for_all_kind_of_products() {
+
         for (ProductType productType : ProductType.values()) {
             if (productType == ProductType.PRODUCT_IBEGIN || productType == ProductType.PRODUCT_10_EC) {
                 continue;
