@@ -1,10 +1,11 @@
 <style>
     .status-success {
-        color: #3e8f3e;
+        /*color: #3e8f3e;*/
+        color: rgb(38, 185, 154);
     }
 
     .status-new {
-        color: #a47e3c;
+        color: #b58f4d;
     }
 
     .status-error {
@@ -80,9 +81,11 @@
             <td>{{ collectionFile.jobEndedDate | date:'yyyy-MM-dd HH:mm:ss Z'}}</td>
             <td>{{ collectionFile.lines.length }}</td>
             <td>{{ collectionFile.deductionFile.lines.length }}</td>
-            <td><a href="/api-elife/RLS/deduction/download/{{collectionFile.id}}" ng-show="isProccessed(collectionFile)">
-                <span class="glyphicon glyphicon-download"></span><span class="glyphicon-class"> Download</span>
-            </a></td>
+            <td>
+                <a href="/api-elife/RLS/deduction/download/{{collectionFile.id}}" ng-show="isProccessed(collectionFile)">
+                    <span class="glyphicon glyphicon-download"></span><span class="glyphicon-class"> Download</span>
+                </a>
+            </td>
             <td>
                 <i ng-hide="isProccessed(collectionFile)" class="status-new glyphicon glyphicon-asterisk"></i>
                 <i ng-show="isProccessed(collectionFile)" class="status-success glyphicon glyphicon-ok-sign"></i>
