@@ -5,7 +5,7 @@ import com.icegreen.greenmail.util.ServerSetupTest;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.springframework.stereotype.Component;
-import th.co.krungthaiaxa.api.elife.TestUtil;
+import th.co.krungthaiaxa.api.elife.utils.TestUtil;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.Quote;

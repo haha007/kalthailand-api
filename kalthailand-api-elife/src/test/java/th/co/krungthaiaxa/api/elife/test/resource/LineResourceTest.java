@@ -26,7 +26,7 @@ import java.net.URISyntaxException;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.*;
-import static th.co.krungthaiaxa.api.elife.TestUtil.getErrorFromJSon;
+import static th.co.krungthaiaxa.api.elife.utils.TestUtil.getErrorFromJSon;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiElifeApplication.class)

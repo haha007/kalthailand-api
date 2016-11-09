@@ -42,8 +42,8 @@ import java.io.File;
 import static org.apache.commons.io.FileUtils.writeByteArrayToFile;
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
-import static th.co.krungthaiaxa.api.elife.TestUtil.productQuotation;
-import static th.co.krungthaiaxa.api.elife.TestUtil.quote;
+import static th.co.krungthaiaxa.api.elife.utils.TestUtil.productQuotation;
+import static th.co.krungthaiaxa.api.elife.utils.TestUtil.quote;
 import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.EVERY_YEAR;
 
 @RunWith(SpringJUnit4ClassRunner.class)

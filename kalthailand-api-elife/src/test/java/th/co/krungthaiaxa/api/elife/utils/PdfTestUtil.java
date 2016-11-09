@@ -9,7 +9,6 @@ import th.co.krungthaiaxa.api.common.exeption.FileIOException;
 import th.co.krungthaiaxa.api.common.utils.IOUtil;
 import th.co.krungthaiaxa.api.common.utils.PdfIOUtil;
 import th.co.krungthaiaxa.api.common.utils.PdfUtil;
-import th.co.krungthaiaxa.api.elife.TestUtil;
 
 import java.awt.*;
 import java.io.ByteArrayOutputStream;
