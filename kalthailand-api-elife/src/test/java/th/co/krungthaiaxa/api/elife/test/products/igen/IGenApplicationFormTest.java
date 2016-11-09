@@ -15,7 +15,6 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import th.co.krungthaiaxa.api.elife.test.ELifeTest;
 import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
 import th.co.krungthaiaxa.api.elife.TestUtil;
 import th.co.krungthaiaxa.api.elife.factory.PolicyFactory;
@@ -29,6 +28,7 @@ import th.co.krungthaiaxa.api.elife.service.ApplicationFormService;
 import th.co.krungthaiaxa.api.elife.service.DocumentService;
 import th.co.krungthaiaxa.api.elife.service.PolicyDocumentService;
 import th.co.krungthaiaxa.api.elife.service.PolicyService;
+import th.co.krungthaiaxa.api.elife.test.ELifeTest;
 import th.co.krungthaiaxa.api.elife.test.utils.GreenMailUtil;
 
 import java.io.File;
@@ -93,14 +93,14 @@ public class IGenApplicationFormTest extends ELifeTest {
     @Test
     public void test_generate_applicationForm_for_validated_quote_annual_cash_back() throws IOException {
         ProductQuotation productQuotation = ProductQuotationFactory.constructIGen(33, PeriodicityCode.EVERY_YEAR, 1000000.0, true, 35, ProductDividendOption.ANNUAL_PAY_BACK_CASH);
-        Policy policy = policyFactory.createPolicyWithValidatedStatus(productQuotation, ProductQuotationFactory.DUMMY_EMAIL);
+        Policy policy = policyFactory.createPolicyWithValidatedStatus(productQuotation, TestUtil.DUMMY_EMAIL);
         testGenerateValidatedApplicationForm(policy);
     }
 
     @Test
     public void test_generate_applicationForm_for_validated_quote_annual_next_premium() throws IOException {
         ProductQuotation productQuotation = ProductQuotationFactory.constructIGen(33, PeriodicityCode.EVERY_YEAR, 1000000.0, true, 35, ProductDividendOption.ANNUAL_PAY_BACK_NEXT_PREMIUM);
-        Policy policy = policyFactory.createPolicyWithValidatedStatus(productQuotation, ProductQuotationFactory.DUMMY_EMAIL);
+        Policy policy = policyFactory.createPolicyWithValidatedStatus(productQuotation, TestUtil.DUMMY_EMAIL);
         testGenerateValidatedApplicationForm(policy);
     }
 

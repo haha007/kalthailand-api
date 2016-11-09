@@ -17,7 +17,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
-import th.co.krungthaiaxa.api.elife.test.ELifeTest;
 import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
 import th.co.krungthaiaxa.api.elife.TestUtil;
 import th.co.krungthaiaxa.api.elife.data.CollectionFile;
@@ -42,6 +41,7 @@ import th.co.krungthaiaxa.api.elife.service.LineService;
 import th.co.krungthaiaxa.api.elife.service.PaymentFailEmailService;
 import th.co.krungthaiaxa.api.elife.service.PaymentRetryService;
 import th.co.krungthaiaxa.api.elife.service.PaymentService;
+import th.co.krungthaiaxa.api.elife.test.ELifeTest;
 import th.co.krungthaiaxa.api.elife.test.utils.GreenMailUtil;
 
 import javax.inject.Inject;
@@ -89,7 +89,7 @@ public class PaymentRetryServiceTest extends ELifeTest {
 
     public void testFullFlowForPaymentFailAndRetrySuccess(ProductQuotation productQuotation) throws FolderException {
         //01 -  Create first fail payment.
-        PolicyWithFirstFailPayment policyWithFirstFailPayment = testCreatePolicyAndTheFirstFailPayment(productQuotation, ProductQuotationFactory.DUMMY_EMAIL);
+        PolicyWithFirstFailPayment policyWithFirstFailPayment = testCreatePolicyAndTheFirstFailPayment(productQuotation, TestUtil.DUMMY_EMAIL);
         //      Assert
         PaymentNewerCompletedResult paymentNewerCompletedResult = paymentService.findNewerCompletedPaymentInSamePolicy(policyWithFirstFailPayment.failPaymentId);
         Payment failPayment = paymentNewerCompletedResult.getPayment();
@@ -120,7 +120,7 @@ public class PaymentRetryServiceTest extends ELifeTest {
 
     private PolicyWithFirstFailPayment testCreatePolicyAndTheFirstFailPayment() throws FolderException {
         ProductQuotation productQuotation = ProductQuotationFactory.constructIProtectDefault();
-        return testCreatePolicyAndTheFirstFailPayment(productQuotation, ProductQuotationFactory.DUMMY_EMAIL);
+        return testCreatePolicyAndTheFirstFailPayment(productQuotation, TestUtil.DUMMY_EMAIL);
     }
 
     private PolicyWithFirstFailPayment testCreatePolicyAndTheFirstFailPayment(ProductQuotation productQuotation, String insuredEmail) throws FolderException {

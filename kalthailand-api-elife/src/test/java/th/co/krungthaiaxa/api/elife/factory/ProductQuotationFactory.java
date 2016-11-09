@@ -21,7 +21,6 @@ import static th.co.krungthaiaxa.api.elife.products.utils.ProductUtils.amountTHB
  */
 @Component
 public class ProductQuotationFactory {
-    public static final String DUMMY_EMAIL = "dummy@krungthai-axa.co.th";
 
     public static ProductQuotation constructQuotation(
             ProductType productType, String packageName, Integer age, PeriodicityCode periodicityCode, Double amountValue, Boolean isSumInsured, Integer taxRate, GenderCode genderCode, Integer occupationTypeId,
