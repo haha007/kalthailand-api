@@ -13,7 +13,7 @@ public enum ProductType {
     PRODUCT_IGEN("iGen", "iGen", "Product iGen"),
     PRODUCT_IPROTECT("iProtect", "iProtect S", "Product iProtect");
     /**
-     * It's same as productId.
+     * It's same as {@link CommonData#productId}
      * This is the logic name, never change its content!
      */
     private String logicName;

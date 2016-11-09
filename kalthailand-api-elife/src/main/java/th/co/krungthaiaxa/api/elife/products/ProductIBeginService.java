@@ -121,7 +121,7 @@ public class ProductIBeginService implements ProductService {
         commonData.setMinSumInsured(amountTHB(SUM_INSURED_MIN));
         commonData.setNbOfYearsOfCoverage(DURATION_COVERAGE_IN_YEAR);
         commonData.setNbOfYearsOfPremium(DURATION_PAYMENT_IN_YEAR);
-        commonData.setProductId(ProductType.PRODUCT_IBEGIN.name());
+        commonData.setProductId(ProductType.PRODUCT_IBEGIN.getLogicName());
         commonData.setProductCurrency(PRODUCT_IBEGIN_CURRENCY);
         commonData.setProductName(PRODUCT_IBEGIN_NAME);
         return commonData;
