@@ -7,6 +7,8 @@ import com.itextpdf.text.pdf.PdfContentByte;
  * @author khoi.tran on 10/25/16.
  */
 public class PdfUtil {
+    public static final BaseFont BASE_FONT = PdfIOUtil.loadFontFromClassPath("ANGSAB_1.ttf", "/ereceipt/ANGSAB_1.TTF");
+
     public static final float TINY = 4f;
     public static final float VERY_SMALL_SIZE = 7f;
     public static final float SMALL_SIZE = 10f;
@@ -22,6 +24,6 @@ public class PdfUtil {
     }
 
     public static BaseFont loadBaseFont() {
-        return PdfIOUtil.loadFontFromClassPath("ANGSAB_1.ttf", "/ereceipt/ANGSAB_1.TTF");
+        return BASE_FONT;
     }
 }
