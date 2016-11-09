@@ -1,7 +1,6 @@
-package th.co.krungthaiaxa.api.elife.factory;
+package th.co.krungthaiaxa.api.elife.factory.productquotation;
 
 import org.springframework.stereotype.Component;
-import th.co.krungthaiaxa.api.common.exeption.UnexpectedException;
 import th.co.krungthaiaxa.api.elife.data.IProtectPackage;
 import th.co.krungthaiaxa.api.elife.model.Amount;
 import th.co.krungthaiaxa.api.elife.model.enums.AtpMode;
@@ -47,6 +46,8 @@ public class ProductQuotationFactory {
         }
         if (atpMode != null) {
             productQuotation.setAtpMode(atpMode.getNumValue());
+        } else {
+            productQuotation.setAtpMode(null);
         }
         return productQuotation;
     }
@@ -75,6 +76,10 @@ public class ProductQuotationFactory {
         return constructQuotation(ProductType.PRODUCT_IPROTECT, IProtectPackage.IPROTECT10.name(), age, periodicityCode, amountValue, isSumInsured, taxRate, genderCode, 1, null);
     }
 
+    public static ProductQuotation constructIProtect(Integer age, PeriodicityCode periodicityCode, Double amountValue, Boolean isSumInsured, Integer taxRate, GenderCode genderCode, AtpMode atpMode) {
+        return constructQuotation(ProductType.PRODUCT_IPROTECT, IProtectPackage.IPROTECT10.name(), age, periodicityCode, amountValue, isSumInsured, taxRate, genderCode, 1, null, atpMode);
+    }
+
     /**
      * Don't need package name or genderCode or occupation because they don't affect the calculation result.
      *
@@ -88,6 +93,10 @@ public class ProductQuotationFactory {
     public static ProductQuotation constructIGen(Integer age, PeriodicityCode periodicityCode, Double amountValue, Boolean isSumInsured, Integer taxRate, ProductDividendOption productDividendOption) {
         //This product always required occupation to stored in DB, but it doesn't impact the calculation.
         return constructQuotation(ProductType.PRODUCT_IGEN, null, age, periodicityCode, amountValue, isSumInsured, taxRate, GenderCode.MALE, 1, productDividendOption);
+    }
+
+    public static ProductQuotation constructIGen(Integer age, PeriodicityCode periodicityCode, Double amountValue, Boolean isSumInsured, Integer taxRate, ProductDividendOption productDividendOption, AtpMode atpMode) {
+        return constructQuotation(ProductType.PRODUCT_IGEN, null, age, periodicityCode, amountValue, isSumInsured, taxRate, GenderCode.MALE, 1, productDividendOption, atpMode);
     }
 
     /**
@@ -121,20 +130,11 @@ public class ProductQuotationFactory {
     }
 
     public static ProductQuotation constructDefault(ProductType productType) {
-        if (productType == ProductType.PRODUCT_IGEN) {
-            return constructIGenDefault();
-        } else if (productType == ProductType.PRODUCT_IPROTECT) {
-            return constructIProtectDefault();
-        } else if (productType == ProductType.PRODUCT_10_EC) {
-            return construct10ECDefault();
-        } else if (productType == ProductType.PRODUCT_IBEGIN) {
-            return constructIBeginECDefault();
-        } else if (productType == ProductType.PRODUCT_IFINE) {
-            return constructIFineDefault();
-        } else {
-            throw new UnexpectedException("Not support " + productType);
-        }
+        return ProductFactoryForProductQuotation.getFactory(productType).constructDefault();
+    }
 
+    public static ProductQuotation constructDefault(ProductType productType, PeriodicityCode periodicityCode, AtpMode atpMode) {
+        return ProductFactoryForProductQuotation.getFactory(productType).constructDefault(periodicityCode, atpMode);
     }
 
     public static ProductQuotation construct10ECDefault(int age, PeriodicityCode periodicityCode) {
@@ -149,12 +149,16 @@ public class ProductQuotationFactory {
         return constructQuotation(ProductType.PRODUCT_IBEGIN, null, age, periodicityCode, amount, isSumInsurd, 23, genderCode, 1, ProductDividendOption.ANNUAL_PAY_BACK_CASH);
     }
 
-    public static ProductQuotation constructIFine(ProductIFinePackage productIFinePackage, int age, PeriodicityCode periodicityCode, GenderCode genderCode, boolean riskOccupation) {
+    public static ProductQuotation constructIFine(ProductIFinePackage productIFinePackage, int age, PeriodicityCode periodicityCode, GenderCode genderCode, boolean riskOccupation, AtpMode atpMode) {
         int occupationId = 1;
         if (riskOccupation) {
             occupationId = 21;
         }
-        ProductQuotation productQuotation = constructQuotation(ProductType.PRODUCT_IFINE, productIFinePackage.name(), age, periodicityCode, productIFinePackage.getSumInsured(), true, 23, genderCode, occupationId, null);
+        ProductQuotation productQuotation = constructQuotation(ProductType.PRODUCT_IFINE, productIFinePackage.name(), age, periodicityCode, productIFinePackage.getSumInsured(), true, 23, genderCode, occupationId, null, atpMode);
         return productQuotation;
+    }
+
+    public static ProductQuotation constructIFine(ProductIFinePackage productIFinePackage, int age, PeriodicityCode periodicityCode, GenderCode genderCode, boolean riskOccupation) {
+        return constructIFine(productIFinePackage, age, periodicityCode, genderCode, riskOccupation, null);
     }
 }

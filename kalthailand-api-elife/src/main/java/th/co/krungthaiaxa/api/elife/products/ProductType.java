@@ -7,6 +7,10 @@ import th.co.krungthaiaxa.api.elife.model.CommonData;
  * Note: now the code from FE call to BE using both enum (PRODUCT_IFINE) value and logicName (iFine), so don't change any of them.
  */
 public enum ProductType {
+    /**
+     * @deprecated IBegin is not used in our system anymore.
+     */
+    @Deprecated
     PRODUCT_10_EC("10EC", "10EC", "Product 10 EC"),
     /**
      * @deprecated IBegin is not used in our system anymore.
