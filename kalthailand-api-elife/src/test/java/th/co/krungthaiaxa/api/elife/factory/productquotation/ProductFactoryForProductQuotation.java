@@ -15,6 +15,10 @@ public class ProductFactoryForProductQuotation {
             return new IProtectFactoryForProductQuotation();
         } else if (productType == ProductType.PRODUCT_IFINE) {
             return new IFineFactoryForProductQuotation();
+        } else if (productType == ProductType.PRODUCT_IBEGIN) {
+            return new IBeginFactoryForProductQuotation();
+        } else if (productType == ProductType.PRODUCT_10_EC) {
+            return new I10ECFactoryForProductQuotation();
         } else {
             throw new UnexpectedException("Not support " + productType);
         }

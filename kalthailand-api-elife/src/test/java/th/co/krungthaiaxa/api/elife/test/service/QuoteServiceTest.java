@@ -7,12 +7,11 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
-import th.co.krungthaiaxa.api.elife.utils.TestUtil;
 import th.co.krungthaiaxa.api.elife.data.SessionQuote;
 import th.co.krungthaiaxa.api.elife.exception.ElifeException;
 import th.co.krungthaiaxa.api.elife.factory.PolicyFactory;
-import th.co.krungthaiaxa.api.elife.factory.productquotation.ProductQuotationFactory;
 import th.co.krungthaiaxa.api.elife.factory.QuoteFactory;
+import th.co.krungthaiaxa.api.elife.factory.productquotation.ProductQuotationFactory;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
 import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
@@ -21,6 +20,7 @@ import th.co.krungthaiaxa.api.elife.repository.SessionQuoteRepository;
 import th.co.krungthaiaxa.api.elife.service.PolicyService;
 import th.co.krungthaiaxa.api.elife.service.QuoteService;
 import th.co.krungthaiaxa.api.elife.test.ELifeTest;
+import th.co.krungthaiaxa.api.elife.utils.TestUtil;
 
 import javax.inject.Inject;
 import java.util.Optional;
@@ -48,7 +48,7 @@ public class QuoteServiceTest extends ELifeTest {
     @Test
     public void should_be_able_to_update_a_10ec_quote() {
         String sessionId = randomNumeric(20);
-        QuoteFactory.QuoteResult quoteResult = getQuote(sessionId, ProductType.PRODUCT_10_EC);
+        QuoteFactory.QuoteResult quoteResult = createQuote(sessionId, ProductType.PRODUCT_10_EC);
 
         quoteService.updateProfessionNameAndCheckBlackList(quoteResult.getQuote(), quoteResult.getAccessToken());
         assertThat(quoteResult.getQuote()).isNotNull();
@@ -57,7 +57,7 @@ public class QuoteServiceTest extends ELifeTest {
     @Test
     public void should_be_able_to_update_a_iBegin_quote() {
         String sessionId = randomNumeric(20);
-        QuoteFactory.QuoteResult quoteResult = getQuote(sessionId, ProductType.PRODUCT_IBEGIN);
+        QuoteFactory.QuoteResult quoteResult = createQuote(sessionId, ProductType.PRODUCT_IBEGIN);
 
         quoteService.updateProfessionNameAndCheckBlackList(quoteResult.getQuote(), quoteResult.getAccessToken());
         assertThat(quoteResult.getQuote()).isNotNull();
@@ -66,7 +66,7 @@ public class QuoteServiceTest extends ELifeTest {
     @Test
     public void should_be_able_to_update_a_iFine_quote() {
         String sessionId = randomNumeric(20);
-        QuoteFactory.QuoteResult quoteResult = getQuote(sessionId, ProductType.PRODUCT_IFINE);
+        QuoteFactory.QuoteResult quoteResult = createQuote(sessionId, ProductType.PRODUCT_IFINE);
 
         quoteService.updateProfessionNameAndCheckBlackList(quoteResult.getQuote(), quoteResult.getAccessToken());
         assertThat(quoteResult.getQuote()).isNotNull();
@@ -83,7 +83,7 @@ public class QuoteServiceTest extends ELifeTest {
     @Test
     public void should_find_by_quote_id_and_session_id() {
         String sessionId = randomNumeric(20);
-        QuoteFactory.QuoteResult quoteResult = getQuote(sessionId, ProductType.PRODUCT_10_EC);
+        QuoteFactory.QuoteResult quoteResult = createQuote(sessionId, ProductType.PRODUCT_IGEN);
         Quote quote = quoteResult.getQuote();
         Optional<Quote> savedQuote = quoteService.findByQuoteId(quote.getQuoteId(), sessionId, ChannelType.LINE);
         assertThat(savedQuote).isNotNull();
@@ -93,7 +93,7 @@ public class QuoteServiceTest extends ELifeTest {
 
     @Test
     public void should_not_find_by_quote_id_when_session_id_has_no_access_to_quote() {
-        QuoteFactory.QuoteResult quoteResult = getQuote(randomNumeric(20), ProductType.PRODUCT_10_EC);
+        QuoteFactory.QuoteResult quoteResult = createQuote(randomNumeric(20), ProductType.PRODUCT_IGEN);
         Quote quote = quoteResult.getQuote();
         Optional<Quote> savedQuote = quoteService.findByQuoteId(quote.getQuoteId(), "FAKE_SESSION", ChannelType.LINE);
         assertThat(savedQuote).isNotNull();
@@ -103,7 +103,7 @@ public class QuoteServiceTest extends ELifeTest {
     @Test
     public void should_add_one_quote_in_session() {
         String sessionId = randomNumeric(20);
-        QuoteFactory.QuoteResult quoteResult = getQuote(sessionId, ProductType.PRODUCT_10_EC);
+        QuoteFactory.QuoteResult quoteResult = createQuote(sessionId, ProductType.PRODUCT_IGEN);
         Quote quote = quoteResult.getQuote();
 
         SessionQuote sessionQuote = sessionQuoteRepository.findBySessionIdAndChannelType(sessionId, ChannelType.LINE);
@@ -113,8 +113,8 @@ public class QuoteServiceTest extends ELifeTest {
     @Test
     public void should_add_two_quotes_in_session_and_ordered_by_update_time() {
         String sessionId = randomNumeric(20);
-        Quote quote1 = getQuote(sessionId, ProductType.PRODUCT_10_EC).getQuote();
-        Quote quote2 = getQuote(sessionId, ProductType.PRODUCT_10_EC).getQuote();
+        Quote quote1 = createQuote(sessionId, ProductType.PRODUCT_IGEN).getQuote();
+        Quote quote2 = createQuote(sessionId, ProductType.PRODUCT_IGEN).getQuote();
 
         SessionQuote sessionQuote = sessionQuoteRepository.findBySessionIdAndChannelType(sessionId, ChannelType.LINE);
         assertThat(sessionQuote.getQuotes()).containsExactly(quote2, quote1);
@@ -129,8 +129,8 @@ public class QuoteServiceTest extends ELifeTest {
     @Test
     public void should_get_latest_quote() {
         String sessionId = randomNumeric(20);
-        getQuote(sessionId, ProductType.PRODUCT_10_EC);
-        Quote quote2 = getQuote(sessionId, ProductType.PRODUCT_10_EC).getQuote();
+        createQuote(sessionId, ProductType.PRODUCT_IGEN);
+        Quote quote2 = createQuote(sessionId, ProductType.PRODUCT_IGEN).getQuote();
 
         Optional<Quote> quote = quoteService.getLatestQuote(sessionId, ChannelType.LINE);
         assertThat(quote.get()).isEqualTo(quote2);
@@ -139,8 +139,8 @@ public class QuoteServiceTest extends ELifeTest {
     @Test
     public void should_get_latest_quote_that_has_not_been_transformed_into_policy() {
         String sessionId = randomNumeric(20);
-        Quote quote1 = getQuote(sessionId, ProductType.PRODUCT_10_EC).getQuote();
-        Quote quote2 = getQuote(sessionId, ProductType.PRODUCT_10_EC).getQuote();
+        Quote quote1 = createQuote(sessionId, ProductType.PRODUCT_IGEN).getQuote();
+        Quote quote2 = createQuote(sessionId, ProductType.PRODUCT_IGEN).getQuote();
         policyService.createPolicy(quote2);
 
         Optional<Quote> quote = quoteService.getLatestQuote(sessionId, ChannelType.LINE);
@@ -149,7 +149,7 @@ public class QuoteServiceTest extends ELifeTest {
 
     @Test
     public void should_calculate_age_of_insured() {
-        QuoteFactory.QuoteResult quoteResult = getQuote(randomNumeric(20), ProductType.PRODUCT_10_EC);
+        QuoteFactory.QuoteResult quoteResult = createQuote(randomNumeric(20), ProductType.PRODUCT_IGEN);
         Quote quote = quoteResult.getQuote();
         quote = quoteService.updateProfessionNameAndCheckBlackList(quote, quoteResult.getAccessToken());
         assertThat(quote.getInsureds().get(0).getAgeAtSubscription()).isGreaterThan(0);
@@ -157,7 +157,7 @@ public class QuoteServiceTest extends ELifeTest {
 
     @Test
     public void should_set_profession_name_from_profession_id() {
-        QuoteFactory.QuoteResult quoteResult = getQuote(randomNumeric(20), ProductType.PRODUCT_10_EC);
+        QuoteFactory.QuoteResult quoteResult = createQuote(randomNumeric(20), ProductType.PRODUCT_IGEN);
         Quote quote = quoteResult.getQuote();
         quote.getInsureds().get(0).setProfessionId(1);
 
@@ -167,7 +167,7 @@ public class QuoteServiceTest extends ELifeTest {
 
     @Test
     public void should_forbid_blacklisted_thai_id() {
-        QuoteFactory.QuoteResult quoteResult = getQuote(randomNumeric(20), ProductType.PRODUCT_10_EC);
+        QuoteFactory.QuoteResult quoteResult = createQuote(randomNumeric(20), ProductType.PRODUCT_IGEN);
         Quote quote = quoteResult.getQuote();
 
         quote.getInsureds().get(0).getPerson().getRegistrations().get(0).setId("aMockedBlackListedThaiID");
@@ -201,7 +201,7 @@ public class QuoteServiceTest extends ELifeTest {
         assertThat(quote.getPremiumsData().getProduct10ECPremium().getSumInsured()).isEqualTo(productQuotation.getSumInsuredAmount());
     }
 
-    private QuoteFactory.QuoteResult getQuote(String sessionId, ProductType productType) {
+    private QuoteFactory.QuoteResult createQuote(String sessionId, ProductType productType) {
         return quoteFactory.createQuote(sessionId, ProductQuotationFactory.constructDefault(productType), TestUtil.DUMMY_EMAIL);
     }
 }

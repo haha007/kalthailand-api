@@ -25,7 +25,12 @@ public class DocumentAssertHelper {
         DocumentDownload documentDownload = documentService.findDocumentDownload(policy, documentType);
         Assert.assertNotNull(msg, documentDownload);
         byte[] pdfContent = documentService.getDocumentDownloadContent(documentDownload);
-        IOUtil.writeBytesToRelativeFile(TestUtil.PATH_TEST_RESULT + "/documentType/" + DateTimeUtil.formatNowForFilePath() + "_" + ProductUtils.validateExistProductName(policy) + ".pdf", pdfContent);
+        String fileName = String.format("%s_%s_%s_%s.pdf",
+                DateTimeUtil.formatNowForFilePath(),
+                policy.getPolicyId(),
+                ProductUtils.validateExistProductName(policy),
+                documentType);
+        IOUtil.writeBytesToRelativeFile(TestUtil.PATH_TEST_RESULT + "/documentType/" + fileName, pdfContent);
         Assert.assertTrue(msg, StringUtils.isNotBlank(documentDownload.getContent()));
     }
 

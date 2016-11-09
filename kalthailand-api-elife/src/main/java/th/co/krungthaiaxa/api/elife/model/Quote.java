@@ -2,6 +2,8 @@ package th.co.krungthaiaxa.api.elife.model;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -11,7 +13,6 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @ApiModel(description = "This is the description of a quote and only a quote. It holds all properties gathered from " +
         "user before the quote got transformed into a Policy")
@@ -123,21 +124,11 @@ public class Quote implements Serializable, Quotable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Quote quote = (Quote) o;
-        return Objects.equals(id, quote.id) &&
-                Objects.equals(quoteId, quote.quoteId) &&
-                Objects.equals(commonData, quote.commonData) &&
-                Objects.equals(premiumsData, quote.premiumsData) &&
-                Objects.equals(insureds, quote.insureds) &&
-                Objects.equals(coverages, quote.coverages) &&
-                Objects.equals(creationDateTime, quote.creationDateTime) &&
-                Objects.equals(lastUpdateDateTime, quote.lastUpdateDateTime);
+        return EqualsBuilder.reflectionEquals(this, o);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, quoteId, commonData, premiumsData, insureds, coverages, creationDateTime, lastUpdateDateTime);
+        return HashCodeBuilder.reflectionHashCode(this);
     }
 }
