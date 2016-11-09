@@ -8,6 +8,10 @@ import th.co.krungthaiaxa.api.elife.model.CommonData;
  */
 public enum ProductType {
     PRODUCT_10_EC("10EC", "10EC", "Product 10 EC"),
+    /**
+     * @deprecated IBegin is not used in our system anymore.
+     */
+    @Deprecated
     PRODUCT_IBEGIN("iBegin", "iBegin", "Product iBegin"),
     PRODUCT_IFINE("iFine", "iFine", "Product iFine"),
     PRODUCT_IGEN("iGen", "iGen", "Product iGen"),

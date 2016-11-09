@@ -482,7 +482,7 @@ public class ProductUtils {
     public static Insured validateExistMainInsured(Quotable quotable) {
         return quotable.getInsureds().stream().filter(Insured::getMainInsuredIndicator)
                 .findFirst()
-                .orElseThrow(() -> new MainInsuredException("Insured size: " + quotable.getInsureds().size()));
+                .orElseThrow(() -> new MainInsuredException(String.format("Main insured not found: %s insured persons in %s. policyId: %s, quoteId: %s", quotable.getInsureds().size(), quotable.getClass().getSimpleName(), quotable.getPolicyId(), quotable.getQuoteId())));
     }
 
     private static boolean isValidEmailAddress(String email) {

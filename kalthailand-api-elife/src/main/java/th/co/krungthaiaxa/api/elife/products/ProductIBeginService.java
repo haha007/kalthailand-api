@@ -24,7 +24,11 @@ import java.util.Optional;
 import static th.co.krungthaiaxa.api.elife.products.utils.ProductUtils.amount;
 import static th.co.krungthaiaxa.api.elife.products.utils.ProductUtils.amountTHB;
 
+/**
+ * @deprecated IBegin is not used in our system anymore.
+ */
 @Component
+@Deprecated
 public class ProductIBeginService implements ProductService {
     public final static Integer DURATION_COVERAGE_IN_YEAR = null;
     public final static Integer DURATION_PAYMENT_IN_YEAR = 10;
