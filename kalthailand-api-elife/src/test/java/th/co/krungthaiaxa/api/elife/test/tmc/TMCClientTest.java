@@ -9,17 +9,14 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import th.co.krungthaiaxa.api.elife.test.ELifeTest;
 import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
 import th.co.krungthaiaxa.api.elife.factory.PolicyFactory;
 import th.co.krungthaiaxa.api.elife.factory.productquotation.ProductQuotationFactory;
-import th.co.krungthaiaxa.api.elife.factory.QuoteFactory;
 import th.co.krungthaiaxa.api.elife.model.Document;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.enums.DocumentType;
 import th.co.krungthaiaxa.api.elife.service.DocumentService;
-import th.co.krungthaiaxa.api.elife.service.PolicyService;
-import th.co.krungthaiaxa.api.elife.service.QuoteService;
+import th.co.krungthaiaxa.api.elife.test.ELifeTest;
 import th.co.krungthaiaxa.api.elife.tmc.TMCClient;
 
 import javax.inject.Inject;
@@ -31,12 +28,6 @@ import javax.inject.Inject;
 public class TMCClientTest extends ELifeTest {
     @Inject
     private DocumentService documentService;
-    @Inject
-    private PolicyService policyService;
-    @Inject
-    private QuoteService quoteService;
-    @Inject
-    private QuoteFactory quoteFactory;
     @Inject
     private PolicyFactory policyFactory;
     @Inject
