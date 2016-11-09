@@ -62,7 +62,7 @@ public class DocumentServiceAllProductsTest extends ELifeTest {
             policy = policyFactory.updateFromPendingValidationToValidated(policy);
             assertDocumentWithValidatedStatus(policy, productType, periodicityCode, atpMode);
 
-            testCollectionFile(policy, productType, periodicityCode, atpMode);
+            testCollectionFileIsProcessOnlyWithEnabledAtpMode(policy, productType, periodicityCode, atpMode);
         } catch (Exception e) {
             if (PeriodicityCode.EVERY_MONTH.equals(periodicityCode) && AtpMode.NO_AUTOPAY.equals(atpMode)) {
                 Assert.assertTrue(e instanceof QuoteCalculationException);
@@ -73,7 +73,7 @@ public class DocumentServiceAllProductsTest extends ELifeTest {
         }
     }
 
-    private void testCollectionFile(Policy policy, ProductType productType, PeriodicityCode periodicityCode, AtpMode atpMode) {
+    private void testCollectionFileIsProcessOnlyWithEnabledAtpMode(Policy policy, ProductType productType, PeriodicityCode periodicityCode, AtpMode atpMode) {
         InputStream inputStream = CollectionFileFactory.constructCollectionExcelFileByPolicy(policy);
         if (atpMode != AtpMode.AUTOPAY) {
             assertThatThrownBy(
