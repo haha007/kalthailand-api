@@ -58,7 +58,7 @@
     </div>
 </div>
 <script th:inline="text">
-    var ACCESS_TOKEN = "[[${accessToken}]]";
+    var ACCESS_TOKEN = "[[${user.accessToken}]]";
 </script>
 <div th:include="parts/import-scripts"></div>
 </body>

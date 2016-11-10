@@ -4,6 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import th.co.krungthaiaxa.admin.elife.filter.ClientSideRoleFilter;
 
@@ -11,6 +12,7 @@ import javax.inject.Inject;
 
 @SpringBootApplication
 @EnableScheduling
+@ComponentScan({ "th.co.krungthaiaxa.admin.elife", "th.co.krungthaiaxa.api.common" })
 public class KalAdminApplication {
 
     @SuppressWarnings("squid:S2095")//Ignore the wrong Sonar check.

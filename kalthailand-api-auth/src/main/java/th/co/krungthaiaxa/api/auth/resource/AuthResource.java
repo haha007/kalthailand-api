@@ -1,25 +1,27 @@
 package th.co.krungthaiaxa.api.auth.resource;
 
-import io.swagger.annotations.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import th.co.krungthaiaxa.api.auth.jwt.JwtTokenUtil;
-import th.co.krungthaiaxa.api.auth.model.RequestForToken;
-import th.co.krungthaiaxa.api.common.model.authentication.Token;
 import th.co.krungthaiaxa.api.auth.model.Error;
+import th.co.krungthaiaxa.api.auth.model.RequestForToken;
+import th.co.krungthaiaxa.api.auth.service.AuthService;
+import th.co.krungthaiaxa.api.common.model.authentication.AuthenticatedUser;
+import th.co.krungthaiaxa.api.common.model.authentication.Token;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -32,7 +34,10 @@ import static org.springframework.http.ResponseEntity.badRequest;
 import static org.springframework.http.ResponseEntity.ok;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
-import static th.co.krungthaiaxa.api.auth.model.ErrorCode.*;
+import static th.co.krungthaiaxa.api.auth.model.ErrorCode.NO_ROLE;
+import static th.co.krungthaiaxa.api.auth.model.ErrorCode.ROLE_NOT_ALLOWED;
+import static th.co.krungthaiaxa.api.auth.model.ErrorCode.TOKEN_EMPTY;
+import static th.co.krungthaiaxa.api.auth.model.ErrorCode.TOKEN_EXPIRED;
 import static th.co.krungthaiaxa.api.auth.utils.JsonUtil.getJson;
 
 @RestController
@@ -43,6 +48,7 @@ public class AuthResource {
     @Value("${jwt.header}")
     private String tokenHeader;
 
+    private final AuthService authService;
     @Autowired
     private AuthenticationManager authenticationManager;
 
@@ -52,25 +58,24 @@ public class AuthResource {
     @Autowired
     private UserDetailsService userDetailsService;
 
+    @Autowired
+    public AuthResource(AuthService authService) {this.authService = authService;}
+
     @ApiOperation(value = "Creates a token", notes = "Creates a JWT token containing user Roles", response = Token.class)
     @RequestMapping(value = "/auth", produces = APPLICATION_JSON_VALUE, method = POST)
     public ResponseEntity<?> createAuthenticationToken(
             @ApiParam(value = "The credentials to get token for", required = true)
             @RequestBody RequestForToken requestForToken) {
-        // Perform the security
-        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
-                requestForToken.getUserName(),
-                requestForToken.getPassword());
-        final Authentication authentication = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        AuthenticatedUser authenticatedUser = authService.authenticate(requestForToken);
+        return ok(Token.of(authenticatedUser.getAccessToken()));
+    }
 
-        // Reload password post-security so we can generate token
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(requestForToken.getUserName());
-        final String token = jwtTokenUtil.generateToken(userDetails);
-
-        // Return the token
-        logger.info("Token has been successfully created");
-        return ok(Token.of(token));
+    @ApiOperation(value = "Creates a token", notes = "Return authenticated user with roles")
+    @RequestMapping(value = "/auth/user", produces = APPLICATION_JSON_VALUE, method = POST)
+    public AuthenticatedUser authenticateUser(
+            @ApiParam(value = "The credentials to get token for", required = true)
+            @RequestBody RequestForToken requestForToken) {
+        return authService.authenticate(requestForToken);
     }
 
     @ApiOperation(value = "Validates a token", notes = "Validates a JWT token for given Role. Token has to be sent in header named 'Authorization'.", response = String.class)

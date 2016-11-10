@@ -14,8 +14,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import th.co.krungthaiaxa.admin.elife.log.RequestLogUtil;
-import th.co.krungthaiaxa.api.common.exeption.UnexpectedException;
-import th.co.krungthaiaxa.api.common.utils.IOUtil;
+import th.co.krungthaiaxa.admin.elife.service.AuthenticationClient;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -30,7 +29,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -45,7 +43,7 @@ import static org.springframework.http.HttpStatus.OK;
 public class ClientSideRoleFilter implements Filter {
     public static final String UI_ROLE_FILTER_CONFIG_FILE = "/static/uiRoleFilter.properties";
     private final static Logger logger = LoggerFactory.getLogger(ClientSideRoleFilter.class);
-    private final Properties uiRoleConfiguration = loadUiRoleConfiguration();
+    private final Properties uiRoleConfiguration = AuthenticationClient.UI_ROLE_CONFIG;
     @Value("${kal.api.auth.header}")
     private String tokenHeader;
     @Value("${kal.api.auth.token.validation.url}")
@@ -63,17 +61,6 @@ public class ClientSideRoleFilter implements Filter {
         }
         String uriLowerCase = uri.toLowerCase();
         return uriLowerCase.endsWith(".htm") || uriLowerCase.endsWith(".html");
-    }
-
-    private Properties loadUiRoleConfiguration() {
-
-        try (InputStream inputStream = IOUtil.loadInputStreamFromClassPath(UI_ROLE_FILTER_CONFIG_FILE)) {
-            Properties properties = new Properties();
-            properties.load(inputStream);
-            return properties;
-        } catch (IOException e) {
-            throw new UnexpectedException("Cannot load uiRoleFilter " + UI_ROLE_FILTER_CONFIG_FILE + ": " + e.getMessage(), e);
-        }
     }
 
     @Override
