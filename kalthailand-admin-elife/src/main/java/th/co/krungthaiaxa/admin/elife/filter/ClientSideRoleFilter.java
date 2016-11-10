@@ -41,8 +41,8 @@ import static org.springframework.http.HttpStatus.OK;
 
 @Component
 public class ClientSideRoleFilter implements Filter {
-    public static final String UI_ROLE_FILTER_CONFIG_FILE = "/static/uiRoleFilter.properties";
-    private final static Logger logger = LoggerFactory.getLogger(ClientSideRoleFilter.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(ClientSideRoleFilter.class);
+    
     private final Properties uiRoleConfiguration = AuthenticationClient.UI_ROLE_CONFIG;
     @Value("${kal.api.auth.header}")
     private String tokenHeader;
@@ -126,7 +126,7 @@ public class ClientSideRoleFilter implements Filter {
         try {
             validateRoleURI = new URI(tokenValidationUrl + "/" + tokenRequiredRole);
         } catch (URISyntaxException e) {
-            logger.info("Unable to check token validity");
+            LOGGER.info("Unable to check token validity");
             return false;
         }
 
@@ -142,7 +142,7 @@ public class ClientSideRoleFilter implements Filter {
         }
 
         if (validateRoleURIResponse.getStatusCode().value() != OK.value()) {
-            logger.info("Provided token doesn't give access to role [" + tokenRequiredRole + "]");
+            LOGGER.info("Provided token doesn't give access to role [" + tokenRequiredRole + "]");
             return false;
         }
 
