@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import th.co.krungthaiaxa.api.auth.jwt.JwtTokenUtil;
 import th.co.krungthaiaxa.api.auth.model.RequestForToken;
-import th.co.krungthaiaxa.api.auth.model.Token;
+import th.co.krungthaiaxa.api.common.model.authentication.Token;
 import th.co.krungthaiaxa.api.auth.model.Error;
 
 import javax.servlet.http.HttpServletRequest;

@@ -25,7 +25,7 @@
     <!-- bootstrap-progressbar -->
     <link href="libs/bootstrap-gentellena/vendors/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css" rel="stylesheet"/>
     <!-- JQVMap -->
-    <link href="libs/bootstrap-gentellena/vendors/jqvmap/dist/jqvmap.min.css" rel="stylesheet"/>
+    <!--<link href="libs/bootstrap-gentellena/vendors/jqvmap/dist/jqvmap.min.css" rel="stylesheet"/>-->
 
     <!-- Custom Theme Style -->
     <link href="libs/bootstrap-gentellena/build/css/custom.min.css" rel="stylesheet"/>
@@ -40,19 +40,12 @@
 <body ng-app="myApp" class="nav-md">
 <div class="container body">
     <div class="main_container">
-        <div class="col-md-3 left_col" th:include="parts/left-col">
-        </div>
-
-        <!-- top navigation -->
-        <div class="top_nav" th:include="parts/top-nav">
-        </div>
-        <!-- /top navigation -->
+        <div class="col-md-3 left_col" th:include="parts/left-col"></div>
+        <div class="top_nav" th:include="parts/top-nav"></div>
 
         <!-- page content -->
         <div class="right_col" role="main">
-            <!-- top tiles -->
-
-            <!-- /top tiles -->
+            <!-- top tiles --><!-- /top tiles -->
 
             <div class="row" ng-view="">
                 <div class="col-md-12 col-sm-12 col-xs-12">
@@ -61,14 +54,13 @@
         </div>
         <!-- /page content -->
 
-        <!-- footer content -->
-        <footer th:include="parts/footer">
-        </footer>
-        <!-- /footer content -->
+        <footer th:include="parts/footer"></footer>
     </div>
 </div>
+<script th:inline="text">
+    var ACCESS_TOKEN = "[[${accessToken}]]";
+</script>
 <div th:include="parts/import-scripts"></div>
 </body>
-
 </html>
 

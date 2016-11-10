@@ -17,7 +17,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import th.co.krungthaiaxa.api.auth.KALApiAuth;
 import th.co.krungthaiaxa.api.auth.model.RequestForToken;
-import th.co.krungthaiaxa.api.auth.model.Token;
+import th.co.krungthaiaxa.api.common.model.authentication.Token;
 import th.co.krungthaiaxa.api.auth.utils.JsonUtil;
 
 import java.io.IOException;

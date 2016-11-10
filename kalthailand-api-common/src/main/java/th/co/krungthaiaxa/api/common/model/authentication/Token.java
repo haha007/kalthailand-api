@@ -1,4 +1,4 @@
-package th.co.krungthaiaxa.api.auth.model;
+package th.co.krungthaiaxa.api.common.model.authentication;
 
 public class Token {
     private String token;

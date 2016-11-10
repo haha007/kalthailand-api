@@ -18,8 +18,9 @@
     function routeConfig($routeProvider) {
         $routeProvider
             .when('/', {
-                templateUrl: 'app/templates/login.html',
-                controller: 'LoginController'
+                templateUrl: 'app/templates/home.html',
+                controller: 'DashboardController',
+                activeTab: 'home'
             })
             .when('/home', {
                 templateUrl: 'app/templates/home.html',
