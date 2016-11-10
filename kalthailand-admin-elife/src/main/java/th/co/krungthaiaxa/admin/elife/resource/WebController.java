@@ -63,6 +63,7 @@ public class WebController {
             return "login";
         }
         model.addAttribute("accessToken", accessToken);
+        model.addAttribute("username", loginFormData.getUserName());
         return "index";
     }
 
