@@ -28,6 +28,7 @@ import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
 import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
 import th.co.krungthaiaxa.api.common.utils.DownloadUtil;
 import th.co.krungthaiaxa.api.common.utils.JsonUtil;
+import th.co.krungthaiaxa.api.common.utils.LogUtil;
 import th.co.krungthaiaxa.api.common.utils.RequestUtil;
 import th.co.krungthaiaxa.api.elife.exception.ElifeException;
 import th.co.krungthaiaxa.api.elife.model.Document;
@@ -62,6 +63,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
@@ -377,6 +379,8 @@ public class PolicyResource {
             @RequestParam(required = false) Optional<String> transactionId,
             @ApiParam(value = "The RegKey is optional. If AtpMode is disabled, the regKey is null because there's no payment from user yet. But if AtpMode is enabled, the regKey must be not null.", required = false)
             @RequestParam(required = false) String regKey) {
+        String msg = String.format("Policy update status to PendingValidation. policyId: %s, paymentId: %s, orderId: %s, transId: %s, regKey: %s", policyId, paymentId, orderId, transactionId, regKey);
+        Instant start = LogUtil.logStarting(msg);
         if (isEmpty(orderId)) {
             logger.error("The order ID was not received");
             return new ResponseEntity<>(getJson(ErrorCode.ORDER_ID_NOT_PROVIDED), NOT_ACCEPTABLE);
@@ -409,6 +413,7 @@ public class PolicyResource {
         policyService.updatePolicyStatusToPendingValidation(policy);
         //Return policy with updated payment
         policy = policyService.validateExistPolicy(policyId);
+        LogUtil.logRuntime(start, msg);
         return new ResponseEntity<>(getJson(policy), OK);
     }
 
@@ -437,6 +442,9 @@ public class PolicyResource {
             @ApiParam(value = "The RegKey for Monthly Mode Payment Only", required = false)
             @RequestParam(required = false) String regKey,
             HttpServletRequest httpServletRequest) {
+        String msg = String.format("[Retry payment] Retry to complete payment. policyId: %s, paymentId: %s, orderId: %s, transId: %s, regKey: %s", policyId, paymentId, orderId, transactionId, regKey);
+        Instant start = LogUtil.logStarting(msg);
+
         Policy policy = policyService.validateExistPolicy(policyId);
         if (!policy.getStatus().equals(PolicyStatus.VALIDATED)) {
             logger.error("The policy is in status [" + policy.getStatus().name() + "], it must be " + VALIDATED + " status.");
@@ -444,7 +452,7 @@ public class PolicyResource {
         }
         String accessToken = httpServletRequest.getHeader(accessTokenHeader);
         paymentRetryService.retryFailedPayment(policyId, paymentId, orderId, transactionId, regKey, accessToken);
-
+        LogUtil.logRuntime(start, msg);
         return new ResponseEntity<>(getJson(policy), OK);
     }
 
