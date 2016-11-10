@@ -43,7 +43,7 @@
                 <form action="#" th:action="@{/admin}" th:object="${loginFormData}" method="post">
                     <h1>Login Form</h1>
 
-                    <div th:if="${#fields.hasErrors('global')}" class="alert alert-error" role="alert" th:text="*{global}">
+                    <div th:if="${#fields.hasErrors('global')}" class="alert alert-error" role="alert" th:errors="*{global}">
                     </div>
 
                     <div>
