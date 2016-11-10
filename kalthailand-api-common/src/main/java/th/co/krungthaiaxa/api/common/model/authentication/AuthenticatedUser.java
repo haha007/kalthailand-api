@@ -1,11 +1,13 @@
 package th.co.krungthaiaxa.api.common.model.authentication;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * @author khoi.tran on 11/10/16.
+ *         Need to implement {@link Serializable} because we need to save into session
  */
-public class AuthenticatedUser {
+public class AuthenticatedUser implements Serializable {
     private String username;
     private String accessToken;
     private List<String> roles;

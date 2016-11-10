@@ -15,6 +15,8 @@ import th.co.krungthaiaxa.admin.elife.service.AuthenticationClient;
 import th.co.krungthaiaxa.api.common.exeption.UnauthenticatedException;
 import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * @author khoi.tran on 11/8/16.
  */
@@ -22,6 +24,8 @@ import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
 @Controller
 public class WebController {
     public static final Logger LOGGER = LoggerFactory.getLogger(WebController.class);
+    public static final String SESSION_ATTR_USER = "user";
+    public static final String PAGE_MODEL_ATTR_USER = "user";
 
     private final AuthenticationClient authenticateService;
 
@@ -40,6 +44,12 @@ public class WebController {
         return "login";
     }
 
+    @RequestMapping(value = "/logout", method = RequestMethod.GET)
+    public String logout(HttpServletRequest httpServletRequest) {
+        httpServletRequest.getSession().removeAttribute(SESSION_ATTR_USER);
+        return "redirect:/login";
+    }
+
     /**
      * This actually only a temporary way which migrate from the old code.
      * Actually we should use login of Spring Security.
@@ -49,10 +59,12 @@ public class WebController {
      * @return
      */
     @RequestMapping(value = "/admin", method = RequestMethod.POST)
-    public String authentication(@ModelAttribute LoginFormData loginFormData, Model model, BindingResult bindingResult) {
+    public String authentication(@ModelAttribute LoginFormData loginFormData, Model model, BindingResult bindingResult, HttpServletRequest httpServletRequest) {
         try {
             AuthenticatedFeaturesUser authenticatedFeaturesUser = authenticateService.authenticatedUserWithAvailableFeatures(loginFormData);
-            model.addAttribute("user", authenticatedFeaturesUser);
+            model.addAttribute(PAGE_MODEL_ATTR_USER, authenticatedFeaturesUser);
+            //TODO session is only the temporary solution because it cannot apply for clustering.
+            httpServletRequest.getSession().setAttribute(SESSION_ATTR_USER, authenticatedFeaturesUser);
             return "index";
         } catch (UnauthenticatedException ex) {
             bindingResult.reject(ex.getErrorCode(), ex.getErrorMessage());
@@ -60,6 +72,26 @@ public class WebController {
         } catch (Exception ex) {
             bindingResult.reject(ErrorCode.ERROR_CODE_UNKNOWN_ERROR, ex.getMessage());
             return "login";
+        }
+    }
+
+    /**
+     * This method avoids the error when user reinput the address of admin in URL.
+     * E.g. http://localhost:8080/admin-elife/admin#/policy-detail?policyID=502-0008308
+     *
+     * @param model
+     * @param httpServletRequest
+     * @return
+     */
+    @RequestMapping(value = "/admin", method = RequestMethod.GET)
+    public String refreshAdmin(Model model, HttpServletRequest httpServletRequest) {
+        //TODO session is only the temporary solution because it cannot apply for clustering.
+        AuthenticatedFeaturesUser user = (AuthenticatedFeaturesUser) httpServletRequest.getSession().getAttribute(SESSION_ATTR_USER);
+        if (user != null) {
+            model.addAttribute(PAGE_MODEL_ATTR_USER, user);
+            return "index";
+        } else {
+            return "redirect:/login";
         }
     }
 

@@ -1,6 +1,9 @@
 <!-- BEGIN Page specific stuff -->
 <div ng-cloak class="col-md-12 col-sm-12 col-xs-12 main ng-cloak" id="dashboardContainer">
-    <h1 class="page-header">Dashboard</h1>
+    <!--<h1 class="page-header">Dashboard</h1>-->
+    <div class="page-title">
+        <h3>Dashboard</h3>
+    </div>
 
     <form class="form-horizontal" ng-submit="search($event)">
 
@@ -16,10 +19,10 @@
                         <input type="text" class="form-control" id="policyID" ng-model="policyIdSearch" autofocus>
                     </div>
                     <div class="col-md-1 text-right">
-                        <label class="control-label">Product</label>
+                        <label for="productTypeSearchID" class="control-label">Product</label>
                     </div>
                     <div class="col-md-3">
-                        <select class="form-control"
+                        <select id="productTypeSearchID" class="form-control"
                                 ng-model="productTypeSearch"
                                 ng-options="pdc.value as pdc.name for pdc in productCriteriaList">
                             <option value=""></option>
@@ -38,7 +41,7 @@
                         </p>
                     </div>
                 </div>
-                <div class="row">
+                <div class="row form-group">
                     <div class="col-md-2 text-right">
                         <label for="nonEmptyAgentCodeSearch" class="control-label">Agent code</label>
                     </div>

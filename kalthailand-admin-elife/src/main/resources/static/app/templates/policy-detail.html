@@ -210,34 +210,51 @@
         <div class="page-header" ng-show="policyDetail">
             <h3>Documents</h3>
         </div>
-        <div class="bs-glyphicons" ng-show="policyDetail">
-            <ul class="bs-glyphicons-list">
-                <li class="img-thumbnail">
-                    <i class="fa fa-paperclip" aria-hidden="true"></i>
-                    <a class="glyphicon-class" ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/APPLICATION_FORM/download">
-                        <span class="attachment-item">Application Form (not validated)</span>
-                    </a>
-                </li>
-                <li class="img-thumbnail" ng-show="policyDetail.status == 'VALIDATED'">
-                    <i class="fa fa-paperclip" aria-hidden="true"></i>
-                    <a ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/APPLICATION_FORM_VALIDATED/download">
-                        <span class="attachment-item">Application Form (validated)</span>
-                    </a>
-                </li>
-                <li class="img-thumbnail" ng-show="isEnabledAutoPay(policyDetail)">
-                    <i class="fa fa-paperclip" aria-hidden="true"></i>
-                    <a ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/DA_FORM/download">
-                        <span class="attachment-item">DA Form</span>
-                    </a>
-                </li>
-                <li class="img-thumbnail" ng-show="policyDetail.status == 'VALIDATED'">
-                    <i class="fa fa-paperclip fa-3" aria-hidden="true"></i>
-                    <a ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/ERECEIPT_PDF/download">
-                        <span class="attachment-item">eReceipt</span>
-                    </a>
-                </li>
-            </ul>
+        <div class="row fontawesome-icon-list" ng-show="policyDetail">
+            <div class="fa-hover col-md-3 col-sm-4 col-xs-12">
+                <a ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/APPLICATION_FORM/download">
+                    <i class="fa fa-paperclip"></i>Application Form (not validated)
+                </a>
+            </div>
+            <div class="fa-hover col-md-3 col-sm-4 col-xs-12" ng-show="policyDetail.status == 'VALIDATED'">
+                <a ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/APPLICATION_FORM_VALIDATED/download">
+                    <i class="fa fa-paperclip"></i>Application Form (validated)
+                </a>
+            </div>
+            <div class="fa-hover col-md-3 col-sm-4 col-xs-12" ng-show="isEnabledAutoPay(policyDetail)">
+                <a ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/DA_FORM/download">
+                    <i class="fa fa-paperclip"></i>DA Form
+                </a>
+            </div>
+            <div class="fa-hover col-md-3 col-sm-4 col-xs-12" ng-show="policyDetail.status == 'VALIDATED'">
+                <a ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/ERECEIPT_PDF/download">
+                    <i class="fa fa-paperclip"></i>eReceipt
+                </a>
+            </div>
         </div>
+        <br/>
+        <!--
+
+                <div class="row">
+                    <div class="x_panel" ng-show="policyDetail">
+                        <div class="x_content">
+                            <a class="btn btn-app" ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/APPLICATION_FORM/download">
+                                <i class="fa fa-paperclip"></i>Application Form (not validated)
+                            </a>
+                            <a class="btn btn-app" ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/APPLICATION_FORM_VALIDATED/download" ng-show="policyDetail.status == 'VALIDATED'">
+                                <i class="fa fa-paperclip"></i>Application Form (validated)
+                            </a>
+                            <a class="btn btn-app" ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/DA_FORM/download" ng-show="isEnabledAutoPay(policyDetail)">
+                                <i class="fa fa-paperclip"></i>DA Form
+                            </a>
+                            <a class="btn btn-app" ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/ERECEIPT_PDF/download" ng-show="policyDetail.status == 'VALIDATED'">
+                                <i class="fa fa-paperclip"></i>eReceipt
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+        -->
 
         <!-- NOTIFICATION -->
         <div class="page-header" ng-show="policyDetail && policyDetail.status != 'VALIDATED'">

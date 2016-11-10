@@ -3,7 +3,9 @@
 
     var app = angular.module('myApp');
     app.run(function ($localStorage) {
-        $localStorage.token = ACCESS_TOKEN;
+        if (hasValue(ACCESS_TOKEN)) {
+            $localStorage.token = ACCESS_TOKEN;
+        }
     });
     app.controller('LoginController', function ($scope, $rootScope, $http, $localStorage, $location) {
         $localStorage.token = null;
