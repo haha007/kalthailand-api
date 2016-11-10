@@ -375,7 +375,7 @@ public class PolicyResource {
             @RequestParam String orderId,
             @ApiParam(value = "The transaction id to use to confirm the payment. Must be sent of status id SUCCESS", required = false)
             @RequestParam(required = false) Optional<String> transactionId,
-            @ApiParam(value = "The RegKey for Monthly Mode Payment Only", required = false)
+            @ApiParam(value = "The RegKey is optional. If AtpMode is disabled, the regKey is null because there's no payment from user yet. But if AtpMode is enabled, the regKey must be not null.", required = false)
             @RequestParam(required = false) String regKey) {
         if (isEmpty(orderId)) {
             logger.error("The order ID was not received");
@@ -393,10 +393,15 @@ public class PolicyResource {
             return new ResponseEntity<>(getJson(policy), OK);
         }
 
+        //TODO need to UnitTest it.
         //TODO need to check is this the first payment in policy or not. If not, throw exception.
         Payment payment = paymentService.validateExistPaymentInPolicy(policyId, paymentId);
-        if (StringUtils.isBlank(regKey) && PeriodicityCode.EVERY_MONTH.equals(ProductUtils.getPeriodicityCode(policy))) {
-            throw new BadArgumentException("The periodicity of payment is MONTHLY, but regKey is blank. policyId:" + policyId, "regKey");
+        if (StringUtils.isBlank(regKey)) {
+            if (ProductUtils.isAtpModeEnable(policy)) {
+                throw new BadArgumentException("The AtpMode is enabled, but regKey is blank. policyId:" + policyId, "regKey");
+            } else if (PeriodicityCode.EVERY_MONTH.equals(ProductUtils.getPeriodicityCode(policy))) {
+                throw new BadArgumentException("The AtpMode is enabled, but regKey is blank. policyId:" + policyId + ". Besides, payment is MONTHLY but ATP is disabled, that's wrong!", "regKey");
+            }
         }
         paymentService.updatePayment(payment, orderId, transactionId.get(), (regKey == null ? "" : regKey));
 
