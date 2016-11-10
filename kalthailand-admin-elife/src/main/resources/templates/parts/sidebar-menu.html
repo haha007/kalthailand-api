@@ -1,10 +1,10 @@
 <div class="menu_section" xmlns:th="http://www.thymeleaf.org">
     <h3>General</h3>
     <ul class="nav side-menu">
-        <li><a><i class="fa fa-suitcase"></i> Policy <span class="fa fa-chevron-down"></span></a>
+        <li th:if="${user.featuresAvailabilities['policyDetailLink']}"><a><i class="fa fa-suitcase"></i> Policy <span class="fa fa-chevron-down"></span></a>
             <ul class="nav child_menu">
                 <li th:if="${user.featuresAvailabilities['policiesLink']}"><a href="#home">List</a></li>
-                <li th:if="${user.featuresAvailabilities.policyDetailLink}"><a href="#policy-detail">Detail</a></li>
+                <li th:if="${user.featuresAvailabilities['policyDetailLink']}"><a href="#policy-detail">Detail</a></li>
             </ul>
         </li>
         <li th:if="${user.featuresAvailabilities.totalQuoteCountLink}"><a><i class="fa fa-quote-left"></i> Quote <span class="fa fa-chevron-down"></span></a>
@@ -17,7 +17,7 @@
                 <li><a href="#collection-file">Collection</a></li>
             </ul>
         </li>
-        <li><a><i class="fa fa-cog"></i> Setting <span class="fa fa-chevron-down"></span></a>
+        <li th:if="${user.featuresAvailabilities.blackListLink || user.featuresAvailabilities.policyNumbersLink}"><a><i class="fa fa-cog"></i> Setting <span class="fa fa-chevron-down"></span></a>
             <ul class="nav child_menu">
                 <li th:if="${user.featuresAvailabilities.blackListLink}"><a href="#blacklist">Black List</a></li>
                 <li th:if="${user.featuresAvailabilities.policyNumbersLink}"><a href="#configuration">Policy Numbers</a></li>
