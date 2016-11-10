@@ -11,6 +11,7 @@ import java.util.Objects;
 
 @ApiModel(description = "Data concerning specific properties to a Person")
 public class Person extends Party implements Serializable {
+    @ApiModelProperty(value = "The person's line mid (if any). At this moment, this field is also the mid.")
     private String lineId;
     private String givenName;
     private String middleName;
@@ -27,7 +28,6 @@ public class Person extends Party implements Serializable {
     private GeographicalAddress deliveryAddress;
     private GeographicalAddress registrationAddress;
 
-    @ApiModelProperty(value = "The person's line mid (if any)")
     public String getLineId() {
         return lineId;
     }
