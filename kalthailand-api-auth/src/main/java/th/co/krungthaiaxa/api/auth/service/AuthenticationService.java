@@ -24,8 +24,8 @@ import java.time.Instant;
  * @author khoi.tran on 11/10/16.
  */
 @Service
-public class AuthService {
-    private final static Logger logger = LoggerFactory.getLogger(AuthService.class);
+public class AuthenticationService {
+    private final static Logger logger = LoggerFactory.getLogger(AuthenticationService.class);
 
     @Autowired
     private AuthenticationManager authenticationManager;

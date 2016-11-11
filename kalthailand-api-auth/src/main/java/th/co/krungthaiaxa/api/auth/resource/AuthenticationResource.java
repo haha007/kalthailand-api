@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import th.co.krungthaiaxa.api.auth.jwt.JwtTokenUtil;
 import th.co.krungthaiaxa.api.auth.model.Error;
 import th.co.krungthaiaxa.api.auth.model.RequestForToken;
-import th.co.krungthaiaxa.api.auth.service.AuthService;
+import th.co.krungthaiaxa.api.auth.service.AuthenticationService;
 import th.co.krungthaiaxa.api.common.model.authentication.AuthenticatedUser;
 import th.co.krungthaiaxa.api.common.model.authentication.Token;
 
@@ -40,19 +40,19 @@ import static th.co.krungthaiaxa.api.auth.utils.JsonUtil.getJson;
 
 @RestController
 @Api(value = "Authentication")
-public class AuthResource {
-    private final static Logger logger = LoggerFactory.getLogger(AuthResource.class);
+public class AuthenticationResource {
+    private final static Logger logger = LoggerFactory.getLogger(AuthenticationResource.class);
 
     @Value("${jwt.header}")
     private String tokenHeader;
 
-    private final AuthService authService;
+    private final AuthenticationService authService;
 
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
 
     @Autowired
-    public AuthResource(AuthService authService) {this.authService = authService;}
+    public AuthenticationResource(AuthenticationService authService) {this.authService = authService;}
 
     @ApiOperation(value = "Creates a token", notes = "Creates a JWT token containing user Roles", response = Token.class)
     @RequestMapping(value = "/auth", produces = APPLICATION_JSON_VALUE, method = POST)

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import th.co.krungthaiaxa.admin.elife.model.AuthenticatedFeaturesUser;
@@ -52,7 +53,17 @@ public class AuthenticationClient {
             String responseJson = responseEntity.getBody();
             return ObjectMapperUtil.toObject(objectMapper, responseJson, AuthenticatedUser.class);
         } catch (HttpServerErrorException ex) {
+            //If possible, get error message from Error object.
             String responseJson = ex.getResponseBodyAsString();
+            try {
+                Error error = ObjectMapperUtil.toObject(objectMapper, responseJson, Error.class);
+                throw new UnauthenticatedException("Error from authentication service: " + error.getUserMessage(), ex);
+            } catch (JsonConverterException jsonException) {
+                throw new UnauthenticatedException("Error from authentication service: " + ex.getMessage(), jsonException);
+            }
+        } catch (HttpClientErrorException ex) {
+            String responseJson = ex.getResponseBodyAsString();
+            //If possible, get error message from Error object.
             try {
                 Error error = ObjectMapperUtil.toObject(objectMapper, responseJson, Error.class);
                 if (ErrorCode.ERROR_CODE_AUTHENTICATION.equals(error.getCode())) {
