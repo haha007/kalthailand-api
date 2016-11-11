@@ -269,7 +269,7 @@ public class PolicyService {
             sendMsg = sendMsg.replace("%FULL_NAME%", policy.getInsureds().get(0).getPerson().getGivenName() + " " + policy.getInsureds().get(0).getPerson().getSurName());
             lineService.sendPushNotification(sendMsg, policy.getInsureds().get(0).getPerson().getLineId());
         } catch (Exception e) {
-            logger.error(String.format("Unable to send push notification for policy booking on policy [%s]: %s", policy.getPolicyId(), e.getMessage()), e);
+            logger.error(String.format("Unable to send LINE push notification for policy booking on policy [%s]: %s", policy.getPolicyId(), e.getMessage()), e);
         }
 
         // Send Application Form to TMC
@@ -361,7 +361,7 @@ public class PolicyService {
             String pushContent = IOUtils.toString(this.getClass().getResourceAsStream("/pushnotification-content/policy-purchased-notification.txt"), Charset.forName("UTF-8"));
             lineService.sendPushNotification(pushContent, policy.getInsureds().get(0).getPerson().getLineId());
         } catch (Exception e) {
-            logger.error(String.format("Unable to send push notification for policy validation on policy [%s]: %s", policy.getPolicyId(), e.getMessage()), e);
+            logger.error(String.format("Unable to send LINE push notification for policy validation on policy [%s]: %s", policy.getPolicyId(), e.getMessage()), e);
         }
 
         // Sign eReceipt and send it to TMC

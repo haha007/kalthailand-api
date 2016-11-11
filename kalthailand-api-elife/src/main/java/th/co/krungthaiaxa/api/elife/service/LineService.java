@@ -30,6 +30,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,8 +72,11 @@ public class LineService {
     }
 
     public void sendPushNotification(String messageContent, String... mids) throws IOException {
+        String msg = "LINE push [start]: mids: " + Arrays.toString(mids);
+        Instant start = LogUtil.logStarting(msg);
+        //TODO Should change this, use some mock URL in profile config. Don't need to check like this in code. If the value is null, should throw Exception.
         if (StringUtils.isEmpty(lineAppNotificationUrl)) {
-            LOGGER.info("Notification is not configured and won't be sent");
+            LogUtil.logRuntime(start, msg + "LINE push is not sent because there's no lineAppNotificationUrl (used for mock test only)");
             return;
         }
 
@@ -101,12 +105,12 @@ public class LineService {
         try {
             response = restTemplate.exchange(builder.toUriString(), POST, entity, String.class);
         } catch (Exception e) {
-            throw new IOException("Unable to send push notification: " + e.getMessage(), e);
+            throw new IOException("Unable to send LINE push notification: " + e.getMessage(), e);
         }
         if (!response.getStatusCode().equals(OK)) {
             throw new IOException("Line's response for push notification is [" + response.getStatusCode() + "]. Response body is [" + response.getBody() + "]");
         }
-        LOGGER.info("Notification is sent with success");
+        LogUtil.logRuntime(start, msg);
     }
 
     public LinePayResponse bookPayment(String mid, Policy policy, String amount, String currency) throws IOException {
