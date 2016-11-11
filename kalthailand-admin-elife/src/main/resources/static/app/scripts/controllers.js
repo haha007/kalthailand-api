@@ -597,197 +597,223 @@
     });
 
     app.controller('PolicyDetailController', function ($scope, $route, $http, $routeParams, PolicyDetail, PolicyNotification) {
-        $scope.$route = $route;
-        $scope.apiELifeUrl = window.location.origin + '/api-elife';
+            $scope.$route = $route;
+            $scope.apiELifeUrl = window.location.origin + '/api-elife';
 
-        $scope.policyID = $routeParams.policyID;
-        if ($scope.policyID) {
-            searchForPolicyDetail();
-        }
-        $scope.AtpMode = {
-            NO_AUTOPAY: 0,
-            AUTOPAY: 1
-        };
-        $scope.isEnabledAutoPay = function (policy) {
-            if (!hasValue(policy)) {
-                return false;
+            $scope.policyID = $routeParams.policyID;
+            if ($scope.policyID) {
+                searchForPolicyDetail();
             }
-            return policy.premiumsData.financialScheduler.atpMode == $scope.AtpMode.AUTOPAY;
-        };
-        // AKT-820
-        $scope.onSubmitPaymentDetails = function () {
-            $scope.isFetching = true;
-
-            var data = {
-                paymentId: $scope.policyDetail.payments[0].paymentId,
-                value: $scope.policyDetail.payments[0].amount.value,
-                currencyCode: $scope.policyDetail.payments[0].amount.currencyCode,
-                channelType: 'LINE',
-                orderId: $scope.payment.orderId,
-                transactionId: $scope.payment.transactionId
+            $scope.AtpMode = {
+                NO_AUTOPAY: 0,
+                AUTOPAY: 1
             };
-
-            if ($scope.policyDetail.premiumsData.financialScheduler.periodicity.code == 'EVERY_MONTH') {
-                if (!$scope.payment.regKey) {
-                    alert('Error! required "regKey" on monthly mode payment');
-                    return;
+            $scope.isEnabledAutoPay = function (policy) {
+                if (!hasValue(policy)) {
+                    return false;
                 }
+                return policy.premiumsData.financialScheduler.atpMode == $scope.AtpMode.AUTOPAY;
+            };
+            // AKT-820
+            $scope.onSubmitPaymentDetails = function () {
+                $scope.isFetching = true;
 
-                data.regKey = $scope.payment.regKey;
-            }
+                var data = {
+                    paymentId: $scope.policyDetail.payments[0].paymentId,
+                    value: $scope.policyDetail.payments[0].amount.value,
+                    currencyCode: $scope.policyDetail.payments[0].amount.currencyCode,
+                    channelType: 'LINE',
+                    orderId: $scope.payment.orderId,
+                    transactionId: $scope.payment.transactionId
+                };
 
-            $http({
-                url: '/api-elife/policies/' + $scope.policyDetail.policyId + '/update/status/pendingValidation',
-                method: 'PUT',
-                params: data,
-                data: data,
-                headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-            }).
-            then(
-                function (response) {
-                    if (response.data.error) {
-                        $scope.isFetching = false;
-                        $scope.successMessage = null;
-                        $scope.errorMessage = response.data.message;
-                    } else {
-                        window.location.reload();
+                if ($scope.policyDetail.premiumsData.financialScheduler.periodicity.code == 'EVERY_MONTH') {
+                    if (!$scope.payment.regKey) {
+                        alert('Error! required "regKey" on monthly mode payment');
+                        return;
                     }
-                },
-                function (err) {
-                    $scope.isFetching = false;
-                    $scope.showErrorMessage(err.data);
-                    //$scope.successMessage = null;
-                    //$scope.errorMessage = err.toString();
+
+                    data.regKey = $scope.payment.regKey;
                 }
-            )
 
-            return false;
-        };
-        /**
-         * @param reminderId 1: no answer. 2: wrong email
-         */
-        $scope.onClickNotification = function (reminderId) {
-            $scope.isValidating = true;
-            PolicyNotification.get({id: $scope.policyID, reminderId: reminderId},
-                function (successResponse) {
-                    $scope.successMessage = "Notifications have been sent successfully";
-                    $scope.errorMessage = null;
-                    $scope.isValidating = null;
-                    $(window).scrollTop(0);
-                },
-                function (errorResponse) {
-                    $scope.successMessage = null;
-                    $scope.errorMessage = errorResponse.data.userMessage;
-                    $scope.isValidating = null;
-                    $(window).scrollTop(0);
-                });
-        };
+                $http({
+                    url: '/api-elife/policies/' + $scope.policyDetail.policyId + '/update/status/pendingValidation',
+                    method: 'PUT',
+                    params: data,
+                    data: data,
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                }).
+                then(
+                    function (response) {
+                        if (response.data.error) {
+                            $scope.isFetching = false;
+                            $scope.successMessage = null;
+                            $scope.errorMessage = response.data.message;
+                        } else {
+                            window.location.reload();
+                        }
+                    },
+                    function (err) {
+                        $scope.isFetching = false;
+                        $scope.showErrorMessage(err.data);
+                        //$scope.successMessage = null;
+                        //$scope.errorMessage = err.toString();
+                    }
+                )
 
-        $scope.onClickValidate = function (policyNumber) {
-            $scope.isValidating = true;
-            $http({
-                url: '/api-elife/policies/' + policyNumber + '/update/status/validated',
-                method: 'PUT',
-                data: $.param({agentName: $scope.agentName, agentCode: $scope.agentCode, linePayCaptureMode: $scope.linePayCaptureMode}),
-                headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-            })
-                .then(
+                return false;
+            };
+            $scope.stepStatus = function (stepId) {
+                var currentStep = $scope.getCurrentStep();
+                var styleClass = "disabled";
+                var isdone = 0;
+                if (currentStep >= stepId) {
+                    styleClass = "selected";
+                    isdone = 1;
+                }
+                return {styleClass: styleClass, isdone: isdone};
+            };
+            $scope.getCurrentStep = function () {
+                var policy = $scope.policyDetail;
+                if (!hasValue(policy)) {
+                    return 0;
+                }
+                var policyStatus = policy.status;
+                if (policyStatus == 'PENDING_PAYMENT') {
+                    return 1;
+                } else if (policyStatus == 'PENDING_VALIDATION') {
+                    return 2;
+                } else if (policyStatus == 'VALIDATED') {
+                    return 3;
+                }
+                return 0;
+            };
+            /**
+             * @param reminderId 1: no answer. 2: wrong email
+             */
+            $scope.onClickNotification = function (reminderId) {
+                $scope.isValidating = true;
+                PolicyNotification.get({id: $scope.policyID, reminderId: reminderId},
                     function (successResponse) {
-                        $scope.successMessage = "Policy [" + successResponse.data.policyId + "] has been validated";
+                        $scope.successMessage = "Notifications have been sent successfully";
                         $scope.errorMessage = null;
-                        $scope.policyDetail = null;
-                        $scope.annualPremium = null;
-                        $scope.sumInsured = null;
                         $scope.isValidating = null;
                         $(window).scrollTop(0);
                     },
                     function (errorResponse) {
-                        var msg = formatErrorMessage(errorResponse.data);
-                        $scope.showErrorMessage(msg);
-                        $scope.policyDetail = null;
-                        $scope.annualPremium = null;
-                        $scope.sumInsured = null;
+                        $scope.successMessage = null;
+                        $scope.errorMessage = errorResponse.data.userMessage;
                         $scope.isValidating = null;
                         $(window).scrollTop(0);
                     });
-        };
+            };
 
-        $scope.search = function (event) {
-            if (hasValue(event)) {
-                event.preventDefault();
+            $scope.onClickValidate = function (policyNumber) {
+                $scope.isValidating = true;
+                $http({
+                    url: '/api-elife/policies/' + policyNumber + '/update/status/validated',
+                    method: 'PUT',
+                    data: $.param({agentName: $scope.agentName, agentCode: $scope.agentCode, linePayCaptureMode: $scope.linePayCaptureMode}),
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                })
+                    .then(
+                        function (successResponse) {
+                            $scope.successMessage = "Policy [" + successResponse.data.policyId + "] has been validated";
+                            $scope.errorMessage = null;
+                            $scope.policyDetail = null;
+                            $scope.annualPremium = null;
+                            $scope.sumInsured = null;
+                            $scope.isValidating = null;
+                            $(window).scrollTop(0);
+                        },
+                        function (errorResponse) {
+                            var msg = formatErrorMessage(errorResponse.data);
+                            $scope.showErrorMessage(msg);
+                            $scope.policyDetail = null;
+                            $scope.annualPremium = null;
+                            $scope.sumInsured = null;
+                            $scope.isValidating = null;
+                            $(window).scrollTop(0);
+                        });
+            };
+
+            $scope.search = function (event) {
+                if (hasValue(event)) {
+                    event.preventDefault();
+                }
+                searchForPolicyDetail();
+            };
+            $scope.getProductDisplayName = function (policyDetail) {
+                if (!hasValue(policyDetail)) {
+                    return null;
+                }
+                var productId = policyDetail.commonData.productId;
+                var productName;
+                if (productId == "iProtect") {
+                    productName = 'iProtect S';
+                } else {
+                    productName = productId;
+                }
+                return productName;
             }
-            searchForPolicyDetail();
-        };
-        $scope.getProductDisplayName = function (policyDetail) {
-            if (!hasValue(policyDetail)) {
-                return null;
-            }
-            var productId = policyDetail.commonData.productId;
-            var productName;
-            if (productId == "iProtect") {
-                productName = 'iProtect S';
-            } else {
-                productName = productId;
-            }
-            return productName;
-        }
-        function searchForPolicyDetail() {
-            PolicyDetail.get({id: $scope.policyID},
-                function (successResponse) {
-                    $scope.scenarioID = 1;
-                    $scope.linePayCaptureMode = 'FAKE_WITH_SUCCESS';
-                    $scope.showSuccessMessage(null);
-                    $scope.policyDetail = successResponse;
-                    var productId = successResponse.commonData.productId;
-                    var sumInsuredAmount;
-                    if (productId == "10EC") {
-                        sumInsuredAmount = successResponse.premiumsData.product10ECPremium.sumInsured;
-                    } else if (productId == "iProtect") {
-                        sumInsuredAmount = successResponse.premiumsData.productIProtectPremium.sumInsured;
-                    } else if (productId == "iFine") {
-                        sumInsuredAmount = successResponse.premiumsData.productIFinePremium.sumInsured;
-                    } else {
-                        if (!hasValue(successResponse.premiumsData.premiumDetail)) {
-                            $scope.showErrorMessage("Not found detail of this policy (" + productId + ")");
-                            return;
+            function searchForPolicyDetail() {
+                PolicyDetail.get({id: $scope.policyID},
+                    function (successResponse) {
+                        $scope.scenarioID = 1;
+                        $scope.linePayCaptureMode = 'FAKE_WITH_SUCCESS';
+                        $scope.showSuccessMessage(null);
+                        $scope.policyDetail = successResponse;
+                        var productId = successResponse.commonData.productId;
+                        var sumInsuredAmount;
+                        if (productId == "10EC") {
+                            sumInsuredAmount = successResponse.premiumsData.product10ECPremium.sumInsured;
+                        } else if (productId == "iProtect") {
+                            sumInsuredAmount = successResponse.premiumsData.productIProtectPremium.sumInsured;
+                        } else if (productId == "iFine") {
+                            sumInsuredAmount = successResponse.premiumsData.productIFinePremium.sumInsured;
+                        } else {
+                            if (!hasValue(successResponse.premiumsData.premiumDetail)) {
+                                $scope.showErrorMessage("Not found detail of this policy (" + productId + ")");
+                                return;
+                            }
+                            sumInsuredAmount = successResponse.premiumsData.premiumDetail.sumInsured;
                         }
-                        sumInsuredAmount = successResponse.premiumsData.premiumDetail.sumInsured;
-                    }
-                    $scope.sumInsured = sumInsuredAmount.value + " " + sumInsuredAmount.currencyCode;
+                        $scope.sumInsured = sumInsuredAmount.value + " " + sumInsuredAmount.currencyCode;
 
 
-                    var periodicity = '' + successResponse.premiumsData.financialScheduler.periodicity.code;
-                    $scope.periodicity = periodicity;
-                    var premium = successResponse.premiumsData.financialScheduler.modalAmount.value;
-                    if (periodicity == 'EVERY_MONTH') {
-                        $scope.annualPremium = (premium * 12) + " " + successResponse.premiumsData.financialScheduler.modalAmount.currencyCode;
-                    } else if (periodicity == 'EVERY_QUARTER') {
-                        $scope.annualPremium = (premium * 4) + " " + successResponse.premiumsData.financialScheduler.modalAmount.currencyCode;
-                    } else if (periodicity == 'EVERY_HALF_YEAR') {
-                        $scope.annualPremium = (premium * 2) + " " + successResponse.premiumsData.financialScheduler.modalAmount.currencyCode;
-                    } else {
-                        $scope.annualPremium = premium + " " + successResponse.premiumsData.financialScheduler.modalAmount.currencyCode;
-                    }
-                },
-                function (errorResponse) {
-                    $scope.showErrorMessage(errorResponse.data.userMessage);
-                    $scope.policyDetail = null;
-                    $scope.annualPremium = null;
-                    $scope.sumInsured = null;
-                });
+                        var periodicity = '' + successResponse.premiumsData.financialScheduler.periodicity.code;
+                        $scope.periodicity = periodicity;
+                        var premium = successResponse.premiumsData.financialScheduler.modalAmount.value;
+                        if (periodicity == 'EVERY_MONTH') {
+                            $scope.annualPremium = (premium * 12) + " " + successResponse.premiumsData.financialScheduler.modalAmount.currencyCode;
+                        } else if (periodicity == 'EVERY_QUARTER') {
+                            $scope.annualPremium = (premium * 4) + " " + successResponse.premiumsData.financialScheduler.modalAmount.currencyCode;
+                        } else if (periodicity == 'EVERY_HALF_YEAR') {
+                            $scope.annualPremium = (premium * 2) + " " + successResponse.premiumsData.financialScheduler.modalAmount.currencyCode;
+                        } else {
+                            $scope.annualPremium = premium + " " + successResponse.premiumsData.financialScheduler.modalAmount.currencyCode;
+                        }
+                    },
+                    function (errorResponse) {
+                        $scope.showErrorMessage(errorResponse.data.userMessage);
+                        $scope.policyDetail = null;
+                        $scope.annualPremium = null;
+                        $scope.sumInsured = null;
+                    });
+
+            }
+
+            $scope.showErrorMessage = function (msg) {
+                $scope.successMessage = null;
+                $scope.errorMessage = msg;
+            }
+            $scope.showSuccessMessage = function (msg) {
+                $scope.successMessage = msg;
+                $scope.errorMessage = null;
+            }
 
         }
-
-        $scope.showErrorMessage = function (msg) {
-            $scope.successMessage = null;
-            $scope.errorMessage = msg;
-        }
-        $scope.showSuccessMessage = function (msg) {
-            $scope.successMessage = msg;
-            $scope.errorMessage = null;
-        }
-
-    });
+    );
 
     app.controller('CommissionController', function (CommissionService, $scope, $route, $http, $localStorage) {
         $scope.service = CommissionService;
