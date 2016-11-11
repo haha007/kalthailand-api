@@ -115,7 +115,6 @@ public class AuthenticationClient {
     }
 
     private static Properties loadUiRoleConfiguration() {
-
         try (InputStream inputStream = IOUtil.loadInputStreamFromClassPath(UI_ROLE_FILTER_CONFIG_FILE)) {
             Properties properties = new Properties();
             properties.load(inputStream);

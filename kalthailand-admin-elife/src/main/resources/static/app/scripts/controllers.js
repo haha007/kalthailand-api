@@ -663,10 +663,12 @@
 
             return false;
         };
-
-        $scope.onClickNotification = function () {
+        /**
+         * @param reminderId 1: no answer. 2: wrong email
+         */
+        $scope.onClickNotification = function (reminderId) {
             $scope.isValidating = true;
-            PolicyNotification.get({id: $scope.policyID, reminderId: $scope.scenarioID},
+            PolicyNotification.get({id: $scope.policyID, reminderId: reminderId},
                 function (successResponse) {
                     $scope.successMessage = "Notifications have been sent successfully";
                     $scope.errorMessage = null;
@@ -711,7 +713,9 @@
         };
 
         $scope.search = function (event) {
-            event.preventDefault();
+            if (hasValue(event)) {
+                event.preventDefault();
+            }
             searchForPolicyDetail();
         };
         $scope.getProductDisplayName = function (policyDetail) {
