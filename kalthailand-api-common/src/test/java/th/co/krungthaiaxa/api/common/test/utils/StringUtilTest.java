@@ -1,9 +1,11 @@
-package th.co.krungthaiaxa.api.common.utils;
+package th.co.krungthaiaxa.api.common.test.utils;
 
 import com.itextpdf.text.log.Logger;
 import com.itextpdf.text.log.LoggerFactory;
 import org.junit.Assert;
 import org.junit.Test;
+import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
+import th.co.krungthaiaxa.api.common.utils.StringUtil;
 
 import java.util.Arrays;
 import java.util.List;

@@ -1,4 +1,4 @@
-package th.co.krungthaiaxa.api.common.utils;
+package th.co.krungthaiaxa.api.common.test.utils;
 
 import org.junit.Assert;
 import org.junit.Test;
