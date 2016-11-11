@@ -778,21 +778,23 @@
                             }
                             sumInsuredAmount = successResponse.premiumsData.premiumDetail.sumInsured;
                         }
-                        $scope.sumInsured = sumInsuredAmount.value + " " + sumInsuredAmount.currencyCode;
+                        $scope.sumInsured = sumInsuredAmount;
 
 
                         var periodicity = '' + successResponse.premiumsData.financialScheduler.periodicity.code;
                         $scope.periodicity = periodicity;
                         var premium = successResponse.premiumsData.financialScheduler.modalAmount.value;
+                        var annualPremiumValue;
                         if (periodicity == 'EVERY_MONTH') {
-                            $scope.annualPremium = (premium * 12) + " " + successResponse.premiumsData.financialScheduler.modalAmount.currencyCode;
+                            annualPremiumValue = (premium * 12);
                         } else if (periodicity == 'EVERY_QUARTER') {
-                            $scope.annualPremium = (premium * 4) + " " + successResponse.premiumsData.financialScheduler.modalAmount.currencyCode;
+                            annualPremiumValue = (premium * 4);
                         } else if (periodicity == 'EVERY_HALF_YEAR') {
-                            $scope.annualPremium = (premium * 2) + " " + successResponse.premiumsData.financialScheduler.modalAmount.currencyCode;
+                            annualPremiumValue = (premium * 2);
                         } else {
-                            $scope.annualPremium = premium + " " + successResponse.premiumsData.financialScheduler.modalAmount.currencyCode;
+                            annualPremiumValue = premium;
                         }
+                        $scope.annualPremium = {value: annualPremiumValue, currencyCode: successResponse.premiumsData.financialScheduler.modalAmount.currencyCode};
                     },
                     function (errorResponse) {
                         $scope.showErrorMessage(errorResponse.data.userMessage);

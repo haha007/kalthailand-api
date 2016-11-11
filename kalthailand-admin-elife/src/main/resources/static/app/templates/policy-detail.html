@@ -213,7 +213,7 @@
                             <label class="col-sm-6 control-label">Sum insured</label>
 
                             <div class="col-sm-6">
-                                <span class="form-control-static">{{ sumInsured }} </span>
+                                <span class="form-control-static">{{ sumInsured.value | number: 2 }} {{sumInsured.currencyCode}} </span>
                             </div>
                         </div>
                     </div>
@@ -244,7 +244,7 @@
                             <label class="col-sm-6 control-label">Premium amount</label>
 
                             <div class="col-sm-6">
-                                <span class="form-control-static">{{ policyDetail.premiumsData.financialScheduler.modalAmount.value }} {{ policyDetail.premiumsData.financialScheduler.modalAmount.currencyCode }}</span>
+                                <span class="form-control-static">{{ policyDetail.premiumsData.financialScheduler.modalAmount.value | number: 2 }} {{ policyDetail.premiumsData.financialScheduler.modalAmount.currencyCode }}</span>
                             </div>
                         </div>
                     </div>
@@ -276,7 +276,7 @@
                             <label class="col-sm-6 control-label">Annual premium</label>
 
                             <div class="col-sm-6">
-                                <span class="form-control-static">{{ annualPremium }}</span>
+                                <span class="form-control-static">{{ annualPremium.value | number:2 }} {{annualPremium.currencyCode}}</span>
                             </div>
 
                         </div>
@@ -354,115 +354,122 @@
             </div>
 
 
-            <!-- NOTIFICATION -->
-            <div class="x_panel" ng-show="policyDetail && policyDetail.status != 'VALIDATED'">
-                <div class="x_title">
-                    <h2>Notification</h2>
+            <div class="row" ng-show="policyDetail && policyDetail.status != 'VALIDATED'">
+                <div class="col-sm-6 col-md-6 col-xs-12">
+                    <!-- NOTIFICATION -->
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <h2>Notification</h2>
 
-                    <div class="clearfix"></div>
-                </div>
-                <div class="x_content">
-                    <div class="row">
-                        <div class="col-offset-4 col-sm-6 col-md-6 col-xs-12">
-                            <div class="dashboard-widget-content">
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <div class="row">
+                                <div class="col-sm-12 col-md-12 col-xs-12">
+                                    <div class="dashboard-widget-content">
 
-                                <ul class="list-unstyled timeline widget">
-                                    <li>
-                                        <div class="block">
-                                            <div class="block_content">
-                                                <h2 class="title">
-                                                    <a>No answer</a>
-                                                </h2>
+                                        <ul class="list-unstyled timeline widget">
+                                            <li>
+                                                <div class="block">
+                                                    <div class="block_content">
+                                                        <h2 class="title">
+                                                            <a>No answer</a>
+                                                        </h2>
 
-                                                <div class="row">
-                                                    <div class="col-sm-4">
-                                                        <div class="byline">
-                                                            <span>notification</span> to <a>insured person</a>
+                                                        <div class="row">
+                                                            <div class="col-sm-5">
+                                                                <div class="byline">
+                                                                    <span>notification</span> to <a>insured person</a>
+                                                                </div>
+                                                                <p class="excerpt">Send SMS + Email + Line</a>
+                                                                </p>
+                                                            </div>
+                                                            <div class="col-sm-7">
+                                                                <button type="button" ng-click="onClickNotification(1)" ng-disabled="isValidating" class="btn btn-success"><i class="fa fa-bullhorn"></i> Notify</button>
+                                                            </div>
                                                         </div>
-                                                        <p class="excerpt">Send SMS + Email + Line</a>
-                                                        </p>
-                                                    </div>
-                                                    <div class="col-sm-8">
-                                                        <button type="button" ng-click="onClickNotification(1)" ng-disabled="isValidating" class="btn btn-default"><i class="fa fa-bullhorn"></i> Notify</button>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div class="block">
-                                            <div class="block_content">
-                                                <h2 class="title">
-                                                    <a>Wrong phone number</a>
-                                                </h2>
+                                            </li>
+                                            <li>
+                                                <div class="block">
+                                                    <div class="block_content">
+                                                        <h2 class="title">
+                                                            <a>Wrong phone number</a>
+                                                        </h2>
 
-                                                <div class="row">
-                                                    <div class="col-sm-4">
-                                                        <div class="byline">
-                                                            <span>notification</span> to <a>insured person</a>
+                                                        <div class="row">
+                                                            <div class="col-sm-5">
+                                                                <div class="byline">
+                                                                    <span>notification</span> to <a>insured person</a>
+                                                                </div>
+                                                                <p class="excerpt">Send Email + Line</a>
+                                                                </p>
+                                                            </div>
+                                                            <div class="col-sm-7">
+                                                                <button type="button" ng-click="onClickNotification(2)" ng-disabled="isValidating" class="btn btn-success"><i class="fa fa-bullhorn"></i> Notify</button>
+                                                            </div>
                                                         </div>
-                                                        <p class="excerpt">Send Email + Line</a>
-                                                        </p>
-                                                    </div>
-                                                    <div class="col-sm-8">
-                                                        <button type="button" ng-click="onClickNotification(2)" ng-disabled="isValidating" class="btn btn-default"><i class="fa fa-bullhorn"></i> Notify</button>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </div>
-                                    </li>
-                                </ul>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
                             </div>
+
                         </div>
                     </div>
 
                 </div>
-            </div>
+                <div class="col-sm-6 col-md-6 col-xs-12">
+                    <!-- VALIDATION -->
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <h2>Validation</h2>
 
-            <!-- VALIDATION -->
-            <div class="x_panel" ng-show="policyDetail && policyDetail.status != 'VALIDATED'">
-                <div class="x_title">
-                    <h2>Validation</h2>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <!-- info row -->
+                            <div class="row">
+                                <form class="form-horizontal">
+                                    <div class="form-group">
+                                        <label for="agentName" class="col-md-3 control-label">Agent Name</label>
 
-                    <div class="clearfix"></div>
-                </div>
-                <div class="x_content">
-                    <!-- info row -->
-                    <div class="row">
-                        <form class="form-horizontal">
-                            <div class="form-group">
-                                <label for="agentName" class="col-md-3 control-label">Agent Name</label>
+                                        <div class="col-md-6">
+                                            <input type="text" class="form-control" id="agentName" ng-model="agentName" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="agentCode" class="col-md-3 control-label">Agent code</label>
 
-                                <div class="col-md-6">
-                                    <input type="text" class="form-control" id="agentName" ng-model="agentName" required>
-                                </div>
+                                        <div class="col-md-6">
+                                            <input type="text" class="form-control" id="agentCode" ng-model="agentCode" mask='999999-99-999999' placeholder="______-__-______" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="linePayCaptureMode" class="col-md-3 control-label">Line Pay call</label>
+
+                                        <div class="col-md-6">
+                                            <select class="form-control" id="linePayCaptureMode" ng-model="linePayCaptureMode">
+                                                <option value="FAKE_WITH_SUCCESS">Fake (with a success response)</option>
+                                                <option value="FAKE_WITH_ERROR">Fake (with an error response)</option>
+                                                <option value="REAL">Real (insured person will be charged)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="ln_solid"></div>
+                                    <div class="form-group">
+                                        <div class="col-md-3 col-md-offset-3">
+                                            <button ng-click="onClickValidate(policyDetail.policyId)" type="button" ng-disabled="isValidating" class="btn btn-default btn-danger">Validate</button>
+                                        </div>
+                                    </div>
+                                </form>
                             </div>
-                            <div class="form-group">
-                                <label for="agentCode" class="col-md-3 control-label">Agent code</label>
-
-                                <div class="col-md-6">
-                                    <input type="text" class="form-control" id="agentCode" ng-model="agentCode" mask='999999-99-999999' placeholder="______-__-______" required>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="linePayCaptureMode" class="col-md-3 control-label">Line Pay call</label>
-
-                                <div class="col-md-6">
-                                    <select class="form-control" id="linePayCaptureMode" ng-model="linePayCaptureMode">
-                                        <option value="FAKE_WITH_SUCCESS">Fake (with a success response)</option>
-                                        <option value="FAKE_WITH_ERROR">Fake (with an error response)</option>
-                                        <option value="REAL">Real (insured person will be charged)</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="ln_solid"></div>
-                            <div class="form-group">
-                                <div class="col-md-3 col-md-offset-3">
-                                    <button ng-click="onClickValidate(policyDetail.policyId)" type="button" ng-disabled="isValidating" class="btn btn-default btn-danger">Validate</button>
-                                </div>
-                            </div>
-                        </form>
+                        </div>
                     </div>
+
                 </div>
             </div>
 
