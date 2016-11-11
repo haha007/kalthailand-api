@@ -27,6 +27,28 @@
             <artifactId>jjwt</artifactId>
             <version>0.6.0</version>
         </dependency>
+
+        <!--Test -->
+        <dependency>
+            <groupId>th.co.krungthaiaxa</groupId>
+            <artifactId>api-common</artifactId>
+            <version>${kalthailand.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.icegreen</groupId>
+            <artifactId>greenmail</artifactId>
+            <version>1.5.0</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>javax.mail</artifactId>
+                    <groupId>com.sun.mail</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
     </dependencies>
 
     <build>
