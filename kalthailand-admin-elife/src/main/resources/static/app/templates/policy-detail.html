@@ -356,6 +356,56 @@
 
             <div class="row" ng-show="policyDetail && policyDetail.status != 'VALIDATED'">
                 <div class="col-sm-6 col-md-6 col-xs-12">
+                    <!-- VALIDATION -->
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <h2>Validation</h2>
+
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <!-- info row -->
+                            <div class="row">
+                                <form class="form-horizontal">
+                                    <div class="form-group">
+                                        <label for="agentName" class="col-md-3 control-label">Agent Name</label>
+
+                                        <div class="col-md-6">
+                                            <input type="text" class="form-control" id="agentName" ng-model="agentName" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="agentCode" class="col-md-3 control-label">Agent code</label>
+
+                                        <div class="col-md-6">
+                                            <input type="text" class="form-control" id="agentCode" ng-model="agentCode" mask='999999-99-999999' placeholder="______-__-______" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="linePayCaptureMode" class="col-md-3 control-label">Line Pay call</label>
+
+                                        <div class="col-md-6">
+                                            <select class="form-control" id="linePayCaptureMode" ng-model="linePayCaptureMode">
+                                                <option value="FAKE_WITH_SUCCESS">Fake (with a success response)</option>
+                                                <option value="FAKE_WITH_ERROR">Fake (with an error response)</option>
+                                                <option value="REAL">Real (insured person will be charged)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="ln_solid"></div>
+                                    <div class="form-group">
+                                        <div class="col-md-3 col-md-offset-3">
+                                            <button ng-click="onClickValidate(policyDetail.policyId)" type="button" ng-disabled="isValidating" class="btn btn-default btn-danger">Validate</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+                <div class="col-sm-6 col-md-6 col-xs-12">
                     <!-- NOTIFICATION -->
                     <div class="x_panel">
                         <div class="x_title">
@@ -418,55 +468,6 @@
                                 </div>
                             </div>
 
-                        </div>
-                    </div>
-
-                </div>
-                <div class="col-sm-6 col-md-6 col-xs-12">
-                    <!-- VALIDATION -->
-                    <div class="x_panel">
-                        <div class="x_title">
-                            <h2>Validation</h2>
-
-                            <div class="clearfix"></div>
-                        </div>
-                        <div class="x_content">
-                            <!-- info row -->
-                            <div class="row">
-                                <form class="form-horizontal">
-                                    <div class="form-group">
-                                        <label for="agentName" class="col-md-3 control-label">Agent Name</label>
-
-                                        <div class="col-md-6">
-                                            <input type="text" class="form-control" id="agentName" ng-model="agentName" required>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="agentCode" class="col-md-3 control-label">Agent code</label>
-
-                                        <div class="col-md-6">
-                                            <input type="text" class="form-control" id="agentCode" ng-model="agentCode" mask='999999-99-999999' placeholder="______-__-______" required>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="linePayCaptureMode" class="col-md-3 control-label">Line Pay call</label>
-
-                                        <div class="col-md-6">
-                                            <select class="form-control" id="linePayCaptureMode" ng-model="linePayCaptureMode">
-                                                <option value="FAKE_WITH_SUCCESS">Fake (with a success response)</option>
-                                                <option value="FAKE_WITH_ERROR">Fake (with an error response)</option>
-                                                <option value="REAL">Real (insured person will be charged)</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="ln_solid"></div>
-                                    <div class="form-group">
-                                        <div class="col-md-3 col-md-offset-3">
-                                            <button ng-click="onClickValidate(policyDetail.policyId)" type="button" ng-disabled="isValidating" class="btn btn-default btn-danger">Validate</button>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
                         </div>
                     </div>
 
