@@ -1,11 +1,4 @@
 <!-- BEGIN Page specific stuff -->
-<style>
-    .form-upload {
-        border: 1px solid #eee;
-        margin-bottom: 20px;
-        padding: 5px;
-    }
-</style>
 <div class="col-md-12 col-sm-12 col-xs-12 main ng-cloak">
     <div class="page-title">
         <div class="">
@@ -32,14 +25,14 @@
         {{ successMessage }}
     </div>
     <div id="paymentDetailContainer">
-        <!-- STATUS -->
         <div class="x_panel" ng-show="policyDetail">
             <div class="x_title">
-                <h2>Policy Status</h2>
+                <h2>Policy information</h2>
 
                 <div class="clearfix"></div>
             </div>
             <div class="x_content">
+                <!-- STATUS -->
                 <div class="form_wizard wizard_horizontal">
                     <ul class="wizard_steps anchor">
                         <!--<li style="width: 33%">-->
@@ -70,138 +63,9 @@
                         </li>
                     </ul>
                 </div>
-            </div>
-        </div>
-        <!-- PAYMENT DETAILS -->
-        <div class="x_panel" ng-show="policyDetail && policyDetail.status == 'PENDING_PAYMENT'">
-            <div class="x_title">
-                <h2>Payment Details
-                </h2>
 
-                <div class="clearfix"></div>
-            </div>
-            <div class="x_content">
-                <!-- info row -->
-                <form id="demo-form2" data-parsley-validate="" class="form-horizontal form-label-left" novalidate="" ng-submit="onSubmitPaymentDetails()">
-                    <div class="form-group" ng-show="isEnabledAutoPay(policyDetail)">
-                        <label for="regKey" class="col-sm-3 control-label">regKey</label>
-
-                        <div class="col-md-6 col-sm-6 col-xs-12">
-                            <input class="form-control" type="text" ng-model="payment.regKey" id="regKey" required>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="orderId" class="col-sm-3 control-label">orderId</label>
-
-                        <div class="col-md-6 col-sm-6 col-xs-12">
-                            <input class="form-control" type="text" ng-model="payment.orderId" id="orderId" required>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="transactionId" class="col-sm-3 control-label">transactionId</label>
-
-                        <div class="col-md-6 col-sm-6 col-xs-12">
-                            <input class="form-control" type="text" ng-model="payment.transactionId" id="transactionId" required>
-                        </div>
-                    </div>
-                    <div class="ln_solid"></div>
-                    <div class="form-group">
-                        <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
-                            <button type="submit" class="btn btn-success" ng-disabled="paymentForm.$invalid || isFetching">
-                                <span ng-show="isFetching">Updating...</span>
-                                <span ng-show=" ! isFetching">Submit</span>
-                            </button>
-                        </div>
-                    </div>
-
-                </form>
-            </div>
-        </div>
-
-        <!-- INSURED DETAILS -->
-        <div class="x_panel" ng-show="policyDetail">
-            <div class="x_title">
-                <h2>Insured details</h2>
-
-                <div class="clearfix"></div>
-            </div>
-            <div class="x_content">
-                <!-- info row -->
-                <div class="row">
-                    <div class="col-sm-4">
-                        <div class="form-group">
-                            <label class="col-sm-4 control-label">First Name</label>
-
-                            <div class="col-sm-8">
-                                <span class="form-control-static">{{ policyDetail.insureds[0].person.givenName }}</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-4">
-                        <div class="form-group">
-
-                            <label class="col-sm-4 control-label">Last Name</label>
-
-                            <div class="col-sm-8">
-                                <span class="form-control-static">{{ policyDetail.insureds[0].person.surName }}</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-4">
-                        <div class="form-group">
-
-                            <label class="col-sm-4 control-label">Date of birth</label>
-
-                            <div class="col-sm-8">
-                                <span class="form-control-static">{{ policyDetail.insureds[0].person.birthDate }}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-4">
-                        <div class="form-group">
-                            <label class="col-sm-4 control-label">Thai ID</label>
-
-                            <div class="col-sm-8">
-                                <span class="form-control-static">{{ policyDetail.insureds[0].person.registrations[0].id }}</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-4">
-                        <div class="form-group">
-
-                            <label class="col-sm-4 control-label">Email</label>
-
-                            <div class="col-sm-8">
-                                <span class="form-control-static">{{ policyDetail.insureds[0].person.email }}</span>
-                            </div>
-
-                        </div>
-                    </div>
-                    <div class="col-sm-4">
-                        <div class="form-group">
-                            <label class="col-sm-4 control-label">Mobile phone</label>
-
-                            <div class="col-sm-8">
-                                <span class="form-control-static">{{ policyDetail.insureds[0].person.mobilePhoneNumber.number }}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-        <!-- POLICY DETAILS -->
-        <div class="x_panel" ng-show="policyDetail">
-            <div class="x_title">
-                <h2>Policy Details</h2>
-
-                <div class="clearfix"></div>
-            </div>
-            <div class="x_content">
-                <!-- info row -->
+                <div class="ln_solid"></div>
+                <!-- POLICY DETAILS -->
                 <div class="row">
                     <div class="col-sm-4">
                         <div class="form-group">
@@ -297,9 +161,128 @@
                 </div>
             </div>
         </div>
+        <!-- PAYMENT DETAILS -->
+        <div class="x_panel" ng-show="policyDetail && policyDetail.status == 'PENDING_PAYMENT'">
+            <div class="x_title">
+                <h2>Payment information
+                </h2>
 
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+                <!-- info row -->
+                <form id="demo-form2" data-parsley-validate="" class="form-horizontal form-label-left" novalidate="" ng-submit="onSubmitPaymentDetails()">
+                    <div class="form-group" ng-show="isEnabledAutoPay(policyDetail)">
+                        <label for="regKey" class="col-sm-3 control-label">regKey</label>
 
-        <div ng-hide="policyDetail && policyDetail.status == 'PENDING_PAYMENT'">
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            <input class="form-control" type="text" ng-model="payment.regKey" id="regKey" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="orderId" class="col-sm-3 control-label">orderId</label>
+
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            <input class="form-control" type="text" ng-model="payment.orderId" id="orderId" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="transactionId" class="col-sm-3 control-label">transactionId</label>
+
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            <input class="form-control" type="text" ng-model="payment.transactionId" id="transactionId" required>
+                        </div>
+                    </div>
+                    <div class="ln_solid"></div>
+                    <div class="form-group">
+                        <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
+                            <button type="submit" class="btn btn-success" ng-disabled="paymentForm.$invalid || isFetching">
+                                <span ng-show="isFetching">Updating...</span>
+                                <span ng-show=" ! isFetching">Submit</span>
+                            </button>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+
+        <!-- INSURED DETAILS -->
+        <div class="x_panel" ng-show="policyDetail">
+            <div class="x_title">
+                <h2>Insured information</h2>
+
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+                <!-- info row -->
+                <div class="row">
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">First Name</label>
+
+                            <div class="col-sm-8">
+                                <span class="form-control-static">{{ policyDetail.insureds[0].person.givenName }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+
+                            <label class="col-sm-4 control-label">Last Name</label>
+
+                            <div class="col-sm-8">
+                                <span class="form-control-static">{{ policyDetail.insureds[0].person.surName }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+
+                            <label class="col-sm-4 control-label">Date of birth</label>
+
+                            <div class="col-sm-8">
+                                <span class="form-control-static">{{ policyDetail.insureds[0].person.birthDate }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">Thai ID</label>
+
+                            <div class="col-sm-8">
+                                <span class="form-control-static">{{ policyDetail.insureds[0].person.registrations[0].id }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+
+                            <label class="col-sm-4 control-label">Email</label>
+
+                            <div class="col-sm-8">
+                                <span class="form-control-static">{{ policyDetail.insureds[0].person.email }}</span>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">Mobile phone</label>
+
+                            <div class="col-sm-8">
+                                <span class="form-control-static">{{ policyDetail.insureds[0].person.mobilePhoneNumber.number }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div ng-show="policyDetail && policyDetail.status != 'PENDING_PAYMENT'">
             <!-- DOCUMENTS -->
             <div class="x_panel" ng-show="policyDetail">
                 <div class="x_title">
@@ -357,7 +340,6 @@
                 </div>
             </div>
 
-
             <div class="row" ng-show="policyDetail && policyDetail.status != 'VALIDATED'">
                 <div class="col-sm-6 col-md-6 col-xs-12">
                     <!-- VALIDATION -->
@@ -406,8 +388,6 @@
                             </div>
                         </div>
                     </div>
-
-
                 </div>
                 <div class="col-sm-6 col-md-6 col-xs-12">
                     <!-- NOTIFICATION -->
@@ -474,11 +454,9 @@
 
                         </div>
                     </div>
-
                 </div>
             </div>
 
         </div>
-        <!-- END Page specific stuff -->
     </div>
 </div>
