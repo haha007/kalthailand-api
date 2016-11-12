@@ -25,7 +25,7 @@
     <div class="clearfix"></div>
     <div class="alert alert-danger" role="alert" ng-show="errorMessage">
         <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-        An error occured. {{ errorMessage }}
+        {{ errorMessage }}
     </div>
     <div class="alert alert-success" role="alert" ng-show="successMessage">
         <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
@@ -46,21 +46,26 @@
                         <li>
                             <a href="" class="{{stepStatus(1).styleClass}}" isdone="{{stepStatus(1).isdone}}" rel="1">
                                 <span class="step_no">1</span>
-                                <span class="step_descr">PENDING_PAYMENT<br><small>The policy has just created from quote<br/>there's no payment yet</small> </span>
+                                <span class="step_descr">PENDING_PAYMENT<br/><small>The policy has just created from quote.<br/>There's no payment yet.</small> </span>
                             </a>
                         </li>
                         <!--<li style="width: 33%">-->
                         <li>
                             <a href="" class="{{stepStatus(2).styleClass}}" isdone="{{stepStatus(2).isdone}}" rel="2">
                                 <span class="step_no">2</span>
-                                <span class="step_descr">PENDING_VALIDATION<br><small>Waiting for validation<br/>You need to input Agency information to validate</small> </span>
+                                <span class="step_descr">PENDING_VALIDATION<br/><small>The customer made the first payment.<br/>It includes the transactionId & orderId.</small></span>
                             </a>
                         </li>
                         <!--<li style="width: 33%">-->
                         <li>
                             <a href="" class="{{stepStatus(3).styleClass}}" isdone="{{stepStatus(3).isdone}}" rel="3">
                                 <span class="step_no">3</span>
-                                <span class="step_descr">VALIDATED<br> <small>Becareful before validation<br/>After policy is validate, you can deduct money more</small> </span>
+                                <span class="step_descr">VALIDATED<br/>
+                                    <small>The policy was validated.<br/>
+                                        <span ng-show="policyDetail.premiumsData.financialScheduler.atpMode == 1">Money is deducted automatically every periodicity.</span>
+                                        <span ng-show="policyDetail.premiumsData.financialScheduler.atpMode != 1">There's no DA From because ATP mode is disabled.</span>
+                                    </small>
+                                </span>
                             </a>
                         </li>
                     </ul>
@@ -71,7 +76,6 @@
         <div class="x_panel" ng-show="policyDetail && policyDetail.status == 'PENDING_PAYMENT'">
             <div class="x_title">
                 <h2>Payment Details
-                    <small>After submit, the status of policy will be PENDING_VALIDATION</small>
                 </h2>
 
                 <div class="clearfix"></div>

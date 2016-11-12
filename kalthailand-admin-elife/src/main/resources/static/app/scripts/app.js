@@ -19,8 +19,10 @@
     app.factory('errorHttpInterceptor', ['$q', '$rootScope', function ($q, $rootScope) {
             return {
                 responseError: function responseError(rejection) {
-                    //It does not throw you to the login page immediately because you may need to capture some progressing input data.
-                    $rootScope.globalMessage = "Your session is expired! Please login again.";
+                    if (rejection.status == 403) {
+                        //It does not throw you to the login page immediately because you may need to capture some progressing input data.
+                        $rootScope.globalMessage = "Your session is expired! Please login again.";
+                    }
                     return $q.reject(rejection);
                 }
             };
