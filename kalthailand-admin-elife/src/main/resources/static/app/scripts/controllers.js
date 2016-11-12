@@ -757,6 +757,10 @@
                 return productName;
             }
             function searchForPolicyDetail() {
+                if (!isNotBlank($scope.policyID)) {
+                    $scope.showErrorMessage("Policy number is required!");
+                    return;
+                }
                 PolicyDetail.get({id: $scope.policyID},
                     function (successResponse) {
                         $scope.scenarioID = 1;
