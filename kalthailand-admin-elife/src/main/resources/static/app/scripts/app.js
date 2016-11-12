@@ -15,6 +15,21 @@
 
     app.run(runFn);
 
+    //GLOBAL ERROR HANDLER ////////////////////////////////////////////////////////////////////////
+    app.factory('errorHttpInterceptor', ['$q', '$rootScope', function ($q, $rootScope) {
+            return {
+                responseError: function responseError(rejection) {
+                    //It does not throw you to the login page immediately because you may need to capture some progressing input data.
+                    $rootScope.globalMessage = "Your session is expired! Please login again.";
+                    return $q.reject(rejection);
+                }
+            };
+        }])
+        .config(['$httpProvider', function ($httpProvider) {
+            $httpProvider.interceptors.push('errorHttpInterceptor');
+        }]);
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
     function routeConfig($routeProvider) {
         $routeProvider
             .when('/', {
@@ -91,6 +106,7 @@
             }
         }
     }
+
 
     app.directive("limitTo", [function () {
         return {

@@ -27,6 +27,11 @@
     <!-- JQVMap -->
     <!--<link href="libs/bootstrap-gentellena/vendors/jqvmap/dist/jqvmap.min.css" rel="stylesheet"/>-->
 
+    <!-- PNotify -->
+    <link href="libs/bootstrap-gentellena/vendors/pnotify/dist/pnotify.css" rel="stylesheet"/>
+    <link href="libs/bootstrap-gentellena/vendors/pnotify/dist/pnotify.buttons.css" rel="stylesheet"/>
+    <link href="libs/bootstrap-gentellena/vendors/pnotify/dist/pnotify.nonblock.css" rel="stylesheet"/>
+
     <!-- Custom Theme Style -->
     <link href="libs/bootstrap-gentellena/build_finish/css/custom.min.css" rel="stylesheet"/>
 
@@ -52,7 +57,6 @@
                 <!--</div>-->
             </div>
         </div>
-        <!-- /page content -->
 
         <footer th:include="parts/footer"></footer>
     </div>
@@ -61,6 +65,17 @@
     var ACCESS_TOKEN = "[[${user.accessToken}]]";
 </script>
 <div th:include="parts/import-scripts"></div>
+<!-- /page content -->
+<div ng-show="globalMessage" class="ui-pnotify dark ui-pnotify-fade-normal ui-pnotify-in ui-pnotify-fade-in ui-pnotify-move" aria-live="assertive" aria-role="alertdialog" style="display: none; width: 300px; right: 36px; top: 36px; cursor: auto;">
+    <div ng-show="globalMessage" class="alert ui-pnotify-container alert-info ui-pnotify-shadow" role="alert" style="min-height: 16px;">
+        <div class="ui-pnotify-closer" aria-role="button" tabindex="0" title="Close" style="cursor: pointer; visibility: hidden; display: none;"><span class="glyphicon glyphicon-remove"></span></div>
+        <div class="ui-pnotify-sticker" aria-role="button" aria-pressed="true" tabindex="0" title="Unstick" style="cursor: pointer; visibility: hidden; display: none;"><span class="glyphicon glyphicon-play" aria-pressed="true"></span></div>
+        <div class="ui-pnotify-icon"><span class="glyphicon glyphicon-info-sign"></span></div>
+        <h4 class="ui-pnotify-title">Sorry my dear</h4>
+
+        <div class="ui-pnotify-text" aria-role="alert">{{globalMessage}}</div>
+    </div>
+</div>
 </body>
 </html>
 
