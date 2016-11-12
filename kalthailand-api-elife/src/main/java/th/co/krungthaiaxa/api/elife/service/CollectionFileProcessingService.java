@@ -438,7 +438,7 @@ public class CollectionFileProcessingService {
         } finally {
             DeductionFileLine deductionFileLine = initDeductionFileLine(collectionFileLine, paymentModeString, resultCode, resultMessage);
             deductionFile.addLine(deductionFileLine);
-            if (!resultCode.equals(RESPONSE_CODE_SUCCESS) && !resultCode.equals(RESPONSE_CODE_ERROR_INTERNAL_LINEPAY)) {
+            if (hasErrorButNotInternalErrorWhenCallLinePay(resultCode)) {
                 if (policy == null || policy.getPolicyId() == null) {
                     LOGGER.warn("Cannot find policyId " + policyId + ", so cannot get information of insured person. Therefore we cannot send inform email to insured customer.");
                 } else {
@@ -447,6 +447,11 @@ public class CollectionFileProcessingService {
             }
         }
         LOGGER.info("Process collectionFileLine [finished]: policyNumber: {}, paymentId: {}", collectionFileLine.getPolicyNumber(), collectionFileLine.getPaymentId());
+    }
+
+    //TODO need to update the list of internal error. E.g: 1106: our server cannot connect to LINE server: should not send email to client.
+    private boolean hasErrorButNotInternalErrorWhenCallLinePay(String resultCode) {
+        return !resultCode.equals(RESPONSE_CODE_SUCCESS) && !LineService.RESPONSE_CODES_ERROR_BY_INTERNAL_APP.contains(resultCode);
     }
 
     private void setResultOfFailPaymentNotificationToDeductionFileLine(DeductionFileLine deductionFileLine, Policy policy, Payment payment) {
