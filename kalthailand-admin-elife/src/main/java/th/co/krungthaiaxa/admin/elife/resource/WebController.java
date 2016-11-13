@@ -14,6 +14,7 @@ import th.co.krungthaiaxa.admin.elife.model.LoginFormData;
 import th.co.krungthaiaxa.admin.elife.service.AuthenticationClient;
 import th.co.krungthaiaxa.api.common.exeption.UnauthenticatedException;
 import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
+import th.co.krungthaiaxa.api.common.model.projectinfo.ProjectInfoProperties;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -26,11 +27,16 @@ public class WebController {
     public static final Logger LOGGER = LoggerFactory.getLogger(WebController.class);
     public static final String SESSION_ATTR_USER = "user";
     public static final String PAGE_MODEL_ATTR_USER = "user";
+    public static final String PAGE_MODEL_ATTR_PROJECT_INFO = "projectInfo";
 
     private final AuthenticationClient authenticateService;
+    private final ProjectInfoProperties projectInfoProperties;
 
     @Autowired
-    public WebController(AuthenticationClient authenticateService) {this.authenticateService = authenticateService;}
+    public WebController(AuthenticationClient authenticateService, ProjectInfoProperties projectInfoProperties) {
+        this.authenticateService = authenticateService;
+        this.projectInfoProperties = projectInfoProperties;
+    }
 
     @RequestMapping("/")
     public String index(Model model) {
@@ -41,6 +47,7 @@ public class WebController {
     public String login(Model model) {
         LoginFormData loginFormData = new LoginFormData();
         model.addAttribute("loginFormData", loginFormData);
+        model.addAttribute(PAGE_MODEL_ATTR_PROJECT_INFO, projectInfoProperties);
         return "login";
     }
 
@@ -63,6 +70,7 @@ public class WebController {
         try {
             AuthenticatedFeaturesUser authenticatedFeaturesUser = authenticateService.authenticatedUserWithAvailableFeatures(loginFormData);
             model.addAttribute(PAGE_MODEL_ATTR_USER, authenticatedFeaturesUser);
+            model.addAttribute(PAGE_MODEL_ATTR_PROJECT_INFO, projectInfoProperties);
             //TODO session is only the temporary solution because it cannot apply for clustering.
             httpServletRequest.getSession().setAttribute(SESSION_ATTR_USER, authenticatedFeaturesUser);
             return "index";
@@ -89,6 +97,7 @@ public class WebController {
         AuthenticatedFeaturesUser user = (AuthenticatedFeaturesUser) httpServletRequest.getSession().getAttribute(SESSION_ATTR_USER);
         if (user != null) {
             model.addAttribute(PAGE_MODEL_ATTR_USER, user);
+            model.addAttribute(PAGE_MODEL_ATTR_PROJECT_INFO, projectInfoProperties);
             return "index";
         } else {
             return "redirect:/login";

@@ -89,7 +89,6 @@
 
     function runFn($rootScope, $location, $templateCache, AuthService) {
         $rootScope.$on('$routeChangeStart', routeChangeStart);
-
         function routeChangeStart(event, next, current) {
 
             // Remove template caching to accept server side rules ->
