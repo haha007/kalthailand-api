@@ -14,16 +14,16 @@
                 <div class="panel-body">
 
                     <div class="row form-group">
-                        <div class="col-md-2 text-right">
+                        <div class="col-md-2 col-xs-12 text-right">
                             <label for="policyID" class="control-label">Policy number</label>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-md-2 col-xs-12">
                             <input type="text" class="form-control" id="policyID" ng-model="policyIdSearch" autofocus>
                         </div>
-                        <div class="col-md-1 text-right">
+                        <div class="col-md-1 col-xs-12 text-right">
                             <label for="productTypeSearchID" class="control-label">Product</label>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-3 col-xs-12">
                             <select id="productTypeSearchID" class="form-control"
                                     ng-model="productTypeSearch"
                                     ng-options="pdc.value as pdc.name for pdc in productCriteriaList">
@@ -31,10 +31,10 @@
                             </select>
                         </div>
 
-                        <div class="col-md-1 text-right">
+                        <div class="col-md-1 col-xs-12 text-right">
                             <label for="fromDateSearch" class="control-label">From</label>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-3 col-xs-12">
                             <p class="input-group">
                                 <input type="text" id="fromDateSearch" class="form-control" uib-datepicker-popup="dd-MM-yyyy" ng-model="fromDateSearch" is-open="fromDateSearch.opened" close-text="Close" datepicker-options="dateOptions"/>
                             <span class="input-group-btn">
@@ -44,20 +44,20 @@
                         </div>
                     </div>
                     <div class="row form-group">
-                        <div class="col-md-2 text-right">
+                        <div class="col-md-2 col-xs-12 text-right">
                             <label for="nonEmptyAgentCodeSearch" class="control-label">Agent code</label>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-md-2 col-xs-12">
                             <select class="form-control" id="nonEmptyAgentCodeSearch" ng-model="nonEmptyAgentCodeSearch">
                                 <option value=""></option>
                                 <option value="true">Not empty</option>
                                 <option value="false">Empty</option>
                             </select>
                         </div>
-                        <div class="col-md-1 text-right">
+                        <div class="col-md-1 col-xs-12 text-right">
                             <label for="statusSearch" class="control-label">Status</label>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-3 col-xs-12">
                             <select class="form-control" id="statusSearch" ng-model="statusSearch">
                                 <option value=""></option>
                                 <option value="PENDING_PAYMENT">Pending payment</option>
@@ -66,10 +66,10 @@
                                 <option value="CANCELED">Canceled</option>
                             </select>
                         </div>
-                        <div class="col-md-1 text-right">
+                        <div class="col-md-1 col-xs-12 text-right">
                             <label for="toDateSearch" class="control-label">To</label>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-3 col-xs-12">
                             <p class="input-group">
                                 <input type="text" id="toDateSearch" class="form-control" uib-datepicker-popup="dd-MM-yyyy" ng-model="toDateSearch" is-open="toDateSearch.opened" close-text="Close" datepicker-options="dateOptions"/>
                             <span class="input-group-btn">
