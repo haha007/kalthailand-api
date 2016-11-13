@@ -104,6 +104,20 @@ function getFields(obj, fieldExpressions) {
     }
     return values;
 };
+function getArrayByFields(arrayObjects, fieldExpression) {
+    var arrayFields = [];
+    for (var i = 0; i < arrayObjects.length; i++) {
+        var ielement = arrayObjects[i];
+        var ielementField;
+        if (hasValue(ielement)) {
+            ielementField = getField(ielement, fieldExpression);
+        } else {
+            ielementField = null;
+        }
+        arrayFields.push(ielementField);
+    }
+    return arrayFields;
+}
 function isString(obj) {
     return (typeof obj === 'string' || obj instanceof String);
 }

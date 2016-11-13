@@ -76,6 +76,7 @@
                 .then(
                     function (successResponse) {
                         $scope.sessionQuoteCounts = successResponse.data;
+                        showChart($scope.sessionQuoteCounts);
                         $scope.successMessage = "Success! Counted from date: '" + $scope.fromDateSearch.toDateString() + "', to date: '" + $scope.toDateSearch.toDateString() + "'";
                         $scope.errorMessage = null;
                     },
@@ -88,6 +89,40 @@
                 );
         }
 
+        function showChart(sessionQuoteCounts) {
+            // Radar chart
+            var ctx = document.getElementById("canvasRadar");
+            var charLabels = getArrayByFields(sessionQuoteCounts, "productId");
+            var sessionQuoteCountsValues = getArrayByFields(sessionQuoteCounts, "sessionQuoteCount");
+            var quoteCountsValues = getArrayByFields(sessionQuoteCounts, "quoteCount");
+            var data = {
+                labels: charLabels,
+                datasets: [{
+                    label: "Session Quotes",
+                    backgroundColor: "rgba(3, 88, 106, 0.2)",
+                    borderColor: "rgba(3, 88, 106, 0.80)",
+                    pointBorderColor: "rgba(3, 88, 106, 0.80)",
+                    pointBackgroundColor: "rgba(3, 88, 106, 0.80)",
+                    pointHoverBackgroundColor: "#fff",
+                    pointHoverBorderColor: "rgba(220,220,220,1)",
+                    data: sessionQuoteCountsValues
+                }, {
+                    label: "Quote",
+                    backgroundColor: "rgba(38, 185, 154, 0.2)",
+                    borderColor: "rgba(38, 185, 154, 0.85)",
+                    pointColor: "rgba(38, 185, 154, 0.85)",
+                    pointStrokeColor: "#fff",
+                    pointHighlightFill: "#fff",
+                    pointHighlightStroke: "rgba(151,187,205,1)",
+                    data: quoteCountsValues
+                }]
+            };
+
+            var canvasRadar = new Chart(ctx, {
+                type: 'radar',
+                data: data,
+            });
+        }
     });
 
     app.controller('DashboardController', function ($scope, $rootScope, $http, $route, Dashboard, PolicyQuotaConfig, ProductCriteria, $localStorage, $location) {

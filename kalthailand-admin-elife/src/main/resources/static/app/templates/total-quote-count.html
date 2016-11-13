@@ -52,32 +52,39 @@
                         Count Quotes
                     </button>
                     <button type="button" class="btn btn-default" ng-click="downloadExcelFile()">
-                        <i class="glyphicon glyphicon-download"></i>
-                        Download Export Excel
+                        <i class="fa fa-file-excel-o"></i>
+                        Export Excel
                     </button>
                 </div>
             </div>
         </form>
-        <div ng-show="sessionQuoteCounts !=null && sessionQuoteCounts.length > 0" class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">Counting result</h3>
+        <div class="row">
+            <div class="col-md-7 col-sm-12 col-xs-12">
+                <div ng-show="sessionQuoteCounts !=null && sessionQuoteCounts.length > 0" class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Counting result</h3>
+                    </div>
+                    <table class="table table-bordered table-hover table-condensed">
+                        <thead style="background-color: #f5f5f5">
+                        <tr>
+                            <th>Product</th>
+                            <th>Session Quotes</th>
+                            <th>Quotes</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="item in sessionQuoteCounts">
+                            <td>{{ item.productId }}</td>
+                            <td>{{ item.sessionQuoteCount | number }}</td>
+                            <td>{{ item.quoteCount | number }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <table class="table table-bordered table-hover table-condensed">
-                <thead style="background-color: #f5f5f5">
-                <tr>
-                    <th>Product</th>
-                    <th>Session Quotes</th>
-                    <th>Quotes</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr ng-repeat="item in sessionQuoteCounts">
-                    <td>{{ item.productId }}</td>
-                    <td>{{ item.sessionQuoteCount | number }}</td>
-                    <td>{{ item.quoteCount | number }}</td>
-                </tr>
-                </tbody>
-            </table>
+            <div class="col-md-5 col-sm-12 col-xs-12">
+                <canvas id="canvasRadar"></canvas>
+            </div>
         </div>
     </div>
     <!-- END Page specific stuff -->
