@@ -91,7 +91,7 @@
 
         function showChart(sessionQuoteCounts) {
             // Radar chart
-            var ctx = document.getElementById("canvasRadar");
+            var ctx = document.getElementById("total-quote-count-chart-radar");
             var charLabels = getArrayByFields(sessionQuoteCounts, "productId");
             var sessionQuoteCountsValues = getArrayByFields(sessionQuoteCounts, "sessionQuoteCount");
             var quoteCountsValues = getArrayByFields(sessionQuoteCounts, "quoteCount");
