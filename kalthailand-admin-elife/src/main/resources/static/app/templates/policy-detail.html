@@ -1,462 +1,464 @@
-<!-- BEGIN Page specific stuff -->
-<div class="col-md-12 col-sm-12 col-xs-12 main ng-cloak">
-    <div class="page-title">
-        <div class="">
-            <h3>Policy Detail</h3>
-        </div>
-        <div class="title_left">
-            <div class="col-md-6 col-sm-6 col-xs-12 form-group top_search">
-                <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Policy number..." ng-model="policyID" ng-keyup="$event.keyCode == 13 && search()" required autofocus/>
+<div class="row">
+    <!-- BEGIN Page specific stuff -->
+    <div class="col-md-12 col-sm-12 col-xs-12 main ng-cloak">
+        <div class="page-title">
+            <div class="">
+                <h3>Policy Detail</h3>
+            </div>
+            <div class="title_left">
+                <div class="col-md-6 col-sm-6 col-xs-12 form-group top_search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Policy number..." ng-model="policyID" ng-keyup="$event.keyCode == 13 && search()" required autofocus/>
                     <span class="input-group-btn">
                       <button class="btn btn-default" type="button" ng-click="search()"><i class="glyphicon glyphicon-search"></i></button>
                     </span>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="clearfix"></div>
-    <div class="alert alert-danger" role="alert" ng-show="errorMessage">
-        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-        {{ errorMessage }}
-    </div>
-    <div class="alert alert-success" role="alert" ng-show="successMessage">
-        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-        {{ successMessage }}
-    </div>
-    <div id="paymentDetailContainer">
-        <div class="x_panel" ng-show="policyDetail">
-            <div class="x_title">
-                <h2>Policy information</h2>
+        <div class="clearfix"></div>
+        <div class="alert alert-danger" role="alert" ng-show="errorMessage">
+            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+            {{ errorMessage }}
+        </div>
+        <div class="alert alert-success" role="alert" ng-show="successMessage">
+            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+            {{ successMessage }}
+        </div>
+        <div id="paymentDetailContainer">
+            <div class="x_panel" ng-show="policyDetail">
+                <div class="x_title">
+                    <h2>Policy information</h2>
 
-                <div class="clearfix"></div>
-            </div>
-            <div class="x_content">
-                <!-- STATUS -->
-                <div class="form_wizard wizard_horizontal">
-                    <ul class="wizard_steps anchor">
-                        <!--<li style="width: 33%">-->
-                        <li>
-                            <a href="" class="{{stepStatus(1).styleClass}}" isdone="{{stepStatus(1).isdone}}" rel="1">
-                                <span class="step_no">1</span>
-                                <span class="step_descr">PENDING_PAYMENT<br/><small>The policy has just created from quote.<br/>There's no payment yet.</small> </span>
-                            </a>
-                        </li>
-                        <!--<li style="width: 33%">-->
-                        <li>
-                            <a href="" class="{{stepStatus(2).styleClass}}" isdone="{{stepStatus(2).isdone}}" rel="2">
-                                <span class="step_no">2</span>
-                                <span class="step_descr">PENDING_VALIDATION<br/><small>The customer made the first payment.<br/>It includes the transactionId & orderId.</small></span>
-                            </a>
-                        </li>
-                        <!--<li style="width: 33%">-->
-                        <li>
-                            <a href="" class="{{stepStatus(3).styleClass}}" isdone="{{stepStatus(3).isdone}}" rel="3">
-                                <span class="step_no">3</span>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <!-- STATUS -->
+                    <div class="form_wizard wizard_horizontal">
+                        <ul class="wizard_steps anchor">
+                            <!--<li style="width: 33%">-->
+                            <li>
+                                <a href="" class="{{stepStatus(1).styleClass}}" isdone="{{stepStatus(1).isdone}}" rel="1">
+                                    <span class="step_no">1</span>
+                                    <span class="step_descr">PENDING_PAYMENT<br/><small>The policy has just created from quote.<br/>There's no payment yet.</small> </span>
+                                </a>
+                            </li>
+                            <!--<li style="width: 33%">-->
+                            <li>
+                                <a href="" class="{{stepStatus(2).styleClass}}" isdone="{{stepStatus(2).isdone}}" rel="2">
+                                    <span class="step_no">2</span>
+                                    <span class="step_descr">PENDING_VALIDATION<br/><small>The customer made the first payment.<br/>It includes the transactionId & orderId.</small></span>
+                                </a>
+                            </li>
+                            <!--<li style="width: 33%">-->
+                            <li>
+                                <a href="" class="{{stepStatus(3).styleClass}}" isdone="{{stepStatus(3).isdone}}" rel="3">
+                                    <span class="step_no">3</span>
                                 <span class="step_descr">VALIDATED<br/>
                                     <small>The policy was validated.<br/>
                                         <span ng-show="policyDetail.premiumsData.financialScheduler.atpMode == 1">Money is deducted automatically every periodicity.</span>
                                         <span ng-show="policyDetail.premiumsData.financialScheduler.atpMode != 1">There's no DA From because ATP mode is disabled.</span>
                                     </small>
                                 </span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-
-                <div class="ln_solid"></div>
-                <!-- POLICY DETAILS -->
-                <div class="row">
-                    <div class="col-sm-4">
-                        <div class="form-group">
-                            <label class="col-sm-4 control-label">Policy ID</label>
-
-                            <div class="col-sm-8">
-                                <span class="form-control-static">{{ policyDetail.policyId }}</span>
-                            </div>
-                        </div>
+                                </a>
+                            </li>
+                        </ul>
                     </div>
-                    <div class="col-sm-4">
-                        <div class="form-group">
-                            <label class="col-sm-6 control-label">Sum insured</label>
 
-                            <div class="col-sm-6">
-                                <span class="form-control-static">{{ sumInsured.value | number: 2 }} {{sumInsured.currencyCode}} </span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-4">
-                        <div class="form-group">
-                            <label class="col-sm-6 control-label">Premium periodicity</label>
-
-                            <div class="col-sm-6">
-                                <span class="form-control-static">{{ policyDetail.premiumsData.financialScheduler.periodicity.code }}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-4">
-                        <div class="form-group">
-                            <label class="col-sm-4 control-label">Product name</label>
-
-                            <div class="col-sm-8">
-                                <span class="form-control-static">{{ getProductDisplayName(policyDetail) }}</span>
-                            </div>
-
-
-                        </div>
-                    </div>
-                    <div class="col-sm-4">
-                        <div class="form-group">
-                            <label class="col-sm-6 control-label">Premium amount</label>
-
-                            <div class="col-sm-6">
-                                <span class="form-control-static">{{ policyDetail.premiumsData.financialScheduler.modalAmount.value | number: 2 }} {{ policyDetail.premiumsData.financialScheduler.modalAmount.currencyCode }}</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-4">
-                        <div class="form-group">
-
-                            <label class="col-sm-6 control-label">Premium end date</label>
-
-                            <div class="col-sm-6">
-                                <span class="form-control-static">{{ policyDetail.premiumsData.financialScheduler.endDate }}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-4">
-                        <div class="form-group">
-                            <label class="col-sm-4 control-label">Status</label>
-
-                            <div class="col-sm-8">
-                                <span class="form-control-static">{{ policyDetail.status }}</span>
-                            </div>
-
-
-                        </div>
-                    </div>
-                    <div class="col-sm-4">
-                        <div class="form-group">
-                            <label class="col-sm-6 control-label">Annual premium</label>
-
-                            <div class="col-sm-6">
-                                <span class="form-control-static">{{ annualPremium.value | number:2 }} {{annualPremium.currencyCode}}</span>
-                            </div>
-
-                        </div>
-                    </div>
-                    <div class="col-sm-4">
-                        <div class="form-group">
-                            <label class="col-sm-6 control-label">ATP</label>
-
-                            <div class="col-sm-6">
-                                <span class="form-control-static">{{ policyDetail.premiumsData.financialScheduler.atpMode == 1 ? 'Yes' : 'No' }}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- PAYMENT DETAILS -->
-        <div class="x_panel" ng-show="policyDetail && policyDetail.status == 'PENDING_PAYMENT'">
-            <div class="x_title">
-                <h2>Payment information
-                </h2>
-
-                <div class="clearfix"></div>
-            </div>
-            <div class="x_content">
-                <!-- info row -->
-                <form id="demo-form2" data-parsley-validate="" class="form-horizontal form-label-left" novalidate="" ng-submit="onSubmitPaymentDetails()">
-                    <div class="form-group" ng-show="isEnabledAutoPay(policyDetail)">
-                        <label for="regKey" class="col-sm-3 control-label">regKey</label>
-
-                        <div class="col-md-6 col-sm-6 col-xs-12">
-                            <input class="form-control" type="text" ng-model="payment.regKey" id="regKey" required>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="orderId" class="col-sm-3 control-label">orderId</label>
-
-                        <div class="col-md-6 col-sm-6 col-xs-12">
-                            <input class="form-control" type="text" ng-model="payment.orderId" id="orderId" required>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="transactionId" class="col-sm-3 control-label">transactionId</label>
-
-                        <div class="col-md-6 col-sm-6 col-xs-12">
-                            <input class="form-control" type="text" ng-model="payment.transactionId" id="transactionId" required>
-                        </div>
-                    </div>
                     <div class="ln_solid"></div>
-                    <div class="form-group">
-                        <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
-                            <button type="submit" class="btn btn-success" ng-disabled="paymentForm.$invalid || isFetching">
-                                <span ng-show="isFetching">Updating...</span>
-                                <span ng-show=" ! isFetching">Submit</span>
-                            </button>
+                    <!-- POLICY DETAILS -->
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">Policy ID</label>
+
+                                <div class="col-sm-8">
+                                    <span class="form-control-static">{{ policyDetail.policyId }}</span>
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label class="col-sm-6 control-label">Sum insured</label>
 
-                </form>
-            </div>
-        </div>
+                                <div class="col-sm-6">
+                                    <span class="form-control-static">{{ sumInsured.value | number: 2 }} {{sumInsured.currencyCode}} </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label class="col-sm-6 control-label">Premium periodicity</label>
 
-        <!-- INSURED DETAILS -->
-        <div class="x_panel" ng-show="policyDetail">
-            <div class="x_title">
-                <h2>Insured information</h2>
-
-                <div class="clearfix"></div>
-            </div>
-            <div class="x_content">
-                <!-- info row -->
-                <div class="row">
-                    <div class="col-sm-4">
-                        <div class="form-group">
-                            <label class="col-sm-4 control-label">First Name</label>
-
-                            <div class="col-sm-8">
-                                <span class="form-control-static">{{ policyDetail.insureds[0].person.givenName }}</span>
+                                <div class="col-sm-6">
+                                    <span class="form-control-static">{{ policyDetail.premiumsData.financialScheduler.periodicity.code }}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-4">
-                        <div class="form-group">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">Product name</label>
 
-                            <label class="col-sm-4 control-label">Last Name</label>
+                                <div class="col-sm-8">
+                                    <span class="form-control-static">{{ getProductDisplayName(policyDetail) }}</span>
+                                </div>
 
-                            <div class="col-sm-8">
-                                <span class="form-control-static">{{ policyDetail.insureds[0].person.surName }}</span>
+
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label class="col-sm-6 control-label">Premium amount</label>
+
+                                <div class="col-sm-6">
+                                    <span class="form-control-static">{{ policyDetail.premiumsData.financialScheduler.modalAmount.value | number: 2 }} {{ policyDetail.premiumsData.financialScheduler.modalAmount.currencyCode }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+
+                                <label class="col-sm-6 control-label">Premium end date</label>
+
+                                <div class="col-sm-6">
+                                    <span class="form-control-static">{{ policyDetail.premiumsData.financialScheduler.endDate }}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-4">
-                        <div class="form-group">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">Status</label>
 
-                            <label class="col-sm-4 control-label">Date of birth</label>
+                                <div class="col-sm-8">
+                                    <span class="form-control-static">{{ policyDetail.status }}</span>
+                                </div>
 
-                            <div class="col-sm-8">
-                                <span class="form-control-static">{{ policyDetail.insureds[0].person.birthDate }}</span>
+
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label class="col-sm-6 control-label">Annual premium</label>
+
+                                <div class="col-sm-6">
+                                    <span class="form-control-static">{{ annualPremium.value | number:2 }} {{annualPremium.currencyCode}}</span>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label class="col-sm-6 control-label">ATP</label>
+
+                                <div class="col-sm-6">
+                                    <span class="form-control-static">{{ policyDetail.premiumsData.financialScheduler.atpMode == 1 ? 'Yes' : 'No' }}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-sm-4">
-                        <div class="form-group">
-                            <label class="col-sm-4 control-label">Thai ID</label>
-
-                            <div class="col-sm-8">
-                                <span class="form-control-static">{{ policyDetail.insureds[0].person.registrations[0].id }}</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-4">
-                        <div class="form-group">
-
-                            <label class="col-sm-4 control-label">Email</label>
-
-                            <div class="col-sm-8">
-                                <span class="form-control-static">{{ policyDetail.insureds[0].person.email }}</span>
-                            </div>
-
-                        </div>
-                    </div>
-                    <div class="col-sm-4">
-                        <div class="form-group">
-                            <label class="col-sm-4 control-label">Mobile phone</label>
-
-                            <div class="col-sm-8">
-                                <span class="form-control-static">{{ policyDetail.insureds[0].person.mobilePhoneNumber.number }}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
-
-        </div>
-
-        <div ng-show="policyDetail && policyDetail.status != 'PENDING_PAYMENT'">
-            <!-- DOCUMENTS -->
-            <div class="x_panel" ng-show="policyDetail">
+            <!-- PAYMENT DETAILS -->
+            <div class="x_panel" ng-show="policyDetail && policyDetail.status == 'PENDING_PAYMENT'">
                 <div class="x_title">
-                    <h2>Documents</h2>
+                    <h2>Payment information
+                    </h2>
 
                     <div class="clearfix"></div>
                 </div>
                 <div class="x_content">
                     <!-- info row -->
-                    <div class="row fontawesome-icon-list" ng-show="policyDetail">
-                        <div class="fa-hover col-md-3 col-sm-4 col-xs-12">
-                            <a ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/APPLICATION_FORM/download">
-                                <i class="fa fa-file-pdf-o"></i>Application Form (not validated)
-                            </a>
-                        </div>
-                        <div class="fa-hover col-md-3 col-sm-4 col-xs-12" ng-show="policyDetail.status == 'VALIDATED'">
-                            <a ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/APPLICATION_FORM_VALIDATED/download">
-                                <i class="fa fa-file-pdf-o"></i>Application Form (validated)
-                            </a>
-                        </div>
-                        <div class="fa-hover col-md-3 col-sm-4 col-xs-12" ng-show="isEnabledAutoPay(policyDetail)">
-                            <a ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/DA_FORM/download">
-                                <i class="fa fa-file-pdf-o"></i>DA Form
-                            </a>
-                        </div>
-                        <div class="fa-hover col-md-3 col-sm-4 col-xs-12" ng-show="policyDetail.status == 'VALIDATED'">
-                            <a ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/ERECEIPT_PDF/download">
-                                <i class="fa fa-file-pdf-o"></i>eReceipt
-                            </a>
-                        </div>
-                    </div>
+                    <form id="demo-form2" data-parsley-validate="" class="form-horizontal form-label-left" novalidate="" ng-submit="onSubmitPaymentDetails()">
+                        <div class="form-group">
+                            <label for="regKey" class="col-sm-3 control-label">regKey</label>
 
-                    <!--
-
-                            <div class="row">
-                                <div class="x_panel" ng-show="policyDetail">
-                                    <div class="x_content">
-                                        <a class="btn btn-app" ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/APPLICATION_FORM/download">
-                                            <i class="fa fa-paperclip"></i>Application Form (not validated)
-                                        </a>
-                                        <a class="btn btn-app" ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/APPLICATION_FORM_VALIDATED/download" ng-show="policyDetail.status == 'VALIDATED'">
-                                            <i class="fa fa-paperclip"></i>Application Form (validated)
-                                        </a>
-                                        <a class="btn btn-app" ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/DA_FORM/download" ng-show="isEnabledAutoPay(policyDetail)">
-                                            <i class="fa fa-paperclip"></i>DA Form
-                                        </a>
-                                        <a class="btn btn-app" ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/ERECEIPT_PDF/download" ng-show="policyDetail.status == 'VALIDATED'">
-                                            <i class="fa fa-paperclip"></i>eReceipt
-                                        </a>
-                                    </div>
-
-                                </div>
+                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                <input ng-disabled="!isEnabledAutoPay(policyDetail)" class="form-control" type="text" ng-model="payment.regKey" id="regKey" required>
                             </div>
-                    -->
+                        </div>
+                        <div class="form-group">
+                            <label for="orderId" class="col-sm-3 control-label">orderId</label>
+
+                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                <input class="form-control" type="text" ng-model="payment.orderId" id="orderId" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="transactionId" class="col-sm-3 control-label">transactionId</label>
+
+                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                <input class="form-control" type="text" ng-model="payment.transactionId" id="transactionId" required>
+                            </div>
+                        </div>
+                        <div class="ln_solid"></div>
+                        <div class="form-group">
+                            <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
+                                <button type="submit" class="btn btn-success" ng-disabled="paymentForm.$invalid || isFetching">
+                                    <span ng-show="isFetching">Updating...</span>
+                                    <span ng-show=" ! isFetching">Submit</span>
+                                </button>
+                            </div>
+                        </div>
+
+                    </form>
                 </div>
             </div>
 
-            <div class="row" ng-show="policyDetail && policyDetail.status != 'VALIDATED'">
-                <div class="col-sm-6 col-md-6 col-xs-12">
-                    <!-- VALIDATION -->
-                    <div class="x_panel">
-                        <div class="x_title">
-                            <h2>Validation</h2>
+            <!-- INSURED DETAILS -->
+            <div class="x_panel" ng-show="policyDetail">
+                <div class="x_title">
+                    <h2>Insured information</h2>
 
-                            <div class="clearfix"></div>
-                        </div>
-                        <div class="x_content">
-                            <!-- info row -->
-                            <div class="row">
-                                <form class="form-horizontal">
-                                    <div class="form-group">
-                                        <label for="agentName" class="col-md-3 control-label">Agent Name</label>
-
-                                        <div class="col-md-6">
-                                            <input type="text" class="form-control" id="agentName" ng-model="agentName" required>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="agentCode" class="col-md-3 control-label">Agent code</label>
-
-                                        <div class="col-md-6">
-                                            <input type="text" class="form-control" id="agentCode" ng-model="agentCode" mask='999999-99-999999' placeholder="______-__-______" required>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="linePayCaptureMode" class="col-md-3 control-label">Line Pay call</label>
-
-                                        <div class="col-md-6">
-                                            <select class="form-control" id="linePayCaptureMode" ng-model="linePayCaptureMode">
-                                                <option value="FAKE_WITH_SUCCESS">Fake (with a success response)</option>
-                                                <option value="FAKE_WITH_ERROR">Fake (with an error response)</option>
-                                                <option value="REAL">Real (insured person will be charged)</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="ln_solid"></div>
-                                    <div class="form-group">
-                                        <div class="col-md-3 col-md-offset-3">
-                                            <button ng-click="onClickValidate(policyDetail.policyId)" type="button" ng-disabled="isValidating" class="btn btn-default btn-danger">Validate</button>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
+                    <div class="clearfix"></div>
                 </div>
-                <div class="col-sm-6 col-md-6 col-xs-12">
-                    <!-- NOTIFICATION -->
-                    <div class="x_panel">
-                        <div class="x_title">
-                            <h2>Notification</h2>
+                <div class="x_content">
+                    <!-- info row -->
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">First Name</label>
 
-                            <div class="clearfix"></div>
-                        </div>
-                        <div class="x_content">
-                            <div class="row">
-                                <div class="col-sm-12 col-md-12 col-xs-12">
-                                    <div class="dashboard-widget-content">
-
-                                        <ul class="list-unstyled timeline widget">
-                                            <li>
-                                                <div class="block">
-                                                    <div class="block_content">
-                                                        <h2 class="title">
-                                                            <a>No answer</a>
-                                                        </h2>
-
-                                                        <div class="row">
-                                                            <div class="col-sm-5">
-                                                                <div class="byline">
-                                                                    <span>notification</span> to <a>insured person</a>
-                                                                </div>
-                                                                <p class="excerpt">Send SMS + Email + Line</a>
-                                                                </p>
-                                                            </div>
-                                                            <div class="col-sm-7">
-                                                                <button type="button" ng-click="onClickNotification(1)" ng-disabled="isValidating" class="btn btn-success"><i class="fa fa-bullhorn"></i> Notify</button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="block">
-                                                    <div class="block_content">
-                                                        <h2 class="title">
-                                                            <a>Wrong phone number</a>
-                                                        </h2>
-
-                                                        <div class="row">
-                                                            <div class="col-sm-5">
-                                                                <div class="byline">
-                                                                    <span>notification</span> to <a>insured person</a>
-                                                                </div>
-                                                                <p class="excerpt">Send Email + Line</a>
-                                                                </p>
-                                                            </div>
-                                                            <div class="col-sm-7">
-                                                                <button type="button" ng-click="onClickNotification(2)" ng-disabled="isValidating" class="btn btn-success"><i class="fa fa-bullhorn"></i> Notify</button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </div>
+                                <div class="col-sm-8">
+                                    <span class="form-control-static">{{ policyDetail.insureds[0].person.givenName }}</span>
                                 </div>
                             </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
 
+                                <label class="col-sm-4 control-label">Last Name</label>
+
+                                <div class="col-sm-8">
+                                    <span class="form-control-static">{{ policyDetail.insureds[0].person.surName }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+
+                                <label class="col-sm-4 control-label">Date of birth</label>
+
+                                <div class="col-sm-8">
+                                    <span class="form-control-static">{{ policyDetail.insureds[0].person.birthDate }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">Thai ID</label>
+
+                                <div class="col-sm-8">
+                                    <span class="form-control-static">{{ policyDetail.insureds[0].person.registrations[0].id }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+
+                                <label class="col-sm-4 control-label">Email</label>
+
+                                <div class="col-sm-8">
+                                    <span class="form-control-static">{{ policyDetail.insureds[0].person.email }}</span>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">Mobile phone</label>
+
+                                <div class="col-sm-8">
+                                    <span class="form-control-static">{{ policyDetail.insureds[0].person.mobilePhoneNumber.number }}</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
+
             </div>
 
+            <div ng-show="policyDetail && policyDetail.status != 'PENDING_PAYMENT'">
+                <!-- DOCUMENTS -->
+                <div class="x_panel" ng-show="policyDetail">
+                    <div class="x_title">
+                        <h2>Documents</h2>
+
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
+                        <!-- info row -->
+                        <div class="row fontawesome-icon-list" ng-show="policyDetail">
+                            <div class="fa-hover col-md-3 col-sm-4 col-xs-12">
+                                <a ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/APPLICATION_FORM/download">
+                                    <i class="fa fa-file-pdf-o"></i>Application Form (not validated)
+                                </a>
+                            </div>
+                            <div class="fa-hover col-md-3 col-sm-4 col-xs-12" ng-show="policyDetail.status == 'VALIDATED'">
+                                <a ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/APPLICATION_FORM_VALIDATED/download">
+                                    <i class="fa fa-file-pdf-o"></i>Application Form (validated)
+                                </a>
+                            </div>
+                            <div class="fa-hover col-md-3 col-sm-4 col-xs-12" ng-show="isEnabledAutoPay(policyDetail)">
+                                <a ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/DA_FORM/download">
+                                    <i class="fa fa-file-pdf-o"></i>DA Form
+                                </a>
+                            </div>
+                            <div class="fa-hover col-md-3 col-sm-4 col-xs-12" ng-show="policyDetail.status == 'VALIDATED'">
+                                <a ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/ERECEIPT_PDF/download">
+                                    <i class="fa fa-file-pdf-o"></i>eReceipt
+                                </a>
+                            </div>
+                        </div>
+
+                        <!--
+
+                                <div class="row">
+                                    <div class="x_panel" ng-show="policyDetail">
+                                        <div class="x_content">
+                                            <a class="btn btn-app" ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/APPLICATION_FORM/download">
+                                                <i class="fa fa-paperclip"></i>Application Form (not validated)
+                                            </a>
+                                            <a class="btn btn-app" ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/APPLICATION_FORM_VALIDATED/download" ng-show="policyDetail.status == 'VALIDATED'">
+                                                <i class="fa fa-paperclip"></i>Application Form (validated)
+                                            </a>
+                                            <a class="btn btn-app" ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/DA_FORM/download" ng-show="isEnabledAutoPay(policyDetail)">
+                                                <i class="fa fa-paperclip"></i>DA Form
+                                            </a>
+                                            <a class="btn btn-app" ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/ERECEIPT_PDF/download" ng-show="policyDetail.status == 'VALIDATED'">
+                                                <i class="fa fa-paperclip"></i>eReceipt
+                                            </a>
+                                        </div>
+
+                                    </div>
+                                </div>
+                        -->
+                    </div>
+                </div>
+
+                <div class="row" ng-show="policyDetail && policyDetail.status != 'VALIDATED'">
+                    <div class="col-sm-6 col-md-6 col-xs-12">
+                        <!-- VALIDATION -->
+                        <div class="x_panel">
+                            <div class="x_title">
+                                <h2>Validation</h2>
+
+                                <div class="clearfix"></div>
+                            </div>
+                            <div class="x_content">
+                                <!-- info row -->
+                                <div class="row">
+                                    <form class="form-horizontal">
+                                        <div class="form-group">
+                                            <label for="agentName" class="col-md-3 control-label">Agent Name</label>
+
+                                            <div class="col-md-6">
+                                                <input type="text" class="form-control" id="agentName" ng-model="agentName" required>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="agentCode" class="col-md-3 control-label">Agent code</label>
+
+                                            <div class="col-md-6">
+                                                <input type="text" class="form-control" id="agentCode" ng-model="agentCode" mask='999999-99-999999' placeholder="______-__-______" required>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="linePayCaptureMode" class="col-md-3 control-label">Line Pay call</label>
+
+                                            <div class="col-md-6">
+                                                <select class="form-control" id="linePayCaptureMode" ng-model="linePayCaptureMode">
+                                                    <option value="FAKE_WITH_SUCCESS">Fake (with a success response)</option>
+                                                    <option value="FAKE_WITH_ERROR">Fake (with an error response)</option>
+                                                    <option value="REAL">Real (insured person will be charged)</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="ln_solid"></div>
+                                        <div class="form-group">
+                                            <div class="col-md-3 col-md-offset-3">
+                                                <button ng-click="onClickValidate(policyDetail.policyId)" type="button" ng-disabled="isValidating" class="btn btn-default btn-danger">Validate</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-6 col-xs-12">
+                        <!-- NOTIFICATION -->
+                        <div class="x_panel">
+                            <div class="x_title">
+                                <h2>Notification</h2>
+
+                                <div class="clearfix"></div>
+                            </div>
+                            <div class="x_content">
+                                <div class="row">
+                                    <div class="col-sm-12 col-md-12 col-xs-12">
+                                        <div class="dashboard-widget-content">
+
+                                            <ul class="list-unstyled timeline widget">
+                                                <li>
+                                                    <div class="block">
+                                                        <div class="block_content">
+                                                            <h2 class="title">
+                                                                <a>No answer</a>
+                                                            </h2>
+
+                                                            <div class="row">
+                                                                <div class="col-sm-5">
+                                                                    <div class="byline">
+                                                                        <span>notification</span> to <a>insured person</a>
+                                                                    </div>
+                                                                    <p class="excerpt">Send SMS + Email + Line</a>
+                                                                    </p>
+                                                                </div>
+                                                                <div class="col-sm-7">
+                                                                    <button type="button" ng-click="onClickNotification(1)" ng-disabled="isValidating" class="btn btn-success"><i class="fa fa-bullhorn"></i> Notify</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                                <li>
+                                                    <div class="block">
+                                                        <div class="block_content">
+                                                            <h2 class="title">
+                                                                <a>Wrong phone number</a>
+                                                            </h2>
+
+                                                            <div class="row">
+                                                                <div class="col-sm-5">
+                                                                    <div class="byline">
+                                                                        <span>notification</span> to <a>insured person</a>
+                                                                    </div>
+                                                                    <p class="excerpt">Send Email + Line</a>
+                                                                    </p>
+                                                                </div>
+                                                                <div class="col-sm-7">
+                                                                    <button type="button" ng-click="onClickNotification(2)" ng-disabled="isValidating" class="btn btn-success"><i class="fa fa-bullhorn"></i> Notify</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
         </div>
     </div>
 </div>

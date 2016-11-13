@@ -8,44 +8,46 @@
         font-size: 12px;
     }
 </style>
+<div class="row">
 
-<!-- BEGIN Page specific stuff -->
-<div ng-cloak class="col-md-12 col-sm-12 col-xs-12 main ng-cloak" id="commissionResultContainer">
-    <div class="page-header">
-        <h1>Commission Result</h1>
-    </div>
-
-    <div class="row">
-        <div class="col-md-3">
-            <button type="submit" class="btn btn-default" style="margin: 0 10px 10px 0" ng-disabled="calculateButton" ng-click="callGenerateCommission()">Generate Month Commission</button>
+    <!-- BEGIN Page specific stuff -->
+    <div ng-cloak class="col-md-12 col-sm-12 col-xs-12 main ng-cloak" id="commissionResultContainer">
+        <div class="page-header">
+            <h1>Commission Result</h1>
         </div>
-        <div class="col-md-9" ng-show="calculateButton">
-            <div class="generateNotice">
-                <label class="redNotice">{{ redNotice }}</label>
+
+        <div class="row">
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-default" style="margin: 0 10px 10px 0" ng-disabled="calculateButton" ng-click="callGenerateCommission()">Generate Month Commission</button>
+            </div>
+            <div class="col-md-9" ng-show="calculateButton">
+                <div class="generateNotice">
+                    <label class="redNotice">{{ redNotice }}</label>
+                </div>
             </div>
         </div>
+
+        <table class="table table-bordered table-striped table-hover table-condensed">
+            <tr>
+                <td>Generate Date</td>
+                <td>Finish Date</td>
+                <td>Commission Of Month</td>
+                <td>Number Of Policies</td>
+                <td>Download</td>
+            </tr>
+            <tr ng-repeat="commissionResult in commissionResultAll.commissionList | orderBy:'-createdDateTime'">
+                <td>{{ commissionResult.createdDateTime }}</td>
+                <td>{{ commissionResult.updatedDateTime ? commissionResult.updatedDateTime : 'Waiting...' }}</td>
+                <td>{{ commissionResult.commissionMonth ? commissionResult.commissionMonth : 'Waiting...' }}</td>
+                <td>{{ commissionResult.commissionPoliciesCount ? commissionResult.commissionPoliciesCount : 'Waiting...' }}</td>
+                <td>
+                    <div ng-show="commissionResult.updatedDateTime">
+                        <a target="_blank" href="/api-elife/commissions/calculation/download/{{commissionResult.rowId}}">Download</a>
+                    </div>
+                </td>
+            </tr>
+        </table>
+
     </div>
-
-    <table class="table table-bordered table-striped table-hover table-condensed">
-        <tr>
-            <td>Generate Date</td>
-            <td>Finish Date</td>
-            <td>Commission Of Month</td>
-            <td>Number Of Policies</td>
-            <td>Download</td>
-        </tr>
-        <tr ng-repeat="commissionResult in commissionResultAll.commissionList | orderBy:'-createdDateTime'">
-            <td>{{ commissionResult.createdDateTime }}</td>
-            <td>{{ commissionResult.updatedDateTime ? commissionResult.updatedDateTime : 'Waiting...' }}</td>
-            <td>{{ commissionResult.commissionMonth ? commissionResult.commissionMonth : 'Waiting...' }}</td>
-            <td>{{ commissionResult.commissionPoliciesCount ? commissionResult.commissionPoliciesCount : 'Waiting...' }}</td>
-            <td>
-                <div ng-show="commissionResult.updatedDateTime">
-                    <a target="_blank" href="/api-elife/commissions/calculation/download/{{commissionResult.rowId}}">Download</a>
-                </div>
-            </td>
-        </tr>
-    </table>
-
+    <!-- END Page specific stuff -->
 </div>
-<!-- END Page specific stuff -->

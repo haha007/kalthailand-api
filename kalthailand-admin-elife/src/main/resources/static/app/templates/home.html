@@ -1,148 +1,151 @@
-<!-- BEGIN Page specific stuff -->
-<div ng-cloak class="col-md-12 col-sm-12 col-xs-12 main ng-cloak" id="dashboardContainer">
-    <!--<h1 class="page-header">Dashboard</h1>-->
-    <div class="page-title">
-        <h3>Policies</h3>
-    </div>
+<div class="row">
 
-    <form class="form-horizontal" ng-submit="search($event)">
+    <!-- BEGIN Page specific stuff -->
+    <div ng-cloak class="col-md-12 col-sm-12 col-xs-12 main ng-cloak" id="dashboardContainer">
+        <!--<h1 class="page-header">Dashboard</h1>-->
+        <div class="page-title">
+            <h3>Policies</h3>
+        </div>
 
-        <div class="panel panel-default">
-            <div class="panel-heading"><h3 class="panel-title">Filter</h3></div>
-            <div class="panel-body">
+        <form class="form-horizontal" ng-submit="search($event)">
 
-                <div class="row form-group">
-                    <div class="col-md-2 text-right">
-                        <label for="policyID" class="control-label">Policy number</label>
-                    </div>
-                    <div class="col-md-2">
-                        <input type="text" class="form-control" id="policyID" ng-model="policyIdSearch" autofocus>
-                    </div>
-                    <div class="col-md-1 text-right">
-                        <label for="productTypeSearchID" class="control-label">Product</label>
-                    </div>
-                    <div class="col-md-3">
-                        <select id="productTypeSearchID" class="form-control"
-                                ng-model="productTypeSearch"
-                                ng-options="pdc.value as pdc.name for pdc in productCriteriaList">
-                            <option value=""></option>
-                        </select>
-                    </div>
+            <div class="panel panel-default">
+                <div class="panel-heading"><h3 class="panel-title">Filter</h3></div>
+                <div class="panel-body">
 
-                    <div class="col-md-1 text-right">
-                        <label for="fromDateSearch" class="control-label">From</label>
-                    </div>
-                    <div class="col-md-3">
-                        <p class="input-group">
-                            <input type="text" id="fromDateSearch" class="form-control" uib-datepicker-popup="dd-MM-yyyy" ng-model="fromDateSearch" is-open="fromDateSearch.opened" close-text="Close" datepicker-options="dateOptions"/>
+                    <div class="row form-group">
+                        <div class="col-md-2 text-right">
+                            <label for="policyID" class="control-label">Policy number</label>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="text" class="form-control" id="policyID" ng-model="policyIdSearch" autofocus>
+                        </div>
+                        <div class="col-md-1 text-right">
+                            <label for="productTypeSearchID" class="control-label">Product</label>
+                        </div>
+                        <div class="col-md-3">
+                            <select id="productTypeSearchID" class="form-control"
+                                    ng-model="productTypeSearch"
+                                    ng-options="pdc.value as pdc.name for pdc in productCriteriaList">
+                                <option value=""></option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-1 text-right">
+                            <label for="fromDateSearch" class="control-label">From</label>
+                        </div>
+                        <div class="col-md-3">
+                            <p class="input-group">
+                                <input type="text" id="fromDateSearch" class="form-control" uib-datepicker-popup="dd-MM-yyyy" ng-model="fromDateSearch" is-open="fromDateSearch.opened" close-text="Close" datepicker-options="dateOptions"/>
                             <span class="input-group-btn">
                                 <button type="button" class="btn btn-default" ng-click="fromDateSearchOpen()"><i class="glyphicon glyphicon-calendar"></i></button>
                             </span>
-                        </p>
+                            </p>
+                        </div>
                     </div>
-                </div>
-                <div class="row form-group">
-                    <div class="col-md-2 text-right">
-                        <label for="nonEmptyAgentCodeSearch" class="control-label">Agent code</label>
-                    </div>
-                    <div class="col-md-2">
-                        <select class="form-control" id="nonEmptyAgentCodeSearch" ng-model="nonEmptyAgentCodeSearch">
-                            <option value=""></option>
-                            <option value="true">Not empty</option>
-                            <option value="false">Empty</option>
-                        </select>
-                    </div>
-                    <div class="col-md-1 text-right">
-                        <label for="statusSearch" class="control-label">Status</label>
-                    </div>
-                    <div class="col-md-3">
-                        <select class="form-control" id="statusSearch" ng-model="statusSearch">
-                            <option value=""></option>
-                            <option value="PENDING_PAYMENT">Pending payment</option>
-                            <option value="PENDING_VALIDATION">Pending validation</option>
-                            <option value="VALIDATED">Validated</option>
-                            <option value="CANCELED">Canceled</option>
-                        </select>
-                    </div>
-                    <div class="col-md-1 text-right">
-                        <label for="toDateSearch" class="control-label">To</label>
-                    </div>
-                    <div class="col-md-3">
-                        <p class="input-group">
-                            <input type="text" id="toDateSearch" class="form-control" uib-datepicker-popup="dd-MM-yyyy" ng-model="toDateSearch" is-open="toDateSearch.opened" close-text="Close" datepicker-options="dateOptions"/>
+                    <div class="row form-group">
+                        <div class="col-md-2 text-right">
+                            <label for="nonEmptyAgentCodeSearch" class="control-label">Agent code</label>
+                        </div>
+                        <div class="col-md-2">
+                            <select class="form-control" id="nonEmptyAgentCodeSearch" ng-model="nonEmptyAgentCodeSearch">
+                                <option value=""></option>
+                                <option value="true">Not empty</option>
+                                <option value="false">Empty</option>
+                            </select>
+                        </div>
+                        <div class="col-md-1 text-right">
+                            <label for="statusSearch" class="control-label">Status</label>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-control" id="statusSearch" ng-model="statusSearch">
+                                <option value=""></option>
+                                <option value="PENDING_PAYMENT">Pending payment</option>
+                                <option value="PENDING_VALIDATION">Pending validation</option>
+                                <option value="VALIDATED">Validated</option>
+                                <option value="CANCELED">Canceled</option>
+                            </select>
+                        </div>
+                        <div class="col-md-1 text-right">
+                            <label for="toDateSearch" class="control-label">To</label>
+                        </div>
+                        <div class="col-md-3">
+                            <p class="input-group">
+                                <input type="text" id="toDateSearch" class="form-control" uib-datepicker-popup="dd-MM-yyyy" ng-model="toDateSearch" is-open="toDateSearch.opened" close-text="Close" datepicker-options="dateOptions"/>
                             <span class="input-group-btn">
                                 <button type="button" class="btn btn-default" ng-click="toDateSearchOpen()"><i class="glyphicon glyphicon-calendar"></i></button>
                             </span>
-                        </p>
+                            </p>
+                        </div>
+                    </div>
+
+
+                </div>
+                <div class="panel-footer">
+
+                    <div ng-hide="isSearching" class="col-xs-2 center-block" style="float:none" role="group">
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-default">Search</button>
+                        </div>
+                    </div>
+
+                    <div ng-show="isSearching" class="col-xs-2 center-block" style="float:none">
+                        <div class="text-center">
+                            <i class="fa fa-spinner fa-spin" style="font-size:24px"></i>
+                        </div>
                     </div>
                 </div>
-
-
             </div>
-            <div class="panel-footer">
+        </form>
 
-                <div ng-hide="isSearching" class="col-xs-2 center-block" style="float:none" role="group">
-                    <div class="text-center">
-                        <button type="submit" class="btn btn-default">Search</button>
-                    </div>
-                </div>
 
-                <div ng-show="isSearching" class="col-xs-2 center-block" style="float:none">
-                    <div class="text-center">
-                        <i class="fa fa-spinner fa-spin" style="font-size:24px"></i>
-                    </div>
+        <div>
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <uib-pagination
+                            total-items="totalItems"
+                            ng-model="currentPage"
+                            max-size="15"
+                            class="pagination-md mx-auto"
+                            force-ellipses="true"
+                            boundary-link-numbers="true"
+                            ng-change="pageChanged()"
+                            items-per-page="20">
+                    </uib-pagination>
                 </div>
             </div>
+
+
+            <table class="table table-bordered table-striped table-hover table-condensed">
+                <tr>
+                    <th style="min-width: 100px">Policy ID</th>
+                    <th>Previous Policy ID</th>
+                    <th>Product</th>
+                    <th>Premium</th>
+                    <th>Status</th>
+                    <th>Start Date</th>
+                    <th>Agent code 1</th>
+                    <th>Agent code 2</th>
+                    <th>Validation Agent code</th>
+                    <th>Creation time</th>
+                    <th>Validation time</th>
+                </tr>
+                <tr ng-repeat="item in policies.content">
+                    <td><a href="#policy-detail?policyID={{ item.policyId }}">{{ item.policyId }}</a></td>
+                    <td>{{ item.insureds[0].insuredPreviousInformations[0]}}</td>
+                    <td>{{ item.commonData.productId }}</td>
+                    <td>{{ item.premiumsData.financialScheduler.modalAmount.value }} {{ item.premiumsData.financialScheduler.modalAmount.currencyCode }}</td>
+                    <td>{{ item.status }}</td>
+                    <td>{{ item.insureds[0].startDate | date:'yyyy-MM-dd' }}</td>
+                    <td>{{ item.insureds[0].insuredPreviousInformations[1] }}</td>
+                    <td>{{ item.insureds[0].insuredPreviousInformations[2] }}</td>
+                    <td>{{ item.validationAgentCode }}</td>
+                    <td>{{ item.creationDateTime | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+                    <td>{{ item.validationDateTime | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+                </tr>
+            </table>
+            Page {{ currentPage }} / {{ otalPages }}. Number of items: {{ totalItems }} <a href="{{downloadUrl}}">Download as Excel File</a>.
         </div>
-    </form>
-
-
-    <div>
-        <div class="row">
-            <div class="col-md-12 text-center">
-                <uib-pagination
-                        total-items="totalItems"
-                        ng-model="currentPage"
-                        max-size="15"
-                        class="pagination-md mx-auto"
-                        force-ellipses="true"
-                        boundary-link-numbers="true"
-                        ng-change="pageChanged()"
-                        items-per-page="20">
-                </uib-pagination>
-            </div>
-        </div>
-
-
-        <table class="table table-bordered table-striped table-hover table-condensed">
-            <tr>
-                <th style="min-width: 100px">Policy ID</th>
-                <th>Previous Policy ID</th>
-                <th>Product</th>
-                <th>Premium</th>
-                <th>Status</th>
-                <th>Start Date</th>
-                <th>Agent code 1</th>
-                <th>Agent code 2</th>
-                <th>Validation Agent code</th>
-                <th>Creation time</th>
-                <th>Validation time</th>
-            </tr>
-            <tr ng-repeat="item in policies.content">
-                <td><a href="#policy-detail?policyID={{ item.policyId }}">{{ item.policyId }}</a></td>
-                <td>{{ item.insureds[0].insuredPreviousInformations[0]}}</td>
-                <td>{{ item.commonData.productId }}</td>
-                <td>{{ item.premiumsData.financialScheduler.modalAmount.value }} {{ item.premiumsData.financialScheduler.modalAmount.currencyCode }}</td>
-                <td>{{ item.status }}</td>
-                <td>{{ item.insureds[0].startDate | date:'yyyy-MM-dd' }}</td>
-                <td>{{ item.insureds[0].insuredPreviousInformations[1] }}</td>
-                <td>{{ item.insureds[0].insuredPreviousInformations[2] }}</td>
-                <td>{{ item.validationAgentCode }}</td>
-                <td>{{ item.creationDateTime | date:'yyyy-MM-dd HH:mm:ss'}}</td>
-                <td>{{ item.validationDateTime | date:'yyyy-MM-dd HH:mm:ss'}}</td>
-            </tr>
-        </table>
-        Page {{ currentPage }} / {{ otalPages }}. Number of items: {{ totalItems }} <a href="{{downloadUrl}}">Download as Excel File</a>.
     </div>
+    <!-- END Page specific stuff -->
 </div>
-<!-- END Page specific stuff -->

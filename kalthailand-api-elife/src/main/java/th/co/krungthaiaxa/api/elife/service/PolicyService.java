@@ -129,7 +129,12 @@ public class PolicyService {
         return policy;
     }
 
-    private PolicyNumber validateExistNextAvailablePoliyNumber() {
+    /**
+     * It must be synchronized to avoid many new policies with the same number.
+     *
+     * @return
+     */
+    private synchronized PolicyNumber validateExistNextAvailablePoliyNumber() {
         Sort sort = new Sort(Sort.Direction.ASC, "policyId");
         Pageable pageable = new PageRequest(0, 1, sort);
         Page<PolicyNumber> policyNumbers = policyNumberRepository.findByPolicyNull(pageable);
