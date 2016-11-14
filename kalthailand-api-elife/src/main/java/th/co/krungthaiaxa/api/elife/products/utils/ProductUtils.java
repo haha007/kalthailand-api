@@ -223,12 +223,12 @@ public class ProductUtils {
         isFalse(insured.getAgeAtSubscription() < minAge, ageIsTooLowException.apply(minAge));
     }
 
-    public static Insured validateMainInsured(Quotable quote) {
-        notNull(quote.getInsureds(), noInsured);
-        isNotEqual(quote.getInsureds().size(), 0, noInsured);
-        isEqual(quote.getInsureds().size(), 1, insuredMoreThanOne);
+    public static Insured validateMainInsured(Quotable quotable) {
+        notNull(quotable.getInsureds(), noInsured);
+        isNotEqual(quotable.getInsureds().size(), 0, noInsured);
+        isEqual(quotable.getInsureds().size(), 1, insuredMoreThanOne);
 
-        Insured mainInsured = validateExistMainInsured(quote);
+        Insured mainInsured = validateExistMainInsured(quotable);
         notNull(mainInsured.getType(), insuredWithNoType);
         isTrue((mainInsured.getMainInsuredIndicator() != null && mainInsured.getMainInsuredIndicator()), new MainInsuredException("The insured person is not the main insured."));
 //        isFalse(!mainInsured.getMainInsuredIndicator(), noMainInsured);

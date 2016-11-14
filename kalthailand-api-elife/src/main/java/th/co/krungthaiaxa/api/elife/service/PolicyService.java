@@ -5,6 +5,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +19,8 @@ import th.co.krungthaiaxa.api.elife.exception.PolicyValidationException;
 import th.co.krungthaiaxa.api.elife.model.Document;
 import th.co.krungthaiaxa.api.elife.model.DocumentDownload;
 import th.co.krungthaiaxa.api.elife.model.Insured;
+import th.co.krungthaiaxa.api.elife.model.Person;
+import th.co.krungthaiaxa.api.elife.model.PersonInfo;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.Registration;
@@ -420,4 +423,12 @@ public class PolicyService {
         lineService.sendPushNotification(pushContent.replace("%POLICY_ID%", policy.getPolicyId()), mainInsured.getPerson().getLineId());
     }
 
+    public Policy updateMainInsuredPerson(String policyId, PersonInfo mainInsuredPersonInfo) {
+        Policy policy = validateExistPolicy(policyId);
+        Insured mainInsured = ProductUtils.validateMainInsured(policy);
+        Person person = mainInsured.getPerson();
+        BeanUtils.copyProperties(mainInsuredPersonInfo, person);
+        policy = policyRepository.save(policy);
+        return policy;
+    }
 }

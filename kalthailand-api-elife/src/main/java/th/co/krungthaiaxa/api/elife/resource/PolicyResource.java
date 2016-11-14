@@ -34,6 +34,7 @@ import th.co.krungthaiaxa.api.elife.exception.ElifeException;
 import th.co.krungthaiaxa.api.elife.model.Document;
 import th.co.krungthaiaxa.api.elife.model.DocumentDownload;
 import th.co.krungthaiaxa.api.elife.model.Payment;
+import th.co.krungthaiaxa.api.elife.model.PersonInfo;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.PolicyCDB;
 import th.co.krungthaiaxa.api.elife.model.Quote;
@@ -335,6 +336,22 @@ public class PolicyResource {
             return new ResponseEntity<>(getJson(ErrorCode.POLICY_CANNOT_BE_CREATED.apply(e.getMessage())), NOT_ACCEPTABLE);
         }
         return new ResponseEntity<>(getJson(policy), OK);
+    }
+
+    @ApiOperation(value = "Update main insured information", notes = "This API will help you to update person info of main insured",
+            response = Policy.class)
+    @ApiResponses({
+            @ApiResponse(code = 406, message = "If JSon of quote is invalid or if Policy could not be created",
+                    response = Error.class)
+    })
+    @RequestMapping(value = "/policies/{policyId}/main-insured/person", produces = APPLICATION_JSON_VALUE, method = POST)
+    @ResponseBody
+    public Policy updateMainInsuredPerson(
+            @ApiParam(name = "policyId", value = "the policy number", required = true)
+            @PathVariable String policyId,
+            @ApiParam(value = "The Person object of mainInsured")
+            @RequestBody PersonInfo mainInsuredPerson) {
+        return policyService.updateMainInsuredPerson(policyId, mainInsuredPerson);
     }
 
     @ApiOperation(value = "Policy payments", notes = "Get the payments of a policy", response = Payment.class,

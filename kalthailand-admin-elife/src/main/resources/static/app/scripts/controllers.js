@@ -649,6 +649,41 @@
                 }
                 return policy.premiumsData.financialScheduler.atpMode == $scope.AtpMode.AUTOPAY;
             };
+            $scope.saveMainInsuredPerson = function () {
+                var mainInsuredPerson = $scope.policyDetail.insureds[0].person;
+                $scope.isSavingMainInsured = true;
+                $http.post(window.location.origin + '/api-elife/policies/' + $scope.policyDetail.policyId + '/main-insured/person', mainInsuredPerson)
+                    .then(
+                        function (successResponse) {
+                            $scope.isSavingMainInsured = false;
+                            $scope.policyDetail = successResponse.data;
+                            $scope.showSuccessMessage("Person info of main insured is updated successfully!");
+                        },
+                        function (errorResponse) {
+                            $scope.isSavingMainInsured = false;
+                            $scope.showErrorMessage("Error when saving main insured." + errorResponse.data.userMessage);
+                            console.log(errorResponse);
+                        });
+                //
+                //$http({
+                //    url: '/api-elife/policies/' + $scope.policyDetail.policyId + '/main-insured/person',
+                //    method: 'POST',
+                //    data: mainInsuredPerson,
+                //    headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                //}).
+                //then(
+                //    function (successResponse) {
+                //        $scope.isSavingMainInsured = false;
+                //        $scope.policyDetail = successResponse.data;
+                //        $scope.showSuccessMessage("Person info of main insured is updated successfully!");
+                //    },
+                //    function (errorResponse) {
+                //        $scope.isSavingMainInsured = false;
+                //        $scope.showErrorMessage("Error when saving main insured." + errorResponse.data.userMessage);
+                //        console.log(errorResponse);
+                //    }
+                //)
+            }
             // AKT-820
             $scope.onSubmitPaymentDetails = function () {
                 $scope.isFetching = true;

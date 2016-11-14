@@ -218,65 +218,57 @@
                 <div class="x_content">
                     <!-- info row -->
                     <div class="row">
-                        <div class="col-sm-4">
-                            <div class="form-group">
-                                <label class="col-sm-4 control-label">First Name</label>
+                        <div class="form-group col-sm-4">
+                            <label class="col-sm-4 control-label">First Name</label>
 
-                                <div class="col-sm-8">
-                                    <span class="form-control-static">{{ policyDetail.insureds[0].person.givenName }}</span>
-                                </div>
+                            <div class="col-sm-8">
+                                <span class="form-control-static">{{ policyDetail.insureds[0].person.givenName }}</span>
                             </div>
                         </div>
-                        <div class="col-sm-4">
-                            <div class="form-group">
+                        <div class="form-group col-sm-4">
 
-                                <label class="col-sm-4 control-label">Last Name</label>
+                            <label class="col-sm-4 control-label">Last Name</label>
 
-                                <div class="col-sm-8">
-                                    <span class="form-control-static">{{ policyDetail.insureds[0].person.surName }}</span>
-                                </div>
+                            <div class="col-sm-8">
+                                <span class="form-control-static">{{ policyDetail.insureds[0].person.surName }}</span>
                             </div>
                         </div>
-                        <div class="col-sm-4">
-                            <div class="form-group">
+                        <div class="form-group col-sm-4">
+                            <label class="col-sm-4 control-label">Email</label>
 
-                                <label class="col-sm-4 control-label">Date of birth</label>
+                            <div class="col-sm-8">
+                                <!--<span class="form-control-static">{{ policyDetail.insureds[0].person.email }}</span>-->
+                                <input class="form-control" type="text" ng-model="policyDetail.insureds[0].person.email" id="orderId" required>
+                            </div>
 
-                                <div class="col-sm-8">
-                                    <span class="form-control-static">{{ policyDetail.insureds[0].person.birthDate }}</span>
-                                </div>
+                        </div>
+                        <div class="form-group col-sm-4">
+                            <label class="col-sm-4 control-label">Thai ID</label>
+
+                            <div class="col-sm-8">
+                                <span class="form-control-static">{{ policyDetail.insureds[0].person.registrations[0].id }}</span>
+                            </div>
+                        </div>
+                        <div class="form-group col-sm-4">
+                            <label class="col-sm-4 control-label">Date of birth</label>
+
+                            <div class="col-sm-8">
+                                <span class="form-control-static">{{ policyDetail.insureds[0].person.birthDate }}</span>
+                            </div>
+                        </div>
+                        <div class="form-group col-sm-4">
+                            <label class="col-sm-4 control-label">Mobile phone</label>
+
+                            <div class="col-sm-8">
+                                <!--<span class="form-control-static">{{ policyDetail.insureds[0].person.mobilePhoneNumber.number }}</span>-->
+                                <input class="form-control" type="text" ng-model="policyDetail.insureds[0].person.mobilePhoneNumber.number" id="orderId" required>
                             </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-sm-4">
-                            <div class="form-group">
-                                <label class="col-sm-4 control-label">Thai ID</label>
-
-                                <div class="col-sm-8">
-                                    <span class="form-control-static">{{ policyDetail.insureds[0].person.registrations[0].id }}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-sm-4">
-                            <div class="form-group">
-
-                                <label class="col-sm-4 control-label">Email</label>
-
-                                <div class="col-sm-8">
-                                    <span class="form-control-static">{{ policyDetail.insureds[0].person.email }}</span>
-                                </div>
-
-                            </div>
-                        </div>
-                        <div class="col-sm-4">
-                            <div class="form-group">
-                                <label class="col-sm-4 control-label">Mobile phone</label>
-
-                                <div class="col-sm-8">
-                                    <span class="form-control-static">{{ policyDetail.insureds[0].person.mobilePhoneNumber.number }}</span>
-                                </div>
-                            </div>
+                    <div class="ln_solid"></div>
+                    <div class="form-group">
+                        <div class="col-md-3">
+                            <button ng-disabled="isSavingMainInsured" ng-click="saveMainInsuredPerson()" type="button" class="btn btn-success">Save Insured</button>
                         </div>
                     </div>
                 </div>
