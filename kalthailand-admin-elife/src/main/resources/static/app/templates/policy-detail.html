@@ -297,22 +297,22 @@
                         <div class="row fontawesome-icon-list" ng-show="policyDetail">
                             <div class="fa-hover col-md-3 col-sm-4 col-xs-12">
                                 <a ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/APPLICATION_FORM/download">
-                                    <i class="red fa fa-file-pdf-o"></i>Application Form (not validated)
+                                    <i class="green fa fa-file-pdf-o"></i>Application Form (not validated)
                                 </a>
                             </div>
                             <div class="fa-hover col-md-3 col-sm-4 col-xs-12" ng-show="policyDetail.status == 'VALIDATED'">
                                 <a ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/APPLICATION_FORM_VALIDATED/download">
-                                    <i class="red fa fa-file-pdf-o"></i>Application Form (validated)
+                                    <i class="green fa fa-file-pdf-o"></i>Application Form (validated)
                                 </a>
                             </div>
                             <div class="fa-hover col-md-3 col-sm-4 col-xs-12" ng-show="isEnabledAutoPay(policyDetail)">
                                 <a ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/DA_FORM/download">
-                                    <i class="red fa fa-file-pdf-o"></i>DA Form
+                                    <i class="green fa fa-file-pdf-o"></i>DA Form
                                 </a>
                             </div>
                             <div class="fa-hover col-md-3 col-sm-4 col-xs-12" ng-show="policyDetail.status == 'VALIDATED'">
                                 <a ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/ERECEIPT_PDF/download">
-                                    <i class="red fa fa-file-pdf-o"></i>eReceipt
+                                    <i class="green fa fa-file-pdf-o"></i>eReceipt
                                 </a>
                             </div>
                         </div>

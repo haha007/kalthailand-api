@@ -4,12 +4,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import th.co.krungthaiaxa.api.common.utils.LogUtil;
 import th.co.krungthaiaxa.api.elife.ereceipt.EreceiptService;
 import th.co.krungthaiaxa.api.elife.model.Document;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.products.utils.ProductUtils;
 
+import java.time.Instant;
 import java.util.Optional;
 
 import static th.co.krungthaiaxa.api.elife.model.enums.DocumentType.APPLICATION_FORM;
@@ -38,6 +40,8 @@ public class PolicyDocumentService {
     }
 
     public void generateDocumentsForPendingValidationPolicy(Policy policy) {
+        Instant start = LogUtil.logStarting("generateDocumentsForPendingValidationPolicy [start]: policyId: " + policy.getPolicyId());
+
         // Generate NOT validated Application Form
         Optional<Document> notValidatedApplicationForm = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(APPLICATION_FORM)).findFirst();
         if (!notValidatedApplicationForm.isPresent()) {
@@ -63,10 +67,11 @@ public class PolicyDocumentService {
         } else {
             LOGGER.debug("The ATP of this policy is not enable, so the DA Form will not be generated.\n policyId: {}", policy.getPolicyId());
         }
-        LOGGER.debug("Default documents for policy [" + policy.getPolicyId() + "] have been created.");
+        LogUtil.logRuntime(start, "generateDocumentsForPendingValidationPolicy [finish]: policyId: " + policy.getPolicyId());
     }
 
     public void generateDocumentsForValidatedPolicy(Policy policy, String token) {
+        Instant start = LogUtil.logStarting("generateDocumentsForValidatedPolicy [start]: policyId: " + policy.getPolicyId());
         boolean newBusiness = true;
 
         // In case previous documents were not generated
@@ -93,7 +98,7 @@ public class PolicyDocumentService {
         } else {
             LOGGER.debug("Signed ereceipt pdf already exists.");
         }
-        LOGGER.debug("Extra documents for policy [" + policy.getPolicyId() + "] have been created.");
+        LogUtil.logRuntime(start, "generateDocumentsForValidatedPolicy [finish]: policyId: " + policy.getPolicyId());
     }
 
 }

@@ -473,8 +473,7 @@ public class PolicyResource {
         return new ResponseEntity<>(getJson(policy), OK);
     }
 
-    //TODO this method should be refactor!
-    @ApiOperation(value = "Update Policy status", notes = "Updates the Policy status to VALIDATED. If " +
+    @ApiOperation(value = "Change status of policy from PENDING_VALIDATION to VALIDATED.", notes = "Updates the Policy status to VALIDATED. If " +
             "susuccessful, it also generates the eReceipt form document (image and PDF) and eReceipt pdf is sent to " +
             "Tele sale API. LINE Pay API is called to confirm the payment booking made earlier using the " +
             "registration key. Payment will be updated with amount and effective date. Finally, it sends " +

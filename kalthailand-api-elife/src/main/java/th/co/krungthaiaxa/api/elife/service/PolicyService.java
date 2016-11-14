@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import th.co.krungthaiaxa.api.common.utils.LogUtil;
 import th.co.krungthaiaxa.api.common.validator.BeanValidator;
 import th.co.krungthaiaxa.api.elife.client.CDBClient;
 import th.co.krungthaiaxa.api.elife.data.PolicyNumber;
@@ -186,17 +187,17 @@ public class PolicyService {
     }
 
     public void updateRegKeyForAllNotProcessedPayments(Policy policy, String newRegistrationKey) {
-        if (isBlank(newRegistrationKey)) {
-            return;
+        Instant start = LogUtil.logStarting("updateRegKeyForAllNotProcessedPayments [start]. policyId: " + policy.getPolicyId());
+        if (!isBlank(newRegistrationKey)) {
+            //TODO Improve performance: use Mongo query to update
+            // Save the registration key in all other payments
+            policy.getPayments().stream().filter(paymentPredicate -> paymentPredicate.getStatus().equals(NOT_PROCESSED)).forEach(payment -> {
+                if (!newRegistrationKey.equals(payment.getRegistrationKey())) {
+                    payment.setRegistrationKey(newRegistrationKey);
+                }
+            });
         }
-
-        //TODO Improve performance: use Mongo query to update
-        // Save the registration key in all other payments
-        policy.getPayments().stream().filter(paymentPredicate -> paymentPredicate.getStatus().equals(NOT_PROCESSED)).forEach(payment -> {
-            if (!newRegistrationKey.equals(payment.getRegistrationKey())) {
-                payment.setRegistrationKey(newRegistrationKey);
-            }
-        });
+        LogUtil.logRuntime(start, "updateRegKeyForAllNotProcessedPayments [finish]. policyId: " + policy.getPolicyId());
     }
 
     /**
@@ -313,6 +314,7 @@ public class PolicyService {
      * @return
      */
     protected Policy updatePolicyStatusToValidated(Policy policy, String agentCode, String agentName, String token) {
+        Instant start = LogUtil.logStarting("updatePolicyStatusToValidated [start]: policyId: " + policy.getPolicyId());
         if (!PolicyStatus.PENDING_VALIDATION.equals(policy.getStatus())) {
             throw new ElifeException("Can't validate policy [" + policy.getPolicyId() + "], it is not pending for validation, it's " + policy.getStatus());
         }
@@ -388,6 +390,7 @@ public class PolicyService {
         } catch (Exception e) {
             logger.error("Unable to send validated application Form to TMC on policy [" + policy.getPolicyId() + "]: " + e.getMessage(), e);
         }
+        LogUtil.logRuntime(start, "updatePolicyStatusToValidated [finish]: policyId: " + policy.getPolicyId());
         return policy;
     }
 

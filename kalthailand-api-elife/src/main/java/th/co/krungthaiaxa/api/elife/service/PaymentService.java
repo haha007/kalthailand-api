@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
+import th.co.krungthaiaxa.api.common.utils.LogUtil;
 import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
 import th.co.krungthaiaxa.api.elife.exception.PaymentHasNewerCompletedException;
 import th.co.krungthaiaxa.api.elife.exception.PaymentNotFoundException;
@@ -24,6 +25,7 @@ import th.co.krungthaiaxa.api.elife.model.line.LinePayResponsePaymentInfo;
 import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
 
 import javax.inject.Inject;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -271,6 +273,7 @@ public class PaymentService {
      * TODO same as {@link PaymentService#updateByLinePayResponse(Payment, BaseLineResponse)} .
      */
     public Payment updatePaymentWithLineResponse(Payment payment, ChannelType line, LinePayResponse linePayResponse) {
+        Instant start = LogUtil.logStarting("updatePaymentWithLineResponse. paymentId: " + payment.getPaymentId() + ", policyId: " + payment.getPolicyId());
         //Same as {@link #updatePaymentWithPaylineResponse(...)}
         String creditCardName = null;
         String method = null;
@@ -301,6 +304,8 @@ public class PaymentService {
         payment.setEffectiveDate(DateTimeUtil.nowLocalDateTimeInThaiZoneId());
         payment.addPaymentInformation(paymentInformation);
         //NOTE: Never get the regKey from linePayResponse and set to payment because the result from linePayResponse is always null. So it can remove the previous regKey of payment.
-        return paymentRepository.save(payment);
+        payment = paymentRepository.save(payment);
+        LogUtil.logRuntime(start, "updatePaymentWithLineResponse. paymentId: " + payment.getPaymentId() + ", policyId: " + payment.getPolicyId());
+        return payment;
     }
 }
