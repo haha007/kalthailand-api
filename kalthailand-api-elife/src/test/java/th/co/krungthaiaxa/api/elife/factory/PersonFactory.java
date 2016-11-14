@@ -5,7 +5,9 @@ import com.icegreen.greenmail.util.ServerSetupTest;
 import org.junit.Rule;
 import org.springframework.stereotype.Component;
 import th.co.krungthaiaxa.api.elife.model.Person;
+import th.co.krungthaiaxa.api.elife.model.PhoneNumber;
 import th.co.krungthaiaxa.api.elife.model.Quote;
+import th.co.krungthaiaxa.api.elife.model.enums.PhoneNumberType;
 
 import java.time.LocalDate;
 
@@ -28,6 +30,8 @@ public class PersonFactory {
     public static void setDefaultValueToPerson(Person person, String name, String email) {
         person.setGivenName(name);
         person.setEmail(email);
+        person.setWorkPhoneNumber(PersonFactory.constructMockHomeNumber());
+        person.setHomePhoneNumber(PersonFactory.constructMockHomeNumber());
     }
 
     public static void setDefaultValueToPerson(Person person, int age, String name, String email) {
@@ -36,5 +40,27 @@ public class PersonFactory {
         person.setBirthDate(birthDate);
         person.setGivenName(name);
         person.setEmail(email);
+        person.setWorkPhoneNumber(PersonFactory.constructMockHomeNumber());
+        person.setHomePhoneNumber(PersonFactory.constructMockHomeNumber());
+    }
+
+    public static PhoneNumber constructMobileNumber(String number) {
+        PhoneNumber phoneNumber = new PhoneNumber();
+        phoneNumber.setType(PhoneNumberType.MOBILE);
+        phoneNumber.setNumber(number);
+        phoneNumber.setCountryCode(66);
+        return phoneNumber;
+    }
+
+    public static PhoneNumber constructMockHomeNumber() {
+        return constructMockPhoneNumber("012345678");
+    }
+
+    public static PhoneNumber constructMockPhoneNumber(String number) {
+        PhoneNumber phoneNumber = new PhoneNumber();
+        phoneNumber.setType(PhoneNumberType.HOME);
+        phoneNumber.setNumber(number);
+        phoneNumber.setCountryCode(66);
+        return phoneNumber;
     }
 }

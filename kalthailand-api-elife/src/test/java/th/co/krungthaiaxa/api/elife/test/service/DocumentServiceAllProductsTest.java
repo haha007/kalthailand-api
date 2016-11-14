@@ -22,8 +22,6 @@ import th.co.krungthaiaxa.api.elife.model.enums.DocumentType;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
 import th.co.krungthaiaxa.api.elife.service.CollectionFileProcessingService;
-import th.co.krungthaiaxa.api.elife.service.DocumentService;
-import th.co.krungthaiaxa.api.elife.service.PolicyService;
 import th.co.krungthaiaxa.api.elife.test.ELifeTest;
 import th.co.krungthaiaxa.api.elife.utils.DocumentAssertHelper;
 
@@ -39,12 +37,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @ActiveProfiles("test")
 public class DocumentServiceAllProductsTest extends ELifeTest {
     public static final Logger LOGGER = LoggerFactory.getLogger(DocumentServiceAllProductsTest.class);
-    @Inject
-    private th.co.krungthaiaxa.api.elife.service.DAFormService DAFormService;
-    @Inject
-    private PolicyService policyService;
-    @Inject
-    private DocumentService documentService;
+
     @Inject
     private DocumentAssertHelper documentAssertHelper;
     @Inject

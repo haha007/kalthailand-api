@@ -71,18 +71,18 @@ public class DAFormService {
         PdfUtil.writeText(page, baseFont, person.getRegistrations().get(0).getId(), 454, 676, MEDIUM_SIZE);
 
         if (person.getHomePhoneNumber() != null && person.getHomePhoneNumber().getNumber() != null) {
-            PdfUtil.writeText(page, baseFont, person.getHomePhoneNumber().getNumber(), 68, 654, MEDIUM_SIZE);
+            PdfUtil.writeText(page, baseFont, person.getHomePhoneNumber().getNumber(), 70, 654, MEDIUM_SIZE);
         }
 
         if (person.getWorkPhoneNumber() != null && person.getWorkPhoneNumber().getNumber() != null) {
-            PdfUtil.writeText(page, baseFont, person.getWorkPhoneNumber().getNumber(), 170, 654, MEDIUM_SIZE);
+            PdfUtil.writeText(page, baseFont, person.getWorkPhoneNumber().getNumber(), 199, 654, MEDIUM_SIZE);
         }
 
         if (person.getMobilePhoneNumber() != null && person.getMobilePhoneNumber().getNumber() != null) {
-            PdfUtil.writeText(page, baseFont, person.getMobilePhoneNumber().getNumber(), 262, 654, MEDIUM_SIZE);
+            PdfUtil.writeText(page, baseFont, person.getMobilePhoneNumber().getNumber(), 326, 654, MEDIUM_SIZE);
         }
 
-        PdfUtil.writeText(page, baseFont, person.getEmail(), 350, 654, MEDIUM_SIZE);
+        PdfUtil.writeText(page, baseFont, person.getEmail(), 452, 654, MEDIUM_SIZE);
 
         char[] numberPNO = policy.getPolicyId().toCharArray();
         PdfUtil.writeText(page, baseFont, String.valueOf(numberPNO[0]), 100, 618, MEDIUM_SIZE);

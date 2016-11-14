@@ -5,10 +5,8 @@ import th.co.krungthaiaxa.api.elife.model.GeographicalAddress;
 import th.co.krungthaiaxa.api.elife.model.HealthStatus;
 import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.model.Person;
-import th.co.krungthaiaxa.api.elife.model.PhoneNumber;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
-import th.co.krungthaiaxa.api.elife.model.enums.PhoneNumberType;
 import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
 import th.co.krungthaiaxa.api.elife.products.utils.ProductUtils;
 import th.co.krungthaiaxa.api.elife.utils.BeneficiaryUtils;
@@ -36,10 +34,11 @@ public class InsuredFactory {
 
         person.setCurrentAddress(constructDefaultGeographical());
         person.setGivenName("วุฒิชัย");
-        person.setHomePhoneNumber(constructMockHomeNumber());
+        person.setHomePhoneNumber(PersonFactory.constructMockHomeNumber());
+        person.setWorkPhoneNumber(PersonFactory.constructMockPhoneNumber("876543210"));
         person.setMaritalStatus(MARRIED);
         person.setMiddleName("Else");
-        person.setMobilePhoneNumber(constructMobileNumber(phoneNumber));
+        person.setMobilePhoneNumber(PersonFactory.constructMobileNumber(phoneNumber));
         person.setSurName("ศรีสุข");
         person.setTitle("MR");
     }
@@ -79,22 +78,6 @@ public class InsuredFactory {
         person.addRegistration(RegistrationFactory.constructThaiId(registrationId));
 
         insured.setPerson(person);
-    }
-
-    private static PhoneNumber constructMobileNumber(String number) {
-        PhoneNumber phoneNumber = new PhoneNumber();
-        phoneNumber.setType(PhoneNumberType.MOBILE);
-        phoneNumber.setNumber(number);
-        phoneNumber.setCountryCode(66);
-        return phoneNumber;
-    }
-
-    private static PhoneNumber constructMockHomeNumber() {
-        PhoneNumber phoneNumber = new PhoneNumber();
-        phoneNumber.setType(PhoneNumberType.HOME);
-        phoneNumber.setNumber("000000000");
-        phoneNumber.setCountryCode(66);
-        return phoneNumber;
     }
 
     private static Fatca constructNoUSAFatca() {

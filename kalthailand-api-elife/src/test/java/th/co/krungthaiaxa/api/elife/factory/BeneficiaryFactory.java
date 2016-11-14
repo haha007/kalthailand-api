@@ -26,7 +26,8 @@ public class BeneficiaryFactory {
         person.setSurName("Benf Last name");
         person.setTitle("MR");
         person.addRegistration(RegistrationFactory.constructThaiId(registrationId));
-
+        person.setHomePhoneNumber(PersonFactory.constructMockHomeNumber());
+        person.setWorkPhoneNumber(PersonFactory.constructMockPhoneNumber("876543210"));
         CoverageBeneficiary result = new CoverageBeneficiary();
         result.setAgeAtSubscription(40);
         result.setCoverageBenefitPercentage(benefitPercent);
