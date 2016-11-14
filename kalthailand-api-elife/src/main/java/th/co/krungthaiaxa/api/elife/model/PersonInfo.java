@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.hibernate.validator.constraints.Email;
+import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -19,11 +20,10 @@ public class PersonInfo extends Party implements Serializable {
     @Valid
     @NotNull
     private PhoneNumber mobilePhoneNumber;
-    @Valid
     private PhoneNumber homePhoneNumber;
-    @Valid
     private PhoneNumber workPhoneNumber;
-    @NotNull
+
+    @NotBlank
     @Email
     private String email;
     private GeographicalAddress currentAddress;
