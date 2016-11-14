@@ -127,9 +127,23 @@
     app.factory('CommissionService', function ($http, $sce, ProductCriteria) {
         return new CommissionService($http, $sce, ProductCriteria);
     });
-    
+
     app.factory('CommissionResultService', function ($http) {
         return new CommissionResultService($http);
     });
 
 })();
+
+var ErrorHandler = function () {
+}
+ErrorHandler.prototype.fieldErrorToMessage = function (fieldError) {
+    return fieldError.message;
+}
+ErrorHandler.prototype.fieldErrorsToMessage = function (fieldErrors) {
+    var message = "";
+    for (i = 0; i < fieldErrors.length; i++) {
+        message += this.fieldErrorToMessage(fieldErrors[i]) + ", ";
+    }
+    return message;
+}
+var ERROR_HANDLER = new ErrorHandler();

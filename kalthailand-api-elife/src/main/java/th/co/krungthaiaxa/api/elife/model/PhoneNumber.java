@@ -2,16 +2,20 @@ package th.co.krungthaiaxa.api.elife.model;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.hibernate.validator.constraints.NotBlank;
 import th.co.krungthaiaxa.api.elife.model.enums.PhoneNumberType;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Objects;
 
 @ApiModel(description = "Data concerning Phone numbers")
 public class PhoneNumber implements Serializable {
+    @NotNull
     private PhoneNumberType type;
     private Integer countryCode;
     private Integer areaCode;
+    @NotBlank
     private String number;
 
     public PhoneNumber() {

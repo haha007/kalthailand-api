@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import th.co.krungthaiaxa.api.common.validator.BeanValidator;
 import th.co.krungthaiaxa.api.elife.client.CDBClient;
 import th.co.krungthaiaxa.api.elife.data.PolicyNumber;
 import th.co.krungthaiaxa.api.elife.exception.ElifeException;
@@ -78,7 +79,7 @@ public class PolicyService {
     private final SMSApiService smsApiService;
     private final ProductServiceFactory productServiceFactory;
     private final CDBClient cdbClient;
-
+    private final BeanValidator beanValidator;
     @Inject
     private PolicyNumberSettingService policyNumberSettingService;
 
@@ -93,7 +94,7 @@ public class PolicyService {
             LineService lineService,
             DocumentService documentService,
             PolicyDocumentService policyDocumentService, SMSApiService smsApiService,
-            ProductServiceFactory productServiceFactory, CDBClient cdbClient) {
+            ProductServiceFactory productServiceFactory, CDBClient cdbClient, BeanValidator beanValidator) {
         this.tmcClient = tmcClient;
         this.policyDocumentService = policyDocumentService;
         this.cdbClient = cdbClient;
@@ -107,6 +108,7 @@ public class PolicyService {
         this.documentService = documentService;
         this.smsApiService = smsApiService;
         this.productServiceFactory = productServiceFactory;
+        this.beanValidator = beanValidator;
     }
 
     public Page<Policy> findAll(String policyId, ProductType productType, PolicyStatus status, Boolean nonEmptyAgentCode, LocalDate startDate,
@@ -424,6 +426,7 @@ public class PolicyService {
     }
 
     public Policy updateMainInsuredPerson(String policyId, PersonInfo mainInsuredPersonInfo) {
+        beanValidator.validate(mainInsuredPersonInfo);
         Policy policy = validateExistPolicy(policyId);
         Insured mainInsured = ProductUtils.validateMainInsured(policy);
         Person person = mainInsured.getPerson();

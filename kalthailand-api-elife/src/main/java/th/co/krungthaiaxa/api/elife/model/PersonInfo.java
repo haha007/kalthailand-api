@@ -4,7 +4,10 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.hibernate.validator.constraints.Email;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 @ApiModel(description = "This is the person information which doesn't affect to quote calculation. The client can change at any time.")
@@ -13,9 +16,15 @@ public class PersonInfo extends Party implements Serializable {
     private String middleName;
     private String surName;
     private String title;
+    @Valid
+    @NotNull
     private PhoneNumber mobilePhoneNumber;
+    @Valid
     private PhoneNumber homePhoneNumber;
+    @Valid
     private PhoneNumber workPhoneNumber;
+    @NotNull
+    @Email
     private String email;
     private GeographicalAddress currentAddress;
     private GeographicalAddress deliveryAddress;

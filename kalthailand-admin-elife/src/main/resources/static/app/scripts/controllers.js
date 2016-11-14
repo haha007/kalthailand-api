@@ -649,8 +649,12 @@
                 }
                 return policy.premiumsData.financialScheduler.atpMode == $scope.AtpMode.AUTOPAY;
             };
+
             $scope.saveMainInsuredPerson = function () {
                 var mainInsuredPerson = $scope.policyDetail.insureds[0].person;
+                if (!validateInsuredPerson(mainInsuredPerson)) {
+                    return;
+                }
                 $scope.isSavingMainInsured = true;
                 $http.post(window.location.origin + '/api-elife/policies/' + $scope.policyDetail.policyId + '/main-insured/person', mainInsuredPerson)
                     .then(
@@ -661,7 +665,12 @@
                         },
                         function (errorResponse) {
                             $scope.isSavingMainInsured = false;
-                            $scope.showErrorMessage("Error when saving main insured." + errorResponse.data.userMessage);
+                            var errorCode = errorResponse.data.code;
+                            var message = errorResponse.data.userMessage;
+                            if (errorCode == "0010") {
+                                message = "Bean error: " + ERROR_HANDLER.fieldErrorsToMessage(errorResponse.data.fieldErrors);
+                            }
+                            $scope.showErrorMessage("Error when saving main insured: " + message);
                             console.log(errorResponse);
                         });
                 //
@@ -683,6 +692,18 @@
                 //        console.log(errorResponse);
                 //    }
                 //)
+            }
+            var validateInsuredPerson = function (insuredPerson) {
+                var result = true;
+                if (!isNotBlank(insuredPerson.email)) {
+                    result = false;
+                    $scope.showErrorMessage("Insured person's email is mandatory.");
+                }
+                if (!isNotBlank(insuredPerson.mobilePhoneNumber.number)) {
+                    result = false;
+                    $scope.showErrorMessage("Insured person's mobile phone is mandatory.");
+                }
+                return result;
             }
             // AKT-820
             $scope.onSubmitPaymentDetails = function () {
