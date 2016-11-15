@@ -57,7 +57,7 @@
             <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
             {{ errorMessage }}
         </div>
-        <div class="alert alert-info" role="alert" ng-hide="collectionFiles && collectionFiles.length > 0">
+        <div class="alert alert-info" role="alert" ng-show="collectionFiles.length == 0">
             There are no collection file yet.
         </div>
         <!--Paging http://jasonwatmore.com/post/2016/01/31/angularjs-pagination-example-with-logic-like-google-->
@@ -101,7 +101,7 @@
             </tbody>
         </table>
         <ul class="pagination-md mx-auto pagination ng-isolate-scope ng-valid">
-            <li class="pagination-page" ng-class="{active: collectionFilesDataTable.pager.currentPage == page,disabled: ngDisabled&&!page.active}" ng-repeat="page in collectionFilesDataTable.pager.pages">
+            <li class="pagination-page" ng-class="{active: collectionFilesDataTable.pager.currentPage == page}" ng-repeat="page in collectionFilesDataTable.pager.pages">
                 <a ng-click="collectionFilesDataTable.setPage(page)">
                     {{page + 1}}
                 </a>
