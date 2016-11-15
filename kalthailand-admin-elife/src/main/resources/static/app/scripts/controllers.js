@@ -666,32 +666,15 @@
                         function (errorResponse) {
                             $scope.isSavingMainInsured = false;
                             var errorCode = errorResponse.data.code;
-                            var message = errorResponse.data.userMessage;
+                            var errorMessage = errorResponse.data.userMessage;
+                            var errorDetails;
                             if (errorCode == "0010") {
-                                message = "Bean error: " + ERROR_HANDLER.fieldErrorsToMessage(errorResponse.data.fieldErrors);
+                                errorDetails = ERROR_HANDLER.fieldErrorsToMessages(errorResponse.data.fieldErrors);
                             }
-                            $scope.showErrorMessage("Error when saving main insured: " + message);
+                            $scope.showErrorMessage(errorMessage, errorDetails);
                             console.log(errorResponse);
                         });
-                //
-                //$http({
-                //    url: '/api-elife/policies/' + $scope.policyDetail.policyId + '/main-insured/person',
-                //    method: 'POST',
-                //    data: mainInsuredPerson,
-                //    headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-                //}).
-                //then(
-                //    function (successResponse) {
-                //        $scope.isSavingMainInsured = false;
-                //        $scope.policyDetail = successResponse.data;
-                //        $scope.showSuccessMessage("Person info of main insured is updated successfully!");
-                //    },
-                //    function (errorResponse) {
-                //        $scope.isSavingMainInsured = false;
-                //        $scope.showErrorMessage("Error when saving main insured." + errorResponse.data.userMessage);
-                //        console.log(errorResponse);
-                //    }
-                //)
+
             }
             var validateInsuredPerson = function (insuredPerson) {
                 var result = true;
@@ -900,13 +883,15 @@
 
             }
 
-            $scope.showErrorMessage = function (msg) {
+            $scope.showErrorMessage = function (msg, errorDetails) {
                 $scope.successMessage = null;
                 $scope.errorMessage = msg;
+                $scope.errorDetails = errorDetails;
             }
             $scope.showSuccessMessage = function (msg) {
                 $scope.successMessage = msg;
                 $scope.errorMessage = null;
+                $scope.errorDetails = null;
             }
 
         }

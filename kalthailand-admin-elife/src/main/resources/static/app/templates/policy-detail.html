@@ -29,6 +29,11 @@
         <div class="alert alert-danger" role="alert" ng-show="errorMessage">
             <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
             {{ errorMessage }}
+            <ul ng-show="errorDetails">
+                <li ng-repeat="detailError in errorDetails">
+                    {{detailError}}
+                </li>
+            </ul>
         </div>
         <div class="alert alert-success" role="alert" ng-show="successMessage">
             <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
@@ -316,29 +321,6 @@
                                 </a>
                             </div>
                         </div>
-
-                        <!--
-
-                                <div class="row">
-                                    <div class="x_panel" ng-show="policyDetail">
-                                        <div class="x_content">
-                                            <a class="btn btn-app" ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/APPLICATION_FORM/download">
-                                                <i class="fa fa-paperclip"></i>Application Form (not validated)
-                                            </a>
-                                            <a class="btn btn-app" ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/APPLICATION_FORM_VALIDATED/download" ng-show="policyDetail.status == 'VALIDATED'">
-                                                <i class="fa fa-paperclip"></i>Application Form (validated)
-                                            </a>
-                                            <a class="btn btn-app" ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/DA_FORM/download" ng-show="isEnabledAutoPay(policyDetail)">
-                                                <i class="fa fa-paperclip"></i>DA Form
-                                            </a>
-                                            <a class="btn btn-app" ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/ERECEIPT_PDF/download" ng-show="policyDetail.status == 'VALIDATED'">
-                                                <i class="fa fa-paperclip"></i>eReceipt
-                                            </a>
-                                        </div>
-
-                                    </div>
-                                </div>
-                        -->
                     </div>
                 </div>
 

@@ -146,4 +146,11 @@ ErrorHandler.prototype.fieldErrorsToMessage = function (fieldErrors) {
     }
     return message;
 }
+ErrorHandler.prototype.fieldErrorsToMessages = function (fieldErrors) {
+    var messages = [];
+    for (i = 0; i < fieldErrors.length; i++) {
+        messages.push(this.fieldErrorToMessage(fieldErrors[i]));
+    }
+    return messages;
+}
 var ERROR_HANDLER = new ErrorHandler();
