@@ -2,10 +2,12 @@ package th.co.krungthaiaxa.api.elife.model;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 import th.co.krungthaiaxa.api.elife.model.enums.PhoneNumberType;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -16,6 +18,8 @@ public class PhoneNumber implements Serializable {
     private Integer countryCode;
     private Integer areaCode;
     @NotBlank
+    @Length(min = 10, max = 10, message = "The phone number must contain 10 characters.")
+    @Pattern(regexp = "[0-9]+", message = "The phone number must contain only number characters.")
     private String number;
 
     public PhoneNumber() {
