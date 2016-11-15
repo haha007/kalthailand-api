@@ -61,7 +61,7 @@
             There are no collection file yet.
         </div>
         <!--Paging http://jasonwatmore.com/post/2016/01/31/angularjs-pagination-example-with-logic-like-google-->
-
+        <!-- DataTable -->
         <table class="table table-bordered table-hover table-condensed">
             <thead>
             <tr>
@@ -76,13 +76,13 @@
             </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="collectionFile in collectionFiles"
+            <tr ng-repeat="collectionFile in collectionFilesDataTable.dataInPage"
                 ng-class="{
                         '': collectionFile.deductionFile.lines.length && collectionFile.lines.length == collectionFile.deductionFile.lines.length,
                         'danger': collectionFile.deductionFile.lines.length && collectionFile.lines.length != collectionFile.deductionFile.lines.length,
                         'warning': collectionFile.lines.length != collectionFile.deductionFile.lines.length
                     }">
-                <td><span class="label label-default">{{$index + 1}}</span></td>
+                <td><span class="label label-default">{{collectionFile.$$index + 1}}</span></td>
                 <td>{{ collectionFile.receivedDate | date:'yyyy-MM-dd HH:mm:ss Z'}}</td>
                 <td>{{ collectionFile.jobStartedDate | date:'yyyy-MM-dd HH:mm:ss Z'}}</td>
                 <td>{{ collectionFile.jobEndedDate | date:'yyyy-MM-dd HH:mm:ss Z'}}</td>
@@ -100,6 +100,13 @@
             </tr>
             </tbody>
         </table>
+        <ul class="pagination-md mx-auto pagination ng-isolate-scope ng-valid">
+            <li class="pagination-page" ng-class="{active: collectionFilesDataTable.pager.currentPage == page,disabled: ngDisabled&&!page.active}" ng-repeat="page in collectionFilesDataTable.pager.pages">
+                <a ng-click="collectionFilesDataTable.setPage(page)">
+                    {{page + 1}}
+                </a>
+            </li>
+        </ul>
         <div>
             <div class="page-header">
                 <h3></h3>

@@ -9,6 +9,9 @@ function DataTable(data, pageSize) {
     this.construct(data, pageSize);
 }
 DataTable.prototype.construct = function (data, pageSize) {
+    if (!hasValue(data)) {
+        data = [];
+    }
     this.data = data;
     this.pager = new Pager(data.length, pageSize);
     this.pager.calculatePages(0);
@@ -19,8 +22,9 @@ DataTable.prototype.calculateDataInPage = function (data, pager) {
     var startIndex = pager.startIndex;
     var endIndex = pager.endIndex;
     if (startIndex >= 0 && endIndex >= 0) {
-        for (i = startIndex; i < endIndex; i++) {
+        for (i = startIndex; i <= endIndex; i++) {
             var row = data[i];
+            row.$$index = i;
             dataInPage.push(row);
         }
     }
@@ -46,6 +50,7 @@ function Pager(totalItems, pageSize) {
     this.endPage = undefined;
     this.startIndex = undefined;
     this.endIndex = undefined;
+    this.pages = undefined;
 
     this.calculatePages(0);
 }
@@ -91,7 +96,8 @@ Pager.prototype.calculatePages = function (currentPage) {
     var endIndex = Math.min(startIndex + pageSize - 1, totalItems - 1);
 
     // create an array of pages to ng-repeat in the pager control
-    var pages = _.range(startPage, endPage + 1);
+    //var pages = _.range(startPage, endPage + 1);
+    var pages = Array.prototype.newArray(startPage, endPage + 1);
 
     // return object with all pager properties required by the view
     this.currentPage = currentPage;
@@ -102,4 +108,5 @@ Pager.prototype.calculatePages = function (currentPage) {
     this.endPage = endPage;
     this.startIndex = startIndex;
     this.endIndex = endIndex;
+    this.pages = pages;
 };

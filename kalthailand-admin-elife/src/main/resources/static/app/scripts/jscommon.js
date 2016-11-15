@@ -15,7 +15,14 @@ Array.prototype.remove = function (item) {
         }
     }
 };
-
+Array.prototype.newArray = function (fromValue, toValue) {
+    var result = [];
+    var length = toValue - fromValue;
+    for (i = 0; i < length; i++) {
+        result.push(fromValue + i);
+    }
+    return result;
+};
 Array.prototype.sortByField = function (fieldName, asc) {
 
     var compareFn = function (a, b) {

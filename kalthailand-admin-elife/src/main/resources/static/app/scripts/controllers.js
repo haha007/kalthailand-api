@@ -290,7 +290,7 @@
 
     app.controller('CollectionFileController', function ($scope, $route, $http, CollectionFile, $localStorage) {
         $scope.$route = $route;
-
+        $scope.collectionFilesDataTable;
 
         fetchCollectionFileDetails();
 
@@ -314,7 +314,7 @@
                     $scope.isUploading = null;
                     $scope.showErrorMessage(errorResponse.data.userMessage);
                 });
-        }
+        };
 
         $scope.processLastCollectionFiles = function (event) {
             $scope.isProcessing = true;
@@ -337,14 +337,16 @@
                     $scope.isProcessing = null;
                     $scope.showErrorMessage(errorResponse.data.userMessage);
                 });
-        }
+        };
 
         $scope.isProccessed = function (collectionFile) {
             return collectionFile.deductionFile.lines && collectionFile.deductionFile.lines.length != 0;
-        }
+        };
         function fetchCollectionFileDetails(callback) {
             CollectionFile.query(function (response) {
                 $scope.collectionFiles = response;
+                $scope.collectionFilesDataTable = new DataTable($scope.collectionFiles, 10);
+                $scope.collectionFilesDataTable.setPage(0);
                 if (hasValue(callback)) {
                     callback.call(this);
                 }
@@ -355,17 +357,17 @@
             $scope.infoMessage = msg;
             $scope.successMessage = null;
             $scope.errorMessage = null;
-        }
+        };
         $scope.showErrorMessage = function (msg) {
             $scope.infoMessage = null;
             $scope.successMessage = null;
             $scope.errorMessage = msg;
-        }
+        };
         $scope.showSuccessMessage = function (msg) {
             $scope.infoMessage = null;
             $scope.successMessage = msg;
             $scope.errorMessage = null;
-        }
+        };
     });
 
     app.controller('ConfigurationController', function ($scope, $route, $http, PolicyQuotaConfig, PolicyNumberUpload, $localStorage) {
