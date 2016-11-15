@@ -99,14 +99,26 @@
                 </td>
             </tr>
             </tbody>
+            <tfoot>
+            <tr>
+                <td colspan="8">
+                    <div class="btn-toolbar">
+                        <div class="btn-group">
+                            <button ng-repeat="page in collectionFilesDataTable.pager.pages"
+                                    ng-click="collectionFilesDataTable.setPage(page)"
+                                    ng-class="{active: collectionFilesDataTable.pager.currentPage == page}"
+                                    class="btn btn-success"
+                                    type="button">
+                                {{page + 1}}
+                            </button>
+                        </div>
+
+                    </div>
+                </td>
+            </tr>
+            </tfoot>
         </table>
-        <ul class="pagination-md mx-auto pagination ng-isolate-scope ng-valid">
-            <li class="pagination-page" ng-class="{active: collectionFilesDataTable.pager.currentPage == page}" ng-repeat="page in collectionFilesDataTable.pager.pages">
-                <a ng-click="collectionFilesDataTable.setPage(page)">
-                    {{page + 1}}
-                </a>
-            </li>
-        </ul>
+
         <div>
             <div class="page-header">
                 <h3></h3>
