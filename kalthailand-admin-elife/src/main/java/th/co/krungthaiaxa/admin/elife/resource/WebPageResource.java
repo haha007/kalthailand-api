@@ -18,6 +18,7 @@ import th.co.krungthaiaxa.api.common.model.projectinfo.ProjectInfoProperties;
 import th.co.krungthaiaxa.api.common.utils.RequestUtil;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 /**
  * @author khoi.tran on 11/8/16.
@@ -40,12 +41,12 @@ public class WebPageResource {
     }
 
     @RequestMapping("/")
-    public String index(Model model) {
-        return login(model);
+    public String index(Model model, HttpServletRequest httpServletRequest) {
+        return login(model, httpServletRequest);
     }
 
     @RequestMapping("/login")
-    public String login(Model model) {
+    public String login(Model model, HttpServletRequest httpServletRequest) {
         LoginFormData loginFormData = new LoginFormData();
         model.addAttribute("loginFormData", loginFormData);
         model.addAttribute(PAGE_MODEL_ATTR_PROJECT_INFO, projectInfoProperties);
@@ -70,10 +71,12 @@ public class WebPageResource {
     public String authentication(@ModelAttribute LoginFormData loginFormData, Model model, BindingResult bindingResult, HttpServletRequest httpServletRequest) {
         try {
             AuthenticatedFeaturesUser authenticatedFeaturesUser = authenticateService.authenticatedUserWithAvailableFeatures(loginFormData);
+            //Disabled the old session (which can be login with different account)
+            HttpSession session = RequestUtil.createNewSession(httpServletRequest);
             model.addAttribute(PAGE_MODEL_ATTR_USER, authenticatedFeaturesUser);
             model.addAttribute(PAGE_MODEL_ATTR_PROJECT_INFO, projectInfoProperties);
             //TODO session is only the temporary solution because it cannot apply for clustering.
-            httpServletRequest.getSession().setAttribute(SESSION_ATTR_USER, authenticatedFeaturesUser);
+            session.setAttribute(SESSION_ATTR_USER, authenticatedFeaturesUser);
             return "index";
         } catch (UnauthenticationException ex) {
             bindingResult.reject(ex.getErrorCode(), ex.getErrorMessage());
@@ -97,12 +100,12 @@ public class WebPageResource {
         //TODO session is only the temporary solution because it cannot apply for clustering.
         AuthenticatedFeaturesUser user = (AuthenticatedFeaturesUser) httpServletRequest.getSession().getAttribute(SESSION_ATTR_USER);
         if (user != null) {
-            String accessToken = RequestUtil.getAccessToken(httpServletRequest);
-            if (accessToken.equals(user.getAccessToken())) {
-                model.addAttribute(PAGE_MODEL_ATTR_USER, user);
-                model.addAttribute(PAGE_MODEL_ATTR_PROJECT_INFO, projectInfoProperties);
-                return "index";
-            }
+//            String accessToken = RequestUtil.getAccessToken(httpServletRequest);
+//            if (accessToken != null && accessToken.equals(user.getAccessToken())) {
+            model.addAttribute(PAGE_MODEL_ATTR_USER, user);
+            model.addAttribute(PAGE_MODEL_ATTR_PROJECT_INFO, projectInfoProperties);
+            return "index";
+//            }
         }
         return "redirect:/login";
     }

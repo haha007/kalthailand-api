@@ -9,6 +9,7 @@ import th.co.krungthaiaxa.api.common.model.error.Error;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -22,6 +23,15 @@ public class RequestUtil {
 
     public static String getAccessToken(HttpServletRequest httpServletRequest) {
         return httpServletRequest.getHeader(REQUEST_HEADER_ACCESS_TOKEN);
+    }
+
+    public static HttpSession createNewSession(HttpServletRequest httpServletRequest){
+        //Disabled the old session (which can be login with different account)
+        HttpSession session = httpServletRequest.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+        return httpServletRequest.getSession(true);
     }
 
     public static void sendError(Error error, Integer status, HttpServletResponse response) {

@@ -126,6 +126,7 @@ public class ClientSideRoleFilter implements Filter {
         return document.html();
     }
 
+    //TODO Duplicate to api-elife. {@link AuthorizationClient#checkPermission}
     private Boolean validateTokenAgainstRole(String token, String tokenRequiredRole) {
         URI validateRoleURI;
         try {
