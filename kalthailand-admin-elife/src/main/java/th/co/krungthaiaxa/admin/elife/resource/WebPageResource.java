@@ -15,6 +15,7 @@ import th.co.krungthaiaxa.admin.elife.service.AuthenticationClient;
 import th.co.krungthaiaxa.api.common.exeption.UnauthenticationException;
 import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
 import th.co.krungthaiaxa.api.common.model.projectinfo.ProjectInfoProperties;
+import th.co.krungthaiaxa.api.common.utils.RequestUtil;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -23,8 +24,8 @@ import javax.servlet.http.HttpServletRequest;
  */
 
 @Controller
-public class WebController {
-    public static final Logger LOGGER = LoggerFactory.getLogger(WebController.class);
+public class WebPageResource {
+    public static final Logger LOGGER = LoggerFactory.getLogger(WebPageResource.class);
     public static final String SESSION_ATTR_USER = "user";
     public static final String PAGE_MODEL_ATTR_USER = "user";
     public static final String PAGE_MODEL_ATTR_PROJECT_INFO = "projectInfo";
@@ -33,7 +34,7 @@ public class WebController {
     private final ProjectInfoProperties projectInfoProperties;
 
     @Autowired
-    public WebController(AuthenticationClient authenticateService, ProjectInfoProperties projectInfoProperties) {
+    public WebPageResource(AuthenticationClient authenticateService, ProjectInfoProperties projectInfoProperties) {
         this.authenticateService = authenticateService;
         this.projectInfoProperties = projectInfoProperties;
     }
@@ -96,12 +97,14 @@ public class WebController {
         //TODO session is only the temporary solution because it cannot apply for clustering.
         AuthenticatedFeaturesUser user = (AuthenticatedFeaturesUser) httpServletRequest.getSession().getAttribute(SESSION_ATTR_USER);
         if (user != null) {
-            model.addAttribute(PAGE_MODEL_ATTR_USER, user);
-            model.addAttribute(PAGE_MODEL_ATTR_PROJECT_INFO, projectInfoProperties);
-            return "index";
-        } else {
-            return "redirect:/login";
+            String accessToken = RequestUtil.getAccessToken(httpServletRequest);
+            if (accessToken.equals(user.getAccessToken())) {
+                model.addAttribute(PAGE_MODEL_ATTR_USER, user);
+                model.addAttribute(PAGE_MODEL_ATTR_PROJECT_INFO, projectInfoProperties);
+                return "index";
+            }
         }
+        return "redirect:/login";
     }
 
 }
