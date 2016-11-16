@@ -35,7 +35,7 @@ import java.util.Properties;
  */
 @Service
 public class AuthenticationClient {
-    private static final String UI_ROLE_FILTER_CONFIG_FILE = "/static/uiRoleFilter.properties";
+    private static final String UI_ROLE_FILTER_CONFIG_FILE = "/security/uiRoleFilter.properties";
     public static final Properties UI_ROLE_CONFIG = loadUiRoleConfiguration();
     @Value("${kal.api.auth.contextpath}")
     private String authContextPath;

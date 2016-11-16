@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+import th.co.krungthaiaxa.api.common.model.authentication.RoleConstants;
 import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
 import th.co.krungthaiaxa.api.common.utils.LogUtil;
 import th.co.krungthaiaxa.api.common.utils.RequestUtil;
@@ -88,7 +89,7 @@ public class KalApiTokenFilter implements Filter {
         try {
             boolean authorized = securityService.checkPermission(authToken, tokenRequiredRole);
             if (authorized) {
-                authorized = securityService.checkPermission(httpServletRequest, URI_REGEXP_POLICIES_MAIN_INSURED_PERSON, HttpMethod.POST, "UI_ELIFE_ADMIN");
+                authorized = securityService.checkPermission(httpServletRequest, URI_REGEXP_POLICIES_MAIN_INSURED_PERSON, HttpMethod.POST, RoleConstants.UI_ELIFE_ADMIN);
             }
             if (authorized) {
                 LogUtil.logRuntime(startTime, LogUtil.toStringRequestURL(httpServletRequest));
