@@ -30,10 +30,12 @@ public class AuthorizationClient {
     private String tokenValidationContexth;
     private RestTemplate template = new RestTemplate();
 
-    public boolean checkPermission(HttpServletRequest request, String resourceUri, HttpMethod httpMethod, String accessToken, String requiredRole) {
-        if (!request.getRequestURI().startsWith(resourceUri) || !request.getMethod().equalsIgnoreCase(httpMethod.name())) {
+    public boolean checkPermission(HttpServletRequest httpServletRequest, String authorizeResourceUri, HttpMethod authorizeHttpMethod, String requiredRole) {
+        String requestURI = httpServletRequest.getRequestURI();
+        if (!requestURI.matches(authorizeResourceUri) || !httpServletRequest.getMethod().equalsIgnoreCase(authorizeHttpMethod.name())) {
             return true;
         }
+        String accessToken = RequestUtil.getAccessToken(httpServletRequest);
         return checkPermission(accessToken, requiredRole);
     }
 

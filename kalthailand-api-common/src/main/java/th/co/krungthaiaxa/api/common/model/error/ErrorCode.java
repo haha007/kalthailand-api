@@ -117,7 +117,7 @@ public class ErrorCode {
 
     // ADMIN UI
     public static final String ERROR_CODE_AUTHORIZATION = "9001";
-    public static final Function<String, Error> UI_UNAUTHORIZED = msg -> new Error(ERROR_CODE_AUTHORIZATION, "You are not authorized to access.", msg);
+    public static final Function<String, Error> UI_UNAUTHORIZED = msg -> new Error(ERROR_CODE_AUTHORIZATION, "You don't have permission to perform the action.", msg);
     public static final Function<String, Error> NOTIFICATION_NOT_SENT = msg -> new Error("9002", "Notification was not sent. Error is: " + msg, "Notification was not sent. Error is: " + msg);
 
 }

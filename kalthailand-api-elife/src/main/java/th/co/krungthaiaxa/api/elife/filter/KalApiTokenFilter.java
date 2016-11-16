@@ -4,13 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
 import th.co.krungthaiaxa.api.common.utils.LogUtil;
 import th.co.krungthaiaxa.api.common.utils.RequestUtil;
@@ -25,16 +21,12 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.time.Instant;
-
-import static org.springframework.http.HttpMethod.GET;
-import static org.springframework.http.HttpStatus.OK;
 
 @Component
 public class KalApiTokenFilter implements Filter {
     private final static Logger logger = LoggerFactory.getLogger(KalApiTokenFilter.class);
+    public static final String URI_REGEXP_POLICIES_MAIN_INSURED_PERSON = "^.+/policies/[0-9a-zA-Z\\-]+/main-insured/person";
 
     @Value("${kal.api.auth.token.validation.url}")
     private String tokenValidationUrl;
@@ -55,7 +47,7 @@ public class KalApiTokenFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         Instant startTime = LogUtil.logRequestStarting(httpServletRequest);
-
+        String requestURI = httpServletRequest.getRequestURI();
         // For swagger documentation, we should let any request to UI thing go through
         if (httpServletRequest.getMethod().equals("GET")) {
             if (httpServletRequest.getRequestURI().endsWith("/swagger-ui.html") ||
@@ -95,40 +87,20 @@ public class KalApiTokenFilter implements Filter {
         String authToken = RequestUtil.getAccessToken(httpServletRequest);
         try {
             boolean authorized = securityService.checkPermission(authToken, tokenRequiredRole);
-
+            if (authorized) {
+                authorized = securityService.checkPermission(httpServletRequest, URI_REGEXP_POLICIES_MAIN_INSURED_PERSON, HttpMethod.POST, "UI_ELIFE_ADMIN");
+            }
+            if (authorized) {
+                LogUtil.logRuntime(startTime, LogUtil.toStringRequestURL(httpServletRequest));
+                chain.doFilter(request, response);
+            } else {
+                LogUtil.logRuntime(startTime, LogUtil.toStringRequestURL(httpServletRequest));
+                RequestUtil.sendErrorToResponse(ErrorCode.UI_UNAUTHORIZED.apply("Doesn't have permission to access API "), (HttpServletResponse) response);
+            }
         } catch (Exception ex) {
+            LogUtil.logRuntime(startTime, LogUtil.toStringRequestURL(httpServletRequest));
             RequestUtil.sendErrorToResponse(ErrorCode.UI_UNAUTHORIZED.apply("Cannot access API: " + ex.getMessage()), (HttpServletResponse) response);
         }
-
-        // Token might be expired, always have to check for validity
-        URI validateRoleURI;
-        try {
-            validateRoleURI = new URI(tokenValidationUrl + "/" + tokenRequiredRole);
-        } catch (URISyntaxException e) {
-            logger.error("Invalid URL [" + tokenValidationUrl + "/" + tokenRequiredRole + "]");
-            RequestUtil.sendErrorToResponse(ErrorCode.UI_UNAUTHORIZED.apply("Unable to check token validity"), (HttpServletResponse) response);
-            return;
-        }
-
-        HttpHeaders validateRoleHeaders = new HttpHeaders();
-        validateRoleHeaders.add("Content-Type", "application/json");
-        validateRoleHeaders.add(RequestUtil.REQUEST_HEADER_ACCESS_TOKEN, authToken);
-        UriComponentsBuilder validateRoleURIBuilder = UriComponentsBuilder.fromUri(validateRoleURI);
-        ResponseEntity<String> validateRoleURIResponse;
-        try {
-            validateRoleURIResponse = template.exchange(validateRoleURIBuilder.toUriString(), GET, new HttpEntity<>(validateRoleHeaders), String.class);
-        } catch (RestClientException e) {
-            RequestUtil.sendErrorToResponse(ErrorCode.UI_UNAUTHORIZED.apply("Unable to check if current token gives access to API"), (HttpServletResponse) response);
-            return;
-        }
-
-        if (validateRoleURIResponse.getStatusCode().value() != OK.value()) {
-            RequestUtil.sendErrorToResponse(ErrorCode.UI_UNAUTHORIZED.apply("Provided token doesn't give access to API"), (HttpServletResponse) response);
-            return;
-        }
-
-        LogUtil.logRuntime(startTime, LogUtil.toStringRequestURL(httpServletRequest));
-        chain.doFilter(request, response);
     }
 
     @Override
