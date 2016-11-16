@@ -27,7 +27,7 @@ import java.time.Instant;
 @Component
 public class KalApiTokenFilter implements Filter {
     private final static Logger logger = LoggerFactory.getLogger(KalApiTokenFilter.class);
-    public static final String URI_REGEXP_POLICIES_MAIN_INSURED_PERSON = "^.+/policies/[0-9a-zA-Z\\-]+/main-insured/person";
+    public static final String URI_REGEXP_POLICIES_MAIN_INSURED_PERSON = "^.*/policies/[0-9a-zA-Z\\-]+/main-insured/person.*";
 
     @Value("${kal.api.auth.token.validation.url}")
     private String tokenValidationUrl;
