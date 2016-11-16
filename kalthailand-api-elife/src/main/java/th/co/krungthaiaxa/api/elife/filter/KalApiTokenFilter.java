@@ -2,6 +2,7 @@ package th.co.krungthaiaxa.api.elife.filter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -13,6 +14,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
 import th.co.krungthaiaxa.api.common.utils.LogUtil;
 import th.co.krungthaiaxa.api.common.utils.RequestUtil;
+import th.co.krungthaiaxa.api.elife.security.AuthorizationClient;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -33,12 +35,14 @@ import static org.springframework.http.HttpStatus.OK;
 @Component
 public class KalApiTokenFilter implements Filter {
     private final static Logger logger = LoggerFactory.getLogger(KalApiTokenFilter.class);
-    @Value("${kal.api.auth.header}")
-    private String tokenHeader;
+
     @Value("${kal.api.auth.token.validation.url}")
     private String tokenValidationUrl;
     @Value("${kal.api.auth.required.role}")
     private String tokenRequiredRole;
+
+    @Autowired
+    private AuthorizationClient securityService;
 
     private RestTemplate template = new RestTemplate();
 
@@ -89,6 +93,12 @@ public class KalApiTokenFilter implements Filter {
 
         // For everything else, we should check for token validity
         String authToken = RequestUtil.getAccessToken(httpServletRequest);
+        try {
+            boolean authorized = securityService.checkPermission(authToken, tokenRequiredRole);
+
+        } catch (Exception ex) {
+            RequestUtil.sendErrorToResponse(ErrorCode.UI_UNAUTHORIZED.apply("Cannot access API: " + ex.getMessage()), (HttpServletResponse) response);
+        }
 
         // Token might be expired, always have to check for validity
         URI validateRoleURI;
@@ -102,7 +112,7 @@ public class KalApiTokenFilter implements Filter {
 
         HttpHeaders validateRoleHeaders = new HttpHeaders();
         validateRoleHeaders.add("Content-Type", "application/json");
-        validateRoleHeaders.add(tokenHeader, authToken);
+        validateRoleHeaders.add(RequestUtil.REQUEST_HEADER_ACCESS_TOKEN, authToken);
         UriComponentsBuilder validateRoleURIBuilder = UriComponentsBuilder.fromUri(validateRoleURI);
         ResponseEntity<String> validateRoleURIResponse;
         try {

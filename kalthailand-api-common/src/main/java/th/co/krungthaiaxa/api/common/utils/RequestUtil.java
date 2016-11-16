@@ -4,6 +4,7 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import th.co.krungthaiaxa.api.common.exeption.UnexpectedException;
 import th.co.krungthaiaxa.api.common.model.error.Error;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,7 +18,7 @@ import java.io.OutputStream;
 public class RequestUtil {
     public static final Logger LOGGER = LoggerFactory.getLogger(RequestUtil.class);
     public static final String PATTERN_LOCAL_DATE = "yyyy-MM-dd";
-    private static final String REQUEST_HEADER_ACCESS_TOKEN = "Authorization";
+    public static final String REQUEST_HEADER_ACCESS_TOKEN = "Authorization";
 
     public static String getAccessToken(HttpServletRequest httpServletRequest) {
         return httpServletRequest.getHeader(REQUEST_HEADER_ACCESS_TOKEN);
@@ -30,7 +31,7 @@ public class RequestUtil {
         try {
             response.getWriter().write(new String(JsonUtil.getJson(error), "UTF-8"));
         } catch (IOException e) {
-            throw new IllegalArgumentException("Unable to get valid error message.", e);
+            throw new UnexpectedException("Unable to get valid error message. " + e.getMessage(), e);
         }
     }
 
@@ -44,7 +45,8 @@ public class RequestUtil {
         try (OutputStream outStream = response.getOutputStream()) {
             IOUtils.write(content, outStream);
         } catch (IOException e) {
-            LOGGER.error("Unable to send error in response", e);
+            LOGGER.error("Unable to send error in response. " + e.getMessage(), e);
+            throw new UnexpectedException("Unable to send error in response. " + e.getMessage(), e);
         }
     }
 }

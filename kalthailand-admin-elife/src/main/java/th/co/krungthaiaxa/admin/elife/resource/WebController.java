@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import th.co.krungthaiaxa.admin.elife.model.AuthenticatedFeaturesUser;
 import th.co.krungthaiaxa.admin.elife.model.LoginFormData;
 import th.co.krungthaiaxa.admin.elife.service.AuthenticationClient;
-import th.co.krungthaiaxa.api.common.exeption.UnauthenticatedException;
+import th.co.krungthaiaxa.api.common.exeption.UnauthenticationException;
 import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
 import th.co.krungthaiaxa.api.common.model.projectinfo.ProjectInfoProperties;
 
@@ -74,7 +74,7 @@ public class WebController {
             //TODO session is only the temporary solution because it cannot apply for clustering.
             httpServletRequest.getSession().setAttribute(SESSION_ATTR_USER, authenticatedFeaturesUser);
             return "index";
-        } catch (UnauthenticatedException ex) {
+        } catch (UnauthenticationException ex) {
             bindingResult.reject(ex.getErrorCode(), ex.getErrorMessage());
             return "login";
         } catch (Exception ex) {

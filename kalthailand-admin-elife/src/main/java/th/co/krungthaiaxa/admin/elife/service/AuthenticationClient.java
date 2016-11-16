@@ -12,7 +12,7 @@ import org.springframework.web.client.RestTemplate;
 import th.co.krungthaiaxa.admin.elife.model.AuthenticatedFeaturesUser;
 import th.co.krungthaiaxa.admin.elife.model.LoginFormData;
 import th.co.krungthaiaxa.api.common.exeption.JsonConverterException;
-import th.co.krungthaiaxa.api.common.exeption.UnauthenticatedException;
+import th.co.krungthaiaxa.api.common.exeption.UnauthenticationException;
 import th.co.krungthaiaxa.api.common.exeption.UnexpectedException;
 import th.co.krungthaiaxa.api.common.model.authentication.AuthenticatedUser;
 import th.co.krungthaiaxa.api.common.model.error.Error;
@@ -57,9 +57,9 @@ public class AuthenticationClient {
             String responseJson = ex.getResponseBodyAsString();
             try {
                 Error error = ObjectMapperUtil.toObject(objectMapper, responseJson, Error.class);
-                throw new UnauthenticatedException("Error from authentication service: " + error.getUserMessage(), ex);
+                throw new UnauthenticationException("Error from authentication service: " + error.getUserMessage(), ex);
             } catch (JsonConverterException jsonException) {
-                throw new UnauthenticatedException("Error from authentication service: " + ex.getMessage(), jsonException);
+                throw new UnauthenticationException("Error from authentication service: " + ex.getMessage(), jsonException);
             }
         } catch (HttpClientErrorException ex) {
             String responseJson = ex.getResponseBodyAsString();
@@ -67,12 +67,12 @@ public class AuthenticationClient {
             try {
                 Error error = ObjectMapperUtil.toObject(objectMapper, responseJson, Error.class);
                 if (ErrorCode.ERROR_CODE_AUTHENTICATION.equals(error.getCode())) {
-                    throw new UnauthenticatedException("Invalid email/password combination. Please try again.", ex);
+                    throw new UnauthenticationException("Invalid email/password combination. Please try again.", ex);
                 } else {
-                    throw new UnauthenticatedException("Error from authentication service: " + error.getUserMessage(), ex);
+                    throw new UnauthenticationException("Error from authentication service: " + error.getUserMessage(), ex);
                 }
             } catch (JsonConverterException jsonException) {
-                throw new UnauthenticatedException("Error from authentication service: " + ex.getMessage(), jsonException);
+                throw new UnauthenticationException("Error from authentication service: " + ex.getMessage(), jsonException);
             }
         }
     }

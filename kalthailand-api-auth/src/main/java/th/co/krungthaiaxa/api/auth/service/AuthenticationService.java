@@ -13,7 +13,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.auth.jwt.JwtTokenUtil;
 import th.co.krungthaiaxa.api.auth.model.RequestForToken;
-import th.co.krungthaiaxa.api.common.exeption.UnauthenticatedException;
+import th.co.krungthaiaxa.api.common.exeption.UnauthenticationException;
 import th.co.krungthaiaxa.api.common.model.authentication.AuthenticatedUser;
 import th.co.krungthaiaxa.api.common.model.authentication.AuthenticatedUserMapper;
 import th.co.krungthaiaxa.api.common.utils.LogUtil;
@@ -54,7 +54,7 @@ public class AuthenticationService {
             LogUtil.logRuntime(start, "Authenticate " + requestForToken.getUserName());
             return result;
         } catch (AuthenticationException ex) {
-            throw new UnauthenticatedException("Unauthenticated " + requestForToken.getUserName() + ": " + ex.getMessage(), ex);
+            throw new UnauthenticationException("Unauthenticated " + requestForToken.getUserName() + ": " + ex.getMessage(), ex);
         }
     }
 }

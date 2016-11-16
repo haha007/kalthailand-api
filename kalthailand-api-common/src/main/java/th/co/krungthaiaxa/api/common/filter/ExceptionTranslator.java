@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import th.co.krungthaiaxa.api.common.exeption.BaseException;
 import th.co.krungthaiaxa.api.common.exeption.BeanValidationException;
 import th.co.krungthaiaxa.api.common.exeption.BeanValidationExceptionIfc;
-import th.co.krungthaiaxa.api.common.exeption.UnauthenticatedException;
+import th.co.krungthaiaxa.api.common.exeption.UnauthenticationException;
 import th.co.krungthaiaxa.api.common.model.error.Error;
 import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
 import th.co.krungthaiaxa.api.common.model.error.FieldError;
@@ -41,10 +41,10 @@ public class ExceptionTranslator {
     @Inject
     public ExceptionTranslator(BeanValidationExceptionTranslator beanValidationExceptionTranslator) {this.beanValidationExceptionTranslator = beanValidationExceptionTranslator;}
 
-    @ExceptionHandler({ UnauthenticatedException.class })
+    @ExceptionHandler({ UnauthenticationException.class })
     @ResponseBody
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    public Error processUnauthenticationException(final UnauthenticatedException exception) {
+    public Error processUnauthenticationException(final UnauthenticationException exception) {
         return processInternalException(exception);
     }
 
