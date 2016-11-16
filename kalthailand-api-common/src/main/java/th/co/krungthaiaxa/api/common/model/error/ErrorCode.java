@@ -3,6 +3,18 @@ package th.co.krungthaiaxa.api.common.model.error;
 import java.util.function.Function;
 
 public class ErrorCode {
+
+    //SIGNING
+    public static final Function<String, Error> PDF_INVALID = msg -> new Error("0001", "Received PDF is not valid", "Received PDF is not valid. Error is:[" + msg + "].");
+    public static final Error NOT_BASE_64_ENCODED = new Error("0002", "The document is not Base 64 encoded.", "The document is not Base 64 encoded.");
+    public static final Function<String, Error> UNABLE_TO_SIGN = msg -> new Error("0003", "Unable to sign the document", "Unable to sign the document. Error is:[" + msg + "].");
+    public static final Function<String, Error> UNAUTHORIZED_SIGN = msg -> new Error("0004", "You are not authorized to use this API", msg);
+    //BLACK_LIST
+    public static final Function<String, Error> INVALID_THAI_ID_FORMAT = msg -> new Error("00001", "Invalid thai ID to check blacklist. Error is [" + msg + "].", "Thai ID format must be number only. Error is [" + msg + "].");
+    public static final Function<String, Error> INVALID_THAI_ID_LENGTH = msg -> new Error("00002", "Invalid thai ID length to check blacklist. Error is [" + msg + "].", "Thai ID length must be 13. Error is [" + msg + "].");
+    public static final Function<String, Error> UNAUTHORIZED_BLACKLIST = msg -> new Error("00003", "You are not authorized to use this API", msg);
+    public static final Function<String, Error> INVALID_BLACKLIST_FILE = msg -> new Error("9003", "Invalid Excel file. Error is: " + msg, "Inavlid Excel file. Error is: " + msg);
+
     public static final String DETAILS_TYPE_DUPLICATE = "Duplicate";
 
     public static final String ERROR_CODE_UNKNOWN_ERROR = "0000";

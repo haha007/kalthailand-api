@@ -20,11 +20,11 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.client.RestTemplate;
+import th.co.krungthaiaxa.api.common.model.error.Error;
+import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
 import th.co.krungthaiaxa.api.signing.KALApiSigning;
 import th.co.krungthaiaxa.api.signing.TestUtil;
 import th.co.krungthaiaxa.api.signing.filter.KalApiTokenFilter;
-import th.co.krungthaiaxa.api.signing.model.Error;
-import th.co.krungthaiaxa.api.signing.model.ErrorCode;
 
 import javax.inject.Inject;
 import java.io.IOException;

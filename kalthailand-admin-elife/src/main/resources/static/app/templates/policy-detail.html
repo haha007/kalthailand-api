@@ -7,7 +7,14 @@
         background: #26B99A;
     }
 </style>
-<div class="row">
+
+<style permission="role-policy-main-insured-person-editor">
+    .no-role-policy-main-insured-person-editor {
+        /*If the user do have the required role, the component doesn't need required role will be hidden.*/
+        display: none;
+    }
+</style>
+<div id="role-policy" class="row">
     <!-- BEGIN Page specific stuff -->
     <div class="col-md-12 col-sm-12 col-xs-12 main ng-cloak">
         <div class="page-title">
@@ -39,7 +46,7 @@
             <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
             {{ successMessage }}
         </div>
-        <div id="paymentDetailContainer">
+        <div>
             <div class="x_panel" ng-show="policyDetail">
                 <div class="x_title">
                     <h2>Policy information</h2>
@@ -177,7 +184,7 @@
                 </div>
             </div>
             <!-- PAYMENT DETAILS -->
-            <div class="x_panel" ng-show="policyDetail && policyDetail.status == 'PENDING_PAYMENT'">
+            <div id="role-policy-payment" class="x_panel" ng-show="policyDetail && policyDetail.status == 'PENDING_PAYMENT'">
                 <div class="x_title">
                     <h2>Payment information
                     </h2>
@@ -251,8 +258,8 @@
                             <label class="col-sm-4 control-label">Email</label>
 
                             <div class="col-sm-8">
-                                <!--<span class="form-control-static">{{ policyDetail.insureds[0].person.email }}</span>-->
-                                <input class="form-control" type="text" ng-model="policyDetail.insureds[0].person.email" id="orderId" required>
+                                <span class="form-control-static no-role-policy-main-insured-person-editor">{{ policyDetail.insureds[0].person.email }}</span>
+                                <input class="form-control" permission="role-policy-main-insured-person-editor" type="text" ng-model="policyDetail.insureds[0].person.email" id="orderId" required>
                             </div>
 
                         </div>
@@ -274,15 +281,15 @@
                             <label class="col-sm-4 control-label">Mobile phone</label>
 
                             <div class="col-sm-8">
-                                <!--<span class="form-control-static">{{ policyDetail.insureds[0].person.mobilePhoneNumber.number }}</span>-->
-                                <input class="form-control" type="text" ng-model="policyDetail.insureds[0].person.mobilePhoneNumber.number" id="orderId" required>
+                                <span class="form-control-static no-role-policy-main-insured-person-editor">{{ policyDetail.insureds[0].person.mobilePhoneNumber.number }}</span>
+                                <input class="form-control" permission="role-policy-main-insured-person-editor" type="text" ng-model="policyDetail.insureds[0].person.mobilePhoneNumber.number" id="orderId" required>
                             </div>
                         </div>
                     </div>
-                    <div class="ln_solid"></div>
-                    <div class="form-group">
+                    <div class="ln_solid" permission="role-policy-main-insured-person-editor"></div>
+                    <div class="form-group" permission="role-policy-main-insured-person-editor">
                         <div class="col-md-3">
-                            <button ng-disabled="isSavingMainInsured" ng-click="saveMainInsuredPerson()" type="button" class="btn btn-success">Save Insured</button>
+                            <button ng-disabled="isSavingMainInsured" ng-click="saveMainInsuredPerson()" type="button" class=" btn btn-success">Save Insured</button>
                         </div>
                     </div>
                 </div>

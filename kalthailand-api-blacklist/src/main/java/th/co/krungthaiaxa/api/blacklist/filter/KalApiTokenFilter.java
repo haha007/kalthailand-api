@@ -1,21 +1,18 @@
 package th.co.krungthaiaxa.api.blacklist.filter;
 
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
-import th.co.krungthaiaxa.api.blacklist.model.Error;
-import th.co.krungthaiaxa.api.blacklist.model.ErrorCode;
-import th.co.krungthaiaxa.api.blacklist.utils.JsonUtil;
+import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
 import th.co.krungthaiaxa.api.common.utils.LogUtil;
+import th.co.krungthaiaxa.api.common.utils.RequestUtil;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -26,7 +23,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Instant;
@@ -90,7 +86,7 @@ public class KalApiTokenFilter implements Filter {
             validateRoleURI = new URI(tokenValidationUrl + "/" + tokenRequiredRole);
         } catch (URISyntaxException e) {
             logger.error("Invalid URL [" + tokenValidationUrl + "/" + tokenRequiredRole + "]");
-            sendErrorToResponse(ErrorCode.UNAUTHORIZED.apply("Unable to check token validity"), (HttpServletResponse) response);
+            RequestUtil.sendErrorToResponse(ErrorCode.UNAUTHORIZED_BLACKLIST.apply("Unable to check token validity"), (HttpServletResponse) response);
             return;
         }
 
@@ -102,12 +98,12 @@ public class KalApiTokenFilter implements Filter {
         try {
             validateRoleURIResponse = template.exchange(validateRoleURIBuilder.toUriString(), GET, new HttpEntity<>(validateRoleHeaders), String.class);
         } catch (RestClientException e) {
-            sendErrorToResponse(ErrorCode.UNAUTHORIZED.apply("Unable to check if current token gives access to API"), (HttpServletResponse) response);
+            RequestUtil.sendErrorToResponse(ErrorCode.UNAUTHORIZED_BLACKLIST.apply("Unable to check if current token gives access to API"), (HttpServletResponse) response);
             return;
         }
 
         if (validateRoleURIResponse.getStatusCode().value() != OK.value()) {
-            sendErrorToResponse(ErrorCode.UNAUTHORIZED.apply("Provided token doesn't give access to API"), (HttpServletResponse) response);
+            RequestUtil.sendErrorToResponse(ErrorCode.UNAUTHORIZED_BLACKLIST.apply("Provided token doesn't give access to API"), (HttpServletResponse) response);
             return;
         }
 
@@ -118,20 +114,6 @@ public class KalApiTokenFilter implements Filter {
     @Override
     public void destroy() {
 
-    }
-
-    private void sendErrorToResponse(Error error, HttpServletResponse response) {
-        byte[] content = JsonUtil.getJson(error);
-
-        response.setHeader("Content-type", "application/json");
-        response.setContentLength(content.length);
-        response.setStatus(HttpStatus.UNAUTHORIZED.value());
-
-        try (OutputStream outStream = response.getOutputStream()) {
-            IOUtils.write(content, outStream);
-        } catch (IOException e) {
-            logger.error("Unable to send error in response", e);
-        }
     }
 
     public void setTemplate(RestTemplate template) {

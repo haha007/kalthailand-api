@@ -1,8 +1,8 @@
 package th.co.krungthaiaxa.api.signing;
 
-
+import th.co.krungthaiaxa.api.common.model.error.Error;
 import th.co.krungthaiaxa.api.signing.utils.JsonUtil;
-import th.co.krungthaiaxa.api.signing.model.Error;
+
 import java.io.IOException;
 
 public class TestUtil {

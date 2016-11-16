@@ -3,6 +3,7 @@ package th.co.krungthaiaxa.admin.elife.filter;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,7 +43,7 @@ import static org.springframework.http.HttpStatus.OK;
 @Component
 public class ClientSideRoleFilter implements Filter {
     private final static Logger LOGGER = LoggerFactory.getLogger(ClientSideRoleFilter.class);
-    
+    private static final String DOM_ATTR_ROLE = "permission";
     private final Properties uiRoleConfiguration = AuthenticationClient.UI_ROLE_CONFIG;
     @Value("${kal.api.auth.header}")
     private String tokenHeader;
@@ -102,10 +103,11 @@ public class ClientSideRoleFilter implements Filter {
         Document document = Jsoup.parse(html);
         Enumeration propertyNames = properties.propertyNames();
         while (propertyNames.hasMoreElements()) {
-            String propertyName = (String) propertyNames.nextElement();
-            Element element = document.getElementById(propertyName);
-            if (element != null) {
-                String requiredRoles = properties.getProperty(propertyName);
+            String roleName = (String) propertyNames.nextElement();
+            Element elementById = document.getElementById(roleName);
+            Elements elementsByPermission = document.getElementsByAttribute(DOM_ATTR_ROLE);
+            if (elementById != null) {
+                String requiredRoles = properties.getProperty(roleName);
                 String[] requiredRoleList = requiredRoles.split(",");
                 boolean hasRequiredRole = false;
                 for (int i = 0; i < requiredRoleList.length && !hasRequiredRole; i++) {
@@ -113,7 +115,10 @@ public class ClientSideRoleFilter implements Filter {
                 }
 
                 if (!hasRequiredRole) {
-                    element.remove();
+                    elementById.remove();
+                    for (Element element : elementsByPermission) {
+                        element.remove();
+                    }
                 }
             }
         }

@@ -101,8 +101,6 @@ public class PolicyResource {
 
     @Value("${environment.name}")
     private String environmentName;
-    @Value("${kal.api.auth.header}")
-    private String accessTokenHeader;
 
     @Inject
     public PolicyResource(DocumentService documentService, PolicyService policyService, QuoteService quoteService, PaymentService paymentService, PaymentRetryService paymentRetryService, PolicyValidatedProcessingService policyValidatedProcessingService,
@@ -350,7 +348,9 @@ public class PolicyResource {
             @ApiParam(name = "policyId", value = "the policy number", required = true)
             @PathVariable String policyId,
             @ApiParam(value = "The Person object of mainInsured")
-            @RequestBody PersonInfo mainInsuredPerson) {
+            @RequestBody PersonInfo mainInsuredPerson, HttpServletRequest httpServletRequest) {
+//        String accessToken = RequestUtil.getAccessToken(httpServletRequest);
+
         return policyService.updateMainInsuredPerson(policyId, mainInsuredPerson);
     }
 
@@ -467,7 +467,7 @@ public class PolicyResource {
             logger.error("The policy is in status [" + policy.getStatus().name() + "], it must be " + VALIDATED + " status.");
             return new ResponseEntity<>(getJson(ErrorCode.POLICY_IS_NOT_VALIDATED_FOR_PAYMENT.apply(policyId)), NOT_ACCEPTABLE);
         }
-        String accessToken = httpServletRequest.getHeader(accessTokenHeader);
+        String accessToken = RequestUtil.getAccessToken(httpServletRequest);
         paymentRetryService.retryFailedPayment(policyId, paymentId, orderId, transactionId, regKey, accessToken);
         LogUtil.logRuntime(start, msg);
         return new ResponseEntity<>(getJson(policy), OK);
@@ -495,7 +495,7 @@ public class PolicyResource {
             @ApiParam(value = "The type of call to Line Pay Capture API", required = true)
             @RequestParam LinePayCaptureMode linePayCaptureMode,
             HttpServletRequest httpServletRequest) {
-        String accessToken = httpServletRequest.getHeader(accessTokenHeader);
+        String accessToken = RequestUtil.getAccessToken(httpServletRequest);
         PolicyValidationRequest policyValidationRequest = new PolicyValidationRequest(policyId, agentCode, agentName, linePayCaptureMode, accessToken);
         return policyValidatedProcessingService.updatePolicyStatusToValidated(policyValidationRequest);
     }
