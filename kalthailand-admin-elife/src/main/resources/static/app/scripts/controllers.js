@@ -682,11 +682,22 @@
                 var result = true;
                 if (!isNotBlank(insuredPerson.email)) {
                     result = false;
-                    $scope.showErrorMessage("Insured person's email is mandatory.");
+                    //$scope.showErrorMessage("Insured person's email is mandatory.");
+                    $scope.showFieldErrorMessage("mainInsured.email", "Email is mandatory.")
+                }
+                if (!validateEmail(insuredPerson.email)) {
+                    result = false;
+                    $scope.showFieldErrorMessage("mainInsured.email", "Email is invalid.")
                 }
                 if (!isNotBlank(insuredPerson.mobilePhoneNumber.number)) {
                     result = false;
-                    $scope.showErrorMessage("Insured person's mobile phone is mandatory.");
+                    //$scope.showErrorMessage("Insured person's mobile phone is mandatory.");
+                    $scope.showFieldErrorMessage("mainInsured.mobile", "Mobile is mandatory.")
+                }
+                if (!validateNumber(insuredPerson.mobilePhoneNumber.number, 10)) {
+                    result = false;
+                    //$scope.showErrorMessage("Insured person's mobile phone is mandatory.");
+                    $scope.showFieldErrorMessage("mainInsured.mobile", "Mobile must be number with 10 digits.")
                 }
                 return result;
             }
@@ -889,13 +900,21 @@
                 $scope.successMessage = null;
                 $scope.errorMessage = msg;
                 $scope.errorDetails = errorDetails;
+                $scope.fieldErrorMessages = null;
             }
             $scope.showSuccessMessage = function (msg) {
                 $scope.successMessage = msg;
                 $scope.errorMessage = null;
                 $scope.errorDetails = null;
+                $scope.fieldErrorMessages = null;
             }
-
+            $scope.showFieldErrorMessage = function (fieldKey, msg) {
+                $scope.successMessage = null;
+                $scope.errorMessage = null;
+                $scope.errorDetails = null;
+                $scope.fieldErrorMessages = $scope.fieldErrorMessages || {};
+                $scope.fieldErrorMessages[fieldKey] = msg;
+            }
         }
     );
 

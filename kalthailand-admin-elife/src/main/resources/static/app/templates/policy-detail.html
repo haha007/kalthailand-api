@@ -260,6 +260,7 @@
                             <div class="col-sm-8">
                                 <span class="form-control-static no-role-policy-main-insured-person-editor">{{ policyDetail.insureds[0].person.email }}</span>
                                 <input class="form-control" permission="role-policy-main-insured-person-editor" type="text" ng-model="policyDetail.insureds[0].person.email" id="orderId" required>
+                                <span class="help-block red">{{ fieldErrorMessages["mainInsured.email"]}}</span>
                             </div>
 
                         </div>
@@ -283,6 +284,7 @@
                             <div class="col-sm-8">
                                 <span class="form-control-static no-role-policy-main-insured-person-editor">{{ policyDetail.insureds[0].person.mobilePhoneNumber.number }}</span>
                                 <input class="form-control" permission="role-policy-main-insured-person-editor" type="text" ng-model="policyDetail.insureds[0].person.mobilePhoneNumber.number" id="orderId" required>
+                                <span class="help-block red">{{ fieldErrorMessages["mainInsured.mobile"]}}</span>
                             </div>
                         </div>
                     </div>
