@@ -18,6 +18,10 @@ public class KalApiTokenFilterRegExpTest {
         Assert.assertTrue("/policies/000-000000/main-insured/person".matches(KalApiTokenFilter.URI_REGEXP_POLICIES_MAIN_INSURED_PERSON));
         Assert.assertTrue("/policies/000-000000/main-insured/person?abc=xyz".matches(KalApiTokenFilter.URI_REGEXP_POLICIES_MAIN_INSURED_PERSON));
 
+        Assert.assertFalse("/api-elife/policies".matches(KalApiTokenFilter.URI_REGEXP_POLICIES_MAIN_INSURED_PERSON));
+        Assert.assertFalse("/api-elife/policies/000-000000".matches(KalApiTokenFilter.URI_REGEXP_POLICIES_MAIN_INSURED_PERSON));
+        Assert.assertFalse("/api-elife/policies/0000-00000/document/XXX/download".matches(KalApiTokenFilter.URI_REGEXP_POLICIES_MAIN_INSURED_PERSON));
+        Assert.assertFalse("/api-elife/policies/0000-00000/update/status/validated".matches(KalApiTokenFilter.URI_REGEXP_POLICIES_MAIN_INSURED_PERSON));
         Assert.assertFalse("/api-elife/policies/502?2112342/main-insured/person".matches(KalApiTokenFilter.URI_REGEXP_POLICIES_MAIN_INSURED_PERSON));
         Assert.assertFalse("abc??/policies/502?2112342/main-insured/person".matches(KalApiTokenFilter.URI_REGEXP_POLICIES_MAIN_INSURED_PERSON));
         Assert.assertFalse("/policies/502?2112342/main-insured/person".matches(KalApiTokenFilter.URI_REGEXP_POLICIES_MAIN_INSURED_PERSON));

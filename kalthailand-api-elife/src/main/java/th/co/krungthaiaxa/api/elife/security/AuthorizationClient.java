@@ -32,7 +32,7 @@ public class AuthorizationClient {
 
     public boolean checkPermission(HttpServletRequest httpServletRequest, String authorizeResourceUri, HttpMethod authorizeHttpMethod, String requiredRole) {
         String requestURI = httpServletRequest.getRequestURI();
-        if (!requestURI.matches(authorizeResourceUri) || !httpServletRequest.getMethod().equalsIgnoreCase(authorizeHttpMethod.name())) {
+        if (!requestURI.matches(authorizeResourceUri) || httpServletRequest.getMethod() == null || !httpServletRequest.getMethod().equalsIgnoreCase(authorizeHttpMethod.name())) {
             return true;
         }
         String accessToken = RequestUtil.getAccessToken(httpServletRequest);
