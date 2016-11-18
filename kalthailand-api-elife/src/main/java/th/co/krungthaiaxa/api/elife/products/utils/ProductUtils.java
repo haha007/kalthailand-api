@@ -490,8 +490,9 @@ public class ProductUtils {
                 .orElseThrow(() -> new MainInsuredException(String.format("Main insured not found: %s insured persons in %s. policyId: %s, quoteId: %s", quotable.getInsureds().size(), quotable.getClass().getSimpleName(), quotable.getPolicyId(), quotable.getQuoteId())));
     }
 
-    private static boolean isValidEmailAddress(String email) {
-        String ePattern = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+    public static boolean isValidEmailAddress(String email) {
+//        String ePattern = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+        String ePattern = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9+_.-]+$";
         java.util.regex.Pattern p = java.util.regex.Pattern.compile(ePattern);
         java.util.regex.Matcher m = p.matcher(email);
         return m.matches();
