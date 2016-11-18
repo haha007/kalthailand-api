@@ -18,7 +18,7 @@ import th.co.krungthaiaxa.api.elife.products.ProductType;
 import th.co.krungthaiaxa.api.elife.products.utils.ProductUtils;
 import th.co.krungthaiaxa.api.elife.products.iprotect.IProtectQuoteEmailService;
 import th.co.krungthaiaxa.api.elife.utils.EmailSender;
-import th.co.krungthaiaxa.api.elife.utils.EmailUtil;
+import th.co.krungthaiaxa.api.elife.utils.EmailElifeUtil;
 
 import javax.inject.Inject;
 import javax.mail.MessagingException;
@@ -68,11 +68,11 @@ public class EmailService {
     }
 
     public void sendEmailWithAttachments(String toEmail, String emailSubject, String emailContent, List<Pair<byte[], String>> attachments) {
-        sendEmail(toEmail, emailSubject, emailContent, EmailUtil.getDefaultImagePairs(), attachments);
+        sendEmail(toEmail, emailSubject, emailContent, EmailElifeUtil.getDefaultImagePairs(), attachments);
     }
 
     public void sendEmailWithAttachments(List<String> toEmails, String emailSubject, String emailContent, List<Pair<byte[], String>> attachments) {
-        sendEmails(toEmails, emailSubject, emailContent, EmailUtil.getDefaultImagePairs(), attachments);
+        sendEmails(toEmails, emailSubject, emailContent, EmailElifeUtil.getDefaultImagePairs(), attachments);
     }
 
     public void sendEmails(List<String> toEmails, String emailSubject, String emailContent, List<Pair<byte[], String>> imagesPairs, List<Pair<byte[], String>> attachments) {

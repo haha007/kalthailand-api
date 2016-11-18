@@ -15,7 +15,7 @@ import th.co.krungthaiaxa.api.elife.policyPremiumNotification.model.PolicyPremiu
 import th.co.krungthaiaxa.api.elife.service.ElifeEmailHelper;
 import th.co.krungthaiaxa.api.elife.service.ElifeEmailService;
 import th.co.krungthaiaxa.api.elife.service.SMSApiService;
-import th.co.krungthaiaxa.api.elife.utils.EmailUtil;
+import th.co.krungthaiaxa.api.elife.utils.EmailElifeUtil;
 
 import java.util.List;
 
@@ -78,8 +78,8 @@ public class PolicyPremiumNotificationService {
         String emailContent = emailTemplate;//fillNotificationEmail(emailTemplate, policy);
 
         byte[] premiumNoticePdfBytes = exportPdf(policyPremiumNoticeRequest, policy);
-        List<Pair<byte[], String>> attachment = EmailUtil.initAttachment("premium-notice.pdf", premiumNoticePdfBytes);
-        elifeEmailService.sendEmail(toEmail, emailSubject, emailContent, EmailUtil.initImagePairs("logo"), attachment);
+        List<Pair<byte[], String>> attachment = EmailElifeUtil.initAttachment("premium-notice.pdf", premiumNoticePdfBytes);
+        elifeEmailService.sendEmail(toEmail, emailSubject, emailContent, EmailElifeUtil.initImagePairs("logo"), attachment);
     }
 
 //    private String fillNotificationEmail(String emailTemplate, PolicyCDB policy) {

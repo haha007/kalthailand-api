@@ -22,7 +22,7 @@ import th.co.krungthaiaxa.api.elife.products.utils.ProductUtils;
 import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
 import th.co.krungthaiaxa.api.elife.ereceipt.EreceiptNumber;
 import th.co.krungthaiaxa.api.elife.ereceipt.EreceiptService;
-import th.co.krungthaiaxa.api.elife.utils.EmailUtil;
+import th.co.krungthaiaxa.api.elife.utils.EmailElifeUtil;
 import th.co.krungthaiaxa.api.elife.utils.PersonUtil;
 
 import javax.inject.Inject;
@@ -151,7 +151,7 @@ public class PaymentRetryService {
             toEmails.add(mainInsuredEmail);
         }
         Pair<byte[], String> ereceiptAttachment = policyService.findEreceiptAttachmentByDocumentId(policy.getPolicyId(), ereceiptPdfDocument.getId());
-        emailService.sendEmails(toEmails, emailSubject, emailContent, EmailUtil.initImagePairs("logo"), Arrays.asList(ereceiptAttachment));
+        emailService.sendEmails(toEmails, emailSubject, emailContent, EmailElifeUtil.initImagePairs("logo"), Arrays.asList(ereceiptAttachment));
     }
 
     public void setLineService(LineService lineService) {

@@ -10,7 +10,7 @@ import java.util.Map;
 /**
  * @author khoi.tran on 8/31/16.
  */
-public class EmailUtil {
+public class EmailElifeUtil {
     public static final String EMAIL_IMAGE_FOLDER = "/images/email/";
 
     public static List<Pair<byte[], String>> getDefaultImagePairs() {

@@ -5,14 +5,22 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
-import static org.apache.commons.io.IOUtils.toByteArray;
 
 /**
  * @author khoi.tran on 7/28/16.
  */
 public class EmailUtil {
+    //        String ePattern = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9+_.-]+$");
+
+    public static boolean isValidEmailAddress(String email) {
+        Matcher matcher = EMAIL_PATTERN.matcher(email);
+        return matcher.matches();
+    }
+
     /**
      * @param imageMap key: imagePlaceHolderName, value: image relative path
      * @return

@@ -12,7 +12,7 @@ import th.co.krungthaiaxa.api.elife.data.PolicyNumbersQuotaNotification;
 import th.co.krungthaiaxa.api.elife.policyNumbersQuota.repository.PolicyNumbersQuotaNotificationRepository;
 import th.co.krungthaiaxa.api.elife.service.EmailService;
 import th.co.krungthaiaxa.api.elife.service.PolicyNumberSettingService;
-import th.co.krungthaiaxa.api.elife.utils.EmailUtil;
+import th.co.krungthaiaxa.api.elife.utils.EmailElifeUtil;
 
 import javax.inject.Inject;
 import java.time.Instant;
@@ -42,7 +42,7 @@ public class PolicyNumbersQuotaNotificationService {
 
     public void sendNotification(PolicyNumbersQuotaCheckerService.PolicyNumbersQuotaCheckerResult policyNumbersQuotaCheckerResult) {
         String emailContent = populateEmailContent(policyNumbersQuotaCheckerResult);
-        List<Pair<byte[], String>> imagesPairs = EmailUtil.getDefaultImagePairs();
+        List<Pair<byte[], String>> imagesPairs = EmailElifeUtil.getDefaultImagePairs();
 
         PolicyNumberSetting policyNumberSetting = policyNumbersQuotaCheckerResult.getPolicyNumberSetting();
         List<String> notificationSettingEmails = policyNumberSetting.getEmailList();

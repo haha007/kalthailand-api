@@ -3,6 +3,7 @@ package th.co.krungthaiaxa.api.elife.products.utils;
 import org.apache.commons.lang3.StringUtils;
 import th.co.krungthaiaxa.api.common.exeption.BadArgumentException;
 import th.co.krungthaiaxa.api.common.exeption.UnexpectedException;
+import th.co.krungthaiaxa.api.common.utils.EmailUtil;
 import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
 import th.co.krungthaiaxa.api.elife.exception.ElifeException;
 import th.co.krungthaiaxa.api.elife.exception.MainInsuredException;
@@ -266,7 +267,7 @@ public class ProductUtils {
         if (insured.getPerson().getHomePhoneNumber() == null && insured.getPerson().getMobilePhoneNumber() == null) {
             throw PolicyValidationException.mainInsuredWithNoPhoneNumber;
         }
-        isTrue(isValidEmailAddress(insured.getPerson().getEmail()), mainInsuredWithInvalidEmail);
+        isTrue(EmailUtil.isValidEmailAddress(insured.getPerson().getEmail()), mainInsuredWithInvalidEmail);
 
         notNull(insured.getHealthStatus().getDisableOrImmunoDeficient(), mainInsuredWithNoDisableStatus);
         notNull(insured.getHealthStatus().getHospitalizedInLast6Months(), mainInsuredWithNoHospitalizedStatus);
@@ -488,14 +489,6 @@ public class ProductUtils {
         return quotable.getInsureds().stream().filter(Insured::getMainInsuredIndicator)
                 .findFirst()
                 .orElseThrow(() -> new MainInsuredException(String.format("Main insured not found: %s insured persons in %s. policyId: %s, quoteId: %s", quotable.getInsureds().size(), quotable.getClass().getSimpleName(), quotable.getPolicyId(), quotable.getQuoteId())));
-    }
-
-    public static boolean isValidEmailAddress(String email) {
-//        String ePattern = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
-        String ePattern = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9+_.-]+$";
-        java.util.regex.Pattern p = java.util.regex.Pattern.compile(ePattern);
-        java.util.regex.Matcher m = p.matcher(email);
-        return m.matches();
     }
 
     public static double convertPeriodicity(double numberInSourcePeriodicity, PeriodicityCode sourcePeriodicity, PeriodicityCode destPeriodicity) {
