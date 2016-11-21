@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 import th.co.krungthaiaxa.api.common.model.authentication.RoleConstants;
 import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
 import th.co.krungthaiaxa.api.common.utils.LogUtil;
@@ -36,8 +35,6 @@ public class KalApiTokenFilter implements Filter {
 
     @Autowired
     private AuthorizationClient securityService;
-
-    private RestTemplate template = new RestTemplate();
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -109,7 +106,4 @@ public class KalApiTokenFilter implements Filter {
 
     }
 
-    public void setTemplate(RestTemplate template) {
-        this.template = template;
-    }
 }

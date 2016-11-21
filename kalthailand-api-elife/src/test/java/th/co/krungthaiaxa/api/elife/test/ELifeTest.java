@@ -4,6 +4,7 @@ import org.apache.commons.lang3.tuple.Triple;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.junit.Before;
+import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.http.HttpEntity;
@@ -20,9 +21,9 @@ import th.co.krungthaiaxa.api.elife.client.CDBClient;
 import th.co.krungthaiaxa.api.elife.client.LineBCClient;
 import th.co.krungthaiaxa.api.elife.client.SigningClient;
 import th.co.krungthaiaxa.api.elife.client.Token;
-import th.co.krungthaiaxa.api.elife.filter.KalApiTokenFilter;
 import th.co.krungthaiaxa.api.elife.repository.LineBCRepository;
 import th.co.krungthaiaxa.api.elife.repository.cdb.CDBRepository;
+import th.co.krungthaiaxa.api.elife.security.AuthorizationClient;
 import th.co.krungthaiaxa.api.elife.tmc.TMCClient;
 import th.co.krungthaiaxa.api.elife.tmc.TMCSendingPDFResponse;
 import th.co.krungthaiaxa.api.elife.tmc.TMCSendingPDFResponseRemark;
@@ -59,7 +60,7 @@ public class ELifeTest {
     @Inject
     private TMCClient tmcClient;
     @Inject
-    private KalApiTokenFilter kalApiTokenFilter;
+    private AuthorizationClient authorizationClient;
 
     @Before
     public void setupFakeTemplateAndRepository() {
@@ -67,7 +68,7 @@ public class ELifeTest {
         System.setProperty("catalina.home", catalinaHome);
 
         mockSigningClient(signingClient);
-        mockApiTokenFilter(kalApiTokenFilter);
+        mockSuccess(authorizationClient);
         mockCdbClient(cdbClient);
         mockBlackListClient(blackListClient);
         mockLineBCClient(lineBCClient);
@@ -75,7 +76,7 @@ public class ELifeTest {
     }
 
     public static void mockBlackListClient(BlackListClient blackListClient) {
-        RestTemplate fakeBlacklistedTemplate = mock(RestTemplate.class);
+        RestTemplate fakeBlacklistedTemplate = Mockito.mock(RestTemplate.class);
         blackListClient.setTemplate(fakeBlacklistedTemplate);
         when(fakeBlacklistedTemplate.exchange(anyString(), eq(HttpMethod.GET), any(HttpEntity.class), eq(String.class))).thenAnswer(invocation -> {
             Object[] args = invocation.getArguments();
@@ -90,7 +91,7 @@ public class ELifeTest {
     }
 
     public static void mockSigningClient(SigningClient signingClient) {
-        RestTemplate fakeSigningRestTemplate = mock(RestTemplate.class);
+        RestTemplate fakeSigningRestTemplate = Mockito.mock(RestTemplate.class);
         signingClient.setTemplate(fakeSigningRestTemplate);
         when(fakeSigningRestTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(String.class))).thenAnswer(invocation -> {
             Object[] args = invocation.getArguments();
@@ -100,9 +101,9 @@ public class ELifeTest {
         });
     }
 
-    public static void mockApiTokenFilter(KalApiTokenFilter kalApiTokenFilter) {
-        RestTemplate fakeAuthRestTemplate = mock(RestTemplate.class);
-        kalApiTokenFilter.setTemplate(fakeAuthRestTemplate);
+    public static void mockSuccess(AuthorizationClient authorizationClient) {
+        RestTemplate fakeAuthRestTemplate = Mockito.mock(RestTemplate.class);
+        authorizationClient.setTemplate(fakeAuthRestTemplate);
         when(fakeAuthRestTemplate.exchange(anyString(), eq(HttpMethod.GET), any(HttpEntity.class), eq(String.class))).thenAnswer(new Answer<ResponseEntity<String>>() {
             @Override
             public ResponseEntity<String> answer(InvocationOnMock invocation) throws Throwable {
@@ -112,7 +113,7 @@ public class ELifeTest {
     }
 
     public static void mockCdbClient(CDBClient cdbClient) {
-        CDBRepository cdbRepository = mock(CDBRepository.class);
+        CDBRepository cdbRepository = Mockito.mock(CDBRepository.class);
         cdbClient.setCdbRepository(cdbRepository);
         when(cdbRepository.getExistingAgentCode(anyString(), anyString())).thenAnswer(invocation -> {
             Object[] args = invocation.getArguments();
@@ -128,7 +129,7 @@ public class ELifeTest {
     }
 
     public static void mockLineBCClient(LineBCClient lineBCClient) {
-        LineBCRepository lineBCRepository = mock(LineBCRepository.class);
+        LineBCRepository lineBCRepository = Mockito.mock(LineBCRepository.class);
         lineBCClient.setLineBCRepository(lineBCRepository);
         when(lineBCRepository.getLineBC(anyString())).thenAnswer(invocation -> {
             Object[] args = invocation.getArguments();
@@ -154,7 +155,7 @@ public class ELifeTest {
 
     public void mockTmcClient(TMCClient tmcClient) {
         // Faking TMC by always returning success
-        WebServiceTemplate webServiceTemplate = mock(WebServiceTemplate.class);
+        WebServiceTemplate webServiceTemplate = Mockito.mock(WebServiceTemplate.class);
         tmcClient.setWebServiceTemplate(webServiceTemplate);
         when(webServiceTemplate.marshalSendAndReceive(anyString(), any(ReceivePDFJSON.class), any(SoapActionCallback.class))).thenAnswer(invocation -> {
             TMCSendingPDFResponseRemark tmcSendingPDFResponseRemark = new TMCSendingPDFResponseRemark();

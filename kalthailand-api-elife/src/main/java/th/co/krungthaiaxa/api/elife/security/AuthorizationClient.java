@@ -57,4 +57,12 @@ public class AuthorizationClient {
         ResponseEntity<String> validateRoleURIResponse = template.exchange(validateRoleURIBuilder.toUriString(), GET, new HttpEntity<>(validateRoleHeaders), String.class);
         return validateRoleURIResponse.getStatusCode() == OK;
     }
+
+    public RestTemplate getTemplate() {
+        return template;
+    }
+
+    public void setTemplate(RestTemplate template) {
+        this.template = template;
+    }
 }
