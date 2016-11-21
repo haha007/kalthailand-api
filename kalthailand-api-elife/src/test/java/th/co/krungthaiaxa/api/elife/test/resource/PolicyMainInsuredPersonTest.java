@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import th.co.krungthaiaxa.api.common.basetest.BaseIntegrationResourceTest;
+import th.co.krungthaiaxa.api.common.model.error.Error;
+import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
+import th.co.krungthaiaxa.api.common.utils.ErrorUtil;
 import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
 import th.co.krungthaiaxa.api.elife.client.BlackListClient;
 import th.co.krungthaiaxa.api.elife.factory.PolicyFactory;
@@ -21,7 +23,7 @@ import th.co.krungthaiaxa.api.elife.test.ELifeTest;
  *         In this test, should not mock ApiFilter.
  */
 @SpringApplicationConfiguration(classes = KalApiElifeApplication.class)
-public class PolicyMainInsuredPersonTest extends BaseIntegrationResourceTest {
+public class PolicyMainInsuredPersonTest extends ELifeTest {
     @Autowired
     private BlackListClient blackListClient;
 
@@ -34,20 +36,13 @@ public class PolicyMainInsuredPersonTest extends BaseIntegrationResourceTest {
     }
 
     @Test
-    public void unauthorized_error_when_update_person_info_without_login() {
+    public void receive_bean_validate_error_when_update_person_info_without_required_fields() {
         Policy policy = policyFactory.createPolicyWithPendingPaymentStatus(ProductQuotationFactory.constructIGenDefault());
         PersonInfo personInfo = new PersonInfo();
         ResponseEntity<String> responseEntity = restTemplate.postForEntity(baseUrl + "/policies/" + policy.getPolicyId() + "/main-insured/person", personInfo, String.class);
-        Assert.assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
+        Error error = assertError(responseEntity, HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.ERROR_CODE_BEAN_VALIDATION);
+        Assert.assertTrue(ErrorUtil.hasFieldError(error, "mobilePhoneNumber"));
+        Assert.assertTrue(ErrorUtil.hasFieldError(error, "email"));
     }
 
-//    @Test
-//    public void login() {
-//        RequestForToken requestForToken = new RequestForToken();
-//        requestForToken.setUserName("user1");
-//        requestForToken.setPassword("user1");
-//        ResponseEntity<String> responseEntity = restTemplate.postForEntity(baseUrl + "/auth/", requestForToken, String.class);
-//
-//        Assert.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-//    }
 }

@@ -17,4 +17,8 @@ public class ErrorUtil {
         }
         return fieldErrors.stream().filter(fieldError -> fieldName.equals(fieldError.getField())).findAny();
     }
+
+    public static boolean hasFieldError(Error error, String fieldName) {
+        return findFieldError(error, fieldName).isPresent();
+    }
 }

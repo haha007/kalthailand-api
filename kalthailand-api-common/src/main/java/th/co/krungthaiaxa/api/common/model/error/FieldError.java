@@ -6,13 +6,17 @@ public class FieldError implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private final String code;
+    private String code;
 
-    private final String objectName;
+    private String objectName;
 
-    private final String field;
+    private String field;
 
-    private final String message;
+    private String message;
+
+    public FieldError() {
+        //This method is necessary for Json converter or Serializable.
+    }
 
     public FieldError(String code, String objectName, String field, String message) {
         this.code = code;

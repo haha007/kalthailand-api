@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.soap.client.core.SoapActionCallback;
+import th.co.krungthaiaxa.api.common.basetest.BaseIntegrationResourceTest;
 import th.co.krungthaiaxa.api.common.utils.JsonUtil;
 import th.co.krungthaiaxa.api.elife.client.BlackListClient;
 import th.co.krungthaiaxa.api.elife.client.CDBClient;
@@ -43,12 +44,11 @@ import java.util.Optional;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.OK;
 
 @Component
-public class ELifeTest {
+public class ELifeTest extends BaseIntegrationResourceTest {
     @Inject
     private CDBClient cdbClient;
     @Inject

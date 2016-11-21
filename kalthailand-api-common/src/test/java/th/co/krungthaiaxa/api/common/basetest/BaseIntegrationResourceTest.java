@@ -15,7 +15,6 @@ import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.client.RestTemplate;
@@ -39,21 +38,25 @@ public abstract class BaseIntegrationResourceTest {
     @Value("http://localhost:${local.server.port}")
     protected String baseUrl;
 
-    public <T> void assertResponseClass(ResponseEntity<String> responseEntity, HttpStatus expectHttpStatus, Class<T> expectedResponseClass) {
+    public <T> T assertResponseClass(ResponseEntity<String> responseEntity, HttpStatus expectHttpStatus, Class<T> expectedResponseClass) {
+        T result = null;
         String jsonString = responseEntity.getBody();
         if (expectedResponseClass != null && expectedResponseClass != String.class) {
-            ObjectMapperUtil.toObject(objectMapper, jsonString, expectedResponseClass);
+            result = ObjectMapperUtil.toObject(objectMapper, jsonString, expectedResponseClass);
         }
         Assert.assertEquals(expectHttpStatus, responseEntity.getStatusCode());
+        return result;
     }
 
-    public void assertError(ResponseEntity<String> responseEntity, HttpStatus expectHttpStatus, String expectedErrorCode) {
+    public Error assertError(ResponseEntity<String> responseEntity, HttpStatus expectHttpStatus, String expectedErrorCode) {
+        Error error = null;
         String jsonString = responseEntity.getBody();
         if (expectedErrorCode != null) {
-            Error error = ObjectMapperUtil.toObject(objectMapper, jsonString, Error.class);
+            error = ObjectMapperUtil.toObject(objectMapper, jsonString, Error.class);
             Assert.assertEquals(expectedErrorCode, error.getCode());
         }
         Assert.assertEquals(expectHttpStatus, responseEntity.getStatusCode());
+        return error;
     }
 
     //GETTER /////////////////////////////////
