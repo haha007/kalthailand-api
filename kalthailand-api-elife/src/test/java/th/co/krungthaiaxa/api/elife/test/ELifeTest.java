@@ -65,7 +65,31 @@ public class ELifeTest {
     public void setupFakeTemplateAndRepository() {
         String catalinaHome = new File("").getAbsolutePath();
         System.setProperty("catalina.home", catalinaHome);
-        // Faking signing by returning pdf document as received and 200 response
+
+        mockSigningClient(signingClient);
+        mockApiTokenFilter(kalApiTokenFilter);
+        mockCdbClient(cdbClient);
+        mockBlackListClient(blackListClient);
+        mockLineBCClient(lineBCClient);
+        mockTmcClient(tmcClient);
+    }
+
+    public static void mockBlackListClient(BlackListClient blackListClient) {
+        RestTemplate fakeBlacklistedTemplate = mock(RestTemplate.class);
+        blackListClient.setTemplate(fakeBlacklistedTemplate);
+        when(fakeBlacklistedTemplate.exchange(anyString(), eq(HttpMethod.GET), any(HttpEntity.class), eq(String.class))).thenAnswer(invocation -> {
+            Object[] args = invocation.getArguments();
+            String url = (String) args[0];
+            List<NameValuePair> params = URLEncodedUtils.parse(new URI(url), "UTF-8");
+            if (params != null && params.size() > 0 && "aMockedBlackListedThaiID".equals(params.get(0).getValue())) {
+                return new ResponseEntity<>("true", HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("false", HttpStatus.OK);
+            }
+        });
+    }
+
+    public static void mockSigningClient(SigningClient signingClient) {
         RestTemplate fakeSigningRestTemplate = mock(RestTemplate.class);
         signingClient.setTemplate(fakeSigningRestTemplate);
         when(fakeSigningRestTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(String.class))).thenAnswer(invocation -> {
@@ -74,8 +98,9 @@ public class ELifeTest {
 
             return new ResponseEntity<>(new String((byte[]) entity.getBody(), Charset.forName("UTF-8")), OK);
         });
+    }
 
-        // Faking authorization by always returning success
+    public static void mockApiTokenFilter(KalApiTokenFilter kalApiTokenFilter) {
         RestTemplate fakeAuthRestTemplate = mock(RestTemplate.class);
         kalApiTokenFilter.setTemplate(fakeAuthRestTemplate);
         when(fakeAuthRestTemplate.exchange(anyString(), eq(HttpMethod.GET), any(HttpEntity.class), eq(String.class))).thenAnswer(new Answer<ResponseEntity<String>>() {
@@ -84,8 +109,9 @@ public class ELifeTest {
                 return new ResponseEntity<>(new String(JsonUtil.getJson(Token.of("123456"))), OK);
             }
         });
+    }
 
-        // Faking CDB by always returning empty Optional
+    public static void mockCdbClient(CDBClient cdbClient) {
         CDBRepository cdbRepository = mock(CDBRepository.class);
         cdbClient.setCdbRepository(cdbRepository);
         when(cdbRepository.getExistingAgentCode(anyString(), anyString())).thenAnswer(invocation -> {
@@ -99,22 +125,9 @@ public class ELifeTest {
                 return Optional.empty();
             }
         });
+    }
 
-        // Faking Black list
-        RestTemplate fakeBlacklistedTemplate = mock(RestTemplate.class);
-        blackListClient.setTemplate(fakeBlacklistedTemplate);
-        when(fakeBlacklistedTemplate.exchange(anyString(), eq(HttpMethod.GET), any(HttpEntity.class), eq(String.class))).thenAnswer(invocation -> {
-            Object[] args = invocation.getArguments();
-            String url = (String) args[0];
-            List<NameValuePair> params = URLEncodedUtils.parse(new URI(url), "UTF-8");
-            if (params != null && params.size() > 0 && "aMockedBlackListedThaiID".equals(params.get(0).getValue())) {
-                return new ResponseEntity<>("true", HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>("false", HttpStatus.OK);
-            }
-        });
-
-        // Faking Line BC
+    public static void mockLineBCClient(LineBCClient lineBCClient) {
         LineBCRepository lineBCRepository = mock(LineBCRepository.class);
         lineBCClient.setLineBCRepository(lineBCRepository);
         when(lineBCRepository.getLineBC(anyString())).thenAnswer(invocation -> {
@@ -137,7 +150,9 @@ public class ELifeTest {
                 return Optional.empty();
             }
         });
+    }
 
+    public void mockTmcClient(TMCClient tmcClient) {
         // Faking TMC by always returning success
         WebServiceTemplate webServiceTemplate = mock(WebServiceTemplate.class);
         tmcClient.setWebServiceTemplate(webServiceTemplate);
@@ -153,4 +168,5 @@ public class ELifeTest {
             return response;
         });
     }
+
 }

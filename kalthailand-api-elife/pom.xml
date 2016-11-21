@@ -82,7 +82,15 @@
              <version>1.5.5</version>
          </dependency>-->
 
-        <!-- test stuff -->
+        <!--Test -->
+        <dependency>
+            <groupId>th.co.krungthaiaxa</groupId>
+            <artifactId>api-common</artifactId>
+            <version>${kalthailand.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+
         <dependency>
             <groupId>com.icegreen</groupId>
             <artifactId>greenmail</artifactId>

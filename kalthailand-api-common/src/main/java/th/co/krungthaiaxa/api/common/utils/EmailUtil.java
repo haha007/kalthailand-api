@@ -13,8 +13,9 @@ import java.util.stream.Collectors;
  * @author khoi.tran on 7/28/16.
  */
 public class EmailUtil {
-    //        String ePattern = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
-    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9+_.-]+$");
+    //    https://www.mkyong.com/regular-expressions/how-to-validate-email-address-with-regular-expression//**/
+    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
+//    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9+_.-]+$");
 
     public static boolean isValidEmailAddress(String email) {
         Matcher matcher = EMAIL_PATTERN.matcher(email);
