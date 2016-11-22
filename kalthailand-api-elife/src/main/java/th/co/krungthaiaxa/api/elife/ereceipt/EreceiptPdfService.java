@@ -201,7 +201,7 @@ public class EreceiptPdfService {
             String msg = String.format("Cannot find ereceiptNumber for the payment %s, policyId: %s", payment.getPaymentId(), payment.getPolicyId());
             throw new UnexpectedException(msg);
         }
-        String ereceiptFullDisplayNumber = ERECEIPT_NUMBER_PREFIX + StringUtil.formatNumberLength(ereceiptNumber.getFullNumberForDisplay(), 8);
+        String ereceiptFullDisplayNumber = StringUtil.formatNumberLength(ereceiptNumber.getFullNumberForDisplay(), 9);
         String ereceiptNumberPart01 = ereceiptFullDisplayNumber.substring(0, ereceiptFullDisplayNumber.length() - 2);
         String ereceiptNumberPart02 = ereceiptFullDisplayNumber.substring(ereceiptFullDisplayNumber.length() - 2);
 
@@ -294,8 +294,6 @@ public class EreceiptPdfService {
         float actualYInTemplate = Y_TOP_WHICH_DRAWN_IN_NORMAL_POSITION + Y_TOP_INSPECT - point.y;
         PdfUtil.writeText(page, baseFont, text, (float) point.getX(), actualYInTemplate, PdfUtil.MEDIUM_SIZE);
     }
-
-
 
     private String getThaiDate(LocalDateTime localDate) {
         return DateTimeUtil.formatBuddhistThaiDate(localDate);

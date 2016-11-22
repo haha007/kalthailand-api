@@ -24,7 +24,7 @@ public class EreceiptIncrementalService {
     public static final String ERECEIPT_NUMBER_SUFFIX_RENEWAL = "02";
     //In eReceipt pdf, there's maximum 6 digit.
     public static final String MAX_MAIN_NUMBER_BASE36 = "zzzzzz";
-    public static final long MAX_MAIN_NUMBER_DECIMAL = Base36Util.toDecimalLong(MAX_MAIN_NUMBER_BASE36);
+    public static final long MAX_MAIN_NUMBER_DECIMAL = 9999999;//Base36Util.toDecimalLong(MAX_MAIN_NUMBER_BASE36);
 
     private final IncrementalService incrementalService;
     private final EreceiptOldNumberCollectionService ereceiptOldNumberCollectionService;

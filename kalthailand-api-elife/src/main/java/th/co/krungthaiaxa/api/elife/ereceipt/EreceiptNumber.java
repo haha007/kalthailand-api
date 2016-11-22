@@ -9,6 +9,7 @@ import java.io.Serializable;
 
 /**
  * @author khoi.tran on 10/31/16.
+ *         2016-11-22: At first, we intended to show receipt number as base-36 number: 0->9, A-Z. But now we only use the decimal number.
  */
 public class EreceiptNumber implements Serializable {
 
