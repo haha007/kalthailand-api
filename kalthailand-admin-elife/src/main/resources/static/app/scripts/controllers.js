@@ -677,7 +677,10 @@
                             console.log(errorResponse);
                         });
 
-            }
+            };
+            $scope.validateInsuredPerson = function () {
+                validateInsuredPerson($scope.policyDetail.insureds[0].person);
+            };
             var validateInsuredPerson = function (insuredPerson) {
                 var resultEmail = true;
                 if (!isNotBlank(insuredPerson.email)) {
