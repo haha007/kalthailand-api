@@ -686,8 +686,7 @@
                 if (!isNotBlank(insuredPerson.email)) {
                     resultEmail = false;
                     $scope.showFieldErrorMessage("mainInsured.email", "Email is mandatory.")
-                }
-                if (!validateEmail(insuredPerson.email)) {
+                } else if (!validateEmail(insuredPerson.email)) {
                     resultEmail = false;
                     $scope.showFieldErrorMessage("mainInsured.email", "Email is invalid.")
                 }
@@ -696,8 +695,7 @@
                 if (!isNotBlank(insuredPerson.mobilePhoneNumber.number)) {
                     resultMobile = false;
                     $scope.showFieldErrorMessage("mainInsured.mobile", "Mobile is mandatory.")
-                }
-                if (!validateNumber(insuredPerson.mobilePhoneNumber.number, 10)) {
+                } else if (!validateNumber(insuredPerson.mobilePhoneNumber.number, 10)) {
                     resultMobile = false;
                     $scope.showFieldErrorMessage("mainInsured.mobile", "Mobile must be number with 10 digits.")
                 }
