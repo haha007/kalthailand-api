@@ -11,7 +11,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.soap.client.core.SoapActionCallback;
@@ -47,8 +46,7 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.OK;
 
-@Component
-public class ELifeTest extends BaseIntegrationResourceTest {
+public abstract class ELifeTest extends BaseIntegrationResourceTest {
     @Inject
     private CDBClient cdbClient;
     @Inject
