@@ -679,23 +679,33 @@
 
             }
             var validateInsuredPerson = function (insuredPerson) {
-                var result = true;
+                var resultEmail = true;
                 if (!isNotBlank(insuredPerson.email)) {
-                    result = false;
+                    resultEmail = false;
                     $scope.showFieldErrorMessage("mainInsured.email", "Email is mandatory.")
                 }
                 if (!validateEmail(insuredPerson.email)) {
-                    result = false;
+                    resultEmail = false;
                     $scope.showFieldErrorMessage("mainInsured.email", "Email is invalid.")
                 }
+
+                var resultMobile = true;
                 if (!isNotBlank(insuredPerson.mobilePhoneNumber.number)) {
-                    result = false;
+                    resultMobile = false;
                     $scope.showFieldErrorMessage("mainInsured.mobile", "Mobile is mandatory.")
                 }
                 if (!validateNumber(insuredPerson.mobilePhoneNumber.number, 10)) {
-                    result = false;
+                    resultMobile = false;
                     $scope.showFieldErrorMessage("mainInsured.mobile", "Mobile must be number with 10 digits.")
                 }
+                if (resultEmail) {
+                    $scope.showFieldErrorMessage("mainInsured.email", null);
+                }
+                if (resultMobile) {
+                    $scope.showFieldErrorMessage("mainInsured.mobile", null);
+
+                }
+                var result = resultEmail && resultMobile;
                 return result;
             }
             // AKT-820
