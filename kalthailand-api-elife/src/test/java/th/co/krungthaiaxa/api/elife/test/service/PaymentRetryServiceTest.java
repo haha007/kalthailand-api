@@ -18,17 +18,16 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
 import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
-import th.co.krungthaiaxa.api.elife.utils.TestUtil;
 import th.co.krungthaiaxa.api.elife.data.CollectionFile;
 import th.co.krungthaiaxa.api.elife.data.DeductionFileLine;
 import th.co.krungthaiaxa.api.elife.exception.PaymentHasNewerCompletedException;
 import th.co.krungthaiaxa.api.elife.factory.CollectionFileFactory;
+import th.co.krungthaiaxa.api.elife.factory.LineServiceMockFactory;
 import th.co.krungthaiaxa.api.elife.factory.PaymentFactory;
 import th.co.krungthaiaxa.api.elife.factory.PolicyFactory;
-import th.co.krungthaiaxa.api.elife.factory.productquotation.ProductQuotationFactory;
 import th.co.krungthaiaxa.api.elife.factory.QuoteFactory;
 import th.co.krungthaiaxa.api.elife.factory.RequestFactory;
-import th.co.krungthaiaxa.api.elife.factory.LineServiceMockFactory;
+import th.co.krungthaiaxa.api.elife.factory.productquotation.ProductQuotationFactory;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.PaymentInformation;
 import th.co.krungthaiaxa.api.elife.model.PaymentNewerCompletedResult;
@@ -43,6 +42,7 @@ import th.co.krungthaiaxa.api.elife.service.PaymentRetryService;
 import th.co.krungthaiaxa.api.elife.service.PaymentService;
 import th.co.krungthaiaxa.api.elife.test.ELifeTest;
 import th.co.krungthaiaxa.api.elife.utils.GreenMailUtil;
+import th.co.krungthaiaxa.api.elife.utils.TestUtil;
 
 import javax.inject.Inject;
 import java.io.InputStream;
@@ -89,7 +89,7 @@ public class PaymentRetryServiceTest extends ELifeTest {
 
     public void testFullFlowForPaymentFailAndRetrySuccess(ProductQuotation productQuotation) throws FolderException {
         //01 -  Create first fail payment.
-        PolicyWithFirstFailPayment policyWithFirstFailPayment = testCreatePolicyAndTheFirstFailPayment(productQuotation, TestUtil.DUMMY_EMAIL);
+        PolicyWithFirstFailPayment policyWithFirstFailPayment = testCreatePolicyAndTheFirstFailPayment(productQuotation, TestUtil.TESTING_EMAIL);
         //      Assert
         PaymentNewerCompletedResult paymentNewerCompletedResult = paymentService.findNewerCompletedPaymentInSamePolicy(policyWithFirstFailPayment.failPaymentId);
         Payment failPayment = paymentNewerCompletedResult.getPayment();
@@ -120,7 +120,7 @@ public class PaymentRetryServiceTest extends ELifeTest {
 
     private PolicyWithFirstFailPayment testCreatePolicyAndTheFirstFailPayment() throws FolderException {
         ProductQuotation productQuotation = ProductQuotationFactory.constructIProtectDefault();
-        return testCreatePolicyAndTheFirstFailPayment(productQuotation, TestUtil.DUMMY_EMAIL);
+        return testCreatePolicyAndTheFirstFailPayment(productQuotation, TestUtil.TESTING_EMAIL);
     }
 
     private PolicyWithFirstFailPayment testCreatePolicyAndTheFirstFailPayment(ProductQuotation productQuotation, String insuredEmail) throws FolderException {
@@ -144,7 +144,7 @@ public class PaymentRetryServiceTest extends ELifeTest {
         //Assert
         DeductionFileLine deductionFileLine = getDeductionFileLineByPolicyNumber(collectionFile, policy.getPolicyId());
         Assert.assertEquals(mockLineResponseFailCode, deductionFileLine.getRejectionCode());
-        Assert.assertEquals(PaymentFailEmailService.RESPONSE_CODE_EMAIL_SENT_SUCCESS, deductionFileLine.getInformCustomerCode());
+        Assert.assertTrue(deductionFileLine.getInformCustomerCode().contains(PaymentFailEmailService.RESPONSE_CODE_EMAIL_SENT_SUCCESS));
 
         result.collectionFile = collectionFile;
         result.failPaymentId = paymentId01Fail;

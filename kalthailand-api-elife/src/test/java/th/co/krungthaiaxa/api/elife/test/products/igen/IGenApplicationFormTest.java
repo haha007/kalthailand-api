@@ -93,14 +93,14 @@ public class IGenApplicationFormTest extends ELifeTest {
     @Test
     public void test_generate_applicationForm_for_validated_quote_annual_cash_back() throws IOException {
         ProductQuotation productQuotation = ProductQuotationFactory.constructIGen(33, PeriodicityCode.EVERY_YEAR, 1000000.0, true, 35, ProductDividendOption.ANNUAL_PAY_BACK_CASH);
-        Policy policy = policyFactory.createPolicyWithValidatedStatus(productQuotation, TestUtil.DUMMY_EMAIL);
+        Policy policy = policyFactory.createPolicyWithValidatedStatus(productQuotation, TestUtil.TESTING_EMAIL);
         testGenerateValidatedApplicationForm(policy);
     }
 
     @Test
     public void test_generate_applicationForm_for_validated_quote_annual_next_premium() throws IOException {
         ProductQuotation productQuotation = ProductQuotationFactory.constructIGen(33, PeriodicityCode.EVERY_YEAR, 1000000.0, true, 35, ProductDividendOption.ANNUAL_PAY_BACK_NEXT_PREMIUM);
-        Policy policy = policyFactory.createPolicyWithValidatedStatus(productQuotation, TestUtil.DUMMY_EMAIL);
+        Policy policy = policyFactory.createPolicyWithValidatedStatus(productQuotation, TestUtil.TESTING_EMAIL);
         testGenerateValidatedApplicationForm(policy);
     }
 

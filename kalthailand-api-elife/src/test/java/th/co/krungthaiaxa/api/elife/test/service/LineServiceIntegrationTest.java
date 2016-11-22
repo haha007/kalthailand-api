@@ -15,7 +15,7 @@ public class LineServiceIntegrationTest {
 
     //    @Test
     public void should_send_sms() throws IOException {
-        lineService.sendPushNotification("testnotification", "B6861355");
+        lineService.sendPushNotificationWithIOException("testnotification", "B6861355");
     }
 
 }

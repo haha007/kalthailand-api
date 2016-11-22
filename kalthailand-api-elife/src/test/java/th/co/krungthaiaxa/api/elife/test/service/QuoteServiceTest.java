@@ -202,6 +202,6 @@ public class QuoteServiceTest extends ELifeTest {
     }
 
     private QuoteFactory.QuoteResult createQuote(String sessionId, ProductType productType) {
-        return quoteFactory.createQuote(sessionId, ProductQuotationFactory.constructDefault(productType), TestUtil.DUMMY_EMAIL);
+        return quoteFactory.createQuote(sessionId, ProductQuotationFactory.constructDefault(productType), TestUtil.TESTING_EMAIL);
     }
 }

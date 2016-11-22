@@ -221,7 +221,7 @@ public class DocumentResourceTest extends ELifeTest {
     }
 
     private Policy getPolicy() throws URISyntaxException, IOException {
-        QuoteFactory.QuoteResult quoteResult = quoteFactory.createQuote(ProductQuotationFactory.constructIGenDefault(), TestUtil.DUMMY_EMAIL);
+        QuoteFactory.QuoteResult quoteResult = quoteFactory.createQuote(ProductQuotationFactory.constructIGenDefault(), TestUtil.TESTING_EMAIL);
         Quote quote = quoteResult.getQuote();
 
         URI quoteCreationURI = new URI("http://localhost:" + port + "/policies");

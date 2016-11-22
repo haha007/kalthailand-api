@@ -30,7 +30,7 @@ public class QuoteFactory {
     public final GreenMailRule greenMail = new GreenMailRule(ServerSetupTest.SMTP_IMAP);
 
     public QuoteResult createDefaultIGen() {
-        return createDefaultIGen(TestUtil.DUMMY_EMAIL);
+        return createDefaultIGen(TestUtil.TESTING_EMAIL);
     }
 
     public QuoteResult createDefaultIGen(String email) {
@@ -39,7 +39,7 @@ public class QuoteFactory {
     }
 
     public QuoteResult createDefaultIProtect() {
-        return createDefaultIProtect(TestUtil.DUMMY_EMAIL);
+        return createDefaultIProtect(TestUtil.TESTING_EMAIL);
     }
 
     public QuoteResult createDefaultIProtect(String email) {
@@ -53,7 +53,7 @@ public class QuoteFactory {
     }
 
     public QuoteResult createQuote(ProductQuotation productQuotation) {
-        return createQuote(productQuotation, TestUtil.DUMMY_EMAIL);
+        return createQuote(productQuotation, TestUtil.TESTING_EMAIL);
     }
 
     public QuoteResult createQuote(String sessionId, ProductQuotation productQuotation, String email) {

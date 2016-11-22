@@ -392,9 +392,9 @@ public class CollectionFileProcessingServiceTest extends ELifeTest {
     @Test
     public void run_cron_job() {
         ProductQuotation productQuotation01 = ProductQuotationFactory.constructIGenDefaultWithMonthlyPayment();
-        Policy policy01 = policyFactory.createPolicyWithValidatedStatus(productQuotation01, TestUtil.DUMMY_EMAIL);
+        Policy policy01 = policyFactory.createPolicyWithValidatedStatus(productQuotation01, TestUtil.TESTING_EMAIL);
         ProductQuotation productQuotation02 = ProductQuotationFactory.constructIProtectDefaultWithMonthlyPayment();
-        Policy policy02 = policyFactory.createPolicyWithValidatedStatus(productQuotation02, TestUtil.DUMMY_EMAIL);
+        Policy policy02 = policyFactory.createPolicyWithValidatedStatus(productQuotation02, TestUtil.TESTING_EMAIL);
 
         InputStream inputStream = collectionFileFactory.constructCollectionExcelFileWithDefaultPayment(policy01.getPolicyId(), policy02.getPolicyId());
 
@@ -430,10 +430,10 @@ public class CollectionFileProcessingServiceTest extends ELifeTest {
         */
     private InputStream createDefaultCollectionFile() {
         ProductQuotation productQuotation01 = ProductQuotationFactory.constructIGenDefaultWithMonthlyPayment();
-        Policy policy01 = policyFactory.createPolicyWithValidatedStatus(productQuotation01, TestUtil.DUMMY_EMAIL);
+        Policy policy01 = policyFactory.createPolicyWithValidatedStatus(productQuotation01, TestUtil.TESTING_EMAIL);
 
         ProductQuotation productQuotation02 = ProductQuotationFactory.constructIProtectDefaultWithMonthlyPayment();
-        Policy policy02 = policyFactory.createPolicyWithValidatedStatus(productQuotation02, TestUtil.DUMMY_EMAIL);
+        Policy policy02 = policyFactory.createPolicyWithValidatedStatus(productQuotation02, TestUtil.TESTING_EMAIL);
         return CollectionFileFactory.constructCollectionExcelFileByPolicy(policy01, policy02);
     }
 

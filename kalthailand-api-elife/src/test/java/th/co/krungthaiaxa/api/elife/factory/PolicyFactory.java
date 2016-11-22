@@ -36,7 +36,7 @@ public class PolicyFactory {
     public final GreenMailRule greenMail = new GreenMailRule(ServerSetupTest.SMTP_IMAP);
 
     public Policy createPolicyWithValidatedStatus(ProductQuotation productQuotation) {
-        return createPolicyWithValidatedStatus(productQuotation, TestUtil.DUMMY_EMAIL);
+        return createPolicyWithValidatedStatus(productQuotation, TestUtil.TESTING_EMAIL);
     }
 
     public Policy createPolicyWithPendingPaymentStatus(ProductQuotation productQuotation, String insuredEmail) {
@@ -50,7 +50,7 @@ public class PolicyFactory {
     }
 
     public Policy createPolicyWithPendingPaymentStatus(ProductQuotation productQuotation) {
-        return createPolicyWithPendingPaymentStatus(productQuotation, TestUtil.DUMMY_EMAIL);
+        return createPolicyWithPendingPaymentStatus(productQuotation, TestUtil.TESTING_EMAIL);
     }
 
     public Policy createPolicyWithPendingPaymentStatus(Quote quote) {

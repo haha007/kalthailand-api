@@ -51,7 +51,7 @@ public class QuoteCountsServiceTest extends ELifeTest {
         //Create new iGen
         QuoteFactory.QuoteResult quoteResult = quoteFactory.createDefaultIGen();
         //Create another iGen with the same quoteSessionId
-        quoteFactory.createQuote(quoteResult.getSessionId(), ProductQuotationFactory.constructIGenDefault(), TestUtil.DUMMY_EMAIL);
+        quoteFactory.createQuote(quoteResult.getSessionId(), ProductQuotationFactory.constructIGenDefault(), TestUtil.TESTING_EMAIL);
 
         toDateTime = LocalDateTime.now();
         List<QuoteCount> quoteCountListAfter = quoteCountForAllProductsService.countQuotesOfAllProducts(fromDateTime, toDateTime);

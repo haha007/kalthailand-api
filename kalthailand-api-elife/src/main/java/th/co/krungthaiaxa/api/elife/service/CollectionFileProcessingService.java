@@ -13,8 +13,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import th.co.krungthaiaxa.api.common.action.ActionWithResult;
 import th.co.krungthaiaxa.api.common.exeption.BadArgumentException;
-import th.co.krungthaiaxa.api.common.exeption.BaseException;
 import th.co.krungthaiaxa.api.common.exeption.UnexpectedException;
 import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
 import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
@@ -52,6 +52,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static org.apache.commons.codec.digest.DigestUtils.sha256Hex;
@@ -98,12 +99,13 @@ public class CollectionFileProcessingService {
      * Don't put final here because we need inject mock test dependency
      */
     private LineService lineService;
-    private final PaymentFailEmailService paymentInformService;
+    private final PaymentFailEmailService paymentRetryEmailService;
+    private final PaymentFailLineNotificationService paymentRetryLineNotificationService;
 
     @Inject
     public CollectionFileProcessingService(CollectionFileRepository collectionFileRepository, PaymentRepository paymentRepository, PolicyRepository policyRepository, PolicyService policyService, PaymentService paymentService, EreceiptService ereceiptService,
             LineService lineService,
-            PaymentFailEmailService paymentInformService) {
+            PaymentFailEmailService paymentRetryEmailService, PaymentFailLineNotificationService paymentRetryLineNotificationService) {
         this.collectionFileRepository = collectionFileRepository;
         this.paymentRepository = paymentRepository;
         this.policyRepository = policyRepository;
@@ -112,7 +114,8 @@ public class CollectionFileProcessingService {
         this.ereceiptService = ereceiptService;
 //        this.deductionFileRepository = deductionFileRepository;
         this.lineService = lineService;
-        this.paymentInformService = paymentInformService;
+        this.paymentRetryEmailService = paymentRetryEmailService;
+        this.paymentRetryLineNotificationService = paymentRetryLineNotificationService;
     }
 
     public static final Function<PeriodicityCode, String> PAYMENT_MODE = periodicityCode -> {
@@ -457,27 +460,28 @@ public class CollectionFileProcessingService {
     private void setResultOfFailPaymentNotificationToDeductionFileLine(DeductionFileLine deductionFileLine, Policy policy, Payment payment) {
         String informCustomerCode;
         String informCustomerMessage;
-        try {
-            informFailPaymentsToUser(policy, payment);
-            informCustomerCode = PaymentFailEmailService.RESPONSE_CODE_EMAIL_SENT_SUCCESS;
-            informCustomerMessage = "Sent inform email to customer";
-        } catch (Exception ex) {
-            if (ex instanceof BaseException) {
-                BaseException baseException = (BaseException) ex;
-                informCustomerCode = baseException.getErrorCode();
-                informCustomerMessage = baseException.getErrorMessage();
-            } else {
-                informCustomerCode = ErrorCode.ERROR_CODE_UNKNOWN_ERROR;
-                informCustomerMessage = ex.getMessage();
+        List<ActionWithResult> notifyActions = new ArrayList<>();
+        notifyActions.add(new ActionWithResult("Email") {
+            @Override
+            public void executeSuccess() {
+                paymentRetryEmailService.sendEmail(policy, payment);
+                this.resultCode = PaymentFailEmailService.RESPONSE_CODE_EMAIL_SENT_SUCCESS;
+                this.resultMessage = "Sent inform email to insured person";
             }
-            LOGGER.error(ex.getMessage(), ex);
-        }
+        });
+        notifyActions.add(new ActionWithResult("Line notification") {
+            @Override
+            public void executeSuccess() {
+                paymentRetryLineNotificationService.sendNotification(policy, payment);
+                this.resultCode = PaymentFailEmailService.RESPONSE_CODE_EMAIL_SENT_SUCCESS;
+                this.resultMessage = "Sent inform line notification to insured person";
+            }
+        });
+        notifyActions.stream().forEach(actionWithResult -> actionWithResult.execute());
+        informCustomerCode = notifyActions.stream().map(notifyAction -> notifyAction.getActionName() + ": " + notifyAction.getResultCode()).collect(Collectors.joining(", "));
+        informCustomerMessage = notifyActions.stream().map(notifyAction -> notifyAction.getResultMessage()).collect(Collectors.joining(", "));
         deductionFileLine.setInformCustomerCode(informCustomerCode);
         deductionFileLine.setInformCustomerMessage(informCustomerMessage);
-    }
-
-    public void informFailPaymentsToUser(Policy policy, Payment payment) {
-        paymentInformService.sendPaymentFailEmail(policy, payment);
     }
 
     private DeductionFileLine initDeductionFileLine(CollectionFileLine collectionFileLine, String paymentMode, String errorCode, String errorMessage) {
@@ -507,4 +511,5 @@ public class CollectionFileProcessingService {
     public void setLineService(LineService lineService) {
         this.lineService = lineService;
     }
+
 }

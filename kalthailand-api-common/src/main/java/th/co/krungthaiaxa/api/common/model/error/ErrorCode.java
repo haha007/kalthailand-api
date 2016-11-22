@@ -98,6 +98,7 @@ public class ErrorCode {
     public static final String ERROR_CODE_LINE_PAYMENT = "0503";
     public static final Function<String, Error> LINE_PAYMENT_ERROR = msg -> new Error(ERROR_CODE_LINE_PAYMENT, "Unable to confirm the payment. Error is [" + msg + "]", "Unable to confirm the payment. Error is [" + msg + "]");
     public static final String ERROR_CODE_LINE_TOKEN_NOT_EXIST = "0504";
+    public static final String ERROR_CODE_LINE_NOTIFICATION = "0505";
 
     //Payment
     public static final String ERROR_CODE_PAYMENT_NOT_FOUND = "0510";

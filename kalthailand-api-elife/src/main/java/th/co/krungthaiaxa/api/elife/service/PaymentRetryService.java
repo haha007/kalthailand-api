@@ -11,6 +11,8 @@ import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
 import th.co.krungthaiaxa.api.common.utils.IOUtil;
 import th.co.krungthaiaxa.api.common.utils.LocaleUtil;
 import th.co.krungthaiaxa.api.elife.data.GeneralSetting;
+import th.co.krungthaiaxa.api.elife.ereceipt.EreceiptNumber;
+import th.co.krungthaiaxa.api.elife.ereceipt.EreceiptService;
 import th.co.krungthaiaxa.api.elife.exception.LinePaymentException;
 import th.co.krungthaiaxa.api.elife.model.Document;
 import th.co.krungthaiaxa.api.elife.model.Insured;
@@ -20,8 +22,6 @@ import th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayResponse;
 import th.co.krungthaiaxa.api.elife.products.utils.ProductUtils;
 import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
-import th.co.krungthaiaxa.api.elife.ereceipt.EreceiptNumber;
-import th.co.krungthaiaxa.api.elife.ereceipt.EreceiptService;
 import th.co.krungthaiaxa.api.elife.utils.EmailElifeUtil;
 import th.co.krungthaiaxa.api.elife.utils.PersonUtil;
 
@@ -118,7 +118,9 @@ public class PaymentRetryService {
             oldPayment.setRetryPaymentId(retryPayment.getPaymentId());
             paymentRepository.save(oldPayment);
         }
-        sendRetryPaymentSuccessToMarketingTeam(retryPayment, accessToken);
+        Policy policy = policyService.validateExistPolicy(retryPayment.getPolicyId());
+        sendRetryPaymentSuccessEmailToInsuredPersonAndMarketingTeam(policy, retryPayment, accessToken);
+        sendRetryPaymentSuccessLineNotificationToInsuredPerson(policy);
         return retryPayment;
     }
 
@@ -128,8 +130,7 @@ public class PaymentRetryService {
      * @param payment
      * @param accessToken
      */
-    private void sendRetryPaymentSuccessToMarketingTeam(Payment payment, String accessToken) {
-        Policy policy = policyService.validateExistPolicy(payment.getPolicyId());
+    private void sendRetryPaymentSuccessEmailToInsuredPersonAndMarketingTeam(Policy policy, Payment payment, String accessToken) {
         Insured mainInsured = ProductUtils.validateExistMainInsured(policy);
 
         Document ereceiptPdfDocument = ereceiptService.addEreceiptPdf(policy, payment, false, accessToken);
@@ -152,6 +153,13 @@ public class PaymentRetryService {
         }
         Pair<byte[], String> ereceiptAttachment = policyService.findEreceiptAttachmentByDocumentId(policy.getPolicyId(), ereceiptPdfDocument.getId());
         emailService.sendEmails(toEmails, emailSubject, emailContent, EmailElifeUtil.initImagePairs("logo"), Arrays.asList(ereceiptAttachment));
+    }
+
+    private void sendRetryPaymentSuccessLineNotificationToInsuredPerson(Policy policy) {
+        String mid = ProductUtils.getMid(policy);
+        String notificationMessage = IOUtil.loadTextFileInClassPath("/line-notification/line-notification-payment-retry-success.txt");
+        notificationMessage = notificationMessage.replaceAll("%POLICY_NUMBER%", policy.getPolicyId());
+        lineService.sendPushNotification(notificationMessage, mid);
     }
 
     public void setLineService(LineService lineService) {

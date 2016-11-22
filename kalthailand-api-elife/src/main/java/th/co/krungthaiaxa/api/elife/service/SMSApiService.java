@@ -42,6 +42,7 @@ public class SMSApiService {
      * @param message
      * @return
      * @throws IOException
+     * @deprecated Should move this method to another class which related to business logic. This class should be related to SMS infrastructure only.
      */
     @Deprecated
     public SMSResponse sendConfirmationMessage(Policy policy, String message) throws IOException {

@@ -14,6 +14,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import th.co.krungthaiaxa.api.common.utils.JsonUtil;
 import th.co.krungthaiaxa.api.common.utils.LogUtil;
 import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
+import th.co.krungthaiaxa.api.elife.exception.LineNotificationException;
 import th.co.krungthaiaxa.api.elife.exception.LinePaymentException;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayRecurringResponse;
@@ -74,7 +75,7 @@ public class LineService {
         this.lineTokenService = lineTokenService;
     }
 
-    public void sendPushNotification(String messageContent, String... mids) throws IOException {
+    public void sendPushNotification(String messageContent, String... mids) {
         String msg = "LINE push [start]: mids: " + Arrays.toString(mids);
         Instant start = LogUtil.logStarting(msg);
         //TODO Should change this, use some mock URL in profile config. Don't need to check like this in code. If the value is null, should throw Exception.
@@ -108,12 +109,27 @@ public class LineService {
         try {
             response = restTemplate.exchange(builder.toUriString(), POST, entity, String.class);
         } catch (Exception e) {
-            throw new IOException("Unable to send LINE push notification: " + e.getMessage(), e);
+            throw new LineNotificationException("Unable to send LINE push notification: " + e.getMessage(), e);
         }
         if (!response.getStatusCode().equals(OK)) {
-            throw new IOException("Line's response for push notification is [" + response.getStatusCode() + "]. Response body is [" + response.getBody() + "]");
+            throw new LineNotificationException("Line's response for push notification is [" + response.getStatusCode() + "]. Response body is [" + response.getBody() + "]");
         }
         LogUtil.logRuntime(start, msg);
+    }
+
+    /**
+     * @param messageContent
+     * @param mids
+     * @throws IOException
+     * @deprecated We only keep this method in order to make it compatible with the old code. Please use {@link #sendPushNotification(String, String...)} insteads.
+     */
+    @Deprecated
+    public void sendPushNotificationWithIOException(String messageContent, String... mids) throws IOException {
+        try {
+            sendPushNotification(messageContent, mids);
+        } catch (LineNotificationException e) {
+            throw new IOException("Unable to send LINE push notification: " + e.getMessage(), e);
+        }
     }
 
     public LinePayResponse bookPayment(String mid, Policy policy, String amount, String currency) throws IOException {

@@ -275,10 +275,10 @@ public class PolicyService {
 
         // Send push notification
         try {
-            String pushContent = IOUtils.toString(this.getClass().getResourceAsStream("/pushnotification-content/policy-booked-notification.txt"), Charset.forName("UTF-8"));
+            String pushContent = IOUtils.toString(this.getClass().getResourceAsStream("/line-notification/policy-booked-notification.txt"), Charset.forName("UTF-8"));
             String sendMsg = pushContent.replace("%POLICY_ID%", policy.getPolicyId());
             sendMsg = sendMsg.replace("%FULL_NAME%", policy.getInsureds().get(0).getPerson().getGivenName() + " " + policy.getInsureds().get(0).getPerson().getSurName());
-            lineService.sendPushNotification(sendMsg, policy.getInsureds().get(0).getPerson().getLineId());
+            lineService.sendPushNotificationWithIOException(sendMsg, policy.getInsureds().get(0).getPerson().getLineId());
         } catch (Exception e) {
             logger.error(String.format("Unable to send LINE push notification for policy booking on policy [%s]: %s", policy.getPolicyId(), e.getMessage()), e);
         }
@@ -370,8 +370,8 @@ public class PolicyService {
 
         // Send push notification
         try {
-            String pushContent = IOUtils.toString(this.getClass().getResourceAsStream("/pushnotification-content/policy-purchased-notification.txt"), Charset.forName("UTF-8"));
-            lineService.sendPushNotification(pushContent, policy.getInsureds().get(0).getPerson().getLineId());
+            String pushContent = IOUtils.toString(this.getClass().getResourceAsStream("/line-notification/policy-purchased-notification.txt"), Charset.forName("UTF-8"));
+            lineService.sendPushNotificationWithIOException(pushContent, policy.getInsureds().get(0).getPerson().getLineId());
         } catch (Exception e) {
             logger.error(String.format("Unable to send LINE push notification for policy validation on policy [%s]: %s", policy.getPolicyId(), e.getMessage()), e);
         }
@@ -412,9 +412,9 @@ public class PolicyService {
         }
 
         // Send push notification
-        String pushContent = IOUtils.toString(this.getClass().getResourceAsStream("/pushnotification-content/user-not-responging-notification.txt"), Charset.forName("UTF-8"));
+        String pushContent = IOUtils.toString(this.getClass().getResourceAsStream("/line-notification/user-not-responging-notification.txt"), Charset.forName("UTF-8"));
         Insured mainInsured = ProductUtils.validateExistMainInsured(policy);
-        lineService.sendPushNotification(pushContent.replace("%POLICY_ID%", policy.getPolicyId()), mainInsured.getPerson().getLineId());
+        lineService.sendPushNotificationWithIOException(pushContent.replace("%POLICY_ID%", policy.getPolicyId()), mainInsured.getPerson().getLineId());
     }
 
     //TODO change logic: if send email fail, it still continue with line push notification, then after that return error for email.
@@ -423,9 +423,9 @@ public class PolicyService {
         emailService.sendPhoneNumberIsWrongEmail(policy);
 
         // Send push notification
-        String pushContent = IOUtils.toString(this.getClass().getResourceAsStream("/pushnotification-content/phone-number-wrong-notification.txt"), Charset.forName("UTF-8"));
+        String pushContent = IOUtils.toString(this.getClass().getResourceAsStream("/line-notification/phone-number-wrong-notification.txt"), Charset.forName("UTF-8"));
         Insured mainInsured = ProductUtils.validateExistMainInsured(policy);
-        lineService.sendPushNotification(pushContent.replace("%POLICY_ID%", policy.getPolicyId()), mainInsured.getPerson().getLineId());
+        lineService.sendPushNotificationWithIOException(pushContent.replace("%POLICY_ID%", policy.getPolicyId()), mainInsured.getPerson().getLineId());
     }
 
     public Policy updateMainInsuredPerson(String policyId, PersonInfo mainInsuredPersonInfo) {

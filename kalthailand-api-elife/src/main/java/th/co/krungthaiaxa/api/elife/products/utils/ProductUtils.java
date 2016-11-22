@@ -548,4 +548,14 @@ public class ProductUtils {
     public static String getRegistrationId(Insured insured) {
         return insured.getPerson().getRegistrations().get(0).getId();
     }
+
+    /**
+     * @param quotable
+     * @return mid. At this moment, mid is equals to lineId;
+     */
+    public static String getMid(Quotable quotable) {
+        Insured mainInsured = validateMainInsured(quotable);
+        return mainInsured.getPerson().getLineId();
+
+    }
 }

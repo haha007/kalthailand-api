@@ -9,7 +9,6 @@ import th.co.krungthaiaxa.api.common.exeption.EmailException;
 import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
 import th.co.krungthaiaxa.api.common.utils.IOUtil;
 import th.co.krungthaiaxa.api.common.utils.LocaleUtil;
-import th.co.krungthaiaxa.api.elife.data.GeneralSetting;
 import th.co.krungthaiaxa.api.elife.model.Amount;
 import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.model.Payment;
@@ -33,17 +32,17 @@ public class PaymentFailEmailService {
     public static final String RESPONSE_CODE_EMAIL_SENT_SUCCESS = "0000";
 
     private final EmailService emailService;
-    private final GeneralSettingService generalSettingService;
     private final MessageSource messageSource;
+    private final PaymentRetryLinkService paymentRetryLinkService;
 
     @Inject
-    public PaymentFailEmailService(EmailService emailService, GeneralSettingService generalSettingService, MessageSource messageSource) {
+    public PaymentFailEmailService(EmailService emailService, MessageSource messageSource, PaymentRetryLinkService paymentRetryLinkService) {
         this.emailService = emailService;
-        this.generalSettingService = generalSettingService;
         this.messageSource = messageSource;
+        this.paymentRetryLinkService = paymentRetryLinkService;
     }
 
-    public void sendPaymentFailEmail(Policy policy, Payment payment) {
+    public void sendEmail(Policy policy, Payment payment) {
         Insured mainInsured = ProductUtils.validateExistMainInsured(policy);
         String insuredEmail = mainInsured.getPerson().getEmail();
         if (StringUtils.isBlank(insuredEmail)) {
@@ -64,7 +63,7 @@ public class PaymentFailEmailService {
         String dueDateString = "";
         String paymentAmount = "";
         try {
-            paymentLink = createPaymentLink(policy.getPolicyId(), payment);
+            paymentLink = paymentRetryLinkService.createPaymentLink(policy.getPolicyId(), payment);
 
             String productId = policy.getCommonData().getProductId();
             ProductType productType = ProductUtils.validateExistProductTypeByLogicName(productId);
@@ -91,14 +90,4 @@ public class PaymentFailEmailService {
         return emailContent;
     }
 
-    private String createPaymentLink(String policyNumber, Payment payment) {
-        GeneralSetting generalSetting = generalSettingService.loadGeneralSetting();
-        String retryLink = generalSetting.getRetryPaymentSetting().getRetryLink();
-        if (payment != null) {
-            return String.format("%s?policyNumber=%s&paymentId=%s", retryLink, policyNumber, payment.getPaymentId());
-        } else {
-            //We terrible sorry but cannot help user to payment again by himself: cannot generate payment link without payment and policyNumber. We need to contact and handle this case manually.
-            return "";
-        }
-    }
 }
