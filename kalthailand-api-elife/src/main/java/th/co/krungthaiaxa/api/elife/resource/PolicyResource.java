@@ -33,6 +33,7 @@ import th.co.krungthaiaxa.api.common.utils.RequestUtil;
 import th.co.krungthaiaxa.api.elife.exception.ElifeException;
 import th.co.krungthaiaxa.api.elife.model.Document;
 import th.co.krungthaiaxa.api.elife.model.DocumentDownload;
+import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.PersonInfo;
 import th.co.krungthaiaxa.api.elife.model.Policy;
@@ -188,7 +189,9 @@ public class PolicyResource {
                 text("Policy ID"),
                 text("Previous Policy ID"),
                 text("Agent Code 1"),
-                text("Agent Code 2"));
+                text("Agent Code 2"),
+                text("Product Type"),
+                text("MID"));
         policies.stream().forEach(tmp -> createPolicyExtractExcelFileLine(sheet, tmp));
         ExcelUtils.autoWidthAllColumns(workbook);
 
@@ -578,13 +581,25 @@ public class PolicyResource {
     }
 
     private void createPolicyExtractExcelFileLine(Sheet sheet, Policy policy) {
-        if (policy.getInsureds().get(0).getInsuredPreviousInformations().size() != 0) {
-            ExcelUtils.appendRow(sheet,
-                    text(policy.getPolicyId()),
-                    text(policy.getInsureds().get(0).getInsuredPreviousInformations().get(0)),
-                    text(policy.getInsureds().get(0).getInsuredPreviousInformations().get(1)),
-                    text(policy.getInsureds().get(0).getInsuredPreviousInformations().get(2)));
+
+        Insured firstInsured = ProductUtils.validateExistFirstInsured(policy);
+        String previousPolicyId = null;
+        String agentCode01 = null;
+        String agentCode02 = null;
+        String productType = ProductUtils.getProductLogicName(policy);
+        String mid = firstInsured.getPerson().getLineId();
+        if (!firstInsured.getInsuredPreviousInformations().isEmpty()) {
+            previousPolicyId = firstInsured.getInsuredPreviousInformations().get(0);
+            agentCode01 = firstInsured.getInsuredPreviousInformations().get(1);
+            agentCode02 = firstInsured.getInsuredPreviousInformations().get(2);
         }
+        ExcelUtils.appendRow(sheet,
+                text(policy.getPolicyId()),
+                text(previousPolicyId),
+                text(agentCode01),
+                text(agentCode02),
+                text(productType),
+                text(mid));
     }
 
 }

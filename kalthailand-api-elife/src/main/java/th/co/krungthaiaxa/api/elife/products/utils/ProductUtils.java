@@ -73,8 +73,12 @@ public class ProductUtils {
         }
     };
 
+    public static String getProductLogicName(Quotable quotable) {
+        return quotable.getCommonData().getProductId();
+    }
+
     public static String validateExistProductName(Quotable quotable) {
-        String productLogicName = quotable.getCommonData().getProductId();
+        String productLogicName = getProductLogicName(quotable);
         ProductType productType = ProductUtils.validateExistProductTypeByLogicName(productLogicName);
         return productType.getDisplayName();
     }
@@ -222,6 +226,23 @@ public class ProductUtils {
         notNull(insured.getAgeAtSubscription(), ageIsEmptyException);
         isFalse(insured.getAgeAtSubscription() > maxAge, ageIsTooHighException.apply(maxAge));
         isFalse(insured.getAgeAtSubscription() < minAge, ageIsTooLowException.apply(minAge));
+    }
+
+    public static Insured validateExistFirstInsured(Quotable quotable) {
+        Insured firstInsured = getFirstInsured(quotable);
+        if (firstInsured == null) {
+            throw new UnexpectedException(String.format("%s %s doesn't have any insured data!", quotable.getClass().getSimpleName(), quotable.getPolicyId()));
+        }
+        return firstInsured;
+    }
+
+    public static Insured getFirstInsured(Quotable quotable) {
+        List<Insured> insureds = quotable.getInsureds();
+        if (insureds == null || insureds.isEmpty()) {
+            return null;
+        } else {
+            return insureds.get(0);
+        }
     }
 
     public static Insured validateMainInsured(Quotable quotable) {

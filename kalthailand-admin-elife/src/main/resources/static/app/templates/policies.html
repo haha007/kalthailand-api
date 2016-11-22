@@ -1,4 +1,4 @@
-    <div class="row">
+<div class="row">
 
     <!-- BEGIN Page specific stuff -->
     <div ng-cloak class="col-md-12 col-sm-12 col-xs-12 main ng-cloak" id="role-policies">
@@ -127,6 +127,7 @@
                     <th>Agent code 1</th>
                     <th>Agent code 2</th>
                     <th>Validation Agent code</th>
+                    <th>Mid</th>
                     <th>Creation time</th>
                     <th>Validation time</th>
                 </tr>
@@ -140,6 +141,7 @@
                     <td>{{ item.insureds[0].insuredPreviousInformations[1] }}</td>
                     <td>{{ item.insureds[0].insuredPreviousInformations[2] }}</td>
                     <td>{{ item.validationAgentCode }}</td>
+                    <td>{{ item.insureds[0].person.lineId }}</td>
                     <td>{{ item.creationDateTime | date:'yyyy-MM-dd HH:mm:ss'}}</td>
                     <td>{{ item.validationDateTime | date:'yyyy-MM-dd HH:mm:ss'}}</td>
                 </tr>

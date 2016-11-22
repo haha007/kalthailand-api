@@ -38,14 +38,14 @@
     function routeConfig($routeProvider) {
         $routeProvider
             .when('/', {
-                templateUrl: 'app/templates/home.html',
+                templateUrl: 'app/templates/policies.html',
                 controller: 'DashboardController',
-                activeTab: 'home'
+                activeTab: 'policies'
             })
-            .when('/home', {
-                templateUrl: 'app/templates/home.html',
+            .when('/policies', {
+                templateUrl: 'app/templates/policies.html',
                 controller: 'DashboardController',
-                activeTab: 'home'
+                activeTab: 'policies'
             })
             .when('/blacklist', {
                 templateUrl: 'app/templates/blacklist.html',
@@ -62,10 +62,10 @@
                 controller: 'PolicyDetailController',
                 activeTab: 'policy-detail'
             })
-            .when('/configuration', {
-                templateUrl: 'app/templates/configuration.html',
+            .when('/policy-numbers', {
+                templateUrl: 'app/templates/policy-numbers.html',
                 controller: 'ConfigurationController',
-                activeTab: 'configuration'
+                activeTab: 'policy-numbers'
             })
             .when('/total-quote-count', {
                 templateUrl: 'app/templates/total-quote-count.html',

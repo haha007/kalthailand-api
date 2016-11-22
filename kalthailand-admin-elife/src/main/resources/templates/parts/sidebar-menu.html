@@ -3,7 +3,7 @@
     <ul class="nav side-menu">
         <li th:if="${user.featuresAvailabilities['policyDetailLink']}"><a><i class="fa fa-suitcase"></i> Policy <span class="fa fa-chevron-down"></span></a>
             <ul class="nav child_menu">
-                <li th:if="${user.featuresAvailabilities['policiesLink']}"><a href="#home">List</a></li>
+                <li th:if="${user.featuresAvailabilities['policiesLink']}"><a href="#policies">List</a></li>
                 <li th:if="${user.featuresAvailabilities['policyDetailLink']}"><a href="#policy-detail">Detail</a></li>
             </ul>
         </li>
@@ -20,7 +20,7 @@
         <li th:if="${user.featuresAvailabilities.blackListLink || user.featuresAvailabilities.policyNumbersLink}"><a><i class="fa fa-cog"></i> Setting <span class="fa fa-chevron-down"></span></a>
             <ul class="nav child_menu">
                 <li th:if="${user.featuresAvailabilities.blackListLink}"><a href="#blacklist">Black List</a></li>
-                <li th:if="${user.featuresAvailabilities.policyNumbersLink}"><a href="#configuration">Policy Numbers</a></li>
+                <li th:if="${user.featuresAvailabilities.policyNumbersLink}"><a href="#policy-numbers">Policy Numbers</a></li>
             </ul>
         </li>
 

@@ -25,15 +25,15 @@ public class PolicyCriteriaRepository {
     private MongoOperations mongoOperations;
 
     public Page<Policy> findPolicies(String policyId, ProductType productType, PolicyStatus status,
-                                     Boolean nonEmptyAgentCode, LocalDate fromDate, LocalDate toDate, Pageable pageable) {
+            Boolean nonEmptyAgentCode, LocalDate fromDate, LocalDate toDate, Pageable pageable) {
         Query query = getQuery(policyId, productType, status, nonEmptyAgentCode, fromDate, toDate);
-		List<Policy> policies = mongoOperations.find(query.with(pageable), Policy.class, "policy");
+        List<Policy> policies = mongoOperations.find(query.with(pageable), Policy.class, "policy");
         Long nbRecords = mongoOperations.count(query, Policy.class, "policy");
         return new PageImpl<>(policies, pageable, nbRecords);
     }
 
     public List<Policy> findPolicies(String policyId, ProductType productType, PolicyStatus status,
-                                Boolean nonEmptyAgentCode, LocalDate fromDate, LocalDate toDate) {
+            Boolean nonEmptyAgentCode, LocalDate fromDate, LocalDate toDate) {
         Query query = getQuery(policyId, productType, status, nonEmptyAgentCode, fromDate, toDate);
         query.fields()
                 .include("policyId")
@@ -42,6 +42,8 @@ public class PolicyCriteriaRepository {
                 .include("status")
                 .include("insureds.startDate")
                 .include("insureds.insuredPreviousInformations")
+                .include("insureds.mainInsuredIndicator")
+                .include("insureds.person.lineId")
                 .include("validationAgentCode");
         return mongoOperations.find(query, Policy.class, "policy");
     }
