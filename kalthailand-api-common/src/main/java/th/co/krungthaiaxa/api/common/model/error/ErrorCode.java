@@ -85,18 +85,12 @@ public class ErrorCode {
     public static final Function<String, Error> POLICY_IS_NOT_VALIDATED_FOR_PAYMENT = msg -> new Error("0407", "The policy [" + msg + "] is not validated for payment and cannot be updated to validated status",
             "The policy [" + msg + "] is not validated for payment and cannot be updated to validated status");
     public static final Function<String, Error> ORDER_ID_NOT_PROVIDED = msg -> new Error("0408", "The order id was not provided", "The order id was not provided");
-    public static final Function<String, Error> POLICY_VALIDATION_ERROR = msg -> new Error("0409", "Payment is successful but there was an error while trying to validate the policy. Error is [" + msg + "].",
-            "There was an error wh ile trying to validate the policy after validating the payment. Error is [" + msg + "].");
-    public static final Error AGENT_CODE_FORMAT_ERROR = new Error("0410", "Agent code is not in format '123456-12-123456'.", "Agent code is not in format '123456-12-123456'.");
     public static final String ERROR_CODE_REAL_CAPTURE_API_HAS_TO_BE_USED = "0411";
-    public static final Error REAL_CAPTURE_API_HAS_TO_BE_USED = new Error(ERROR_CODE_REAL_CAPTURE_API_HAS_TO_BE_USED, "When validating a Policy in Production, only real call to Line Pay is allowed.",
-            "When validating a Policy in Production, only real call to Line Pay is allowed.");
 
     // Line
     public static final Error UNABLE_TO_DECRYPT = new Error("0501", "Unable to get your user ID", "The provided text could not be decrypted");
     public static final Error UNABLE_TO_GET_LINE_BC = new Error("0502", "Unable to get line bc", "The provided mid is not valid or have no line bc data along with input mid");
     public static final String ERROR_CODE_LINE_PAYMENT = "0503";
-    public static final Function<String, Error> LINE_PAYMENT_ERROR = msg -> new Error(ERROR_CODE_LINE_PAYMENT, "Unable to confirm the payment. Error is [" + msg + "]", "Unable to confirm the payment. Error is [" + msg + "]");
     public static final String ERROR_CODE_LINE_TOKEN_NOT_EXIST = "0504";
     public static final String ERROR_CODE_LINE_NOTIFICATION = "0505";
 
@@ -111,7 +105,6 @@ public class ErrorCode {
 
     // Email
     public static final String ERROR_CODE_EMAIL_SENDER = "0701";
-    public static final Function<String, Error> UNABLE_TO_SEND_EMAIL = msg -> new Error(ERROR_CODE_EMAIL_SENDER, "Unable to send email", "Error message is:" + msg);
 
     // Watermarking
     public static final Function<String, Error> INVALID_COLLECTION_FILE = msg -> new Error("0901", "Unable to upload the collection file. Error is: [" + msg + "]", "Unable to upload the collection file. Error is: [" + msg + "]");
@@ -119,6 +112,6 @@ public class ErrorCode {
     // ADMIN UI
     public static final String ERROR_CODE_AUTHORIZATION = "9001";
     public static final Function<String, Error> UI_UNAUTHORIZED = msg -> new Error(ERROR_CODE_AUTHORIZATION, "You don't have permission to perform the action.", msg);
-    public static final Function<String, Error> NOTIFICATION_NOT_SENT = msg -> new Error("9002", "Notification was not sent. Error is: " + msg, "Notification was not sent. Error is: " + msg);
+    public static final Function<String, Error> LINE_NOTIFICATION = msg -> new Error(ERROR_CODE_LINE_NOTIFICATION, "Notification was not sent. Error is: " + msg, "Notification was not sent. Error is: " + msg);
 
 }
