@@ -14,14 +14,14 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import th.co.krungthaiaxa.api.elife.test.ELifeTest;
 import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
-import th.co.krungthaiaxa.api.elife.utils.TestUtil;
 import th.co.krungthaiaxa.api.elife.factory.QuoteFactory;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.products.ProductEmailService;
 import th.co.krungthaiaxa.api.elife.service.QuoteService;
+import th.co.krungthaiaxa.api.elife.test.ELifeTest;
 import th.co.krungthaiaxa.api.elife.utils.GreenMailUtil;
+import th.co.krungthaiaxa.api.elife.utils.TestUtil;
 
 import javax.inject.Inject;
 import javax.mail.MessagingException;
@@ -59,13 +59,13 @@ public class ProductEmailServiceTest extends ELifeTest {
 
     @Test
     public void igen_send_quote_email() throws MessagingException, IOException {
-        QuoteFactory.QuoteResult quoteResult = quoteFactory.createDefaultIGen("dummy@krungthai-axa.co.th");
+        QuoteFactory.QuoteResult quoteResult = quoteFactory.createDefaultIGen();
         test_send_quote_email(quoteResult);
     }
 
     @Test
     public void iprotect_send_quote_email() throws MessagingException, IOException {
-        QuoteFactory.QuoteResult quoteResult = quoteFactory.createDefaultIProtect("dummy@krungthai-axa.co.th");
+        QuoteFactory.QuoteResult quoteResult = quoteFactory.createDefaultIProtect();
         test_send_quote_email(quoteResult);
     }
 

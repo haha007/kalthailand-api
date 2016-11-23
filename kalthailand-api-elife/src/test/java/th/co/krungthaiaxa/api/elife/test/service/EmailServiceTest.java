@@ -19,11 +19,10 @@ import org.springframework.context.MessageSource;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import th.co.krungthaiaxa.api.elife.test.ELifeTest;
 import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
 import th.co.krungthaiaxa.api.elife.factory.PolicyFactory;
-import th.co.krungthaiaxa.api.elife.factory.productquotation.ProductQuotationFactory;
 import th.co.krungthaiaxa.api.elife.factory.QuoteFactory;
+import th.co.krungthaiaxa.api.elife.factory.productquotation.ProductQuotationFactory;
 import th.co.krungthaiaxa.api.elife.model.Amount;
 import th.co.krungthaiaxa.api.elife.model.Document;
 import th.co.krungthaiaxa.api.elife.model.DocumentDownload;
@@ -39,6 +38,7 @@ import th.co.krungthaiaxa.api.elife.service.EmailService;
 import th.co.krungthaiaxa.api.elife.service.PolicyDocumentService;
 import th.co.krungthaiaxa.api.elife.service.PolicyService;
 import th.co.krungthaiaxa.api.elife.service.QuoteService;
+import th.co.krungthaiaxa.api.elife.test.ELifeTest;
 
 import javax.inject.Inject;
 import javax.mail.BodyPart;
@@ -61,13 +61,13 @@ import java.util.Optional;
 import static com.icegreen.greenmail.util.GreenMailUtil.getBody;
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
-import static th.co.krungthaiaxa.api.elife.utils.TestUtil.beneficiary;
-import static th.co.krungthaiaxa.api.elife.utils.TestUtil.productQuotation;
-import static th.co.krungthaiaxa.api.elife.utils.TestUtil.quote;
 import static th.co.krungthaiaxa.api.elife.model.enums.ChannelType.LINE;
 import static th.co.krungthaiaxa.api.elife.model.enums.DocumentType.ERECEIPT_PDF;
 import static th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode.EVERY_YEAR;
 import static th.co.krungthaiaxa.api.elife.products.ProductType.PRODUCT_IFINE;
+import static th.co.krungthaiaxa.api.elife.utils.TestUtil.beneficiary;
+import static th.co.krungthaiaxa.api.elife.utils.TestUtil.productQuotation;
+import static th.co.krungthaiaxa.api.elife.utils.TestUtil.quote;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiElifeApplication.class)
@@ -126,7 +126,7 @@ public class EmailServiceTest extends ELifeTest {
 
     @Test
     public void should_send_quote_iprotect_email_monthly_with_proper_from_address() throws Exception {
-        Quote quote = quoteFactory.createDefaultIProtectQuoteForLine(55, "santi.lik@krungthai-axa.co.th");
+        Quote quote = quoteFactory.createDefaultIProtectQuoteForLine(55, TestUtil.TESTING_EMAIL);
         emailService.sendQuoteIProtect(quote);
         assertThat(greenMail.getReceivedMessages()).hasSize(1);
         MimeMessage email = greenMail.getReceivedMessages()[0];
@@ -139,7 +139,7 @@ public class EmailServiceTest extends ELifeTest {
         Quote quote = quoteService.createQuote("xxx", LINE, productQuotation);
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateProfessionNameAndCheckBlackList(quote, "token");
-        //quote.getInsureds().get(0).getPerson().setEmail("chr_biz@hotmail.com");
+        //quote.getInsureds().get(0).getPerson().setEmail(TestUtil.TESTING_EMAIL);
         quote.getInsureds().get(0).getPerson().setEmail("santi.lik@krungthai-axa.co.th");
         Amount am = new Amount(1000.0, "THB");
         quote.getPremiumsData().getFinancialScheduler().setModalAmount(am);
@@ -162,8 +162,8 @@ public class EmailServiceTest extends ELifeTest {
         Quote quote = quoteService.createQuote("xxx", LINE, productQuotation(PRODUCT_IFINE, 55, EVERY_YEAR, 100000.0));
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateProfessionNameAndCheckBlackList(quote, "token");
-        quote.getInsureds().get(0).getPerson().setEmail("santi.lik@krungthai-axa.co.th");
-        //quote.getInsureds().get(0).getPerson().setEmail("chr_biz@hotmail.com");
+        quote.getInsureds().get(0).getPerson().setEmail(TestUtil.TESTING_EMAIL);
+        //quote.getInsureds().get(0).getPerson().setEmail(TestUtil.TESTING_EMAIL);
         emailService.sendQuoteiFineEmail(quote);
         assertThat(greenMail.getReceivedMessages()).hasSize(1);
         MimeMessage email = greenMail.getReceivedMessages()[0];
@@ -192,7 +192,7 @@ public class EmailServiceTest extends ELifeTest {
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateProfessionNameAndCheckBlackList(quote, "token");
         Policy policy = policyService.createPolicy(quote);
-        policy.getInsureds().get(0).getPerson().setEmail("tanawat_hemchua@hotmail.com");
+        policy.getInsureds().get(0).getPerson().setEmail(TestUtil.TESTING_EMAIL);
         emailService.sendPolicyBookedEmail(policy);
 
         assertThat(greenMail.getReceivedMessages()).hasSize(1);
