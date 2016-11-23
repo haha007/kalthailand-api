@@ -15,10 +15,10 @@ import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.product.ProductIFinePremium;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
-import th.co.krungthaiaxa.api.elife.products.utils.ProductUtils;
 import th.co.krungthaiaxa.api.elife.products.iprotect.IProtectQuoteEmailService;
-import th.co.krungthaiaxa.api.elife.utils.EmailSender;
+import th.co.krungthaiaxa.api.elife.products.utils.ProductUtils;
 import th.co.krungthaiaxa.api.elife.utils.EmailElifeUtil;
+import th.co.krungthaiaxa.api.elife.utils.EmailSender;
 
 import javax.inject.Inject;
 import javax.mail.MessagingException;
@@ -109,9 +109,7 @@ public class EmailService {
     public void sendQuoteiFineEmail(Quote quote) {
         logger.info("Sending quote iFine email");
         List<Pair<byte[], String>> base64ImgFileNames = new ArrayList<>();
-
-        base64ImgFileNames.add(Pair.of(IOUtil.loadBinaryFileInClassPath("/images/email/logo.png"), "<imageLogo>"));
-        //generate sale illustration iFine pdf file
+//        base64ImgFileNames.add(Pair.of(IOUtil.loadBinaryFileInClassPath("/images/email/logo.png"), "<imageLogo>"));
         List<Pair<byte[], String>> attachments = new ArrayList<>();
         attachments.add(saleIllustrationiFineService.generatePDF(quote));
         emailSender.sendEmail(emailName, quote.getInsureds().get(0).getPerson().getEmail(), subject, getQuoteiFineEmailContent(quote), base64ImgFileNames, attachments);
@@ -120,30 +118,30 @@ public class EmailService {
     public void sendPolicyBookedEmail(Policy policy) throws IOException, MessagingException {
         logger.info("Sending policy booked email");
         List<Pair<byte[], String>> base64ImgFileNames = new ArrayList<>();
-        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/logo.png")), "<imageElife>"));
-        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/facebook-logo.png")), "<imgF>"));
-        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/twitter-logo.png")), "<imgT>"));
-        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/youtube-logo.png")), "<imgY>"));
+//        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/logo.png")), "<imageElife>"));
+//        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/facebook-logo.png")), "<imgF>"));
+//        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/twitter-logo.png")), "<imgT>"));
+//        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/youtube-logo.png")), "<imgY>"));
         emailSender.sendEmail(emailName, policy.getInsureds().get(0).getPerson().getEmail(), getBookedEmailContentSubject(), getBookedEmailContent(policy), base64ImgFileNames, new ArrayList<>());
     }
 
     public void sendUserNotRespondingEmail(Policy policy) throws IOException, MessagingException {
         logger.info("Sending user is not responding email");
         List<Pair<byte[], String>> base64ImgFileNames = new ArrayList<>();
-        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/logo.png")), "<imageElife>"));
-        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/facebook-logo.png")), "<imgF>"));
-        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/twitter-logo.png")), "<imgT>"));
-        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/youtube-logo.png")), "<imgY>"));
+//        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/logo.png")), "<imageElife>"));
+//        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/facebook-logo.png")), "<imgF>"));
+//        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/twitter-logo.png")), "<imgT>"));
+//        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/youtube-logo.png")), "<imgY>"));
         emailSender.sendEmail(emailName, policy.getInsureds().get(0).getPerson().getEmail(), getUserNotResponseContentSubject(), getUserNotResponseContent(policy), base64ImgFileNames, new ArrayList<>());
     }
 
     public void sendPhoneNumberIsWrongEmail(Policy policy) throws IOException, MessagingException {
         logger.info("Sending phone number is wrong email");
         List<Pair<byte[], String>> base64ImgFileNames = new ArrayList<>();
-        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/logo.png")), "<imageElife>"));
-        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/facebook-logo.png")), "<imgF>"));
-        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/twitter-logo.png")), "<imgT>"));
-        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/youtube-logo.png")), "<imgY>"));
+//        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/logo.png")), "<imageElife>"));
+//        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/facebook-logo.png")), "<imgF>"));
+//        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/twitter-logo.png")), "<imgT>"));
+//        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/youtube-logo.png")), "<imgY>"));
         emailSender.sendEmail(emailName, policy.getInsureds().get(0).getPerson().getEmail(), getPhoneNumberIsWrongContentSubject(), getPhoneNumberIsWrongContent(policy), base64ImgFileNames, new ArrayList<>());
     }
 

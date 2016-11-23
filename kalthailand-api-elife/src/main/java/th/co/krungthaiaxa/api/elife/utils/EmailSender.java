@@ -106,7 +106,7 @@ public class EmailSender {
 
     private BodyPart getImageBodyPart(Pair<byte[], String> image) throws MessagingException {
         BodyPart messageBodyPart = new MimeBodyPart();
-        DataSource source = new ByteArrayDataSource(image.getLeft(), "application/octet-stream");
+        DataSource source = new ByteArrayDataSource(image.getLeft(), "image/jpeg");
         messageBodyPart.setDataHandler(new DataHandler(source));
         messageBodyPart.addHeader("Content-ID", image.getRight());
         return messageBodyPart;
