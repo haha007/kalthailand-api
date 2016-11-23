@@ -17,7 +17,6 @@ import th.co.krungthaiaxa.api.elife.model.product.ProductIFinePremium;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
 import th.co.krungthaiaxa.api.elife.products.iprotect.IProtectQuoteEmailService;
 import th.co.krungthaiaxa.api.elife.products.utils.ProductUtils;
-import th.co.krungthaiaxa.api.elife.utils.EmailElifeUtil;
 import th.co.krungthaiaxa.api.elife.utils.EmailSender;
 
 import javax.inject.Inject;
@@ -32,8 +31,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-
-import static org.apache.commons.io.IOUtils.toByteArray;
 
 /**
  * @deprecated should use {@link th.co.krungthaiaxa.api.elife.products.ProductEmailService}
@@ -65,14 +62,6 @@ public class EmailService {
         this.saleIllustration10ECService = saleIllustration10ECService;
         this.saleIllustrationiFineService = saleIllustrationiFineService;
         this.iProtectEmailService = iProtectEmailService;
-    }
-
-    public void sendEmailWithAttachments(String toEmail, String emailSubject, String emailContent, List<Pair<byte[], String>> attachments) {
-        sendEmail(toEmail, emailSubject, emailContent, EmailElifeUtil.getDefaultImagePairs(), attachments);
-    }
-
-    public void sendEmailWithAttachments(List<String> toEmails, String emailSubject, String emailContent, List<Pair<byte[], String>> attachments) {
-        sendEmails(toEmails, emailSubject, emailContent, EmailElifeUtil.getDefaultImagePairs(), attachments);
     }
 
     public void sendEmails(List<String> toEmails, String emailSubject, String emailContent, List<Pair<byte[], String>> imagesPairs, List<Pair<byte[], String>> attachments) {
@@ -148,10 +137,10 @@ public class EmailService {
     public void sendEreceiptEmail(Policy policy, Pair<byte[], String> attachFile) throws IOException, MessagingException {
         logger.info("Sending ereceipt email");
         List<Pair<byte[], String>> base64ImgFileNames = new ArrayList<>();
-        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/logo.png")), "<imageElife>"));
-        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/facebook-logo.png")), "<imgF>"));
-        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/twitter-logo.png")), "<imgT>"));
-        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/youtube-logo.png")), "<imgY>"));
+//        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/logo.png")), "<imageElife>"));
+//        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/facebook-logo.png")), "<imgF>"));
+//        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/twitter-logo.png")), "<imgT>"));
+//        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/youtube-logo.png")), "<imgY>"));
         List<Pair<byte[], String>> fileList = new ArrayList<>();
         fileList.add(attachFile);
         emailSender.sendEmail(emailName, policy.getInsureds().get(0).getPerson().getEmail(), getEreceiptEmailSubject(policy), getEreceiptEmailContent(policy), base64ImgFileNames, fileList);

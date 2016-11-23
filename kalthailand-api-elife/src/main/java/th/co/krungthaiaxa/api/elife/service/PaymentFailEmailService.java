@@ -16,7 +16,6 @@ import th.co.krungthaiaxa.api.elife.model.Person;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
 import th.co.krungthaiaxa.api.elife.products.utils.ProductUtils;
-import th.co.krungthaiaxa.api.elife.utils.EmailElifeUtil;
 import th.co.krungthaiaxa.api.elife.utils.PersonUtil;
 
 import javax.inject.Inject;
@@ -51,7 +50,9 @@ public class PaymentFailEmailService {
 
         String emailSubject = messageSource.getMessage("email.payment.fail.title", null, LocaleUtil.THAI_LOCALE);
         String emailContent = fillEmailContent(policy, payment);
-        emailService.sendEmail(insuredEmail, emailSubject, emailContent, EmailElifeUtil.initImagePairs("logo"), Collections.EMPTY_LIST);
+        emailService.sendEmail(insuredEmail, emailSubject, emailContent
+                , Collections.emptyList() //EmailElifeUtil.initImagePairs("logo")
+                , Collections.emptyList());
         LOGGER.debug("Sent informed email to customer, policyId: " + policy.getPolicyId());
     }
 

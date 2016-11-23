@@ -11,10 +11,10 @@ import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.products.utils.ProductUtils;
 import th.co.krungthaiaxa.api.elife.service.ElifeEmailHelper;
 import th.co.krungthaiaxa.api.elife.service.ElifeEmailService;
-import th.co.krungthaiaxa.api.elife.utils.EmailElifeUtil;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -52,7 +52,8 @@ public abstract class AbstractQuoteEmailService {
     }
 
     protected List<Pair<byte[], String>> loadImagePairs() {
-        List<Pair<byte[], String>> base64ImgFileNames = EmailElifeUtil.initImagePairs("logo");
+        List<Pair<byte[], String>> base64ImgFileNames = Collections.emptyList();
+//        EmailElifeUtil.initImagePairs("logo");
         return base64ImgFileNames;
     }
 

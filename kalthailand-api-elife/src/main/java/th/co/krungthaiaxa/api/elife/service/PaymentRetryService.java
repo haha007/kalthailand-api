@@ -22,11 +22,11 @@ import th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayResponse;
 import th.co.krungthaiaxa.api.elife.products.utils.ProductUtils;
 import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
-import th.co.krungthaiaxa.api.elife.utils.EmailElifeUtil;
 import th.co.krungthaiaxa.api.elife.utils.PersonUtil;
 
 import javax.inject.Inject;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -152,7 +152,9 @@ public class PaymentRetryService {
             toEmails.add(mainInsuredEmail);
         }
         Pair<byte[], String> ereceiptAttachment = policyService.findEreceiptAttachmentByDocumentId(policy.getPolicyId(), ereceiptPdfDocument.getId());
-        emailService.sendEmails(toEmails, emailSubject, emailContent, EmailElifeUtil.initImagePairs("logo"), Arrays.asList(ereceiptAttachment));
+        emailService.sendEmails(toEmails, emailSubject, emailContent
+                , Collections.emptyList() //EmailElifeUtil.initImagePairs("logo")
+                , Arrays.asList(ereceiptAttachment));
     }
 
     private void sendRetryPaymentSuccessLineNotificationToInsuredPerson(Policy policy) {
