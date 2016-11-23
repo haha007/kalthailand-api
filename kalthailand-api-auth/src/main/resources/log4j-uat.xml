@@ -15,7 +15,7 @@
         <priority value="WARN"/>
     </category>
     <root>
-        <priority value="INFO"/>
+        <priority value="DEBUG"/>
         <appender-ref ref="FILE"/>
     </root>
 </log4j:configuration>
