@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.common.utils.LogUtil;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
-import th.co.krungthaiaxa.api.elife.migration.EreceiptOldNumberGenerationService;
 
 import javax.annotation.PostConstruct;
 import java.time.Instant;
@@ -25,15 +24,15 @@ public class EreceiptOldNumberCollectionService {
     public static final Logger LOGGER = LoggerFactory.getLogger(EreceiptOldNumberCollectionService.class);
     //TODO we can remove this injection after Running the OldReceiptNumber in the first time.
     //This injection will make sure that the oldReceiptNumber will be generated before this class is constructed.
-    private final EreceiptOldNumberGenerationService ereceiptOldNumberGenerationService;
+//    private final EreceiptOldNumberGenerationService ereceiptOldNumberGenerationService;
     private final PaymentRepository paymentRepository;
 
     //This class should use TreeSet so that we can use binarySort when using contains() operator.
     private Set<String> receiptFullDisplayNumbers;
 
     @Autowired
-    public EreceiptOldNumberCollectionService(EreceiptOldNumberGenerationService ereceiptOldNumberGenerationService, PaymentRepository paymentRepository) {
-        this.ereceiptOldNumberGenerationService = ereceiptOldNumberGenerationService;
+    public EreceiptOldNumberCollectionService(PaymentRepository paymentRepository) {
+//        this.ereceiptOldNumberGenerationService = ereceiptOldNumberGenerationService;
         this.paymentRepository = paymentRepository;
     }
 

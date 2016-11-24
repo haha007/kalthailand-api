@@ -32,6 +32,7 @@ public class GeneralSetting {
         /**
          * This is not the full link with full parameters.
          * It's just the main link.
+         * When client click to this link, it will open LINE browser and open our FE page. Then our FE page will redirect user to LINE page so that he can update his creditcard account.
          */
         private String retryLink;
         private List<String> toSuccessEmails;
