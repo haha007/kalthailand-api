@@ -2,15 +2,12 @@ package th.co.krungthaiaxa.api.elife.migration;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.common.utils.LogUtil;
 import th.co.krungthaiaxa.api.common.utils.base36.Base36Util;
 import th.co.krungthaiaxa.api.elife.ereceipt.EreceiptNumber;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
 
-import javax.annotation.PostConstruct;
 import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,12 +17,12 @@ import java.util.stream.Collectors;
  *         This class will generate the ereceipt numbers in the old ways (before 1.8.4 - 31-10-2016)
  *         Migrate for version 1.9.0
  */
-@Service
+//@Service
 public class EreceiptOldNumberGenerationService {
     public static final Logger LOGGER = LoggerFactory.getLogger(EreceiptOldNumberGenerationService.class);
     private final PaymentRepository paymentRepository;
 
-    @Autowired
+    //    @Autowired
     public EreceiptOldNumberGenerationService(PaymentRepository paymentRepository) {
         this.paymentRepository = paymentRepository;
     }
@@ -33,7 +30,7 @@ public class EreceiptOldNumberGenerationService {
     /**
      * This method will run only one time.
      */
-    @PostConstruct
+//    @PostConstruct
     public EreceiptOldNumberResult generateEreceiptNumbersByOldPatternForOldPayments() {
         Instant startMethod = LogUtil.logStarting("Generate receiptNumbers for old payments [start]");
 

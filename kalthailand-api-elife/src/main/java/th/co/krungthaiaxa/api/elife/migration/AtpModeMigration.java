@@ -2,8 +2,6 @@ package th.co.krungthaiaxa.api.elife.migration;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.Quotable;
 import th.co.krungthaiaxa.api.elife.model.Quote;
@@ -13,7 +11,6 @@ import th.co.krungthaiaxa.api.elife.products.utils.ProductUtils;
 import th.co.krungthaiaxa.api.elife.repository.PolicyRepository;
 import th.co.krungthaiaxa.api.elife.repository.QuoteRepository;
 
-import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,19 +18,19 @@ import java.util.stream.Collectors;
  * @author khoi.tran on 11/7/16.
  *         Migrate for version 1.10.0
  */
-@Service
+//@Service
 public class AtpModeMigration {
     public static final Logger LOGGER = LoggerFactory.getLogger(AtpModeMigration.class);
     private final PolicyRepository policyRepository;
     private final QuoteRepository quoteRepository;
 
-    @Autowired
+    //    @Autowired
     public AtpModeMigration(PolicyRepository policyRepository, QuoteRepository quoteRepository) {
         this.policyRepository = policyRepository;
         this.quoteRepository = quoteRepository;
     }
 
-    @PostConstruct
+    //    @PostConstruct
     public void migrate() {
         migrateAtpModeForMonthlyPaymentForPolicies();
         migrateAtpModeForMonthlyPaymentForQuotes();
