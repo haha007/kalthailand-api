@@ -1,4 +1,4 @@
-package th.co.krungthaiaxa.api.elife.service;
+package th.co.krungthaiaxa.api.elife.line;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
@@ -46,6 +46,7 @@ import static th.co.krungthaiaxa.api.common.utils.JsonUtil.getJson;
 public class LineService {
     public final static Logger LOGGER = LoggerFactory.getLogger(LineService.class);
     public static final String RESPONSE_CODE_ERROR_NOT_ALLOWED_TO_ACCESS = "1106";
+    public static final String RESPONSE_CODE_ERROR_NO_REGKEY = "1190";
     public static final String RESPONSE_CODE_ERROR_INTERNAL_LINEPAY = "9000";
     public static final List<String> RESPONSE_CODES_ERROR_BY_INTERNAL_APP = Collections.unmodifiableList(Arrays.asList(LineService.RESPONSE_CODE_ERROR_INTERNAL_LINEPAY, LineService.RESPONSE_CODE_ERROR_NOT_ALLOWED_TO_ACCESS));
     public static final String RESPONSE_CODE_SUCCESS = "0000";
@@ -69,6 +70,8 @@ public class LineService {
     @Value("${line.app.notification.url}")
     private String lineAppNotificationUrl;
     private final LineTokenService lineTokenService;
+
+    private RestTemplate restTemplate = new RestTemplate();
 
     @Inject
     public LineService(LineTokenService lineTokenService) {
@@ -104,7 +107,6 @@ public class LineService {
         HttpEntity<String> entity = new HttpEntity<>(new String(getJson(linePushNotificationRequest), forName("UTF-8")), headers);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(lineAppNotificationUrl);
-        RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> response;
         try {
             response = restTemplate.exchange(builder.toUriString(), POST, entity, String.class);
@@ -155,7 +157,6 @@ public class LineService {
         HttpEntity<String> entity = new HttpEntity<>(new String(getJson(linePayBookingRequest), forName("UTF-8")), headers);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(linePayHost + "/request");
-        RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> response;
         try {
             response = restTemplate.exchange(builder.toUriString(), POST, entity, String.class);
@@ -184,7 +185,6 @@ public class LineService {
         HttpEntity<String> entity = new HttpEntity<>(new String(getJson(linePayConfirmingRequest), forName("UTF-8")), headers);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(linePayHost + "/" + transactionId + "/confirm");
-        RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> response;
         try {
             response = restTemplate.exchange(builder.toUriString(), POST, entity, String.class);
@@ -264,7 +264,6 @@ public class LineService {
         HttpEntity<String> entity = new HttpEntity<>(new String(getJson(linePayConfirmingRequest), forName("UTF-8")), headers);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(linePayHost + "/authorizations/" + transactionId + "/capture");
-        RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> response;
         try {
             response = restTemplate.exchange(builder.toUriString(), POST, entity, String.class);
@@ -283,6 +282,14 @@ public class LineService {
 
     private LinePayResponse getBookingResponseFromJSon(String json) {
         return ObjectMapperUtil.toObject(JsonUtil.mapper, json, LinePayResponse.class);
+    }
+
+    public RestTemplate getRestTemplate() {
+        return restTemplate;
+    }
+
+    public void setRestTemplate(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
     }
 
     private class LinePushNotificationRequest {

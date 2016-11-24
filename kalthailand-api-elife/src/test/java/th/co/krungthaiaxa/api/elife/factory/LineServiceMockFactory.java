@@ -6,7 +6,7 @@ import org.mockito.stubbing.Answer;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayRecurringResponse;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayRecurringResponseInfo;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayResponse;
-import th.co.krungthaiaxa.api.elife.service.LineService;
+import th.co.krungthaiaxa.api.elife.line.LineService;
 
 import java.io.IOException;
 import java.time.LocalDateTime;

@@ -1,6 +1,6 @@
 package th.co.krungthaiaxa.api.elife.test.service;
 
-import th.co.krungthaiaxa.api.elife.service.LineService;
+import th.co.krungthaiaxa.api.elife.line.LineService;
 
 import java.io.IOException;
 

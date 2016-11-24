@@ -14,12 +14,28 @@ import javax.inject.Inject;
 @Component
 public class ProfileHelper {
     public static final String NO_PROFILE = "none";
+    public static final String PRODUCTION = "prd";
+    public static final String UAT = "uat";
+    public static final String TEST = "test";
+    public static final String DEV = "dev";
+    public static final String LOCAL = "local";
+
     public static final Logger LOGGER = LoggerFactory.getLogger(ProfileHelper.class);
     private final Environment env;
     private String[] usingProfiles = null;
 
     @Inject
     public ProfileHelper(Environment env) {this.env = env;}
+
+    public boolean containProfile(String profile) {
+        String[] usingProfiles = getUsingProfiles();
+        for (String usingProfile : usingProfiles) {
+            if (usingProfile.equalsIgnoreCase(profile)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     public String[] getUsingProfiles() {
         if (usingProfiles == null) {

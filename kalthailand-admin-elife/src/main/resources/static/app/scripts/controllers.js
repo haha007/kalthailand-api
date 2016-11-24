@@ -345,7 +345,7 @@
         function fetchCollectionFileDetails(callback) {
             CollectionFile.query(function (response) {
                 $scope.collectionFiles = response;
-                $scope.collectionFilesDataTable = new DataTable($scope.collectionFiles, 10);
+                $scope.collectionFilesDataTable = new DataTable($scope.collectionFiles, 5);
                 $scope.collectionFilesDataTable.setPage(0);
                 if (hasValue(callback)) {
                     callback.call(this);

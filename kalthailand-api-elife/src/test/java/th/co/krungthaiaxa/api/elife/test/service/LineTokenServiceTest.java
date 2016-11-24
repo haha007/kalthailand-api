@@ -10,7 +10,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
 import th.co.krungthaiaxa.api.elife.data.LineToken;
-import th.co.krungthaiaxa.api.elife.service.LineTokenService;
+import th.co.krungthaiaxa.api.elife.line.LineTokenService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

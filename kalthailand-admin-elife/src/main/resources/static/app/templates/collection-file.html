@@ -128,10 +128,12 @@
                     <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:100%">
                     </div>
                 </div>
-                <button ng-hide="isProcessing" type="button" class="btn btn-danger" style="margin-right:10px;" ng-click="processLastCollectionFiles()">Process Last Collection Files</button>
+                <button ng-hide="isProcessing" type="button" class="btn btn-danger" title="Use email '+kalthailand-api.test.fail' in UAT to test fail case." style="margin-right:10px;" ng-click="processLastCollectionFiles()">
+                    Process Collection Files
+                </button>
             </div>
             <div><span class="help-block">It will show result of maximum 5 collection files.</span></div>
-            <div ng-repeat="collectionFile in collectionFiles" class="panel panel-default" ng-show="$index < 5">
+            <div ng-repeat="collectionFile in collectionFilesDataTable.dataInPage" class="panel panel-default">
                 <div class="panel-heading">
                     <div class="pull-left"><i class="fa fa-list-alt"></i><span>{{$index+1}}</span></div>
                     <div class="pull-right"><span>{{collectionFile.receivedDate | date:'yyyy-MM-dd HH:mm:ss Z'}}</span></div>

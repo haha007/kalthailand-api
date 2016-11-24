@@ -20,12 +20,14 @@ import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
 import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
 import th.co.krungthaiaxa.api.common.utils.LogUtil;
 import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
+import th.co.krungthaiaxa.api.common.utils.ProfileHelper;
 import th.co.krungthaiaxa.api.elife.data.CollectionFile;
 import th.co.krungthaiaxa.api.elife.data.CollectionFileLine;
 import th.co.krungthaiaxa.api.elife.data.DeductionFile;
 import th.co.krungthaiaxa.api.elife.data.DeductionFileLine;
 import th.co.krungthaiaxa.api.elife.ereceipt.EreceiptNumber;
 import th.co.krungthaiaxa.api.elife.ereceipt.EreceiptService;
+import th.co.krungthaiaxa.api.elife.line.LineService;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus;
@@ -58,9 +60,9 @@ import static java.time.format.DateTimeFormatter.ofPattern;
 import static org.apache.commons.codec.digest.DigestUtils.sha256Hex;
 import static org.springframework.util.Assert.isTrue;
 import static org.springframework.util.Assert.notNull;
+import static th.co.krungthaiaxa.api.elife.line.LineService.RESPONSE_CODE_ERROR_INTERNAL_LINEPAY;
+import static th.co.krungthaiaxa.api.elife.line.LineService.RESPONSE_CODE_SUCCESS;
 import static th.co.krungthaiaxa.api.elife.model.enums.ChannelType.LINE;
-import static th.co.krungthaiaxa.api.elife.service.LineService.RESPONSE_CODE_ERROR_INTERNAL_LINEPAY;
-import static th.co.krungthaiaxa.api.elife.service.LineService.RESPONSE_CODE_SUCCESS;
 import static th.co.krungthaiaxa.api.elife.utils.ExcelUtils.appendRow;
 import static th.co.krungthaiaxa.api.elife.utils.ExcelUtils.text;
 
@@ -85,7 +87,7 @@ public class CollectionFileProcessingService {
     public final static String COLLECTION_FILE_COLUMN_NAME_4 = "M92PNO6";
     public final static String COLLECTION_FILE_COLUMN_NAME_5 = "M92PMOD6";
     public final static String COLLECTION_FILE_COLUMN_NAME_6 = "M92PRM6";
-    public static final String ERROR_NO_REGISTRATION_KEY_FOUND = "No registration key found to process the payment. Payment is not successful";
+    public static final String FAIL_PROCESSING_EMAIL = "+kalthailand-api.test.fail";
 
     private final CollectionFileRepository collectionFileRepository;
     private final PaymentRepository paymentRepository;
@@ -101,11 +103,12 @@ public class CollectionFileProcessingService {
     private LineService lineService;
     private final PaymentFailEmailService paymentRetryEmailService;
     private final PaymentFailLineNotificationService paymentRetryLineNotificationService;
+    private final ProfileHelper profileHelper;
 
     @Inject
     public CollectionFileProcessingService(CollectionFileRepository collectionFileRepository, PaymentRepository paymentRepository, PolicyRepository policyRepository, PolicyService policyService, PaymentService paymentService, EreceiptService ereceiptService,
             LineService lineService,
-            PaymentFailEmailService paymentRetryEmailService, PaymentFailLineNotificationService paymentRetryLineNotificationService) {
+            PaymentFailEmailService paymentRetryEmailService, PaymentFailLineNotificationService paymentRetryLineNotificationService, ProfileHelper profileHelper) {
         this.collectionFileRepository = collectionFileRepository;
         this.paymentRepository = paymentRepository;
         this.policyRepository = policyRepository;
@@ -116,6 +119,7 @@ public class CollectionFileProcessingService {
         this.lineService = lineService;
         this.paymentRetryEmailService = paymentRetryEmailService;
         this.paymentRetryLineNotificationService = paymentRetryLineNotificationService;
+        this.profileHelper = profileHelper;
     }
 
     public static final Function<PeriodicityCode, String> PAYMENT_MODE = periodicityCode -> {
@@ -413,7 +417,14 @@ public class CollectionFileProcessingService {
             if (StringUtils.isBlank(lastRegistrationKey)) {
                 throw new UnexpectedException("Not found registrationKey for policy " + policyId + ", paymentId " + paymentId);
             }
-            LinePayRecurringResponse linePayResponse = lineService.preApproved(lastRegistrationKey, premiumAmount, currencyCode, productId, orderId);
+            LinePayRecurringResponse linePayResponse;
+            if (mockFailPayment(policy)) {
+                linePayResponse = new LinePayRecurringResponse();
+                linePayResponse.setReturnCode(LineService.RESPONSE_CODE_ERROR_NO_REGKEY);
+                linePayResponse.setReturnMessage("MockFailTest");
+            } else {
+                linePayResponse = lineService.preApproved(lastRegistrationKey, premiumAmount, currencyCode, productId, orderId);
+            }
             resultCode = linePayResponse.getReturnCode();
             resultMessage = linePayResponse.getReturnMessage();
             //TODO need to recheck with business team
@@ -450,6 +461,19 @@ public class CollectionFileProcessingService {
             }
         }
         LOGGER.info("Process collectionFileLine [finished]: policyNumber: {}, paymentId: {}", collectionFileLine.getPolicyNumber(), collectionFileLine.getPaymentId());
+    }
+
+    private boolean mockFailPayment(Policy policy) {
+        if (profileHelper.containProfile(ProfileHelper.PRODUCTION)) {
+            return false;
+        } else {
+            String insuredEmail = ProductUtils.validateExistMainInsured(policy).getPerson().getEmail();
+            if (insuredEmail.contains(FAIL_PROCESSING_EMAIL)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
     }
 
     //TODO need to update the list of internal error. E.g: 1106: our server cannot connect to LINE server: should not send email to client.
