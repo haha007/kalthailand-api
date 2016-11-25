@@ -129,7 +129,7 @@ public class CollectionFileProcessingService {
 
     public synchronized CollectionFile importCollectionFile(InputStream inputStream) {
         CollectionFile collectionFile = readCollectionExcelFile(inputStream);
-        validateNotDuplicatePolicies(collectionFile);
+//        validateNotDuplicatePolicies(collectionFile);
         collectionFile.getLines().forEach(this::importCollectionFileLine);
         return collectionFileRepository.save(collectionFile);
     }
@@ -413,11 +413,11 @@ public class CollectionFileProcessingService {
             LinePayRecurringResponse linePayResponse = lineService.preApproved(lastRegistrationKey, premiumAmount, currencyCode, productId, orderId);
             resultCode = linePayResponse.getReturnCode();
             resultMessage = linePayResponse.getReturnMessage();
-            //TODO need to recheck with business team
-            if (Math.abs(premiumAmount - payment.getAmount().getValue()) >= 1) {
-                String msg = String.format("The money in collection file %s is not match with the predefined amount %s", premiumAmount, payment.getAmount());
-                throw new UnexpectedException(msg);
-            }
+            //We should allow to process any money because user may want to pay more or less.
+//            if (Math.abs(premiumAmount - payment.getAmount().getValue()) >= 1) {
+//                String msg = String.format("The money in collection file %s is not match with the predefined amount %s", premiumAmount, payment.getAmount());
+//                throw new UnexpectedException(msg);
+//            }
             payment.getAmount().setValue(premiumAmount);
             payment.setOrderId(orderId);
             if (LineService.RESPONSE_CODE_SUCCESS.equals(resultCode)) {
