@@ -15,6 +15,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.common.action.ActionWithResult;
 import th.co.krungthaiaxa.api.common.exeption.BadArgumentException;
+import th.co.krungthaiaxa.api.common.exeption.BaseException;
 import th.co.krungthaiaxa.api.common.exeption.UnexpectedException;
 import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
 import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
@@ -428,11 +429,11 @@ public class CollectionFileProcessingService {
             }
             resultCode = linePayResponse.getReturnCode();
             resultMessage = linePayResponse.getReturnMessage();
-            //TODO need to recheck with business team
-            if (Math.abs(premiumAmount - payment.getAmount().getValue()) >= 1) {
-                String msg = String.format("The money in collection file %s is not match with the predefined amount %s", premiumAmount, payment.getAmount());
-                throw new UnexpectedException(msg);
-            }
+            //We should allow to process any money because user may want to pay more or less.
+//            if (Math.abs(premiumAmount - payment.getAmount().getValue()) >= 1) {
+//                String msg = String.format("The money in collection file %s is not match with the predefined amount %s", premiumAmount, payment.getAmount());
+//                throw new UnexpectedException(msg);
+//            }
             payment.getAmount().setValue(premiumAmount);
             payment.setOrderId(orderId);
             if (LineService.RESPONSE_CODE_SUCCESS.equals(resultCode)) {
