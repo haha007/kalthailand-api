@@ -38,6 +38,7 @@ public class SystemHealthService {
                 diskSpace.setDriverPath(store.name());
                 diskSpace.setUsableSpace(store.getUsableSpace());
                 diskSpace.setUnallocatedSpace(store.getUnallocatedSpace());
+                diskSpace.setTotalSpace(store.getTotalSpace());
                 result.add(diskSpace);
             } catch (IOException e) {
                 LOGGER.error("Cannot load disk space" + e.getMessage(), e);
