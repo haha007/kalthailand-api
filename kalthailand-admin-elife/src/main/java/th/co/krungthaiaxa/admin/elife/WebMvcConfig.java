@@ -20,6 +20,16 @@ public class WebMvcConfig extends WebMvcAutoConfiguration.WebMvcAutoConfiguratio
     @Autowired
     public SpringTemplateEngine templateEngine;
 
+//    @Bean
+//    public EmbeddedServletContainerCustomizer containerCustomizer() {
+//        return new EmbeddedServletContainerCustomizer() {
+//            @Override
+//            public void customize(ConfigurableEmbeddedServletContainer container) {
+//                container.addErrorPages(new ErrorPage(HttpStatus.NOT_FOUND, "/404.html"));
+//            }
+//        };
+//    }
+
     //    @Bean
 //    public ThymeleafTilesConfigurer tilesConfigurer() {
 //        final ThymeleafTilesConfigurer configurer = new ThymeleafTilesConfigurer();

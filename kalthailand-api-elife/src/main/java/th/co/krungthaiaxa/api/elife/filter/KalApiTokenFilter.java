@@ -22,6 +22,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.Instant;
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Pattern;
 
 @Component
 public class KalApiTokenFilter implements Filter {
@@ -47,39 +50,72 @@ public class KalApiTokenFilter implements Filter {
         Instant startTime = LogUtil.logRequestStarting(httpServletRequest);
         String requestURI = httpServletRequest.getRequestURI();
         // For swagger documentation, we should let any request to UI thing go through
-        if (httpServletRequest.getMethod().equals("GET")) {
-            if (httpServletRequest.getRequestURI().endsWith("/swagger-ui.html") ||
-                    httpServletRequest.getRequestURI().endsWith("/v2/api-docs") ||
-                    httpServletRequest.getRequestURI().endsWith("/swagger-resources") ||
-                    httpServletRequest.getRequestURI().endsWith("/configuration/ui") ||
-                    httpServletRequest.getRequestURI().endsWith("/configuration/security") ||
-                    httpServletRequest.getRequestURI().endsWith("/project-info") ||
-                    httpServletRequest.getRequestURI().contains("webjars/springfox-swagger-ui")) {
-                chain.doFilter(httpServletRequest, response);
-                return;
+        List<String> publicURIsForGETMethod = Arrays.asList(
+                "/health"
+                , "/swagger-ui.html"
+                , "/v2/api-docs"
+                , "/swagger-resources"
+                , "/configuration/ui"
+                , "/configuration/security"
+                , "/project-info"
+                , "webjars/springfox-swagger-ui"
+        );
+        if (httpServletRequest.getMethod().equalsIgnoreCase(HttpMethod.GET.name())) {
+            for (String publicURI : publicURIsForGETMethod) {
+                if (requestURI.contains(publicURI)) {
+                    chain.doFilter(httpServletRequest, response);
+                    return;
+                }
             }
         }
 
         // Very specific URLs that cannot send token when clicking on link to download file
+        List<String> regexPublicURIs = Arrays.asList(
+                ".*/autoconfig"
+                , ".*/actuator"
+//                , ".*/trace"
+//                , ".*/beans$"
+//                , ".*/configprops"
+//                , ".*/dump"
+//                , ".*/env"
+                , ".*/loggers"
+                , ".*/metrics"
+//                , ".*/mappings"
+                , ".*/policies/extract/download.*"
+                , ".*/adminwebsocket/policy-numbers/upload/.*"
+                , ".*/RLS/deduction/download/.*"
+                , ".*/session-quotes/all-products-counts/download.*"
+                , ".*/quotes/all-products/download.*"
+                , ".*/commissions/calculation/download/.*"
+                , ".*/policies/.*/pdf.*"
+                , ".*/policies/.*/download.*"
+        );
         // TODO Should be removed
-        if (httpServletRequest.getRequestURI().endsWith("/policies/extract/download") ||
-                httpServletRequest.getRequestURI().contains("/RLS/deduction/download/") ||
-                httpServletRequest.getRequestURI().contains("/session-quotes/all-products-counts/download") ||
-                httpServletRequest.getRequestURI().contains("/quotes/all-products/download") ||
-                httpServletRequest.getRequestURI().contains("/commissions/calculation/download/") ||
-                (httpServletRequest.getRequestURI().contains("/policies/") && httpServletRequest.getRequestURI().contains("/pdf")) ||
-                (httpServletRequest.getRequestURI().contains("/policies/") && httpServletRequest.getRequestURI().contains("/download"))
-                ) {
-            chain.doFilter(httpServletRequest, response);
-            return;
+        for (String publicURI : regexPublicURIs) {
+            Pattern pattern = Pattern.compile(publicURI);
+            if (pattern.matcher(requestURI).matches()) {
+                chain.doFilter(httpServletRequest, response);
+                return;
+            }
         }
+//        if (httpServletRequest.getRequestURI().endsWith("/policies/extract/download") ||
+//                httpServletRequest.getRequestURI().contains("/RLS/deduction/download/") ||
+//                httpServletRequest.getRequestURI().contains("/session-quotes/all-products-counts/download") ||
+//                httpServletRequest.getRequestURI().contains("/quotes/all-products/download") ||
+//                httpServletRequest.getRequestURI().contains("/commissions/calculation/download/") ||
+//                (httpServletRequest.getRequestURI().contains("/policies/") && httpServletRequest.getRequestURI().contains("/pdf")) ||
+//                (httpServletRequest.getRequestURI().contains("/policies/") && httpServletRequest.getRequestURI().contains("/download"))
+//                ) {
+//            chain.doFilter(httpServletRequest, response);
+//            return;
+//        }
 
-        // Very specific URLs that cannot send token when clicking on link to download file
-        // TODO Should be removed
-        if (httpServletRequest.getRequestURI().contains("/adminwebsocket/policy-numbers/upload/")) {
-            chain.doFilter(httpServletRequest, response);
-            return;
-        }
+//        // Very specific URLs that cannot send token when clicking on link to download file
+//        // TODO Should be removed
+//        if (httpServletRequest.getRequestURI().contains("/adminwebsocket/policy-numbers/upload/")) {
+//            chain.doFilter(httpServletRequest, response);
+//            return;
+//        }
 
         // For everything else, we should check for token validity
         String authToken = RequestUtil.getAccessToken(httpServletRequest);

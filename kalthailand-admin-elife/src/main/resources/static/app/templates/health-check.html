@@ -1,0 +1,56 @@
+<div class="row">
+
+    <div ng-cloak class="col-md-12 col-sm-12 col-xs-12 main ng-cloak">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <button class="btn btn-success" ng-click="service.showHealth()"><i class="fa fa-refresh"></i> Load status</button>
+        </div>
+        <div class="col-md-2 col-sm-2 col-xs-12">
+
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2>Memory</h2>
+
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <ul class="verticle_bars list-inline">
+                        <li>
+                            Used
+                            <div class="text-center progress progress-striped vertical progress_wide bottom">
+                                {{service.metrics.usedMemoryPercentage.toFixed(0)}}%
+
+                                <div class="progress-bar progress-bar-success" role="progressbar" style="height: {{service.metrics.usedMemoryPercentage}}%;"></div>
+                            </div>
+                        </li>
+                        <li class="clearfix"></li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-2 col-sm-2 col-xs-12">
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2>Space</h2>
+
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <ul class="verticle_bars list-inline">
+                        <li ng-repeat="diskSpace in service.metrics.diskSpaces">
+                            {{diskSpace.driverPath}}<br/>
+
+                            <div class="text-center progress progress-striped vertical progress_wide bottom">
+                                {{diskSpace.usedSpacePercentage.toFixed(0)}}%
+                                {{diskSpace.totalSpace}}
+                                <div class="progress-bar progress-bar-success" role="progressbar" style="height: {{diskSpace.usedSpacePercentage}}%;"></div>
+                            </div>
+                        </li>
+                        <li class="clearfix"></li>
+                    </ul>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -82,8 +82,13 @@
                 controller: 'CommissionResultController',
                 activeTab: 'commission-result'
             })
+            .when('/health-check', {
+                templateUrl: 'app/templates/health-check.html',
+                controller: 'HealthCheckController',
+                activeTab: 'health-check'
+            })
             .otherwise({
-                redirectTo: '/home'
+                redirectTo: '/policies'
             });
 
     }

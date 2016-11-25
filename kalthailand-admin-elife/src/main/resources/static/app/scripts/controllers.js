@@ -929,7 +929,9 @@
     app.controller('CommissionController', function (CommissionService, $scope, $route, $http, $localStorage) {
         $scope.service = CommissionService;
     });
-
+    app.controller('HealthCheckController', function (HealthCheckService, $scope, $route, $http, $localStorage) {
+        $scope.service = HealthCheckService;
+    });
     app.controller('CommissionResultController', function (CommissionResultService, $scope, $route, $http, $localStorage) {
         $scope.service = CommissionResultService;
 

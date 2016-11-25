@@ -136,7 +136,8 @@ public class CollectionFileProcessingService {
 
     public synchronized CollectionFile importCollectionFile(InputStream inputStream) {
         CollectionFile collectionFile = readCollectionExcelFile(inputStream);
-        validateNotDuplicatePolicies(collectionFile);
+        //We must allow duplicate policies.
+//        validateNotDuplicatePolicies(collectionFile);
         collectionFile.getLines().forEach(this::importCollectionFileLine);
         return collectionFileRepository.save(collectionFile);
     }

@@ -131,7 +131,9 @@
     app.factory('CommissionResultService', function ($http) {
         return new CommissionResultService($http);
     });
-
+    app.factory('HealthCheckService', function ($http, $sce) {
+        return new HealthCheckService($http, $sce);
+    });
 })();
 
 var ErrorHandler = function () {

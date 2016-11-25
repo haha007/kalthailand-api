@@ -163,13 +163,12 @@
                         <td>{{deductiveLine.processDate | date:'yyyy-MM-dd HH:mm:ss'}}</td>
                         <td ng-class="{
                                     'status-success': deductiveLine.rejectionCode == '0000',
-                                    'status-error': deductiveLine.rejectionCode != '0000' && deductiveLine.informCustomerCode != '0000',
-                                    'status-warn': deductiveLine.rejectionCode != '0000' && deductiveLine.informCustomerCode == '0000'
-
+                                    'status-error': deductiveLine.rejectionCode != '0000' && !deductiveLine.informCustomerCode.includes('0000'),
+                                    'status-warn': deductiveLine.rejectionCode != '0000' && deductiveLine.informCustomerCode.includes('0000')
                                 }">
                             <i ng-show="deductiveLine.rejectionCode == '0000'" class="glyphicon glyphicon-ok"></i>
-                            <i ng-show="deductiveLine.rejectionCode != '0000' && deductiveLine.informCustomerCode != '0000'" class="glyphicon glyphicon-remove"></i>
-                            <i ng-show="deductiveLine.rejectionCode != '0000' && deductiveLine.informCustomerCode == '0000'" class="fa fa-exclamation"></i>
+                            <i ng-show="deductiveLine.rejectionCode != '0000' && !deductiveLine.informCustomerCode.includes('0000')" class="glyphicon glyphicon-remove"></i>
+                            <i ng-show="deductiveLine.rejectionCode != '0000' && deductiveLine.informCustomerCode.includes('0000')" class="fa fa-exclamation"></i>
                             {{ deductiveLine.rejectionCode}}
                         </td>
                         <td>{{deductiveLine.rejectionMessage}}</td>
