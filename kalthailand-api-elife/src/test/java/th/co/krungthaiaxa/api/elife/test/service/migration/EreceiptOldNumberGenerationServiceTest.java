@@ -1,41 +1,35 @@
 package th.co.krungthaiaxa.api.elife.test.service.migration;
 
 import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.api.common.utils.IOUtil;
-import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
-import th.co.krungthaiaxa.api.elife.utils.TestUtil;
+import th.co.krungthaiaxa.api.elife.migration.EreceiptOldNumberGenerationService;
+import th.co.krungthaiaxa.api.elife.migration.EreceiptOldNumberResult;
 import th.co.krungthaiaxa.api.elife.model.DocumentDownload;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
 import th.co.krungthaiaxa.api.elife.service.DocumentService;
-import th.co.krungthaiaxa.api.elife.migration.EreceiptOldNumberGenerationService;
-import th.co.krungthaiaxa.api.elife.migration.EreceiptOldNumberResult;
+import th.co.krungthaiaxa.api.elife.utils.TestUtil;
 
 import java.util.List;
 
 /**
  * @author khoi.tran on 10/31/16.
+ * @deprecated EreceiptOldNumberGenerationService is not used anymore. So this testing is disabled. In next sprint, if there's nothing wrong, we can totally remove it.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = KalApiElifeApplication.class)
-@WebAppConfiguration
-@ActiveProfiles("test")
+//@RunWith(SpringJUnit4ClassRunner.class)
+//@SpringApplicationConfiguration(classes = KalApiElifeApplication.class)
+//@WebAppConfiguration
+//@ActiveProfiles("test")
+@Deprecated
 public class EreceiptOldNumberGenerationServiceTest {
-    @Autowired
+    //    @Autowired
     EreceiptOldNumberGenerationService ereceiptOldNumberGenerationService;
-    @Autowired
+    //    @Autowired
     PaymentRepository paymentRepository;
-    @Autowired
+    //    @Autowired
     DocumentService documentService;
 
-    @Test
+    //    @Test
     public void test_generate_ereceipt() {
         EreceiptOldNumberResult result = ereceiptOldNumberGenerationService.generateEreceiptNumbersByOldPatternForOldPayments();
         List<Payment> payments = paymentRepository.findByReceiptPdfDocumentNotNull();

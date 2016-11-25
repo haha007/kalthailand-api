@@ -14,17 +14,17 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.api.common.exeption.BadArgumentException;
 import th.co.krungthaiaxa.api.common.utils.IOUtil;
 import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
-import th.co.krungthaiaxa.api.elife.utils.TestUtil;
 import th.co.krungthaiaxa.api.elife.data.CollectionFile;
 import th.co.krungthaiaxa.api.elife.data.CollectionFileLine;
 import th.co.krungthaiaxa.api.elife.data.DeductionFile;
 import th.co.krungthaiaxa.api.elife.data.DeductionFileLine;
 import th.co.krungthaiaxa.api.elife.exception.PolicyNotFoundException;
 import th.co.krungthaiaxa.api.elife.factory.CollectionFileFactory;
-import th.co.krungthaiaxa.api.elife.factory.PolicyFactory;
-import th.co.krungthaiaxa.api.elife.factory.productquotation.ProductQuotationFactory;
-import th.co.krungthaiaxa.api.elife.factory.QuoteFactory;
 import th.co.krungthaiaxa.api.elife.factory.LineServiceMockFactory;
+import th.co.krungthaiaxa.api.elife.factory.PolicyFactory;
+import th.co.krungthaiaxa.api.elife.factory.QuoteFactory;
+import th.co.krungthaiaxa.api.elife.factory.productquotation.ProductQuotationFactory;
+import th.co.krungthaiaxa.api.elife.line.LineService;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
@@ -36,10 +36,10 @@ import th.co.krungthaiaxa.api.elife.repository.CollectionFileRepository;
 import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
 import th.co.krungthaiaxa.api.elife.repository.PolicyRepository;
 import th.co.krungthaiaxa.api.elife.service.CollectionFileProcessingService;
-import th.co.krungthaiaxa.api.elife.line.LineService;
 import th.co.krungthaiaxa.api.elife.service.PolicyService;
 import th.co.krungthaiaxa.api.elife.service.QuoteService;
 import th.co.krungthaiaxa.api.elife.test.ELifeTest;
+import th.co.krungthaiaxa.api.elife.utils.TestUtil;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -157,9 +157,14 @@ public class CollectionFileProcessingServiceTest extends ELifeTest {
     }
 
     @Test
-    public void should_throw_exception_when_duplicate_policies() {
-        InputStream inputStream = IOUtil.loadInputStreamFromClassPath("/collection-file/LFDISC6_duplicate_policies.xlsx");
-        assertThatThrownBy(() -> rlsService.importCollectionFile(inputStream)).isInstanceOf(BadArgumentException.class);
+    public void should_not_throw_exception_when_duplicate_policies() {
+        Policy policy01 = createValidatedIGenPolicyWithDefaultPayment(PeriodicityCode.EVERY_MONTH);
+        Policy policy02 = policyFactory.createPolicyWithValidatedStatus(ProductQuotationFactory.constructIProtectDefaultWithMonthlyPayment());
+
+        InputStream inputStream = CollectionFileFactory.constructCollectionExcelFileByPolicy(policy01, policy02, policy01);
+        CollectionFile collectionFile = rlsService.importCollectionFile(inputStream);
+        Assert.assertEquals(3, collectionFile.getLines().size());
+//        assertThatThrownBy(() -> rlsService.importCollectionFile(inputStream)).isInstanceOf(BadArgumentException.class);
     }
 
     @Test
