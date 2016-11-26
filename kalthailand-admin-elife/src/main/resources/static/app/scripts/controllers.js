@@ -931,6 +931,7 @@
     });
     app.controller('HealthCheckController', function (HealthCheckService, $scope, $route, $http, $localStorage) {
         $scope.service = HealthCheckService;
+        $scope.service.$scope = $scope;
     });
     app.controller('CommissionResultController', function (CommissionResultService, $scope, $route, $http, $localStorage) {
         $scope.service = CommissionResultService;

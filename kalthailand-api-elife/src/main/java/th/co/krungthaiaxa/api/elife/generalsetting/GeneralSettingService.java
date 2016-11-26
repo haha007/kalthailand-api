@@ -1,10 +1,10 @@
-package th.co.krungthaiaxa.api.elife.service;
+package th.co.krungthaiaxa.api.elife.generalsetting;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.common.utils.StringUtil;
-import th.co.krungthaiaxa.api.elife.data.GeneralSetting;
-import th.co.krungthaiaxa.api.elife.repository.GeneralSettingRepository;
+import th.co.krungthaiaxa.api.elife.generalsetting.GeneralSetting;
+import th.co.krungthaiaxa.api.elife.generalsetting.GeneralSettingRepository;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -39,6 +39,10 @@ public class GeneralSettingService {
             generalSetting = generalSettings.get(0);
         }
         return generalSetting;
+    }
+
+    public void saveSetting(GeneralSetting generalSetting) {
+        generalSettingRepository.save(generalSetting);
     }
 
     private GeneralSetting addDefaultSetting() {

@@ -6,9 +6,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
 import th.co.krungthaiaxa.api.common.utils.ListUtil;
-import th.co.krungthaiaxa.api.elife.data.GeneralSetting;
+import th.co.krungthaiaxa.api.elife.generalsetting.GeneralSetting;
 import th.co.krungthaiaxa.api.elife.model.PolicyCDB;
-import th.co.krungthaiaxa.api.elife.service.GeneralSettingService;
+import th.co.krungthaiaxa.api.elife.generalsetting.GeneralSettingService;
 
 import java.time.LocalDate;
 import java.util.List;

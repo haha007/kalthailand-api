@@ -2,7 +2,8 @@ package th.co.krungthaiaxa.api.elife.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import th.co.krungthaiaxa.api.elife.data.GeneralSetting;
+import th.co.krungthaiaxa.api.elife.generalsetting.GeneralSetting;
+import th.co.krungthaiaxa.api.elife.generalsetting.GeneralSettingService;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 
 /**

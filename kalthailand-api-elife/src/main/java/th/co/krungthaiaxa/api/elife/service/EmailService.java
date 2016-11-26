@@ -33,7 +33,7 @@ import java.util.Locale;
 import java.util.Set;
 
 /**
- * @deprecated should use {@link th.co.krungthaiaxa.api.elife.products.ProductEmailService}
+ * @deprecated should use {@link th.co.krungthaiaxa.api.elife.products.ProductEmailService} or {@link ElifeEmailService}
  */
 @Deprecated
 @Service

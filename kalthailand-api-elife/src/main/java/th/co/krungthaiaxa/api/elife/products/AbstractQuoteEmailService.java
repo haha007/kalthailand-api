@@ -47,7 +47,9 @@ public abstract class AbstractQuoteEmailService {
         attachments.add(saleIllustrationService.generatePDF(quote));
         Insured mainInsured = ProductUtils.validateExistMainInsured(quote);
         String emailContent = getEmailContent(emailTemplate, quote);
-        axaEmailService.sendEmail(mainInsured.getPerson().getEmail(), emailQuoteSubject, emailContent, loadImagePairs(), attachments);
+        axaEmailService.sendEmail(mainInsured.getPerson().getEmail(), emailQuoteSubject, emailContent
+//                , loadImagePairs()
+                , attachments);
         logger.info("Quote iProtect email sent!");
     }
 

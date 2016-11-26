@@ -32,7 +32,7 @@ public class SystemHealth {
     }
 
     public float getJvmUsedMemoryPercentage() {
-        jvmUsedMemoryPercentage = (float) NumberUtil.consumedPercentage((double) jvmTotalMemory, (double) jvmFreeMemory);
+        jvmUsedMemoryPercentage = (float) NumberUtil.percentage((double) jvmMaxMemory, (double) getJvmUsedMemory());
         return jvmUsedMemoryPercentage;
     }
 

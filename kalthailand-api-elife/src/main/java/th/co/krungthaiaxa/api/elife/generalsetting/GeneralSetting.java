@@ -1,6 +1,8 @@
-package th.co.krungthaiaxa.api.elife.data;
+package th.co.krungthaiaxa.api.elife.generalsetting;
 
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import th.co.krungthaiaxa.api.elife.system.health.SystemHealthSetting;
 
 import java.util.List;
 
@@ -9,8 +11,11 @@ import java.util.List;
  */
 @Document(collection = "generalSetting")
 public class GeneralSetting {
+    @Id
+    private String id;
     private boolean policyPremiumMockData = true;
     private RetryPaymentSetting retryPaymentSetting;
+    private SystemHealthSetting systemHealthSetting;
 
     public RetryPaymentSetting getRetryPaymentSetting() {
         return retryPaymentSetting;
@@ -26,6 +31,22 @@ public class GeneralSetting {
 
     public void setPolicyPremiumMockData(boolean policyPremiumMockData) {
         this.policyPremiumMockData = policyPremiumMockData;
+    }
+
+    public SystemHealthSetting getSystemHealthSetting() {
+        return systemHealthSetting;
+    }
+
+    public void setSystemHealthSetting(SystemHealthSetting systemHealthSetting) {
+        this.systemHealthSetting = systemHealthSetting;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public static class RetryPaymentSetting {

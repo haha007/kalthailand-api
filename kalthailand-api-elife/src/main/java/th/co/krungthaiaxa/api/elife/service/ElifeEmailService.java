@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.elife.utils.EmailSender;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -23,8 +24,11 @@ public class ElifeEmailService {
     public ElifeEmailService(EmailSender emailSender) {this.emailSender = emailSender;}
 
     public void sendEmail(String toEmailAddress, String emailSubject, String emailContent,
-            List<Pair<byte[], String>> images, List<Pair<byte[], String>> attachments) {
-        emailSender.sendEmail(fromEmail, toEmailAddress, emailSubject, emailContent, images, attachments);
+            List<Pair<byte[], String>> attachments) {
+        emailSender.sendEmail(fromEmail, toEmailAddress, emailSubject, emailContent, Collections.emptyList(), attachments);
     }
 
+    public void sendEmail(String toEmailAddress, String emailSubject, String emailContent) {
+        emailSender.sendEmail(fromEmail, toEmailAddress, emailSubject, emailContent, Collections.emptyList(), Collections.emptyList());
+    }
 }
