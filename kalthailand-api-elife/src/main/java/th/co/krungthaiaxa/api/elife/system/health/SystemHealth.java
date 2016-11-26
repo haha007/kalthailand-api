@@ -9,55 +9,57 @@ import java.util.List;
  */
 public class SystemHealth {
     /**
+     * @see http://stackoverflow.com/questions/3571203/what-are-runtime-getruntime-totalmemory-and-freememory
+     * @see https://github.com/oshi/oshi
      * Returns the total memory allocated from the system (which can at most reach the maximum memory value returned by the previous function).
      */
-    private long totalMemory;
+    private long jvmTotalMemory;
     /**
      * Returns the maximum amount of memory available to the Java Virtual Machine set by the '-mx' or '-Xmx' flags.
      */
-    private long maxMemory;
+    private long jvmMaxMemory;
     /**
      * Returns the free memory *within* the total memory returned by the previous function.
      */
-    private long freeMemory;
+    private long jvmFreeMemory;
 
-    private long usedMemory;
-    private float usedMemoryPercentage;
+    private long jvmUsedMemory;
+    private float jvmUsedMemoryPercentage;
 
-    public long getUsedMemory() {
-        usedMemory = (long) NumberUtil.consumed((double) totalMemory, (double) freeMemory);
-        return usedMemory;
+    public long getJvmUsedMemory() {
+        jvmUsedMemory = (long) NumberUtil.consumed((double) jvmTotalMemory, (double) jvmFreeMemory);
+        return jvmUsedMemory;
     }
 
-    public float getUsedMemoryPercentage() {
-        usedMemoryPercentage = (float) NumberUtil.consumedPercentage((double) totalMemory, (double) freeMemory);
-        return usedMemoryPercentage;
+    public float getJvmUsedMemoryPercentage() {
+        jvmUsedMemoryPercentage = (float) NumberUtil.consumedPercentage((double) jvmTotalMemory, (double) jvmFreeMemory);
+        return jvmUsedMemoryPercentage;
     }
 
     private List<DiskSpace> diskSpaces;
 
-    public long getTotalMemory() {
-        return totalMemory;
+    public long getJvmTotalMemory() {
+        return jvmTotalMemory;
     }
 
-    public void setTotalMemory(long totalMemory) {
-        this.totalMemory = totalMemory;
+    public void setJvmTotalMemory(long jvmTotalMemory) {
+        this.jvmTotalMemory = jvmTotalMemory;
     }
 
-    public long getMaxMemory() {
-        return maxMemory;
+    public long getJvmMaxMemory() {
+        return jvmMaxMemory;
     }
 
-    public void setMaxMemory(long maxMemory) {
-        this.maxMemory = maxMemory;
+    public void setJvmMaxMemory(long jvmMaxMemory) {
+        this.jvmMaxMemory = jvmMaxMemory;
     }
 
-    public long getFreeMemory() {
-        return freeMemory;
+    public long getJvmFreeMemory() {
+        return jvmFreeMemory;
     }
 
-    public void setFreeMemory(long freeMemory) {
-        this.freeMemory = freeMemory;
+    public void setJvmFreeMemory(long jvmFreeMemory) {
+        this.jvmFreeMemory = jvmFreeMemory;
     }
 
     public List<DiskSpace> getDiskSpaces() {
@@ -68,11 +70,11 @@ public class SystemHealth {
         this.diskSpaces = diskSpaces;
     }
 
-    public void setUsedMemory(long usedMemory) {
-        this.usedMemory = usedMemory;
+    public void setJvmUsedMemory(long jvmUsedMemory) {
+        this.jvmUsedMemory = jvmUsedMemory;
     }
 
-    public void setUsedMemoryPercentage(float usedMemoryPercentage) {
-        this.usedMemoryPercentage = usedMemoryPercentage;
+    public void setJvmUsedMemoryPercentage(float jvmUsedMemoryPercentage) {
+        this.jvmUsedMemoryPercentage = jvmUsedMemoryPercentage;
     }
 }

@@ -21,9 +21,9 @@ public class SystemHealthService {
 
     public SystemHealth loadHealthStatus() {
         SystemHealth healthStatus = new SystemHealth();
-        healthStatus.setTotalMemory(Runtime.getRuntime().totalMemory());
-        healthStatus.setFreeMemory(Runtime.getRuntime().freeMemory());
-        healthStatus.setMaxMemory(Runtime.getRuntime().maxMemory());
+        healthStatus.setJvmTotalMemory(Runtime.getRuntime().totalMemory());
+        healthStatus.setJvmFreeMemory(Runtime.getRuntime().freeMemory());
+        healthStatus.setJvmMaxMemory(Runtime.getRuntime().maxMemory());
         healthStatus.setDiskSpaces(loadDiskSpace());
         return healthStatus;
     }

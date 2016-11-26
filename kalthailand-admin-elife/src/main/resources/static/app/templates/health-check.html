@@ -1,56 +1,167 @@
+<style>
+    .mem {
+        background-color: #ECF0F1;
+        box-shadow: inset 0 1px 2px rgba(0, 0, 0, .1);
+
+    }
+
+    .totalMem {
+        background-color: #e1e5e6;
+        background-image: linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);
+        background-size: 40px 40px;
+        box-shadow: inset 0 -1px 0 rgba(0, 0, 0, .15);
+
+    }
+
+    .usedMem {
+        background-color: #1ABB9C;
+        background-image: linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);
+        background-size: 40px 40px;
+
+        color: #2A3F54;
+        box-shadow: inset 0 -1px 0 rgba(0, 0, 0, .15);
+    }
+
+    .freeMem {
+        box-shadow: inset 0 1px 2px rgba(0, 0, 0, .1);
+        background-color: #f5f5f5;
+    }
+
+    .unallocatedMem {
+        background-color: #73879C;
+        /*background-color: #2A3F54;*/
+        background-image: linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);
+        background-size: 40px 40px;
+        box-shadow: inset 0 1px 2px rgba(0, 0, 0, .1);
+        color: #2A3F54;
+    }
+</style>
 <div class="row">
 
     <div ng-cloak class="col-md-12 col-sm-12 col-xs-12 main ng-cloak">
-        <div class="col-md-12 col-sm-12 col-xs-12">
-            <button class="btn btn-success" ng-click="service.showHealth()"><i class="fa fa-refresh"></i> Load status</button>
-        </div>
-        <div class="col-md-2 col-sm-2 col-xs-12">
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <button class="btn btn-success" ng-click="service.showHealth()"><i class="fa fa-refresh"></i> Load status</button>
+            </div>
+            <div class="col-md-6 col-sm-12 col-xs-12">
 
-            <div class="x_panel">
-                <div class="x_title">
-                    <h2>Memory</h2>
+                <div class="x_panel">
+                    <div class="x_title">
+                        <h2>JVM Memory</h2>
 
-                    <div class="clearfix"></div>
-                </div>
-                <div class="x_content">
-                    <ul class="verticle_bars list-inline">
-                        <li>
-                            Used
-                            <div class="text-center progress progress-striped vertical progress_wide bottom">
-                                {{service.metrics.usedMemoryPercentage.toFixed(0)}}%
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
+                        <div class="col-md-12 col-sm-12 col-xs-12">
+                            <div class="row">
+                                <div class="col-md-3 col-sm-12">
+                                    <table class="mem" style="width: 100%; height: 250px; text-align: center">
+                                        <tr>
+                                            <td class="freeMem" style="height: {{service.metrics.jvmFreeMemory / service.metrics.jvmMaxMemory * 100}}%; width: 33%">
+                                                Free
+                                            </td>
+                                            <td class="totalMem" rowspan="2" style="width: 33%">
+                                                Total
+                                            </td>
+                                            <td rowspan="3">
+                                                Max
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="usedMem" style="height: {{service.metrics.jvmUsedMemory / service.metrics.jvmMaxMemory * 100}}%">
+                                                Used
+                                            </td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="unallocatedMem">
 
-                                <div class="progress-bar progress-bar-success" role="progressbar" style="height: {{service.metrics.usedMemoryPercentage}}%;"></div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="col-md-9 col-sm-12 col-xs-12">
+                                    <div class="input-group col-md-12">
+                                        <label class="col-md-5 mem"
+                                               title="Maximum memory available to the Java Virtual Machine set by the '-mx' or '-Xmx' flags">
+                                            Max
+                                        </label>
+                                        <span class="col-md-3">100%</span>
+                                        <span class="col-md-4">{{(service.metrics.jvmMaxMemory / 1073741824).toFixed(2)}} GB</span>
+                                    </div>
+                                    <div class="input-group col-md-12">
+                                        <label class="col-md-5 totalMem" style="color: #73879C;" title="Total memory allocated from the system">Total</label>
+                                        <span class="col-md-3 ">{{(service.metrics.jvmTotalMemory / service.metrics.jvmMaxMemory * 100).toFixed(2)}}%</span>
+                                        <span class="col-md-4">{{(service.metrics.jvmTotalMemory / 1073741824).toFixed(2)}} GB</span>
+                                    </div>
+                                    <div class="input-group col-md-12">
+                                        <label class="col-md-5 usedMem">Used</label>
+                                        <span class="col-md-3 ">{{(service.metrics.jvmUsedMemory / service.metrics.jvmMaxMemory * 100).toFixed(2)}}%</span>
+                                        <span class="col-md-4">{{(service.metrics.jvmUsedMemory / 1073741824).toFixed(2)}} GB</span>
+                                    </div>
+                                    <div class="input-group col-md-12">
+                                        <label class="col-md-5 freeMem" style="color: #73879C;" title="Free memory within the total memory">Free</label>
+                                        <span class="col-md-3 ">{{(service.metrics.jvmFreeMemory / service.metrics.jvmMaxMemory * 100).toFixed(2)}}%</span>
+                                        <span class="col-md-4">{{(service.metrics.jvmFreeMemory / 1073741824).toFixed(2)}} GB</span>
+                                    </div>
+                                    <div class="input-group col-md-12">
+                                        <label class="col-md-5 unallocatedMem" style="color: #2A3F54;" title="When necessary, JVM will automatically uses unallocated memory to add up into total memory">Unallocated</label>
+                                        <span class="col-md-3 ">{{((1 - (service.metrics.jvmTotalMemory / service.metrics.jvmMaxMemory)) * 100).toFixed(2)}}%</span>
+                                        <span class="col-md-4">{{((service.metrics.jvmMaxMemory - service.metrics.jvmTotalMemory) / 1073741824).toFixed(2)}} GB</span>
+                                    </div>
+                                </div>
                             </div>
-                        </li>
-                        <li class="clearfix"></li>
-                    </ul>
+                        </div>
+
+                    </div>
                 </div>
             </div>
+            <div class="col-md-4 col-sm-2 col-xs-12">
+                <div class="x_panel">
+                    <div class="x_title">
+                        <h2>Space</h2>
 
-        </div>
-        <div class="col-md-2 col-sm-2 col-xs-12">
-            <div class="x_panel">
-                <div class="x_title">
-                    <h2>Space</h2>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
+                        <ul class="list-unstyled timeline">
+                            <li ng-repeat="diskSpace in service.metrics.diskSpaces">
+                                <div class="block">
+                                    <div class="tags">
+                                        <a href="" class="tag">
+                                            <i class="fa fa-hdd-o"></i> {{(diskSpace.totalSpace / 1073741824).toFixed(1)}}GB
+                                        </a>
+                                    </div>
+                                    <div class="block_content">
+                                        <h2 class="title">
+                                            <a>{{diskSpace.driverPath}}</a>
+                                        </h2>
 
-                    <div class="clearfix"></div>
-                </div>
-                <div class="x_content">
-                    <ul class="verticle_bars list-inline">
-                        <li ng-repeat="diskSpace in service.metrics.diskSpaces">
-                            {{diskSpace.driverPath}}<br/>
+                                        <!--<div class="byline">-->
+                                        <!--<span>Used </span><a>{{((diskSpace.totalSpace - diskSpace.usableSpace) / 1073741824).toFixed(2)}} GB </a><span>-</span>-->
+                                        <!--<a> {{((diskSpace.totalSpace - diskSpace.usableSpace)/diskSpace.totalSpace * 100).toFixed(2)}}%</a>-->
+                                        <!--</div>-->
+                                        <div class="byline">
+                                            <span>Usable </span><a>{{(diskSpace.usableSpace / 1073741824).toFixed(2)}} GB </a><span>-</span><a> {{(diskSpace.usableSpace / diskSpace.totalSpace * 100).toFixed(2)}}%</a>
+                                        </div>
+                                        <div class="byline">
+                                            <span>Unallocated</span><a>{{((diskSpace.unallocatedSpace) / 1073741824).toFixed(2)}} GB </a><span>-</span><a> {{(diskSpace.unallocatedSpace / diskSpace.totalSpace * 100).toFixed(2)}}%</a>
+                                        </div>
+                                        <div class="progress progress-striped">
+                                            <div class="progress-bar progress-bar-success" style="width:{{diskSpace.usedSpacePercentage.toFixed(0)}}%;"></div>
+                                        </div>
+                                        <!--<p class="excerpt">Film festivals used to be do-or-die moments for movie makers. They were where you met the producers that could fund your project, and if the buyers liked your flick, they’d pay to Fast-forward and… <a>Read&nbsp;More</a>-->
+                                        <!--</p>-->
+                                    </div>
+                                </div>
+                            </li>
 
-                            <div class="text-center progress progress-striped vertical progress_wide bottom">
-                                {{diskSpace.usedSpacePercentage.toFixed(0)}}%
-                                {{diskSpace.totalSpace}}
-                                <div class="progress-bar progress-bar-success" role="progressbar" style="height: {{diskSpace.usedSpacePercentage}}%;"></div>
-                            </div>
-                        </li>
-                        <li class="clearfix"></li>
-                    </ul>
-
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
+
     </div>
+</div>
 </div>
