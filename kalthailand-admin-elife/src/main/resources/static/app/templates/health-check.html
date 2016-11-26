@@ -41,7 +41,7 @@
     <div ng-cloak class="col-md-12 col-sm-12 col-xs-12 main ng-cloak">
         <div class="row">
             <div class="col-md-12 col-sm-12 col-xs-12">
-                <button class="btn btn-success" ng-click="service.showHealth()"><i class="fa fa-refresh"></i> Load status</button>
+                <button class="btn btn-default" ng-click="service.showHealth()"><i class="fa fa-refresh"></i> Load status</button>
             </div>
             <div class="col-md-6 col-sm-12 col-xs-12">
 
@@ -181,27 +181,27 @@
                             <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
                             {{ service.successMessage }}
                         </div>
-                        <form class="form-horizontal form-label-left">
+                        <form name="systemHealthSettingForm" class="form-horizontal form-label-left">
 
                             <div class="form-group">
-                                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">Notify for used memory (%) <span class="required">*</span>
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12">Notify for used memory (%) <span class="required">*</span>
                                 </label>
 
                                 <div class="col-md-6 col-sm-6 col-xs-12">
-                                    <input ng-model="service.systemHealthSetting.usedMemoryPercentageWarning" type="number" id="first-name" required="required" min="0" max="100" class="form-control col-md-7 col-xs-12">
+                                    <input name="usedMemoryPercentageWarning" ng-model="service.systemHealthSetting.usedMemoryPercentageWarning" required="required" type="number" min="0" max="100" class="form-control col-md-7 col-xs-12">
                                 </div>
                             </div>
                             <div class="form-group" ng-repeat="warningEmail in service.systemHealthSetting.warningEmails">
-                                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name">Notify to email <span class="required">*</span>
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12">Notify to email <span class="required">*</span>
                                 </label>
 
                                 <div class="col-md-6 col-sm-6 col-xs-12">
-                                    <input ng-model="warningEmail" type="email" id="last-name" name="last-name" required="required" class="form-control col-md-7 col-xs-12">
+                                    <input name="warningEmail" ng-model="warningEmail" type="email" required="required" class="form-control col-md-7 col-xs-12">
                                 </div>
                             </div>
                             <div class="ln_solid"></div>
                             <div>
-                                <button type="submit" class="btn btn-success" ng-click="service.saveSetting($event)">Save Setting</button>
+                                <button type="submit" class="btn btn-default" ng-click="service.saveSetting($event)">Save Setting</button>
                             </div>
                         </form>
                     </div>

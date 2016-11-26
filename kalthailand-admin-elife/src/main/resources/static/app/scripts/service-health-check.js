@@ -37,9 +37,12 @@ HealthCheckService.prototype.loadSetting = function (msg) {
         }
     );
 }
-HealthCheckService.prototype.saveSetting = function ($event) {
-    $event.
+HealthCheckService.prototype.saveSetting = function () {
     var self = this;
+    if (self.$scope.systemHealthSettingForm.$invalid == true) {
+        self.showErrorMessage("Invalid inputs.");
+        return;
+    }
     self.$http.put(window.location.origin + '/api-elife/system/health/setting', self.systemHealthSetting).then(
         function (successResponse) {
             self.systemHealthSetting = successResponse.data;
