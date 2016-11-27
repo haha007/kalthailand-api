@@ -30,12 +30,12 @@ public class PaymentFailEmailService {
     private final static Logger LOGGER = LoggerFactory.getLogger(PaymentFailEmailService.class);
     public static final String RESPONSE_CODE_EMAIL_SENT_SUCCESS = "0000";
 
-    private final EmailService emailService;
+    private final ElifeEmailService emailService;
     private final MessageSource messageSource;
     private final PaymentRetryLinkService paymentRetryLinkService;
 
     @Inject
-    public PaymentFailEmailService(EmailService emailService, MessageSource messageSource, PaymentRetryLinkService paymentRetryLinkService) {
+    public PaymentFailEmailService(ElifeEmailService emailService, MessageSource messageSource, PaymentRetryLinkService paymentRetryLinkService) {
         this.emailService = emailService;
         this.messageSource = messageSource;
         this.paymentRetryLinkService = paymentRetryLinkService;
@@ -51,7 +51,7 @@ public class PaymentFailEmailService {
         String emailSubject = messageSource.getMessage("email.payment.fail.title", null, LocaleUtil.THAI_LOCALE);
         String emailContent = fillEmailContent(policy, payment);
         emailService.sendEmail(insuredEmail, emailSubject, emailContent
-                , Collections.emptyList() //EmailElifeUtil.initImagePairs("logo")
+//                , //EmailElifeUtil.initImagePairs("logo")
                 , Collections.emptyList());
         LOGGER.debug("Sent informed email to customer, policyId: " + policy.getPolicyId());
     }

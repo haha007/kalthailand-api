@@ -33,7 +33,7 @@
     <category name="th.co.krungthaiaxa">
         <priority value="DEBUG"/>
     </category>
-    <category name="th.co.krungthaiaxa.api.elife.service.EmailService" additivity="false">
+    <category name="th.co.krungthaiaxa.api.elife.service.EmailSender" additivity="false">
         <priority value="DEBUG"/>
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="FILE_EMAIL"/>

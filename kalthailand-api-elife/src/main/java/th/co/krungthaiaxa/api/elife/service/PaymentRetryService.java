@@ -10,10 +10,10 @@ import th.co.krungthaiaxa.api.common.exeption.BadArgumentException;
 import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
 import th.co.krungthaiaxa.api.common.utils.IOUtil;
 import th.co.krungthaiaxa.api.common.utils.LocaleUtil;
-import th.co.krungthaiaxa.api.elife.generalsetting.GeneralSetting;
 import th.co.krungthaiaxa.api.elife.ereceipt.EreceiptNumber;
 import th.co.krungthaiaxa.api.elife.ereceipt.EreceiptService;
 import th.co.krungthaiaxa.api.elife.exception.LinePaymentException;
+import th.co.krungthaiaxa.api.elife.generalsetting.GeneralSetting;
 import th.co.krungthaiaxa.api.elife.generalsetting.GeneralSettingService;
 import th.co.krungthaiaxa.api.elife.line.LineService;
 import th.co.krungthaiaxa.api.elife.model.Document;
@@ -28,7 +28,6 @@ import th.co.krungthaiaxa.api.elife.utils.PersonUtil;
 
 import javax.inject.Inject;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -48,13 +47,13 @@ public class PaymentRetryService {
     private final EreceiptService ereceiptService;
     private final PolicyService policyService;
     private final PaymentService paymentService;
-    private final EmailService emailService;
+    private final ElifeEmailService emailService;
     private final MessageSource messageSource;
     private final PaymentRepository paymentRepository;
     private final GeneralSettingService generalSettingService;
 
     @Inject
-    public PaymentRetryService(GeneralSettingService generalSettingService, PaymentRepository paymentRepository, PolicyService policyService, LineService lineService, EmailService emailService, EreceiptService ereceiptService,
+    public PaymentRetryService(GeneralSettingService generalSettingService, PaymentRepository paymentRepository, PolicyService policyService, LineService lineService, ElifeEmailService emailService, EreceiptService ereceiptService,
             MessageSource messageSource, PaymentService paymentService) {
         this.paymentService = paymentService;
         this.generalSettingService = generalSettingService;
@@ -155,7 +154,7 @@ public class PaymentRetryService {
         }
         Pair<byte[], String> ereceiptAttachment = policyService.findEreceiptAttachmentByDocumentId(policy.getPolicyId(), ereceiptPdfDocument.getId());
         emailService.sendEmails(toEmails, emailSubject, emailContent
-                , Collections.emptyList() //EmailElifeUtil.initImagePairs("logo")
+                //EmailElifeUtil.initImagePairs("logo")
                 , Arrays.asList(ereceiptAttachment));
     }
 

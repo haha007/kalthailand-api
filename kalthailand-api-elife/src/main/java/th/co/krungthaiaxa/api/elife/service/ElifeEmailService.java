@@ -7,7 +7,9 @@ import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.elife.utils.EmailSender;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author khoi.tran on 10/17/16.
@@ -30,5 +32,12 @@ public class ElifeEmailService {
 
     public void sendEmail(String toEmailAddress, String emailSubject, String emailContent) {
         emailSender.sendEmail(fromEmail, toEmailAddress, emailSubject, emailContent, Collections.emptyList(), Collections.emptyList());
+    }
+
+    public void sendEmails(List<String> toEmails, String emailSubject, String emailContent, List<Pair<byte[], String>> attachments) {
+        Set<String> toEmailSet = new HashSet<>(toEmails);
+        for (String toEmail : toEmailSet) {
+            sendEmail(toEmail, emailSubject, emailContent, attachments);
+        }
     }
 }

@@ -64,21 +64,15 @@ public class EmailService {
         this.iProtectEmailService = iProtectEmailService;
     }
 
-    public void sendEmails(List<String> toEmails, String emailSubject, String emailContent, List<Pair<byte[], String>> imagesPairs, List<Pair<byte[], String>> attachments) {
-        Set<String> toEmailSet = new HashSet<>(toEmails);
-        for (String toEmail : toEmailSet) {
-            sendEmail(toEmail, emailSubject, emailContent, imagesPairs, attachments);
-        }
-    }
-
-    public void sendEmail(String toEmail, String emailSubject, String emailContent, List<Pair<byte[], String>> imagesPairs) {
-        sendEmail(toEmail, emailSubject, emailContent, imagesPairs, Collections.EMPTY_LIST);
-    }
-
-    public void sendEmail(String toEmail, String emailSubject, String emailContent, List<Pair<byte[], String>> imagesPairs, List<Pair<byte[], String>> attachments) {
-        emailSender.sendEmail(emailName, toEmail, emailSubject, emailContent, imagesPairs, attachments);
-        logger.debug("The email was sent to {}", toEmail);
-    }
+//
+//    public void sendEmail(String toEmail, String emailSubject, String emailContent, List<Pair<byte[], String>> imagesPairs) {
+//        sendEmail(toEmail, emailSubject, emailContent, imagesPairs, Collections.EMPTY_LIST);
+//    }
+//
+//    public void sendEmail(String toEmail, String emailSubject, String emailContent, List<Pair<byte[], String>> imagesPairs, List<Pair<byte[], String>> attachments) {
+//        emailSender.sendEmail(emailName, toEmail, emailSubject, emailContent, imagesPairs, attachments);
+//        logger.debug("The email was sent to {}", toEmail);
+//    }
 
     public void sendQuote10ECEmail(Quote quote, String base64Image) {
         logger.info("Sending quote 10EC email");

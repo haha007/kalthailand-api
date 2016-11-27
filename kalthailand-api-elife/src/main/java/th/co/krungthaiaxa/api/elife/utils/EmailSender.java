@@ -32,7 +32,7 @@ import static org.springframework.util.Assert.notNull;
 
 @Component
 public class EmailSender {
-    private final static Logger logger = LoggerFactory.getLogger(EmailSender.class);
+    public final static Logger LOGGER = LoggerFactory.getLogger(EmailSender.class);
     @Value("${email.smtp.server}")
     private String smtpHost;
     @Value("${email.smtp.port}")
@@ -42,17 +42,17 @@ public class EmailSender {
             List<Pair<byte[], String>> images, List<Pair<byte[], String>> attachments) {
         String maskFromMail = StringUtil.maskEmail(fromEmailAddress);
         String maskToMail = StringUtil.maskEmail(toEmailAddress);
-        String msg = String.format("Sending email [start]: fromEmail: '%s', toEmail: '%s'", maskFromMail, maskToMail);
-        logger.info(msg);
+        String msg = String.format("Send email [start]: fromEmail: '%s', toEmail: '%s'", maskFromMail, maskToMail);
+        LOGGER.info(msg);
 
         hasText(smtpHost, "smtpHost is a mandatory value and cannot be null/blank");
         hasText(smtpPort, "smtpPort is a mandatory value and cannot be null/blank");
         try {
             send(generateMessage(fromEmailAddress, toEmailAddress, emailSubject, emailContent, images, attachments));
-            msg = String.format("Sending email [success]: fromEmail: '%s', toEmail: '%s'", maskFromMail, maskToMail);
-            logger.info(msg);
+            msg = String.format("Send email [success]: fromEmail: '%s', toEmail: '%s'", maskFromMail, maskToMail);
+            LOGGER.info(msg);
         } catch (MessagingException | IOException e) {
-            msg = String.format("Sending email [error]: fromEmail: '%s', toEmail: '%s'", maskFromMail, maskToMail);
+            msg = String.format("Send email [error]: fromEmail: '%s', toEmail: '%s'", maskFromMail, maskToMail);
             throw new EmailException(msg, e);
         }
     }

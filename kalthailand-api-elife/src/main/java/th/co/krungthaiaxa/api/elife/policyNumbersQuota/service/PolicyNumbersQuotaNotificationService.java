@@ -1,6 +1,5 @@
 package th.co.krungthaiaxa.api.elife.policyNumbersQuota.service;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,12 +9,11 @@ import th.co.krungthaiaxa.api.common.utils.StringUtil;
 import th.co.krungthaiaxa.api.elife.data.PolicyNumberSetting;
 import th.co.krungthaiaxa.api.elife.data.PolicyNumbersQuotaNotification;
 import th.co.krungthaiaxa.api.elife.policyNumbersQuota.repository.PolicyNumbersQuotaNotificationRepository;
-import th.co.krungthaiaxa.api.elife.service.EmailService;
+import th.co.krungthaiaxa.api.elife.service.ElifeEmailService;
 import th.co.krungthaiaxa.api.elife.service.PolicyNumberSettingService;
 
 import javax.inject.Inject;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,7 +24,7 @@ import java.util.Optional;
 @Service
 public class PolicyNumbersQuotaNotificationService {
     public static final Logger LOGGER = LoggerFactory.getLogger(PolicyNumbersQuotaNotificationService.class);
-    private final EmailService emailService;
+    private final ElifeEmailService emailService;
     private final PolicyNumbersQuotaNotificationRepository policyNumbersQuotaNotificationRepository;
     private final PolicyNumberSettingService policyNumberSettingService;
 
@@ -34,7 +32,7 @@ public class PolicyNumbersQuotaNotificationService {
     private long timeScale;
 
     @Inject
-    public PolicyNumbersQuotaNotificationService(EmailService emailService, PolicyNumbersQuotaNotificationRepository policyNumbersQuotaNotificationRepository, PolicyNumberSettingService policyNumberSettingService) {
+    public PolicyNumbersQuotaNotificationService(ElifeEmailService emailService, PolicyNumbersQuotaNotificationRepository policyNumbersQuotaNotificationRepository, PolicyNumberSettingService policyNumberSettingService) {
         this.emailService = emailService;
         this.policyNumbersQuotaNotificationRepository = policyNumbersQuotaNotificationRepository;
         this.policyNumberSettingService = policyNumberSettingService;
@@ -42,7 +40,7 @@ public class PolicyNumbersQuotaNotificationService {
 
     public void sendNotification(PolicyNumbersQuotaCheckerService.PolicyNumbersQuotaCheckerResult policyNumbersQuotaCheckerResult) {
         String emailContent = populateEmailContent(policyNumbersQuotaCheckerResult);
-        List<Pair<byte[], String>> imagesPairs = new ArrayList<>();//EmailElifeUtil.getDefaultImagePairs();
+//        List<Pair<byte[], String>> imagesPairs = new ArrayList<>();//EmailElifeUtil.getDefaultImagePairs();
 
         PolicyNumberSetting policyNumberSetting = policyNumbersQuotaCheckerResult.getPolicyNumberSetting();
         List<String> notificationSettingEmails = policyNumberSetting.getEmailList();
@@ -54,7 +52,7 @@ public class PolicyNumbersQuotaNotificationService {
             Optional<PolicyNumbersQuotaNotification> policyNumbersQuotaNotificationOptional = policyNumbersQuotaNotificationRepository.findOneByNotificationEmail(email);
             PolicyNumbersQuotaNotification policyNumbersQuotaNotification = policyNumbersQuotaNotificationOptional.orElse(initCurrentPolicyNumbersQuotaNotification(email));
             if (isOverNotificationDuration(checkingTime, policyNumbersQuotaNotification, notificationTriggerSeconds)) {
-                emailService.sendEmail(email, "Available Policy Number will run out soon.", emailContent, imagesPairs);
+                emailService.sendEmail(email, "Available Policy Number will run out soon.", emailContent);
                 policyNumbersQuotaNotification.setNotificationTime(checkingTime);
                 policyNumbersQuotaNotificationRepository.save(policyNumbersQuotaNotification);
             }
