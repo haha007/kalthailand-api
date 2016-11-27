@@ -83,31 +83,31 @@
                                 </div>
                                 <div class="col-md-9 col-sm-12 col-xs-12">
                                     <div class="input-group col-md-12">
-                                        <label class="col-md-5 mem"
+                                        <label class="text-center col-md-4 mem"
                                                title="Maximum memory available to the Java Virtual Machine set by the '-mx' or '-Xmx' flags">
                                             Max
                                         </label>
-                                        <span class="col-md-3">100%</span>
+                                        <span class="col-md-2">100%</span>
                                         <span class="col-md-4">{{(service.metrics.jvmMaxMemory / 1073741824).toFixed(2)}} GB</span>
                                     </div>
                                     <div class="input-group col-md-12">
-                                        <label class="col-md-5 totalMem" style="color: #73879C;" title="Total memory allocated from the system">Total</label>
-                                        <span class="col-md-3 ">{{(service.metrics.jvmTotalMemory / service.metrics.jvmMaxMemory * 100).toFixed(2)}}%</span>
+                                        <label class="text-center col-md-4 totalMem" style="color: #73879C;" title="Total memory allocated from the system">Total</label>
+                                        <span class="col-md-2 ">{{(service.metrics.jvmTotalMemory / service.metrics.jvmMaxMemory * 100).toFixed(2)}}%</span>
                                         <span class="col-md-4">{{(service.metrics.jvmTotalMemory / 1073741824).toFixed(2)}} GB</span>
                                     </div>
                                     <div class="input-group col-md-12">
-                                        <label class="col-md-5 usedMem">Used</label>
-                                        <span class="col-md-3 ">{{(service.metrics.jvmUsedMemory / service.metrics.jvmMaxMemory * 100).toFixed(2)}}%</span>
+                                        <label class="text-center col-md-4 usedMem">Used</label>
+                                        <span class="col-md-2 ">{{(service.metrics.jvmUsedMemory / service.metrics.jvmMaxMemory * 100).toFixed(2)}}%</span>
                                         <span class="col-md-4">{{(service.metrics.jvmUsedMemory / 1073741824).toFixed(2)}} GB</span>
                                     </div>
                                     <div class="input-group col-md-12">
-                                        <label class="col-md-5 freeMem" style="color: #73879C;" title="Free memory within the total memory">Free</label>
-                                        <span class="col-md-3 ">{{(service.metrics.jvmFreeMemory / service.metrics.jvmMaxMemory * 100).toFixed(2)}}%</span>
+                                        <label class="text-center col-md-4 freeMem" style="color: #73879C;" title="Free memory within the total memory">Free</label>
+                                        <span class="col-md-2 ">{{(service.metrics.jvmFreeMemory / service.metrics.jvmMaxMemory * 100).toFixed(2)}}%</span>
                                         <span class="col-md-4">{{(service.metrics.jvmFreeMemory / 1073741824).toFixed(2)}} GB</span>
                                     </div>
                                     <div class="input-group col-md-12">
-                                        <label class="col-md-5 unallocatedMem" style="color: #2A3F54;" title="When necessary, JVM will automatically uses unallocated memory to add up into total memory">Unallocated</label>
-                                        <span class="col-md-3 ">{{((1 - (service.metrics.jvmTotalMemory / service.metrics.jvmMaxMemory)) * 100).toFixed(2)}}%</span>
+                                        <label class="text-center col-md-4 unallocatedMem" style="color: #2A3F54;" title="When necessary, JVM will automatically uses unallocated memory to add up into total memory">Unallocated</label>
+                                        <span class="col-md-2">{{((1 - (service.metrics.jvmTotalMemory / service.metrics.jvmMaxMemory)) * 100).toFixed(2)}}%</span>
                                         <span class="col-md-4">{{((service.metrics.jvmMaxMemory - service.metrics.jvmTotalMemory) / 1073741824).toFixed(2)}} GB</span>
                                     </div>
                                 </div>
@@ -159,7 +159,7 @@
             </div>
 
             <!-- SETTING FORM -->
-            <div class="col-md-12">
+            <div class="col-md-12" permission="role-health-check-setting">
                 <div class="x_panel">
                     <div class="x_title">
                         <h2>Setting</h2>
@@ -196,7 +196,7 @@
                                 </label>
 
                                 <div class="col-md-6 col-sm-6 col-xs-12">
-                                    <input name="warningEmailsString" ng-model="service.systemHealthSetting.warningEmailsString" type="text" required="required" class="form-control col-md-7 col-xs-12">
+                                    <input name="warningEmailsString" ng-model="service.systemHealthSetting.warningEmailsString" rows="5" required="required" class="form-control col-md-7 col-xs-12"/>
                                 </div>
                             </div>
                             <div class="ln_solid"></div>

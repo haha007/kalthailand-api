@@ -106,7 +106,7 @@ public class ClientSideRoleFilter implements Filter {
             String roleName = (String) propertyNames.nextElement();
             Element elementById = document.getElementById(roleName);
             Elements elementsByPermission = document.getElementsByAttribute(DOM_ATTR_ROLE);
-            if (elementById != null) {
+            if (elementById != null || !elementsByPermission.isEmpty()) {
                 String requiredRoles = properties.getProperty(roleName);
                 String[] requiredRoleList = requiredRoles.split(",");
                 boolean hasRequiredRole = false;
@@ -115,7 +115,9 @@ public class ClientSideRoleFilter implements Filter {
                 }
 
                 if (!hasRequiredRole) {
-                    elementById.remove();
+                    if (elementById != null) {
+                        elementById.remove();
+                    }
                     for (Element element : elementsByPermission) {
                         element.remove();
                     }
