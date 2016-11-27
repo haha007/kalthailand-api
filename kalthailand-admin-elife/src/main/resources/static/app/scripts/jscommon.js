@@ -23,6 +23,20 @@ Array.prototype.newArray = function (fromValue, toValue) {
     }
     return result;
 };
+Array.prototype.mergeNotBlankValuesToString = function () {
+    var result = null;
+    for (i = 0; i < this.length; i++) {
+        var itemValue = this[i];
+        if (isNotBlank(itemValue)) {
+            if (hasValue(result)) {
+                result += ", " + itemValue;
+            } else {
+                result = itemValue;
+            }
+        }
+    }
+    return result;
+};
 Array.prototype.sortByField = function (fieldName, asc) {
 
     var compareFn = function (a, b) {
@@ -187,7 +201,18 @@ String.prototype.beginWith = function (s) {
     var rs = (this.substr(0, s.length) == s);
     return rs;
 };
-
+String.prototype.splitToNotBlankValues = function () {
+    var result = [];
+    var array = this.split(',');
+    for (var i = 0; i < array.length; i++) {
+        var itemValue = array[i];
+        if (isNotBlank(itemValue)) {
+            var trimItemValue = itemValue.trim();
+            result.push(trimItemValue);
+        }
+    }
+    return result;
+}
 function inheritPrototype(prototype) {
     function F() {
     }; // Dummy constructor
@@ -208,8 +233,11 @@ function isArray(obj) {
 function hasValue(variable) {
     return (typeof variable !== 'undefined') && (variable !== null);
 }
-function isNotBlank(variable) {
+function isNotEmpty(variable) {
     return (typeof variable !== 'undefined') && (variable !== null) && (variable.length !== 0);
+}
+function isNotBlank(variable) {
+    return isNotEmpty(variable) && isNotEmpty(variable.trim());
 }
 function isUndefined(value) {
     return typeof value == 'undefined';

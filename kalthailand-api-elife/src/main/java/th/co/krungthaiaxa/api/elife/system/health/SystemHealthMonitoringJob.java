@@ -31,11 +31,6 @@ public class SystemHealthMonitoringJob {
         this.emailService = emailService;
     }
 
-//    @PostConstruct
-//    public void init() {
-//        systemHealthSettingService.loadSetting();
-//    }
-
     @Scheduled(fixedRateString = "${system.health.cron.interval.seconds}000")
     public void monitorHealth() {
         SystemHealthSetting systemHealthSetting = systemHealthSettingService.loadSetting();
