@@ -48,8 +48,9 @@ HealthCheckService.prototype.saveSetting = function () {
         return;
     }
     var warningEmailsArray = self.systemHealthSetting.warningEmailsString.splitToNotBlankValues();
-    if (!validateEmails(warningEmailsArray).isValid()) {
-        self.showErrorMessage("Invalid emails.");
+    var validateEmailsResult = validateEmails(warningEmailsArray);
+    if (!validateEmailsResult.isValid()) {
+        self.showErrorMessage("Invalid emails: " + validateEmailsResult.toStringInvalidItems());
         return;
     }
     self.systemHealthSetting.warningEmails = warningEmailsArray;

@@ -41,4 +41,13 @@ ValidationListResult.prototype.push = function (invalidItem) {
 };
 ValidationListResult.prototype.isValid = function () {
     return this.invalidItems.length == 0;
-}
+};
+ValidationListResult.prototype.toStringInvalidItems = function () {
+    var toStringItems = [];
+    for (i = 0; i < this.invalidItems.length; i++) {
+        var invalidItem = this.invalidItems[i];
+        var invalidItemToString = "[" + invalidItem.index + "] " + invalidItem.value;
+        toStringItems.push(invalidItemToString);
+    }
+    return toStringItems.join(", ");
+};

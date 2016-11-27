@@ -43,6 +43,7 @@
             <div class="col-md-12 col-sm-12 col-xs-12">
                 <button class="btn btn-default" ng-click="service.showHealth()"><i class="fa fa-refresh"></i> Load status</button>
             </div>
+            <!-- JVM MEMORY -->
             <div class="col-md-6 col-sm-12 col-xs-12">
 
                 <div class="x_panel">
@@ -116,6 +117,8 @@
                     </div>
                 </div>
             </div>
+
+            <!-- SPACE -->
             <div class="col-md-6 col-sm-12 col-xs-12">
                 <div class="x_panel">
                     <div class="x_title">
@@ -154,6 +157,7 @@
                     </div>
                 </div>
             </div>
+
             <!-- SETTING FORM -->
             <div class="col-md-12">
                 <div class="x_panel">
@@ -186,7 +190,7 @@
                                     <input name="usedMemoryPercentageWarning" ng-model="service.systemHealthSetting.usedMemoryPercentageWarning" required="required" type="number" min="0" max="100" class="form-control col-md-7 col-xs-12">
                                 </div>
                             </div>
-                            <div class="divider-dashed"></div>
+                            <!--<div class="divider-dashed"></div>-->
                             <div class="form-group">
                                 <label class="control-label col-md-3 col-sm-3 col-xs-12">Notify to email <span class="required">*</span>
                                 </label>
