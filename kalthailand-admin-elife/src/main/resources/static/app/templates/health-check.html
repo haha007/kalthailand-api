@@ -2,14 +2,20 @@
     .mem {
         background-color: #ECF0F1;
         box-shadow: inset 0 1px 2px rgba(0, 0, 0, .1);
+        text-align: center;
+    }
 
+    .maxMem {
+        text-align: left;
+        /*box-shadow: inset 0 -1px 0 rgba(0, 0, 0, .15);*/
     }
 
     .totalMem {
-        background-color: #e1e5e6;
-        background-image: linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);
-        background-size: 40px 40px;
-        box-shadow: inset 0 -1px 0 rgba(0, 0, 0, .15);
+        text-align: left;
+        /*background-color: #e1e5e6;*/
+        /*background-image: linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);*/
+        /*background-size: 40px 40px;*/
+        /*box-shadow: inset 0 -1px 0 rgba(0, 0, 0, .15);*/
 
     }
 
@@ -35,6 +41,51 @@
         box-shadow: inset 0 1px 2px rgba(0, 0, 0, .1);
         color: #2A3F54;
     }
+
+    .vertical-line {
+        position: relative;
+        left: 5px;
+    }
+
+    .vertical-line:after {
+        content: "";
+        position: absolute;
+        /*z-index: -1;*/
+        top: 0;
+        bottom: 0;
+        left: -2px;
+        border-left: 1px dotted #73879C;
+    }
+
+    .arrow-up:after {
+        content: "";
+        position: absolute;
+        /*z-index: -1;*/
+        top: 0;
+        bottom: 0;
+        left: -5px;
+        border-left: 3px solid transparent;
+        border-right: 3px solid transparent;
+        border-bottom: 3px solid #73879C;
+        width: 0;
+        height: 0;
+    }
+
+    .arrow-down:after {
+        content: "";
+        position: absolute;
+        /*z-index: -1;*/
+        /*top: 0;*/
+        bottom: 0;
+        left: -5px;
+        border-left: 3px solid transparent;
+        border-right: 3px solid transparent;
+        border-top: 3px solid #73879C;
+        width: 0;
+        height: 0;
+    }
+
+
 </style>
 <div class="row">
 
@@ -56,16 +107,23 @@
                         <div class="col-md-12 col-sm-12 col-xs-12">
                             <div class="row">
                                 <div class="col-md-3 col-sm-12">
-                                    <table class="mem" style="width: 100%; height: 250px; text-align: center">
+                                    <table class="mem" style="width: 100%; height: 250px;">
                                         <tr>
                                             <td class="freeMem" style="height: {{service.metrics.jvmFreeMemory / service.metrics.jvmMaxMemory * 100}}%; width: 33%">
                                                 Free
                                             </td>
-                                            <td class="totalMem" rowspan="2" style="width: 33%">
+                                            <td class="totalMem vertical-line" rowspan="2" style="width: 33%">
+                                                <div class=" arrow-up"></div>
                                                 Total
+                                                <div class="arrow-down"></div>
+                                                <!--<div class="arrow-up"></div>-->
+                                                <!--<div class="vertical-line arrow-up">Total</div>-->
+                                                <!--<div class="arrow-down"></div>-->
                                             </td>
-                                            <td rowspan="3">
+                                            <td class="maxMem vertical-line" rowspan="3">
+                                                <div class=" arrow-up"></div>
                                                 Max
+                                                <div class="arrow-down"></div>
                                             </td>
                                         </tr>
                                         <tr>
@@ -75,9 +133,7 @@
                                             <td></td>
                                         </tr>
                                         <tr>
-                                            <td class="unallocatedMem" colspan="2">
-
-                                            </td>
+                                            <td class="unallocatedMem"></td>
                                         </tr>
                                     </table>
                                 </div>
@@ -91,7 +147,7 @@
                                         <span class="col-md-4">{{(service.metrics.jvmMaxMemory / 1073741824).toFixed(2)}} GB</span>
                                     </div>
                                     <div class="input-group col-md-12">
-                                        <label class="text-center col-md-4 totalMem" style="color: #73879C;" title="Total memory allocated from the system">Total</label>
+                                        <label class="text-center col-md-4 mem" style="color: #73879C;" title="Total memory allocated from the system">Total</label>
                                         <span class="col-md-2 ">{{(service.metrics.jvmTotalMemory / service.metrics.jvmMaxMemory * 100).toFixed(2)}}%</span>
                                         <span class="col-md-4">{{(service.metrics.jvmTotalMemory / 1073741824).toFixed(2)}} GB</span>
                                     </div>
