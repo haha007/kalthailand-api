@@ -483,7 +483,7 @@
                                     <span title="payment.amount.currencyCode">{{ payment.amount.value | number: 2}}</span>
                                 </td>
                                 <td>
-                                    <span>{{ payment.status}}</span>
+                                    <span ng-class="{'green': payment.status=='COMPLETED'}">{{ payment.status}}</span>
                                 </td>
                                 <td>
                                     <span>{{ payment.dueDate | date:'yyyy-MM-dd hh:mm:ss'}}</span>
