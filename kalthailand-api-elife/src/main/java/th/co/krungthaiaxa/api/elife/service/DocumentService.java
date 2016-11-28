@@ -8,6 +8,7 @@ import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
 import th.co.krungthaiaxa.api.elife.model.Document;
 import th.co.krungthaiaxa.api.elife.model.DocumentDownload;
 import th.co.krungthaiaxa.api.elife.model.DocumentReferenceType;
+import th.co.krungthaiaxa.api.elife.model.DocumentWithContent;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.enums.DocumentType;
 import th.co.krungthaiaxa.api.elife.repository.DocumentDownloadRepository;
@@ -36,6 +37,10 @@ public class DocumentService {
         this.policyRepository = policyRepository;
     }
 
+    /**
+     * @param documentId Note: this is the documentId, not documentDownloadId.
+     * @return
+     */
     public DocumentDownload findDocumentDownload(String documentId) {
         return documentDownloadRepository.findByDocumentId(documentId);
     }
@@ -98,4 +103,18 @@ public class DocumentService {
         return document;
     }
 
+    public DocumentWithContent findDocumentWithContent(String documentId) {
+        DocumentWithContent documentWithContent = new DocumentWithContent();
+
+        Document document = documentRepository.findOne(documentId);
+        DocumentDownload documentDownload = findDocumentDownload(documentId);
+        byte[] content = null;
+        if (documentDownload != null) {
+            content = getDocumentDownloadContent(documentDownload);
+        }
+        documentWithContent.setDocument(document);
+        documentWithContent.setDocumentDownload(documentDownload);
+        documentWithContent.setDocumentContent(content);
+        return documentWithContent;
+    }
 }

@@ -225,6 +225,6 @@ public class QuoteResource {
         LocalDateTime endDate = DateTimeUtil.toLocalDateTimePatternISO(endDateString);
         endDate = DateTimeUtil.toEndOfDate(endDate);
         byte[] content = quoteCountForAllProductsService.exportTotalQuotesCountReport(startDate, endDate);
-        DownloadUtil.writeBytesToResponseWithDateRollFileName(response, content, "quotes-count");
+        DownloadUtil.writeExcelBytesToResponseWithDateRollFileName(response, content, "quotes-count");
     }
 }

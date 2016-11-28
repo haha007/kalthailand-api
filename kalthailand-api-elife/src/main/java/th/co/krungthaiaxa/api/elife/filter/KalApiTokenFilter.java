@@ -89,6 +89,7 @@ public class KalApiTokenFilter implements Filter {
                 , ".*/commissions/calculation/download/.*"
                 , ".*/policies/.*/pdf.*"
                 , ".*/policies/.*/download.*"
+                , ".*/documents/.*/download.*"
         );
         // TODO Should be removed
         for (String publicURI : regexPublicURIs) {
@@ -98,24 +99,6 @@ public class KalApiTokenFilter implements Filter {
                 return;
             }
         }
-//        if (httpServletRequest.getRequestURI().endsWith("/policies/extract/download") ||
-//                httpServletRequest.getRequestURI().contains("/RLS/deduction/download/") ||
-//                httpServletRequest.getRequestURI().contains("/session-quotes/all-products-counts/download") ||
-//                httpServletRequest.getRequestURI().contains("/quotes/all-products/download") ||
-//                httpServletRequest.getRequestURI().contains("/commissions/calculation/download/") ||
-//                (httpServletRequest.getRequestURI().contains("/policies/") && httpServletRequest.getRequestURI().contains("/pdf")) ||
-//                (httpServletRequest.getRequestURI().contains("/policies/") && httpServletRequest.getRequestURI().contains("/download"))
-//                ) {
-//            chain.doFilter(httpServletRequest, response);
-//            return;
-//        }
-
-//        // Very specific URLs that cannot send token when clicking on link to download file
-//        // TODO Should be removed
-//        if (httpServletRequest.getRequestURI().contains("/adminwebsocket/policy-numbers/upload/")) {
-//            chain.doFilter(httpServletRequest, response);
-//            return;
-//        }
 
         // For everything else, we should check for token validity
         String authToken = RequestUtil.getAccessToken(httpServletRequest);

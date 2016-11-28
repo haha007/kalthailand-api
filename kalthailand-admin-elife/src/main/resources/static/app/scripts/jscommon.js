@@ -37,6 +37,10 @@ Array.prototype.mergeNotBlankValuesToString = function () {
     }
     return result;
 };
+/**
+ * @param fieldName
+ * @param asc 1 or -1
+ */
 Array.prototype.sortByField = function (fieldName, asc) {
 
     var compareFn = function (a, b) {

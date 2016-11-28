@@ -183,51 +183,7 @@
                     </div>
                 </div>
             </div>
-            <!-- PAYMENT DETAILS -->
-            <div id="role-policy-payment" class="x_panel" ng-show="policyDetail && policyDetail.status == 'PENDING_PAYMENT'">
-                <div class="x_title">
-                    <h2>Payment information
-                    </h2>
 
-                    <div class="clearfix"></div>
-                </div>
-                <div class="x_content">
-                    <!-- info row -->
-                    <form id="demo-form2" data-parsley-validate="" class="form-horizontal form-label-left" novalidate="" ng-submit="onSubmitPaymentDetails()">
-                        <div class="form-group">
-                            <label for="regKey" class="col-sm-3 control-label">regKey</label>
-
-                            <div class="col-md-6 col-sm-6 col-xs-12">
-                                <input ng-disabled="!isEnabledAutoPay(policyDetail)" class="form-control" type="text" ng-model="payment.regKey" id="regKey" required>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="orderId" class="col-sm-3 control-label">orderId</label>
-
-                            <div class="col-md-6 col-sm-6 col-xs-12">
-                                <input class="form-control" type="text" ng-model="payment.orderId" id="orderId" required>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="transactionId" class="col-sm-3 control-label">transactionId</label>
-
-                            <div class="col-md-6 col-sm-6 col-xs-12">
-                                <input class="form-control" type="text" ng-model="payment.transactionId" id="transactionId" required>
-                            </div>
-                        </div>
-                        <div class="ln_solid"></div>
-                        <div class="form-group">
-                            <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
-                                <button type="submit" class="btn btn-success" ng-disabled="paymentForm.$invalid || isFetching">
-                                    <span ng-show="isFetching">Updating...</span>
-                                    <span ng-show=" ! isFetching">Submit</span>
-                                </button>
-                            </div>
-                        </div>
-
-                    </form>
-                </div>
-            </div>
 
             <!-- INSURED DETAILS -->
             <div class="x_panel" ng-show="policyDetail">
@@ -447,6 +403,113 @@
                 </div>
 
             </div>
+
+
+            <!-- PAYMENT INPUT -->
+            <div id="role-policy-payment" class="x_panel" ng-show="policyDetail && policyDetail.status == 'PENDING_PAYMENT'">
+                <div class="x_title">
+                    <h2>Payment input
+                    </h2>
+
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <!-- info row -->
+                    <form id="demo-form2" data-parsley-validate="" class="form-horizontal form-label-left" novalidate="" ng-submit="onSubmitPaymentDetails()">
+                        <div class="form-group">
+                            <label for="regKey" class="col-sm-3 control-label">regKey</label>
+
+                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                <input ng-disabled="!isEnabledAutoPay(policyDetail)" class="form-control" type="text" ng-model="payment.regKey" id="regKey" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="orderId" class="col-sm-3 control-label">orderId</label>
+
+                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                <input class="form-control" type="text" ng-model="payment.orderId" id="orderId" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="transactionId" class="col-sm-3 control-label">transactionId</label>
+
+                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                <input class="form-control" type="text" ng-model="payment.transactionId" id="transactionId" required>
+                            </div>
+                        </div>
+                        <div class="ln_solid"></div>
+                        <div class="form-group">
+                            <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
+                                <button type="submit" class="btn btn-success" ng-disabled="paymentForm.$invalid || isFetching">
+                                    <span ng-show="isFetching">Updating...</span>
+                                    <span ng-show=" ! isFetching">Submit</span>
+                                </button>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+
+            <!-- PAYMENT INFO -->
+            <div class="x_panel" ng-show="policyDetail">
+                <div class="x_title">
+                    <h2>Payment information
+                    </h2>
+
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <div class="table-responsive">
+                        <table class="table table-striped jambo_table">
+                            <thead>
+                            <tr>
+                                <td>Payment</td>
+                                <td>Amount</td>
+                                <td>Status</td>
+                                <td>Due Date</td>
+                                <td>Effective</td>
+                                <td>Order</td>
+                                <td>Transaction</td>
+                                <td>eReceipt</td>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="payment in policyDetail.payments">
+                                <td>
+                                    {{ payment.paymentId}}
+                                </td>
+                                <td>
+                                    <span title="payment.amount.currencyCode">{{ payment.amount.value | number: 2}}</span>
+                                </td>
+                                <td>
+                                    {{ payment.status}}
+                                </td>
+                                <td>
+                                    {{ payment.dueDate | date:'yyyy-MM-dd hh:mm:ss'}}
+                                </td>
+                                <td>
+                                    {{ payment.effectiveDate | date:'yyyy-MM-dd hh:mm:ss'}}
+                                </td>
+                                <td>
+                                    {{ payment.orderId}}
+                                </td>
+                                <td>
+                                    {{ payment.transactionId}}
+                                </td>
+                                <td>
+                                    <a ng-show="payment.receiptPdfDocument.id" ng-href="{{apiELifeUrl}}/documents/{{payment.receiptPdfDocument.id}}/download">
+                                        <i class="green fa fa-file-pdf-o"></i>{{payment.receiptNumber.fullNumberForDisplay}}
+                                    </a>
+                                </td>
+                            </tr>
+                            </tbody>
+
+                        </table>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>

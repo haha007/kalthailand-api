@@ -23,13 +23,16 @@ import th.co.krungthaiaxa.api.elife.exception.OutputImageException;
 import th.co.krungthaiaxa.api.elife.exception.UnsupportedImageException;
 import th.co.krungthaiaxa.api.elife.model.Document;
 import th.co.krungthaiaxa.api.elife.model.DocumentDownload;
+import th.co.krungthaiaxa.api.elife.model.DocumentWithContent;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.enums.DocumentType;
 import th.co.krungthaiaxa.api.elife.service.DocumentService;
 import th.co.krungthaiaxa.api.elife.service.PolicyService;
+import th.co.krungthaiaxa.api.elife.utils.ElifeDownloadUtils;
 import th.co.krungthaiaxa.api.elife.utils.WatermarkUtil;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -168,5 +171,13 @@ public class DocumentResource {
         documentService.addDocument(policy.get(), encodedContent, mimeType, DocumentType.THAI_ID);
 
         return new ResponseEntity<>(encodedContent, OK);
+    }
+
+    @ApiOperation(value = "Download document")
+    @RequestMapping(value = "/documents/{documentId}/download", produces = APPLICATION_JSON_VALUE, method = GET)
+    @ResponseBody
+    public void downloadDocument(@PathVariable String documentId, HttpServletResponse response) {
+        DocumentWithContent documentWithContent = documentService.findDocumentWithContent(documentId);
+        ElifeDownloadUtils.writeBytesToResponse(response, documentWithContent);
     }
 }
