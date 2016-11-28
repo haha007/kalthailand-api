@@ -219,21 +219,17 @@ public class PolicyResource {
         }
     }
 
-    @ApiOperation(value = "Policy details", notes = "Gets the details of a policy.", response = Policy.class)
-    @ApiResponses({
-            @ApiResponse(code = 404, message = "If the policy is not found", response = Error.class)
-    })
+    @ApiOperation(value = "Policy details")
     @RequestMapping(value = "/policies/{policyNumber}", produces = APPLICATION_JSON_VALUE, method = GET)
     @ResponseBody
-    public ResponseEntity<byte[]> getPolicy(
-            @ApiParam(value = "The policy number", required = true)
-            @PathVariable String policyNumber) {
-        Optional<Policy> policy = policyService.findPolicyByPolicyNumber(policyNumber);
-        if (!policy.isPresent()) {
-            return new ResponseEntity<>(getJson(ErrorCode.POLICY_DOES_NOT_EXIST), NOT_FOUND);
-        } else {
-            return new ResponseEntity<>(getJson(policy.get()), OK);
-        }
+    public Policy getPolicy(@ApiParam(value = "The policy number", required = true) @PathVariable String policyNumber) {
+        return policyService.findPolicyWithFullDetailsByPolicyNumber(policyNumber);
+//        Optional<Policy> policy = policyService.findPolicyByPolicyNumber(policyNumber);
+//        if (!policy.isPresent()) {
+//            return new ResponseEntity<>(getJson(ErrorCode.POLICY_DOES_NOT_EXIST), NOT_FOUND);
+//        } else {
+//            return new ResponseEntity<>(getJson(policy.get()), OK);
+//        }
     }
 
     @ApiOperation(value = "Send notifications", notes = "Sends pre-defined notifications to insured on different channels (SMS, eMail, Line Push notification). Content of notification and channels of notifications depends on reminder ID.", response = String.class)
@@ -364,15 +360,16 @@ public class PolicyResource {
     })
     @RequestMapping(value = "/policies/{policyId}/payments", produces = APPLICATION_JSON_VALUE, method = GET)
     @ResponseBody
-    public ResponseEntity<byte[]> getPolicyPayments(
+    public List<Payment> getPolicyPayments(
             @ApiParam(value = "The policy ID", required = true)
             @PathVariable String policyId) {
-        Optional<Policy> policy = policyService.findPolicyByPolicyNumber(policyId);
-        if (!policy.isPresent()) {
-            logger.error("Unable to find the policy with ID [" + policyId + "]");
-            return new ResponseEntity<>(getJson(ErrorCode.POLICY_DOES_NOT_EXIST), NOT_FOUND);
-        }
-        return new ResponseEntity<>(getJson(policy.get().getPayments()), OK);
+        return paymentService.findPaymentsByPolicyNumber(policyId);
+//        Optional<Policy> policy = policyService.findPolicyByPolicyNumber(policyId);
+//        if (!policy.isPresent()) {
+//            logger.error("Unable to find the policy with ID [" + policyId + "]");
+//            return new ResponseEntity<>(getJson(ErrorCode.POLICY_DOES_NOT_EXIST), NOT_FOUND);
+//        }
+//        return new ResponseEntity<>(getJson(policy.get().getPayments()), OK);
     }
 
     @ApiOperation(value = "Update Policy status", notes = "Updates the Policy status to PENDING_VALIDATION. If " +

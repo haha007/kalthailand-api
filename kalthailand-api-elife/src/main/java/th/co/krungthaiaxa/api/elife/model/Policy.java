@@ -38,6 +38,14 @@ public class Policy implements Serializable, Quotable {
     private PremiumsData premiumsData;
     private List<Insured> insureds = new ArrayList<>();
     private List<Coverage> coverages = new ArrayList<>();
+
+    //TODO it should be always lazy-loading to improve performance.
+    //TODO after changing to lazy-loading, all command line #getPayments() must be replaced by paymentRepositories.findByPolicyNumber(String).
+    /**
+     * Note:
+     * Assume you create a separated payment with corresponding policyId.
+     * But if you don't add that payment into this policy, this field won't contains that payment even if you reload policy from DB.
+     */
     @DBRef
     private List<Payment> payments = new ArrayList<>();
     @DBRef
@@ -192,6 +200,10 @@ public class Policy implements Serializable, Quotable {
                 creationDateTime = Instant.ofEpochMilli(objectId.getDate().getTime());
             }
         }
+    }
+
+    public void setPayments(List<Payment> payments) {
+        this.payments = payments;
     }
 
     public Instant getLastUpdateDateTime() {

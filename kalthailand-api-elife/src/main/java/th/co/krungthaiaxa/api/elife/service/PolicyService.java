@@ -22,6 +22,7 @@ import th.co.krungthaiaxa.api.elife.line.LineService;
 import th.co.krungthaiaxa.api.elife.model.Document;
 import th.co.krungthaiaxa.api.elife.model.DocumentDownload;
 import th.co.krungthaiaxa.api.elife.model.Insured;
+import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.Person;
 import th.co.krungthaiaxa.api.elife.model.PersonInfo;
 import th.co.krungthaiaxa.api.elife.model.Policy;
@@ -128,6 +129,15 @@ public class PolicyService {
         return policy != null ? Optional.of(policy) : Optional.empty();
     }
 
+    public Policy findPolicyWithFullDetailsByPolicyNumber(String policyNumber) {
+        Policy policy = policyRepository.findByPolicyId(policyNumber);
+        if (policy != null) {
+            List<Payment> payments = paymentRepository.findByPolicyId(policyNumber);
+            policy.setPayments(payments);
+        }
+        return policy;
+    }
+
     public Policy validateExistPolicy(String policyNumber) {
         Policy policy = policyRepository.findByPolicyId(policyNumber);
         if (policy == null) {
@@ -192,7 +202,8 @@ public class PolicyService {
         if (!isBlank(newRegistrationKey)) {
             //TODO Improve performance: use Mongo query to update
             // Save the registration key in all other payments
-            policy.getPayments().stream().filter(paymentPredicate -> paymentPredicate.getStatus().equals(NOT_PROCESSED)).forEach(payment -> {
+            List<Payment> payments = paymentRepository.findByPolicyId(policy.getPolicyId());
+            payments.stream().filter(paymentPredicate -> paymentPredicate.getStatus().equals(NOT_PROCESSED)).forEach(payment -> {
                 if (!newRegistrationKey.equals(payment.getRegistrationKey())) {
                     payment.setRegistrationKey(newRegistrationKey);
                 }

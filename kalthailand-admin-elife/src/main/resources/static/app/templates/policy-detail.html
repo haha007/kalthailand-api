@@ -471,6 +471,7 @@
                                 <td>Effective</td>
                                 <td>Order</td>
                                 <td>Transaction</td>
+                                <td>Retry</td>
                                 <td>eReceipt</td>
                             </tr>
                             </thead>
@@ -496,6 +497,9 @@
                                 </td>
                                 <td>
                                     <span> {{ payment.transactionId}}</span>
+                                </td>
+                                <td>
+                                    <span> {{ payment.retried ? 'Yes' : 'No'}}</span>
                                 </td>
                                 <td>
                                     <a ng-show="payment.receiptPdfDocument.id" ng-href="{{apiELifeUrl}}/documents/{{payment.receiptPdfDocument.id}}/download">

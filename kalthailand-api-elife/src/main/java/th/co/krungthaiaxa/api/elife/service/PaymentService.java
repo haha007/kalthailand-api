@@ -70,6 +70,10 @@ public class PaymentService {
         }
     }
 
+    public List<Payment> findPaymentsByPolicyNumber(String policyNumber) {
+        return paymentRepository.findByPolicyId(policyNumber);
+    }
+
     public Optional<Payment> findLastestPaymentByPolicyNumberAndRegKeyNotNull(String policyNumber) {
         return paymentRepository.findOneByRegKeyNotNullAndPolicyId(policyNumber, new Sort(Sort.Direction.DESC, "dueDate"));
     }

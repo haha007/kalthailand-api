@@ -15,7 +15,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.common.action.ActionWithResult;
 import th.co.krungthaiaxa.api.common.exeption.BadArgumentException;
-import th.co.krungthaiaxa.api.common.exeption.BaseException;
 import th.co.krungthaiaxa.api.common.exeption.UnexpectedException;
 import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
 import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
@@ -386,6 +385,7 @@ public class CollectionFileProcessingService {
         }
     }
 
+    //TODO when processing successful, it only generate eReceipt number, not eReceipt Pdf, and also not send eReceipt Pdf to TMC?
     private void processCollectionFileLine(DeductionFile deductionFile, CollectionFileLine collectionFileLine) {
         boolean newBusiness = NEW_BUSINESS;
         LOGGER.info("Processing collectionFileLine [start]: policyNumber: {}", collectionFileLine.getPolicyNumber());
