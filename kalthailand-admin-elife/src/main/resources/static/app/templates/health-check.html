@@ -246,6 +246,14 @@
                                     <input name="usedMemoryPercentageWarning" ng-model="service.systemHealthSetting.usedMemoryPercentageWarning" required="required" type="number" min="0" max="100" class="form-control col-md-7 col-xs-12">
                                 </div>
                             </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12">Notify for used space (%) <span class="required">*</span>
+                                </label>
+
+                                <div class="col-md-6 col-sm-6 col-xs-12">
+                                    <input name="usedSpacePercentageWarning" ng-model="service.systemHealthSetting.usedSpacePercentageWarning" required="required" type="number" min="0" max="100" class="form-control col-md-7 col-xs-12">
+                                </div>
+                            </div>
                             <!--<div class="divider-dashed"></div>-->
                             <div class="form-group">
                                 <label class="control-label col-md-3 col-sm-3 col-xs-12">Notify to emails <span class="required">*</span>
@@ -257,7 +265,7 @@
                             </div>
                             <div class="ln_solid"></div>
                             <div>
-                                <button type="submit" class="btn btn-default" ng-click="service.saveSetting($event)">Save Setting</button>
+                                <button type="submit" class="btn btn-default" ng-click="service.saveSetting()">Save Setting</button>
                             </div>
                         </form>
                     </div>

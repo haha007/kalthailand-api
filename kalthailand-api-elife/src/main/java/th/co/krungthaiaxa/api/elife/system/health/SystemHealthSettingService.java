@@ -18,6 +18,8 @@ public class SystemHealthSettingService {
     private String warningToEmails;
     @Value("${system.health.warning.used-memory-percentage}")
     private Float usedMemoryPercentageWarning;
+    @Value("${system.health.warning.used-space-percentage}")
+    private Float usedSpacePercentageWarning;
 
     @Autowired
     public SystemHealthSettingService(GeneralSettingService generalSettingService) {this.generalSettingService = generalSettingService;}
@@ -29,6 +31,7 @@ public class SystemHealthSettingService {
             systemHealthSetting = new SystemHealthSetting();
             systemHealthSetting.setWarningEmails(StringUtil.splitToNotNullStrings(warningToEmails));
             systemHealthSetting.setUsedMemoryPercentageWarning(usedMemoryPercentageWarning);
+            systemHealthSetting.setUsedSpacePercentageWarning(usedSpacePercentageWarning);
             generalSetting.setSystemHealthSetting(systemHealthSetting);
             generalSettingService.saveSetting(generalSetting);
         }

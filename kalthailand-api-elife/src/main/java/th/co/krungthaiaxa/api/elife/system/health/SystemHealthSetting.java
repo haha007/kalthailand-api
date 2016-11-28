@@ -14,6 +14,8 @@ public class SystemHealthSetting {
     private List<String> warningEmails;
     @NotNull
     private Float usedMemoryPercentageWarning;
+    @NotNull
+    private Float usedSpacePercentageWarning;
 
     public List<String> getWarningEmails() {
         return warningEmails;
@@ -29,5 +31,13 @@ public class SystemHealthSetting {
 
     public void setUsedMemoryPercentageWarning(Float usedMemoryPercentageWarning) {
         this.usedMemoryPercentageWarning = usedMemoryPercentageWarning;
+    }
+
+    public Float getUsedSpacePercentageWarning() {
+        return usedSpacePercentageWarning;
+    }
+
+    public void setUsedSpacePercentageWarning(Float usedSpacePercentageWarning) {
+        this.usedSpacePercentageWarning = usedSpacePercentageWarning;
     }
 }
