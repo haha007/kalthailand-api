@@ -475,32 +475,33 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr ng-repeat="payment in policyDetail.payments">
+                            <tr ng-repeat="payment in policyDetail.payments" ng-show="payment.status != 'NOT_PROCESSED'">
                                 <td>
-                                    {{ payment.paymentId}}
+                                    <span>{{ payment.paymentId}}</span>
                                 </td>
                                 <td>
                                     <span title="payment.amount.currencyCode">{{ payment.amount.value | number: 2}}</span>
                                 </td>
                                 <td>
-                                    {{ payment.status}}
+                                    <span>{{ payment.status}}</span>
                                 </td>
                                 <td>
-                                    {{ payment.dueDate | date:'yyyy-MM-dd hh:mm:ss'}}
+                                    <span>{{ payment.dueDate | date:'yyyy-MM-dd hh:mm:ss'}}</span>
                                 </td>
                                 <td>
-                                    {{ payment.effectiveDate | date:'yyyy-MM-dd hh:mm:ss'}}
+                                    <span>{{ payment.effectiveDate | date:'yyyy-MM-dd hh:mm:ss'}}</span>
                                 </td>
                                 <td>
-                                    {{ payment.orderId}}
+                                    <span>{{ payment.orderId}}</span>
                                 </td>
                                 <td>
-                                    {{ payment.transactionId}}
+                                    <span> {{ payment.transactionId}}</span>
                                 </td>
                                 <td>
                                     <a ng-show="payment.receiptPdfDocument.id" ng-href="{{apiELifeUrl}}/documents/{{payment.receiptPdfDocument.id}}/download">
-                                        <i class="green fa fa-file-pdf-o"></i>{{payment.receiptNumber.fullNumberForDisplay}}
+                                        <span> <i class="green fa fa-file-pdf-o"></i> {{payment.receiptNumber.fullNumberForDisplay}}</span>
                                     </a>
+                                    <span ng-hide="payment.receiptPdfDocument.id">{{payment.receiptNumber.fullNumberForDisplay}}</span>
                                 </td>
                             </tr>
                             </tbody>

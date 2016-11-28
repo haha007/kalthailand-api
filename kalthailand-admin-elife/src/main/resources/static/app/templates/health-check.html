@@ -197,7 +197,10 @@
                                         </h2>
 
                                         <div class="byline">
-                                            <span>Usable </span><a>{{(diskSpace.usableSpace / 1073741824).toFixed(2)}} GB </a><span>-</span><a> {{(diskSpace.usableSpace / diskSpace.totalSpace * 100).toFixed(2)}}%</a>
+                                            <span>Used </span><a>{{((diskSpace.totalSpace - diskSpace.usableSpace) / 1073741824).toFixed(2)}} GB </a><span>-</span><a> {{((1 - diskSpace.usableSpace / diskSpace.totalSpace) * 100).toFixed(2)}}%</a>
+                                        </div>
+                                        <div class="byline">
+                                            <span>Free </span><a>{{(diskSpace.usableSpace / 1073741824).toFixed(2)}} GB </a><span>-</span><a> {{(diskSpace.usableSpace / diskSpace.totalSpace * 100).toFixed(2)}}%</a>
                                         </div>
                                         <div class="byline">
                                             <span>Unallocated</span><a>{{((diskSpace.unallocatedSpace) / 1073741824).toFixed(2)}} GB </a><span>-</span><a> {{(diskSpace.unallocatedSpace / diskSpace.totalSpace * 100).toFixed(2)}}%</a>
