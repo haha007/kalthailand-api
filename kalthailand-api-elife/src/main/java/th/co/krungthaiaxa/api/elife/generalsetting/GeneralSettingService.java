@@ -1,12 +1,10 @@
 package th.co.krungthaiaxa.api.elife.generalsetting;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.common.utils.StringUtil;
-import th.co.krungthaiaxa.api.elife.generalsetting.GeneralSetting;
-import th.co.krungthaiaxa.api.elife.generalsetting.GeneralSettingRepository;
 
-import javax.inject.Inject;
 import java.util.List;
 
 /**
@@ -27,7 +25,7 @@ public class GeneralSettingService {
     @Value("${payment.retry.tosuccessemails}")
     private String defaultRetryPaymentSuccessToEmailsString;
 
-    @Inject
+    @Autowired
     public GeneralSettingService(GeneralSettingRepository generalSettingRepository) {this.generalSettingRepository = generalSettingRepository;}
 
     public GeneralSetting loadGeneralSetting() {

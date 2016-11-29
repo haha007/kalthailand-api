@@ -1,97 +1,88 @@
 package th.co.krungthaiaxa.api.elife.urlshortener.google;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.api.client.http.apache.ApacheHttpTransport;
+import com.google.api.client.googleapis.services.CommonGoogleClientRequestInitializer;
+import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.urlshortener.Urlshortener;
+import com.google.api.services.urlshortener.model.Url;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import th.co.krungthaiaxa.api.common.utils.IOUtil;
-import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
+import th.co.krungthaiaxa.api.common.exeption.UnexpectedException;
+import th.co.krungthaiaxa.api.common.utils.ProfileHelper;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.util.Hashtable;
-import java.util.Map;
 
 /**
  * @author khoi.tran on 11/29/16.
+ *         Introduction: https://developers.google.com/api-client-library/java/apis/urlshortener/v1
+ *         Sample Java code: https://github.com/google/google-api-java-client-samples/blob/master/urlshortener-robots-appengine-sample/
+ *         Explain: https://developers.google.com/url-shortener/v1/getting_started
  */
 @Service
 public class UrlShortenerService {
+    public static final Logger LOGGER = LoggerFactory.getLogger(UrlShortenerService.class);
+    @Autowired
+    private ProfileHelper profileHelper;
+    public String googleAppName;
+
     @Value("${google.api.key.default}")
     private String googleKeyApi;
 
-    public static void main(String[] a) {
-        try {
-            UrlShortenerService urlShortenerService = new UrlShortenerService();
-            urlShortenerService.getShortUrl("http://203.154.153.117:8080/admin-elife/admin#/policy-detail?policyID=502-4878405");
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+    @PostConstruct
+    public void init() {
+        googleAppName = "axa-kalthailand-api_" + profileHelper.getFirstUsingProfile();
     }
 
-    public String getShortUrl(String originalUrl) throws IOException {
-//        UrlShortenerRequest urlShortenerRequest = new UrlShortenerRequest();
-//        urlShortenerRequest.setLongUrl(originalUrl);
-//        RestTemplate restTemplate = new RestTemplate();
-//        ResponseEntity<String> responseEntity = restTemplate.postForEntity("https://www.googleapis.com/urlshortener/v1/url?key=AIzaSyDB9_kBpncpF5xCI2188N_UGfgWCfVk1bY", urlShortenerRequest, String.class);
-//        String responseContent = responseEntity.getBody();
-//        System.out.print(responseContent);
-
-        // setup up the HTTP transport
-//
-//        HttpTransport transport = new ApacheHttpTransport();
-//        // add default headers
-//        GoogleHeaders defaultHeaders = new GoogleHeaders();
-//        transport.defaultHeaders = defaultHeaders;
-//        transport.defaultHeaders.put("Content-Type", "application/json");
-//        transport.addParser(new JsonHttpParser());
-//
-//        // build the HTTP GET request and URL
-//        HttpRequest request = transport.buildPostRequest();
-//        request.setUrl(GOOGL_URL);
-//        GenericData data = new GenericData();
-//        data.put("longUrl", "http://www.google.com/");
-//        JsonHttpContent content = new JsonHttpContent();
-//        content.data = data;
-//        request.content = content;
-//
-//        HttpResponse response = request.execute();
-//        String result = response.parseAs(String.class);
-//
-//        System.out.println(result);
-//
-//        UrlshortenerRequestInitializer urlshortenerRequestInitializer = new UrlshortenerRequestInitializer("AIzaSyDB9_kBpncpF5xCI2188N_UGfgWCfVk1bY");
-////        Urlshortener urlshortener =  new Urlshortener(urlshortenerRequestInitializer);
-////
-////        new Urlshortener.Builder().setUrlshortenerRequestInitializer(urlshortenerRequestInitializer);
-////        GoogleAccountCredential.
-//        AppIdentityCredential credential =
-//                new AppIdentityCredential(Arrays.asList(UrlshortenerScopes.URLSHORTENER));
-        Map<String, String> key = readKey();
-        String clientId = key.get("client_id");
-        String clientSecret = key.get("");
-        Urlshortener shortener = new Urlshortener.Builder(new ApacheHttpTransport(), new JacksonFactory(), urlshortenerRequestInitializer)
+    private Urlshortener getGoogleUrlShortenerService() {
+        HttpTransport httpTransport = new NetHttpTransport();
+        JsonFactory jsonFactory = new JacksonFactory();
+        GoogleClientRequestInitializer keyInitializer = new CommonGoogleClientRequestInitializer(googleKeyApi);
+        Urlshortener service = new Urlshortener.Builder(httpTransport, jsonFactory, null)
+                .setGoogleClientRequestInitializer(keyInitializer)
+                .setApplicationName(googleAppName)
                 .build();
-//        UrlHistory history = shortener.URL().list().execute();
-        return null;
+        return service;
     }
 
-    public static Map<String, String> readKey() {
-        String json = IOUtil.loadTextFileInClassPath("/google-api/AXA-kalthailand-api-8f4bf9245bd6.json");
-        Map map = ObjectMapperUtil.toObject(new ObjectMapper(), json, Hashtable.class);
-        return map;
+    public String getShortUrl(String originalUrl) {
+        Urlshortener shortener = getGoogleUrlShortenerService();
+        Url toInsert = new Url().setLongUrl(originalUrl);
+        try {
+            Url shortUrl = shortener.url().insert(toInsert).execute();
+            String shortUrlString = shortUrl.getId();
+            return shortUrlString;
+        } catch (IOException e) {
+            //We don't really need to create a specific error code for this kind of error because it doesn't need to return to client.
+            throw new UnexpectedException("Google API error: " + e.getMessage(), e);
+        }
     }
 
-    public static class UrlShortenerRequest {
-        private String longUrl;
-
-        public String getLongUrl() {
-            return longUrl;
+    /**
+     * This method will never throw Exception, if there's something wrong, it will return original Url.
+     *
+     * @param originalUrl
+     * @return
+     */
+    public String getShortUrlIfPossible(String originalUrl) {
+        if (StringUtils.isBlank(originalUrl)) {
+            return originalUrl;
         }
-
-        public void setLongUrl(String longUrl) {
-            this.longUrl = longUrl;
+        String shortUrl;
+        try {
+            shortUrl = getShortUrl(originalUrl);
+            LOGGER.trace("Shorten Url: long: '{}', shortUrl: '{}'", originalUrl, shortUrl);
+        } catch (Exception ex) {
+            shortUrl = originalUrl;
+            LOGGER.error("Cannot shorten Url '" + originalUrl + "': " + ex.getMessage(), ex);
         }
+        return shortUrl;
     }
 }
