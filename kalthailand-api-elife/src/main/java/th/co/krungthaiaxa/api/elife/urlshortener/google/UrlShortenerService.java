@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.common.exeption.UnexpectedException;
+import th.co.krungthaiaxa.api.common.model.cache.PermanentMemoryCache;
 import th.co.krungthaiaxa.api.common.utils.ProfileHelper;
 
 import javax.annotation.PostConstruct;
@@ -35,6 +36,8 @@ public class UrlShortenerService {
 
     @Value("${google.api.key.default}")
     private String googleKeyApi;
+
+    private PermanentMemoryCache<String, String> shortenUrlCache = new PermanentMemoryCache<>();
 
     @PostConstruct
     public void init() {
@@ -72,17 +75,22 @@ public class UrlShortenerService {
      * @return
      */
     public String getShortUrlIfPossible(String originalUrl) {
-        if (StringUtils.isBlank(originalUrl)) {
-            return originalUrl;
-        }
         String shortUrl;
-        try {
-            shortUrl = getShortUrl(originalUrl);
-            LOGGER.trace("Shorten Url: long: '{}', shortUrl: '{}'", originalUrl, shortUrl);
-        } catch (Exception ex) {
+        if (StringUtils.isBlank(originalUrl)) {
             shortUrl = originalUrl;
-            LOGGER.error("Cannot shorten Url '" + originalUrl + "': " + ex.getMessage(), ex);
+        } else {
+            try {
+                shortUrl = shortenUrlCache.get(originalUrl);
+                if (shortUrl == null) {
+                    shortUrl = getShortUrl(originalUrl);
+                }
+                LOGGER.trace("Shorten Url: long: '{}', shortUrl: '{}'", originalUrl, shortUrl);
+            } catch (Exception ex) {
+                shortUrl = originalUrl;
+                LOGGER.error("Cannot shorten Url '" + originalUrl + "': " + ex.getMessage(), ex);
+            }
         }
+        shortenUrlCache.put(originalUrl, shortUrl);
         return shortUrl;
     }
 }

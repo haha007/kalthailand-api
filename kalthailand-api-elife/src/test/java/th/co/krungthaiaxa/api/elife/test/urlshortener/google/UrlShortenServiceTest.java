@@ -29,7 +29,7 @@ public class UrlShortenServiceTest {
 
     @Test
     public void test_shorten_line_url() {
-        String longUrl = "https://line.me/R/ch/1469556370/elife/th/retrypayment?paymentId=123423-a2322&policyId=2397rqwe-23412";
+        String longUrl = "https://line.me/R/ch/1469556370/elife/th/retrypayment?paymentId=123423-a2322&policyId=abc-xyz" + System.currentTimeMillis();
         String shortUrl = urlShortenerService.getShortUrlIfPossible(longUrl);
         LOGGER.info(shortUrl);
         Assert.assertTrue(StringUtils.isNotBlank(shortUrl));
