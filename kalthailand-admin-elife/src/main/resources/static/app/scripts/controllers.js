@@ -663,7 +663,7 @@
                         function (successResponse) {
                             $scope.isSavingMainInsured = false;
                             $scope.policyDetail = successResponse.data;
-                            $scope.policyDetail.payments.sortByField('dueDate', 1);
+                            $scope.policyDetail.payments.sortByField('dueDate', -1);
                             $scope.showSuccessMessage("Person info of main insured is updated successfully!");
                         },
                         function (errorResponse) {
@@ -863,7 +863,7 @@
                         $scope.linePayCaptureMode = 'FAKE_WITH_SUCCESS';
                         $scope.showSuccessMessage(null);
                         $scope.policyDetail = successResponse;
-                        $scope.policyDetail.payments.sortByField('dueDate', 1);
+                        $scope.policyDetail.payments.sortByField('dueDate', -1);
                         var productId = successResponse.commonData.productId;
                         var sumInsuredAmount;
                         if (productId == "10EC") {
