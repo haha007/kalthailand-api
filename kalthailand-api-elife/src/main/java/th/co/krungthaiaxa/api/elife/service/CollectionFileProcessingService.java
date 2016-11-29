@@ -404,7 +404,8 @@ public class CollectionFileProcessingService {
                 throw new UnexpectedException("Not found payment " + paymentId);
             }
             currencyCode = payment.getAmount().getCurrencyCode();
-            String orderId = "R-" + payment.getPolicyId() + "-" + (new SimpleDateFormat("yyyyMMddhhmmssSSS").format(new Date()));
+            String paymentIdString = payment.getPaymentId() != null ? payment.getPaymentId() : "";
+            String orderId = "R-" + payment.getPolicyId() + "-" + (new SimpleDateFormat("yyyyMMddhhmmssSSS").format(new Date())) + "_" + paymentIdString;
 
             String lastRegistrationKey = findLastRegistrationKey(payment.getPolicyId());
             if (StringUtils.isBlank(lastRegistrationKey)) {
