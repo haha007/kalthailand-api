@@ -9,6 +9,8 @@ import th.co.krungthaiaxa.api.common.utils.NumberUtil;
 import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
 import th.co.krungthaiaxa.api.elife.service.ElifeEmailService;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,7 +23,10 @@ public class SystemHealthMonitoringJob {
     private final SystemHealthService systemHealthService;
     private final SystemHealthSettingService systemHealthSettingService;
     private final ElifeEmailService emailService;
+    private Instant previousDangerTime = null;
+    private long WARNING_WHEN_DANGER_IN_MILLS = 300;//will send warning if in danger in 5 minutes.
 
+    private long millsInDangerToWarning = WARNING_WHEN_DANGER_IN_MILLS;//5 mins
     private static final String EMAIL_HEALTH_WARNING_PATH = "/system/health/email-health-warning.html";
     private static final String EMAIL_HEALTH_WARNING_TEMPLATE = IOUtil.loadTextFileInClassPath(EMAIL_HEALTH_WARNING_PATH);
 
@@ -36,13 +41,34 @@ public class SystemHealthMonitoringJob {
     public void monitorHealth() {
         SystemHealthSetting systemHealthSetting = systemHealthSettingService.loadSetting();
         SystemHealth systemHealth = systemHealthService.loadHealthStatus();
-        if (shouldSendAlert(systemHealth, systemHealthSetting)) {
+        if (shouldSendWarning(systemHealth, systemHealthSetting)) {
             LogUtil.logStarting("[SYSTEM.HEALTH] [WARNING]" + ObjectMapperUtil.toStringMultiLine(systemHealth));
             sendWarningEmail(systemHealth, systemHealthSetting);
         }
     }
 
-    private boolean shouldSendAlert(SystemHealth systemHealth, SystemHealthSetting systemHealthSetting) {
+    private synchronized boolean shouldSendWarning(SystemHealth systemHealth, SystemHealthSetting systemHealthSetting) {
+        Instant now = Instant.now();
+        Duration duration = Duration.between(previousDangerTime, now);
+        if (isDangerHealth(systemHealth, systemHealthSetting)) {
+            if (previousDangerTime == null) {
+                previousDangerTime = now;
+            }
+            if (duration.toMillis() >= millsInDangerToWarning) {
+                millsInDangerToWarning *= 2;
+                previousDangerTime = now;
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            millsInDangerToWarning = WARNING_WHEN_DANGER_IN_MILLS;
+            previousDangerTime = null;
+            return false;
+        }
+    }
+
+    private boolean isDangerHealth(SystemHealth systemHealth, SystemHealthSetting systemHealthSetting) {
         boolean isAlertUsedMemory = systemHealth.getJvmUsedMemoryPercentage() > systemHealthSetting.getUsedMemoryPercentageWarning();
         if (isAlertUsedMemory) {
             return true;
