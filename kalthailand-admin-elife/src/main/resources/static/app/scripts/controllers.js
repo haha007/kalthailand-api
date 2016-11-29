@@ -649,9 +649,24 @@
                 if (!hasValue(policy)) {
                     return false;
                 }
-                return policy.premiumsData.financialScheduler.atpMode == $scope.AtpMode.AUTOPAY;
+                return policy.premiumsData.financialScheduler.atpMo;
+                de == $scope.AtpMode.AUTOPAY;
             };
-
+            $scope.clickShowAllPayments = function () {
+                if ($scope.showAllPayments == "checked") {
+                    $scope.showAllPayments = null;
+                } else {
+                    $scope.showAllPayments = "checked";
+                }
+            };
+            $scope.sortPayments = function () {
+                if (hasValue($scope.paymentsOrder) && $scope.paymentsOrder == 1) {
+                    $scope.paymentsOrder = -1;
+                } else {
+                    $scope.paymentsOrder = 1;
+                }
+                $scope.policyDetail.payments.sortByField('dueDate', $scope.paymentsOrder);
+            };
             $scope.saveMainInsuredPerson = function () {
                 var mainInsuredPerson = $scope.policyDetail.insureds[0].person;
                 if (!validateInsuredPerson(mainInsuredPerson)) {

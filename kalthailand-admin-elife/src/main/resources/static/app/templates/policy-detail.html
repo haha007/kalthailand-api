@@ -280,11 +280,6 @@
                                     <i class="green fa fa-file-pdf-o"></i>DA Form
                                 </a>
                             </div>
-                            <div class="fa-hover col-md-3 col-sm-4 col-xs-12" ng-show="policyDetail.status == 'VALIDATED'">
-                                <a ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/ERECEIPT_PDF/download">
-                                    <i class="green fa fa-file-pdf-o"></i>eReceipt
-                                </a>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -457,6 +452,18 @@
                     <h2>Payment information
                     </h2>
 
+                    <form class="form-horizontal form-label-left">
+                        <div class="form-group">
+                            <div class="checkbox">
+                                <label class="">
+                                    <div class="icheckbox_flat-green" ng-class="showAllPayments" style="position: relative;"><input type="checkbox" class="flat" checked="{{showAllPayments}}" style="position: absolute; opacity: 0;" ng-click="clickShowAllPayments()">
+                                        <ins class="iCheck-helper"></ins>
+                                    </div>
+                                    Show 'not processed' payments
+                                </label>
+                            </div>
+                        </div>
+                    </form>
                     <div class="clearfix"></div>
                 </div>
                 <div class="x_content">
@@ -467,16 +474,19 @@
                                 <td>Payment</td>
                                 <td>Amount</td>
                                 <td>Status</td>
-                                <td>Due Date</td>
+                                <td style="min-width: 100px">
+                                    Due Date
+                                    <a ng-click="sortPayments()"><i class="fa fa-sort"></i></a>
+                                </td>
                                 <td>Effective</td>
+                                <td>eReceipt</td>
+                                <td>Retry</td>
                                 <td>Order</td>
                                 <td>Transaction</td>
-                                <td>Retry</td>
-                                <td>eReceipt</td>
                             </tr>
                             </thead>
                             <tbody>
-                            <tr ng-repeat="payment in policyDetail.payments" ng-show="payment.status != 'NOT_PROCESSED'">
+                            <tr ng-repeat="payment in policyDetail.payments" ng-show="showAllPayments == 'checked' || payment.status != 'NOT_PROCESSED'">
                                 <td>
                                     <span>{{ payment.paymentId}}</span>
                                 </td>
@@ -493,19 +503,19 @@
                                     <span>{{ payment.effectiveDate | date:'yyyy-MM-dd hh:mm:ss'}}</span>
                                 </td>
                                 <td>
-                                    <span>{{ payment.orderId}}</span>
-                                </td>
-                                <td>
-                                    <span> {{ payment.transactionId}}</span>
+                                    <a ng-show="payment.receiptPdfDocument.id" ng-href="{{apiELifeUrl}}/documents/{{payment.receiptPdfDocument.id}}/download">
+                                        <span> <i class="green fa fa-file-pdf-o"></i> {{payment.receiptNumber.fullNumberForDisplay}}</span>
+                                    </a>
+                                    <span ng-hide="payment.receiptPdfDocument.id">{{payment.receiptNumber.fullNumberForDisplay}}</span>
                                 </td>
                                 <td>
                                     <span> {{ payment.retried ? 'Yes' : ''}}</span>
                                 </td>
                                 <td>
-                                    <a ng-show="payment.receiptPdfDocument.id" ng-href="{{apiELifeUrl}}/documents/{{payment.receiptPdfDocument.id}}/download">
-                                        <span> <i class="green fa fa-file-pdf-o"></i> {{payment.receiptNumber.fullNumberForDisplay}}</span>
-                                    </a>
-                                    <span ng-hide="payment.receiptPdfDocument.id">{{payment.receiptNumber.fullNumberForDisplay}}</span>
+                                    <span>{{ payment.orderId}}</span>
+                                </td>
+                                <td>
+                                    <span> {{ payment.transactionId}}</span>
                                 </td>
                             </tr>
                             </tbody>
