@@ -499,7 +499,7 @@
                                     <span> {{ payment.transactionId}}</span>
                                 </td>
                                 <td>
-                                    <span> {{ payment.retried ? 'Yes' : 'No'}}</span>
+                                    <span> {{ payment.retried ? 'Yes' : ''}}</span>
                                 </td>
                                 <td>
                                     <a ng-show="payment.receiptPdfDocument.id" ng-href="{{apiELifeUrl}}/documents/{{payment.receiptPdfDocument.id}}/download">

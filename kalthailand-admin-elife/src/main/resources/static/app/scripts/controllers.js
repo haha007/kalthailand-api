@@ -663,7 +663,6 @@
                         function (successResponse) {
                             $scope.isSavingMainInsured = false;
                             $scope.policyDetail = successResponse.data;
-                            $scope.policyDetail.payments.sortByField('dueDate', -1);
                             $scope.showSuccessMessage("Person info of main insured is updated successfully!");
                         },
                         function (errorResponse) {
@@ -811,26 +810,26 @@
                     method: 'PUT',
                     data: $.param({agentName: $scope.agentName, agentCode: $scope.agentCode, linePayCaptureMode: $scope.linePayCaptureMode}),
                     headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-                })
-                    .then(
-                        function (successResponse) {
-                            $scope.successMessage = "Policy [" + successResponse.data.policyId + "] has been validated";
-                            $scope.errorMessage = null;
-                            $scope.policyDetail = null;
-                            $scope.annualPremium = null;
-                            $scope.sumInsured = null;
-                            $scope.isValidating = null;
-                            $(window).scrollTop(0);
-                        },
-                        function (errorResponse) {
-                            var msg = formatErrorMessage(errorResponse.data);
-                            $scope.showErrorMessage(msg);
-                            $scope.policyDetail = null;
-                            $scope.annualPremium = null;
-                            $scope.sumInsured = null;
-                            $scope.isValidating = null;
-                            $(window).scrollTop(0);
-                        });
+                }).then(
+                    function (successResponse) {
+                        $scope.successMessage = "Policy [" + successResponse.data.policyId + "] has been validated";
+                        $scope.errorMessage = null;
+                        $scope.policyDetail = null;
+                        $scope.annualPremium = null;
+                        $scope.sumInsured = null;
+                        $scope.isValidating = null;
+                        $(window).scrollTop(0);
+                    },
+                    function (errorResponse) {
+                        var msg = formatErrorMessage(errorResponse.data);
+                        $scope.showErrorMessage(msg);
+                        $scope.policyDetail = null;
+                        $scope.annualPremium = null;
+                        $scope.sumInsured = null;
+                        $scope.isValidating = null;
+                        $(window).scrollTop(0);
+                    }
+                );
             };
 
             $scope.search = function (event) {
@@ -863,7 +862,6 @@
                         $scope.linePayCaptureMode = 'FAKE_WITH_SUCCESS';
                         $scope.showSuccessMessage(null);
                         $scope.policyDetail = successResponse;
-                        $scope.policyDetail.payments.sortByField('dueDate', -1);
                         var productId = successResponse.commonData.productId;
                         var sumInsuredAmount;
                         if (productId == "10EC") {
