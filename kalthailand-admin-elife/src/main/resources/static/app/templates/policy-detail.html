@@ -474,9 +474,8 @@
                                 <td>Payment</td>
                                 <td>Amount</td>
                                 <td>Status</td>
-                                <td style="min-width: 100px">
-                                    Due Date
-                                    <a ng-click="sortPayments()"><i class="fa fa-sort"></i></a>
+                                <td style="min-width: 75px">
+                                    Due Date <i ng-click="sortPayments()" class="fa fa-sort"></i>
                                 </td>
                                 <td>Effective</td>
                                 <td>eReceipt</td>
@@ -486,7 +485,7 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr ng-repeat="payment in policyDetail.payments" ng-show="showAllPayments == 'checked' || payment.status != 'NOT_PROCESSED'">
+                            <tr ng-repeat="payment in policyDetail.payments" title="RegKey: '{{payment.registrationKey}}'" ng-show="showAllPayments == 'checked' || payment.status != 'NOT_PROCESSED'">
                                 <td>
                                     <span>{{ payment.paymentId}}</span>
                                 </td>
