@@ -559,7 +559,7 @@ public class PolicyResource {
             HttpServletResponse httpServletResponse) {
         policyPremiumNoticeRequest.setPolicyNumber(policyNumber);
         byte[] pdf = policyPremiumNotificationService.exportPdf(policyPremiumNoticeRequest);
-        DownloadUtil.writeBytesToResponse(httpServletResponse, pdf, "premium-notice.pdf", DownloadUtil.DownloadType.PDF);
+        DownloadUtil.writeBytesToResponseWithFullFileName(httpServletResponse, pdf, "premium-notice.pdf", DownloadUtil.DownloadType.PDF);
     }
 
     @ApiOperation(value = "Get policy detail from Core DB (CDB) system.", notes = "This method doesn't get policy detail from eLife DB, it will get detail from CDB.", response = PolicyCDB.class)

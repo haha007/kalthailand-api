@@ -18,62 +18,57 @@ public class DownloadUtil {
     public static final String CONTENT_TYPE_XLSX = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
     private final static Logger LOGGER = LoggerFactory.getLogger(DownloadUtil.class);
 
-    public static void writeBytesToResponse(HttpServletResponse response, byte[] content, String fileName, DownloadType downloadType) {
-        FileType fileType = getContentType(downloadType);
-        writeBytesToResponse(response, content, fileName, fileType.getMimeType());
+    public static void writeBytesToResponseWithFullFileName(HttpServletResponse response, byte[] content, String fullFileName, DownloadType downloadType) {
+        String mimeType = getContentType(downloadType);
+        writeBytesToResponseWithFullFileName(response, content, fullFileName, mimeType);
     }
 
-    private static FileType getContentType(DownloadType downloadType) {
-        FileType contentType;
+    public static String getContentType(DownloadType downloadType) {
+        String contentType;
         if (downloadType == DownloadType.XLSX) {
-            contentType = new FileType(".xlsx", CONTENT_TYPE_XLSX);
+            contentType = CONTENT_TYPE_XLSX;
         } else if (downloadType == DownloadType.PDF) {
-            contentType = new FileType(".pdf", CONTENT_TYPE_PDF);
+            contentType = CONTENT_TYPE_PDF;
         } else {
             throw new UnexpectedException("Not support this DownloadType yet: " + downloadType);
         }
         return contentType;
     }
 
-    private static class FileType {
-        private String fileExtension;
-        private String mimeType;
-
-        private FileType(String fileExtension, String mimeType) {
-            this.fileExtension = fileExtension;
-            this.mimeType = mimeType;
-        }
-
-        public String getFileExtension() {
-            return fileExtension;
-        }
-
-        public void setFileExtension(String fileExtension) {
-            this.fileExtension = fileExtension;
-        }
-
-        public String getMimeType() {
-            return mimeType;
-        }
-
-        public void setMimeType(String mimeType) {
-            this.mimeType = mimeType;
-        }
-    }
-
     public static void writeExcelBytesToResponseWithDateRollFileName(HttpServletResponse response, byte[] content, String fileNamePrefix) {
         String dateTime = DateTimeUtil.formatLocalDateTime(LocalDateTime.now(), "yyyyMMdd_HHmmss");
         String fileName = fileNamePrefix + "_" + dateTime + ".xlsx";
-        writeBytesToResponse(response, content, fileName, CONTENT_TYPE_XLSX);
+        writeBytesToResponseWithFullFileName(response, content, fileName, CONTENT_TYPE_XLSX);
     }
 
-    public static void writeBytesToResponse(HttpServletResponse response, byte[] content, String fileName, String contentType) {
-        response.setContentType(contentType);
+    /**
+     * @param response
+     * @param content
+     * @param fileName doesn't have extension. The extension will be decided by mimeType.
+     * @param mimeType
+     */
+    public static void writeBytesToResponse(HttpServletResponse response, byte[] content, String fileName, String mimeType) {
+        String fullFileName = fileName;
+        String fileExtension = FileNameUtil.getFileExtensionFromMimeType(mimeType);
+        if (fileExtension != null) {
+            fullFileName += "." + fileExtension;
+        }
+        writeBytesToResponseWithFullFileName(response, content, fullFileName, mimeType);
+    }
+
+    /**
+     * @param response
+     * @param content
+     * @param fullFileName file name include extension.
+     * @param mimeType
+     */
+    public static void writeBytesToResponseWithFullFileName(HttpServletResponse response, byte[] content, String fullFileName, String mimeType) {
+        response.setContentType(mimeType);
         response.setContentLength(content.length);
 
         // set headers for the response
         String headerKey = "Content-Disposition";
-        String headerValue = String.format("attachment; filename=\"%s\"", fileName);
+        String headerValue = String.format("attachment; filename=\"%s\"", fullFileName);
         response.setHeader(headerKey, headerValue);
 
         try {
