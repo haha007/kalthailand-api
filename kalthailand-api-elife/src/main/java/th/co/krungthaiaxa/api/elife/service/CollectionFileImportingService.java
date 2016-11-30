@@ -12,13 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.common.exeption.BadArgumentException;
 import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
-import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
 import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
 import th.co.krungthaiaxa.api.elife.data.CollectionFile;
 import th.co.krungthaiaxa.api.elife.data.CollectionFileLine;
-import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.Policy;
-import th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 import th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus;
 import th.co.krungthaiaxa.api.elife.products.utils.ProductUtils;
@@ -29,14 +26,12 @@ import th.co.krungthaiaxa.api.elife.utils.ExcelUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.apache.commons.codec.digest.DigestUtils.sha256Hex;
 import static org.springframework.util.Assert.isTrue;
@@ -153,44 +148,7 @@ public class CollectionFileImportingService {
         Policy policy = policyService.validateExistPolicy(policyId);
         isTrue(policy.getStatus().equals(PolicyStatus.VALIDATED), "The policy [" + collectionFileLine.getPolicyNumber() + "] has not been validated and payments can't go through without validation");
         validatePaymentModeWithAtpEnable(collectionFileLine, policy);
-
-        // 28 is the maximum nb of days between a scheduled payment and collection file first cycle start date
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime todayMinus28Days = now.minusDays(28);
-        LocalDateTime tomorrow = now.plusDays(1);
-
-        // There should be a scheduled payment for which due date is within the last 28 days
-        Optional<Payment> notProcessedPaymentInThisMonth = paymentRepository.findOneByPolicyIdAndDueDateRangeAndInStatus(policyId, todayMinus28Days, tomorrow, PaymentStatus.NOT_PROCESSED);
-        if (notProcessedPaymentInThisMonth.isPresent()) {
-            collectionFileLine.setPaymentId(notProcessedPaymentInThisMonth.get().getPaymentId());
-            LOGGER.info("Existing payment id [" + notProcessedPaymentInThisMonth.get().getPaymentId() + "] has been added for the " +
-                    "collection file line about policy [" + policy.getPolicyId() + "] ");
-            return;
-        }
-
-        // If payment isn't found, Collection file "always win", and the payment received in the collection has to go through
-        // But for the payment to go through, we need to find the registration key that was used previously
-        String lastRegistrationKey = paymentService.findLastRegistrationKey(policyId);
-
-        //Create the predefined payment. The user has not really payed yet. That's why it doesn't have effective date.
-        Payment newPayment = new Payment(policy.getPolicyId(),
-                collectionFileLine.getPremiumAmount(),
-                policy.getCommonData().getProductCurrency(),
-                DateTimeUtil.nowLocalDateTimeInThaiZoneId());
-        if (StringUtils.isBlank(lastRegistrationKey)) {
-            LOGGER.info("Unable to find a schedule payment for policy [" + policy.getPolicyId() + "] and a " +
-                    "previously used registration key, will create one payment from scratch, but payment will fail " +
-                    "since it has no registration key");
-        } else {
-            newPayment.setRegistrationKey(lastRegistrationKey);
-            LOGGER.info("Unable to find a schedule payment for policy [" + policy.getPolicyId() + "], will " +
-                    "create one from scratch");
-        }
-        paymentRepository.save(newPayment);
-        policy.addPayment(newPayment);
-        policy.setLastUpdateDateTime(Instant.now());
-        policyRepository.save(policy);
-        collectionFileLine.setPaymentId(newPayment.getPaymentId());
+//        insertPaymentIntoCollectionFileLine(collectionFileLine, policy);
         LOGGER.info("Import collectionFileLine [finished]: policyNumber: {}, paymentId: {}", collectionFileLine.getPolicyNumber(), collectionFileLine.getPaymentId());
     }
 

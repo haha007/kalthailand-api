@@ -12,6 +12,7 @@ import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.products.utils.ProductUtils;
+import th.co.krungthaiaxa.api.elife.utils.AmountUtil;
 import th.co.krungthaiaxa.api.elife.utils.PersonUtil;
 
 /**
@@ -56,6 +57,7 @@ public class PaymentFailLineNotificationService {
         String paymentLink = paymentRetryLinkService.createPaymentLink(policy.getPolicyId(), payment);
         lineNotificationContent = lineNotificationContent
                 .replaceAll("%INSURED_FULL_NAME%", customerName)
+                .replaceAll("%PREMIUM_AMOUNT%", AmountUtil.formatCurrency(ProductUtils.getPremiumAmount(policy)))
                 .replaceAll("%RETRY_PAYMENT_URL%", paymentLink);
         return lineNotificationContent;
     }

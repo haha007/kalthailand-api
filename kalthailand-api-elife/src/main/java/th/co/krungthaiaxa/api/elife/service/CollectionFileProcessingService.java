@@ -25,6 +25,7 @@ import th.co.krungthaiaxa.api.elife.ereceipt.EreceiptService;
 import th.co.krungthaiaxa.api.elife.line.LineService;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.Policy;
+import th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayRecurringResponse;
 import th.co.krungthaiaxa.api.elife.products.utils.ProductUtils;
@@ -41,6 +42,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.time.format.DateTimeFormatter.ofPattern;
@@ -169,24 +171,14 @@ public class CollectionFileProcessingService {
         }
     }
 
-//
-//    private String findLastRegistrationKey(String policyNumber) {
-//        Optional<Payment> paymentOptional = paymentService.findLastestPaymentByPolicyNumberAndRegKeyNotNull(policyNumber);
-//        if (paymentOptional.isPresent()) {
-//            return paymentOptional.get().getRegistrationKey();
-//        } else {
-//            return null;
-//        }
-//    }
-
     //TODO when processing successful, it only generate eReceipt number, not eReceipt Pdf, and also not send eReceipt Pdf to TMC?
     private void processCollectionFileLine(DeductionFile deductionFile, CollectionFileLine collectionFileLine) {
         boolean newBusiness = NEW_BUSINESS;
+        //TODO the code here is a little bit mess, we need to refactor in the future.
         LOGGER.info("Processing collectionFileLine [start]: policyNumber: {}", collectionFileLine.getPolicyNumber());
-
-        String paymentId = collectionFileLine.getPaymentId();
         String policyId = collectionFileLine.getPolicyNumber();
-        Double premiumAmount = collectionFileLine.getPremiumAmount();
+        Double paymentAmountFromCollection = collectionFileLine.getPremiumAmount();
+
         Policy policy = null;
         Payment payment = null;
         String currencyCode = null;
@@ -194,25 +186,19 @@ public class CollectionFileProcessingService {
         String resultMessage = "CollectionFileLine is not processed completely yet: " + ObjectMapperUtil.toStringMultiLine(collectionFileLine);
         String resultCode = RESPONSE_CODE_ERROR_INTERNAL_LINEPAY;
         try {
-            policy = policyRepository.findByPolicyId(policyId);
-            if (policy == null) {
-                throw new UnexpectedException("Not found policy " + policyId);
-            }
+            policy = policyService.validateExistPolicy(policyId);
             PeriodicityCode periodicityCode = policy.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode();
             paymentModeString = CollectionFileService.PAYMENT_MODE.apply(periodicityCode);
             String productId = policy.getCommonData().getProductId();
+            payment = findPaymentIntoCollectionFileLine(collectionFileLine, policy);
 
-            payment = paymentRepository.findOne(paymentId);
-            if (payment == null) {
-                throw new UnexpectedException("Not found payment " + paymentId);
-            }
             currencyCode = payment.getAmount().getCurrencyCode();
             String paymentIdStringSuffix = StringUtils.isNoneBlank(payment.getPaymentId()) ? "_" + payment.getPaymentId() : "";
             String orderId = "R-" + payment.getPolicyId() + "-" + (new SimpleDateFormat("yyyyMMddhhmmssSSS").format(new Date())) + paymentIdStringSuffix;
 
             String lastRegistrationKey = paymentService.findLastRegistrationKey(payment.getPolicyId());
             if (StringUtils.isBlank(lastRegistrationKey)) {
-                throw new UnexpectedException("Not found registrationKey for policy " + policyId + ", paymentId " + paymentId);
+                throw new UnexpectedException("Not found registrationKey for policy " + policyId + ", paymentId " + payment.getPaymentId());
             }
             LinePayRecurringResponse linePayResponse;
             if (mockFailPayment(policy)) {
@@ -220,16 +206,13 @@ public class CollectionFileProcessingService {
                 linePayResponse.setReturnCode(LineService.RESPONSE_CODE_ERROR_NO_REGKEY);
                 linePayResponse.setReturnMessage("MockFailTest");
             } else {
-                linePayResponse = lineService.preApproved(lastRegistrationKey, premiumAmount, currencyCode, productId, orderId);
+                linePayResponse = lineService.preApproved(lastRegistrationKey, paymentAmountFromCollection, currencyCode, productId, orderId);
             }
             resultCode = linePayResponse.getReturnCode();
             resultMessage = linePayResponse.getReturnMessage();
+            //The amount from collection may different from amount of policy's premium amount.
             //We should allow to process any money because user may want to pay more or less.
-//            if (Math.abs(premiumAmount - payment.getAmount().getValue()) >= 1) {
-//                String msg = String.format("The money in collection file %s is not match with the predefined amount %s", premiumAmount, payment.getAmount());
-//                throw new UnexpectedException(msg);
-//            }
-            payment.getAmount().setValue(premiumAmount);
+            payment.getAmount().setValue(paymentAmountFromCollection);
             payment.setOrderId(orderId);
             if (LineService.RESPONSE_CODE_SUCCESS.equals(resultCode)) {
                 //Only generate new ereceiptNumber when payment success.
@@ -244,7 +227,7 @@ public class CollectionFileProcessingService {
             resultCode = RESPONSE_CODE_ERROR_INTERNAL_LINEPAY;
             resultMessage = ex.getMessage();
             if (payment != null) {
-                paymentService.updatePaymentWithErrorStatus(payment, premiumAmount, currencyCode, LINE, resultCode, resultMessage);
+                paymentService.updatePaymentWithErrorStatus(payment, paymentAmountFromCollection, currencyCode, LINE, resultCode, resultMessage);
             }
         } finally {
             DeductionFileLine deductionFileLine = initDeductionFileLine(collectionFileLine, paymentModeString, resultCode, resultMessage);
@@ -258,6 +241,48 @@ public class CollectionFileProcessingService {
             }
         }
         LOGGER.info("Process collectionFileLine [finished]: policyNumber: {}, paymentId: {}", collectionFileLine.getPolicyNumber(), collectionFileLine.getPaymentId());
+    }
+
+    private Payment findPaymentIntoCollectionFileLine(CollectionFileLine collectionFileLine, Policy policy) {
+        String policyId = policy.getPolicyId();
+        // 28 is the maximum nb of days between a scheduled payment and collection file first cycle start date
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime todayMinus28Days = now.minusDays(28);
+        LocalDateTime tomorrow = now.plusDays(1);
+
+        // There should be a scheduled payment for which due date is within the last 28 days
+        Optional<Payment> notProcessedPaymentInThisMonth = paymentRepository.findOneByPolicyIdAndDueDateRangeAndInStatus(policyId, todayMinus28Days, tomorrow, PaymentStatus.NOT_PROCESSED);
+        if (notProcessedPaymentInThisMonth.isPresent()) {
+            collectionFileLine.setPaymentId(notProcessedPaymentInThisMonth.get().getPaymentId());
+            LOGGER.info("Existing payment id [" + notProcessedPaymentInThisMonth.get().getPaymentId() + "] has been added for the " +
+                    "collection file line about policy [" + policy.getPolicyId() + "] ");
+            return notProcessedPaymentInThisMonth.get();
+        }
+
+        // If payment isn't found, Collection file "always win", and the payment received in the collection has to go through
+        // But for the payment to go through, we need to find the registration key that was used previously
+        String lastRegistrationKey = paymentService.findLastRegistrationKey(policyId);
+
+        //Create the predefined payment. The user has not really payed yet. That's why it doesn't have effective date.
+        Payment newPayment = new Payment(policy.getPolicyId(),
+                collectionFileLine.getPremiumAmount(),
+                policy.getCommonData().getProductCurrency(),
+                DateTimeUtil.nowLocalDateTimeInThaiZoneId());
+        if (StringUtils.isBlank(lastRegistrationKey)) {
+            LOGGER.info("Unable to find a schedule payment for policy [" + policy.getPolicyId() + "] and a " +
+                    "previously used registration key, will create one payment from scratch, but payment will fail " +
+                    "since it has no registration key");
+        } else {
+            newPayment.setRegistrationKey(lastRegistrationKey);
+            LOGGER.info("Unable to find a schedule payment for policy [" + policy.getPolicyId() + "], will " +
+                    "create one from scratch");
+        }
+        paymentRepository.save(newPayment);
+        policy.addPayment(newPayment);
+        policy.setLastUpdateDateTime(Instant.now());
+        policyRepository.save(policy);
+        collectionFileLine.setPaymentId(newPayment.getPaymentId());
+        return newPayment;
     }
 
     private boolean mockFailPayment(Policy policy) {

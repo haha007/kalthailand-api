@@ -2,6 +2,7 @@ package th.co.krungthaiaxa.api.elife.utils;
 
 import org.apache.commons.lang3.StringUtils;
 import th.co.krungthaiaxa.api.common.exeption.AmountException;
+import th.co.krungthaiaxa.api.common.utils.NumberUtil;
 import th.co.krungthaiaxa.api.elife.model.Amount;
 
 /**
@@ -27,5 +28,13 @@ public class AmountUtil {
         }
         double max = Math.max(amountA.getValue(), amountB.getValue());
         return new Amount(max, amountA.getCurrencyCode());
+    }
+
+    public static String formatCurrency(Amount amount) {
+        String result = NumberUtil.formatCurrencyValue(amount.getValue());
+        if (StringUtils.isNotBlank(amount.getCurrencyCode())) {
+            result += " " + amount.getCurrencyCode();
+        }
+        return result;
     }
 }
