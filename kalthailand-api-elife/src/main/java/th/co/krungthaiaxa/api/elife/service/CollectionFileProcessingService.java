@@ -11,9 +11,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.common.action.ActionWithResult;
-import th.co.krungthaiaxa.api.common.exeption.BadArgumentException;
 import th.co.krungthaiaxa.api.common.exeption.UnexpectedException;
-import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
 import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
 import th.co.krungthaiaxa.api.common.utils.LogUtil;
 import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
@@ -42,11 +40,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.time.format.DateTimeFormatter.ofPattern;
@@ -105,7 +99,6 @@ public class CollectionFileProcessingService {
         this.paymentRetryLineNotificationService = paymentRetryLineNotificationService;
         this.profileHelper = profileHelper;
     }
-
 
     public CollectionFile findOne(String collectionFileId) {
         return collectionFileRepository.findOne(collectionFileId);
@@ -176,44 +169,15 @@ public class CollectionFileProcessingService {
         }
     }
 
-    /**
-     * @param collectionFile
-     * @return key: policyNumber, value: counts of duplicated lines
-     */
-    private Map<String, Integer> validateNotDuplicatePolicies(CollectionFile collectionFile) {
-        Map<String, Integer> duplicatedLines = new HashMap<>();
-        CollectionFileLine[] lines = collectionFile.getLines().toArray(new CollectionFileLine[0]);//Convert to Array to improve performance.
-        for (int i = 0; i < lines.length; i++) {
-            CollectionFileLine iline = lines[i];
-            String ipolicyNumber = iline.getPolicyNumber();
-            if (StringUtils.isNotBlank(ipolicyNumber)) {
-                for (int j = i + 1; j < lines.length; j++) {
-                    CollectionFileLine jline = lines[j];
-                    if (ipolicyNumber.equals(jline.getPolicyNumber())) {
-                        Integer count = duplicatedLines.get(ipolicyNumber);
-                        if (count == null) {
-                            count = 1;
-                        }
-                        count++;
-                        duplicatedLines.put(ipolicyNumber, count);
-                    }
-                }
-            }
-        }
-        if (duplicatedLines.size() > 0) {
-            throw new BadArgumentException("Duplicated policies " + duplicatedLines.keySet() + "", duplicatedLines, ErrorCode.DETAILS_TYPE_DUPLICATE);
-        }
-        return duplicatedLines;
-    }
-
-    private String findLastRegistrationKey(String policyNumber) {
-        Optional<Payment> paymentOptional = paymentService.findLastestPaymentByPolicyNumberAndRegKeyNotNull(policyNumber);
-        if (paymentOptional.isPresent()) {
-            return paymentOptional.get().getRegistrationKey();
-        } else {
-            return null;
-        }
-    }
+//
+//    private String findLastRegistrationKey(String policyNumber) {
+//        Optional<Payment> paymentOptional = paymentService.findLastestPaymentByPolicyNumberAndRegKeyNotNull(policyNumber);
+//        if (paymentOptional.isPresent()) {
+//            return paymentOptional.get().getRegistrationKey();
+//        } else {
+//            return null;
+//        }
+//    }
 
     //TODO when processing successful, it only generate eReceipt number, not eReceipt Pdf, and also not send eReceipt Pdf to TMC?
     private void processCollectionFileLine(DeductionFile deductionFile, CollectionFileLine collectionFileLine) {
@@ -246,7 +210,7 @@ public class CollectionFileProcessingService {
             String paymentIdStringSuffix = StringUtils.isNoneBlank(payment.getPaymentId()) ? "_" + payment.getPaymentId() : "";
             String orderId = "R-" + payment.getPolicyId() + "-" + (new SimpleDateFormat("yyyyMMddhhmmssSSS").format(new Date())) + paymentIdStringSuffix;
 
-            String lastRegistrationKey = findLastRegistrationKey(payment.getPolicyId());
+            String lastRegistrationKey = paymentService.findLastRegistrationKey(payment.getPolicyId());
             if (StringUtils.isBlank(lastRegistrationKey)) {
                 throw new UnexpectedException("Not found registrationKey for policy " + policyId + ", paymentId " + paymentId);
             }

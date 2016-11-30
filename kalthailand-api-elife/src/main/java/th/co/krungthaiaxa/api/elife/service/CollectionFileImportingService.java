@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.common.exeption.BadArgumentException;
+import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
 import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
 import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
 import th.co.krungthaiaxa.api.elife.data.CollectionFile;
@@ -31,8 +32,10 @@ import java.io.InputStream;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.apache.commons.codec.digest.DigestUtils.sha256Hex;
@@ -204,4 +207,33 @@ public class CollectionFileImportingService {
         }
     }
 
+    /**
+     * @param collectionFile
+     * @return key: policyNumber, value: counts of duplicated lines
+     */
+    private Map<String, Integer> validateNotDuplicatePolicies(CollectionFile collectionFile) {
+        Map<String, Integer> duplicatedLines = new HashMap<>();
+        CollectionFileLine[] lines = collectionFile.getLines().toArray(new CollectionFileLine[0]);//Convert to Array to improve performance.
+        for (int i = 0; i < lines.length; i++) {
+            CollectionFileLine iline = lines[i];
+            String ipolicyNumber = iline.getPolicyNumber();
+            if (StringUtils.isNotBlank(ipolicyNumber)) {
+                for (int j = i + 1; j < lines.length; j++) {
+                    CollectionFileLine jline = lines[j];
+                    if (ipolicyNumber.equals(jline.getPolicyNumber())) {
+                        Integer count = duplicatedLines.get(ipolicyNumber);
+                        if (count == null) {
+                            count = 1;
+                        }
+                        count++;
+                        duplicatedLines.put(ipolicyNumber, count);
+                    }
+                }
+            }
+        }
+        if (duplicatedLines.size() > 0) {
+            throw new BadArgumentException("Duplicated policies " + duplicatedLines.keySet() + "", duplicatedLines, ErrorCode.DETAILS_TYPE_DUPLICATE);
+        }
+        return duplicatedLines;
+    }
 }
