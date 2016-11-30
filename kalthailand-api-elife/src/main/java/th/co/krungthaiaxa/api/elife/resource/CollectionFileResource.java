@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
 import th.co.krungthaiaxa.api.elife.data.CollectionFile;
+import th.co.krungthaiaxa.api.elife.service.CollectionFileImportingService;
 import th.co.krungthaiaxa.api.elife.service.CollectionFileProcessingService;
 
 import javax.inject.Inject;
@@ -38,10 +39,12 @@ public class CollectionFileResource {
     private final static Logger logger = LoggerFactory.getLogger(CollectionFileResource.class);
 
     private final CollectionFileProcessingService collectionFileProcessingService;
+    private final CollectionFileImportingService collectionFileImportingService;
 
     @Inject
-    public CollectionFileResource(CollectionFileProcessingService collectionFileProcessingService) {
+    public CollectionFileResource(CollectionFileProcessingService collectionFileProcessingService, CollectionFileImportingService collectionFileImportingService) {
         this.collectionFileProcessingService = collectionFileProcessingService;
+        this.collectionFileImportingService = collectionFileImportingService;
     }
 
     @ApiOperation(value = "Upload Collection files", notes = "Uploads a collection file and check for content validity", response = String.class)
@@ -49,7 +52,7 @@ public class CollectionFileResource {
     @ResponseBody
     public ResponseEntity<byte[]> uploadCollectionFile(@RequestParam("file") MultipartFile file) {
         try {
-            collectionFileProcessingService.importCollectionFile(file.getInputStream());
+            collectionFileImportingService.importCollectionFile(file.getInputStream());
         } catch (IOException | IllegalArgumentException e) {
             return new ResponseEntity<>(getJson(ErrorCode.INVALID_COLLECTION_FILE.apply(e.getMessage())), NOT_ACCEPTABLE);
         }

@@ -11,15 +11,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
 import th.co.krungthaiaxa.api.common.utils.IOUtil;
-import th.co.krungthaiaxa.api.elife.utils.TestUtil;
 import th.co.krungthaiaxa.api.elife.data.CollectionFileLine;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 import th.co.krungthaiaxa.api.elife.repository.PolicyRepository;
-import th.co.krungthaiaxa.api.elife.service.CollectionFileProcessingService;
+import th.co.krungthaiaxa.api.elife.service.CollectionFileService;
 import th.co.krungthaiaxa.api.elife.service.PolicyService;
 import th.co.krungthaiaxa.api.elife.utils.ExcelIOUtils;
 import th.co.krungthaiaxa.api.elife.utils.ExcelUtils;
+import th.co.krungthaiaxa.api.elife.utils.TestUtil;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -44,22 +44,22 @@ public class CollectionFileFactory {
     public final GreenMailRule greenMail = new GreenMailRule(ServerSetupTest.SMTP_IMAP);
 
     /**
-     * The structure of Collection import file must be matched with structure inside {@link CollectionFileProcessingService#importCollectionFile(InputStream)}
+     * The structure of Collection import file must be matched with structure inside {@link th.co.krungthaiaxa.api.elife.service.CollectionFileImportingService#importCollectionFile(InputStream)}
      *
      * @param collectionFileLineInputs
      * @return the inputstream of Excel file which contains policyNumbers need to be processed.
      */
     public static InputStream constructCollectionExcelFileWithDefaultPayment(CollectionFileLine... collectionFileLineInputs) {
         HSSFWorkbook workbook = new HSSFWorkbook();
-        Sheet sheet = workbook.createSheet(CollectionFileProcessingService.COLLECTION_FILE_SHEET_NAME);
+        Sheet sheet = workbook.createSheet(CollectionFileService.COLLECTION_FILE_SHEET_NAME);
         ExcelUtils.appendRow(
                 sheet,
-                ExcelUtils.text(CollectionFileProcessingService.COLLECTION_FILE_COLUMN_NAME_1),
-                ExcelUtils.text(CollectionFileProcessingService.COLLECTION_FILE_COLUMN_NAME_2),
-                ExcelUtils.text(CollectionFileProcessingService.COLLECTION_FILE_COLUMN_NAME_3),
-                ExcelUtils.text(CollectionFileProcessingService.COLLECTION_FILE_COLUMN_NAME_4),
-                ExcelUtils.text(CollectionFileProcessingService.COLLECTION_FILE_COLUMN_NAME_5),
-                ExcelUtils.text(CollectionFileProcessingService.COLLECTION_FILE_COLUMN_NAME_6)
+                ExcelUtils.text(CollectionFileService.COLLECTION_FILE_COLUMN_NAME_1),
+                ExcelUtils.text(CollectionFileService.COLLECTION_FILE_COLUMN_NAME_2),
+                ExcelUtils.text(CollectionFileService.COLLECTION_FILE_COLUMN_NAME_3),
+                ExcelUtils.text(CollectionFileService.COLLECTION_FILE_COLUMN_NAME_4),
+                ExcelUtils.text(CollectionFileService.COLLECTION_FILE_COLUMN_NAME_5),
+                ExcelUtils.text(CollectionFileService.COLLECTION_FILE_COLUMN_NAME_6)
         );
         for (CollectionFileLine collectionFileLineInput : collectionFileLineInputs) {
             Double paymentValue = collectionFileLineInput.getPremiumAmount() == null ? DEFAULT_PAYMENT_MONEY : collectionFileLineInput.getPremiumAmount();
@@ -117,6 +117,6 @@ public class CollectionFileFactory {
 
     private static final String getPaymentMode(Policy policy) {
         PeriodicityCode periodicityCode = policy.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode();
-        return CollectionFileProcessingService.PAYMENT_MODE.apply(periodicityCode);
+        return CollectionFileService.PAYMENT_MODE.apply(periodicityCode);
     }
 }

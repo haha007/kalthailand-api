@@ -35,6 +35,7 @@ import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
 import th.co.krungthaiaxa.api.elife.repository.CollectionFileRepository;
 import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
 import th.co.krungthaiaxa.api.elife.repository.PolicyRepository;
+import th.co.krungthaiaxa.api.elife.service.CollectionFileImportingService;
 import th.co.krungthaiaxa.api.elife.service.CollectionFileProcessingService;
 import th.co.krungthaiaxa.api.elife.service.PolicyService;
 import th.co.krungthaiaxa.api.elife.service.QuoteService;
@@ -78,6 +79,8 @@ public class CollectionFileProcessingServiceTest extends ELifeTest {
     @Inject
     private CollectionFileProcessingService rlsService;
     @Inject
+    private CollectionFileImportingService collectionFileImportingService;
+    @Inject
     private CollectionFileRepository collectionFileRepository;
     @Inject
     private LineService lineService;
@@ -102,44 +105,44 @@ public class CollectionFileProcessingServiceTest extends ELifeTest {
     @Test
     public void should_not_save_collection_file_when_there_is_an_error() {
         long before = collectionFileRepository.count();
-        assertThatThrownBy(() -> rlsService.importCollectionFile(IOUtil.loadInputStreamFromClassPath("/graph.jpg")))
+        assertThatThrownBy(() -> collectionFileImportingService.importCollectionFile(IOUtil.loadInputStreamFromClassPath("/graph.jpg")))
                 .isInstanceOf(IllegalArgumentException.class);
         Assertions.assertThat(collectionFileRepository.count()).isEqualTo(before);
     }
 
     @Test
     public void should_throw_exception_when_file_not_valid_excel_file() {
-        assertThatThrownBy(() -> rlsService.importCollectionFile(IOUtil.loadInputStreamFromClassPath("/graph.jpg")))
+        assertThatThrownBy(() -> collectionFileImportingService.importCollectionFile(IOUtil.loadInputStreamFromClassPath("/graph.jpg")))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     public void should_throw_exception_when_file_not_found() {
-        assertThatThrownBy(() -> rlsService.importCollectionFile(null))
+        assertThatThrownBy(() -> collectionFileImportingService.importCollectionFile(null))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     public void should_throw_exception_when_file_with_extra_column() {
-        assertThatThrownBy(() -> rlsService.importCollectionFile(IOUtil.loadInputStreamFromClassPath("/collectionFile_extraColumn.xls")))
+        assertThatThrownBy(() -> collectionFileImportingService.importCollectionFile(IOUtil.loadInputStreamFromClassPath("/collectionFile_extraColumn.xls")))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     public void should_throw_exception_when_file_with_missing_sheet() {
-        assertThatThrownBy(() -> rlsService.importCollectionFile(IOUtil.loadInputStreamFromClassPath("/collectionFile_missingSheet.xls")))
+        assertThatThrownBy(() -> collectionFileImportingService.importCollectionFile(IOUtil.loadInputStreamFromClassPath("/collectionFile_missingSheet.xls")))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     public void should_throw_exception_when_file_with_missing_column() {
-        assertThatThrownBy(() -> rlsService.importCollectionFile(IOUtil.loadInputStreamFromClassPath("/collectionFile_missingColumn.xls")))
+        assertThatThrownBy(() -> collectionFileImportingService.importCollectionFile(IOUtil.loadInputStreamFromClassPath("/collectionFile_missingColumn.xls")))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     public void should_throw_exception_when_file_with_wrong_column_name() {
-        assertThatThrownBy(() -> rlsService.importCollectionFile(IOUtil.loadInputStreamFromClassPath("/collectionFile_wrongColumnName.xls")))
+        assertThatThrownBy(() -> collectionFileImportingService.importCollectionFile(IOUtil.loadInputStreamFromClassPath("/collectionFile_wrongColumnName.xls")))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -148,12 +151,12 @@ public class CollectionFileProcessingServiceTest extends ELifeTest {
         Policy policy01 = createValidatedIGenPolicyWithDefaultPayment(PeriodicityCode.EVERY_MONTH);
         Policy policy02 = policyFactory.createPolicyWithValidatedStatus(ProductQuotationFactory.constructIProtectDefaultWithMonthlyPayment());
         InputStream collectionFile01 = CollectionFileFactory.constructCollectionExcelFileByPolicy(policy01, policy02);
-        rlsService.importCollectionFile(collectionFile01);
+        collectionFileImportingService.importCollectionFile(collectionFile01);
 
         //Collection02 is the same with collection01
         InputStream collectionFile02 = CollectionFileFactory.constructCollectionExcelFileByPolicy(policy01, policy02);
 
-        assertThatThrownBy(() -> rlsService.importCollectionFile(collectionFile02)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> collectionFileImportingService.importCollectionFile(collectionFile02)).isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
@@ -162,21 +165,21 @@ public class CollectionFileProcessingServiceTest extends ELifeTest {
         Policy policy02 = policyFactory.createPolicyWithValidatedStatus(ProductQuotationFactory.constructIProtectDefaultWithMonthlyPayment());
 
         InputStream inputStream = CollectionFileFactory.constructCollectionExcelFileByPolicy(policy01, policy02, policy01);
-        CollectionFile collectionFile = rlsService.importCollectionFile(inputStream);
+        CollectionFile collectionFile = collectionFileImportingService.importCollectionFile(inputStream);
         Assert.assertEquals(3, collectionFile.getLines().size());
-//        assertThatThrownBy(() -> rlsService.importCollectionFile(inputStream)).isInstanceOf(BadArgumentException.class);
+//        assertThatThrownBy(() -> collectionFileImportingService.importCollectionFile(inputStream)).isInstanceOf(BadArgumentException.class);
     }
 
     @Test
     public void should_save_empty_collection() {
-        CollectionFile collectionFile = rlsService.importCollectionFile(IOUtil.loadInputStreamFromClassPath("/collectionFile_empty.xls"));
+        CollectionFile collectionFile = collectionFileImportingService.importCollectionFile(IOUtil.loadInputStreamFromClassPath("/collectionFile_empty.xls"));
         assertThat(collectionFile.getLines()).hasSize(0);
     }
 
     @Test
     public void should_save_collection_file_with_lines_hash_code_and_dates() {
         LocalDateTime now = now();
-        CollectionFile collectionFile = rlsService.importCollectionFile(createDefaultCollectionFile());
+        CollectionFile collectionFile = collectionFileImportingService.importCollectionFile(createDefaultCollectionFile());
         assertThat(collectionFile.getLines()).hasSize(2);
         assertThat(collectionFile.getFileHashCode()).isNotNull();
         assertThat(collectionFile.getReceivedDate()).isAfter(now);
@@ -187,7 +190,7 @@ public class CollectionFileProcessingServiceTest extends ELifeTest {
     @Test
     public void should_not_find_a_payment_for_the_policy_when_policy_does_not_exist() {
         InputStream collectionFile = CollectionFileFactory.constructCollectionExcelFileWithDefaultPayment("123", "456");
-        assertThatThrownBy(() -> rlsService.importCollectionFile(collectionFile))
+        assertThatThrownBy(() -> collectionFileImportingService.importCollectionFile(collectionFile))
                 .isInstanceOf(PolicyNotFoundException.class);
     }
 
@@ -195,7 +198,7 @@ public class CollectionFileProcessingServiceTest extends ELifeTest {
     public void should_not_find_a_payment_for_the_policy_when_policy_is_not_monthly() {
         Policy policy = createValidatedIGenPolicyWithDefaultPayment(EVERY_YEAR);
         InputStream inputStream = CollectionFileFactory.constructCollectionExcelFileByPolicy(policy);
-        assertThatThrownBy(() -> rlsService.importCollectionFile(inputStream))
+        assertThatThrownBy(() -> collectionFileImportingService.importCollectionFile(inputStream))
                 .isInstanceOf(BadArgumentException.class);
     }
 
@@ -208,7 +211,7 @@ public class CollectionFileProcessingServiceTest extends ELifeTest {
         paymentRepository.save(policy.getPayments());
 
         InputStream inputStream = CollectionFileFactory.constructCollectionExcelFileByPolicy(policy);
-        rlsService.importCollectionFile(inputStream);
+        collectionFileImportingService.importCollectionFile(inputStream);
         Policy updatedPolicy = policyRepository.findByPolicyId(policy.getPolicyId());
 
         Optional<Payment> newPayment = updatedPolicy.getPayments().stream().filter(payment -> !policy.getPayments().contains(payment)).findFirst();
@@ -224,7 +227,7 @@ public class CollectionFileProcessingServiceTest extends ELifeTest {
         paymentRepository.save(policy.getPayments());
 
         InputStream inputStream = CollectionFileFactory.constructCollectionExcelFileByPolicy(policy);
-        rlsService.importCollectionFile(inputStream);
+        collectionFileImportingService.importCollectionFile(inputStream);
 
         Policy updatedPolicy = policyRepository.findByPolicyId(policy.getPolicyId());
         Optional<Payment> newPayment = updatedPolicy.getPayments().stream().filter(payment -> !policy.getPayments().contains(payment)).findFirst();
@@ -240,7 +243,7 @@ public class CollectionFileProcessingServiceTest extends ELifeTest {
         paymentRepository.save(policy.getPayments());
 
         InputStream inputStream = CollectionFileFactory.constructCollectionExcelFileByPolicy(policy);
-        rlsService.importCollectionFile(inputStream);
+        collectionFileImportingService.importCollectionFile(inputStream);
 
         Policy updatedPolicy = policyRepository.findByPolicyId(policy.getPolicyId());
         Optional<Payment> newPayment = updatedPolicy.getPayments().stream().filter(payment -> !policy.getPayments().contains(payment)).findFirst();
@@ -257,7 +260,7 @@ public class CollectionFileProcessingServiceTest extends ELifeTest {
         paymentRepository.save(policy.getPayments());
 
         InputStream inputStream = CollectionFileFactory.constructCollectionExcelFileByPolicy(policy);
-        rlsService.importCollectionFile(inputStream);
+        collectionFileImportingService.importCollectionFile(inputStream);
 
         Policy updatedPolicy = policyRepository.findByPolicyId(policy.getPolicyId());
         Optional<Payment> newPayment = updatedPolicy.getPayments().stream().filter(payment -> !policy.getPayments().contains(payment)).findFirst();
@@ -272,7 +275,7 @@ public class CollectionFileProcessingServiceTest extends ELifeTest {
         Policy policy = createValidatedIGenPolicyWithDefaultPayment(EVERY_MONTH);
 
         InputStream inputStream = CollectionFileFactory.constructCollectionExcelFileByPolicy(policy);
-        CollectionFile collectionFile = rlsService.importCollectionFile(inputStream);
+        CollectionFile collectionFile = collectionFileImportingService.importCollectionFile(inputStream);
 
         assertThat(collectionFile.getLines().get(0).getPaymentId()).isNotNull();
     }
@@ -286,7 +289,7 @@ public class CollectionFileProcessingServiceTest extends ELifeTest {
         paymentRepository.save(policy.getPayments());
 
         InputStream inputStream = CollectionFileFactory.constructCollectionExcelFileByPolicy(policy);
-        CollectionFile collectionFile = rlsService.importCollectionFile(inputStream);
+        CollectionFile collectionFile = collectionFileImportingService.importCollectionFile(inputStream);
 
         List<CollectionFile> collectionFilesResult = rlsService.processLatestCollectionFiles();
         CollectionFile collectionFileResult = collectionFilesResult.get(0);
@@ -403,7 +406,7 @@ public class CollectionFileProcessingServiceTest extends ELifeTest {
 
         InputStream inputStream = collectionFileFactory.constructCollectionExcelFileWithDefaultPayment(policy01.getPolicyId(), policy02.getPolicyId());
 
-        rlsService.importCollectionFile(inputStream);
+        collectionFileImportingService.importCollectionFile(inputStream);
         rlsService.processLatestCollectionFiles();
     }
 

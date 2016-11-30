@@ -28,6 +28,7 @@ import th.co.krungthaiaxa.api.elife.factory.PolicyFactory;
 import th.co.krungthaiaxa.api.elife.factory.QuoteFactory;
 import th.co.krungthaiaxa.api.elife.factory.RequestFactory;
 import th.co.krungthaiaxa.api.elife.factory.productquotation.ProductQuotationFactory;
+import th.co.krungthaiaxa.api.elife.line.LineService;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.PaymentInformation;
 import th.co.krungthaiaxa.api.elife.model.PaymentNewerCompletedResult;
@@ -35,8 +36,8 @@ import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus;
 import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
 import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
+import th.co.krungthaiaxa.api.elife.service.CollectionFileImportingService;
 import th.co.krungthaiaxa.api.elife.service.CollectionFileProcessingService;
-import th.co.krungthaiaxa.api.elife.line.LineService;
 import th.co.krungthaiaxa.api.elife.service.PaymentFailEmailService;
 import th.co.krungthaiaxa.api.elife.service.PaymentRetryService;
 import th.co.krungthaiaxa.api.elife.service.PaymentService;
@@ -58,6 +59,8 @@ public class PaymentRetryServiceTest extends ELifeTest {
     public static final Logger LOGGER = LoggerFactory.getLogger(PaymentRetryServiceTest.class);
     @Inject
     private CollectionFileProcessingService rlsService;
+    @Inject
+    private CollectionFileImportingService collectionFileImportingService;
     private LineService lineService;
 
     @Inject
@@ -132,7 +135,7 @@ public class PaymentRetryServiceTest extends ELifeTest {
         String mockLineResponseFailCode = "4000";
         setupLineServiceWithResponseCode(mockLineResponseFailCode);
         InputStream inputStream = collectionFileFactory.constructCollectionExcelFileWithDefaultPayment(policy.getPolicyId());
-        rlsService.importCollectionFile(inputStream);
+        collectionFileImportingService.importCollectionFile(inputStream);
         List<CollectionFile> collectionFileList = rlsService.processLatestCollectionFiles();
         CollectionFile collectionFile = collectionFileList.get(0);
         String paymentId01Fail = getPaymentIdFromFirstLineOfCollectionFile(collectionFile);

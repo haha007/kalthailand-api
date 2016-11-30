@@ -70,6 +70,15 @@ public class PaymentService {
         }
     }
 
+    public String findLastRegistrationKey(String policyNumber) {
+        Optional<Payment> paymentOptional = findLastestPaymentByPolicyNumberAndRegKeyNotNull(policyNumber);
+        if (paymentOptional.isPresent()) {
+            return paymentOptional.get().getRegistrationKey();
+        } else {
+            return null;
+        }
+    }
+
     public List<Payment> findPaymentsByPolicyNumber(String policyNumber) {
         return paymentRepository.findByPolicyId(policyNumber);
     }

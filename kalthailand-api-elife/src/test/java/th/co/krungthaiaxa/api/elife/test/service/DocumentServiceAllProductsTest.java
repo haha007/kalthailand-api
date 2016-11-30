@@ -21,6 +21,7 @@ import th.co.krungthaiaxa.api.elife.model.enums.AtpMode;
 import th.co.krungthaiaxa.api.elife.model.enums.DocumentType;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
+import th.co.krungthaiaxa.api.elife.service.CollectionFileImportingService;
 import th.co.krungthaiaxa.api.elife.service.CollectionFileProcessingService;
 import th.co.krungthaiaxa.api.elife.test.ELifeTest;
 import th.co.krungthaiaxa.api.elife.utils.DocumentAssertHelper;
@@ -44,6 +45,8 @@ public class DocumentServiceAllProductsTest extends ELifeTest {
     private PolicyFactory policyFactory;
     @Inject
     private CollectionFileProcessingService collectionFileProcessingService;
+    @Inject
+    private CollectionFileImportingService collectionFileImportingService;
 
     public void testWith(ProductType productType, PeriodicityCode periodicityCode, AtpMode atpMode) {
         String msg = String.format("DAForm test: Product: %s, Periodicity: %s, ATP: %s.", productType, periodicityCode, atpMode);
@@ -70,10 +73,10 @@ public class DocumentServiceAllProductsTest extends ELifeTest {
         InputStream inputStream = CollectionFileFactory.constructCollectionExcelFileByPolicy(policy);
         if (atpMode != AtpMode.AUTOPAY) {
             assertThatThrownBy(
-                    () -> collectionFileProcessingService.importCollectionFile(inputStream))
+                    () -> collectionFileImportingService.importCollectionFile(inputStream))
                     .isInstanceOf(BaseException.class);
         } else {
-            CollectionFile collectionFile = collectionFileProcessingService.importCollectionFile(inputStream);
+            CollectionFile collectionFile = collectionFileImportingService.importCollectionFile(inputStream);
             List<CollectionFile> proccessCollectionFiles = collectionFileProcessingService.processLatestCollectionFiles();
             Assert.assertEquals(proccessCollectionFiles.get(0).getId(), collectionFile.getId());
         }
