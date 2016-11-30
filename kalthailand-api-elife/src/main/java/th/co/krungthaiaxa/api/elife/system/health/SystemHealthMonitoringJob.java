@@ -1,5 +1,7 @@
 package th.co.krungthaiaxa.api.elife.system.health;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,7 @@ import java.util.stream.Collectors;
  */
 @Service
 public class SystemHealthMonitoringJob {
+    private static final Logger LOGGER = LoggerFactory.getLogger(SystemHealthMonitoringJob.class);
     private static final long BYTES_TO_GB = 1073741824;
     private final SystemHealthService systemHealthService;
     private final SystemHealthSettingService systemHealthSettingService;
@@ -49,14 +52,16 @@ public class SystemHealthMonitoringJob {
 
     private synchronized boolean shouldSendWarning(SystemHealth systemHealth, SystemHealthSetting systemHealthSetting) {
         Instant now = Instant.now();
-        Duration duration = Duration.between(previousDangerTime, now);
         if (isDangerHealth(systemHealth, systemHealthSetting)) {
             if (previousDangerTime == null) {
                 previousDangerTime = now;
+                LOGGER.warn("System health in danger: " + ObjectMapperUtil.toStringMultiLine(systemHealth));
             }
+            Duration duration = Duration.between(previousDangerTime, now);
             if (duration.toMillis() >= millsInDangerToWarning) {
                 millsInDangerToWarning *= 2;
                 previousDangerTime = now;
+                LOGGER.warn("System health in danger: " + ObjectMapperUtil.toStringMultiLine(systemHealth));
                 return true;
             } else {
                 return false;
