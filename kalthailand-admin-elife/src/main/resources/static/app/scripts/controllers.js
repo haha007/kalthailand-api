@@ -600,7 +600,7 @@
                     $scope.paymentsOrder = 1;
                 }
                 var fieldSorts = [];
-                for (i = 0; i < fieldNames.length; i++) {
+                for (var i = 0; i < fieldNames.length; i++) {
                     fieldSorts.push(new FieldSort(fieldNames[i], $scope.paymentsOrder));
                 }
                 $scope.policyDetail.payments.sortByFields(fieldSorts);
