@@ -474,10 +474,12 @@
                                 <td>Amount</td>
                                 <td>Status</td>
                                 <td style="min-width: 85px">
-                                    Due Date <i ng-click="sortPayments()" class="fa fa-sort"></i>
+                                    Due Date <i ng-click="sortPayments('dueDate','effectiveDate')" class="fa fa-sort"></i>
                                 </td>
-                                <td style="min-width: 85px">Effective</td>
-                                <td>eReceipt</td>
+                                <td style="min-width: 85px">
+                                    Effective <i ng-click="sortPayments('effectiveDate','dueDate')" class="fa fa-sort"></i>
+                                </td>
+                                <td style="min-width: 100px">eReceipt</td>
                                 <td>Order</td>
                                 <td>Transaction</td>
                                 <td>Payment Id</td>
@@ -503,9 +505,9 @@
                                 </td>
                                 <td>
                                     <a ng-show="payment.receiptPdfDocument.id" ng-href="{{apiELifeUrl}}/documents/{{payment.receiptPdfDocument.id}}/download">
-                                        <span> <i class="green fa fa-file-pdf-o"></i> {{payment.receiptNumber.fullNumberForDisplay}}</span>
+                                        <span> <i class="green fa fa-file-pdf-o"></i> {{payment.receiptNumber.mainNumberDecimal}}-{{payment.receiptNumber.suffixNumberBase36}}</span>
                                     </a>
-                                    <span ng-hide="payment.receiptPdfDocument.id">{{payment.receiptNumber.fullNumberForDisplay}}</span>
+                                    <span ng-hide="payment.receiptPdfDocument.id">{{payment.receiptNumber.mainNumberDecimal}}-{{payment.receiptNumber.suffixNumberBase36}}</span>
                                 </td>
 
                                 <td>

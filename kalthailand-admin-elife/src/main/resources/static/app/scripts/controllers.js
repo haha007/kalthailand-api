@@ -593,16 +593,17 @@
                     $scope.showAllPayments = "checked";
                 }
             };
-            $scope.sortPayments = function () {
+            $scope.sortPayments = function (fieldNames) {
                 if (hasValue($scope.paymentsOrder) && $scope.paymentsOrder == 1) {
                     $scope.paymentsOrder = -1;
                 } else {
                     $scope.paymentsOrder = 1;
                 }
-                $scope.policyDetail.payments.sortByFields(
-                    [new FieldSort('dueDate', $scope.paymentsOrder)
-                        , new FieldSort('effectiveDate', $scope.paymentsOrder)
-                    ]);
+                var fieldSorts = [];
+                for (i = 0; i < fieldNames.length; i++) {
+                    fieldSorts.push(new FieldSort(fieldNames[i], $scope.paymentsOrder));
+                }
+                $scope.policyDetail.payments.sortByFields(fieldSorts);
             };
             $scope.saveMainInsuredPerson = function () {
                 var mainInsuredPerson = $scope.policyDetail.insureds[0].person;
