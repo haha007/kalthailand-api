@@ -144,6 +144,24 @@ public class PaymentService {
         return result;
     }
 
+    public PaymentNewerCompletedResult findCompletedRetryPaymentInSamePolicy(String oldPaymentId) {
+        PaymentNewerCompletedResult result = new PaymentNewerCompletedResult();
+        Payment oldPayment = validateExistPayment(oldPaymentId);
+        result.setPayment(oldPayment);
+        Payment completedRetryPayment = findFirstCompletedRetryPayment(oldPaymentId);
+        result.setNewerCompletedPayment(completedRetryPayment);
+        return result;
+    }
+
+    public Payment findFirstCompletedRetryPayment(String originalPaymentId) {
+        List<Payment> retryPayments = paymentRepository.findByRetryFromOriginalPaymentIdAndStatus(originalPaymentId, PaymentStatus.COMPLETED);
+        if (retryPayments.isEmpty()) {
+            return null;
+        } else {
+            return retryPayments.get(0);
+        }
+    }
+
     public Payment validateNotExistNewerPayment(String paymentId) {
         PaymentNewerCompletedResult paymentNewerCompletedResult = findNewerCompletedPaymentInSamePolicy(paymentId);
         Payment oldPayment = paymentNewerCompletedResult.getPayment();

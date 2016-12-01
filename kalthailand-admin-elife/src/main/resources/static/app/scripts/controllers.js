@@ -125,7 +125,7 @@
         }
     });
 
-    app.controller('DashboardController', function ($scope, $rootScope, $http, $route, Dashboard, PolicyQuotaConfig, ProductCriteria, $localStorage, $location) {
+    app.controller('PoliciesController', function ($scope, $rootScope, $http, $route, Dashboard, PolicyQuotaConfig, ProductCriteria, $localStorage, $location) {
         $scope.$route = $route;
 
         $scope.currentPage = 1;
@@ -144,8 +144,8 @@
 
         $scope.search = searchForPolicies;
         $scope.pageChanged = searchForPolicies;
+
         searchForPolicies();
-        fetchPolicyQuotaInfo();
         $scope.productCriteriaList = ProductCriteria.query();
 
         $scope.dateOptions = {
@@ -167,72 +167,6 @@
             event.preventDefault();
             searchForPolicies();
         };
-
-        function fetchPolicyQuotaInfo() {
-
-            var callCount = 0;
-            var policyQuota;
-            var availablePolicyCount
-            var triggerPercent;
-
-            PolicyQuotaConfig
-                .get({id: 0},
-                    function (successResponse) {
-                        triggerPercent = successResponse.triggerPercent;
-                        done();
-                    },
-                    function (errorResponse) {
-                        console.log(errorResponse.data.userMessage);
-                        done();
-                    });
-
-            $http.get(window.location.origin + '/api-elife/policy-numbers/count', {}).then(
-                function (successResponse) {
-                    policyQuota = successResponse.data;
-                    done();
-                },
-                function (errorResponse) {
-                    console.log(errorResponse);
-                    done();
-                });
-
-            $http.get(window.location.origin + '/api-elife/policy-numbers/available/count', {}).then(
-                function (successResponse) {
-                    availablePolicyCount = successResponse.data;
-                    done();
-                },
-                function (errorResponse) {
-                    console.log(errorResponse);
-                    done();
-                });
-
-            function done() {
-                if (++callCount === 3) {
-
-                    if (!availablePolicyCount) {
-                        console.log('Unable to fetch availablePolicyCount');
-                        return;
-                    }
-                    if (!policyQuota) {
-                        console.log('Unable to fetch policyQuota');
-                        return;
-                    }
-                    if (!triggerPercent) {
-                        console.log('Unable to fetch triggerPercent');
-                        return;
-                    }
-
-                    var usagePercent = (policyQuota - availablePolicyCount) / policyQuota * 100;
-
-                    if (usagePercent >= triggerPercent) {
-                        $scope.policyAlmostFull = true;
-                    }
-
-                    return;
-                }
-            }
-
-        }
 
 
         function searchForPolicies() {
@@ -370,7 +304,7 @@
         };
     });
 
-    app.controller('ConfigurationController', function ($scope, $route, $http, PolicyQuotaConfig, PolicyNumberUpload, $localStorage) {
+    app.controller('PolicyNumbersController', function ($scope, $route, $http, PolicyQuotaConfig, PolicyNumberUpload, $localStorage) {
         $scope.$route = $route;
         $scope.settings = {};
 
@@ -665,7 +599,10 @@
                 } else {
                     $scope.paymentsOrder = 1;
                 }
-                $scope.policyDetail.payments.sortByField('dueDate', $scope.paymentsOrder);
+                $scope.policyDetail.payments.sortByFields(
+                    [new FieldSort('dueDate', $scope.paymentsOrder)
+                        , new FieldSort('effectiveDate', $scope.paymentsOrder)
+                    ]);
             };
             $scope.saveMainInsuredPerson = function () {
                 var mainInsuredPerson = $scope.policyDetail.insureds[0].person;

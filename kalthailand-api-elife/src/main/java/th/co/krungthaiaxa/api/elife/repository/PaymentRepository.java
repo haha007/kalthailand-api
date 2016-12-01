@@ -76,4 +76,8 @@ public interface PaymentRepository extends MongoRepository<Payment, String> {
     List<Payment> findReceiptNumbersByReceiptNumberOldPatternAndReceiptNumberNotNull(boolean receiptNumberOldPattern);
 
     Payment findOneByRetryPaymentId(String paymentId);
+
+    List<Payment> findByRetryFromOriginalPaymentId(String originalPaymentId);
+
+    List<Payment> findByRetryFromOriginalPaymentIdAndStatus(String originalPaymentId, PaymentStatus completed);
 }

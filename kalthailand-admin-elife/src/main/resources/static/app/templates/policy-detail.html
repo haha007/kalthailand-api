@@ -496,10 +496,10 @@
                                     <span ng-class="{'green': payment.status=='COMPLETED'}">{{ payment.status}}</span>
                                 </td>
                                 <td>
-                                    <span>{{ payment.dueDate | date:'yyyy-MM-dd hh:mm:ss'}}</span>
+                                    <span>{{ payment.dueDate | date:'yyyy-MM-dd HH:mm:ss'}}</span>
                                 </td>
                                 <td>
-                                    <span>{{ payment.effectiveDate | date:'yyyy-MM-dd hh:mm:ss'}}</span>
+                                    <span>{{ payment.effectiveDate | date:'yyyy-MM-dd HH:mm:ss'}}</span>
                                 </td>
                                 <td>
                                     <a ng-show="payment.receiptPdfDocument.id" ng-href="{{apiELifeUrl}}/documents/{{payment.receiptPdfDocument.id}}/download">

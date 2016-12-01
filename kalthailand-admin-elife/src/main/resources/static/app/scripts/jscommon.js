@@ -37,41 +37,97 @@ Array.prototype.mergeNotBlankValuesToString = function () {
     }
     return result;
 };
+var FieldSort = function (fieldName, asc) {
+    this.fieldName = fieldName;
+    this.asc = asc;
+}
+var ComparatorByFields = function (fieldSorts) {
+    this.fieldSorts = fieldSorts;
+}
+ComparatorByFields.prototype.compareByField = function (fieldName, asc, a, b) {
+    var valA = getField(a, fieldName);
+    var valB = getField(b, fieldName);
+    var result = 0;
+    if (hasValue(valA)) {
+        if (hasValue(valB)) {
+            if (valA < valB) {
+                result = -1;
+            } else if (valA > valB) {
+                result = 1;
+            }
+        } else {
+            result = 1;
+        }
+    } else {
+        if (hasValue(valB)) {
+            result = -1;
+        } else {
+            result = 0;
+        }
+    }
+
+    if (asc == -1) {
+        result = result * asc;
+    }
+    return result;
+};
+ComparatorByFields.prototype.compareByFields = function (a, b) {
+    var result = 0;
+    for (i = 0; i < this.fieldSorts.length; i++) {
+        var fieldSort = this.fieldSorts[i];
+        result = this.compareByField(fieldSort.fieldName, fieldSort.asc, a, b);
+        if (result != 0) {
+            break;
+        }
+    }
+    return result;
+
+};
+//var compareByField = function (fieldName, asc, a, b) {
+//    var valA = getField(a, fieldName);
+//    var valB = getField(b, fieldName);
+//    var result = 0;
+//    if (hasValue(valA)) {
+//        if (hasValue(valB)) {
+//            if (valA < valB) {
+//                result = -1;
+//            } else if (valA > valB) {
+//                result = 1;
+//            }
+//        } else {
+//            result = 1;
+//        }
+//    } else {
+//        if (hasValue(valB)) {
+//            result = -1;
+//        } else {
+//            result = 0;
+//        }
+//    }
+//
+//    if (asc == -1) {
+//        result = result * asc;
+//    }
+//    return result;
+//};
 /**
  * @param fieldName
  * @param asc 1 or -1
  */
 Array.prototype.sortByField = function (fieldName, asc) {
-
-    var compareFn = function (a, b) {
-        var valA = getField(a, fieldName);
-        var valB = getField(b, fieldName);
-        var result = 0;
-        if (hasValue(valA)) {
-            if (hasValue(valB)) {
-                if (valA < valB) {
-                    result = -1;
-                } else if (valA > valB) {
-                    result = 1;
-                }
-            } else {
-                result = 1;
-            }
-        } else {
-            if (hasValue(valB)) {
-                result = -1;
-            } else {
-                result = 0;
-            }
-        }
-
-        if (asc == -1) {
-            result = result * asc;
-        }
-        return result;
+    var comparator = new ComparatorByFields([new FieldSort(fieldName, asc)]);
+    var comparatorByField = function (a, b) {
+        return comparator.compareByFields(a, b);
     };
-    this.sort(compareFn);
-}
+    this.sort(comparatorByField);
+};
+Array.prototype.sortByFields = function (fieldSorts) {
+    var comparator = new ComparatorByFields(fieldSorts);
+    var comparatorByField = function (a, b) {
+        return comparator.compareByFields(a, b);
+    };
+    this.sort(comparatorByField);
+};
 /**
  * @param fieldExpressions array of field to check duplicated.
  */

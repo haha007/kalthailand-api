@@ -52,6 +52,7 @@ public class Payment implements Serializable {
     private String transactionId;
     private String registrationKey;
     private PaymentStatus status;
+    @ApiModelProperty(required = true, value = "The payment due date. Can be in future. If this payment is the retry payment, its dueDate will be equals to original's dueDate")
     private LocalDateTime dueDate;
     /**
      * This field only have value after checking with LineService and get response (can fail or not)!
@@ -158,7 +159,6 @@ public class Payment implements Serializable {
         this.status = status;
     }
 
-    @ApiModelProperty(required = true, value = "The payment due date. Can be in future.")
     public LocalDateTime getDueDate() {
         return dueDate;
     }

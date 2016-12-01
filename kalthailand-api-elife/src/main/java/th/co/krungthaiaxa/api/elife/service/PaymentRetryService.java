@@ -85,7 +85,7 @@ public class PaymentRetryService {
         Payment retryPayment = new Payment();
         retryPayment.setPolicyId(policyId);
         retryPayment.setRegistrationKey(regKey);
-        retryPayment.setDueDate(DateTimeUtil.nowLocalDateTimeInThaiZoneId());
+        retryPayment.setDueDate(oldPayment.getDueDate());
         retryPayment.setAmount(oldPayment.getAmount());
         retryPayment.setEffectiveDate(DateTimeUtil.nowLocalDateTimeInThaiZoneId());
         retryPayment.setTransactionId(transactionId);

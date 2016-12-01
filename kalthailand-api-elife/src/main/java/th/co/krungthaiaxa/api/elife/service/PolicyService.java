@@ -132,7 +132,7 @@ public class PolicyService {
     public Policy findPolicyWithFullDetailsByPolicyNumber(String policyNumber) {
         Policy policy = policyRepository.findByPolicyId(policyNumber);
         if (policy != null) {
-            Sort sort = new Sort(Sort.Direction.DESC, "dueDate");
+            Sort sort = new Sort(Sort.Direction.DESC, "dueDate", "effectiveDate");
             List<Payment> payments = paymentRepository.findByPolicyId(policyNumber, sort);
             policy.setPayments(payments);
         }

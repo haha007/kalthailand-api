@@ -39,12 +39,12 @@
         $routeProvider
             .when('/', {
                 templateUrl: 'app/templates/policies.html',
-                controller: 'DashboardController',
+                controller: 'PoliciesController',
                 activeTab: 'policies'
             })
             .when('/policies', {
                 templateUrl: 'app/templates/policies.html',
-                controller: 'DashboardController',
+                controller: 'PoliciesController',
                 activeTab: 'policies'
             })
             .when('/blacklist', {
@@ -64,7 +64,7 @@
             })
             .when('/policy-numbers', {
                 templateUrl: 'app/templates/policy-numbers.html',
-                controller: 'ConfigurationController',
+                controller: 'PolicyNumbersController',
                 activeTab: 'policy-numbers'
             })
             .when('/total-quote-count', {
