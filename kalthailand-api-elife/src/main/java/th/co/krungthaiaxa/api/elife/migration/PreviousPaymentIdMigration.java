@@ -14,15 +14,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Version 1.11.0
+ *
  * @author khoi.tran on 12/1/16.
  */
 @Service
-public class PaymentRetryIdMigration {
-    public static final Logger LOGGER = LoggerFactory.getLogger(PaymentRetryIdMigration.class);
+public class PreviousPaymentIdMigration {
+    public static final Logger LOGGER = LoggerFactory.getLogger(PreviousPaymentIdMigration.class);
     private final PaymentRepository paymentRepository;
 
     @Autowired
-    public PaymentRetryIdMigration(PaymentRepository paymentRepository) {this.paymentRepository = paymentRepository;}
+    public PreviousPaymentIdMigration(PaymentRepository paymentRepository) {this.paymentRepository = paymentRepository;}
 
     @PostConstruct
     public void init() {
@@ -30,7 +32,7 @@ public class PaymentRetryIdMigration {
     }
 
     private void insertFieldRetryFromPreviousPaymentId() {
-        ActionLoopByPage actionLoopByPage = new ActionLoopByPage<Payment>() {
+        ActionLoopByPage actionLoopByPage = new ActionLoopByPage<Payment>("PreviousPaymentIdMigration") {
             @Override
             protected List<Payment> executeEachPageData(Pageable pageRequest) {
                 List<Payment> originalPayments = paymentRepository.findByRetryPaymentIdNotNull(pageRequest);
