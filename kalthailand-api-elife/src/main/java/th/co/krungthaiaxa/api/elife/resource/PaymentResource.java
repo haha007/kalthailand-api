@@ -57,7 +57,7 @@ public class PaymentResource {
     public PaymentNewerCompletedResult checkNewerCompletedPaymentSinceInputPayment(@ApiParam(value = "The payment ID", required = true)
     @PathVariable String paymentId) {
         //TODO when checking retry payment, maybe Collection process was handled failed payment. So in that case, if the client click retry payment again, they will be charged one more time.
-        return paymentService.findCompletedRetryPaymentInSamePolicy(paymentId);
+        return paymentService.findNewerCompletedPaymentInSamePolicy(paymentId);
     }
 
 }

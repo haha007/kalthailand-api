@@ -126,8 +126,8 @@ public class PaymentService {
         result.setPayment(oldPayment);
         Payment newerCompletedPayment;
         if (oldPayment.getRetryPaymentId() != null) {
-            Payment retryPayment = validateExistPayment(oldPayment.getRetryPaymentId());
-            if (PaymentStatus.COMPLETED.equals(retryPayment.getStatus())) {
+            Payment retryPayment = findFirstCompletedRetryPayment(oldPayment.getRetryPaymentId());
+            if (retryPayment != null) {
                 result.setNewerCompletedPayment(retryPayment);
                 return result;
             }
