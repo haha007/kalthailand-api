@@ -21,6 +21,7 @@ import java.util.List;
 @Service
 public class PreviousPaymentIdMigration {
     public static final Logger LOGGER = LoggerFactory.getLogger(PreviousPaymentIdMigration.class);
+    public static final int PROCESS_PAGE_SIZE = 20;
     private final PaymentRepository paymentRepository;
 
     @Autowired
@@ -35,25 +36,25 @@ public class PreviousPaymentIdMigration {
         ActionLoopByPage actionLoopByPage = new ActionLoopByPage<Payment>("PreviousPaymentIdMigration") {
             @Override
             protected List<Payment> executeEachPageData(Pageable pageRequest) {
-                List<Payment> originalPayments = paymentRepository.findByRetryPaymentIdNotNull(pageRequest);
+                List<Payment> paymentsWithWasRetried = paymentRepository.findByRetryPaymentIdNotNull(pageRequest);
                 List<Payment> retryPayments = new ArrayList<>();
-                for (Payment originalPayment : originalPayments) {
-                    String retryPaymentId = originalPayment.getRetryPaymentId();
+                for (Payment paymentWhichWasRetried : paymentsWithWasRetried) {
+                    String retryPaymentId = paymentWhichWasRetried.getRetryPaymentId();
                     Payment retryPayment = paymentRepository.findOne(retryPaymentId);
                     if (retryPayment == null) {
-                        LOGGER.warn("Not found retryPaymentId " + retryPaymentId + ", previousPayment: " + originalPayment.getPaymentId());
+                        LOGGER.warn("Not found retryPaymentId " + retryPaymentId + ", previousPayment: " + paymentWhichWasRetried.getPaymentId());
                     } else {
                         String originalPaymentId = findRecursiveOriginalPaymentId(retryPayment);
-                        retryPayment.setRetryFromPreviousPaymentId(originalPayment.getPaymentId());
+                        retryPayment.setRetryFromPreviousPaymentId(paymentWhichWasRetried.getPaymentId());
                         retryPayment.setRetryFromOriginalPaymentId(originalPaymentId);
                         retryPayments.add(retryPayment);
                     }
                 }
                 paymentRepository.save(retryPayments);
-                return originalPayments;
+                return paymentsWithWasRetried;
             }
         };
-        actionLoopByPage.executeAllPages(20);
+        actionLoopByPage.executeAllPages(PROCESS_PAGE_SIZE);
     }
 
     private String findRecursiveOriginalPaymentId(Payment payment) {

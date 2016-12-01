@@ -471,7 +471,6 @@
                         <table class="table table-striped jambo_table">
                             <thead>
                             <tr>
-                                <td>Payment</td>
                                 <td>Amount</td>
                                 <td>Status</td>
                                 <td style="min-width: 85px">
@@ -479,16 +478,17 @@
                                 </td>
                                 <td style="min-width: 85px">Effective</td>
                                 <td>eReceipt</td>
-                                <td>Retry</td>
                                 <td>Order</td>
                                 <td>Transaction</td>
+                                <td>Payment Id</td>
+                                <td>Retry</td>
+                                <td>Retry From</td>
+                                <td>Retry Origin</td>
                             </tr>
                             </thead>
                             <tbody>
                             <tr ng-repeat="payment in policyDetail.payments" title="RegKey: '{{payment.registrationKey}}'" ng-show="showAllPayments == 'checked' || payment.status != 'NOT_PROCESSED'">
-                                <td>
-                                    <span>{{ payment.paymentId}}</span>
-                                </td>
+
                                 <td>
                                     <span title="payment.amount.currencyCode">{{ payment.amount.value | number: 2}}</span>
                                 </td>
@@ -507,14 +507,24 @@
                                     </a>
                                     <span ng-hide="payment.receiptPdfDocument.id">{{payment.receiptNumber.fullNumberForDisplay}}</span>
                                 </td>
-                                <td>
-                                    <span> {{ payment.retried ? 'Yes' : ''}}</span>
-                                </td>
+
                                 <td>
                                     <span>{{ payment.orderId}}</span>
                                 </td>
                                 <td>
                                     <span> {{ payment.transactionId}}</span>
+                                </td>
+                                <td>
+                                    <span>{{ payment.paymentId}}</span>
+                                </td>
+                                <td>
+                                    <span> {{ payment.retried ? 'Yes' : ''}}</span>
+                                </td>
+                                <td>
+                                    <span> {{ payment.retryFromPreviousPaymentId}}</span>
+                                </td>
+                                <td>
+                                    <span> {{ payment.retryFromOriginalPaymentId}}</span>
                                 </td>
                             </tr>
                             </tbody>
