@@ -87,6 +87,7 @@ public class PaymentRetryService {
         retryPayment.setTransactionId(transactionId);
         retryPayment.setOrderId(orderId);
         retryPayment.setRetried(true);
+        retryPayment.setRetryFromPreviousPaymentId(oldPaymentId);
 
         // If no transaction id, then in error, nothing else should be done since we don't have a status (error / success)
         if (StringUtils.isBlank(transactionId)) {
@@ -112,10 +113,7 @@ public class PaymentRetryService {
                 //Don't need to resend another fail email to user. When backend return error, FE will show error page to customer.
             }
             //TODO payment with response
-            //TODO following line is redundant.
-//            retryPayment = paymentService.updatePayment(retryPayment, orderId, transactionId, StringUtils.isBlank(regKey) ? "" : regKey); //Unnessary
             retryPayment = paymentService.updateByLinePayResponse(retryPayment, linePayResponse);//Old code: missing some information, but still correct
-//            paymentService.updatePaymentAfterLinePay(retryPayment, retryPayment.getAmount().getValue(), retryPayment.getAmount().getCurrencyCode(), ChannelType.LINE, linePayResponse);//New method with correct information.
             oldPayment.setRetryPaymentId(retryPayment.getPaymentId());
             paymentRepository.save(oldPayment);
         }

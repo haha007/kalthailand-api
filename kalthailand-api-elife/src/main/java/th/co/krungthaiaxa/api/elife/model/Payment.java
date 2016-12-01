@@ -28,13 +28,15 @@ import java.util.List;
 public class Payment implements Serializable {
 
     public static final int REGISTRATION_KEY_PLAIN_TEXT_MAX_LENGTH = 100;
+
+    @ApiModelProperty(required = true, value = "The payment Id")
     @Id
     private String paymentId;
     @ApiModelProperty(value = "If this payment is fail, the user will retry with new payment. That retry paymentId will be stored in this field.")
     @Indexed
     private String retryPaymentId;
-    //    @ApiModelProperty(value = "If the field 'retried' is true, this field will store id of original payment.")
-//    private String retryFromPreviousPaymentId;
+    @ApiModelProperty(value = "If the field 'retried' is true, this field will store id of original payment.")
+    private String retryFromPreviousPaymentId;
     @ApiModelProperty(value = "If true, this payment is processed by client who clicked on retry payment link in email-fail-payment.")
     private Boolean retried;
     //    @ApiModelProperty(value = "If true, this payment is the the additional payment.")
@@ -81,7 +83,6 @@ public class Payment implements Serializable {
         amount.setCurrencyCode(currencyCode);
     }
 
-    @ApiModelProperty(required = true, value = "The payment Id")
     public String getPaymentId() {
         return paymentId;
     }
@@ -254,4 +255,11 @@ public class Payment implements Serializable {
         this.newBusiness = newBusiness;
     }
 
+    public String getRetryFromPreviousPaymentId() {
+        return retryFromPreviousPaymentId;
+    }
+
+    public void setRetryFromPreviousPaymentId(String retryFromPreviousPaymentId) {
+        this.retryFromPreviousPaymentId = retryFromPreviousPaymentId;
+    }
 }

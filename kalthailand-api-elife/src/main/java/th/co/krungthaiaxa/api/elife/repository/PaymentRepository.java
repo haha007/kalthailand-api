@@ -53,6 +53,8 @@ public interface PaymentRepository extends MongoRepository<Payment, String> {
 
     List<Payment> findByRetryPaymentIdNotNull();
 
+    List<Payment> findByRetryPaymentIdNotNull(Pageable pageable);
+
     @Query(value = "{'$and': [{'retryPaymentId':{'$ne': null}}, {'retryPaymentId':{'$ne': ''}}]}", fields = "{'retryPaymentId':1, 'paymentId':0}")
     List<Payment> findRetryPaymentIdByRetryPaymentIdNotNull();
 
