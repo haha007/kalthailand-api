@@ -14,9 +14,13 @@ import java.util.List;
 public abstract class ActionLoopByPage<E> {
     public static final Logger LOGGER = LoggerFactory.getLogger(ActionLoopByPage.class);
 
+    /**
+     * The name is not mandatory, only for logging.
+     */
     private String name;
 
     public ActionLoopByPage() {
+        this.name = null;
     }
 
     public ActionLoopByPage(String name) {
@@ -38,11 +42,12 @@ public abstract class ActionLoopByPage<E> {
         boolean isContinue = true;
         while (isContinue) {
             Pageable pageRequest = new PageRequest(page, pageSize, sort);
-            LOGGER.debug("Action '{}' execute page {}", name, pageRequest);
+            LOGGER.debug("Action '{}' [{}]", name, pageRequest);
             List<E> pageData = executeEachPageData(pageRequest);
             isContinue = !pageData.isEmpty();
             page++;
         }
+        LOGGER.debug("Action '{}' [finish]", name);
     }
 
     protected abstract List<E> executeEachPageData(Pageable pageRequest);

@@ -76,6 +76,10 @@ public class PaymentRetryService {
      */
     public Payment retryFailedPayment(String policyId, String oldPaymentId, String orderId, String transactionId, String regKey, String accessToken) {
         Payment oldPayment = paymentService.validateNotExistNewerPayment(oldPaymentId);
+        String retryFromOriginalPaymentId = oldPayment.getRetryFromOriginalPaymentId();
+        if (StringUtils.isBlank(retryFromOriginalPaymentId)) {
+            retryFromOriginalPaymentId = oldPaymentId;
+        }
         boolean newBusiness = NEW_BUSINESS;
 
         Payment retryPayment = new Payment();
@@ -88,6 +92,7 @@ public class PaymentRetryService {
         retryPayment.setOrderId(orderId);
         retryPayment.setRetried(true);
         retryPayment.setRetryFromPreviousPaymentId(oldPaymentId);
+        retryPayment.setRetryFromOriginalPaymentId(retryFromOriginalPaymentId);
 
         // If no transaction id, then in error, nothing else should be done since we don't have a status (error / success)
         if (StringUtils.isBlank(transactionId)) {

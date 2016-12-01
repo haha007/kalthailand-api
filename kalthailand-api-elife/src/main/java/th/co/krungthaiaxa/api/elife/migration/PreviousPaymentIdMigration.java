@@ -43,7 +43,9 @@ public class PreviousPaymentIdMigration {
                     if (retryPayment == null) {
                         LOGGER.warn("Not found retryPaymentId " + retryPaymentId + ", previousPayment: " + originalPayment.getPaymentId());
                     } else {
+                        String originalPaymentId = findRecursiveOriginalPaymentId(retryPayment);
                         retryPayment.setRetryFromPreviousPaymentId(originalPayment.getPaymentId());
+                        retryPayment.setRetryFromOriginalPaymentId(originalPaymentId);
                         retryPayments.add(retryPayment);
                     }
                 }
@@ -54,4 +56,17 @@ public class PreviousPaymentIdMigration {
         actionLoopByPage.executeAllPages(20);
     }
 
+    private String findRecursiveOriginalPaymentId(Payment payment) {
+        String originalPaymentId = null;
+        Payment currentPayment = payment;
+        Payment previousPayment;
+        do {
+            previousPayment = paymentRepository.findOneByRetryPaymentId(currentPayment.getPaymentId());
+            if (previousPayment != null) {
+                originalPaymentId = previousPayment.getPaymentId();
+                currentPayment = previousPayment;
+            }
+        } while (previousPayment != null);
+        return originalPaymentId;
+    }
 }
