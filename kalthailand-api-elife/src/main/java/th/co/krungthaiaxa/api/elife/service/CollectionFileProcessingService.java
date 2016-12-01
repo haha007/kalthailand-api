@@ -58,6 +58,10 @@ import static th.co.krungthaiaxa.api.elife.utils.ExcelUtils.text;
  * This class contains methods for processing the collectionFile.
  * After processing collection files, the result (Excel) file will be updated into RLS system (manually).
  * Collection always process only the 'renewal' payments. The 'new business' payments were already handled by FE.
+ * <p>
+ * Collection file is uploaded two times per month.
+ * 1) First round: 28th day of month.
+ * 2) Second round: 4th day of next month: this round will process only failed payment of the first round.
  */
 @Service
 public class CollectionFileProcessingService {
@@ -76,7 +80,6 @@ public class CollectionFileProcessingService {
     private final PaymentService paymentService;
     private final EreceiptService ereceiptService;
 
-    //    private final DeductionFileRepository deductionFileRepository;
     /**
      * Don't put final here because we need inject mock test dependency
      */
@@ -171,7 +174,9 @@ public class CollectionFileProcessingService {
         }
     }
 
-    //TODO when processing successful, it only generate eReceipt number, not eReceipt Pdf, and also not send eReceipt Pdf to TMC?
+    /**
+     * When processing successful, it only generate eReceipt number, not eReceipt Pdf, and also not send eReceipt Pdf to TMC!
+     */
     private void processCollectionFileLine(DeductionFile deductionFile, CollectionFileLine collectionFileLine) {
         boolean newBusiness = NEW_BUSINESS;
         //TODO the code here is a little bit mess, we need to refactor in the future.

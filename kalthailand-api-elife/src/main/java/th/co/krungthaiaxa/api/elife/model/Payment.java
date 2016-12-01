@@ -9,8 +9,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import th.co.krungthaiaxa.api.common.utils.EncryptUtil;
-import th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus;
 import th.co.krungthaiaxa.api.elife.ereceipt.EreceiptNumber;
+import th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -33,8 +33,12 @@ public class Payment implements Serializable {
     @ApiModelProperty(value = "If this payment is fail, the user will retry with new payment. That retry paymentId will be stored in this field.")
     @Indexed
     private String retryPaymentId;
-    @ApiModelProperty(value = "If this payment is the retry from an original payment, this value is true.")
+    //    @ApiModelProperty(value = "If the field 'retried' is true, this field will store id of original payment.")
+//    private String retryFromPreviousPaymentId;
+    @ApiModelProperty(value = "If true, this payment is processed by client who clicked on retry payment link in email-fail-payment.")
     private Boolean retried;
+    //    @ApiModelProperty(value = "If true, this payment is the the additional payment.")
+//    private Boolean additionalPayment;
     @ApiModelProperty(value = "The first payment of a policy is the 'new business' payment. The later payments are 'renewal' payments. This field only has value after the first payment.")
     private Boolean newBusiness;
     private String policyId;
@@ -226,30 +230,6 @@ public class Payment implements Serializable {
         this.receiptNumberOldPattern = receiptNumberOldPattern;
     }
 
-//    public String getReceiptFullNumberBase36() {
-//        return receiptFullNumberBase36;
-//    }
-//
-//    public void setReceiptFullNumberBase36(String receiptFullNumberBase36) {
-//        this.receiptFullNumberBase36 = receiptFullNumberBase36;
-//    }
-//
-//    public Long getReceiptMainNumberDecimal() {
-//        return receiptMainNumberDecimal;
-//    }
-//
-//    public void setReceiptMainNumberDecimal(Long receiptMainNumberDecimal) {
-//        this.receiptMainNumberDecimal = receiptMainNumberDecimal;
-//    }
-//
-//    public String getReceiptMainNumberBase36() {
-//        return receiptMainNumberBase36;
-//    }
-//
-//    public void setReceiptMainNumberBase36(String receiptMainNumberBase36) {
-//        this.receiptMainNumberBase36 = receiptMainNumberBase36;
-//    }
-
     public Boolean getRetried() {
         return retried;
     }
@@ -273,4 +253,5 @@ public class Payment implements Serializable {
     public void setNewBusiness(Boolean newBusiness) {
         this.newBusiness = newBusiness;
     }
+
 }

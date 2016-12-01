@@ -6,13 +6,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.common.utils.IOUtil;
+import th.co.krungthaiaxa.api.common.utils.NumberUtil;
 import th.co.krungthaiaxa.api.elife.exception.LinePaymentException;
 import th.co.krungthaiaxa.api.elife.line.LineService;
 import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.products.utils.ProductUtils;
-import th.co.krungthaiaxa.api.elife.utils.AmountUtil;
 import th.co.krungthaiaxa.api.elife.utils.PersonUtil;
 
 /**
@@ -57,7 +57,7 @@ public class PaymentFailLineNotificationService {
         String paymentLink = paymentRetryLinkService.createPaymentLink(policy.getPolicyId(), payment);
         lineNotificationContent = lineNotificationContent
                 .replaceAll("%INSURED_FULL_NAME%", customerName)
-                .replaceAll("%PREMIUM_AMOUNT%", AmountUtil.formatCurrency(ProductUtils.getPremiumAmount(policy)))
+                .replaceAll("%PREMIUM_AMOUNT%", NumberUtil.formatCurrencyValue(ProductUtils.getPremiumAmount(policy).getValue()))
                 .replaceAll("%RETRY_PAYMENT_URL%", paymentLink);
         return lineNotificationContent;
     }
