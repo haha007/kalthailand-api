@@ -568,6 +568,7 @@
     });
 
     app.controller('PolicyDetailController', function ($scope, $route, $http, $routeParams, PolicyDetail, PolicyNotification) {
+            $scope.PROFILE = PROFILE;
             $scope.$route = $route;
             $scope.apiELifeUrl = window.location.origin + '/api-elife';
 
@@ -575,6 +576,14 @@
             if ($scope.policyID) {
                 searchForPolicyDetail();
             }
+            $scope.useTestFailEmail = function () {
+                if ($scope.policyDetail) {
+                    var person = $scope.policyDetail.insureds[0].person;
+                    if (!person.email.includes('+kalthailand-api.test.fail@')) {
+                        person.email = person.email.replace('@', '+kalthailand-api.test.fail@');
+                    }
+                }
+            };
             $scope.AtpMode = {
                 NO_AUTOPAY: 0,
                 AUTOPAY: 1
@@ -922,7 +931,8 @@
 
 
     });
-})();
+})
+();
 
 function formatErrorMessage(error) {
     var prefixMessage = error.userMessage;

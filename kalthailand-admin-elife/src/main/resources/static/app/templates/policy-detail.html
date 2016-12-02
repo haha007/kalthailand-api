@@ -211,7 +211,11 @@
                             </div>
                         </div>
                         <div class="form-group col-sm-4">
-                            <label class="col-sm-4 control-label">Email *</label>
+                            <label class="col-sm-4 control-label">Email *
+                                <a ng-show="PROFILE != 'prd'" ng-click="useTestFailEmail()" title="Use 'test fail email' to test retry payment flow. (This link doesn't appear in 'Production' environment.)" style="font-weight: normal; font-style: italic; color: #AEAEAE;"><br/>
+                                    <small>Retry email</small>
+                                </a>
+                            </label>
 
                             <div class="col-sm-8">
                                 <span class="form-control-static no-role-policy-main-insured-person-editor">{{ policyDetail.insureds[0].person.email }}</span>

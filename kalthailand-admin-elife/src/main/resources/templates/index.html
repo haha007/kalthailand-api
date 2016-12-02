@@ -63,6 +63,7 @@
     </div>
 </div>
 <script th:inline="text">
+    var PROFILE = "[[${projectInfo.profiles[0]}]]";
     var ACCESS_TOKEN = "[[${user.accessToken}]]";
 </script>
 <div th:include="parts/import-scripts"></div>
