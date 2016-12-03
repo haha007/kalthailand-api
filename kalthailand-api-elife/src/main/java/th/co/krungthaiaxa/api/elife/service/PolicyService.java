@@ -29,6 +29,7 @@ import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.Registration;
 import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
+import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 import th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus;
 import th.co.krungthaiaxa.api.elife.model.enums.RegistrationTypeName;
 import th.co.krungthaiaxa.api.elife.model.sms.SMSResponse;
@@ -115,13 +116,13 @@ public class PolicyService {
     }
 
     public Page<Policy> findAll(String policyId, ProductType productType, PolicyStatus status, Boolean nonEmptyAgentCode, LocalDate startDate,
-            LocalDate endDate, Integer startIndex, Integer nbOfRecords) {
-        return policyCriteriaRepository.findPolicies(policyId, productType, status, nonEmptyAgentCode, startDate, endDate, new PageRequest(startIndex, nbOfRecords, new Sort(Sort.Direction.DESC, "policyId")));
+            LocalDate endDate, PeriodicityCode periodicityCode, Integer atpModeId, Integer currentPage, Integer pageSize) {
+        return policyCriteriaRepository.findPolicies(policyId, productType, status, nonEmptyAgentCode, startDate, endDate, periodicityCode, atpModeId, new PageRequest(currentPage, pageSize, new Sort(Sort.Direction.DESC, "policyId")));
     }
 
     public List<Policy> findAll(String policyId, ProductType productType, PolicyStatus status, Boolean nonEmptyAgentCode, LocalDate startDate,
-            LocalDate endDate) {
-        return policyCriteriaRepository.findPolicies(policyId, productType, status, nonEmptyAgentCode, startDate, endDate);
+            LocalDate endDate, PeriodicityCode periodicityCode, Integer atpModeId) {
+        return policyCriteriaRepository.findPolicies(policyId, productType, status, nonEmptyAgentCode, startDate, endDate, periodicityCode, atpModeId);
     }
 
     public Optional<Policy> findPolicyByPolicyNumber(String policyNumber) {

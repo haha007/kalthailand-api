@@ -89,6 +89,37 @@
                                         </p>
                                     </div>
                                 </div>
+
+                                <div class="col-md-4 col-xs-12 form-group">
+                                    <div class="col-md-6 col-xs-12 text-right">
+                                        <label for="policyID" class="control-label">Periodicity</label>
+                                    </div>
+                                    <div class="col-md-6 col-xs-12">
+                                        <select class="form-control" ng-model="criteriaPeriodicityCode">
+                                            <option value=""></option>
+                                            <option value="EVERY_MONTH">Monthly</option>
+                                            <option value="EVERY_QUARTER">Quarterly</option>
+                                            <option value="EVERY_HALF_YEAR">Half Yearly</option>
+                                            <option value="EVERY_YEAR">Yearly</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-xs-12 form-group">
+                                    <div class="col-md-6 col-xs-12 text-right">
+                                        <label for="policyID" class="control-label">ATP</label>
+                                    </div>
+                                    <div class="col-md-6 col-xs-12">
+                                        <label class="checkbox">
+                                            <div class="icheckbox_flat-green" ng-class="criteriaAtpModeId == 1? 'checked': ''" style="position: relative;">
+                                                <input type="checkbox" class="flat" style="position: absolute; opacity: 0;"
+                                                       checked="{{criteriaAtpModeId == 1? 'checked': null}}"
+                                                       ng-click="clickAtpMode()">
+                                                <ins class="iCheck-helper"></ins>
+                                            </div>
+                                            
+                                        </label>
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="ln_solid"></div>
@@ -141,6 +172,8 @@
                                     <th>Validation Agent code</th>
                                     <th>Creation time</th>
                                     <th>Validation time</th>
+                                    <th>Periodicity</th>
+                                    <th>ATP</th>
                                 </tr>
                                 </thead>
 
@@ -157,6 +190,8 @@
                                     <td>{{ item.validationAgentCode }}</td>
                                     <td>{{ item.creationDateTime | date:'yyyy-MM-dd HH:mm:ss'}}</td>
                                     <td>{{ item.validationDateTime | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+                                    <td>{{ item.premiumsData.financialScheduler.periodicity.code}}</td>
+                                    <td>{{ item.premiumsData.financialScheduler.atpMode == 1? 'Yes': 'No'}}</td>
                                 </tr>
 
                                 </tbody>

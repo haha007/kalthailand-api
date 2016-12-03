@@ -136,6 +136,8 @@
         $scope.productTypeSearch = null;
         $scope.statusSearch = null;
         $scope.nonEmptyAgentCodeSearch = null;
+        $scope.criteriaPeriodicityCode = null;
+        $scope.criteriaAtpModeId = null;
 
         var aMonthAgo = new Date();
         aMonthAgo.setMonth(new Date().getMonth() - 1);
@@ -167,7 +169,14 @@
             event.preventDefault();
             searchForPolicies();
         };
-
+        $scope.clickAtpMode = function () {
+            if ($scope.criteriaAtpModeId == 1) {
+                $scope.criteriaAtpModeId = null;
+            } else {
+                $scope.criteriaAtpModeId = 1;
+            }
+            ;
+        };
 
         function searchForPolicies() {
             $scope.isSearching = true;
@@ -180,7 +189,9 @@
                     status: $scope.statusSearch,
                     nonEmptyAgentCode: $scope.nonEmptyAgentCodeSearch,
                     fromDate: $scope.fromDateSearch,
-                    toDate: $scope.toDateSearch
+                    toDate: $scope.toDateSearch,
+                    atpModeId: $scope.criteriaAtpModeId,
+                    periodicityCode: $scope.criteriaPeriodicityCode
                 },
                 function (successResponse) {
                     $scope.isSearching = null;
@@ -209,6 +220,12 @@
                     }
                     if ($scope.toDateSearch) {
                         $scope.downloadUrl += '&toDate=' + $scope.toDateSearch.toISOString();
+                    }
+                    if ($scope.criteriaPeriodicityCode) {
+                        $scope.downloadUrl += '&periodicityCode=' + $scope.criteriaPeriodicityCode;
+                    }
+                    if ($scope.criteriaAtpModeId == 1) {
+                        $scope.downloadUrl += '&atpModeId=' + $scope.criteriaAtpModeId;
                     }
                 },
                 function (errorResponse) {
