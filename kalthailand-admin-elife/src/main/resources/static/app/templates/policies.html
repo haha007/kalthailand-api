@@ -7,80 +7,89 @@
                 <div class="x_panel">
                     <div class="x_title">
                         <h2>Policies
-                            <small>{{ totalItems }} items</small>
+
                         </h2>
+
                         <div class="clearfix"></div>
                     </div>
                     <div class="x_content">
                         <form class="form-horizontal" ng-submit="search($event)">
 
+                            <div class="row">
+                                <div class="col-md-4 col-xs-12 form-group">
+                                    <div class="col-md-6 col-xs-12 text-right">
+                                        <label for="policyID" class="control-label">Policy number</label>
+                                    </div>
+                                    <div class="col-md-6 col-xs-12">
+                                        <input type="text" class="form-control" id="policyID" ng-model="policyIdSearch" autofocus>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-xs-12 form-group">
 
-                            <div class="row form-group">
-                                <div class="col-md-2 col-xs-12 text-right">
-                                    <label for="policyID" class="control-label">Policy number</label>
+                                    <div class="col-md-6 col-xs-12 text-right">
+                                        <label for="productTypeSearchID" class="control-label">Product</label>
+                                    </div>
+                                    <div class="col-md-6 col-xs-12">
+                                        <select id="productTypeSearchID" class="form-control"
+                                                ng-model="productTypeSearch"
+                                                ng-options="pdc.value as pdc.name for pdc in productCriteriaList">
+                                            <option value=""></option>
+                                        </select>
+                                    </div>
                                 </div>
-                                <div class="col-md-2 col-xs-12">
-                                    <input type="text" class="form-control" id="policyID" ng-model="policyIdSearch" autofocus>
-                                </div>
-                                <div class="col-md-1 col-xs-12 text-right">
-                                    <label for="productTypeSearchID" class="control-label">Product</label>
-                                </div>
-                                <div class="col-md-3 col-xs-12">
-                                    <select id="productTypeSearchID" class="form-control"
-                                            ng-model="productTypeSearch"
-                                            ng-options="pdc.value as pdc.name for pdc in productCriteriaList">
-                                        <option value=""></option>
-                                    </select>
-                                </div>
-
-                                <div class="col-md-1 col-xs-12 text-right">
-                                    <label for="fromDateSearch" class="control-label">From</label>
-                                </div>
-                                <div class="col-md-3 col-xs-12">
-                                    <p class="input-group">
-                                        <input type="text" id="fromDateSearch" class="form-control" uib-datepicker-popup="dd-MM-yyyy" ng-model="fromDateSearch" is-open="fromDateSearch.opened" close-text="Close" datepicker-options="dateOptions"/>
+                                <div class="col-md-4 col-xs-12  form-group">
+                                    <div class="col-md-6 col-xs-12 text-right">
+                                        <label for="fromDateSearch" class="control-label">From</label>
+                                    </div>
+                                    <div class="col-md-6 col-xs-12">
+                                        <p class="input-group">
+                                            <input type="text" id="fromDateSearch" class="form-control" uib-datepicker-popup="dd-MM-yyyy" ng-model="fromDateSearch" is-open="fromDateSearch.opened" close-text="Close" datepicker-options="dateOptions"/>
                             <span class="input-group-btn">
                                 <button type="button" class="btn btn-default" ng-click="fromDateSearchOpen()"><i class="glyphicon glyphicon-calendar"></i></button>
                             </span>
-                                    </p>
+                                        </p>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="row form-group">
-                                <div class="col-md-2 col-xs-12 text-right">
-                                    <label for="nonEmptyAgentCodeSearch" class="control-label">Agent code</label>
+                                <div class="col-md-4  col-xs-12  form-group">
+                                    <div class="col-md-6 col-xs-12 text-right">
+                                        <label for="nonEmptyAgentCodeSearch" class="control-label">Agent code</label>
+                                    </div>
+                                    <div class="col-md-6 col-xs-12">
+                                        <select class="form-control" id="nonEmptyAgentCodeSearch" ng-model="nonEmptyAgentCodeSearch">
+                                            <option value=""></option>
+                                            <option value="true">Not empty</option>
+                                            <option value="false">Empty</option>
+                                        </select>
+                                    </div>
                                 </div>
-                                <div class="col-md-2 col-xs-12">
-                                    <select class="form-control" id="nonEmptyAgentCodeSearch" ng-model="nonEmptyAgentCodeSearch">
-                                        <option value=""></option>
-                                        <option value="true">Not empty</option>
-                                        <option value="false">Empty</option>
-                                    </select>
+                                <div class="col-md-4  col-xs-12 form-group">
+                                    <div class="col-md-6 col-xs-12 text-right">
+                                        <label for="statusSearch" class="control-label">Status</label>
+                                    </div>
+                                    <div class="col-md-6 col-xs-12">
+                                        <select class="form-control" id="statusSearch" ng-model="statusSearch">
+                                            <option value=""></option>
+                                            <option value="PENDING_PAYMENT">Pending payment</option>
+                                            <option value="PENDING_VALIDATION">Pending validation</option>
+                                            <option value="VALIDATED">Validated</option>
+                                            <option value="CANCELED">Canceled</option>
+                                        </select>
+                                    </div>
                                 </div>
-                                <div class="col-md-1 col-xs-12 text-right">
-                                    <label for="statusSearch" class="control-label">Status</label>
-                                </div>
-                                <div class="col-md-3 col-xs-12">
-                                    <select class="form-control" id="statusSearch" ng-model="statusSearch">
-                                        <option value=""></option>
-                                        <option value="PENDING_PAYMENT">Pending payment</option>
-                                        <option value="PENDING_VALIDATION">Pending validation</option>
-                                        <option value="VALIDATED">Validated</option>
-                                        <option value="CANCELED">Canceled</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-1 col-xs-12 text-right">
-                                    <label for="toDateSearch" class="control-label">To</label>
-                                </div>
-                                <div class="col-md-3 col-xs-12">
-                                    <p class="input-group">
-                                        <input type="text" id="toDateSearch" class="form-control" uib-datepicker-popup="dd-MM-yyyy" ng-model="toDateSearch" is-open="toDateSearch.opened" close-text="Close" datepicker-options="dateOptions"/>
+                                <div class="col-md-4  col-xs-12  form-group">
+                                    <div class="col-md-6 col-xs-12 text-right">
+                                        <label for="toDateSearch" class="control-label">To</label>
+                                    </div>
+                                    <div class="col-md-6 col-xs-12">
+                                        <p class="input-group">
+                                            <input type="text" id="toDateSearch" class="form-control" uib-datepicker-popup="dd-MM-yyyy" ng-model="toDateSearch" is-open="toDateSearch.opened" close-text="Close" datepicker-options="dateOptions"/>
                             <span class="input-group-btn">
                                 <button type="button" class="btn btn-default" ng-click="toDateSearchOpen()"><i class="glyphicon glyphicon-calendar"></i></button>
                             </span>
-                                    </p>
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
-
 
                             <div class="ln_solid"></div>
                             <div ng-hide="isSearching" class="col-xs-2 center-block" style="float:none" role="group">
@@ -112,7 +121,10 @@
                                 </uib-pagination>
                             </div>
                         </div>
-                        <p><a href="{{downloadUrl}}"><i class="green fa fa-file-excel-o"></i> Export data</a></p>
+                        <p><a href="{{downloadUrl}}"><i class="green fa fa-file-excel-o"></i> Export data</a>
+                            -
+                            <small>{{ totalItems }} items</small>
+                        </p>
 
                         <div class="table-responsive">
                             <table class="table table-striped table-bordered jambo_table">
