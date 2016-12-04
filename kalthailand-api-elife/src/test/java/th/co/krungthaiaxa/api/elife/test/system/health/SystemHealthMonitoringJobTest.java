@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -27,7 +28,8 @@ import th.co.krungthaiaxa.api.elife.utils.TestUtil;
 @ActiveProfiles("test")
 public class SystemHealthMonitoringJobTest extends ELifeTest {
     //Defined in application-test.properties, 'system.health.warning.in-danger.mills'
-    private static final int JOB_SCHEDULE_IN_MILLS = 1000;
+    @Value("${system.health.warning.in-danger.mills}")
+    private int MILLS_IN_DANGER;
 
     @Autowired
     private SystemHealthMonitoringJob systemHealthMonitoringJob;
@@ -35,7 +37,6 @@ public class SystemHealthMonitoringJobTest extends ELifeTest {
     private SystemHealthSettingService systemHealthSettingService;
 
     private SystemHealthSetting originalSystemHealthSetting;
-    private SystemHealthSetting testingSetting;
 
     @Before
     public void init() {
@@ -43,10 +44,6 @@ public class SystemHealthMonitoringJobTest extends ELifeTest {
 
         originalSystemHealthSetting = systemHealthSettingService.loadSetting();
 
-        testingSetting = new SystemHealthSetting();
-        org.springframework.beans.BeanUtils.copyProperties(originalSystemHealthSetting, testingSetting);
-        testingSetting.setUsedMemoryPercentageWarning(0.5f);
-        systemHealthSettingService.saveSetting(testingSetting);
     }
 
     @After
@@ -55,28 +52,71 @@ public class SystemHealthMonitoringJobTest extends ELifeTest {
     }
 
     @Test
-    public void test() {
-        int numberOfAlerEmails = testingSetting.getWarningEmails().size();
+    public void test_in_danger_memory() {
+        SystemHealthSetting testingSetting = cloneSettingFromOriginal();
+        testingSetting.setUsedMemoryPercentageWarning(0.001f);
+        testInDanger(testingSetting);
+    }
+
+    @Test
+    public void test_in_danger_space() {
+        SystemHealthSetting testingSetting = cloneSettingFromOriginal();
+        testingSetting.setUsedSpacePercentageWarning(0.001f);
+        testInDanger(testingSetting);
+    }
+
+    private SystemHealthSetting cloneSettingFromOriginal() {
+        SystemHealthSetting testingSetting = new SystemHealthSetting();
+        org.springframework.beans.BeanUtils.copyProperties(originalSystemHealthSetting, testingSetting);
+        return testingSetting;
+    }
+
+    private void testInDanger(SystemHealthSetting inDangerSystemHealthSetting) {
+        systemHealthSettingService.saveSetting(inDangerSystemHealthSetting);
+        int numberOfAlerEmails = inDangerSystemHealthSetting.getWarningEmails().size();
 
         //In the first time, no alert yet.
         systemHealthMonitoringJob.monitorHealth();
         Assert.assertEquals(0, greenMail.getReceivedMessages().length);
 
-        //But it will alert in after 1 second.
-        sleep(JOB_SCHEDULE_IN_MILLS + 1);
+        //Wait 1 time: Alert now, but next round you have to wait (1*2)
+        sleep(MILLS_IN_DANGER + 1);
         systemHealthMonitoringJob.monitorHealth();
         GreenMailUtil.writeReceiveMessagesToFiles(greenMail, TestUtil.PATH_TEST_RESULT + "emails/system-health-notification.html");
         Assert.assertEquals(numberOfAlerEmails, greenMail.getReceivedMessages().length);
 
-        //It next second, it won't alert anymore.
-        sleep(JOB_SCHEDULE_IN_MILLS + 1);
+        //Wait 1 time: Not alert ( 1 < 1*2)
+        sleep(MILLS_IN_DANGER + 1);
         systemHealthMonitoringJob.monitorHealth();
         Assert.assertEquals(numberOfAlerEmails, greenMail.getReceivedMessages().length);
 
-        //It next second again, now it will alert.
-        sleep(JOB_SCHEDULE_IN_MILLS + 1);
+        //Wait 2 times: Alert (2 >= 1*2), the next round will be 2*2
+        sleep(MILLS_IN_DANGER + 1);
         systemHealthMonitoringJob.monitorHealth();
         Assert.assertEquals(numberOfAlerEmails + 1, greenMail.getReceivedMessages().length);
+
+        //After 4th second, the alert will be reset to 1st second.
+        //Reset systemHealSetting to original: don't alert anymore.
+        systemHealthSettingService.saveSetting(originalSystemHealthSetting);
+        systemHealthMonitoringJob.monitorHealth();
+        sleep(MILLS_IN_DANGER * 4 + 1);
+
+        //THE ALERT TIMER WAS RESET TO 1 UNIT /////////////////////
+        //In the first time, no alert yet.
+        clearGreenMail();
+        systemHealthSettingService.saveSetting(inDangerSystemHealthSetting);
+        systemHealthMonitoringJob.monitorHealth();
+        Assert.assertEquals(0, greenMail.getReceivedMessages().length);
+
+        //Wait 1 time: Alert now, but next round you have to wait (1*2)
+        sleep(MILLS_IN_DANGER + 1);
+        systemHealthMonitoringJob.monitorHealth();
+        Assert.assertEquals(numberOfAlerEmails, greenMail.getReceivedMessages().length);
+
+        //RESET ALERT TIMER FOR OTHER TESTING
+        sleep(MILLS_IN_DANGER + 1);
+        systemHealthSettingService.saveSetting(originalSystemHealthSetting);
+        systemHealthMonitoringJob.monitorHealth();
     }
 
     private void sleep(int mills) {
