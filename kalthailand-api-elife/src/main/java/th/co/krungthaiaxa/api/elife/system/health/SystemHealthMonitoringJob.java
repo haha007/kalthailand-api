@@ -3,6 +3,7 @@ package th.co.krungthaiaxa.api.elife.system.health;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.common.utils.IOUtil;
@@ -33,6 +34,13 @@ public class SystemHealthMonitoringJob {
     private static final String EMAIL_HEALTH_WARNING_PATH = "/system/health/email-health-warning.html";
     private static final String EMAIL_HEALTH_WARNING_TEMPLATE = IOUtil.loadTextFileInClassPath(EMAIL_HEALTH_WARNING_PATH);
 
+    /**
+     * In testing, you don't want to run scheduled job automatically.
+     * You will want to call job method by yourself.
+     */
+    @Value("${system.health.cron.enable}")
+    private Boolean enableJob;
+
     @Autowired
     public SystemHealthMonitoringJob(SystemHealthService systemHealthService, ElifeEmailService emailService, SystemHealthSettingService systemHealthSettingService) {
         this.systemHealthService = systemHealthService;
@@ -41,7 +49,15 @@ public class SystemHealthMonitoringJob {
     }
 
     @Scheduled(fixedRateString = "${system.health.cron.interval.seconds}000")
+    public void executeScheduledJob() {
+        if (!enableJob) {
+            return;
+        }
+        monitorHealth();
+    }
+
     public void monitorHealth() {
+        LogUtil.logStarting("[SYSTEM.HEALTH] [RUNNING]");
         SystemHealthSetting systemHealthSetting = systemHealthSettingService.loadSetting();
         SystemHealth systemHealth = systemHealthService.loadHealthStatus();
         if (shouldSendWarning(systemHealth, systemHealthSetting)) {
@@ -104,4 +120,11 @@ public class SystemHealthMonitoringJob {
         }
     }
 
+    public Boolean getEnableJob() {
+        return enableJob;
+    }
+
+    public void setEnableJob(Boolean enableJob) {
+        this.enableJob = enableJob;
+    }
 }
