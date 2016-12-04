@@ -9,6 +9,8 @@ import org.springframework.data.domain.Sort;
 import java.util.List;
 
 /**
+ * WARNING: Please careful when using this class. Otherwise, it can cause infinited loop. View more in {@link #executeAllPages(int)}.
+ *
  * @author khoi.tran on 12/1/16.
  */
 public abstract class ActionLoopByPage<E> {
@@ -33,6 +35,9 @@ public abstract class ActionLoopByPage<E> {
 
     /**
      * This method will stop if there's any exception are thrown, or the data in page is empty.
+     * <p>
+     * If the data in page (result of {@link #executeEachPageData(Pageable)}) is never empty, then this method will loop forever, so please don't let it happen!
+     * You have to make sure that there's a point which result of {@link #executeEachPageData(Pageable)} is empty.
      *
      * @param pageSize pageSize of elements.
      * @param sort     sort for elements. Can be null.
@@ -50,5 +55,14 @@ public abstract class ActionLoopByPage<E> {
         LOGGER.debug("Action '{}' [finish]", name);
     }
 
+    /**
+     * This method will be stopped if there's any exception are thrown, or the data in page is empty.
+     * <p>
+     * If the data in page is never empty, then this method will loop forever, so please don't let it happen!
+     * You have to make sure that there's a point which result of this method is empty.
+     *
+     * @param pageRequest
+     * @return
+     */
     protected abstract List<E> executeEachPageData(Pageable pageRequest);
 }
