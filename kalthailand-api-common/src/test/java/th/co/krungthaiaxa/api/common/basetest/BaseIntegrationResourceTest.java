@@ -31,7 +31,7 @@ public abstract class BaseIntegrationResourceTest {
     public final GreenMailRule greenMail = new GreenMailRule(ServerSetupTest.SMTP_IMAP);
 
     @Autowired
-    ObjectMapper objectMapper;
+    protected ObjectMapper objectMapper;
 
     protected final RestTemplate restTemplate = new TestRestTemplate();
 

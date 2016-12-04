@@ -1,7 +1,9 @@
 package th.co.krungthaiaxa.api.common.utils;
 
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -60,6 +62,16 @@ public final class ObjectMapperUtil {
             return objectMapper.readValue(jsonString, javaType);
         } catch (Exception e) {
             String msg = String.format("Cannot convert json to object: %s\n\tType:%s\n\tJsonString:\t\n%s", e.getMessage(), type.getTypeName(), jsonString);
+            throw new JsonConverterException(msg, jsonString, e);
+        }
+    }
+
+    public static JsonNode toObject(ObjectMapper objectMapper, String jsonString) {
+        try {
+            JsonParser jsonParser = objectMapper.getFactory().createParser(jsonString);
+            return objectMapper.readTree(jsonParser);
+        } catch (Exception e) {
+            String msg = String.format("Cannot convert json to object: %s\n\tType:%s\n\tJsonString:\t\n%s", e.getMessage(), JsonNode.class.getName(), jsonString);
             throw new JsonConverterException(msg, jsonString, e);
         }
     }
