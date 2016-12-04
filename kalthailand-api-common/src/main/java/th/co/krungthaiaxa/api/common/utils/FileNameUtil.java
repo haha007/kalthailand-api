@@ -19,8 +19,8 @@ public class FileNameUtil {
         FILE_EXTENSION_MAP.put("docm", "application/vnd.ms-word.document.macroEnabled.12");
         FILE_EXTENSION_MAP.put("dotm", "application/vnd.ms-word.template.macroEnabled.12");
         FILE_EXTENSION_MAP.put("xls", "application/vnd.ms-excel");
-        FILE_EXTENSION_MAP.put("xlt", "application/vnd.ms-excel");
-        FILE_EXTENSION_MAP.put("xla", "application/vnd.ms-excel");
+//        FILE_EXTENSION_MAP.put("xlt", "application/vnd.ms-excel");
+//        FILE_EXTENSION_MAP.put("xla", "application/vnd.ms-excel");
         FILE_EXTENSION_MAP.put("xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         FILE_EXTENSION_MAP.put("xltx", "application/vnd.openxmlformats-officedocument.spreadsheetml.template");
         FILE_EXTENSION_MAP.put("xlsm", "application/vnd.ms-excel.sheet.macroEnabled.12");
