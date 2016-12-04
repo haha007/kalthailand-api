@@ -2,6 +2,7 @@ package th.co.krungthaiaxa.api.common.basetest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.icegreen.greenmail.junit.GreenMailRule;
+import com.icegreen.greenmail.store.FolderException;
 import com.icegreen.greenmail.util.ServerSetupTest;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -57,6 +58,14 @@ public abstract class BaseIntegrationResourceTest {
         }
         Assert.assertEquals(expectHttpStatus, responseEntity.getStatusCode());
         return error;
+    }
+
+    public void clearGreenMail() {
+        try {
+            greenMail.purgeEmailFromAllMailboxes();
+        } catch (FolderException e) {
+            LOGGER.error(e.getMessage(), e);
+        }
     }
 
     //GETTER /////////////////////////////////

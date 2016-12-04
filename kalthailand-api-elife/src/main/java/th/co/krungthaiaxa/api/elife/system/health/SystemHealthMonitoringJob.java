@@ -28,9 +28,10 @@ public class SystemHealthMonitoringJob {
     private final SystemHealthSettingService systemHealthSettingService;
     private final ElifeEmailService emailService;
     private Instant previousDangerTime = null;
-    private long WARNING_WHEN_DANGER_IN_MILLS = 300;//will send warning if in danger in 5 minutes.
+    @Value("${system.health.warning.in-danger.mills}")
+    private long defaultMillsInDangerBeforeWarning;
 
-    private long millsInDangerToWarning = WARNING_WHEN_DANGER_IN_MILLS;//5 mins
+    private Long millsInDangerToWarning;
     private static final String EMAIL_HEALTH_WARNING_PATH = "/system/health/email-health-warning.html";
     private static final String EMAIL_HEALTH_WARNING_TEMPLATE = IOUtil.loadTextFileInClassPath(EMAIL_HEALTH_WARNING_PATH);
 
@@ -57,7 +58,6 @@ public class SystemHealthMonitoringJob {
     }
 
     public void monitorHealth() {
-        LogUtil.logStarting("[SYSTEM.HEALTH] [RUNNING]");
         SystemHealthSetting systemHealthSetting = systemHealthSettingService.loadSetting();
         SystemHealth systemHealth = systemHealthService.loadHealthStatus();
         if (shouldSendWarning(systemHealth, systemHealthSetting)) {
@@ -74,6 +74,9 @@ public class SystemHealthMonitoringJob {
                 LOGGER.warn("System health in danger: " + ObjectMapperUtil.toStringMultiLine(systemHealth));
             }
             Duration duration = Duration.between(previousDangerTime, now);
+            if (millsInDangerToWarning == null) {
+                millsInDangerToWarning = defaultMillsInDangerBeforeWarning;
+            }
             if (duration.toMillis() >= millsInDangerToWarning) {
                 millsInDangerToWarning *= 2;
                 previousDangerTime = now;
@@ -83,7 +86,7 @@ public class SystemHealthMonitoringJob {
                 return false;
             }
         } else {
-            millsInDangerToWarning = WARNING_WHEN_DANGER_IN_MILLS;
+            millsInDangerToWarning = defaultMillsInDangerBeforeWarning;
             previousDangerTime = null;
             return false;
         }
@@ -118,13 +121,5 @@ public class SystemHealthMonitoringJob {
         for (String toEmail : toEmails) {
             emailService.sendEmail(toEmail, "[Elife][System Health] warning health", emailHealthWarningContent);
         }
-    }
-
-    public Boolean getEnableJob() {
-        return enableJob;
-    }
-
-    public void setEnableJob(Boolean enableJob) {
-        this.enableJob = enableJob;
     }
 }
