@@ -17,4 +17,4 @@ kalthailand-admin-elife/bin/
 .sonar
 
 kalthailand-admin-elife/src/main/resources/static/libs/bootstrap-gentellena/*/.gitignore
-*.json
+kalthailand-admin-elife/src/main/resources/static/libs/**/*.json
