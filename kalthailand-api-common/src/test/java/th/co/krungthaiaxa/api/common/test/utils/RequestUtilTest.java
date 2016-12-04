@@ -12,7 +12,7 @@ import java.util.Map;
  */
 public class RequestUtilTest {
     @Test
-    public void success_generate_parameters() {
+    public void testSuccessGenerateParameters() {
         Map<String, Object> params = new HashMap<>();
         params.put("policyId", "123");
         params.put("quoteId", null);

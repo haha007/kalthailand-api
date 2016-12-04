@@ -1,4 +1,4 @@
-package th.co.krungthaiaxa.api.elife.test.utils;
+package th.co.krungthaiaxa.api.common.test.utils;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -9,7 +9,7 @@ import th.co.krungthaiaxa.api.common.utils.FileNameUtil;
  */
 public class FileNameUtilsTest {
     @Test
-    public void success_get_file_extension() {
+    public void testSuccessGetFileExtension() {
         testExtensionFromMimeType("xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         testExtensionFromMimeType("xls", "application/vnd.ms-excel");
         testExtensionFromMimeType("pdf", "application/pdf");
@@ -21,7 +21,7 @@ public class FileNameUtilsTest {
     }
 
     @Test
-    public void success_get_file_mimetype() {
+    public void testSuccessGetFileMimetype() {
         Assert.assertEquals("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", FileNameUtil.getMimeTypeFromFileExtension("xlsx"));
         Assert.assertEquals("application/vnd.ms-excel", FileNameUtil.getMimeTypeFromFileExtension("xls"));
         Assert.assertEquals("application/pdf", FileNameUtil.getMimeTypeFromFileExtension("pdf"));
