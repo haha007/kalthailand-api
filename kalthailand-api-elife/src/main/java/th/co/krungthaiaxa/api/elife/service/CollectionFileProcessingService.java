@@ -208,7 +208,7 @@ public class CollectionFileProcessingService {
             LinePayRecurringResponse linePayResponse;
             if (mockFailPayment(policy)) {
                 linePayResponse = new LinePayRecurringResponse();
-                linePayResponse.setReturnCode(LineService.RESPONSE_CODE_ERROR_NO_REGKEY);
+                linePayResponse.setReturnCode(LineService.RESPONSE_CODE_ERROR_MOCK_LINE_FAIL);
                 linePayResponse.setReturnMessage("MockFailTest");
             } else {
                 linePayResponse = lineService.preApproved(lastRegistrationKey, paymentAmountFromCollection, currencyCode, productId, orderId);

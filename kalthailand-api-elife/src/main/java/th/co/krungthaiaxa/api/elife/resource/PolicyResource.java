@@ -229,12 +229,6 @@ public class PolicyResource {
     @ResponseBody
     public Policy getPolicy(@ApiParam(value = "The policy number", required = true) @PathVariable String policyNumber) {
         return policyService.findPolicyWithFullDetailsByPolicyNumber(policyNumber);
-//        Optional<Policy> policy = policyService.findPolicyByPolicyNumber(policyNumber);
-//        if (!policy.isPresent()) {
-//            return new ResponseEntity<>(getJson(ErrorCode.POLICY_DOES_NOT_EXIST), NOT_FOUND);
-//        } else {
-//            return new ResponseEntity<>(getJson(policy.get()), OK);
-//        }
     }
 
     @ApiOperation(value = "Send notifications", notes = "Sends pre-defined notifications to insured on different channels (SMS, eMail, Line Push notification). Content of notification and channels of notifications depends on reminder ID.", response = String.class)

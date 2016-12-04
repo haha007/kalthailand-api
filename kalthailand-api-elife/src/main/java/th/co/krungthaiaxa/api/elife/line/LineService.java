@@ -46,6 +46,7 @@ import static th.co.krungthaiaxa.api.common.utils.JsonUtil.getJson;
 public class LineService {
     public final static Logger LOGGER = LoggerFactory.getLogger(LineService.class);
     public static final String RESPONSE_CODE_ERROR_NOT_ALLOWED_TO_ACCESS = "1106";
+    public static final String RESPONSE_CODE_ERROR_MOCK_LINE_FAIL = "9001";
     public static final String RESPONSE_CODE_ERROR_NO_REGKEY = "1190";
     public static final String RESPONSE_CODE_ERROR_INTERNAL_LINEPAY = "9000";
     public static final List<String> RESPONSE_CODES_ERROR_BY_INTERNAL_APP = Collections.unmodifiableList(Arrays.asList(LineService.RESPONSE_CODE_ERROR_INTERNAL_LINEPAY, LineService.RESPONSE_CODE_ERROR_NOT_ALLOWED_TO_ACCESS));

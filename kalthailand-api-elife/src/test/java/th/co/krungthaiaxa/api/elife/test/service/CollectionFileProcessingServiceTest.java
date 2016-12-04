@@ -77,7 +77,7 @@ public class CollectionFileProcessingServiceTest extends ELifeTest {
     @Inject
     private QuoteService quoteService;
     @Inject
-    private CollectionFileProcessingService rlsService;
+    private CollectionFileProcessingService collectionFileProcessingService;
     @Inject
     private CollectionFileImportingService collectionFileImportingService;
     @Inject
@@ -94,7 +94,7 @@ public class CollectionFileProcessingServiceTest extends ELifeTest {
     @Before
     public void setup() throws IOException {
         lineService = LineServiceMockFactory.initServiceDefault();
-        rlsService.setLineService(lineService);
+        collectionFileProcessingService.setLineService(lineService);
     }
 
     @After
@@ -168,7 +168,7 @@ public class CollectionFileProcessingServiceTest extends ELifeTest {
         CollectionFile collectionFile = collectionFileImportingService.importCollectionFile(inputStream);
         Assert.assertEquals(3, collectionFile.getLines().size());
 
-        List<CollectionFile> collectionFiles = rlsService.processLatestCollectionFiles();
+        List<CollectionFile> collectionFiles = collectionFileProcessingService.processLatestCollectionFiles();
         CollectionFile collectionFileResult = collectionFiles.get(0);
         Assert.assertEquals(3, collectionFileResult.getLines().size());
 
@@ -182,12 +182,26 @@ public class CollectionFileProcessingServiceTest extends ELifeTest {
 //        assertThatThrownBy(() -> collectionFileImportingService.importCollectionFile(inputStream)).isInstanceOf(BadArgumentException.class);
     }
 
+    private void assertDeductionStatus(CollectionFile collectionFile, String... statuses) {
+        int i = 0;
+        for (DeductionFileLine deductionFileLine : collectionFile.getDeductionFile().getLines()) {
+            Assert.assertEquals(statuses[i], deductionFileLine.getRejectionCode());
+            i++;
+        }
+
+    }
+
     private void assertCollectionFileAndDeductionFileIsEquals(CollectionFile collectionFile) {
         int line = 0;
         for (CollectionFileLine collectionFileLine : collectionFile.getLines()) {
             DeductionFileLine deductionFileLine = collectionFile.getDeductionFile().getLines().get(line);
             Assert.assertEquals(collectionFileLine.getPaymentId(), deductionFileLine.getPaymentId());
-            Assert.assertEquals(collectionFileLine.getPremiumAmount(), deductionFileLine.getAmount());
+            assertThat(deductionFileLine.getAmount()).isEqualTo(collectionFileLine.getPremiumAmount());
+            assertThat(deductionFileLine.getBankCode()).isEqualTo(collectionFileLine.getBankCode());
+            assertThat(deductionFileLine.getPaymentMode()).isEqualTo(collectionFileLine.getPaymentMode());
+            assertThat(deductionFileLine.getPolicyNumber()).isEqualTo(collectionFileLine.getPolicyNumber());
+            assertThat(deductionFileLine.getProcessDate()).isEqualToIgnoringMinutes(LocalDateTime.now());
+
             line++;
         }
     }
@@ -250,7 +264,7 @@ public class CollectionFileProcessingServiceTest extends ELifeTest {
 
         InputStream inputStream = CollectionFileFactory.constructCollectionExcelFileByPolicy(policy);
         collectionFileImportingService.importCollectionFile(inputStream);
-        rlsService.processLatestCollectionFiles();
+        collectionFileProcessingService.processLatestCollectionFiles();
         Policy updatedPolicy = policyRepository.findByPolicyId(policy.getPolicyId());
         Optional<Payment> newPayment = updatedPolicy.getPayments().stream().filter(payment -> !policy.getPayments().contains(payment)).findFirst();
         assertThat(updatedPolicy.getPayments()).hasSize(policy.getPayments().size() + 1);
@@ -266,7 +280,7 @@ public class CollectionFileProcessingServiceTest extends ELifeTest {
 
         InputStream inputStream = CollectionFileFactory.constructCollectionExcelFileByPolicy(policy);
         collectionFileImportingService.importCollectionFile(inputStream);
-        rlsService.processLatestCollectionFiles();
+        collectionFileProcessingService.processLatestCollectionFiles();
         Policy updatedPolicy = policyRepository.findByPolicyId(policy.getPolicyId());
         Optional<Payment> newPayment = updatedPolicy.getPayments().stream().filter(payment -> !policy.getPayments().contains(payment)).findFirst();
         assertThat(updatedPolicy.getPayments()).hasSize(policy.getPayments().size() + 1);
@@ -283,7 +297,7 @@ public class CollectionFileProcessingServiceTest extends ELifeTest {
 
         InputStream inputStream = CollectionFileFactory.constructCollectionExcelFileByPolicy(policy);
         collectionFileImportingService.importCollectionFile(inputStream);
-        rlsService.processLatestCollectionFiles();
+        collectionFileProcessingService.processLatestCollectionFiles();
         Policy updatedPolicy = policyRepository.findByPolicyId(policy.getPolicyId());
         Optional<Payment> newPayment = updatedPolicy.getPayments().stream().filter(payment -> !policy.getPayments().contains(payment)).findFirst();
         assertThat(updatedPolicy.getPayments()).hasSize(policy.getPayments().size() + 1);
@@ -313,7 +327,7 @@ public class CollectionFileProcessingServiceTest extends ELifeTest {
         InputStream inputStream = CollectionFileFactory.constructCollectionExcelFileByPolicy(policy);
         CollectionFile collectionFile = collectionFileImportingService.importCollectionFile(inputStream);
 
-        List<CollectionFile> collectionFilesResult = rlsService.processLatestCollectionFiles();
+        List<CollectionFile> collectionFilesResult = collectionFileProcessingService.processLatestCollectionFiles();
         CollectionFile collectionFileResult = collectionFilesResult.get(0);
         CollectionFileLine firstCollectionFileLine = collectionFileResult.getLines().get(0);
 
@@ -421,15 +435,17 @@ public class CollectionFileProcessingServiceTest extends ELifeTest {
 
     @Test
     public void run_cron_job() {
-        ProductQuotation productQuotation01 = ProductQuotationFactory.constructIGenDefaultWithMonthlyPayment();
-        Policy policy01 = policyFactory.createPolicyWithValidatedStatus(productQuotation01, TestUtil.TESTING_EMAIL);
-        ProductQuotation productQuotation02 = ProductQuotationFactory.constructIProtectDefaultWithMonthlyPayment();
-        Policy policy02 = policyFactory.createPolicyWithValidatedStatus(productQuotation02, TestUtil.TESTING_EMAIL);
+        Policy policy01 = policyFactory.createPolicyWithValidatedStatus(ProductQuotationFactory.constructIGenDefaultWithMonthlyPayment(), TestUtil.TESTING_EMAIL);
+        Policy policy02 = policyFactory.createPolicyWithValidatedStatus(ProductQuotationFactory.constructIProtectDefaultWithMonthlyPayment(), TestUtil.TESTING_EMAIL);
+        Policy policy03 = policyFactory.createPolicyWithValidatedStatus(ProductQuotationFactory.constructIProtectDefaultWithMonthlyPayment(), TestUtil.TESTING_EMAIL_FAIL_COLLECTION_PAYMENT);
 
-        InputStream inputStream = collectionFileFactory.constructCollectionExcelFileWithDefaultPayment(policy01.getPolicyId(), policy02.getPolicyId());
+        InputStream inputStream = collectionFileFactory.constructCollectionExcelFileWithDefaultPayment(policy01.getPolicyId(), policy02.getPolicyId(), policy03.getPolicyId());
 
         collectionFileImportingService.importCollectionFile(inputStream);
-        rlsService.processLatestCollectionFiles();
+        List<CollectionFile> collectionFiles = collectionFileProcessingService.processLatestCollectionFiles();
+        CollectionFile collectionFile = collectionFiles.get(0);
+        assertCollectionFileAndDeductionFileIsEquals(collectionFile);
+        assertDeductionStatus(collectionFile, LineService.RESPONSE_CODE_SUCCESS, LineService.RESPONSE_CODE_SUCCESS, LineService.RESPONSE_CODE_ERROR_MOCK_LINE_FAIL);
     }
 
     /*
