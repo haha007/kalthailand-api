@@ -10,10 +10,14 @@ import th.co.krungthaiaxa.api.common.utils.FileNameUtil;
 public class FileNameUtilsTest {
     @Test
     public void success_get_file_extension() {
-        Assert.assertEquals("xlsx", FileNameUtil.getFileExtensionFromMimeType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
-        Assert.assertEquals("xls", FileNameUtil.getFileExtensionFromMimeType("application/vnd.ms-excel"));
-        Assert.assertEquals("pdf", FileNameUtil.getFileExtensionFromMimeType("application/pdf"));
+        testExtensionFromMimeType("xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        testExtensionFromMimeType("xls", "application/vnd.ms-excel");
+        testExtensionFromMimeType("pdf", "application/pdf");
 
+    }
+
+    private void testExtensionFromMimeType(String extension, String mimeType) {
+        Assert.assertEquals(extension, FileNameUtil.getFileExtensionFromMimeType(mimeType));
     }
 
     @Test
@@ -21,6 +25,5 @@ public class FileNameUtilsTest {
         Assert.assertEquals("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", FileNameUtil.getMimeTypeFromFileExtension("xlsx"));
         Assert.assertEquals("application/vnd.ms-excel", FileNameUtil.getMimeTypeFromFileExtension("xls"));
         Assert.assertEquals("application/pdf", FileNameUtil.getMimeTypeFromFileExtension("pdf"));
-
     }
 }

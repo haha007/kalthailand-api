@@ -64,7 +64,7 @@ public class RequestUtil {
     }
 
     public static String generateRequestParameters(Map<String, Object> parameters) {
-        String paramsString = parameters.entrySet().stream().map(entry -> generateRequestParameter(entry)).collect(Collectors.joining("&"));
+        String paramsString = parameters.entrySet().stream().filter(entry -> entry.getValue() != null).map(entry -> generateRequestParameter(entry)).collect(Collectors.joining("&"));
         if (StringUtils.isNotBlank(paramsString)) {
             paramsString = "?" + paramsString;
         }
