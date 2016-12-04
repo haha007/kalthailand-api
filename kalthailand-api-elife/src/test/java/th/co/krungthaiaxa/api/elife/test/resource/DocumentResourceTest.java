@@ -4,6 +4,7 @@ import com.icegreen.greenmail.junit.GreenMailRule;
 import com.icegreen.greenmail.util.ServerSetupTest;
 import org.apache.commons.io.IOUtils;
 import org.assertj.core.api.Assertions;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -13,6 +14,7 @@ import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -21,11 +23,12 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import th.co.krungthaiaxa.api.common.model.error.Error;
 import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
+import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
+import th.co.krungthaiaxa.api.common.utils.IOUtil;
 import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
-import th.co.krungthaiaxa.api.elife.utils.TestUtil;
 import th.co.krungthaiaxa.api.elife.factory.PolicyFactory;
-import th.co.krungthaiaxa.api.elife.factory.productquotation.ProductQuotationFactory;
 import th.co.krungthaiaxa.api.elife.factory.QuoteFactory;
+import th.co.krungthaiaxa.api.elife.factory.productquotation.ProductQuotationFactory;
 import th.co.krungthaiaxa.api.elife.model.Document;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.Quote;
@@ -34,6 +37,7 @@ import th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus;
 import th.co.krungthaiaxa.api.elife.service.PolicyService;
 import th.co.krungthaiaxa.api.elife.service.QuoteService;
 import th.co.krungthaiaxa.api.elife.test.ELifeTest;
+import th.co.krungthaiaxa.api.elife.utils.TestUtil;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -218,6 +222,23 @@ public class DocumentResourceTest extends ELifeTest {
 
         List<Document> documents = TestUtil.getDocumentsFromJSon(response.getBody());
         assertThat(documents).hasSize(2);
+    }
+
+    @Test
+    public void able_to_download_document_inside_policy() throws IOException, URISyntaxException {
+        Policy policy = policyFactory.createPolicyWithValidatedStatus(ProductQuotationFactory.constructIGenDefault());
+        List<Document> documents = policy.getDocuments();
+        Assert.assertTrue(!documents.isEmpty());
+        for (Document document : documents) {
+            testDownloadDocument(document);
+        }
+    }
+
+    private void testDownloadDocument(Document document) throws URISyntaxException, IOException {
+        ResponseEntity<byte[]> response = template.getForEntity(baseUrl + "/documents/" + document.getId() + "/download", byte[].class);
+        IOUtil.writeBytesToRelativeFile(TestUtil.PATH_TEST_RESULT + "/documents/" + DateTimeUtil.formatNowForFilePath() + "_" + document.getTypeName() + "_" + document.getPolicyId() + ".pdf", response.getBody());
+        Assert.assertEquals(HttpStatus.OK, response.getStatusCode());
+
     }
 
     private Policy getPolicy() throws URISyntaxException, IOException {
