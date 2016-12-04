@@ -13,7 +13,7 @@ public class EncryptUtilTest {
     private final static Logger LOGGER = LoggerFactory.getLogger(EncryptUtilTest.class);
 
     @Test
-    public void should_encrypt_and_decrypt_success() {
+    public void test_should_encrypt_and_decrypt_success() {
         String originalText = "3101202780273";
         String encodedText = EncryptUtil.encrypt(originalText);
         LOGGER.info("Encoded text: %n" + encodedText);
@@ -24,7 +24,7 @@ public class EncryptUtilTest {
     }
 
     @Test
-    public void should_decrypt() {
+    public void test_should_decrypt() {
         try {
             String encrypted =
                     "fgQa4KR7J32CkTDI7hcMDZC2CjTHijuPd3zP3KpBiWlqSMR08Di9ypvXzreyUmHUKBHucJc4haYltFFpghRuOdma+lp/Ui5eTGBPGhTn7kQCdcEUjhHZxdRBVWxPQsgFb14YwNFWWKee3mBwGfU1zhJAf/XWlQ9tU2rUSQ/nDulPRq1rgXEuAbMbJ/hc1NPsw0kkqQ2lfpFbcQGAiqezqneHFfxYgwK6/XdA2qHMvB2beIWutt015EUPGuTd02h7E592x1zKqeB/iO19fZf30/re/CGZK5mVJWrCmDd6mKJY+Yeq7mj8/JvNVBR4uJOJHmSPDmyXh5IFx6FIYxCRqA=="
@@ -42,7 +42,7 @@ public class EncryptUtilTest {
     }
 
     @Test
-    public void should_decrypt_broken_text() {
+    public void test_should_decrypt_broken_text() {
         try {
             String encrypted =
 //                    "fgQa4KR7J32CkTDI7hcMDZC2CjTHijuPd3zP3KpBiWlqSMR08Di9ypvXzreyUmHUKBHucJc4haYltFFpghRuOdma+lp/Ui5eTGBPGhTn7kQCdcEUjhHZxdRBVWxPQsgFb14YwNFWWKee3mBwGfU1zhJAf/XWlQ9tU2rUSQ/nDulPRq1rgXEuAbMbJ/hc1NPsw0kkqQ2lfpFbcQGAiqezqneHFfxYgwK6/XdA2qHMvB2beIWutt015EUPGuTd02h7E592x1zKqeB/iO19fZf30/re/CGZK5mVJWrCmDd6mKJY+Yeq7mj8/JvNVBR4uJOJHmSPDmyXh5IFx6FIYxCRqA=="
@@ -65,7 +65,7 @@ public class EncryptUtilTest {
     }
 
     @Test
-    public void should_encrypt() {
+    public void test_should_encrypt() {
         try {
             String plainText = EncryptUtil.encrypt(
                     "RK6C65719XTKZZP");

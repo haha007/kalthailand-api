@@ -88,7 +88,7 @@ public class PolicyResourceTest extends ELifeTest {
     }
 
     @Test
-    public void success_queried_policies() {
+    public void test_success_queried_policies() {
         Policy policy = policyFactory.createPolicyWithValidatedStatus(ProductQuotationFactory.constructIGenDefaultWithMonthlyPayment());
         String urlParameters = createParametersForQueryPolicies(policy);
         String url = baseUrl + "/policies" + urlParameters;
@@ -106,7 +106,7 @@ public class PolicyResourceTest extends ELifeTest {
     }
 
     @Test
-    public void success_export_queried_policies() {
+    public void test_success_export_queried_policies() {
         Policy policy = policyFactory.createPolicyWithValidatedStatus(ProductQuotationFactory.constructIGenDefaultWithMonthlyPayment());
         String urlParameters = createParametersForQueryPolicies(policy);
         String url = baseUrl + "/policies/extract/download" + urlParameters;
@@ -115,7 +115,7 @@ public class PolicyResourceTest extends ELifeTest {
     }
 
     @Test
-    public void success_get_one_policy() {
+    public void test_success_get_one_policy() {
         Policy policy = policyFactory.createPolicyWithValidatedStatus(ProductQuotationFactory.constructIGenDefaultWithMonthlyPayment());
         String url = baseUrl + "/policies/" + policy.getPolicyId();
         ResponseEntity<String> responseEntity = template.getForEntity(url, String.class);
@@ -162,7 +162,7 @@ public class PolicyResourceTest extends ELifeTest {
     }
 
     @Test
-    public void should_return_error_when_creating_policy_from_none_existing_quote() throws IOException {
+    public void test_should_return_error_when_creating_policy_from_none_existing_quote() throws IOException {
         String jsonQuote = TestUtil.getJSon(TestUtil.quote(TestUtil.product10ECService()));
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(base)
                 .queryParam("sessionId", randomNumeric(20))
@@ -175,7 +175,7 @@ public class PolicyResourceTest extends ELifeTest {
     }
 
     @Test
-    public void should_return_a_policy_object() throws IOException {
+    public void test_should_return_a_policy_object() throws IOException {
         Policy policy = getPolicy();
 
         // check database values
@@ -185,7 +185,7 @@ public class PolicyResourceTest extends ELifeTest {
     }
 
     @Test
-    public void should_return_policy_payment_list() throws IOException, URISyntaxException {
+    public void test_should_return_policy_payment_list() throws IOException, URISyntaxException {
         Policy policy = getPolicy();
 
         URI paymentURI = new URI("http://localhost:" + port + "/policies/" + policy.getPolicyId() + "/payments");
@@ -196,7 +196,7 @@ public class PolicyResourceTest extends ELifeTest {
     }
 
     @Test
-    public void should_update_payment_transaction_id_and_registration_key_but_not_the_status() throws IOException, URISyntaxException {
+    public void test_should_update_payment_transaction_id_and_registration_key_but_not_the_status() throws IOException, URISyntaxException {
         Policy policy = policyFactory.createPolicyWithPendingPaymentStatus(ProductQuotationFactory.constructIGenDefault());
 
         URI paymentURI = new URI("http://localhost:" + port + "/policies/" + policy.getPolicyId() + "/update/status/pendingValidation");
@@ -218,7 +218,7 @@ public class PolicyResourceTest extends ELifeTest {
     }
 
     @Test
-    public void cannot_update_status_policy_to_pendingValidation_when_missing_regKey() throws IOException, URISyntaxException {
+    public void test_cannot_update_status_policy_to_pendingValidation_when_missing_regKey() throws IOException, URISyntaxException {
         Policy policy = policyFactory.createPolicyWithPendingPaymentStatus(ProductQuotationFactory.constructIProtectDefaultWithMonthlyPayment());
 
         URI paymentURI = new URI("http://localhost:" + port + "/policies/" + policy.getPolicyId() + "/update/status/pendingValidation");
