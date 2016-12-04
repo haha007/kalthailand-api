@@ -27,7 +27,7 @@ import th.co.krungthaiaxa.api.elife.utils.TestUtil;
 @WebAppConfiguration
 @ActiveProfiles("test")
 public class SystemHealthMonitoringJobTest extends ELifeTest {
-    //Defined in application-test.properties, 'system.health.warning.in-danger.mills'
+    //For testing correctly, the number should not be less than 250 mills.
     @Value("${system.health.warning.in-danger.mills}")
     private int MILLS_IN_DANGER;
 
