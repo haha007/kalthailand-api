@@ -104,13 +104,15 @@
                 <td colspan="8">
                     <div class="btn-toolbar">
                         <div class="pull-right btn-group">
+
                             <button ng-repeat="page in collectionFilesDataTable.pager.pages"
-                                    ng-click="collectionFilesDataTable.setPage(page)"
-                                    ng-class="{active: collectionFilesDataTable.pager.currentPage == page}"
+                                    ng-click="collectionFilesDataTable.setPage(page.index)"
+                                    ng-class="{active: collectionFilesDataTable.pager.currentPage == page.index}"
                                     class="btn btn-success"
                                     type="button">
-                                {{page + 1}}
+                                {{page.label}}
                             </button>
+
                         </div>
                         <div class="clearfix"></div>
                     </div>
