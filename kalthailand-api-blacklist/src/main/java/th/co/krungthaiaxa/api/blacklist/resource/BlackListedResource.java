@@ -1,6 +1,10 @@
 package th.co.krungthaiaxa.api.blacklist.resource;
 
-import io.swagger.annotations.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.apache.poi.openxml4j.exceptions.OpenXML4JException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,20 +17,19 @@ import org.springframework.web.multipart.MultipartFile;
 import org.xml.sax.SAXException;
 import th.co.krungthaiaxa.api.blacklist.data.BlackListed;
 import th.co.krungthaiaxa.api.blacklist.exception.ElifeException;
-import th.co.krungthaiaxa.api.blacklist.model.Error;
-import th.co.krungthaiaxa.api.blacklist.model.ErrorCode;
 import th.co.krungthaiaxa.api.blacklist.service.BlackListedService;
+import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
 
 import javax.inject.Inject;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NOT_ACCEPTABLE;
+import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
-import static th.co.krungthaiaxa.api.blacklist.model.ErrorCode.INVALID_THAI_ID_FORMAT;
-import static th.co.krungthaiaxa.api.blacklist.model.ErrorCode.INVALID_THAI_ID_LENGTH;
 import static th.co.krungthaiaxa.api.blacklist.utils.JsonUtil.getJson;
 
 @RestController
@@ -54,14 +57,14 @@ public class BlackListedResource {
             blackListedService.checkThaiIdFormat(thaiId);
         } catch (ElifeException e) {
             logger.error("Thai ID is invalid.", e);
-            return new ResponseEntity<>(getJson(INVALID_THAI_ID_FORMAT.apply(e.getMessage())), NOT_ACCEPTABLE);
+            return new ResponseEntity<>(getJson(ErrorCode.INVALID_THAI_ID_FORMAT.apply(e.getMessage())), NOT_ACCEPTABLE);
         }
 
         try {
             blackListedService.checkThaiIdLength(thaiId);
         } catch (ElifeException e) {
             logger.error("Thai ID is invalid.", e);
-            return new ResponseEntity<>(getJson(INVALID_THAI_ID_LENGTH.apply(e.getMessage())), NOT_ACCEPTABLE);
+            return new ResponseEntity<>(getJson(ErrorCode.INVALID_THAI_ID_LENGTH.apply(e.getMessage())), NOT_ACCEPTABLE);
         }
 
         return new ResponseEntity<>(getJson(blackListedService.isBlackListed(thaiId)), OK);
