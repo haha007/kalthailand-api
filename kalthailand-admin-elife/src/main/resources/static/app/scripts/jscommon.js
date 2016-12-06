@@ -297,7 +297,7 @@ function isNotEmpty(variable) {
     return (typeof variable !== 'undefined') && (variable !== null) && (variable.length !== 0);
 }
 function isNotBlank(variable) {
-    return isNotEmpty(variable) && isNotEmpty(variable.trim());
+    return isNotEmpty(variable) || (isString(variable) && isNotEmpty(variable.trim()));
 }
 function isUndefined(value) {
     return typeof value == 'undefined';
