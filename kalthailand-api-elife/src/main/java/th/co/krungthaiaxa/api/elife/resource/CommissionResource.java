@@ -5,31 +5,27 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import th.co.krungthaiaxa.api.common.model.error.Error;
+import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
+import th.co.krungthaiaxa.api.common.utils.DownloadUtil;
+import th.co.krungthaiaxa.api.common.utils.MimeTypeUtil;
 import th.co.krungthaiaxa.api.elife.commission.data.CommissionCalculationSession;
 import th.co.krungthaiaxa.api.elife.commission.data.CommissionPlan;
 import th.co.krungthaiaxa.api.elife.commission.data.CommissionResult;
 import th.co.krungthaiaxa.api.elife.commission.service.CommissionCalculationSessionExportService;
 import th.co.krungthaiaxa.api.elife.commission.service.CommissionCalculationSessionService;
 import th.co.krungthaiaxa.api.elife.commission.service.CommissionPlanService;
-import th.co.krungthaiaxa.api.elife.model.Policy;
-import th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus;
-import th.co.krungthaiaxa.api.elife.products.ProductType;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.List;
 
 import static java.time.LocalDateTime.now;
@@ -73,7 +69,7 @@ public class CommissionResource {
     public void calculateCommissionsForPolicies() {
         commissionCalculationSessionService.calculateCommissionForPolicies();
     }
-    
+
     //santi : for get list of calculated commission
     @ApiOperation(value = "Get list of calculated commission transactions", notes = "Get list of calculated commission transactions", response = CommissionResult.class, responseContainer = "List")
     @ApiResponses({ @ApiResponse(code = 500, message = "If there's any internal error", response = Error.class) })
@@ -81,36 +77,19 @@ public class CommissionResource {
     public List<CommissionResult> getCalculateCommissionsList() {
         return commissionCalculationSessionService.getCommissionCalculationedList();
     }
-    
+
     //santi : for download commission excel file
     @ApiOperation(value = "Commission download excel file", notes = "Commission download excel file", response = CommissionResult.class, responseContainer = "List")
     @RequestMapping(value = "/commissions/calculation/download/{rowId}", method = GET)
     @ResponseBody
     public void getCommissionResultExcelFile(
-    		@ApiParam(value = "The Commission Result Row Id", required = true)
-    		@PathVariable String rowId,
-    		HttpServletResponse response) {
-    	
-    	String now = ofPattern("yyyyMMdd_HHmmss").format(now());
-    	
-    	byte[] content = commissionCalculationSessionService.exportToExcel(rowId, now);
-    	
-    	response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-        response.setContentLength(content.length);
+            @ApiParam(value = "The Commission Result Row Id", required = true)
+            @PathVariable String rowId,
+            HttpServletResponse response) {
 
-        
-        String fileName = "eLife_CommissionExtract_" + now + ".xlsx";
-        // set headers for the response
-        String headerKey = "Content-Disposition";
-        String headerValue = String.format("attachment; filename=\"%s\"", fileName);
-        response.setHeader(headerKey, headerValue);
-
-        try (OutputStream outStream = response.getOutputStream()) {
-            IOUtils.write(content, outStream);
-        } catch (IOException e) {
-            logger.error("Unable to download the commission file", e);
-        }
-        
+        String now = ofPattern("yyyyMMdd_HHmmss").format(now());
+        byte[] excelFileContent = commissionCalculationSessionExportService.exportToExcel(rowId, now);
+        DownloadUtil.writeBytesToResponse(response, excelFileContent, "commission_" + DateTimeUtil.formatNowForFilePath() + "_" + rowId, MimeTypeUtil.MIME_TYPE_PDF);
     }
 
     @ApiOperation(value = "Get Deduction file", notes = "Get a Deduction file")
@@ -118,20 +97,6 @@ public class CommissionResource {
     public void getDeductionFile(@PathVariable String commissionCalculationSessionIdString, HttpServletResponse response) {
         logger.info("Downloading deduction File");
         byte[] excelFileContent = commissionCalculationSessionExportService.exportExcel(commissionCalculationSessionIdString);
-
-        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-        response.setContentLength(excelFileContent.length);
-
-        String fileName = "deductionFile_" + ofPattern("yyyyMMdd_HHmmss").format(now()) + ".xlsx";
-        // set headers for the response
-        String headerKey = "Content-Disposition";
-        String headerValue = String.format("attachment; filename=\"%s\"", fileName);
-        response.setHeader(headerKey, headerValue);
-
-        try (OutputStream outStream = response.getOutputStream()) {
-            IOUtils.write(excelFileContent, outStream);
-        } catch (IOException e) {
-            logger.error("Unable to download the deduction file", e);
-        }
+        DownloadUtil.writeBytesToResponse(response, excelFileContent, "commission_" + DateTimeUtil.formatNowForFilePath() + "_" + commissionCalculationSessionIdString, MimeTypeUtil.MIME_TYPE_PDF);
     }
 }

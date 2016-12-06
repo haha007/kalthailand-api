@@ -1,9 +1,12 @@
 package th.co.krungthaiaxa.api.elife.commission.data;
 
+import io.swagger.annotations.ApiModelProperty;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import th.co.krungthaiaxa.api.common.data.BaseEntity;
 
+import javax.validation.constraints.NotNull;
+import java.time.Instant;
 import java.util.List;
 
 /**
@@ -15,6 +18,10 @@ public class CommissionCalculationSession extends BaseEntity {
     private List<CommissionPlan> commissionPlans;
     @DBRef
     private List<CommissionCalculation> commissionCalculations;
+
+    @ApiModelProperty(value = "This commission session is calculated on the payments which proccessed before the commissionDate (within one month)")
+    @NotNull
+    private Instant commissionDate;
 
     public List<CommissionPlan> getCommissionPlans() {
         return commissionPlans;
@@ -30,5 +37,13 @@ public class CommissionCalculationSession extends BaseEntity {
 
     public void setCommissionCalculations(List<CommissionCalculation> commissionCalculations) {
         this.commissionCalculations = commissionCalculations;
+    }
+
+    public Instant getCommissionDate() {
+        return commissionDate;
+    }
+
+    public void setCommissionDate(Instant commissionDate) {
+        this.commissionDate = commissionDate;
     }
 }

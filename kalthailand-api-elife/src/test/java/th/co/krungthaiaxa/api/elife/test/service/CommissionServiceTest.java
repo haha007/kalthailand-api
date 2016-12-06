@@ -6,7 +6,6 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import th.co.krungthaiaxa.api.elife.test.ELifeTest;
 import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
 import th.co.krungthaiaxa.api.elife.commission.data.CommissionPlan;
 import th.co.krungthaiaxa.api.elife.commission.data.CommissionResult;
@@ -16,9 +15,11 @@ import th.co.krungthaiaxa.api.elife.commission.data.CommissionTargetGroup;
 import th.co.krungthaiaxa.api.elife.commission.data.CommissionTargetGroupType;
 import th.co.krungthaiaxa.api.elife.commission.data.CustomerCategory;
 import th.co.krungthaiaxa.api.elife.commission.repositories.CommissionResultRepository;
+import th.co.krungthaiaxa.api.elife.commission.service.CommissionCalculationSessionExportService;
 import th.co.krungthaiaxa.api.elife.commission.service.CommissionCalculationSessionService;
 import th.co.krungthaiaxa.api.elife.commission.service.CommissionPlanService;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
+import th.co.krungthaiaxa.api.elife.test.ELifeTest;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -40,6 +41,8 @@ public class CommissionServiceTest extends ELifeTest {
     CommissionPlanService commissionPlanService;
     @Inject
     CommissionCalculationSessionService commissionCalculationSessionService;
+    @Inject
+    CommissionCalculationSessionExportService commissionCalculationSessionExportService;
     @Inject
     CommissionResultRepository commissionResultRepository;
 
@@ -73,7 +76,7 @@ public class CommissionServiceTest extends ELifeTest {
     public void should_get_excel_commission() {
         List<CommissionResult> commissionList = commissionResultRepository.findAll();
         if (commissionList.size() != 0) {
-            byte[] content = commissionCalculationSessionService.exportToExcel(commissionList.get(0).getRowId(), ofPattern("yyyyMMdd_HHmmss").format(now()));
+            byte[] content = commissionCalculationSessionExportService.exportToExcel(commissionList.get(0).getRowId(), ofPattern("yyyyMMdd_HHmmss").format(now()));
             File excelFile = new File("target/commissionExtract.xlsx");
             try {
                 writeByteArrayToFile(excelFile, content);

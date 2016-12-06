@@ -6,7 +6,10 @@ import th.co.krungthaiaxa.api.common.data.BaseEntity;
 import java.util.List;
 
 /**
+ * TODO Must migrate data from CommissionResult to CommissionCalculationSession
  * Should be replaced by new data structure.
+ *
+ * @deprecated replaced by {@link CommissionCalculationSession}.
  */
 @Document(collection = "commissionResult")
 @Deprecated

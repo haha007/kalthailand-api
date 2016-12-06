@@ -6,7 +6,10 @@ import java.util.Map;
 /**
  * @author khoi.tran on 11/30/16.
  */
-public class FileNameUtil {
+public class MimeTypeUtil {
+    public static final String MIME_TYPE_XLS = "application/vnd.ms-excel";
+    public static final String MIME_TYPE_XLSX = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+    public static final String MIME_TYPE_PDF = "application/pdf";
     private static final Map<String, String> FILE_EXTENSION_MAP;
 
     static {
@@ -18,10 +21,10 @@ public class FileNameUtil {
         FILE_EXTENSION_MAP.put("dotx", "application/vnd.openxmlformats-officedocument.wordprocessingml.template");
         FILE_EXTENSION_MAP.put("docm", "application/vnd.ms-word.document.macroEnabled.12");
         FILE_EXTENSION_MAP.put("dotm", "application/vnd.ms-word.template.macroEnabled.12");
-        FILE_EXTENSION_MAP.put("xls", "application/vnd.ms-excel");
+        FILE_EXTENSION_MAP.put("xls", MIME_TYPE_XLS);
 //        FILE_EXTENSION_MAP.put("xlt", "application/vnd.ms-excel");
 //        FILE_EXTENSION_MAP.put("xla", "application/vnd.ms-excel");
-        FILE_EXTENSION_MAP.put("xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        FILE_EXTENSION_MAP.put("xlsx", MIME_TYPE_XLSX);
         FILE_EXTENSION_MAP.put("xltx", "application/vnd.openxmlformats-officedocument.spreadsheetml.template");
         FILE_EXTENSION_MAP.put("xlsm", "application/vnd.ms-excel.sheet.macroEnabled.12");
         FILE_EXTENSION_MAP.put("xltm", "application/vnd.ms-excel.template.macroEnabled.12");
@@ -57,7 +60,7 @@ public class FileNameUtil {
         // Other
         FILE_EXTENSION_MAP.put("txt", "text/plain");
         FILE_EXTENSION_MAP.put("rtf", "application/rtf");
-        FILE_EXTENSION_MAP.put("pdf", "application/pdf");
+        FILE_EXTENSION_MAP.put("pdf", MIME_TYPE_PDF);
     }
 
     public static String getMimeTypeFromFileExtension(String fileExtension) {
