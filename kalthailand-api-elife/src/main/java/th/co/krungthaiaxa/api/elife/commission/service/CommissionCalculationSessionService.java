@@ -70,7 +70,7 @@ public class CommissionCalculationSessionService {
     }
 
     //santi : for get list of calculated commission
-    public List<CommissionResult> getCommissionCalculationedList() {
+    public List<CommissionResult> findAllCommissionCalculationSessions() {
         LOGGER.debug("Start process to get commission list .....");
         LOGGER.debug("Stop process to get commission list .....");
         return commissionResultRepository.findAllByOrderByCreatedDateTimeAsc();

@@ -2,6 +2,7 @@ package th.co.krungthaiaxa.api.elife.test.service;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -19,6 +20,7 @@ import th.co.krungthaiaxa.api.elife.commission.service.CommissionCalculationSess
 import th.co.krungthaiaxa.api.elife.commission.service.CommissionCalculationSessionService;
 import th.co.krungthaiaxa.api.elife.commission.service.CommissionPlanService;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
+import th.co.krungthaiaxa.api.elife.repository.cdb.CDBRepository;
 import th.co.krungthaiaxa.api.elife.test.ELifeTest;
 
 import javax.inject.Inject;
@@ -46,6 +48,9 @@ public class CommissionServiceTest extends ELifeTest {
     @Inject
     CommissionResultRepository commissionResultRepository;
 
+    @Autowired
+    private CDBRepository cdbRepository;
+
     @Test
     public void test_create_commission_with_good_data() {
         List<CommissionPlan> commissionPlans = new ArrayList<>();
@@ -60,10 +65,37 @@ public class CommissionServiceTest extends ELifeTest {
         commissionCalculationSessionService.calculateCommissionForPolicies();
     }
 
+//    @Test
+//    public void testPerformance() {
+//        List<CommissionPlan> commissionPlans = commissionPlanService.findAll();
+//        List<String> channelIds = commissionPlans.stream().map(sc -> sc.getUnitCode()).collect(Collectors.toList());//list of UnitCode
+//        List<String> planCodes = commissionPlans.stream().map(sc -> sc.getPlanCode()).collect(Collectors.toList());
+//        List<String> channelIdsNoDup = channelIds.stream().distinct().collect(Collectors.toList());
+//        List<String> planCodesNoDup = planCodes.stream().distinct().collect(Collectors.toList());
+//
+//        //Warmup
+//        for (int i = 0; i < 5; i++) {
+//            cdbRepository.findPoliciesByChannelIdsAndPaymentModeIds(channelIdsNoDup, planCodesNoDup);
+//            cdbRepository.findPoliciesByChannelIdsAndPaymentModeIdsMap(channelIdsNoDup, planCodesNoDup);
+//        }
+//
+//        //Test performance.
+//        Instant start = Instant.now();
+//        for (int i = 0; i < 300; i++) {
+//            cdbRepository.findPoliciesByChannelIdsAndPaymentModeIds(channelIdsNoDup, planCodesNoDup);
+//        }
+//        start = LogUtil.logRuntime(start, "[BeanMapping] finish");
+//
+//        for (int i = 0; i < 300; i++) {
+//            cdbRepository.findPoliciesByChannelIdsAndPaymentModeIdsMap(channelIdsNoDup, planCodesNoDup);
+//        }
+//        start = LogUtil.logRuntime(start, "[Map] finish");
+//    }
+
     //santi : for get list of all commission result
     @Test
     public void shold_get_list_of_calculated_commission_result() {
-        List<CommissionResult> list = commissionCalculationSessionService.getCommissionCalculationedList();
+        List<CommissionResult> list = commissionCalculationSessionService.findAllCommissionCalculationSessions();
         assertThat(list).isInstanceOf(List.class);
     }
 

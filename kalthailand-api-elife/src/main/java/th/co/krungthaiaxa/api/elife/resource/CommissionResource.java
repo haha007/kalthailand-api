@@ -75,7 +75,7 @@ public class CommissionResource {
     @ApiResponses({ @ApiResponse(code = 500, message = "If there's any internal error", response = Error.class) })
     @RequestMapping(value = "/commissions/calculation/lists", produces = APPLICATION_JSON_VALUE, method = RequestMethod.GET)
     public List<CommissionResult> getCalculateCommissionsList() {
-        return commissionCalculationSessionService.getCommissionCalculationedList();
+        return commissionCalculationSessionService.findAllCommissionCalculationSessions();
     }
 
     //santi : for download commission excel file
