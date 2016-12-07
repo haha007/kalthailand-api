@@ -16,7 +16,6 @@ import th.co.krungthaiaxa.api.elife.commission.data.CommissionTargetEntityType;
 import th.co.krungthaiaxa.api.elife.commission.data.CommissionTargetGroup;
 import th.co.krungthaiaxa.api.elife.commission.data.CommissionTargetGroupType;
 import th.co.krungthaiaxa.api.elife.commission.data.CustomerCategory;
-import th.co.krungthaiaxa.api.elife.commission.repositories.CommissionResultRepository;
 import th.co.krungthaiaxa.api.elife.commission.service.CommissionCalculationSessionExportService;
 import th.co.krungthaiaxa.api.elife.commission.service.CommissionCalculationSessionService;
 import th.co.krungthaiaxa.api.elife.commission.service.CommissionPlanService;
@@ -44,8 +43,6 @@ public class CommissionServiceTest extends ELifeTest {
     CommissionCalculationSessionService commissionCalculationSessionService;
     @Inject
     CommissionCalculationSessionExportService commissionCalculationSessionExportService;
-    @Inject
-    CommissionResultRepository commissionResultRepository;
 
     @Autowired
     private CDBRepository cdbRepository;

@@ -12,7 +12,6 @@ import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
 import th.co.krungthaiaxa.api.elife.commission.data.CommissionCalculation;
 import th.co.krungthaiaxa.api.elife.commission.data.CommissionCalculationSession;
 import th.co.krungthaiaxa.api.elife.commission.repositories.CommissionCalculationSessionRepository;
-import th.co.krungthaiaxa.api.elife.commission.repositories.CommissionResultRepository;
 import th.co.krungthaiaxa.api.elife.repository.cdb.CDBRepository;
 import th.co.krungthaiaxa.api.elife.utils.ExcelUtils;
 
@@ -27,16 +26,11 @@ import static th.co.krungthaiaxa.api.elife.utils.ExcelUtils.text;
 @Service
 public class CommissionCalculationSessionExportService {
     public final static Logger LOGGER = LoggerFactory.getLogger(CDBRepository.class);
-    private final CommissionResultRepository commissionResultRepository;
     private final CommissionCalculationSessionRepository commissionCalculationSessionRepository;
 
-    private final CommissionCalculationSessionService commissionCalculationSessionService;
-
     @Autowired
-    public CommissionCalculationSessionExportService(CommissionResultRepository commissionResultRepository, CommissionCalculationSessionRepository commissionCalculationSessionRepository, CommissionCalculationSessionService commissionCalculationSessionService) {
-        this.commissionResultRepository = commissionResultRepository;
+    public CommissionCalculationSessionExportService(CommissionCalculationSessionRepository commissionCalculationSessionRepository) {
         this.commissionCalculationSessionRepository = commissionCalculationSessionRepository;
-        this.commissionCalculationSessionService = commissionCalculationSessionService;
     }
 
     //santi : for download commission excel file
