@@ -30,21 +30,23 @@
         <table class="table table-bordered table-striped table-hover table-condensed">
             <tr>
                 <td>Generate Date</td>
-                <td>Finish Date</td>
                 <td>Commission Of Month</td>
                 <td>Number Of Policies</td>
                 <td>Download</td>
+                <td>Result Code</td>
+                <td>Result Message</td>
             </tr>
             <tr ng-repeat="commissionSession in service.commissionCalculationSessions | orderBy:'-createdDateTime'">
                 <td>{{ commissionSession.createdDateTime }}</td>
-                <td>{{ commissionSession.updatedDateTime ? commissionSession.updatedDateTime : 'Waiting...' }}</td>
                 <td>{{ commissionSession.commissionDate | date:'MM/yyyy' }}</td>
-                <td>{{ commissionSession.commissionCalculations.length ? commissionSession.commissionCalculations.length : 'Waiting...' }}</td>
+                <td>{{ commissionSession.commissionCalculations.length}}</td>
                 <td>
                     <div ng-show="commissionSession.updatedDateTime">
                         <a target="_blank" href="/api-elife/commissions/calculation-session/download/{{commissionSession.id}}">Download</a>
                     </div>
                 </td>
+                <td>{{ commissionSession.resultCode }}</td>
+                <td>{{ commissionSession.resultMessage }}</td>
             </tr>
         </table>
     </div>
