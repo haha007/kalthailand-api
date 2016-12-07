@@ -67,7 +67,7 @@ public class CommissionResource {
     }
 
     //santi : for get list of calculated commission
-    @ApiOperation(value = "Get list of calculated commission transactions", notes = "Get list of calculated commission transactions", response = CommissionResult.class, responseContainer = "List")
+    @ApiOperation(value = "Get list of calculated commission transactions", notes = "Get list of calculated commission transactions")
     @ApiResponses({ @ApiResponse(code = 500, message = "If there's any internal error", response = Error.class) })
     @RequestMapping(value = "/commissions/calculation/lists", produces = APPLICATION_JSON_VALUE, method = RequestMethod.GET)
     public List<CommissionCalculationSession> getCalculateCommissionsList() {

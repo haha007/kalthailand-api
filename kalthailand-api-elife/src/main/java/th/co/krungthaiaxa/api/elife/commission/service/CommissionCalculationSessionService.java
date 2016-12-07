@@ -14,7 +14,6 @@ import th.co.krungthaiaxa.api.elife.commission.data.CommissionTargetEntity;
 import th.co.krungthaiaxa.api.elife.commission.data.CommissionTargetGroup;
 import th.co.krungthaiaxa.api.elife.commission.data.cdb.CDBPolicyCommissionEntity;
 import th.co.krungthaiaxa.api.elife.commission.repositories.CommissionCalculationSessionRepository;
-import th.co.krungthaiaxa.api.elife.commission.repositories.CommissionResultRepository;
 import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.products.utils.ProductUtils;
@@ -40,7 +39,6 @@ public class CommissionCalculationSessionService {
     private final CommissionPlanService commissionPlanService;
     private final CommissionCalculationSessionRepository commissionCalculationSessionRepository;
     private final CDBRepository cdbRepository;
-    private final CommissionResultRepository commissionResultRepository;
     private final PolicyRepository policyRepository;
 
 //    @Autowired
@@ -61,19 +59,16 @@ public class CommissionCalculationSessionService {
     private final DecimalFormat DCF = new DecimalFormat("#0.0000");
 
     @Inject
-    public CommissionCalculationSessionService(CommissionPlanService commissionPlanService, CommissionCalculationSessionRepository commissionCalculationSessionRepository, CDBRepository cdbRepository, PolicyRepository policyRepository,
-            CommissionResultRepository commissionResultRepository) {
+    public CommissionCalculationSessionService(CommissionPlanService commissionPlanService, CommissionCalculationSessionRepository commissionCalculationSessionRepository, CDBRepository cdbRepository, PolicyRepository policyRepository) {
         this.commissionPlanService = commissionPlanService;
         this.commissionCalculationSessionRepository = commissionCalculationSessionRepository;
         this.cdbRepository = cdbRepository;
         this.policyRepository = policyRepository;
-        this.commissionResultRepository = commissionResultRepository;
     }
 
     //santi : for get list of calculated commission
     public List<CommissionCalculationSession> findAllCommissionCalculationSessions() {
         return commissionCalculationSessionRepository.findAllByOrderByCreatedDateTimeAsc();
-//        return commissionResultRepository.findAllByOrderByCreatedDateTimeAsc();
     }
 
     //santi : for trigger calculation commission
