@@ -94,17 +94,13 @@ public class CDBRepository {
                 "on a.pno = b.g3pno " +
                 "where " +
                 "left(ltrim(rtrim(right('00000000000000' + cast(a.pagt1 as varchar),14))),6) in (";
-        for (String channelId : channelIdsNoDup) {
-            sql += "?,";
-        }
-        sql = sql.substring(0, sql.length() - 1);
+        String channelIdsParams = th.co.krungthaiaxa.api.common.utils.StringUtil.joinStrings(",", "?", channelIdsNoDup.size());
+        sql += channelIdsParams;
         sql += ") and ltrim(rtrim(a.lplan)) in (";
-        for (String planCode : planCodesNoDup) {
-            sql += "?,";
-        }
-        sql = sql.substring(0, sql.length() - 1);
+        String planCodesParams = th.co.krungthaiaxa.api.common.utils.StringUtil.joinStrings(",", "?", planCodesNoDup.size());
+        sql += planCodesParams;
         sql += ")";
-        LOGGER.debug("sql:" + sql);
+        LOGGER.trace("sql: {}", sql);
         return sql;
     }
 

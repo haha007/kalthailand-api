@@ -47,4 +47,23 @@ public class StringUtilTest {
                 + "10\n"
                 + "]", string);
     }
+
+    @Test
+    public void test_join_string_many_times() {
+        String fullString = StringUtil.joinStrings(", ", "?", 3);
+        Assert.assertEquals("?, ?, ?", fullString);
+
+        fullString = StringUtil.joinStrings(",", "?", 0);
+        Assert.assertEquals("", fullString);
+
+        fullString = StringUtil.joinStrings(",", null, 3);
+        Assert.assertEquals("null,null,null", fullString);
+
+        fullString = StringUtil.joinStrings(",", "", 3);
+        Assert.assertEquals(",,", fullString);
+
+        fullString = StringUtil.joinStrings(",", " ", 3);
+        Assert.assertEquals(" , , ", fullString);
+
+    }
 }

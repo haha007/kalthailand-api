@@ -18,6 +18,23 @@ public class StringUtil {
         return sb.toString();
     }
 
+    /**
+     * @param delimiter
+     * @param loopedString if loopedString is null, return empty string.
+     * @param loopedTimes  the number of times which loopedString will be appended.
+     * @return
+     */
+    public static String joinStrings(String delimiter, String loopedString, int loopedTimes) {
+        StringBuilder result = new StringBuilder();
+        if (loopedTimes > 0) {
+            result.append(loopedString);
+            for (int i = 1; i < loopedTimes; i++) {
+                result.append(delimiter).append(loopedString);
+            }
+        }
+        return result.toString();
+    }
+
     public static String joinNotBlankStrings(String delimiter, String... strs) {
         if (strs == null) {
             return null;
@@ -26,6 +43,7 @@ public class StringUtil {
             return "";
         }
         StringBuilder sb = new StringBuilder();
+        ;
         for (int i = 0; i < strs.length; i++) {
             String str = strs[i];
             if (StringUtils.isNotBlank(str)) {
