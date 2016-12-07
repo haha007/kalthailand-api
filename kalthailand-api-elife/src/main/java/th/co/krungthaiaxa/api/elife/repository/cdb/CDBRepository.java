@@ -7,8 +7,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import th.co.krungthaiaxa.api.common.utils.StringUtil;
+import th.co.krungthaiaxa.api.elife.commission.data.cdb.CDBPolicyCommissionEntity;
+import th.co.krungthaiaxa.api.elife.utils.JdbcHelper;
 
 import java.util.List;
 import java.util.Map;
@@ -17,6 +20,9 @@ import java.util.Optional;
 @Repository
 public class CDBRepository {
     private final static Logger LOGGER = LoggerFactory.getLogger(CDBRepository.class);
+    @Autowired
+    private JdbcHelper jdbcHelper;
+
 //
 //    @Autowired
 //    @Qualifier("cdbDataSource")
@@ -74,8 +80,9 @@ public class CDBRepository {
         }
     }
 
-    public List<Map<String, Object>> findPoliciesByChannelIdsAndPaymentModeIds(List<String> channelIdsNoDup, List<String> planCodesNoDup) {
-        List<Map<String, Object>> policies = jdbcTemplate.queryForList(generateSql(channelIdsNoDup, planCodesNoDup), generateParameters(channelIdsNoDup, planCodesNoDup));
+    public List<CDBPolicyCommissionEntity> findPoliciesByChannelIdsAndPaymentModeIds(List<String> channelIdsNoDup, List<String> planCodesNoDup) {
+        RowMapper<CDBPolicyCommissionEntity> rowMapper = jdbcHelper.getRowMapper(CDBPolicyCommissionEntity.class);
+        List<CDBPolicyCommissionEntity> policies = jdbcTemplate.query(generateSql(channelIdsNoDup, planCodesNoDup), generateParameters(channelIdsNoDup, planCodesNoDup), rowMapper);
         return policies;
     }
 

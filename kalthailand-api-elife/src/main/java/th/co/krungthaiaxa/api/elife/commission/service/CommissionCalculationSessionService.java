@@ -12,6 +12,7 @@ import th.co.krungthaiaxa.api.elife.commission.data.CommissionPlan;
 import th.co.krungthaiaxa.api.elife.commission.data.CommissionResult;
 import th.co.krungthaiaxa.api.elife.commission.data.CommissionTargetEntity;
 import th.co.krungthaiaxa.api.elife.commission.data.CommissionTargetGroup;
+import th.co.krungthaiaxa.api.elife.commission.data.cdb.CDBPolicyCommissionEntity;
 import th.co.krungthaiaxa.api.elife.commission.repositories.CommissionCalculationSessionRepository;
 import th.co.krungthaiaxa.api.elife.commission.repositories.CommissionResultRepository;
 import th.co.krungthaiaxa.api.elife.model.Insured;
@@ -26,7 +27,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -99,11 +99,11 @@ public class CommissionCalculationSessionService {
 
         if (channelIdsNoDup.size() > 0 && planCodesNoDup.size() > 0) {
             try {
-                List<Map<String, Object>> policiesCDB = cdbRepository.findPoliciesByChannelIdsAndPaymentModeIds(channelIdsNoDup, planCodesNoDup); //jdbcTemplate.queryForList(generateSql(channelIdsNoDup, planCodesNoDup), generateParameters(channelIdsNoDup, planCodesNoDup));
+                List<CDBPolicyCommissionEntity> policiesCDB = cdbRepository.findPoliciesByChannelIdsAndPaymentModeIds(channelIdsNoDup, planCodesNoDup); //jdbcTemplate.queryForList(generateSql(channelIdsNoDup, planCodesNoDup), generateParameters(channelIdsNoDup, planCodesNoDup));
                 if (policiesCDB.size() > 0) {
-                    for (Map<String, Object> policyCDB : policiesCDB) {
+                    for (CDBPolicyCommissionEntity policyCDB : policiesCDB) {
                         //check policy must not null
-                        Policy policy = policyRepository.findByPolicyId(String.valueOf(policyCDB.get("policyNumber")));
+                        Policy policy = policyRepository.findByPolicyId(String.valueOf(policyCDB.getPolicyNumber()));
                         if (policy != null) {
                             CommissionCalculation commissionCalculation = calculateCommissionForPolicy(policy, policyCDB, commissionPlans);
                             listCommissionCalculated.add(commissionCalculation);
@@ -124,17 +124,17 @@ public class CommissionCalculationSessionService {
         LOGGER.debug("[Commission] finish");
     }
 
-    private CommissionCalculation calculateCommissionForPolicy(Policy policy, Map<String, Object> policyCDB, List<CommissionPlan> commissionPlans) {
+    private CommissionCalculation calculateCommissionForPolicy(Policy policy, CDBPolicyCommissionEntity policyCDB, List<CommissionPlan> commissionPlans) {
         CommissionCalculation commissionCalculation = new CommissionCalculation();
 
         //cdb information
-        commissionCalculation.setPolicyNumber(String.valueOf(policyCDB.get("policyNumber")));
-        commissionCalculation.setPolicyStatus(String.valueOf(policyCDB.get("policyStatus")));
-        commissionCalculation.setPlanCode(String.valueOf(policyCDB.get("planCode")));
-        commissionCalculation.setPaymentCode(String.valueOf(policyCDB.get("paymentCode")));
-        commissionCalculation.setAgentCode(String.valueOf(policyCDB.get("agentCode")));
-        commissionCalculation.setFirstYearPremium(convertFormat(Double.valueOf(String.valueOf(policyCDB.get("firstYearPremium")))));
-        commissionCalculation.setFirstYearCommission(convertFormat(Double.valueOf(String.valueOf(policyCDB.get("firstYearCommission")))));
+        commissionCalculation.setPolicyNumber(String.valueOf(policyCDB.getPolicyNumber()));
+        commissionCalculation.setPolicyStatus(String.valueOf(policyCDB.getPolicyStatus()));
+        commissionCalculation.setPlanCode(String.valueOf(policyCDB.getPlanCode()));
+        commissionCalculation.setPaymentCode(String.valueOf(policyCDB.getPaymentCode()));
+        commissionCalculation.setAgentCode(String.valueOf(policyCDB.getAgentCode()));
+        commissionCalculation.setFirstYearPremium(convertFormat(Double.valueOf(String.valueOf(policyCDB.getFirstYearPremium()))));
+        commissionCalculation.setFirstYearCommission(convertFormat(Double.valueOf(String.valueOf(policyCDB.getFirstYearCommission()))));
 
         //previously information
         Insured mainInsured = ProductUtils.getFirstInsured(policy);
