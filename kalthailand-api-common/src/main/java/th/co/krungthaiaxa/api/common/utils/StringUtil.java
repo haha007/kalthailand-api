@@ -43,7 +43,6 @@ public class StringUtil {
             return "";
         }
         StringBuilder sb = new StringBuilder();
-        ;
         for (int i = 0; i < strs.length; i++) {
             String str = strs[i];
             if (StringUtils.isNotBlank(str)) {

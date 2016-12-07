@@ -16,6 +16,7 @@ import th.co.krungthaiaxa.api.elife.commission.repositories.CommissionCalculatio
 import th.co.krungthaiaxa.api.elife.commission.repositories.CommissionResultRepository;
 import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.model.Policy;
+import th.co.krungthaiaxa.api.elife.products.utils.ProductUtils;
 import th.co.krungthaiaxa.api.elife.repository.PolicyRepository;
 import th.co.krungthaiaxa.api.elife.repository.cdb.CDBRepository;
 
@@ -100,13 +101,13 @@ public class CommissionCalculationSessionService {
 
         if (channelIdsNoDup.size() > 0 && planCodesNoDup.size() > 0) {
             try {
-                List<Map<String, Object>> policies = cdbRepository.findPoliciesByChannelIdsAndPaymentModeIds(channelIdsNoDup, planCodesNoDup); //jdbcTemplate.queryForList(generateSql(channelIdsNoDup, planCodesNoDup), generateParameters(channelIdsNoDup, planCodesNoDup));
-                if (policies.size() > 0) {
-                    for (Map<String, Object> policyMap : policies) {
+                List<Map<String, Object>> policiesCDB = cdbRepository.findPoliciesByChannelIdsAndPaymentModeIds(channelIdsNoDup, planCodesNoDup); //jdbcTemplate.queryForList(generateSql(channelIdsNoDup, planCodesNoDup), generateParameters(channelIdsNoDup, planCodesNoDup));
+                if (policiesCDB.size() > 0) {
+                    for (Map<String, Object> policyCDB : policiesCDB) {
                         //check policy must not null
-                        Policy policy = policyRepository.findByPolicyId(String.valueOf(policyMap.get("policyNo")));
+                        Policy policy = policyRepository.findByPolicyId(String.valueOf(policyCDB.get("policyNo")));
                         if (policy != null) {
-                            CommissionCalculation commissionCalculation = calculateCommissionForPolicy(policy, policyMap, commissionPlans);
+                            CommissionCalculation commissionCalculation = calculateCommissionForPolicy(policy, policyCDB, commissionPlans);
                             listCommissionCalculated.add(commissionCalculation);
                         }
                     }
@@ -140,9 +141,9 @@ public class CommissionCalculationSessionService {
         commissionCalculation.setFirstYearCommission(convertFormat(Double.valueOf(String.valueOf(policyMap.get("firstYearCommission")))));
 
         //previously information
-        Insured insured = policy.getInsureds().get(0);
-        List<String> prevInf = insured.getInsuredPreviousInformations();
-        if (prevInf.size() == 0) {
+        Insured mainInsured = ProductUtils.getFirstInsured(policy);
+        List<String> insuredPreviousInformations = mainInsured.getInsuredPreviousInformations();
+        if (insuredPreviousInformations.size() == 0) {
             commissionCalculation.setCustomerCategory(NEW);
             commissionCalculation.setPreviousPolicyNo(BLANK);
             commissionCalculation.setExistingAgentCode1(BLANK);
@@ -150,11 +151,11 @@ public class CommissionCalculationSessionService {
             commissionCalculation.setExistingAgentCode2(BLANK);
             commissionCalculation.setExistingAgentCode2Status(BLANK);
         } else {
-            commissionCalculation.setCustomerCategory((prevInf.get(0).equals(NULL) ? NEW : EXISTING));
-            commissionCalculation.setPreviousPolicyNo((prevInf.get(0).equals(NULL) ? BLANK : prevInf.get(0)));
-            commissionCalculation.setExistingAgentCode1((prevInf.get(1).equals(NULL) ? BLANK : prevInf.get(1)));
+            commissionCalculation.setCustomerCategory((insuredPreviousInformations.get(0).equals(NULL) ? NEW : EXISTING));
+            commissionCalculation.setPreviousPolicyNo((insuredPreviousInformations.get(0).equals(NULL) ? BLANK : insuredPreviousInformations.get(0)));
+            commissionCalculation.setExistingAgentCode1((insuredPreviousInformations.get(1).equals(NULL) ? BLANK : insuredPreviousInformations.get(1)));
             commissionCalculation.setExistingAgentCode1Status((commissionCalculation.getExistingAgentCode1().equals(BLANK) ? BLANK : cdbRepository.getExistingAgentCodeStatus(getProperAgentCodeNumber(commissionCalculation.getExistingAgentCode1(), 14))));
-            commissionCalculation.setExistingAgentCode2((prevInf.get(2).equals(NULL) ? BLANK : prevInf.get(2)));
+            commissionCalculation.setExistingAgentCode2((insuredPreviousInformations.get(2).equals(NULL) ? BLANK : insuredPreviousInformations.get(2)));
             commissionCalculation.setExistingAgentCode2Status((commissionCalculation.getExistingAgentCode2().equals(BLANK) ? BLANK : cdbRepository.getExistingAgentCodeStatus(getProperAgentCodeNumber(commissionCalculation.getExistingAgentCode2(), 14))));
         }
 
