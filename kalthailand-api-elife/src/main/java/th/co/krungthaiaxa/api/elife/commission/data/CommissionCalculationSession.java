@@ -16,7 +16,6 @@ import java.util.List;
 @Document(collection = "commissionCalculationSession")
 public class CommissionCalculationSession extends BaseEntity {
     private List<CommissionPlan> commissionPlans;
-    @DBRef
     private List<CommissionCalculation> commissionCalculations;
 
     @ApiModelProperty(value = "This commission session is calculated on the payments which proccessed before the commissionDate (within one month)")

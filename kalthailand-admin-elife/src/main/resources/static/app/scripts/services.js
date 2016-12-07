@@ -128,8 +128,8 @@
         return new CommissionService($http, $sce, ProductCriteria);
     });
 
-    app.factory('CommissionResultService', function ($http) {
-        return new CommissionResultService($http);
+    app.factory('CommissionResultService', function ($http, $sce) {
+        return new CommissionResultService($http, $sce);
     });
     app.factory('HealthCheckService', function ($http, $sce) {
         return new HealthCheckService($http, $sce);

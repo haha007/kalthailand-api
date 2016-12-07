@@ -86,7 +86,7 @@ public class KalApiTokenFilter implements Filter {
                 , ".*/RLS/deduction/download/.*"
                 , ".*/session-quotes/all-products-counts/download.*"
                 , ".*/quotes/all-products/download.*"
-                , ".*/commissions/calculation/download/.*"
+                , ".*/commissions/calculation-session/download/.*"
                 , ".*/policies/.*/pdf.*"
                 , ".*/policies/.*/download.*"
                 , ".*/documents/.*/download.*"

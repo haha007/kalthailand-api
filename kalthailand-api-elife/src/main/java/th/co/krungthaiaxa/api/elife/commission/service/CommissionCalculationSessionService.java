@@ -1,15 +1,15 @@
 package th.co.krungthaiaxa.api.elife.commission.service;
 
-import org.bson.types.ObjectId;
 import org.jsoup.helper.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.common.exeption.CommissionCalculationSessionException;
+import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
 import th.co.krungthaiaxa.api.elife.commission.data.CommissionCalculation;
 import th.co.krungthaiaxa.api.elife.commission.data.CommissionCalculationSession;
 import th.co.krungthaiaxa.api.elife.commission.data.CommissionPlan;
-import th.co.krungthaiaxa.api.elife.commission.data.CommissionResult;
 import th.co.krungthaiaxa.api.elife.commission.data.CommissionTargetEntity;
 import th.co.krungthaiaxa.api.elife.commission.data.CommissionTargetGroup;
 import th.co.krungthaiaxa.api.elife.commission.data.cdb.CDBPolicyCommissionEntity;
@@ -23,6 +23,7 @@ import th.co.krungthaiaxa.api.elife.repository.cdb.CDBRepository;
 
 import javax.inject.Inject;
 import java.text.DecimalFormat;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -70,10 +71,9 @@ public class CommissionCalculationSessionService {
     }
 
     //santi : for get list of calculated commission
-    public List<CommissionResult> findAllCommissionCalculationSessions() {
-        LOGGER.debug("Start process to get commission list .....");
-        LOGGER.debug("Stop process to get commission list .....");
-        return commissionResultRepository.findAllByOrderByCreatedDateTimeAsc();
+    public List<CommissionCalculationSession> findAllCommissionCalculationSessions() {
+        return commissionCalculationSessionRepository.findAllByOrderByCreatedDateTimeAsc();
+//        return commissionResultRepository.findAllByOrderByCreatedDateTimeAsc();
     }
 
     //santi : for trigger calculation commission
@@ -82,50 +82,65 @@ public class CommissionCalculationSessionService {
 
         LocalDateTime nowDate = LocalDateTime.now();
 
-        //save first
-        CommissionResult commissionResult = new CommissionResult();
-        commissionResult.setCommissionMonth(String.valueOf(nowDate.getYear()) + String.valueOf((new DecimalFormat("00")).format((nowDate.getMonthValue() - 1))));
-        commissionResult.setCreatedDateTime(nowDate);
-        //TODO rowId is unnecessary
-        commissionResult.setRowId(getRowId(nowDate));
-
         List<CommissionPlan> commissionPlans = commissionPlanService.findAll();
-        List<String> channelIds = commissionPlans.stream().map(sc -> sc.getUnitCode()).collect(Collectors.toList());//list of UnitCode
-        List<String> planCodes = commissionPlans.stream().map(sc -> sc.getPlanCode()).collect(Collectors.toList());
-        List<String> channelIdsNoDup = channelIds.stream().distinct().collect(Collectors.toList());
-        List<String> planCodesNoDup = planCodes.stream().distinct().collect(Collectors.toList());
+        CommissionCalculationSession commissionResult = new CommissionCalculationSession();
+        Instant previousMonth = DateTimeUtil.plusMonths(Instant.now(), -1);
+        commissionResult.setCommissionDate(previousMonth);
+        commissionResult.setCreatedDateTime(nowDate);
+        commissionResult.setCommissionPlans(commissionPlans);
+
+        List<String> unitCodes = commissionPlans.stream().map(sc -> sc.getUnitCode()).distinct().collect(Collectors.toList());//list of UnitCode
+        List<String> planCodes = commissionPlans.stream().map(sc -> sc.getPlanCode()).distinct().collect(Collectors.toList());
 
         List<CommissionCalculation> listCommissionCalculated = new ArrayList<>();
 
-        if (channelIdsNoDup.size() > 0 && planCodesNoDup.size() > 0) {
+        if (!unitCodes.isEmpty() && !planCodes.isEmpty()) {
             try {
-                List<CDBPolicyCommissionEntity> policiesCDB = cdbRepository.findPoliciesByChannelIdsAndPaymentModeIds(channelIdsNoDup, planCodesNoDup); //jdbcTemplate.queryForList(generateSql(channelIdsNoDup, planCodesNoDup), generateParameters(channelIdsNoDup, planCodesNoDup));
-                if (policiesCDB.size() > 0) {
-                    for (CDBPolicyCommissionEntity policyCDB : policiesCDB) {
-                        //check policy must not null
-                        Policy policy = policyRepository.findByPolicyId(String.valueOf(policyCDB.getPolicyNumber()));
-                        if (policy != null) {
-                            CommissionCalculation commissionCalculation = calculateCommissionForPolicy(policy, policyCDB, commissionPlans);
-                            listCommissionCalculated.add(commissionCalculation);
-                        }
-                    }
-                    commissionResult.setCommissionPoliciesCount(listCommissionCalculated.size());
-                    commissionResult.setPolicies(listCommissionCalculated);
-                    commissionResult.setUpdatedDateTime(LocalDateTime.now());
-                    //update
+                List<CDBPolicyCommissionEntity> policiesCDB = cdbRepository.findPoliciesByChannelIdsAndPaymentModeIds(unitCodes, planCodes); //jdbcTemplate.queryForList(generateSql(channelIdsNoDup, planCodesNoDup), generateParameters(channelIdsNoDup, planCodesNoDup));
+                for (CDBPolicyCommissionEntity policyCDB : policiesCDB) {
+                    CommissionCalculation commissionCalculation = calculateCommissionForPolicy(policyCDB, commissionPlans);
+                    listCommissionCalculated.add(commissionCalculation);
                 }
+                commissionResult.setCommissionCalculations(listCommissionCalculated);
+                commissionResult.setUpdatedDateTime(LocalDateTime.now());
+                //update
             } catch (Exception e) {
                 LOGGER.error("Unable to query " + e.getMessage(), e);
             }
         } else {
             LOGGER.debug("[Commission] Not found channel Ids and planCodes in setting.....");
         }
-        commissionResultRepository.save(commissionResult);
+        commissionCalculationSessionRepository.save(commissionResult);
         LOGGER.debug("[Commission] finish");
     }
 
-    private CommissionCalculation calculateCommissionForPolicy(Policy policy, CDBPolicyCommissionEntity policyCDB, List<CommissionPlan> commissionPlans) {
+    private static final String CODE_SUCCESS = "0000";
+    private static final String CODE_INTERNAL_ERROR = "9000";
+
+    private CommissionCalculation calculateCommissionForPolicy(CDBPolicyCommissionEntity policyCDB, List<CommissionPlan> commissionPlans) {
         CommissionCalculation commissionCalculation = new CommissionCalculation();
+        String policyNumber = policyCDB.getPolicyNumber();
+        Policy policy = policyRepository.findByPolicyId(String.valueOf(policyCDB.getPolicyNumber()));
+        if (policy != null) {
+            try {
+                calculateCommissionForPolicy(commissionCalculation, policy, policyCDB, commissionPlans);
+                commissionCalculation.setResultCode(CODE_SUCCESS);
+                commissionCalculation.setResultMessage("Success");
+            } catch (Exception ex) {
+                String msg = String.format("Error when calculation commission for policy '%s': %s", policyNumber, ex.getMessage());
+                LOGGER.error(msg, ex);
+                commissionCalculation.setResultCode(CODE_INTERNAL_ERROR);
+                commissionCalculation.setResultMessage(msg);
+            }
+        } else {
+            BeanUtils.copyProperties(policyCDB, commissionCalculation);
+            commissionCalculation.setResultCode(CODE_INTERNAL_ERROR);
+            commissionCalculation.setResultMessage(String.format("Not found policy '%s' in elife.", policyNumber));
+        }
+        return commissionCalculation;
+    }
+
+    private void calculateCommissionForPolicy(CommissionCalculation commissionCalculation, Policy policy, CDBPolicyCommissionEntity policyCDB, List<CommissionPlan> commissionPlans) {
 
         //cdb information
         commissionCalculation.setPolicyNumber(String.valueOf(policyCDB.getPolicyNumber()));
@@ -158,7 +173,6 @@ public class CommissionCalculationSessionService {
         //calculation commission
         CommissionPlan commissionPlan = findCommissionPlan(getProperAgentCodeNumber(commissionCalculation.getAgentCode(), 6), commissionCalculation.getPlanCode(), commissionCalculation.getCustomerCategory(), commissionPlans);
         calculateCommissionRate(commissionCalculation, commissionPlan);
-        return commissionCalculation;
     }
 
     private void calculateCommissionRate(CommissionCalculation commissionCalculation, CommissionPlan commissionPlan) {
@@ -217,7 +231,7 @@ public class CommissionCalculationSessionService {
         return newAgentCode.substring(newAgentCode.length() - 14, newAgentCode.length()).substring(0, cutPosition);
     }
 
-    public CommissionCalculationSession validateExistCalculationSession(ObjectId calculationSessionId) {
+    public CommissionCalculationSession validateExistCalculationSession(String calculationSessionId) {
         CommissionCalculationSession commissionCalculationSession = commissionCalculationSessionRepository.findOne(calculationSessionId);
         if (commissionCalculationSession == null) {
             throw new CommissionCalculationSessionException("Not found calculation session " + calculationSessionId);

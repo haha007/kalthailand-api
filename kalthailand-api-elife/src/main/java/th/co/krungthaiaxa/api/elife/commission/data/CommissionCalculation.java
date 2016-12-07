@@ -16,6 +16,7 @@ public class CommissionCalculation {
     private String paymentCode;
     private String agentCode;
     private String customerCategory;
+
     private String previousPolicyNo;
     private String existingAgentCode1;
     private String existingAgentCode1Status;

@@ -220,7 +220,7 @@ public class ExcelUtils {
         private final double value;
 
         public DoubleCell(Number value) {
-            this.value = value.doubleValue();
+            this.value = (value == null ? 0L : value).doubleValue();
         }
 
         @Override

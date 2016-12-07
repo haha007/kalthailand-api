@@ -904,13 +904,13 @@
             }
         }
     );
-
-    app.controller('CommissionController', function (CommissionService, $scope, $route, $http, $localStorage) {
-        $scope.service = CommissionService;
-    });
     app.controller('HealthCheckController', function (HealthCheckService, $scope, $route, $http, $localStorage) {
         $scope.service = HealthCheckService;
         $scope.service.$scope = $scope;
+    });
+    
+    app.controller('CommissionController', function (CommissionService, $scope, $route, $http, $localStorage) {
+        $scope.service = CommissionService;
     });
     app.controller('CommissionResultController', function (CommissionResultService, $scope, $route, $http, $localStorage) {
         $scope.service = CommissionResultService;
@@ -932,12 +932,7 @@
 
         $scope.commissionResultAll = CommissionResultService;
 
-        $scope.callGenerateCommission = function () {
-            var obj = {'createdDateTime': 'Waiting...'};
-            $scope.commissionResultAll.commissionList.splice(0, 0, obj);
-            CommissionResultService.generateCommission();
-            $scope.loadNewFilter();
-        }
+
 
         $scope.loadNewFilter = function () {
             $scope.commissionResultAll = CommissionResultService;

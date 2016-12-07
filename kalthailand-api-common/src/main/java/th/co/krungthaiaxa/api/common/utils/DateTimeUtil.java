@@ -91,9 +91,15 @@ public class DateTimeUtil {
         return formatLocalDateTime(LocalDateTime.now(), PATTERN_FILE_SHORT_PATH);
     }
 
-    public static Instant plusYears(Instant instant, int year) {
+    public static Instant plusYears(Instant instant, int years) {
         LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
-        localDateTime = localDateTime.plusYears(year);
+        localDateTime = localDateTime.plusYears(years);
+        return localDateTime.atZone(ZoneId.systemDefault()).toInstant();
+    }
+
+    public static Instant plusMonths(Instant instant, int months) {
+        LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+        localDateTime = localDateTime.plusMonths(months);
         return localDateTime.atZone(ZoneId.systemDefault()).toInstant();
     }
 
@@ -111,5 +117,10 @@ public class DateTimeUtil {
 
     public static LocalDateTime toLocalDateTime(String dateString, String datePattern) {
         return LocalDateTime.from(DateTimeFormatter.ofPattern(datePattern).parse(dateString));
+    }
+
+    public static String format(Instant instant, String datePattern) {
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(datePattern).withZone(ZoneId.systemDefault());
+        return dateTimeFormatter.format(instant);
     }
 }

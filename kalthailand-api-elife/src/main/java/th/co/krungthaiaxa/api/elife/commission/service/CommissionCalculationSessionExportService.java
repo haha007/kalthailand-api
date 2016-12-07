@@ -4,20 +4,19 @@ import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
 import th.co.krungthaiaxa.api.elife.commission.data.CommissionCalculation;
 import th.co.krungthaiaxa.api.elife.commission.data.CommissionCalculationSession;
-import th.co.krungthaiaxa.api.elife.commission.data.CommissionResult;
+import th.co.krungthaiaxa.api.elife.commission.repositories.CommissionCalculationSessionRepository;
 import th.co.krungthaiaxa.api.elife.commission.repositories.CommissionResultRepository;
 import th.co.krungthaiaxa.api.elife.repository.cdb.CDBRepository;
 import th.co.krungthaiaxa.api.elife.utils.ExcelUtils;
 
 import java.io.IOException;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static th.co.krungthaiaxa.api.elife.utils.ExcelUtils.text;
@@ -29,40 +28,27 @@ import static th.co.krungthaiaxa.api.elife.utils.ExcelUtils.text;
 public class CommissionCalculationSessionExportService {
     public final static Logger LOGGER = LoggerFactory.getLogger(CDBRepository.class);
     private final CommissionResultRepository commissionResultRepository;
+    private final CommissionCalculationSessionRepository commissionCalculationSessionRepository;
 
     private final CommissionCalculationSessionService commissionCalculationSessionService;
 
     @Autowired
-    public CommissionCalculationSessionExportService(CommissionResultRepository commissionResultRepository, CommissionCalculationSessionService commissionCalculationSessionService) {
+    public CommissionCalculationSessionExportService(CommissionResultRepository commissionResultRepository, CommissionCalculationSessionRepository commissionCalculationSessionRepository, CommissionCalculationSessionService commissionCalculationSessionService) {
         this.commissionResultRepository = commissionResultRepository;
+        this.commissionCalculationSessionRepository = commissionCalculationSessionRepository;
         this.commissionCalculationSessionService = commissionCalculationSessionService;
     }
 
-    /**
-     * @param commissionCalculationSessionId
-     * @return
-     * @deprecated Not implemented
-     */
-    @Deprecated
-    public byte[] exportExcel(String commissionCalculationSessionId) {
-        ObjectId objectId = new ObjectId(commissionCalculationSessionId);
-        CommissionCalculationSession commissionCalculationSession = commissionCalculationSessionService.validateExistCalculationSession(objectId);
-        //TODO this method never return null.
-        return null;
-    }
-
     //santi : for download commission excel file
-    public byte[] exportToExcel(String rowId, String now) {
+    public byte[] exportToExcel(String commissionCalculationSessionId) {
 
         LOGGER.debug("Start process to export commission excel .....");
 
-        byte[] content = null;
-
-        CommissionResult commissionResult = commissionResultRepository.findByRowId(rowId);
-        List<CommissionCalculation> commissionCalculated = commissionResult.getPolicies();
+        CommissionCalculationSession commissionResult = commissionCalculationSessionRepository.findOne(commissionCalculationSessionId);
+        List<CommissionCalculation> commissionCalculated = commissionResult.getCommissionCalculations();
 
         Workbook workbook = new XSSFWorkbook();
-        Sheet sheet = workbook.createSheet("CommissionExtract_" + now);
+        Sheet sheet = workbook.createSheet("CommissionExtract_" + DateTimeUtil.formatNowForFilePath());
 
         ExcelUtils.appendRow(sheet,
                 text("Month"),
@@ -101,27 +87,27 @@ public class CommissionCalculationSessionExportService {
                 text("OV TSR Rate"),
                 text("OV Marketing Rate"),
                 text("OV Company Rate"),
-                text("Calculate Date Time"));
+                text("Calculate Date Time"),
+                text("Result Code"),
+                text("Result Message"));
         commissionCalculated.stream().forEach(tmp -> createCommissionResultExtractExcelFileLine(sheet, tmp, commissionResult));
         ExcelUtils.autoWidthAllColumns(workbook);
 
         try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
             workbook.write(byteArrayOutputStream);
-            content = byteArrayOutputStream.toByteArray();
+            byte[] content = byteArrayOutputStream.toByteArray();
+            LOGGER.debug("Stop process to export commission excel .....");
+            return content;
         } catch (IOException e) {
             throw new IllegalStateException("Unable to write content of excel deduction file", e);
         }
-
-        LOGGER.debug("Stop process to export commission excel .....");
-
-        return content;
-
     }
 
-    private void createCommissionResultExtractExcelFileLine(Sheet sheet, CommissionCalculation commission, CommissionResult commissionResult) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss.SSS");
+    private void createCommissionResultExtractExcelFileLine(Sheet sheet, CommissionCalculation commission, CommissionCalculationSession commissionResult) {
+        String commissionMonth = DateTimeUtil.format(commissionResult.getCommissionDate(), "MM/yyyy");
+        String updateDateTime = DateTimeUtil.formatLocalDateTime(commissionResult.getUpdatedDateTime(), "dd/MM/yyyy HH:mm:ss.SSS");
         ExcelUtils.appendRow(sheet,
-                text(String.valueOf(commissionResult.getCommissionMonth())),
+                text(commissionMonth),
                 text(commission.getPolicyNumber()),
                 text(commission.getPolicyStatus()),
                 text(commission.getPlanCode()),
@@ -133,6 +119,7 @@ public class CommissionCalculationSessionExportService {
                 text(commission.getExistingAgentCode1Status()),
                 text(commission.getExistingAgentCode2()),
                 text(commission.getExistingAgentCode2Status()),
+
                 text(commission.getFirstYearPremium()),
                 text(commission.getFirstYearCommission()),
                 text(commission.getFyAffiliateCommission()),
@@ -147,6 +134,7 @@ public class CommissionCalculationSessionExportService {
                 text(commission.getOvTsrCommission()),
                 text(commission.getOvMarketingCommission()),
                 text(commission.getOvCompanyCommission()),
+
                 text(commission.getFyAffiliateRate()),
                 text(commission.getFyDistributionRate()),
                 text(commission.getFyTsrRate()),
@@ -157,7 +145,9 @@ public class CommissionCalculationSessionExportService {
                 text(commission.getOvTsrRate()),
                 text(commission.getOvMarketingRate()),
                 text(commission.getOvCompanyRate()),
-                text(commissionResult.getUpdatedDateTime().format(formatter)));
+                text(updateDateTime),
+                text(commission.getResultCode()),
+                text(commission.getResultMessage()));
     }
 
 }
