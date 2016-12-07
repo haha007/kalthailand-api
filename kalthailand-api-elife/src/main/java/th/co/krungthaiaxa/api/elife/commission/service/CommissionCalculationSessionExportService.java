@@ -122,7 +122,7 @@ public class CommissionCalculationSessionExportService {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss.SSS");
         ExcelUtils.appendRow(sheet,
                 text(String.valueOf(commissionResult.getCommissionMonth())),
-                text(commission.getPolicyNo()),
+                text(commission.getPolicyNumber()),
                 text(commission.getPolicyStatus()),
                 text(commission.getPlanCode()),
                 text(commission.getPaymentCode()),
@@ -153,7 +153,7 @@ public class CommissionCalculationSessionExportService {
                 text(commission.getFyMarketingRate()),
                 text(commission.getFyCompanyRate()),
                 text(commission.getOvAffiliateRate()),
-                text(commission.getOvDistributiionRate()),
+                text(commission.getOvDistributionRate()),
                 text(commission.getOvTsrRate()),
                 text(commission.getOvMarketingRate()),
                 text(commission.getOvCompanyRate()),

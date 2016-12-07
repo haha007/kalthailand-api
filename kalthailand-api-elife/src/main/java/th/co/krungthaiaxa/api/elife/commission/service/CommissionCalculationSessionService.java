@@ -103,7 +103,7 @@ public class CommissionCalculationSessionService {
                 if (policiesCDB.size() > 0) {
                     for (Map<String, Object> policyCDB : policiesCDB) {
                         //check policy must not null
-                        Policy policy = policyRepository.findByPolicyId(String.valueOf(policyCDB.get("policyNo")));
+                        Policy policy = policyRepository.findByPolicyId(String.valueOf(policyCDB.get("policyNumber")));
                         if (policy != null) {
                             CommissionCalculation commissionCalculation = calculateCommissionForPolicy(policy, policyCDB, commissionPlans);
                             listCommissionCalculated.add(commissionCalculation);
@@ -128,7 +128,7 @@ public class CommissionCalculationSessionService {
         CommissionCalculation commissionCalculation = new CommissionCalculation();
 
         //cdb information
-        commissionCalculation.setPolicyNo(String.valueOf(policyCDB.get("policyNo")));
+        commissionCalculation.setPolicyNumber(String.valueOf(policyCDB.get("policyNumber")));
         commissionCalculation.setPolicyStatus(String.valueOf(policyCDB.get("policyStatus")));
         commissionCalculation.setPlanCode(String.valueOf(policyCDB.get("planCode")));
         commissionCalculation.setPaymentCode(String.valueOf(policyCDB.get("paymentCode")));
@@ -201,7 +201,7 @@ public class CommissionCalculationSessionService {
         commissionCalculation.setFyMarketingRate(convertFormat(getTargetEntities(TARGET_ENTITY_MKR, targetGroupFY).getPercentage()));
         commissionCalculation.setFyCompanyRate(convertFormat(getTargetEntities(TARGET_ENTITY_COM, targetGroupFY).getPercentage()));
         commissionCalculation.setOvAffiliateRate(convertFormat(getTargetEntities(TARGET_ENTITY_AFF, targetGroupOV).getPercentage()));
-        commissionCalculation.setOvDistributiionRate(convertFormat(getTargetEntities(TARGET_ENTITY_DIS, targetGroupOV).getPercentage()));
+        commissionCalculation.setOvDistributionRate(convertFormat(getTargetEntities(TARGET_ENTITY_DIS, targetGroupOV).getPercentage()));
         commissionCalculation.setOvTsrRate(convertFormat(getTargetEntities(TARGET_ENTITY_TSR, targetGroupOV).getPercentage()));
         commissionCalculation.setOvMarketingRate(convertFormat(getTargetEntities(TARGET_ENTITY_MKR, targetGroupOV).getPercentage()));
         commissionCalculation.setOvCompanyRate(convertFormat(getTargetEntities(TARGET_ENTITY_COM, targetGroupOV).getPercentage()));

@@ -1,5 +1,7 @@
 package th.co.krungthaiaxa.api.elife.commission.data;
 
+import org.springframework.data.mongodb.core.mapping.Field;
+
 /**
  * @author khoi.tran on 8/30/16.
  *         This is the result of comission calculation for one policy.
@@ -7,8 +9,8 @@ package th.co.krungthaiaxa.api.elife.commission.data;
  */
 
 public class CommissionCalculation {
-
-    private String policyNo;
+    @Field("policyNo")
+    private String policyNumber;
     private String policyStatus;
     private String planCode;
     private String paymentCode;
@@ -42,7 +44,8 @@ public class CommissionCalculation {
     private Double fyCompanyRate;
     private Double ovAffiliateRate;
     //TODO should migrate, original field name is ovDistributiionRate
-    private Double ovDistributiionRate;
+    @Field("ovDistributiionRate")
+    private Double ovDistributionRate;
     private Double ovTsrRate;
     private Double ovMarketingRate;
     private Double ovCompanyRate;
@@ -50,12 +53,12 @@ public class CommissionCalculation {
     private String resultCode;
     private String resultMessage;
 
-    public String getPolicyNo() {
-        return policyNo;
+    public String getPolicyNumber() {
+        return policyNumber;
     }
 
-    public void setPolicyNo(String policyNo) {
-        this.policyNo = policyNo;
+    public void setPolicyNumber(String policyNumber) {
+        this.policyNumber = policyNumber;
     }
 
     public String getPolicyStatus() {
@@ -298,12 +301,12 @@ public class CommissionCalculation {
         this.ovAffiliateRate = ovAffiliateRate;
     }
 
-    public Double getOvDistributiionRate() {
-        return ovDistributiionRate;
+    public Double getOvDistributionRate() {
+        return ovDistributionRate;
     }
 
-    public void setOvDistributiionRate(Double ovDistributiionRate) {
-        this.ovDistributiionRate = ovDistributiionRate;
+    public void setOvDistributionRate(Double ovDistributionRate) {
+        this.ovDistributionRate = ovDistributionRate;
     }
 
     public Double getOvTsrRate() {

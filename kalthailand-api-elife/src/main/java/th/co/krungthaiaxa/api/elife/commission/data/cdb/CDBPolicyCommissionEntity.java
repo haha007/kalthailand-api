@@ -7,6 +7,10 @@ public class CDBPolicyCommissionEntity {
     private String policyNumber;
     private Double firstYearPremium;
     private Double firstYearCommission;
+    private String policyStatus;
+    private String planCode;
+    private String paymentCode;
+    private String agentCode;
 
     public String getPolicyNumber() {
         return policyNumber;
@@ -30,5 +34,37 @@ public class CDBPolicyCommissionEntity {
 
     public void setFirstYearCommission(Double firstYearCommission) {
         this.firstYearCommission = firstYearCommission;
+    }
+
+    public String getPolicyStatus() {
+        return policyStatus;
+    }
+
+    public void setPolicyStatus(String policyStatus) {
+        this.policyStatus = policyStatus;
+    }
+
+    public String getPlanCode() {
+        return planCode;
+    }
+
+    public void setPlanCode(String planCode) {
+        this.planCode = planCode;
+    }
+
+    public String getPaymentCode() {
+        return paymentCode;
+    }
+
+    public void setPaymentCode(String paymentCode) {
+        this.paymentCode = paymentCode;
+    }
+
+    public String getAgentCode() {
+        return agentCode;
+    }
+
+    public void setAgentCode(String agentCode) {
+        this.agentCode = agentCode;
     }
 }

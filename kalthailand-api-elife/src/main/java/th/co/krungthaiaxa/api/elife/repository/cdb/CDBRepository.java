@@ -83,7 +83,7 @@ public class CDBRepository {
         String channelIdsParams = StringUtil.joinStrings(",", "?", channelIdsNoDup.size());
         String planCodesParams = StringUtil.joinStrings(",", "?", planCodesNoDup.size());
         String sql = StringUtil.newString("select ",
-                "ltrim(rtrim(a.pno)) as policyNo, ",
+                "ltrim(rtrim(a.pno)) as policyNumber, ",
                 "ltrim(rtrim(a.pstu)) as policyStatus, ",
                 "ltrim(rtrim(a.lplan)) as planCode, ",
                 "ltrim(rtrim(a.pmode)) as paymentCode, ",
