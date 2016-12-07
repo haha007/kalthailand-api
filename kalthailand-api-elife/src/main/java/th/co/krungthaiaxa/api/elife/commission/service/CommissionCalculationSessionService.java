@@ -78,8 +78,7 @@ public class CommissionCalculationSessionService {
 
     //santi : for trigger calculation commission
     public void calculateCommissionForPolicies() {
-
-        LOGGER.debug("Start process to calculate commission .....");
+        LOGGER.debug("[Commission] start");
 
         LocalDateTime nowDate = LocalDateTime.now();
 
@@ -89,7 +88,6 @@ public class CommissionCalculationSessionService {
         commissionResult.setCreatedDateTime(nowDate);
         //TODO rowId is unnecessary
         commissionResult.setRowId(getRowId(nowDate));
-        commissionResultRepository.save(commissionResult);
 
         List<CommissionPlan> commissionPlans = commissionPlanService.findAll();
         List<String> channelIds = commissionPlans.stream().map(sc -> sc.getUnitCode()).collect(Collectors.toList());//list of UnitCode
@@ -115,30 +113,28 @@ public class CommissionCalculationSessionService {
                     commissionResult.setPolicies(listCommissionCalculated);
                     commissionResult.setUpdatedDateTime(LocalDateTime.now());
                     //update
-                    commissionResultRepository.save(commissionResult);
-                } else {
-                    commissionResultRepository.delete(commissionResult);
                 }
             } catch (Exception e) {
                 LOGGER.error("Unable to query " + e.getMessage(), e);
             }
         } else {
-            LOGGER.debug("Have no commission configure to calculate.....");
+            LOGGER.debug("[Commission] Not found channel Ids and planCodes in setting.....");
         }
-        LOGGER.debug("Stop process to calculate commission .....");
+        commissionResultRepository.save(commissionResult);
+        LOGGER.debug("[Commission] finish");
     }
 
-    private CommissionCalculation calculateCommissionForPolicy(Policy policy, Map<String, Object> policyMap, List<CommissionPlan> commissionPlans) {
+    private CommissionCalculation calculateCommissionForPolicy(Policy policy, Map<String, Object> policyCDB, List<CommissionPlan> commissionPlans) {
         CommissionCalculation commissionCalculation = new CommissionCalculation();
 
         //cdb information
-        commissionCalculation.setPolicyNo(String.valueOf(policyMap.get("policyNo")));
-        commissionCalculation.setPolicyStatus(String.valueOf(policyMap.get("policyStatus")));
-        commissionCalculation.setPlanCode(String.valueOf(policyMap.get("planCode")));
-        commissionCalculation.setPaymentCode(String.valueOf(policyMap.get("paymentCode")));
-        commissionCalculation.setAgentCode(String.valueOf(policyMap.get("agentCode")));
-        commissionCalculation.setFirstYearPremium(convertFormat(Double.valueOf(String.valueOf(policyMap.get("firstYearPremium")))));
-        commissionCalculation.setFirstYearCommission(convertFormat(Double.valueOf(String.valueOf(policyMap.get("firstYearCommission")))));
+        commissionCalculation.setPolicyNo(String.valueOf(policyCDB.get("policyNo")));
+        commissionCalculation.setPolicyStatus(String.valueOf(policyCDB.get("policyStatus")));
+        commissionCalculation.setPlanCode(String.valueOf(policyCDB.get("planCode")));
+        commissionCalculation.setPaymentCode(String.valueOf(policyCDB.get("paymentCode")));
+        commissionCalculation.setAgentCode(String.valueOf(policyCDB.get("agentCode")));
+        commissionCalculation.setFirstYearPremium(convertFormat(Double.valueOf(String.valueOf(policyCDB.get("firstYearPremium")))));
+        commissionCalculation.setFirstYearCommission(convertFormat(Double.valueOf(String.valueOf(policyCDB.get("firstYearCommission")))));
 
         //previously information
         Insured mainInsured = ProductUtils.getFirstInsured(policy);
@@ -160,13 +156,17 @@ public class CommissionCalculationSessionService {
         }
 
         //calculation commission
+        CommissionPlan commissionPlan = findCommissionPlan(getProperAgentCodeNumber(commissionCalculation.getAgentCode(), 6), commissionCalculation.getPlanCode(), commissionCalculation.getCustomerCategory(), commissionPlans);
+        calculateCommissionRate(commissionCalculation, commissionPlan);
+        return commissionCalculation;
+    }
 
+    private void calculateCommissionRate(CommissionCalculation commissionCalculation, CommissionPlan commissionPlan) {
         //fy
-        CommissionPlan plan = getCommissionPlanForCalculate(getProperAgentCodeNumber(commissionCalculation.getAgentCode(), 6), commissionCalculation.getPlanCode(), commissionCalculation.getCustomerCategory(), commissionPlans);
-        CommissionTargetGroup fCtg = getCommissionTargetGroup(FY, plan.getTargetGroups());
-        CommissionTargetGroup oCtg = getCommissionTargetGroup(OV, plan.getTargetGroups());
-        commissionCalculation.setFyAffiliateCommission(convertFormat((commissionCalculation.getFirstYearCommission() * getTargetEntities(TARGET_ENTITY_AFF, fCtg).getPercentage()) / 100));
-        Double fDisComm = (commissionCalculation.getFirstYearCommission() * getTargetEntities(TARGET_ENTITY_DIS, fCtg).getPercentage()) / 100;
+        CommissionTargetGroup targetGroupFY = getCommissionTargetGroup(FY, commissionPlan.getTargetGroups());
+        CommissionTargetGroup targetGroupOV = getCommissionTargetGroup(OV, commissionPlan.getTargetGroups());
+        commissionCalculation.setFyAffiliateCommission(convertFormat((commissionCalculation.getFirstYearCommission() * getTargetEntities(TARGET_ENTITY_AFF, targetGroupFY).getPercentage()) / 100));
+        Double fDisComm = (commissionCalculation.getFirstYearCommission() * getTargetEntities(TARGET_ENTITY_DIS, targetGroupFY).getPercentage()) / 100;
         if (StringUtil.isBlank(commissionCalculation.getExistingAgentCode2())) {
             commissionCalculation.setFyDistribution1Commission(convertFormat(fDisComm));
             commissionCalculation.setFyDistribution2Commission(0.0);
@@ -175,13 +175,13 @@ public class CommissionCalculationSessionService {
             commissionCalculation.setFyDistribution1Commission(convertFormat(disCommSplit));
             commissionCalculation.setFyDistribution2Commission(convertFormat(disCommSplit));
         }
-        commissionCalculation.setFyTsrCommission(convertFormat((commissionCalculation.getFirstYearCommission() * getTargetEntities(TARGET_ENTITY_TSR, fCtg).getPercentage()) / 100));
-        commissionCalculation.setFyMarketingCommission(convertFormat((commissionCalculation.getFirstYearCommission() * getTargetEntities(TARGET_ENTITY_MKR, fCtg).getPercentage()) / 100));
-        commissionCalculation.setFyCompanyCommission(convertFormat((commissionCalculation.getFirstYearCommission() * getTargetEntities(TARGET_ENTITY_COM, fCtg).getPercentage()) / 100));
+        commissionCalculation.setFyTsrCommission(convertFormat((commissionCalculation.getFirstYearCommission() * getTargetEntities(TARGET_ENTITY_TSR, targetGroupFY).getPercentage()) / 100));
+        commissionCalculation.setFyMarketingCommission(convertFormat((commissionCalculation.getFirstYearCommission() * getTargetEntities(TARGET_ENTITY_MKR, targetGroupFY).getPercentage()) / 100));
+        commissionCalculation.setFyCompanyCommission(convertFormat((commissionCalculation.getFirstYearCommission() * getTargetEntities(TARGET_ENTITY_COM, targetGroupFY).getPercentage()) / 100));
 
         //ov
-        commissionCalculation.setOvAffiliateCommission(convertFormat((commissionCalculation.getFirstYearCommission() * getTargetEntities(TARGET_ENTITY_AFF, oCtg).getPercentage()) / 100));
-        Double oDisComm = (commissionCalculation.getFirstYearCommission() * getTargetEntities(TARGET_ENTITY_DIS, oCtg).getPercentage()) / 100;
+        commissionCalculation.setOvAffiliateCommission(convertFormat((commissionCalculation.getFirstYearCommission() * getTargetEntities(TARGET_ENTITY_AFF, targetGroupOV).getPercentage()) / 100));
+        Double oDisComm = (commissionCalculation.getFirstYearCommission() * getTargetEntities(TARGET_ENTITY_DIS, targetGroupOV).getPercentage()) / 100;
         if (StringUtil.isBlank(commissionCalculation.getExistingAgentCode2())) {
             commissionCalculation.setOvDistribution1Commission(convertFormat(oDisComm));
             commissionCalculation.setOvDistribution2Commission(0.0);
@@ -190,22 +190,21 @@ public class CommissionCalculationSessionService {
             commissionCalculation.setOvDistribution1Commission(convertFormat(disCommSplit));
             commissionCalculation.setOvDistribution2Commission(convertFormat(disCommSplit));
         }
-        commissionCalculation.setOvTsrCommission(convertFormat((commissionCalculation.getFirstYearCommission() * getTargetEntities(TARGET_ENTITY_TSR, oCtg).getPercentage()) / 100));
-        commissionCalculation.setOvMarketingCommission(convertFormat((commissionCalculation.getFirstYearCommission() * getTargetEntities(TARGET_ENTITY_MKR, oCtg).getPercentage()) / 100));
-        commissionCalculation.setOvCompanyCommission(convertFormat((commissionCalculation.getFirstYearCommission() * getTargetEntities(TARGET_ENTITY_COM, oCtg).getPercentage()) / 100));
+        commissionCalculation.setOvTsrCommission(convertFormat((commissionCalculation.getFirstYearCommission() * getTargetEntities(TARGET_ENTITY_TSR, targetGroupOV).getPercentage()) / 100));
+        commissionCalculation.setOvMarketingCommission(convertFormat((commissionCalculation.getFirstYearCommission() * getTargetEntities(TARGET_ENTITY_MKR, targetGroupOV).getPercentage()) / 100));
+        commissionCalculation.setOvCompanyCommission(convertFormat((commissionCalculation.getFirstYearCommission() * getTargetEntities(TARGET_ENTITY_COM, targetGroupOV).getPercentage()) / 100));
 
         //commission rate
-        commissionCalculation.setFyAffiliateRate(convertFormat(getTargetEntities(TARGET_ENTITY_AFF, fCtg).getPercentage()));
-        commissionCalculation.setFyDistributionRate(convertFormat(getTargetEntities(TARGET_ENTITY_DIS, fCtg).getPercentage()));
-        commissionCalculation.setFyTsrRate(convertFormat(getTargetEntities(TARGET_ENTITY_TSR, fCtg).getPercentage()));
-        commissionCalculation.setFyMarketingRate(convertFormat(getTargetEntities(TARGET_ENTITY_MKR, fCtg).getPercentage()));
-        commissionCalculation.setFyCompanyRate(convertFormat(getTargetEntities(TARGET_ENTITY_COM, fCtg).getPercentage()));
-        commissionCalculation.setOvAffiliateRate(convertFormat(getTargetEntities(TARGET_ENTITY_AFF, oCtg).getPercentage()));
-        commissionCalculation.setOvDistributiionRate(convertFormat(getTargetEntities(TARGET_ENTITY_DIS, oCtg).getPercentage()));
-        commissionCalculation.setOvTsrRate(convertFormat(getTargetEntities(TARGET_ENTITY_TSR, oCtg).getPercentage()));
-        commissionCalculation.setOvMarketingRate(convertFormat(getTargetEntities(TARGET_ENTITY_MKR, oCtg).getPercentage()));
-        commissionCalculation.setOvCompanyRate(convertFormat(getTargetEntities(TARGET_ENTITY_COM, oCtg).getPercentage()));
-        return commissionCalculation;
+        commissionCalculation.setFyAffiliateRate(convertFormat(getTargetEntities(TARGET_ENTITY_AFF, targetGroupFY).getPercentage()));
+        commissionCalculation.setFyDistributionRate(convertFormat(getTargetEntities(TARGET_ENTITY_DIS, targetGroupFY).getPercentage()));
+        commissionCalculation.setFyTsrRate(convertFormat(getTargetEntities(TARGET_ENTITY_TSR, targetGroupFY).getPercentage()));
+        commissionCalculation.setFyMarketingRate(convertFormat(getTargetEntities(TARGET_ENTITY_MKR, targetGroupFY).getPercentage()));
+        commissionCalculation.setFyCompanyRate(convertFormat(getTargetEntities(TARGET_ENTITY_COM, targetGroupFY).getPercentage()));
+        commissionCalculation.setOvAffiliateRate(convertFormat(getTargetEntities(TARGET_ENTITY_AFF, targetGroupOV).getPercentage()));
+        commissionCalculation.setOvDistributiionRate(convertFormat(getTargetEntities(TARGET_ENTITY_DIS, targetGroupOV).getPercentage()));
+        commissionCalculation.setOvTsrRate(convertFormat(getTargetEntities(TARGET_ENTITY_TSR, targetGroupOV).getPercentage()));
+        commissionCalculation.setOvMarketingRate(convertFormat(getTargetEntities(TARGET_ENTITY_MKR, targetGroupOV).getPercentage()));
+        commissionCalculation.setOvCompanyRate(convertFormat(getTargetEntities(TARGET_ENTITY_COM, targetGroupOV).getPercentage()));
     }
 
     private Double convertFormat(Double value) {
@@ -226,55 +225,44 @@ public class CommissionCalculationSessionService {
         return commissionCalculationSession;
     }
 
-    private CommissionPlan getCommissionPlanForCalculate(String channelCode, String planCode, String customerCategory, List<CommissionPlan> commissionPlans) {
+    private CommissionPlan findCommissionPlan(String channelCode, String planCode, String customerCategory, List<CommissionPlan> commissionPlans) {
         CommissionPlan commissionPlan = new CommissionPlan();
-        for (CommissionPlan c : commissionPlans) {
-            if (c.getUnitCode().equals(channelCode) &&
-                    c.getPlanCode().equals(planCode) &&
-                    c.getCustomerCategory().name().equals(customerCategory)) {
-                commissionPlan = c;
+        for (CommissionPlan icommissionPlan : commissionPlans) {
+            if (icommissionPlan.getUnitCode().equals(channelCode) &&
+                    icommissionPlan.getPlanCode().equals(planCode) &&
+                    icommissionPlan.getCustomerCategory().name().equals(customerCategory)) {
+                commissionPlan = icommissionPlan;
                 break;
             }
         }
         return commissionPlan;
     }
 
-    private CommissionTargetGroup getCommissionTargetGroup(String type, List<CommissionTargetGroup> ctgList) {
-        CommissionTargetGroup outCtg = new CommissionTargetGroup();
-        for (CommissionTargetGroup ctg : ctgList) {
-            if (ctg.getTargetGroupType().name().equals(FY) && type.equals(FY)) {
-                outCtg = ctg;
-            } else if (ctg.getTargetGroupType().name().equals(OV) && type.equals(OV)) {
-                outCtg = ctg;
+    private CommissionTargetGroup getCommissionTargetGroup(String type, List<CommissionTargetGroup> commissionTargetGroups) {
+        //TODO If not found, should return null.
+        CommissionTargetGroup result = new CommissionTargetGroup();
+        for (CommissionTargetGroup commissionTargetGroup : commissionTargetGroups) {
+            if (commissionTargetGroup.getTargetGroupType().name().equalsIgnoreCase(type)) {
+                result = commissionTargetGroup;
             }
         }
-        return outCtg;
+        return result;
     }
 
     private CommissionTargetEntity getTargetEntities(String entityType, CommissionTargetGroup commissionTargetGroup) {
-        CommissionTargetEntity outCtr = new CommissionTargetEntity();
-        List<CommissionTargetEntity> entityGroup = commissionTargetGroup.getTargetEntities();
-        for (CommissionTargetEntity cte : entityGroup) {
-            if (cte.getTargetEntityType().name().equals(TARGET_ENTITY_AFF) && entityType.equals(TARGET_ENTITY_AFF)) {
-                outCtr = cte;
-                break;
-            } else if (cte.getTargetEntityType().name().equals(TARGET_ENTITY_COM) && entityType.equals(TARGET_ENTITY_COM)) {
-                outCtr = cte;
-                break;
-            } else if (cte.getTargetEntityType().name().equals(TARGET_ENTITY_TSR) && entityType.equals(TARGET_ENTITY_TSR)) {
-                outCtr = cte;
-                break;
-            } else if (cte.getTargetEntityType().name().equals(TARGET_ENTITY_MKR) && entityType.equals(TARGET_ENTITY_MKR)) {
-                outCtr = cte;
-                break;
-            } else if (cte.getTargetEntityType().name().equals(TARGET_ENTITY_DIS) && entityType.equals(TARGET_ENTITY_DIS)) {
-                outCtr = cte;
+        //TODO If not found, should return null.
+        CommissionTargetEntity result = new CommissionTargetEntity();
+        List<CommissionTargetEntity> targetEntities = commissionTargetGroup.getTargetEntities();
+        for (CommissionTargetEntity targetEntity : targetEntities) {
+            if (targetEntity.getTargetEntityType().name().equalsIgnoreCase(entityType)) {
+                result = targetEntity;
                 break;
             }
         }
-        return outCtr;
+        return result;
     }
 
+    @Deprecated
     private String getRowId(LocalDateTime now) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS");
         return "C" + now.format(formatter);

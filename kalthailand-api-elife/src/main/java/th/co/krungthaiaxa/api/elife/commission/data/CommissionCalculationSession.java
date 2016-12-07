@@ -23,6 +23,9 @@ public class CommissionCalculationSession extends BaseEntity {
     @NotNull
     private Instant commissionDate;
 
+    private String resultCode;
+    private String resultMessage;
+
     public List<CommissionPlan> getCommissionPlans() {
         return commissionPlans;
     }
@@ -45,5 +48,21 @@ public class CommissionCalculationSession extends BaseEntity {
 
     public void setCommissionDate(Instant commissionDate) {
         this.commissionDate = commissionDate;
+    }
+
+    public String getResultCode() {
+        return resultCode;
+    }
+
+    public void setResultCode(String resultCode) {
+        this.resultCode = resultCode;
+    }
+
+    public String getResultMessage() {
+        return resultMessage;
+    }
+
+    public void setResultMessage(String resultMessage) {
+        this.resultMessage = resultMessage;
     }
 }

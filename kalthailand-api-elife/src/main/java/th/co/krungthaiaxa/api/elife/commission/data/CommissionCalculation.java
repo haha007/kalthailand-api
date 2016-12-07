@@ -19,6 +19,7 @@ public class CommissionCalculation {
     private String existingAgentCode1Status;
     private String existingAgentCode2;
     private String existingAgentCode2Status;
+
     private Double firstYearPremium;
     private Double firstYearCommission;
     private Double fyAffiliateCommission;
@@ -33,17 +34,21 @@ public class CommissionCalculation {
     private Double ovTsrCommission;
     private Double ovMarketingCommission;
     private Double ovCompanyCommission;
+
     private Double fyAffiliateRate;
     private Double fyDistributionRate;
     private Double fyTsrRate;
     private Double fyMarketingRate;
     private Double fyCompanyRate;
     private Double ovAffiliateRate;
-    //TODO should migrate
+    //TODO should migrate, original field name is ovDistributiionRate
     private Double ovDistributiionRate;
     private Double ovTsrRate;
     private Double ovMarketingRate;
     private Double ovCompanyRate;
+
+    private String resultCode;
+    private String resultMessage;
 
     public String getPolicyNo() {
         return policyNo;
@@ -325,4 +330,19 @@ public class CommissionCalculation {
         this.ovCompanyRate = ovCompanyRate;
     }
 
+    public String getResultCode() {
+        return resultCode;
+    }
+
+    public void setResultCode(String resultCode) {
+        this.resultCode = resultCode;
+    }
+
+    public String getResultMessage() {
+        return resultMessage;
+    }
+
+    public void setResultMessage(String resultMessage) {
+        this.resultMessage = resultMessage;
+    }
 }
