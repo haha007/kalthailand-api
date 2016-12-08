@@ -136,7 +136,7 @@ CommissionService.prototype.validateCommissionPlan = function (commissionPlan) {
                 break;
             }
             var sumPercentage = self.sumPercentageInCommissionGroup(commissionTargetGroup);
-            if ((commissionGroupType.isRequired || self.hasTargetEntitiesPercentages(commissionTargetGroup)) && sumPercentage != 100) {
+            if ((commissionGroupType.isRequired || self.hasTargetEntitiesPercentages(commissionTargetGroup)) && sumPercentage - 100 < 0.00005) {
                 var msg = "Invalid commission: " + commissionPlan.unitCode + "-" + commissionPlan.planCode + "-" + commissionPlan.customerCategory + ": Group '" + commissionTargetGroup.targetGroupType + "' has totally " + sumPercentage + "%";
                 self.showErrorMessage(msg);
                 isSuccess = false;

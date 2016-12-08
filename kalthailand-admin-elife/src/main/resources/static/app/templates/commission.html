@@ -40,7 +40,6 @@
         <div class="page-header">
             <h1>Commission Setting</h1>
         </div>
-        <div ng-include="'app/templates/partials/message.html'"></div>
         <table class="table table-bordered table-striped table-hover table-condensed">
             <thead>
             <tr>
@@ -98,9 +97,13 @@
             </tr>
             </tbody>
         </table>
+        <div ng-include="'app/templates/partials/message.html'"></div>
+
         <button ng-disabled="!service.isValidateSuccess" ng-class="{'btn-danger': service.isValidateSuccess}" class="btn btn-default" ng-click="service.saveAllCommissionPlans()"
                 title="After saving, you will not be able to remove saved rows. But you can update their percentage numbers.">Save all
         </button>
+
     </div>
+
     <!-- END Page specific stuff -->
 </div>

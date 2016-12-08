@@ -27,6 +27,9 @@ public class BaseEntity {
     }
 
     public LocalDateTime getCreatedDateTime() {
+        if (createdDateTime == null) {
+            createdDateTime = LocalDateTime.now();
+        }
         return createdDateTime;
     }
 
@@ -35,6 +38,9 @@ public class BaseEntity {
     }
 
     public LocalDateTime getUpdatedDateTime() {
+        if (updatedDateTime == null) {
+            updatedDateTime = LocalDateTime.now();
+        }
         return updatedDateTime;
     }
 

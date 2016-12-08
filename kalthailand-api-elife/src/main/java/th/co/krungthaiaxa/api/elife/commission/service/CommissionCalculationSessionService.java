@@ -4,9 +4,12 @@ import org.jsoup.helper.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.common.exeption.CommissionCalculationSessionException;
 import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
+import th.co.krungthaiaxa.api.common.utils.ExceptionUtil;
+import th.co.krungthaiaxa.api.common.utils.LogUtil;
 import th.co.krungthaiaxa.api.elife.commission.data.CommissionCalculation;
 import th.co.krungthaiaxa.api.elife.commission.data.CommissionCalculationSession;
 import th.co.krungthaiaxa.api.elife.commission.data.CommissionPlan;
@@ -80,7 +83,7 @@ public class CommissionCalculationSessionService {
 
     //santi : for trigger calculation commission
     public void calculateCommissionForPolicies() {
-        LOGGER.debug("[Commission] start");
+        Instant start = LogUtil.logStarting("[Commission-calculation][start]");
         CommissionCalculationSession commissionResult = new CommissionCalculationSession();
         Instant previousMonth = DateTimeUtil.plusMonths(Instant.now(), -1);
         commissionResult.setCommissionDate(previousMonth);
@@ -109,38 +112,42 @@ public class CommissionCalculationSessionService {
                 resultMessage = String.format("Not found UnitCodes or PlanCodes in Commission Setting: UnitCodes: %s, PlanCodes: %s", unitCodes.size(), planCodes.size());
                 LOGGER.debug("[Commission] {}", resultMessage);
             }
+        } catch (DataAccessException e) {
+            resultCode = RESULT_CODE_SESSION_INTERNAL_ERROR;
+            //This message will be shown to end user.
+            resultMessage = "Wrong CDB query: " + ExceptionUtil.getDataExceptionRoot(e);
+            //This is the detail message will be shown in log file.
+            LOGGER.error("Wrong CDB query: " + e.getMessage(), e);
         } catch (Exception e) {
             resultCode = RESULT_CODE_SESSION_INTERNAL_ERROR;
             resultMessage = e.getMessage();
-            LOGGER.error("Unable to query " + e.getMessage(), e);
+            LOGGER.error("Wrong calculation " + e.getMessage(), e);
         }
         commissionResult.setResultCode(resultCode);
         commissionResult.setResultMessage(resultMessage);
-        commissionResult.setCreatedDateTime(LocalDateTime.now());
-        commissionResult.setUpdatedDateTime(LocalDateTime.now());
         commissionCalculationSessionRepository.save(commissionResult);
-        LOGGER.debug("[Commission] finish");
+        LogUtil.logRuntime(start, "[Commission-calculation][finish]");
     }
 
     private CommissionCalculation calculateCommissionForPolicy(CDBPolicyCommissionEntity policyCDB, List<CommissionPlan> commissionPlans) {
         CommissionCalculation commissionCalculation = new CommissionCalculation();
         String policyNumber = policyCDB.getPolicyNumber();
-        Policy policy = policyRepository.findByPolicyId(String.valueOf(policyCDB.getPolicyNumber()));
-        if (policy != null) {
-            try {
-                calculateCommissionForPolicy(commissionCalculation, policy, policyCDB, commissionPlans);
-                commissionCalculation.setResultCode(RESULT_CODE_POLICY_SUCCESS);
-                commissionCalculation.setResultMessage("Success");
-            } catch (Exception ex) {
-                String msg = String.format("Error when calculation commission for policy '%s': %s", policyNumber, ex.getMessage());
-                LOGGER.error(msg, ex);
-                commissionCalculation.setResultCode(RESULT_CODE_INTERNAL_ERROR);
-                commissionCalculation.setResultMessage(msg);
-            }
-        } else {
+        try {
+//            Policy policy = policyRepository.findByPolicyId(String.valueOf(policyCDB.getPolicyNumber()));
+//            if (policy != null) {
+//                calculateCommissionForPolicy(commissionCalculation, policy, policyCDB, commissionPlans);
+//                commissionCalculation.setResultCode(RESULT_CODE_POLICY_SUCCESS);
+//                commissionCalculation.setResultMessage("Success");
+//            } else {
             BeanUtils.copyProperties(policyCDB, commissionCalculation);
             commissionCalculation.setResultCode(RESULT_CODE_INTERNAL_ERROR);
             commissionCalculation.setResultMessage(String.format("Not found policy '%s' in elife.", policyNumber));
+//            }
+        } catch (Exception ex) {
+            String msg = String.format("Error when calculation commission for policy '%s': %s", policyNumber, ex.getMessage());
+            LOGGER.error(msg, ex);
+            commissionCalculation.setResultCode(RESULT_CODE_INTERNAL_ERROR);
+            commissionCalculation.setResultMessage(msg);
         }
         return commissionCalculation;
     }

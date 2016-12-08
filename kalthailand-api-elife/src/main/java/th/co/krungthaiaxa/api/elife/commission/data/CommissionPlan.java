@@ -13,7 +13,8 @@ import java.util.List;
 public class CommissionPlan extends BaseEntity {
     @Indexed
     /**
-     * This can be any string. For example 40002, 20001...
+     * This can be any string. For example 40002, 20002...
+     * But usually the number.
      */
     private String unitCode;
     /**
