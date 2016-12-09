@@ -77,12 +77,17 @@ public class ExcelUtils {
 
     public static void autoWidthAllColumns(Workbook workbook, boolean useMergedCells) {
         for (int sheetNum = 0; sheetNum < workbook.getNumberOfSheets(); sheetNum++) {
-            short biggestCellNumberInSheet = newArrayList(workbook.getSheetAt(sheetNum).rowIterator()) //
-                    .stream() //
-                    .map(Row::getLastCellNum).reduce((short) 0, (a, b) -> (short) Math.max(a, b));
-            for (int columnIndex = 0; columnIndex < biggestCellNumberInSheet; columnIndex++) {
-                workbook.getSheetAt(sheetNum).autoSizeColumn(columnIndex, useMergedCells);
-            }
+            Sheet sheet = workbook.getSheetAt(sheetNum);
+            autoWidthAllColumns(sheet, useMergedCells);
+        }
+    }
+
+    public static void autoWidthAllColumns(Sheet sheet, boolean useMergedCells) {
+        short biggestCellNumberInSheet = newArrayList(sheet.rowIterator()) //
+                .stream() //
+                .map(Row::getLastCellNum).reduce((short) 0, (a, b) -> (short) Math.max(a, b));
+        for (int columnIndex = 0; columnIndex < biggestCellNumberInSheet; columnIndex++) {
+            sheet.autoSizeColumn(columnIndex, useMergedCells);
         }
     }
 

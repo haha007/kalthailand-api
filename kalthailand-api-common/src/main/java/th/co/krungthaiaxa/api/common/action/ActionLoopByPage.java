@@ -6,6 +6,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -29,8 +30,8 @@ public abstract class ActionLoopByPage<E> {
         this.name = name;
     }
 
-    public void executeAllPages(int pageSize) {
-        executeAllPages(pageSize, null);
+    public List<E> executeAllPages(int pageSize) {
+        return executeAllPages(pageSize, null);
     }
 
     /**
@@ -42,17 +43,20 @@ public abstract class ActionLoopByPage<E> {
      * @param pageSize pageSize of elements.
      * @param sort     sort for elements. Can be null.
      */
-    public void executeAllPages(int pageSize, Sort sort) {
+    public List<E> executeAllPages(int pageSize, Sort sort) {
         int page = 0;
+        List<E> all = new ArrayList<>();
         boolean isContinue = true;
         while (isContinue) {
             Pageable pageRequest = new PageRequest(page, pageSize, sort);
             LOGGER.debug("Action '{}' [{}]", name, pageRequest);
             List<E> pageData = executeEachPageData(pageRequest);
+            all.addAll(pageData);
             isContinue = !pageData.isEmpty();
             page++;
         }
         LOGGER.debug("Action '{}' [finish]", name);
+        return all;
     }
 
     /**

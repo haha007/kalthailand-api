@@ -16,7 +16,7 @@ import th.co.krungthaiaxa.api.auth.model.RequestForToken;
 import th.co.krungthaiaxa.api.common.exeption.UnauthenticationException;
 import th.co.krungthaiaxa.api.common.model.authentication.AuthenticatedUser;
 import th.co.krungthaiaxa.api.common.model.authentication.AuthenticatedUserMapper;
-import th.co.krungthaiaxa.api.common.utils.LogUtil;
+import th.co.krungthaiaxa.api.common.log.LogUtil;
 
 import java.time.Instant;
 
@@ -51,7 +51,7 @@ public class AuthenticationService {
             final String token = jwtTokenUtil.generateToken(userDetails);
             AuthenticatedUser result = AuthenticatedUserMapper.toAuthenticatedUser(userDetails, token);
             // Return the token
-            LogUtil.logRuntime(start, "Authenticate " + requestForToken.getUserName());
+            LogUtil.logFinishing(start, "Authenticate " + requestForToken.getUserName());
             return result;
         } catch (AuthenticationException ex) {
             throw new UnauthenticationException("Unauthenticated " + requestForToken.getUserName() + ": " + ex.getMessage(), ex);

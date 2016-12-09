@@ -2,7 +2,6 @@ package th.co.krungthaiaxa.api.elife.service;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.lang3.tuple.Triple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -11,7 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import th.co.krungthaiaxa.api.common.utils.LogUtil;
+import th.co.krungthaiaxa.api.common.log.LogUtil;
 import th.co.krungthaiaxa.api.common.validator.BeanValidator;
 import th.co.krungthaiaxa.api.elife.client.CDBClient;
 import th.co.krungthaiaxa.api.elife.data.PolicyNumber;
@@ -26,6 +25,7 @@ import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.Person;
 import th.co.krungthaiaxa.api.elife.model.PersonInfo;
 import th.co.krungthaiaxa.api.elife.model.Policy;
+import th.co.krungthaiaxa.api.elife.model.PreviousPolicy;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.Registration;
 import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
@@ -211,7 +211,7 @@ public class PolicyService {
                 }
             });
         }
-        LogUtil.logRuntime(start, "updateRegKeyForAllNotProcessedPayments [finish]. policyId: " + policy.getPolicyId());
+        LogUtil.logFinishing(start, "updateRegKeyForAllNotProcessedPayments [finish]. policyId: " + policy.getPolicyId());
     }
 
     /**
@@ -247,21 +247,22 @@ public class PolicyService {
         }
 
         // Update the policy
-        Optional<Registration> insuredId = policy.getInsureds().get(0).getPerson().getRegistrations()
+        Insured mainInsured = ProductUtils.getFirstInsured(policy);
+        Optional<Registration> insuredRegistrationOptional = mainInsured.getPerson().getRegistrations()
                 .stream()
                 .filter(registration -> registration.getTypeName().equals(RegistrationTypeName.THAI_ID_NUMBER))
                 .findFirst();
-        String insuredDOB = policy.getInsureds().get(0).getPerson().getBirthDate().format(ofPattern("yyyyMMdd"));
-        if (insuredId.isPresent()) {
-            Optional<Triple<String, String, String>> agent = cdbClient.getExistingAgentCode(insuredId.get().getId(), insuredDOB);
-            if (agent.isPresent()) {
-                String previousPolicy = agent.get().getLeft();
-                String agent1 = agent.get().getMiddle();
-                String agent2 = agent.get().getRight();
-                policy.getInsureds().get(0).addInsuredPreviousInformation((previousPolicy != null) ? previousPolicy : "NULL");
-                policy.getInsureds().get(0).addInsuredPreviousInformation((agent1 != null) ? agent1 : "NULL");
-                policy.getInsureds().get(0).addInsuredPreviousInformation((agent2 != null) ? agent2 : "NULL");
+        String insuredDOB = mainInsured.getPerson().getBirthDate().format(ofPattern("yyyyMMdd"));
+        if (insuredRegistrationOptional.isPresent()) {
+            Optional<PreviousPolicy> previousPolicyOptional = cdbClient.getExistingAgentCode(insuredRegistrationOptional.get().getId(), insuredDOB);
+            if (previousPolicyOptional.isPresent()) {
+                PreviousPolicy previousPolicy = previousPolicyOptional.get();
+                mainInsured.setLastActivatingPreviousPolicy(previousPolicy);
+                mainInsured.addInsuredPreviousInformation(previousPolicy.getPolicyNumber());
+                mainInsured.addInsuredPreviousInformation(previousPolicy.getAgentCode1());
+                mainInsured.addInsuredPreviousInformation(previousPolicy.getAgentCode2());
             }
+            mainInsured.setNotSearchedPreviousPolicy(false);
         }
 
         policy.setStatus(PolicyStatus.PENDING_VALIDATION);
@@ -404,7 +405,7 @@ public class PolicyService {
         } catch (Exception e) {
             logger.error("Unable to send validated application Form to TMC on policy [" + policy.getPolicyId() + "]: " + e.getMessage(), e);
         }
-        LogUtil.logRuntime(start, "updatePolicyStatusToValidated [finish]: policyId: " + policy.getPolicyId());
+        LogUtil.logFinishing(start, "updatePolicyStatusToValidated [finish]: policyId: " + policy.getPolicyId());
         return policy;
     }
 

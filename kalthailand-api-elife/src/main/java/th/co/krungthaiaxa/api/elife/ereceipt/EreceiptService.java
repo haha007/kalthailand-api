@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import th.co.krungthaiaxa.api.common.utils.LogUtil;
+import th.co.krungthaiaxa.api.common.log.LogUtil;
 import th.co.krungthaiaxa.api.elife.client.SigningClient;
 import th.co.krungthaiaxa.api.elife.exception.EreceiptDocumentException;
 import th.co.krungthaiaxa.api.elife.model.Document;
@@ -43,7 +43,7 @@ public class EreceiptService {
     public EreceiptNumber generateEreceiptFullNumber(boolean newBusiness) {
         Instant start = LogUtil.logStarting("Generate new ereceipt [start]");
         EreceiptNumber ereceiptNumber = ereceiptIncrementalService.nextValue(newBusiness);
-        LogUtil.logRuntime(start, "Generate new ereceipt [finish]: " + ereceiptNumber.getFullNumberForDisplay());
+        LogUtil.logFinishing(start, "Generate new ereceipt [finish]: " + ereceiptNumber.getFullNumberForDisplay());
         return ereceiptNumber;
     }
 

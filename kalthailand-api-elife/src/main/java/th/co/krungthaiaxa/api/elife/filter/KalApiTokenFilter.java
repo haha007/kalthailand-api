@@ -6,9 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
+import th.co.krungthaiaxa.api.common.log.LogHttpRequestUtil;
 import th.co.krungthaiaxa.api.common.model.authentication.RoleConstants;
 import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
-import th.co.krungthaiaxa.api.common.utils.LogUtil;
 import th.co.krungthaiaxa.api.common.utils.RequestUtil;
 import th.co.krungthaiaxa.api.elife.security.AuthorizationClient;
 
@@ -47,7 +47,7 @@ public class KalApiTokenFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
-        Instant startTime = LogUtil.logRequestStarting(httpServletRequest);
+        Instant startTime = LogHttpRequestUtil.logStarting(httpServletRequest);
         String requestURI = httpServletRequest.getRequestURI();
         // For swagger documentation, we should let any request to UI thing go through
         List<String> publicURIsForGETMethod = Arrays.asList(
@@ -108,14 +108,14 @@ public class KalApiTokenFilter implements Filter {
                 authorized = securityService.checkPermission(httpServletRequest, URI_REGEXP_POLICIES_MAIN_INSURED_PERSON, HttpMethod.POST, RoleConstants.UI_ELIFE_ADMIN);
             }
             if (authorized) {
-                LogUtil.logRuntime(startTime, LogUtil.toStringRequestURL(httpServletRequest));
+                LogHttpRequestUtil.logFinishing(startTime, httpServletRequest);
                 chain.doFilter(request, response);
             } else {
-                LogUtil.logRuntime(startTime, LogUtil.toStringRequestURL(httpServletRequest));
+                LogHttpRequestUtil.logFinishing(startTime, httpServletRequest);
                 RequestUtil.sendErrorToResponse(ErrorCode.UI_UNAUTHORIZED.apply("Doesn't have permission to access API "), (HttpServletResponse) response);
             }
         } catch (Exception ex) {
-            LogUtil.logRuntime(startTime, LogUtil.toStringRequestURL(httpServletRequest));
+            LogHttpRequestUtil.logFinishing(startTime, httpServletRequest);
             RequestUtil.sendErrorToResponse(ErrorCode.UI_UNAUTHORIZED.apply("Cannot access API: " + ex.getMessage()), (HttpServletResponse) response);
         }
     }

@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.common.exeption.BaseException;
 import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
-import th.co.krungthaiaxa.api.common.utils.LogUtil;
+import th.co.krungthaiaxa.api.common.log.LogUtil;
 import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
 import th.co.krungthaiaxa.api.common.validator.BeanValidator;
 import th.co.krungthaiaxa.api.elife.exception.LinePaymentException;
@@ -127,7 +127,7 @@ public class PolicyValidatedProcessingService {
         String regKey = linePayResponse.getInfo().getRegKey();
         policyService.updateRegKeyForAllNotProcessedPayments(policy, regKey);
         policy = policyService.updatePolicyStatusToValidated(policy, agentCode, agentName, accessToken);
-        LogUtil.logRuntime(start, "Validate policy [finish] " + ObjectMapperUtil.toStringMultiLine(policyValidationRequest));
+        LogUtil.logFinishing(start, "Validate policy [finish] " + ObjectMapperUtil.toStringMultiLine(policyValidationRequest));
         return policy;
     }
 

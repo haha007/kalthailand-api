@@ -8,7 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import th.co.krungthaiaxa.api.common.utils.LogUtil;
+import th.co.krungthaiaxa.api.common.log.LogHttpRequestUtil;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -30,7 +30,7 @@ public class JwtAuthenticationTokenFilter extends UsernamePasswordAuthentication
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
-        Instant startTime = LogUtil.logRequestStarting(httpRequest);
+        Instant startTime = LogHttpRequestUtil.logStarting(httpRequest);
 
         String authToken = httpRequest.getHeader(this.tokenHeader);
         Optional<String> username = jwtTokenUtil.getUsernameFromToken(authToken);
@@ -43,8 +43,7 @@ public class JwtAuthenticationTokenFilter extends UsernamePasswordAuthentication
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         }
-
-        LogUtil.logRuntime(startTime, LogUtil.toStringRequestURL(httpRequest));
+        LogHttpRequestUtil.logFinishing(startTime, httpRequest);
         chain.doFilter(request, response);
     }
 

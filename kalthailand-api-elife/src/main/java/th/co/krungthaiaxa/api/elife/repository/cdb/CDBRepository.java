@@ -1,24 +1,29 @@
 package th.co.krungthaiaxa.api.elife.repository.cdb;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Triple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import th.co.krungthaiaxa.api.common.utils.LogUtil;
+import th.co.krungthaiaxa.api.common.log.LogUtil;
 import th.co.krungthaiaxa.api.common.utils.StringUtil;
 import th.co.krungthaiaxa.api.elife.commission.data.cdb.CDBPolicyCommissionEntity;
+import th.co.krungthaiaxa.api.elife.model.PreviousPolicy;
 import th.co.krungthaiaxa.api.elife.utils.JdbcHelper;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Optional;
+
+import static java.time.format.DateTimeFormatter.ofPattern;
 
 @Repository
 public class CDBRepository {
@@ -26,31 +31,33 @@ public class CDBRepository {
     @Autowired
     private JdbcHelper jdbcHelper;
 
-//
-//    @Autowired
-//    @Qualifier("cdbDataSource")
-//    private DataSource cdbDataSource;
-
     @Autowired
     @Qualifier("cdbTemplate")
     private JdbcTemplate jdbcTemplate;
 
+    public Optional<PreviousPolicy> findLastActivatingPreviousPolicy(String insuredRegistrationId, LocalDate insuredDateOfBirth) {
+        String insuredDOBString = insuredDateOfBirth.format(ofPattern("yyyyMMdd"));
+        return findLastActivatingPreviousPolicy(insuredRegistrationId, insuredDOBString);
+    }
+
     /**
+     * @param insuredRegistrationId this is also the thaiId
      * @return Left part is the previous policy number, middle part is first agent code, right part is the second agent code
      */
-    public Optional<Triple<String, String, String>> getExistingAgentCode(String idCard, String dateOfBirth) {
-        if (StringUtils.isBlank(idCard) || StringUtils.isBlank(dateOfBirth)) {
+    public Optional<PreviousPolicy> findLastActivatingPreviousPolicy(String insuredRegistrationId, String dateOfBirth) {
+        if (StringUtils.isBlank(insuredRegistrationId) || StringUtils.isBlank(dateOfBirth)) {
             return Optional.empty();
         }
 
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug(String.format("[%1$s] .....", "getExistingAgentCode"));
-            LOGGER.debug(String.format("idCard is %1$s", idCard));
+            LOGGER.debug(String.format("idCard is %1$s", insuredRegistrationId));
             LOGGER.debug(String.format("dateOfBirth is %1$s", dateOfBirth));
         }
-        String sql = StringUtil.newString("select top 1 pno, ",
-                " case cast(coalesce(pagt1,0) as varchar) when '0' then 'NULL' else cast(coalesce(pagt1,0) as varchar) end as pagt1, ",
-                " case cast(coalesce(pagt2,0) as varchar) when '0' then 'NULL' else cast(coalesce(pagt2,0) as varchar) end as pagt2 ",
+        //TODO need to refactor.
+        String sql = StringUtil.newString("select top 1 policyNumber, ",
+                " case cast(coalesce(pagt1,0) as varchar) when '0' then 'NULL' else cast(coalesce(pagt1,0) as varchar) end as agentCode1, ",
+                " case cast(coalesce(pagt2,0) as varchar) when '0' then 'NULL' else cast(coalesce(pagt2,0) as varchar) end as agentCode2 ",
                 "from lfkludta_lfppml ",
                 "where left(coalesce(pagt1,'0'),1) not in ('2','4') ",
                 "and left(coalesce(pagt2,'0'),1) not in ('2','4') ",
@@ -64,23 +71,38 @@ public class CDBRepository {
                 "then lpaydb else pdob end ",
                 "order by pdoi desc");
         Object[] parameters = new Object[2];
-        parameters[0] = idCard;
+        parameters[0] = insuredRegistrationId;
         parameters[1] = dateOfBirth;
-        Map<String, Object> map = null;
-        try {
-            List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, parameters);
-            if (!list.isEmpty()) {
-                map = list.get(0);
+
+        BeanPropertyRowMapper<PreviousPolicy> beanPropertyRowMapper = BeanPropertyRowMapper.newInstance(PreviousPolicy.class);
+        List<PreviousPolicy> previousPolicies = jdbcTemplate.query(sql, parameters, beanPropertyRowMapper);
+        //Cleanup data
+        ListIterator<PreviousPolicy> listIterator = previousPolicies.listIterator();
+        while (listIterator.hasNext()) {
+            PreviousPolicy previousPolicy = listIterator.next();
+            if (!isExist(previousPolicy.getPolicyNumber())) {
+                previousPolicy.setPolicyNumber(null);
             }
-        } catch (Exception e) {
-            LOGGER.error("Unable to query for agent code: " + e.getMessage(), e);
+            if (!isExist(previousPolicy.getAgentCode1())) {
+                previousPolicy.setAgentCode1(null);
+            }
+            if (!isExist(previousPolicy.getAgentCode2())) {
+                previousPolicy.setAgentCode2(null);
+            }
+            if (previousPolicy.getPolicyNumber() == null && previousPolicy.getAgentCode1() == null && previousPolicy.getAgentCode2() == null) {
+                listIterator.remove();
+            }
         }
 
-        if (map == null) {
-            return Optional.of(Triple.of("NULL", "NULL", "NULL"));
+        if (previousPolicies.isEmpty()) {
+            return Optional.empty();
         } else {
-            return Optional.of(Triple.of((String) map.get("pno"), (String) map.get("pagt1"), (String) map.get("pagt2")));
+            return Optional.of(previousPolicies.get(0));
         }
+    }
+
+    private boolean isExist(String value) {
+        return StringUtils.isNotBlank(value) && !value.equalsIgnoreCase("NULL");
     }
 
     /**
@@ -88,17 +110,17 @@ public class CDBRepository {
      * @param planCodes related to product & product package
      * @return
      */
-    public List<CDBPolicyCommissionEntity> findPoliciesByChannelIdsAndPaymentModeIds(List<String> unitCodes, List<String> planCodes) {
+    public List<CDBPolicyCommissionEntity> findPolicyCommissionsByUnitCodesAndPlanCodes(List<String> unitCodes, List<String> planCodes) {
         Instant start = LogUtil.logStarting("[Commission-Query from CDB][start]");
         RowMapper<CDBPolicyCommissionEntity> rowMapper = jdbcHelper.getRowMapper(CDBPolicyCommissionEntity.class);
-        List<CDBPolicyCommissionEntity> policiesFirstHalftMonth = jdbcTemplate.query(generateSql("LFKLUDTA_LFPPMSWK", unitCodes, planCodes), generateParameters(unitCodes, planCodes), rowMapper);
-        start = LogUtil.logRuntime(start, "[Commission-Query from CDB][finish], first halft " + policiesFirstHalftMonth.size());
-        List<CDBPolicyCommissionEntity> policiesLastHalfMonth = jdbcTemplate.query(generateSql("LFKLUHST_LFPPMSWK1", unitCodes, planCodes), generateParameters(unitCodes, planCodes), rowMapper);
-        start = LogUtil.logRuntime(start, "[Commission-Query from CDB][finish], last halft " + policiesLastHalfMonth.size());
+        List<CDBPolicyCommissionEntity> policiesFirstHalftMonth = jdbcTemplate.query(constructSqlFindPolicyCommissionByUnitCodesAndPlanCodes("LFKLUDTA_LFPPMSWK", unitCodes, planCodes), constructParamsFindPolicyCommissionByUnitCodesAndPlanCodes(unitCodes, planCodes), rowMapper);
+        start = LogUtil.logFinishing(start, "[Commission-Query from CDB][finish], first halft " + policiesFirstHalftMonth.size());
+        List<CDBPolicyCommissionEntity> policiesLastHalfMonth = jdbcTemplate.query(constructSqlFindPolicyCommissionByUnitCodesAndPlanCodes("LFKLUHST_LFPPMSWK1", unitCodes, planCodes), constructParamsFindPolicyCommissionByUnitCodesAndPlanCodes(unitCodes, planCodes), rowMapper);
+        start = LogUtil.logFinishing(start, "[Commission-Query from CDB][finish], last halft " + policiesLastHalfMonth.size());
         List<CDBPolicyCommissionEntity> policies = new ArrayList<>();
         policies.addAll(policiesFirstHalftMonth);
         policies.addAll(policiesLastHalfMonth);
-        LogUtil.logRuntime(start, "[Commission-Query from CDB][finish] " + policies.size());
+        LogUtil.logFinishing(start, "[Commission-Query from CDB][finish] " + policies.size());
         return policies;
     }
 
@@ -116,7 +138,7 @@ public class CDBRepository {
      * @param planCodesNoDup
      * @return
      */
-    private String generateSql(String commissionTableName, List<String> channelIdsNoDup, List<String> planCodesNoDup) {
+    private String constructSqlFindPolicyCommissionByUnitCodesAndPlanCodes(String commissionTableName, List<String> channelIdsNoDup, List<String> planCodesNoDup) {
         String channelIdsParams = StringUtil.joinStrings(",", "?", channelIdsNoDup.size());
         String planCodesParams = StringUtil.joinStrings(",", "?", planCodesNoDup.size());
         String sql = StringUtil.newString(
@@ -126,6 +148,7 @@ public class CDBRepository {
                 "ltrim(rtrim(a.lplan)) as planCode, ",
                 "ltrim(rtrim(a.pmode)) as paymentCode, ",
                 "ltrim(rtrim(a.pagt1)) as agentCode, ",
+
                 "b.g3bsp1 as firstYearPremium, ",
                 "b.g3bsc1 as firstYearCommission ",
                 "FROM [dbo].[LFKLUDTA_LFPPML] as a ",
@@ -141,7 +164,7 @@ public class CDBRepository {
         return sql;
     }
 
-    private Object[] generateParameters(List<String> channelIdsNoDup, List<String> planCodesNoDup) {
+    private Object[] constructParamsFindPolicyCommissionByUnitCodesAndPlanCodes(List<String> channelIdsNoDup, List<String> planCodesNoDup) {
         Object[] parameters = new Object[channelIdsNoDup.size() + planCodesNoDup.size()];
         int indx = 0;
         for (String channelId : channelIdsNoDup) {

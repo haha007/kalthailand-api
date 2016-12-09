@@ -14,8 +14,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
-import th.co.krungthaiaxa.admin.elife.log.RequestLogUtil;
 import th.co.krungthaiaxa.admin.elife.service.AuthenticationClient;
+import th.co.krungthaiaxa.api.common.log.LogHttpRequestUtil;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -87,7 +87,7 @@ public class ClientSideRoleFilter implements Filter {
         String modifiedResponse = modify(httpServletRequest, new String(wrappedResponse.getByteArray()), uiRoleConfiguration);
         servletResponse.setContentLength(modifiedResponse.length());
 
-        RequestLogUtil.logRequestWithRunningTime(httpServletRequest, startTime);
+        LogHttpRequestUtil.logFinishing(startTime, httpServletRequest);
         servletResponse.getOutputStream().write(modifiedResponse.getBytes());
     }
 

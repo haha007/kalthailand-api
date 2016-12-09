@@ -1,6 +1,5 @@
 package th.co.krungthaiaxa.api.elife.commission.service;
 
-import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -9,13 +8,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
+import th.co.krungthaiaxa.api.common.log.LogUtil;
 import th.co.krungthaiaxa.api.elife.commission.data.CommissionCalculation;
 import th.co.krungthaiaxa.api.elife.commission.data.CommissionCalculationSession;
 import th.co.krungthaiaxa.api.elife.commission.repositories.CommissionCalculationSessionRepository;
 import th.co.krungthaiaxa.api.elife.repository.cdb.CDBRepository;
+import th.co.krungthaiaxa.api.elife.utils.ExcelIOUtils;
 import th.co.krungthaiaxa.api.elife.utils.ExcelUtils;
 
-import java.io.IOException;
+import java.time.Instant;
 import java.util.List;
 
 import static th.co.krungthaiaxa.api.elife.utils.ExcelUtils.text;
@@ -35,14 +36,19 @@ public class CommissionCalculationSessionExportService {
 
     //santi : for download commission excel file
     public byte[] exportToExcel(String commissionCalculationSessionId) {
-
-        LOGGER.debug("Start process to export commission excel .....");
-
-        CommissionCalculationSession commissionResult = commissionCalculationSessionRepository.findOne(commissionCalculationSessionId);
-        List<CommissionCalculation> commissionCalculated = commissionResult.getCommissionCalculations();
-
+        Instant start = LogUtil.logStarting("[Commission][Export][start]");
+        CommissionCalculationSession commissionCalculationSession = commissionCalculationSessionRepository.findOne(commissionCalculationSessionId);
         Workbook workbook = new XSSFWorkbook();
-        Sheet sheet = workbook.createSheet("CommissionExtract_" + DateTimeUtil.formatNowForFilePath());
+        addCommissionResultSheet(workbook, commissionCalculationSession);
+        ExcelUtils.autoWidthAllColumns(workbook);
+        byte[] bytes = ExcelIOUtils.writeToBytes(workbook);
+        LogUtil.logFinishing(start, "[Commission][Export][start]");
+        return bytes;
+    }
+
+    private Sheet addCommissionResultSheet(Workbook workbook, CommissionCalculationSession commissionCalculationSession) {
+        List<CommissionCalculation> commissionCalculations = commissionCalculationSession.getCommissionCalculations();
+        Sheet sheet = workbook.createSheet("Commission Result");
 
         ExcelUtils.appendRow(sheet,
                 text("Month"),
@@ -84,17 +90,8 @@ public class CommissionCalculationSessionExportService {
                 text("Calculate Date Time"),
                 text("Result Code"),
                 text("Result Message"));
-        commissionCalculated.stream().forEach(tmp -> createCommissionResultExtractExcelFileLine(sheet, tmp, commissionResult));
-        ExcelUtils.autoWidthAllColumns(workbook);
-
-        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
-            workbook.write(byteArrayOutputStream);
-            byte[] content = byteArrayOutputStream.toByteArray();
-            LOGGER.debug("Stop process to export commission excel .....");
-            return content;
-        } catch (IOException e) {
-            throw new IllegalStateException("Unable to write content of excel deduction file", e);
-        }
+        commissionCalculations.stream().forEach(tmp -> createCommissionResultExtractExcelFileLine(sheet, tmp, commissionCalculationSession));
+        return sheet;
     }
 
     private void createCommissionResultExtractExcelFileLine(Sheet sheet, CommissionCalculation commission, CommissionCalculationSession commissionResult) {

@@ -43,14 +43,23 @@ public final class ObjectMapperUtil {
         }
     }
 
-    public static InputStream toJsonInputStream(ObjectMapper objectMapper, Object object) {
+    public static byte[] toJsonBytes(ObjectMapper objectMapper, Object object) {
         try {
             if (object == null) {
                 return null;
             }
-            byte[] bytes = objectMapper.writeValueAsBytes(object);
-            return new ByteArrayInputStream(bytes);
+            return objectMapper.writeValueAsBytes(object);
         } catch (JsonProcessingException e) {
+            String msg = "Cannot convert object to json: " + toString(object);
+            throw new JsonConverterException(msg, object, e);
+        }
+    }
+
+    public static InputStream toJsonInputStream(ObjectMapper objectMapper, Object object) {
+        try {
+            byte[] bytes = toJsonBytes(objectMapper, object);
+            return new ByteArrayInputStream(bytes);
+        } catch (Exception e) {
             String msg = "Cannot convert object to json: " + toString(object);
             throw new JsonConverterException(msg, object, e);
         }

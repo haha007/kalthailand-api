@@ -1,12 +1,9 @@
 package th.co.krungthaiaxa.api.elife.test;
 
-import com.icegreen.greenmail.junit.GreenMailRule;
-import com.icegreen.greenmail.util.ServerSetupTest;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.junit.Before;
-import org.junit.Rule;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -116,7 +113,7 @@ public abstract class ELifeTest extends BaseIntegrationResourceTest {
     public static void mockCdbClient(CDBClient cdbClient) {
         CDBRepository cdbRepository = Mockito.mock(CDBRepository.class);
         cdbClient.setCdbRepository(cdbRepository);
-        when(cdbRepository.getExistingAgentCode(anyString(), anyString())).thenAnswer(invocation -> {
+        when(cdbRepository.findLastActivatingPreviousPolicy(anyString(), anyString())).thenAnswer(invocation -> {
             Object[] args = invocation.getArguments();
             String id = (String) args[0];
             String dob = (String) args[1];

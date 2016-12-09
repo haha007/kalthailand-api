@@ -23,7 +23,7 @@
     <category name="th.co.krungthaiaxa">
         <priority value="DEBUG"/>
     </category>
-    <category name="th.co.krungthaiaxa.admin.elife.log.RequestLogUtil" additivity="false">
+    <category name="th.co.krungthaiaxa.api.common.log.LogHttpRequestUtil" additivity="false">
         <priority value="DEBUG"/>
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="FILE_REQUEST"/>

@@ -3,6 +3,7 @@ package th.co.krungthaiaxa.api.common.filter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.TypeMismatchException;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindingResult;
@@ -107,7 +108,7 @@ public class ExceptionTranslator {
         Error result;
         if (exception instanceof BeanValidationExceptionIfc) {
             result = this.beanValidationExceptionTranslator.toErrorDTO((BeanValidationExceptionIfc) exception);
-        } else if (exception instanceof SQLException) {
+        } else if (exception instanceof SQLException || exception instanceof DataAccessException) {
             result = new Error(ErrorCode.ERROR_CODE_UNKNOWN_ERROR, "SQL Query error." + ExceptionUtil.getDataExceptionRoot(exception), "SQL Query error " + exception.getMessage());
         } else {
             String message = exception.getMessage();

@@ -1,5 +1,6 @@
 package th.co.krungthaiaxa.api.elife.repository;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -16,4 +17,7 @@ public interface PolicyRepository extends MongoRepository<Policy, String> {
 
     @Query("{$and: [{'premiumsData.financialScheduler.periodicity.code': ?0},{'premiumsData.financialScheduler.periodicity.code': {$exists: false}}]}")
     List<Policy> findByPeriodicityCodeAndAtpModeNull(PeriodicityCode periodicityCode);
+
+    @Query("{'insureds.insuredPreviousInformations': { $gt: [] }}")
+    List<Policy> findByInsuredPreviousPolicyNotNull(Pageable pageRequest);
 }

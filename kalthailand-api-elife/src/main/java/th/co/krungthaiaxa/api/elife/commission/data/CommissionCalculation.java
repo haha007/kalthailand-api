@@ -1,7 +1,5 @@
 package th.co.krungthaiaxa.api.elife.commission.data;
 
-import org.springframework.data.mongodb.core.mapping.Field;
-
 /**
  * @author khoi.tran on 8/30/16.
  *         This is the result of comission calculation for one policy.
@@ -9,22 +7,36 @@ import org.springframework.data.mongodb.core.mapping.Field;
  */
 
 public class CommissionCalculation {
-    @Field("policyNo")
+    //Same as {@link CDBPolicyCommissionEntity} ////////////
     private String policyNumber;
     private String policyStatus;
     private String planCode;
     private String paymentCode;
     private String agentCode;
-    private String customerCategory;
+    private Double firstYearPremium;
+    private Double firstYearCommission;
 
+    //Other fields which are calculated from eLife policy
+    private String customerCategory;
     private String previousPolicyNo;
     private String existingAgentCode1;
     private String existingAgentCode1Status;
     private String existingAgentCode2;
     private String existingAgentCode2Status;
 
-    private Double firstYearPremium;
-    private Double firstYearCommission;
+    //Same as the rate values in Commission Setting at the time running calculation.
+    private Double fyAffiliateRate;
+    private Double fyDistributionRate;
+    private Double fyTsrRate;
+    private Double fyMarketingRate;
+    private Double fyCompanyRate;
+    private Double ovAffiliateRate;
+    private Double ovDistributionRate;
+    private Double ovTsrRate;
+    private Double ovMarketingRate;
+    private Double ovCompanyRate;
+
+    //Other fields are calculated from commission rate.
     private Double fyAffiliateCommission;
     private Double fyDistribution1Commission;
     private Double fyDistribution2Commission;
@@ -37,19 +49,6 @@ public class CommissionCalculation {
     private Double ovTsrCommission;
     private Double ovMarketingCommission;
     private Double ovCompanyCommission;
-
-    private Double fyAffiliateRate;
-    private Double fyDistributionRate;
-    private Double fyTsrRate;
-    private Double fyMarketingRate;
-    private Double fyCompanyRate;
-    private Double ovAffiliateRate;
-    //TODO should migrate, original field name is ovDistributiionRate
-    @Field("ovDistributiionRate")
-    private Double ovDistributionRate;
-    private Double ovTsrRate;
-    private Double ovMarketingRate;
-    private Double ovCompanyRate;
 
     private String resultCode;
     private String resultMessage;

@@ -8,7 +8,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import th.co.krungthaiaxa.api.common.utils.LogUtil;
+import th.co.krungthaiaxa.api.common.log.LogUtil;
 
 import java.time.Instant;
 import java.util.Arrays;
@@ -37,11 +37,11 @@ public class LoggingAspect {
         try {
             Object result = joinPoint.proceed();
             String msg = String.format("End: %s.%s() with result = %s", joinPoint.getSignature().getDeclaringTypeName(), joinPoint.getSignature().getName(), result);
-            LogUtil.logRuntime(startTime, msg);
+            LogUtil.logFinishing(startTime, msg);
             return result;
         } catch (IllegalArgumentException e) {
             String msg = String.format("Error: %s.%s() with exception: %s", joinPoint.getSignature().getDeclaringTypeName(), joinPoint.getSignature().getName(), e);
-            LogUtil.logRuntime(startTime, msg);
+            LogUtil.logFinishing(startTime, msg);
             throw e;
         }
     }

@@ -7,9 +7,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.common.utils.IOUtil;
-import th.co.krungthaiaxa.api.common.utils.LogUtil;
+import th.co.krungthaiaxa.api.common.log.LogUtil;
 import th.co.krungthaiaxa.api.common.utils.NumberUtil;
 import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
+import th.co.krungthaiaxa.api.common.utils.ProfileHelper;
 import th.co.krungthaiaxa.api.elife.service.ElifeEmailService;
 
 import java.time.Duration;
@@ -27,7 +28,9 @@ public class SystemHealthMonitoringJob {
     private final SystemHealthService systemHealthService;
     private final SystemHealthSettingService systemHealthSettingService;
     private final ElifeEmailService emailService;
+    private final ProfileHelper profileHelper;
     private Instant previousDangerTime = null;
+
     @Value("${system.health.warning.in-danger.mills}")
     private long defaultMillsInDangerBeforeWarning;
 
@@ -43,10 +46,11 @@ public class SystemHealthMonitoringJob {
     private Boolean enableJob;
 
     @Autowired
-    public SystemHealthMonitoringJob(SystemHealthService systemHealthService, ElifeEmailService emailService, SystemHealthSettingService systemHealthSettingService) {
+    public SystemHealthMonitoringJob(SystemHealthService systemHealthService, ElifeEmailService emailService, SystemHealthSettingService systemHealthSettingService, ProfileHelper profileHelper) {
         this.systemHealthService = systemHealthService;
         this.systemHealthSettingService = systemHealthSettingService;
         this.emailService = emailService;
+        this.profileHelper = profileHelper;
     }
 
     @Scheduled(fixedRateString = "${system.health.cron.interval.seconds}000")
@@ -113,13 +117,14 @@ public class SystemHealthMonitoringJob {
         String usedSpacePercentages = systemHealth.getDiskSpaces().stream().map(diskSpace -> "[" + diskSpace.getDriverPath() + "]: " + diskSpace.getUsedSpacePercentage() + "%").collect(Collectors.joining(", "));
 
         emailHealthWarningContent = emailHealthWarningContent
+                .replaceAll("%ENVIRONMENT%", profileHelper.getFirstUsingProfile())
                 .replaceAll("%USED_MEMORY%", NumberUtil.formatCurrencyValue(systemHealth.getJvmUsedMemory() / BYTES_TO_GB))
                 .replaceAll("%USED_MEMORY_PERCENTAGE%", "" + systemHealth.getJvmUsedMemoryPercentage())
                 .replaceAll("%USED_SPACE_PERCENTAGE%", usedSpacePercentages);
 
         List<String> toEmails = systemHealthSetting.getWarningEmails();
         for (String toEmail : toEmails) {
-            emailService.sendEmail(toEmail, "[Elife][System Health] warning health", emailHealthWarningContent);
+            emailService.sendEmail(toEmail, "[Elife][System Health][" + profileHelper.getFirstUsingProfile() + "] warning health", emailHealthWarningContent);
         }
     }
 }

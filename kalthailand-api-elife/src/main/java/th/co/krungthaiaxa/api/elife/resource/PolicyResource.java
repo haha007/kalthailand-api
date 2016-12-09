@@ -29,7 +29,7 @@ import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
 import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
 import th.co.krungthaiaxa.api.common.utils.DownloadUtil;
 import th.co.krungthaiaxa.api.common.utils.JsonUtil;
-import th.co.krungthaiaxa.api.common.utils.LogUtil;
+import th.co.krungthaiaxa.api.common.log.LogUtil;
 import th.co.krungthaiaxa.api.common.utils.RequestUtil;
 import th.co.krungthaiaxa.api.elife.exception.ElifeException;
 import th.co.krungthaiaxa.api.elife.model.Document;
@@ -429,7 +429,7 @@ public class PolicyResource {
         policyService.updatePolicyStatusToPendingValidation(policy);
         //Return policy with updated payment
         policy = policyService.validateExistPolicy(policyId);
-        LogUtil.logRuntime(start, msg);
+        LogUtil.logFinishing(start, msg);
         return new ResponseEntity<>(getJson(policy), OK);
     }
 
@@ -468,7 +468,7 @@ public class PolicyResource {
         }
         String accessToken = RequestUtil.getAccessToken(httpServletRequest);
         paymentRetryService.retryFailedPayment(policyId, paymentId, orderId, transactionId, regKey, accessToken);
-        LogUtil.logRuntime(start, msg);
+        LogUtil.logFinishing(start, msg);
         return new ResponseEntity<>(getJson(policy), OK);
     }
 

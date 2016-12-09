@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.common.action.ActionWithResult;
 import th.co.krungthaiaxa.api.common.exeption.UnexpectedException;
 import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
-import th.co.krungthaiaxa.api.common.utils.LogUtil;
+import th.co.krungthaiaxa.api.common.log.LogUtil;
 import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
 import th.co.krungthaiaxa.api.common.utils.ProfileHelper;
 import th.co.krungthaiaxa.api.elife.data.CollectionFile;
@@ -130,7 +130,7 @@ public class CollectionFileProcessingService {
         for (CollectionFile collectionFile : collectionFiles) {
             processCollectionFile(collectionFile);
         }
-        LogUtil.logRuntime(startTime, "Process collection files [finished]");
+        LogUtil.logFinishing(startTime, "Process collection files [finished]");
         return collectionFiles;
     }
 
