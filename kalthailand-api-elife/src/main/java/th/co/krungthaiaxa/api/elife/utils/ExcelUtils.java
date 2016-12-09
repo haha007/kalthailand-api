@@ -8,15 +8,19 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
 
 import java.math.BigInteger;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.apache.poi.ss.usermodel.Cell.CELL_TYPE_FORMULA;
 
 public class ExcelUtils {
     public static final Logger LOGGER = LoggerFactory.getLogger(ExcelUtils.class);
+    public static final String CELL_DATE_TIME_FORMAT = "yyyy/MM/dd HH:mm:ss";
 
     public static Double getNumber(Row row, int cellIndex) {
         Cell cell = row.getCell(cellIndex, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
@@ -119,8 +123,8 @@ public class ExcelUtils {
         ));
     }
 
-    public static CellContent time(LocalDate time) {
-        return new Time(time);
+    public static CellContent date(LocalDate time) {
+        return new DateCellContent(time);
     }
 
     public static CellContent percentFormula(String str) {
@@ -136,19 +140,31 @@ public class ExcelUtils {
     }
 
     public static CellContent text(BigInteger value) {
-        return new Text(value.toString());
+        return new TextCellContent(value.toString());
+    }
+
+    public static CellContent text(LocalDate localDate) {
+        return new DateCellContent(localDate);
+    }
+
+    public static CellContent text(LocalDateTime localDateTime) {
+        return new DateTimeCellContent(localDateTime);
+    }
+
+    public static CellContent text(Instant instant) {
+        return new InstantCellContent(instant);
     }
 
     public static CellContent text(String value) {
-        return new Text(value);
+        return new TextCellContent(value);
     }
 
     public static CellContent text(Double value) {
-        return new DoubleCell(value);
+        return new DoubleCellContent(value);
     }
 
     public static CellContent text(Boolean value) {
-        return value == null ? new Text(Boolean.FALSE.toString()) : new Text(value.toString());
+        return value == null ? new TextCellContent(Boolean.FALSE.toString()) : new TextCellContent(value.toString());
     }
 
     public static CellContent empty() {
@@ -164,14 +180,30 @@ public class ExcelUtils {
         return cellNumber;
     }
 
+    public static Cell appendCell(Row row, CellContent cellContent) {
+        int lastCellNum = row.getLastCellNum();
+        Cell cell = row.createCell(lastCellNum);
+        cellContent.populateCell(cell);
+        return cell;
+    }
+
+    public static void appendMergedCell(Row row, CellContent cellContent, int colSpans) {
+        Cell nextCell = appendCell(row, cellContent);
+        for (int i = 0; i < colSpans - 1; i++) {
+            appendCell(row, new Empty());
+        }
+        CellRangeAddress region = new CellRangeAddress(row.getRowNum(), row.getRowNum(), nextCell.getColumnIndex(), nextCell.getColumnIndex() + colSpans - 1);
+        row.getSheet().addMergedRegion(region);
+    }
+
     public interface CellContent {
         void populateCell(Cell cell);
     }
 
-    private static class Text implements CellContent {
+    private static class TextCellContent implements CellContent {
         private final String string;
 
-        public Text(String string) {
+        public TextCellContent(String string) {
             this.string = string;
         }
 
@@ -198,19 +230,53 @@ public class ExcelUtils {
         }
     }
 
-    private static class Time implements CellContent {
-        private final LocalDate time;
+    private static class DateCellContent implements CellContent {
+        private final LocalDate localDate;
 
-        public Time(LocalDate time) {
-            this.time = time;
+        public DateCellContent(LocalDate localDate) {
+            this.localDate = localDate;
         }
 
         @Override
         public void populateCell(Cell cell) {
-            cell.setCellValue(time.toString());
+            cell.setCellValue(DateTimeUtil.formatLocalDate(localDate, CELL_DATE_TIME_FORMAT));
             CellStyle style = cell.getRow().getSheet().getWorkbook().createCellStyle();
             style.setDataFormat(
-                    cell.getRow().getSheet().getWorkbook().createDataFormat().getFormat("YYYY/MM/DD HH:MM:SS"));
+                    cell.getRow().getSheet().getWorkbook().createDataFormat().getFormat(CELL_DATE_TIME_FORMAT));
+            cell.setCellStyle(style);
+        }
+    }
+
+    private static class DateTimeCellContent implements CellContent {
+        private final LocalDateTime localDateTime;
+
+        public DateTimeCellContent(LocalDateTime localDateTime) {
+            this.localDateTime = localDateTime;
+        }
+
+        @Override
+        public void populateCell(Cell cell) {
+            cell.setCellValue(DateTimeUtil.formatLocalDateTime(localDateTime, CELL_DATE_TIME_FORMAT));
+            CellStyle style = cell.getRow().getSheet().getWorkbook().createCellStyle();
+            style.setDataFormat(
+                    cell.getRow().getSheet().getWorkbook().createDataFormat().getFormat(CELL_DATE_TIME_FORMAT));
+            cell.setCellStyle(style);
+        }
+    }
+
+    private static class InstantCellContent implements CellContent {
+        private final Instant instant;
+
+        public InstantCellContent(Instant instant) {
+            this.instant = instant;
+        }
+
+        @Override
+        public void populateCell(Cell cell) {
+            cell.setCellValue(DateTimeUtil.format(instant, CELL_DATE_TIME_FORMAT));
+            CellStyle style = cell.getRow().getSheet().getWorkbook().createCellStyle();
+            style.setDataFormat(
+                    cell.getRow().getSheet().getWorkbook().createDataFormat().getFormat(CELL_DATE_TIME_FORMAT));
             cell.setCellStyle(style);
         }
     }
@@ -221,10 +287,10 @@ public class ExcelUtils {
         }
     }
 
-    private static class DoubleCell implements CellContent {
+    private static class DoubleCellContent implements CellContent {
         private final double value;
 
-        public DoubleCell(Number value) {
+        public DoubleCellContent(Number value) {
             this.value = (value == null ? 0L : value).doubleValue();
         }
 

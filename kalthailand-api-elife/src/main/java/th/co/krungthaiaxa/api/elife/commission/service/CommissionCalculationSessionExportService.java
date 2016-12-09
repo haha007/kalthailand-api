@@ -1,5 +1,6 @@
 package th.co.krungthaiaxa.api.elife.commission.service;
 
+import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -7,11 +8,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
 import th.co.krungthaiaxa.api.common.log.LogUtil;
+import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
 import th.co.krungthaiaxa.api.elife.commission.data.CommissionCalculation;
 import th.co.krungthaiaxa.api.elife.commission.data.CommissionCalculationSession;
+import th.co.krungthaiaxa.api.elife.commission.data.CommissionPlan;
+import th.co.krungthaiaxa.api.elife.commission.data.CommissionTargetEntity;
+import th.co.krungthaiaxa.api.elife.commission.data.CommissionTargetEntityType;
+import th.co.krungthaiaxa.api.elife.commission.data.CommissionTargetGroup;
+import th.co.krungthaiaxa.api.elife.commission.data.CommissionTargetGroupType;
 import th.co.krungthaiaxa.api.elife.commission.repositories.CommissionCalculationSessionRepository;
+import th.co.krungthaiaxa.api.elife.commission.util.CommissionUtil;
 import th.co.krungthaiaxa.api.elife.repository.cdb.CDBRepository;
 import th.co.krungthaiaxa.api.elife.utils.ExcelIOUtils;
 import th.co.krungthaiaxa.api.elife.utils.ExcelUtils;
@@ -40,10 +47,61 @@ public class CommissionCalculationSessionExportService {
         CommissionCalculationSession commissionCalculationSession = commissionCalculationSessionRepository.findOne(commissionCalculationSessionId);
         Workbook workbook = new XSSFWorkbook();
         addCommissionResultSheet(workbook, commissionCalculationSession);
+        addCommissionSettingSheet(workbook, commissionCalculationSession);
         ExcelUtils.autoWidthAllColumns(workbook);
         byte[] bytes = ExcelIOUtils.writeToBytes(workbook);
         LogUtil.logFinishing(start, "[Commission][Export][start]");
         return bytes;
+    }
+
+    private Sheet addCommissionSettingSheet(Workbook workbook, CommissionCalculationSession commissionCalculationSession) {
+        Sheet sheet = workbook.createSheet("Commission Setting");
+        ExcelUtils.appendRow(sheet,
+                text("Calculation date"),
+                text(commissionCalculationSession.getCreatedDateTime())
+        );
+        ExcelUtils.appendRow(sheet,
+                text("Commission month"),
+                text(commissionCalculationSession.getCommissionDate())
+        );
+        Row rowHeader01 = ExcelUtils.appendRow(sheet,
+                text("Unit code"),
+                text("Plan code"),
+                text("Customer category")
+        );
+        Row rowHeader02 = ExcelUtils.appendRow(sheet,
+                text(""),
+                text(""),
+                text("")
+        );
+        for (CommissionTargetGroupType commissionTargetGroupType : CommissionTargetGroupType.values()) {
+            ExcelUtils.appendMergedCell(rowHeader01, text(commissionTargetGroupType.name()), CommissionTargetEntityType.values().length);
+            for (CommissionTargetEntityType commissionTargetEntityType : CommissionTargetEntityType.values()) {
+                ExcelUtils.appendCell(rowHeader02, text(commissionTargetEntityType.name()));
+            }
+        }
+
+        List<CommissionPlan> commissionPlans = commissionCalculationSession.getCommissionPlans();
+        for (CommissionPlan commissionPlan : commissionPlans) {
+            Row row = ExcelUtils.appendRow(sheet,
+                    text(commissionPlan.getUnitCode()),
+                    text(commissionPlan.getPlanCode()),
+                    text(commissionPlan.getCustomerCategory().name()));
+            for (CommissionTargetGroupType commissionTargetGroupType : CommissionTargetGroupType.values()) {
+                CommissionTargetGroup commissionTargetGroup = CommissionUtil.getTargetGroup(commissionPlan, commissionTargetGroupType);
+                for (CommissionTargetEntityType commissionTargetEntityType : CommissionTargetEntityType.values()) {
+                    Double percentage = null;
+                    if (commissionTargetGroup != null) {
+                        CommissionTargetEntity commissionTargetEntity = CommissionUtil.getTargetEntity(commissionTargetGroup, commissionTargetEntityType);
+                        if (commissionTargetEntity != null) {
+                            percentage = commissionTargetEntity.getPercentage();
+                        }
+                    }
+                    ExcelUtils.appendCell(row, text(percentage));
+                }
+            }
+        }
+        return sheet;
     }
 
     private Sheet addCommissionResultSheet(Workbook workbook, CommissionCalculationSession commissionCalculationSession) {
@@ -95,7 +153,7 @@ public class CommissionCalculationSessionExportService {
     }
 
     private void createCommissionResultExtractExcelFileLine(Sheet sheet, CommissionCalculation commission, CommissionCalculationSession commissionResult) {
-        String commissionMonth = DateTimeUtil.format(commissionResult.getCommissionDate(), "MM/yyyy");
+        String commissionMonth = DateTimeUtil.format(commissionResult.getCommissionDate(), "yyyyMM");
         String updateDateTime = DateTimeUtil.formatLocalDateTime(commissionResult.getUpdatedDateTime(), "dd/MM/yyyy HH:mm:ss.SSS");
         ExcelUtils.appendRow(sheet,
                 text(commissionMonth),

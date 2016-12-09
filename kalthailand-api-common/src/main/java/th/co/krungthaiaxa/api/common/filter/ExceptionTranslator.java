@@ -109,7 +109,7 @@ public class ExceptionTranslator {
         if (exception instanceof BeanValidationExceptionIfc) {
             result = this.beanValidationExceptionTranslator.toErrorDTO((BeanValidationExceptionIfc) exception);
         } else if (exception instanceof SQLException || exception instanceof DataAccessException) {
-            result = new Error(ErrorCode.ERROR_CODE_UNKNOWN_ERROR, "SQL Query error." + ExceptionUtil.getDataExceptionRoot(exception), "SQL Query error " + exception.getMessage());
+            result = new Error(ErrorCode.ERROR_CODE_UNKNOWN_ERROR, "SQL Query error. " + ExceptionUtil.getDataExceptionRoot(exception), "SQL Query error " + exception.getMessage());
         } else {
             String message = exception.getMessage();
             if (exception instanceof NullPointerException) {
