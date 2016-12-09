@@ -45,60 +45,57 @@ public class CDBRepository {
      * @return Left part is the previous policy number, middle part is first agent code, right part is the second agent code
      */
     public Optional<PreviousPolicy> findLastActivatingPreviousPolicy(String insuredRegistrationId, String dateOfBirth) {
+        Instant start = LogUtil.logStarting(String.format("findLastActivatingPreviousPolicy. registrationId: %s, dateOfBirth: %s", insuredRegistrationId, dateOfBirth));
+        Optional<PreviousPolicy> result;
         if (StringUtils.isBlank(insuredRegistrationId) || StringUtils.isBlank(dateOfBirth)) {
-            return Optional.empty();
-        }
+            result = Optional.empty();
+        }else {
+            //TODO need to refactor.
+            String sql = StringUtil.newString("select top 1 pno as policyNumber, ",
+                    " case cast(coalesce(pagt1,0) as varchar) when '0' then 'NULL' else cast(coalesce(pagt1,0) as varchar) end as agentCode1, ",
+                    " case cast(coalesce(pagt2,0) as varchar) when '0' then 'NULL' else cast(coalesce(pagt2,0) as varchar) end as agentCode2 ",
+                    "from lfkludta_lfppml ",
+                    "where left(coalesce(pagt1,'0'),1) not in ('2','4') ",
+                    "and left(coalesce(pagt2,'0'),1) not in ('2','4') ",
+                    "and pterm = 0 ",
+                    "and pstu in ('1') ",
+                    "and ? = ",
+                    "case when ltrim(rtrim(coalesce(pownid,''))) <> '' and lpaydb <> 0 ",
+                    "then ltrim(rtrim(coalesce(pownid,''))) else ltrim(rtrim(coalesce(pid,''))) end ",
+                    "and ? = ",
+                    "case when ltrim(rtrim(coalesce(pownid,''))) <> '' and lpaydb <> 0 ",
+                    "then lpaydb else pdob end ",
+                    "order by pdoi desc");
+            Object[] parameters = new Object[2];
+            parameters[0] = insuredRegistrationId;
+            parameters[1] = dateOfBirth;
 
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug(String.format("[%1$s] .....", "getExistingAgentCode"));
-            LOGGER.debug(String.format("idCard is %1$s", insuredRegistrationId));
-            LOGGER.debug(String.format("dateOfBirth is %1$s", dateOfBirth));
-        }
-        //TODO need to refactor.
-        String sql = StringUtil.newString("select top 1 policyNumber, ",
-                " case cast(coalesce(pagt1,0) as varchar) when '0' then 'NULL' else cast(coalesce(pagt1,0) as varchar) end as agentCode1, ",
-                " case cast(coalesce(pagt2,0) as varchar) when '0' then 'NULL' else cast(coalesce(pagt2,0) as varchar) end as agentCode2 ",
-                "from lfkludta_lfppml ",
-                "where left(coalesce(pagt1,'0'),1) not in ('2','4') ",
-                "and left(coalesce(pagt2,'0'),1) not in ('2','4') ",
-                "and pterm = 0 ",
-                "and pstu in ('1') ",
-                "and ? = ",
-                "case when ltrim(rtrim(coalesce(pownid,''))) <> '' and lpaydb <> 0 ",
-                "then ltrim(rtrim(coalesce(pownid,''))) else ltrim(rtrim(coalesce(pid,''))) end ",
-                "and ? = ",
-                "case when ltrim(rtrim(coalesce(pownid,''))) <> '' and lpaydb <> 0 ",
-                "then lpaydb else pdob end ",
-                "order by pdoi desc");
-        Object[] parameters = new Object[2];
-        parameters[0] = insuredRegistrationId;
-        parameters[1] = dateOfBirth;
-
-        BeanPropertyRowMapper<PreviousPolicy> beanPropertyRowMapper = BeanPropertyRowMapper.newInstance(PreviousPolicy.class);
-        List<PreviousPolicy> previousPolicies = jdbcTemplate.query(sql, parameters, beanPropertyRowMapper);
-        //Cleanup data
-        ListIterator<PreviousPolicy> listIterator = previousPolicies.listIterator();
-        while (listIterator.hasNext()) {
-            PreviousPolicy previousPolicy = listIterator.next();
-            if (!isExist(previousPolicy.getPolicyNumber())) {
-                previousPolicy.setPolicyNumber(null);
+            BeanPropertyRowMapper<PreviousPolicy> beanPropertyRowMapper = BeanPropertyRowMapper.newInstance(PreviousPolicy.class);
+            List<PreviousPolicy> previousPolicies = jdbcTemplate.query(sql, parameters, beanPropertyRowMapper);
+            //Cleanup data
+            ListIterator<PreviousPolicy> listIterator = previousPolicies.listIterator();
+            while (listIterator.hasNext()) {
+                PreviousPolicy previousPolicy = listIterator.next();
+                if (!isExist(previousPolicy.getPolicyNumber())) {
+                    previousPolicy.setPolicyNumber(null);
+                }
+                if (!isExist(previousPolicy.getAgentCode1())) {
+                    previousPolicy.setAgentCode1(null);
+                }
+                if (!isExist(previousPolicy.getAgentCode2())) {
+                    previousPolicy.setAgentCode2(null);
+                }
+                if (previousPolicy.getPolicyNumber() == null && previousPolicy.getAgentCode1() == null && previousPolicy.getAgentCode2() == null) {
+                    listIterator.remove();
+                }
             }
-            if (!isExist(previousPolicy.getAgentCode1())) {
-                previousPolicy.setAgentCode1(null);
-            }
-            if (!isExist(previousPolicy.getAgentCode2())) {
-                previousPolicy.setAgentCode2(null);
-            }
-            if (previousPolicy.getPolicyNumber() == null && previousPolicy.getAgentCode1() == null && previousPolicy.getAgentCode2() == null) {
-                listIterator.remove();
+            if (previousPolicies.isEmpty()) {
+                result = Optional.empty();
+            } else {
+                result = Optional.of(previousPolicies.get(0));
             }
         }
-
-        if (previousPolicies.isEmpty()) {
-            return Optional.empty();
-        } else {
-            return Optional.of(previousPolicies.get(0));
-        }
+        return result;
     }
 
     private boolean isExist(String value) {

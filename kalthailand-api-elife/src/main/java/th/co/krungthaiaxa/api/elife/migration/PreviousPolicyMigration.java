@@ -69,7 +69,7 @@ public class PreviousPolicyMigration {
         };
         List<Policy> policies = actionLoopByPage.executeAllPages(50);
         List<String> policiesNumbers = policies.stream().map(policy -> policy.getPolicyId()).collect(Collectors.toList());
-        byte[] previousPoliciesMigrationData = ObjectMapperUtil.toJsonBytes(objectMapper, policies);
+        byte[] previousPoliciesMigrationData = ObjectMapperUtil.toJsonBytes(objectMapper, policiesNumbers);
         elifeEmailService.sendEmail(
                 "khoi.tran.ags@gmail.com",
                 "[eLife][Migrate][" + profileHelper.getFirstUsingProfile() + "] Previous Policies_" + DateTimeUtil.formatNowForFilePath(),
