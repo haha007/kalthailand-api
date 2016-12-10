@@ -6,6 +6,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.ss.util.CellUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
@@ -14,6 +15,8 @@ import java.math.BigInteger;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.apache.poi.ss.usermodel.Cell.CELL_TYPE_FORMULA;
@@ -187,13 +190,28 @@ public class ExcelUtils {
         return cell;
     }
 
-    public static void appendMergedCell(Row row, CellContent cellContent, int colSpans) {
+    public static void setStyleToCell(Cell cell, String styleProperty, Object styleValue) {
+        Map<String, Object> styleProperties = new HashMap<>();
+        styleProperties.put(styleProperty, styleValue);
+        CellUtil.setCellStyleProperties(cell, styleProperties);
+    }
+
+    public static void styleAlignCenter(Cell cell) {
+        setStyleToCell(cell, "alignment", CellStyle.ALIGN_CENTER);
+    }
+
+    public static Cell appendMergedCell(Row row, CellContent cellContent, int colSpans) {
         Cell nextCell = appendCell(row, cellContent);
+        styleAlignCenter(nextCell);
+//        CellStyle cellStyle = row.getSheet().getWorkbook().createCellStyle();
+//        cellStyle.setAlignment(CellStyle.ALIGN_CENTER);
+//        nextCell.setCellStyle(cellStyle);
         for (int i = 0; i < colSpans - 1; i++) {
             appendCell(row, new Empty());
         }
         CellRangeAddress region = new CellRangeAddress(row.getRowNum(), row.getRowNum(), nextCell.getColumnIndex(), nextCell.getColumnIndex() + colSpans - 1);
         row.getSheet().addMergedRegion(region);
+        return nextCell;
     }
 
     public interface CellContent {

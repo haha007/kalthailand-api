@@ -17,7 +17,6 @@ import th.co.krungthaiaxa.api.elife.commission.data.CommissionTargetEntity;
 import th.co.krungthaiaxa.api.elife.commission.data.CommissionTargetEntityType;
 import th.co.krungthaiaxa.api.elife.commission.data.CommissionTargetGroup;
 import th.co.krungthaiaxa.api.elife.commission.data.CommissionTargetGroupType;
-import th.co.krungthaiaxa.api.elife.commission.repositories.CommissionCalculationSessionRepository;
 import th.co.krungthaiaxa.api.elife.commission.util.CommissionUtil;
 import th.co.krungthaiaxa.api.elife.repository.cdb.CDBRepository;
 import th.co.krungthaiaxa.api.elife.utils.ExcelIOUtils;
@@ -34,17 +33,14 @@ import static th.co.krungthaiaxa.api.elife.utils.ExcelUtils.text;
 @Service
 public class CommissionCalculationSessionExportService {
     public final static Logger LOGGER = LoggerFactory.getLogger(CDBRepository.class);
-    private final CommissionCalculationSessionRepository commissionCalculationSessionRepository;
+    private final CommissionCalculationSessionService commissionCalculationSessionService;
 
     @Autowired
-    public CommissionCalculationSessionExportService(CommissionCalculationSessionRepository commissionCalculationSessionRepository) {
-        this.commissionCalculationSessionRepository = commissionCalculationSessionRepository;
-    }
+    public CommissionCalculationSessionExportService(CommissionCalculationSessionService commissionCalculationSessionService) {this.commissionCalculationSessionService = commissionCalculationSessionService;}
 
-    //santi : for download commission excel file
     public byte[] exportToExcel(String commissionCalculationSessionId) {
         Instant start = LogUtil.logStarting("[Commission][Export][start]");
-        CommissionCalculationSession commissionCalculationSession = commissionCalculationSessionRepository.findOne(commissionCalculationSessionId);
+        CommissionCalculationSession commissionCalculationSession = commissionCalculationSessionService.validateExistCalculationSession(commissionCalculationSessionId);
         Workbook workbook = new XSSFWorkbook();
         addCommissionResultSheet(workbook, commissionCalculationSession);
         addCommissionSettingSheet(workbook, commissionCalculationSession);
