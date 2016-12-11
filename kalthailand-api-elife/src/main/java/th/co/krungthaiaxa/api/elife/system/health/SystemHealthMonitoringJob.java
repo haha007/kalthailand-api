@@ -6,8 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import th.co.krungthaiaxa.api.common.utils.IOUtil;
 import th.co.krungthaiaxa.api.common.log.LogUtil;
+import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
+import th.co.krungthaiaxa.api.common.utils.IOUtil;
 import th.co.krungthaiaxa.api.common.utils.NumberUtil;
 import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
 import th.co.krungthaiaxa.api.common.utils.ProfileHelper;
@@ -117,6 +118,7 @@ public class SystemHealthMonitoringJob {
         String usedSpacePercentages = systemHealth.getDiskSpaces().stream().map(diskSpace -> "[" + diskSpace.getDriverPath() + "]: " + diskSpace.getUsedSpacePercentage() + "%").collect(Collectors.joining(", "));
 
         emailHealthWarningContent = emailHealthWarningContent
+                .replaceAll("%DATE_TIME%", DateTimeUtil.format(Instant.now(), "yyyy/MM/dd HH:mm:ss"))
                 .replaceAll("%ENVIRONMENT%", profileHelper.getFirstUsingProfile())
                 .replaceAll("%USED_MEMORY%", NumberUtil.formatCurrencyValue(systemHealth.getJvmUsedMemory() / BYTES_TO_GB))
                 .replaceAll("%USED_MEMORY_PERCENTAGE%", "" + systemHealth.getJvmUsedMemoryPercentage())

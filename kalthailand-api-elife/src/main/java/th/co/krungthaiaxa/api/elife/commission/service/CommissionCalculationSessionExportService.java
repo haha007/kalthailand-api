@@ -8,8 +8,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import th.co.krungthaiaxa.api.common.exeption.UnexpectedException;
 import th.co.krungthaiaxa.api.common.log.LogUtil;
 import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
+import th.co.krungthaiaxa.api.common.utils.IOUtil;
 import th.co.krungthaiaxa.api.elife.commission.data.CommissionCalculation;
 import th.co.krungthaiaxa.api.elife.commission.data.CommissionCalculationSession;
 import th.co.krungthaiaxa.api.elife.commission.data.CommissionPlan;
@@ -41,13 +43,21 @@ public class CommissionCalculationSessionExportService {
     public byte[] exportToExcel(String commissionCalculationSessionId) {
         Instant start = LogUtil.logStarting("[Commission][Export][start]");
         CommissionCalculationSession commissionCalculationSession = commissionCalculationSessionService.validateExistCalculationSession(commissionCalculationSessionId);
-        Workbook workbook = new XSSFWorkbook();
-        addCommissionResultSheet(workbook, commissionCalculationSession);
-        addCommissionSettingSheet(workbook, commissionCalculationSession);
-        ExcelUtils.autoWidthAllColumns(workbook);
-        byte[] bytes = ExcelIOUtils.writeToBytes(workbook);
-        LogUtil.logFinishing(start, "[Commission][Export][start]");
-        return bytes;
+        Workbook workbook = null;
+        try {
+            workbook = new XSSFWorkbook();
+            addCommissionResultSheet(workbook, commissionCalculationSession);
+            addCommissionSettingSheet(workbook, commissionCalculationSession);
+            ExcelUtils.autoWidthAllColumns(workbook);
+            byte[] bytes = ExcelIOUtils.writeToBytes(workbook);
+            LogUtil.logFinishing(start, "[Commission][Export][start]");
+            return bytes;
+        } catch (Exception ex) {
+            String msg = String.format("Cannot export CommissionCalculationSession %s into Excel file: %s", commissionCalculationSessionId, ex.getMessage());
+            throw new UnexpectedException(msg, ex);
+        } finally {
+            IOUtil.closeIfPossible(workbook);
+        }
     }
 
     private Sheet addCommissionSettingSheet(Workbook workbook, CommissionCalculationSession commissionCalculationSession) {

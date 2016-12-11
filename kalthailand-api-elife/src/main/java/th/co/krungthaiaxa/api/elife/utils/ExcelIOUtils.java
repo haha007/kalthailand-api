@@ -21,8 +21,7 @@ public class ExcelIOUtils {
     }
 
     public static byte[] writeToBytes(Workbook workbook) {
-        try {
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
             workbook.write(byteArrayOutputStream);
             byte[] bytes = byteArrayOutputStream.toByteArray();
             return bytes;
