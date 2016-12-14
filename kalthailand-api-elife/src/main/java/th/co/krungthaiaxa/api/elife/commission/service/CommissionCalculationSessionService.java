@@ -30,7 +30,9 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -101,14 +103,16 @@ public class CommissionCalculationSessionService {
             List<String> unitCodes = commissionPlans.stream().map(sc -> sc.getUnitCode()).distinct().collect(Collectors.toList());//list of UnitCode
             List<String> planCodes = commissionPlans.stream().map(sc -> sc.getPlanCode()).distinct().collect(Collectors.toList());
 
-            List<CommissionCalculation> listCommissionCalculated = new ArrayList<>();
+            List<CommissionCalculation> commissionCalculations = new ArrayList<>();
             if (!unitCodes.isEmpty() && !planCodes.isEmpty()) {
                 List<CDBPolicyCommissionEntity> policiesCDB = cdbRepository.findPolicyCommissionsByUnitCodesAndPlanCodes(unitCodes, planCodes); //jdbcTemplate.queryForList(generateSql(channelIdsNoDup, planCodesNoDup), generateParameters(channelIdsNoDup, planCodesNoDup));
+                Map<String, PreviousPolicy> previousPoliciesCache = new HashMap<>();
+                Map<String, String> agentCodeStatusCache = new HashMap<>();
                 for (CDBPolicyCommissionEntity policyCDB : policiesCDB) {
-                    CommissionCalculation commissionCalculation = calculateCommissionForPolicy(policyCDB, commissionPlans);
-                    listCommissionCalculated.add(commissionCalculation);
+                    CommissionCalculation commissionCalculation = calculateCommissionForPolicy(policyCDB, commissionPlans, previousPoliciesCache, agentCodeStatusCache);
+                    commissionCalculations.add(commissionCalculation);
                 }
-                commissionResult.setCommissionCalculations(listCommissionCalculated);
+                commissionResult.setCommissionCalculations(commissionCalculations);
                 resultCode = RESULT_CODE_SESSION_SUCCESS;
                 resultMessage = "Success";
             } else {
@@ -127,13 +131,20 @@ public class CommissionCalculationSessionService {
         LogUtil.logFinishing(start, "[Commission-calculation][finish]");
     }
 
-    private CommissionCalculation calculateCommissionForPolicy(CDBPolicyCommissionEntity policyCDB, List<CommissionPlan> commissionPlans) {
+    private CommissionCalculation calculateCommissionForPolicy(CDBPolicyCommissionEntity policyCDB, List<CommissionPlan> commissionPlans, Map<String, PreviousPolicy> previousPoliciesCache, Map<String, String> agentCodeStatusCache) {
         CommissionCalculation commissionCalculation = new CommissionCalculation();
         String policyNumber = policyCDB.getPolicyNumber();
         try {
             copyData(policyCDB, commissionCalculation);
-            Optional<PreviousPolicy> previousPolicyOptional = findPreviousPolicyOfSameInsured(policyCDB.getPolicyNumber());
-            setAgentDataAndCustomerCategoryToCommissionCalculation(commissionCalculation, previousPolicyOptional);
+            PreviousPolicy previousPolicy = previousPoliciesCache.get(policyNumber);
+            if (previousPolicy == null) {
+                Optional<PreviousPolicy> previousPolicyOptional = findPreviousPolicyOfSameInsured(policyCDB.getPolicyNumber());
+                previousPolicy = previousPolicyOptional.isPresent() ? previousPolicyOptional.get() : null;
+                if (previousPolicy != null) {
+                    previousPoliciesCache.put(policyNumber, previousPolicy);
+                }
+            }
+            setAgentDataAndCustomerCategoryToCommissionCalculation(commissionCalculation, previousPolicy, agentCodeStatusCache);
             CommissionPlan commissionPlan = CommissionUtil.findCommissionPlan(getProperAgentCodeNumber(commissionCalculation.getAgentCode(), 6), commissionCalculation.getPlanCode(), commissionCalculation.getCustomerCategory(), commissionPlans);
             calculateCommissionRate(commissionCalculation, commissionPlan);
             commissionCalculation.setResultCode(RESULT_CODE_POLICY_SUCCESS);
@@ -150,28 +161,36 @@ public class CommissionCalculationSessionService {
     private Optional<PreviousPolicy> findPreviousPolicyOfSameInsured(String policyNumber) {
         Policy policy = policyRepository.findByPolicyId(policyNumber);
         Optional<PreviousPolicy> previousPolicyOptional;
+        PreviousPolicy previousPolicy = null;
         if (policy != null) {
             Insured mainInsured = ProductUtils.validateExistMainInsured(policy);
             mainInsured.setNotSearchedPreviousPolicy(false);
-            //Don't load previous policy from eLife DB (mainInsured.getLastActivatingPreviousPolicy()) because that previous policy might be was deactivated.
-            //So we need to recheck with CDB again.
-            previousPolicyOptional = cdbRepository.findLastActivatingPreviousPolicy(ProductUtils.getRegistrationId(mainInsured), mainInsured.getPerson().getBirthDate());
+            previousPolicy = mainInsured.getLastActivatingPreviousPolicy();
+            if (previousPolicy == null && mainInsured.isNotSearchedPreviousPolicy()) {
+                //Don't load previous policy from eLife DB (mainInsured.getLastActivatingPreviousPolicy()) because that previous policy might be was deactivated.
+                //So we need to recheck with CDB again.
+                previousPolicyOptional = cdbRepository.findLastActivatingPreviousPolicy(ProductUtils.getRegistrationId(mainInsured), mainInsured.getPerson().getBirthDate());
+                previousPolicy = previousPolicyOptional.isPresent() ? previousPolicyOptional.get() : null;
+                mainInsured.setLastActivatingPreviousPolicy(previousPolicy);
+                mainInsured.setNotSearchedPreviousPolicy(false);
+                policyRepository.save(policy);
+            }
+        }
+        if (previousPolicy != null) {
+            previousPolicyOptional = Optional.of(previousPolicy);
         } else {
             previousPolicyOptional = Optional.empty();
         }
         return previousPolicyOptional;
     }
 
-    private void setAgentDataAndCustomerCategoryToCommissionCalculation(CommissionCalculation commissionCalculation, Optional<PreviousPolicy> previousPolicyOptional) {
-
-        if (!previousPolicyOptional.isPresent()) {
-            commissionCalculation.setCustomerCategory(NEW);
-        } else {
-            PreviousPolicy previousPolicy = previousPolicyOptional.get();
-            if (StringUtils.isBlank(previousPolicy.getPolicyNumber())) {
-                commissionCalculation.setCustomerCategory(NEW);
-            } else {
-                commissionCalculation.setCustomerCategory(EXISTING);
+    private void setAgentDataAndCustomerCategoryToCommissionCalculation(CommissionCalculation commissionCalculation, PreviousPolicy previousPolicy, Map<String, String> agentStatusesCache) {
+        String previousPolicyNumber;
+        String customerCategory = NEW;
+        if (previousPolicy != null) {
+            previousPolicyNumber = previousPolicy.getPolicyNumber();
+            if (!StringUtils.isBlank(previousPolicyNumber)) {
+                customerCategory = EXISTING;
             }
             String agentCode1 = previousPolicy.getAgentCode1();
             String agentCode2 = previousPolicy.getAgentCode2();
@@ -179,30 +198,24 @@ public class CommissionCalculationSessionService {
             commissionCalculation.setExistingAgentCode1(agentCode1);
             commissionCalculation.setExistingAgentCode2(agentCode2);
             if (StringUtils.isNotBlank(agentCode1)) {
-                String agentCodeStatus = cdbRepository.getExistingAgentCodeStatus(getProperAgentCodeNumber(agentCode1, 14));
-                commissionCalculation.setExistingAgentCode1Status(agentCodeStatus);
+                String agentStatus = getAgentStatus(agentCode1, agentStatusesCache);
+                commissionCalculation.setExistingAgentStatus1(agentStatus);
             }
             if (StringUtils.isNotBlank(agentCode2)) {
-                String agentCodeStatus = cdbRepository.getExistingAgentCodeStatus(getProperAgentCodeNumber(agentCode2, 14));
-                commissionCalculation.setExistingAgentCode2Status(agentCodeStatus);
+                String agentStatus = getAgentStatus(agentCode2, agentStatusesCache);
+                commissionCalculation.setExistingAgentStatus2(agentStatus);
             }
         }
-        //TODO migrate old NULL & BLANK value to null
+        commissionCalculation.setCustomerCategory(customerCategory);
+    }
 
-//
-//        List<String> insuredPreviousInformations = mainInsured.getInsuredPreviousInformations();
-//        insuredPreviousInformations.get(0);
-//        if (insuredPreviousInformations.isEmpty()) {
-//            commissionCalculation.setCustomerCategory(NEW);
-//        } else {
-//            commissionCalculation.setCustomerCategory((insuredPreviousInformations.get(0).equals(NULL) ? NEW : EXISTING));
-//            commissionCalculation.setPreviousPolicyNo((insuredPreviousInformations.get(0).equals(NULL) ? BLANK : insuredPreviousInformations.get(0)));
-//            commissionCalculation.setExistingAgentCode1((insuredPreviousInformations.get(1).equals(NULL) ? BLANK : insuredPreviousInformations.get(1)));
-//            commissionCalculation.setExistingAgentCode1Status((commissionCalculation.getExistingAgentCode1().equals(BLANK) ? BLANK : cdbRepository.getExistingAgentCodeStatus(getProperAgentCodeNumber(commissionCalculation.getExistingAgentCode1(), 14))));
-//            commissionCalculation.setExistingAgentCode2((insuredPreviousInformations.get(2).equals(NULL) ? BLANK : insuredPreviousInformations.get(2)));
-//            commissionCalculation.setExistingAgentCode2Status((commissionCalculation.getExistingAgentCode2().equals(BLANK) ? BLANK : cdbRepository.getExistingAgentCodeStatus(getProperAgentCodeNumber(commissionCalculation.getExistingAgentCode2(), 14))));
-//        }
-
+    private String getAgentStatus(String agentCode, Map<String, String> agentCodeStatusCache) {
+        String agentStatus = agentCodeStatusCache.get(agentCode);
+        if (agentStatus == null) {
+            agentStatus = cdbRepository.getExistingAgentCodeStatus(getProperAgentCodeNumber(agentCode, 14));
+            agentCodeStatusCache.put(agentCode, agentStatus);
+        }
+        return agentStatus;
     }
 
     private void copyData(CDBPolicyCommissionEntity policyCDB, CommissionCalculation commissionCalculation) {

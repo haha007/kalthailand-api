@@ -2,6 +2,8 @@ package th.co.krungthaiaxa.api.elife.migration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,7 +26,7 @@ import java.util.stream.Collectors;
  */
 @Service
 public class PreviousPolicyMigration {
-
+    public static final Logger LOGGER = LoggerFactory.getLogger(PreviousPolicyMigration.class);
     private final PolicyRepository policyRepository;
     private final ProfileHelper profileHelper;
     private final ObjectMapper objectMapper;
@@ -68,15 +70,19 @@ public class PreviousPolicyMigration {
             }
         };
         List<Policy> policies = actionLoopByPage.executeAllPages(50);
-        List<String> policiesNumbers = policies.stream().map(policy -> policy.getPolicyId()).collect(Collectors.toList());
-        byte[] previousPoliciesMigrationData = ObjectMapperUtil.toJsonBytes(objectMapper, policiesNumbers);
-        elifeEmailService.sendEmail(
-                "khoi.tran.ags@gmail.com",
-                "[eLife][Migrate][" + profileHelper.getFirstUsingProfile() + "] Previous Policies_" + DateTimeUtil.formatNowForFilePath(),
-                "Policies: " + policiesNumbers.size(),
-                "migrated-previous-policies_" + DateTimeUtil.formatNowForFilePath() + ".json",
-                previousPoliciesMigrationData
-        );
+        try {
+            List<String> policiesNumbers = policies.stream().map(policy -> policy.getPolicyId()).collect(Collectors.toList());
+            byte[] previousPoliciesMigrationData = ObjectMapperUtil.toJsonBytes(objectMapper, policiesNumbers);
+            elifeEmailService.sendEmail(
+                    "khoi.tran.ags@gmail.com",
+                    "[eLife][Migrate][" + profileHelper.getFirstUsingProfile() + "] Previous Policies_" + DateTimeUtil.formatNowForFilePath(),
+                    "Policies: " + policiesNumbers.size(),
+                    "migrated-previous-policies_" + DateTimeUtil.formatNowForFilePath() + ".json",
+                    previousPoliciesMigrationData
+            );
+        } catch (Exception ex) {
+            LOGGER.error("Cannot send email " + ex.getMessage(), ex);
+        }
     }
 
     private boolean isBlankValueOfPreviousPolicy(String value) {

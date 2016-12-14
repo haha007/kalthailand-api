@@ -151,9 +151,10 @@ public class CommissionCalculationSessionExportService {
                 text("OV TSR Rate"),
                 text("OV Marketing Rate"),
                 text("OV Company Rate"),
-                text("Calculate Date Time"),
-                text("Result Code"),
-                text("Result Message"));
+                text("Calculate Date Time")
+//                text("Result Code"),
+//                text("Result Message")
+        );
         commissionCalculations.stream().forEach(tmp -> createCommissionResultExtractExcelFileLine(sheet, tmp, commissionCalculationSession));
         return sheet;
     }
@@ -171,9 +172,9 @@ public class CommissionCalculationSessionExportService {
                 text(commission.getCustomerCategory()),
                 text(commission.getPreviousPolicyNo()),
                 text(commission.getExistingAgentCode1()),
-                text(commission.getExistingAgentCode1Status()),
+                text(commission.getExistingAgentStatus1()),
                 text(commission.getExistingAgentCode2()),
-                text(commission.getExistingAgentCode2Status()),
+                text(commission.getExistingAgentStatus2()),
 
                 text(commission.getFirstYearPremium()),
                 text(commission.getFirstYearCommission()),
@@ -200,9 +201,10 @@ public class CommissionCalculationSessionExportService {
                 text(commission.getOvTsrRate()),
                 text(commission.getOvMarketingRate()),
                 text(commission.getOvCompanyRate()),
-                text(updateDateTime),
-                text(commission.getResultCode()),
-                text(commission.getResultMessage()));
+                text(updateDateTime)
+//                text(commission.getResultCode()),
+//                text(commission.getResultMessage())
+        );
     }
 
 }

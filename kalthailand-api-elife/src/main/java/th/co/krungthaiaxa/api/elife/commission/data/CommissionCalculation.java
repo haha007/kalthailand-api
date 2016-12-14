@@ -20,9 +20,9 @@ public class CommissionCalculation {
     private String customerCategory;
     private String previousPolicyNo;
     private String existingAgentCode1;
-    private String existingAgentCode1Status;
+    private String existingAgentStatus1;
     private String existingAgentCode2;
-    private String existingAgentCode2Status;
+    private String existingAgentStatus2;
 
     //Same as the rate values in Commission Setting at the time running calculation.
     private Double fyAffiliateRate;
@@ -117,12 +117,12 @@ public class CommissionCalculation {
         this.existingAgentCode1 = existingAgentCode1;
     }
 
-    public String getExistingAgentCode1Status() {
-        return existingAgentCode1Status;
+    public String getExistingAgentStatus1() {
+        return existingAgentStatus1;
     }
 
-    public void setExistingAgentCode1Status(String existingAgentCode1Status) {
-        this.existingAgentCode1Status = existingAgentCode1Status;
+    public void setExistingAgentStatus1(String existingAgentStatus1) {
+        this.existingAgentStatus1 = existingAgentStatus1;
     }
 
     public String getExistingAgentCode2() {
@@ -133,12 +133,12 @@ public class CommissionCalculation {
         this.existingAgentCode2 = existingAgentCode2;
     }
 
-    public String getExistingAgentCode2Status() {
-        return existingAgentCode2Status;
+    public String getExistingAgentStatus2() {
+        return existingAgentStatus2;
     }
 
-    public void setExistingAgentCode2Status(String existingAgentCode2Status) {
-        this.existingAgentCode2Status = existingAgentCode2Status;
+    public void setExistingAgentStatus2(String existingAgentStatus2) {
+        this.existingAgentStatus2 = existingAgentStatus2;
     }
 
     public Double getFirstYearPremium() {
