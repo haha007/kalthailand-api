@@ -37,7 +37,8 @@ public class Insured implements Serializable {
      * This is the last activating previous policy which is updated when process the first payment.
      * But when processing commission, maybe the data was old. So we need to recheck the previous policy again.
      */
-    private PreviousPolicy lastActivatingPreviousPolicy;
+    @ApiModelProperty(value = "At the point when this policy is changed from PENDING_PAYMENT to PENDING_VALIDATION, the previous policy is activated and not terminated. But after that, it can be terminated, you have to recheck its status again.")
+    private PreviousPolicy previousPolicy;
     //This field is applied for data migration only (v1.12.0), after this version, should remove this field.
     private boolean notSearchedPreviousPolicy = true;
     /**
@@ -230,12 +231,12 @@ public class Insured implements Serializable {
                 insuredPreviousInformations);
     }
 
-    public PreviousPolicy getLastActivatingPreviousPolicy() {
-        return lastActivatingPreviousPolicy;
+    public PreviousPolicy getPreviousPolicy() {
+        return previousPolicy;
     }
 
-    public void setLastActivatingPreviousPolicy(PreviousPolicy lastActivatingPreviousPolicy) {
-        this.lastActivatingPreviousPolicy = lastActivatingPreviousPolicy;
+    public void setPreviousPolicy(PreviousPolicy previousPolicy) {
+        this.previousPolicy = previousPolicy;
     }
 
     public boolean isNotSearchedPreviousPolicy() {

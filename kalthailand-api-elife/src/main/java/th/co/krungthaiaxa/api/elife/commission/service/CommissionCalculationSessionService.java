@@ -165,13 +165,13 @@ public class CommissionCalculationSessionService {
         if (policy != null) {
             Insured mainInsured = ProductUtils.validateExistMainInsured(policy);
             mainInsured.setNotSearchedPreviousPolicy(false);
-            previousPolicy = mainInsured.getLastActivatingPreviousPolicy();
+            previousPolicy = mainInsured.getPreviousPolicy();
             if (previousPolicy == null && mainInsured.isNotSearchedPreviousPolicy()) {
                 //Don't load previous policy from eLife DB (mainInsured.getLastActivatingPreviousPolicy()) because that previous policy might be was deactivated.
                 //So we need to recheck with CDB again.
                 previousPolicyOptional = cdbRepository.findLastActivatingPreviousPolicy(ProductUtils.getRegistrationId(mainInsured), mainInsured.getPerson().getBirthDate());
                 previousPolicy = previousPolicyOptional.isPresent() ? previousPolicyOptional.get() : null;
-                mainInsured.setLastActivatingPreviousPolicy(previousPolicy);
+                mainInsured.setPreviousPolicy(previousPolicy);
                 mainInsured.setNotSearchedPreviousPolicy(false);
                 policyRepository.save(policy);
             }

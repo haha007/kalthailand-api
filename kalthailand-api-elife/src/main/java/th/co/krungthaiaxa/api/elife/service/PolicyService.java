@@ -257,7 +257,7 @@ public class PolicyService {
             Optional<PreviousPolicy> previousPolicyOptional = cdbClient.getExistingAgentCode(insuredRegistrationOptional.get().getId(), insuredDOB);
             if (previousPolicyOptional.isPresent()) {
                 PreviousPolicy previousPolicy = previousPolicyOptional.get();
-                mainInsured.setLastActivatingPreviousPolicy(previousPolicy);
+                mainInsured.setPreviousPolicy(previousPolicy);
                 mainInsured.addInsuredPreviousInformation(previousPolicy.getPolicyNumber());
                 mainInsured.addInsuredPreviousInformation(previousPolicy.getAgentCode1());
                 mainInsured.addInsuredPreviousInformation(previousPolicy.getAgentCode2());

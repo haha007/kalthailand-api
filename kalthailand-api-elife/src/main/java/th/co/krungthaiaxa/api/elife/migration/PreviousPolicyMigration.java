@@ -59,7 +59,7 @@ public class PreviousPolicyMigration {
                             previousPolicy.setAgentCode1(agentCode1);
                             previousPolicy.setAgentCode2(agentCode2);
 
-                            insured.setLastActivatingPreviousPolicy(previousPolicy);
+                            insured.setPreviousPolicy(previousPolicy);
                         }
                     }
                 }
