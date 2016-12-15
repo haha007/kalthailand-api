@@ -17,7 +17,6 @@ import th.co.krungthaiaxa.api.common.utils.DownloadUtil;
 import th.co.krungthaiaxa.api.common.utils.MimeTypeUtil;
 import th.co.krungthaiaxa.api.elife.commission.data.CommissionCalculationSession;
 import th.co.krungthaiaxa.api.elife.commission.data.CommissionPlan;
-import th.co.krungthaiaxa.api.elife.commission.data.CommissionResult;
 import th.co.krungthaiaxa.api.elife.commission.service.CommissionCalculationSessionExportService;
 import th.co.krungthaiaxa.api.elife.commission.service.CommissionCalculationSessionService;
 import th.co.krungthaiaxa.api.elife.commission.service.CommissionPlanService;
@@ -59,37 +58,23 @@ public class CommissionResource {
     }
 
     //santi : for trigger calculation commission
-    @ApiOperation(value = "Calculate commission for policies.", notes = "Calculate commission for input policies based on commission plans.", response = CommissionCalculationSession.class)
+    @ApiOperation(value = "Calculate commission for payments in one month.", notes = "Calculate commission for input policies based on commission plans.")
     @ApiResponses({ @ApiResponse(code = 500, message = "If there's any internal error", response = Error.class) })
-    @RequestMapping(value = "/commissions/calculation", produces = APPLICATION_JSON_VALUE, method = RequestMethod.POST)
+    @RequestMapping(value = "/commissions/calculation-sessions", produces = APPLICATION_JSON_VALUE, method = RequestMethod.POST)
     public void calculateCommissionsForPolicies() {
         commissionCalculationSessionService.calculateCommissionForPolicies();
     }
 
     //santi : for get list of calculated commission
-    @ApiOperation(value = "Get list of calculated commission transactions", notes = "Get list of calculated commission transactions")
+    @ApiOperation(value = "Get list of Calculation Sessions", notes = "Each calculation session is the result of commission calculation in one month.")
     @ApiResponses({ @ApiResponse(code = 500, message = "If there's any internal error", response = Error.class) })
-    @RequestMapping(value = "/commissions/calculation/lists", produces = APPLICATION_JSON_VALUE, method = RequestMethod.GET)
+    @RequestMapping(value = "/commissions/calculation-sessions", produces = APPLICATION_JSON_VALUE, method = RequestMethod.GET)
     public List<CommissionCalculationSession> getCalculateCommissionsList() {
         return commissionCalculationSessionService.findAllCommissionCalculationSessions();
     }
 
-//    //santi : for download commission excel file
-//    @ApiOperation(value = "Commission download excel file", notes = "Commission download excel file", response = CommissionResult.class, responseContainer = "List")
-//    @RequestMapping(value = "/commissions/calculation/download/{rowId}", method = GET)
-//    @ResponseBody
-//    public void getCommissionResultExcelFile(
-//            @ApiParam(value = "The Commission Result Row Id", required = true)
-//            @PathVariable String rowId,
-//            HttpServletResponse response) {
-//
-//        String now = ofPattern("yyyyMMdd_HHmmss").format(now());
-//        byte[] excelFileContent = commissionCalculationSessionExportService.exportToExcel(rowId, now);
-//        DownloadUtil.writeBytesToResponse(response, excelFileContent, "commission_" + DateTimeUtil.formatNowForFilePath() + "_" + rowId, MimeTypeUtil.MIME_TYPE_PDF);
-//    }
-
     @ApiOperation(value = "Download Commission Calculation Session")
-    @RequestMapping(value = "/commissions/calculation-session/download/{calculation-session-id}", method = GET)
+    @RequestMapping(value = "/commissions/calculation-sessions/download/{calculation-session-id}", method = GET)
     public void downloadCommissionCalcuationSession(@PathVariable("calculation-session-id") String commissionCalculationSessionIdString, HttpServletResponse response) {
         logger.info("Downloading deduction File");
         byte[] excelFileContent = commissionCalculationSessionExportService.exportToExcel(commissionCalculationSessionIdString);

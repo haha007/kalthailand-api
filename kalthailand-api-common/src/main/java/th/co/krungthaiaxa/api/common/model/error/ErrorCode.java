@@ -15,12 +15,10 @@ public class ErrorCode {
     public static final Function<String, Error> UNAUTHORIZED_BLACKLIST = msg -> new Error("00003", "You are not authorized to use this API", msg);
     public static final Function<String, Error> INVALID_BLACKLIST_FILE = msg -> new Error("9003", "Invalid Excel file. Error is: " + msg, "Inavlid Excel file. Error is: " + msg);
 
-    public static final String DETAILS_TYPE_DUPLICATE = "Duplicate";
-
-    public static final String ERROR_CODE_UNKNOWN_ERROR = "0000";
+    public static final String ERROR_CODE_UNKNOWN_ERROR = "0001";
     public static final Function<String, Error> UNKNOWN_ERROR = msg -> new Error(ERROR_CODE_UNKNOWN_ERROR, "This is an unknown error. Please contact administrator to get more information.", "Unknown error: " + msg);
-    public static final Function<String, Error> BAD_REQUEST = msg -> new Error("0001", "Bad request error: " + msg, "Bad request error: " + msg);
     public static final String ERROR_CODE_AUTHENTICATION = "0002";
+    public static final Function<String, Error> BAD_REQUEST = msg -> new Error("0003", "Bad request error: " + msg, "Bad request error: " + msg);
 
     //Bean Validation (0010 -> 0019)
     public static final String ERROR_CODE_BEAN_VALIDATION = "0010";

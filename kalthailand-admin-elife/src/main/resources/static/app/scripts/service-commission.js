@@ -75,9 +75,9 @@ CommissionService.prototype.addCommissionPlan = function () {
 };
 CommissionService.prototype.removeCommissionPlan = function (commissionPlan) {
     var self = this;
-    if (self.isCommissionPlanReadonly(commissionPlan)) {
-        return;
-    }
+    //if (self.isCommissionPlanReadonly(commissionPlan)) {
+    //    return;
+    //}
     self.commissionPlans.remove(commissionPlan);
     self.validateCommissionPlans();
 };
@@ -259,5 +259,19 @@ CommissionService.prototype.findCommissionTargetEntityInPlan = function (commiss
     var targetGroup = self.findCommissionGroupInPlan(commissionPlan, groupType);
     if (targetGroup == null) return null;
     return self.findCommissionTargetEntityInGroup(targetGroup, entityType);
+};
+CommissionService.prototype.sortCommissionPlans = function (fieldNames) {
+    var self = this;
+
+    if (hasValue(self.commissionPlansOrder) && self.commissionPlansOrder == 1) {
+        self.commissionPlansOrder = -1;
+    } else {
+        self.commissionPlansOrder = 1;
+    }
+    var fieldSorts = [];
+    for (var i = 0; i < fieldNames.length; i++) {
+        fieldSorts.push(new FieldSort(fieldNames[i], self.commissionPlansOrder));
+    }
+    self.commissionPlans.sortByFields(fieldSorts);
 };
 

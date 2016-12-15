@@ -1,7 +1,5 @@
 package th.co.krungthaiaxa.api.elife.filter;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
@@ -28,7 +26,6 @@ import java.util.regex.Pattern;
 
 @Component
 public class KalApiTokenFilter implements Filter {
-    private final static Logger logger = LoggerFactory.getLogger(KalApiTokenFilter.class);
     public static final String URI_REGEXP_POLICIES_MAIN_INSURED_PERSON = "^.*/policies/[0-9a-zA-Z\\-]+/main-insured/person.*";
 
     @Value("${kal.api.auth.token.validation.url}")
@@ -41,7 +38,7 @@ public class KalApiTokenFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-
+        //Nothing to do here.
     }
 
     @Override
@@ -86,7 +83,7 @@ public class KalApiTokenFilter implements Filter {
                 , ".*/RLS/deduction/download/.*"
                 , ".*/session-quotes/all-products-counts/download.*"
                 , ".*/quotes/all-products/download.*"
-                , ".*/commissions/calculation-session/download/.*"
+                , ".*/commissions/calculation-sessions/download/.*"
                 , ".*/policies/.*/pdf.*"
                 , ".*/policies/.*/download.*"
                 , ".*/documents/.*/download.*"
@@ -122,7 +119,7 @@ public class KalApiTokenFilter implements Filter {
 
     @Override
     public void destroy() {
-
+        //Nothing to do.
     }
 
 }

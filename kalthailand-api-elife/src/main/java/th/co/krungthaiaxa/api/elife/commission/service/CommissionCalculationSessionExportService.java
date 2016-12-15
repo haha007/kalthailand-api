@@ -68,7 +68,7 @@ public class CommissionCalculationSessionExportService {
         );
         ExcelUtils.appendRow(sheet,
                 text("Commission month"),
-                text(commissionCalculationSession.getCommissionDate())
+                text(DateTimeUtil.format(commissionCalculationSession.getCommissionDate(), "yyyy/MM"))
         );
         Row rowHeader01 = ExcelUtils.appendRow(sheet,
                 text("Unit code"),
@@ -155,7 +155,9 @@ public class CommissionCalculationSessionExportService {
 //                text("Result Code"),
 //                text("Result Message")
         );
-        commissionCalculations.stream().forEach(tmp -> createCommissionResultExtractExcelFileLine(sheet, tmp, commissionCalculationSession));
+        if (commissionCalculations != null) {
+            commissionCalculations.stream().forEach(commissionCalculation -> createCommissionResultExtractExcelFileLine(sheet, commissionCalculation, commissionCalculationSession));
+        }
         return sheet;
     }
 

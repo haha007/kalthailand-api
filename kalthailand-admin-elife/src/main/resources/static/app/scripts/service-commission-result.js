@@ -8,7 +8,7 @@ function CommissionResultService($http, $sce) {
 
 CommissionResultService.prototype.commissionResultAll = function () {
     var self = this;
-    self.$http.get(window.location.origin + '/api-elife/commissions/calculation/lists', {}).then(
+    self.$http.get(window.location.origin + '/api-elife/commissions/calculation-sessions', {}).then(
         function (successResponse) {
             self.commissionCalculationSessions = successResponse.data;
             self.showInfoMessage("Loaded commission lists");
@@ -31,10 +31,10 @@ CommissionResultService.prototype.generateCommission = function (msg) {
     self.isCalculating = true;
 
     // API Service
-    self.$http.post(window.location.origin + '/api-elife/commissions/calculation', {}).then(
+    self.$http.post(window.location.origin + '/api-elife/commissions/calculation-sessions', {}).then(
         function (successResponse) {
             // Load after generate
-            self.$http.get(window.location.origin + '/api-elife/commissions/calculation/lists', {}).then(
+            self.$http.get(window.location.origin + '/api-elife/commissions/calculation-sessions', {}).then(
                 function (successResponse) {
                     self.isCalculating = false;
                     self.commissionCalculationSessions = successResponse.data;
@@ -53,7 +53,7 @@ CommissionResultService.prototype.generateCommission = function (msg) {
     );
 
     // Load first after click
-//    self.$http.get(window.location.origin + '/api-elife/commissions/calculation/lists', {}).then(
+//    self.$http.get(window.location.origin + '/api-elife/commissions/calculation-sessions', {}).then(
 //        function (successResponse) {
 //            self.commissionCalculationSessions = successResponse.data;
 //            self.showInfoMessage("Loaded commission lists");
