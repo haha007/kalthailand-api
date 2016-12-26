@@ -609,8 +609,7 @@
                 if (!hasValue(policy)) {
                     return false;
                 }
-                return policy.premiumsData.financialScheduler.atpMo;
-                de == $scope.AtpMode.AUTOPAY;
+                return policy.premiumsData.financialScheduler.atpMode == $scope.AtpMode.AUTOPAY;
             };
             $scope.clickShowAllPayments = function () {
                 if ($scope.showAllPayments == "checked") {
@@ -908,7 +907,7 @@
         $scope.service = HealthCheckService;
         $scope.service.$scope = $scope;
     });
-    
+
     app.controller('CommissionController', function (CommissionService, $scope, $route, $http, $localStorage) {
         $scope.service = CommissionService;
     });
@@ -931,7 +930,6 @@
         }
 
         $scope.commissionResultAll = CommissionResultService;
-
 
 
         $scope.loadNewFilter = function () {

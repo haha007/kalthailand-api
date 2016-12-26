@@ -52,6 +52,7 @@ public class PolicyCriteriaRepository {
                 .include("insureds.mainInsuredIndicator")
                 .include("insureds.person.lineId")
                 .include("validationAgentCode")
+                .include("validationDateTime")
                 .include("premiumsData.financialScheduler.periodicity.code")
                 .include("premiumsData.financialScheduler.atpMode")
         ;
