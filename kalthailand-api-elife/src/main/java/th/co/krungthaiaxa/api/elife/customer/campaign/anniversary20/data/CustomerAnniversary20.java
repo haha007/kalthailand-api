@@ -12,7 +12,7 @@ import th.co.krungthaiaxa.api.elife.export.ReportField;
 /**
  * @author khoi.tran on 12/26/16.
  */
-@Document
+@Document(collection = "customerAnniversary20")
 public class CustomerAnniversary20 extends BaseEntity {
     @NotBlank
     @Field("firstName")
