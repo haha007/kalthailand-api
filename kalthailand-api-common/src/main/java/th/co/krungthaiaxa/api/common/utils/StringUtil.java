@@ -126,6 +126,32 @@ public class StringUtil {
         return result.replace(delimiter.toString(), "");
     }
 
+    /**
+     * @param string the string with camel case
+     * @return this method will split the camel case string into separated words.
+     * "lowercase",        // [lowercase]
+     * "Class",            // [Class]
+     * "MyClass",          // [My Class]
+     * "HTML",             // [HTML]
+     * "PDFLoader",        // [PDF Loader]
+     * "AString",          // [A String]
+     * "SimpleXMLParser",  // [Simple XML Parser]
+     * "GL11Version",      // [GL 11 Version]
+     * "99Bottles",        // [99 Bottles]
+     * "May5",             // [May 5]
+     * "BFG9000",          // [BFG 9000]
+     */
+    public static String splitCamelCase(String string) {
+        return string.replaceAll(
+                String.format("%s|%s|%s",
+                        "(?<=[A-Z])(?=[A-Z][a-z])",
+                        "(?<=[^A-Z])(?=[A-Z])",
+                        "(?<=[A-Za-z])(?=[^A-Za-z])"
+                ),
+                " "
+        );
+    }
+
     public static String formatNumberLength(long numberString, int length) {
         return StringUtils.leftPad(String.valueOf((int) numberString), length, '0');
 

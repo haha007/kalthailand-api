@@ -5,6 +5,8 @@ import org.springframework.data.annotation.Id;
 import java.time.LocalDateTime;
 
 /**
+ * This class ensure that these fields {@link #createdDateTime} and {@link #updatedDateTime} should always have values.
+ *
  * @author khoi.tran on 9/8/16.
  */
 public class BaseEntity {
@@ -15,8 +17,8 @@ public class BaseEntity {
     @Id
     private String id;
 
-    private LocalDateTime createdDateTime;
-    private LocalDateTime updatedDateTime;
+    private LocalDateTime createdDateTime = LocalDateTime.now();
+    private LocalDateTime updatedDateTime = LocalDateTime.now();
 
     public String getId() {
         return id;
@@ -35,6 +37,9 @@ public class BaseEntity {
 
     public void setCreatedDateTime(LocalDateTime createdDateTime) {
         this.createdDateTime = createdDateTime;
+        if (this.createdDateTime == null) {
+            this.createdDateTime = LocalDateTime.now();
+        }
     }
 
     public LocalDateTime getUpdatedDateTime() {
@@ -46,5 +51,8 @@ public class BaseEntity {
 
     public void setUpdatedDateTime(LocalDateTime updatedDateTime) {
         this.updatedDateTime = updatedDateTime;
+        if (this.updatedDateTime == null) {
+            this.updatedDateTime = LocalDateTime.now();
+        }
     }
 }

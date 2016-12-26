@@ -146,6 +146,29 @@ public class ExcelUtils {
         return new TextCellContent(value.toString());
     }
 
+    public static CellContent text(Object value) {
+        if (value == null) {
+            return empty();
+        }
+        if (value instanceof String) {
+            return text((String) value);
+        } else if (value instanceof LocalDate) {
+            return text((LocalDate) value);
+        } else if (value instanceof LocalDateTime) {
+            return text((LocalDateTime) value);
+        } else if (value instanceof Double) {
+            return text((Double) value);
+        } else if (value instanceof Boolean) {
+            return text((Boolean) value);
+        } else if (value instanceof Instant) {
+            return text((Instant) value);
+        } else if (value instanceof BigInteger) {
+            return text((BigInteger) value);
+        } else {
+            return text(value.toString());
+        }
+    }
+
     public static CellContent text(LocalDate localDate) {
         return new DateCellContent(localDate);
     }
