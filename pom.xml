@@ -21,11 +21,11 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
-        <kalthailand.version>1.12.0-SNAPSHOT</kalthailand.version>
+        <kalthailand.version>1.13.0-SNAPSHOT</kalthailand.version>
         <!--
         Main features:
-        1) AKT-1211: Commission calculation fix bug
-        2) Fix error of collection dueDate.
+        1) AKT-1256: Customer promotion form for Krungthai-AXA 20th Anniversary.
+        2) Fix bug DAForm doesn't appear.
         -->
         <path.resources>src/main/resources</path.resources>
     </properties>
