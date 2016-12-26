@@ -17,7 +17,7 @@ public class ReportFieldUtils {
 
     public static List<ReportFieldDescription> analyseReportFieldDescriptions(Class<?> objectClass) {
         List<ReportFieldDescription> reportFieldDescriptions = new ArrayList<>();
-        Field[] fields = objectClass.getFields();
+        Field[] fields = objectClass.getDeclaredFields();
         for (Field field : fields) {
             ReportField reportField = field.getAnnotation(ReportField.class);
             String reportFieldName;

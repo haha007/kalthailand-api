@@ -1,7 +1,6 @@
 package th.co.krungthaiaxa.api.elife.customer.campaign.anniversary20.data;
 
 import org.hibernate.validator.constraints.Email;
-import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -25,7 +24,6 @@ public class CustomerAnniversary20 extends BaseEntity {
 
     @ReportField("Thai ID")
     @Field("thaiID")
-    @Length(min = 13, max = 13)
     @NotBlank
     private String registration;
     @NotBlank

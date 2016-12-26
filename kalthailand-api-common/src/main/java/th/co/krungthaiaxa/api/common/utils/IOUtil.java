@@ -39,9 +39,10 @@ public class IOUtil {
      */
     public static String loadTextFileInClassPath(String path) {
         try {
-            return IOUtils.toString(IOUtil.class.getResourceAsStream(path), Charset.forName("UTF-8"));
+            InputStream inputStream = loadInputStreamFromClassPath(path);
+            return IOUtils.toString(inputStream, Charset.forName("UTF-8"));
         } catch (IOException e) {
-            String msg = String.format("Cannot load String from '%s'", path);
+            String msg = String.format("Cannot load String from file '%s'", path);
             throw new FileNotFoundException(msg, e);
         }
     }

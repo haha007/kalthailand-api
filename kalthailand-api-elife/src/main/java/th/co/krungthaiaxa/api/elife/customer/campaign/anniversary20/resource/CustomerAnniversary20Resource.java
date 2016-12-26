@@ -2,6 +2,7 @@ package th.co.krungthaiaxa.api.elife.customer.campaign.anniversary20.resource;
 
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -33,7 +34,7 @@ public class CustomerAnniversary20Resource {
     @ApiOperation(value = "Create Customer data for 'Krungthai-AXA 20th Anniversary'", notes = "Insert data of customer so that we can do upselling for the 'Krungthai AXA 20th Anniversary' campaign.")
     @RequestMapping(value = "/customer/campaign/krungthai-axa-20th-anniversary", produces = APPLICATION_JSON_VALUE, method = RequestMethod.POST)
     @ResponseBody
-    public CustomerAnniversary20 createCustomer(CustomerAnniversary20 customerAnniversary20) {
+    public CustomerAnniversary20 createCustomer(@RequestBody CustomerAnniversary20 customerAnniversary20) {
         return customerAnniversary20Service.createCustomerAnniversary20(customerAnniversary20);
     }
 

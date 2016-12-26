@@ -1,0 +1,9 @@
+{
+  "givenName": "Dummy",
+  "surName": "Testing Guy",
+  "registration": "1234567890123",
+  "email": "dummy.testing@gmail.com",
+  "mobile": "090818283848",
+  "address": "11/22 dummy address",
+  "purchaseReason": "Just for testing. Nothing else."
+}

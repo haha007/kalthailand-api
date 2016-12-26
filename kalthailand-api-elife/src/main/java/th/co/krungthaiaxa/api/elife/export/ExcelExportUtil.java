@@ -74,13 +74,13 @@ public class ExcelExportUtil {
      * @param object
      */
     private static void addObjectToNextRow(Sheet sheet, int rowIndex, Object object) {
-        int i = 0;
+        int col = 0;
         List<ReportFieldValue> reportFieldValues = ReportFieldUtils.analyseReportFieldValues(object);
         ExcelUtils.CellContent[] cellContents = new ExcelUtils.CellContent[reportFieldValues.size() + 1];
         cellContents[0] = ExcelUtils.text(rowIndex + 1);
         for (ReportFieldValue reportFieldValue : reportFieldValues) {
-            cellContents[i] = ExcelUtils.text(reportFieldValue.getValue());
-            i++;
+            cellContents[col + 1] = ExcelUtils.text(reportFieldValue.getValue());
+            col++;
         }
         ExcelUtils.appendRow(sheet, cellContents);
     }
