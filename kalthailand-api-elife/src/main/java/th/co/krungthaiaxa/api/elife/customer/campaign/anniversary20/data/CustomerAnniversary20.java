@@ -20,7 +20,7 @@ public class CustomerAnniversary20 extends BaseEntity {
 
     @NotBlank
     @Field("lastName")
-    private String surName;
+    private String surname;
 
     @ReportField("Thai ID")
     @Field("thaiID")
@@ -45,12 +45,12 @@ public class CustomerAnniversary20 extends BaseEntity {
         this.givenName = givenName;
     }
 
-    public String getSurName() {
-        return surName;
+    public String getSurname() {
+        return surname;
     }
 
-    public void setSurName(String surName) {
-        this.surName = surName;
+    public void setSurname(String surname) {
+        this.surname = surname;
     }
 
     public String getEmail() {

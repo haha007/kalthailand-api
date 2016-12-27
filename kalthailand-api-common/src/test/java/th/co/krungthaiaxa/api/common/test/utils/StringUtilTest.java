@@ -37,6 +37,12 @@ public class StringUtilTest {
     }
 
     @Test
+    public void test_cammel_case() {
+        String camelCaseWords = StringUtil.toCamelCaseWords("givenName");
+        Assert.assertEquals("Given Name", camelCaseWords);
+    }
+
+    @Test
     public void test_object_mapper() {
         List<Long> numbers = Arrays.asList(-1L, 0L, 10L);
         String string = ObjectMapperUtil.toSimpleStringMultiLineForEachElement(numbers);

@@ -40,8 +40,10 @@
     <div class="login_wrapper">
         <div class="animate form login_form">
             <section class="login_content">
+                <img src="images/logo_400x400.gif" style="width: 200px; height: 200px;"/>
+
                 <form action="#" th:action="@{/admin}" th:object="${loginFormData}" method="post">
-                    <h1>Login Form</h1>
+                    <h1>eLife Dashboard</h1>
 
                     <div th:if="${#fields.hasErrors('global')}" class="alert alert-error" role="alert" th:errors="*{global}">
                     </div>

@@ -126,6 +126,12 @@ public class StringUtil {
         return result.replace(delimiter.toString(), "");
     }
 
+    public static String toCamelCaseWords(String string) {
+        String separatedWordsByCamelCase = splitByCamelCase(string);
+        String result = WordUtils.capitalize(separatedWordsByCamelCase.toLowerCase());
+        return result;
+    }
+
     /**
      * @param string the string with camel case
      * @return this method will split the camel case string into separated words.
@@ -141,7 +147,7 @@ public class StringUtil {
      * "May5",             // [May 5]
      * "BFG9000",          // [BFG 9000]
      */
-    public static String splitCamelCase(String string) {
+    public static String splitByCamelCase(String string) {
         return string.replaceAll(
                 String.format("%s|%s|%s",
                         "(?<=[A-Z])(?=[A-Z][a-z])",

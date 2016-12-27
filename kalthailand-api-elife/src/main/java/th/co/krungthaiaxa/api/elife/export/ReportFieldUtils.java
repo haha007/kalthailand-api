@@ -24,7 +24,7 @@ public class ReportFieldUtils {
             if (reportField != null && StringUtils.isNotBlank(reportField.value())) {
                 reportFieldName = reportField.value();
             } else {
-                reportFieldName = StringUtil.splitCamelCase(field.getName());
+                reportFieldName = StringUtil.toCamelCaseWords(field.getName());
             }
 
             ReportFieldDescription reportFieldDescription = new ReportFieldDescription();
