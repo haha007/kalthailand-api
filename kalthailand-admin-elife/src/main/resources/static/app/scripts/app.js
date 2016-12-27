@@ -82,6 +82,11 @@
                 controller: 'CommissionResultController',
                 activeTab: 'commission-result'
             })
+            .when('/campaign-customers', {
+                templateUrl: 'app/templates/campaign-customers.html',
+                controller: 'CampaignCustomersController',
+                activeTab: 'campaign-customers'
+            })
             .when('/health-check', {
                 templateUrl: 'app/templates/health-check.html',
                 controller: 'HealthCheckController',

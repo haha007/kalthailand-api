@@ -23,7 +23,6 @@ CommissionResultService.prototype.callGenerateCommission = function () {
     var obj = {'createdDateTime': 'Waiting...'};
     self.commissionCalculationSessions.splice(0, 0, obj);
     CommissionResultService.generateCommission();
-    $scope.loadNewFilter();
 };
 
 CommissionResultService.prototype.generateCommission = function (msg) {
@@ -51,28 +50,13 @@ CommissionResultService.prototype.generateCommission = function (msg) {
             self.showErrorMessage(errorResponse.data.userMessage);
         }
     );
-
-    // Load first after click
-//    self.$http.get(window.location.origin + '/api-elife/commissions/calculation-sessions', {}).then(
-//        function (successResponse) {
-//            self.commissionCalculationSessions = successResponse.data;
-//            self.showInfoMessage("Loaded commission lists");
-//        },
-//        function (errorResponse) {
-//            self.showErrorMessage(errorResponse.data);
-//        }
-//    );
-
 };
-
 CommissionResultService.prototype.showInfoMessage = function (msg) {
     var self = this;
     self.infoMessage = msg;
     self.successMessage = null;
     self.errorMessage = null;
 };
-
-
 CommissionResultService.prototype.showErrorMessage = function (msg) {
     var self = this;
     self.infoMessage = null;

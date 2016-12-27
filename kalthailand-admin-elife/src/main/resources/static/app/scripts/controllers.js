@@ -911,6 +911,7 @@
     app.controller('CommissionController', function (CommissionService, $scope, $route, $http, $localStorage) {
         $scope.service = CommissionService;
     });
+    //TODO should move all logic from Controller to Service
     app.controller('CommissionResultController', function (CommissionResultService, $scope, $route, $http, $localStorage) {
         $scope.service = CommissionResultService;
 
@@ -928,18 +929,16 @@
             $scope.calculateButton = true;
             $scope.redNotice = '(Commission  can only be generated before 10<sup>th</sup> day of a month)';
         }
-
         $scope.commissionResultAll = CommissionResultService;
-
-
         $scope.loadNewFilter = function () {
             $scope.commissionResultAll = CommissionResultService;
             $scope.calculateButton = false;
             $scope.redNotice = '';
-//            $scope.redNotice = 'Please wait system is processing for generate reusult ...';
         }
-
-
+    });
+    app.controller('CampaignCustomersController', function (CampaignCustomersService, $scope, $route, $http, $localStorage) {
+        $scope.service = CampaignCustomersService;
+        $scope.service.$scope = $scope;
     });
 })
 ();

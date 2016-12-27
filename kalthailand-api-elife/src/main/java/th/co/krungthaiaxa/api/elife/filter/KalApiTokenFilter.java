@@ -78,6 +78,7 @@ public class KalApiTokenFilter implements Filter {
                 , ".*/loggers"
                 , ".*/metrics"
 //                , ".*/mappings"
+                , ".*/download.*"
                 , ".*/policies/extract/download.*"
                 , ".*/adminwebsocket/policy-numbers/upload/.*"
                 , ".*/RLS/deduction/download/.*"

@@ -134,6 +134,10 @@
     app.factory('HealthCheckService', function ($http, $sce) {
         return new HealthCheckService($http, $sce);
     });
+    app.factory('CampaignCustomersService', function ($http, $sce) {
+        return new CampaignCustomersService($http, $sce);
+    });
+
 })();
 
 var ErrorHandler = function () {
