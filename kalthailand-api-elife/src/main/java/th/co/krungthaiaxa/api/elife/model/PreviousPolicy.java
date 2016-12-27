@@ -1,9 +1,11 @@
 package th.co.krungthaiaxa.api.elife.model;
 
+import java.io.Serializable;
+
 /**
  * @author khoi.tran on 12/8/16.
  */
-public class PreviousPolicy {
+public class PreviousPolicy implements Serializable {
     private String policyNumber;
     private String agentCode1;
     private String agentCode2;

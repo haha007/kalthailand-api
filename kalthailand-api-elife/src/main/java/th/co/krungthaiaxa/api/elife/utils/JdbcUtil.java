@@ -78,7 +78,7 @@ public class JdbcUtil {
             field.set(target, value);
         } catch (IllegalAccessException e) {
             String msg = String.format("Cannot set value %s to field %s of target %s", value, fieldName, target);
-            throw new UnexpectedException(msg);
+            throw new UnexpectedException(msg, e);
         }
     }
 }
