@@ -38,8 +38,10 @@ public class StringUtilTest {
 
     @Test
     public void test_cammel_case() {
-        String camelCaseWords = StringUtil.toCamelCaseWords("givenName");
-        Assert.assertEquals("Given Name", camelCaseWords);
+        Assert.assertEquals("Given Name", StringUtil.toCamelCaseWords("givenName"));
+        Assert.assertEquals("Given TMC Name", StringUtil.toCamelCaseWords("givenTMCName"));
+        Assert.assertEquals("Given TMC Name", StringUtil.toCamelCaseWords("givenTMC name"));
+        Assert.assertEquals("Given TM C Name", StringUtil.toCamelCaseWords("givenTM C   name"));
     }
 
     @Test

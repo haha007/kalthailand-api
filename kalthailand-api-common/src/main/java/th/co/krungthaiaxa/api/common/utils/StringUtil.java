@@ -128,7 +128,7 @@ public class StringUtil {
 
     public static String toCamelCaseWords(String string) {
         String separatedWordsByCamelCase = splitByCamelCase(string);
-        String result = WordUtils.capitalize(separatedWordsByCamelCase.toLowerCase());
+        String result = WordUtils.capitalize(separatedWordsByCamelCase);
         return result;
     }
 
@@ -148,14 +148,15 @@ public class StringUtil {
      * "BFG9000",          // [BFG 9000]
      */
     public static String splitByCamelCase(String string) {
-        return string.replaceAll(
+        String result = string.replaceAll(
                 String.format("%s|%s|%s",
                         "(?<=[A-Z])(?=[A-Z][a-z])",
                         "(?<=[^A-Z])(?=[A-Z])",
                         "(?<=[A-Za-z])(?=[^A-Za-z])"
                 ),
                 " "
-        );
+        );//separated words
+        return result.replaceAll("[ ]+", " ");
     }
 
     public static String formatNumberLength(long numberString, int length) {
