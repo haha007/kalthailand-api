@@ -40,7 +40,7 @@
     <div class="login_wrapper">
         <div class="animate form login_form">
             <section class="login_content">
-                <img src="images/logo_400x400.gif" style="width: 200px; height: 200px;"/>
+                <img th:src="@{/images/logo_400x400.gif}" style="width: 200px; height: 200px;"/>
 
                 <form action="#" th:action="@{/admin}" th:object="${loginFormData}" method="post">
                     <h1>eLife Dashboard</h1>
