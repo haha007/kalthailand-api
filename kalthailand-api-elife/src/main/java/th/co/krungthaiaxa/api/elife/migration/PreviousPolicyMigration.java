@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
+ * This class support for CommissionCalculation (1.12.0).
+ *
  * @author khoi.tran on 12/8/16.
  */
 @Service

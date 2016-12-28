@@ -22,7 +22,7 @@ public class CommissionPlanService {
         return commissionPlanRepository.findAll();
     }
 
-    public List<CommissionPlan> putCommissions(List<CommissionPlan> commissionPlans) {
+    public List<CommissionPlan> saveCommissionPlans(List<CommissionPlan> commissionPlans) {
         commissionPlanRepository.deleteAll();
         for (CommissionPlan commissionPlan : commissionPlans) {
             preSaveCommissionPlan(commissionPlan);

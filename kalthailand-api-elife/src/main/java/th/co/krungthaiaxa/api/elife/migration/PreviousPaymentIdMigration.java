@@ -2,29 +2,33 @@ package th.co.krungthaiaxa.api.elife.migration;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.common.action.ActionLoopByPage;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Version 1.11.0, turn off in 1.12.0, totally remove in 1.13.0
+ * Version 1.11.0, turn off in 1.12.0, totally remove in 1.13.0.
+ * However, the 1.12.0 was not deployed. So it will be included in 1.13.0
  *
  * @author khoi.tran on 12/1/16.
  */
-//@Service
+@Service
 public class PreviousPaymentIdMigration {
     public static final Logger LOGGER = LoggerFactory.getLogger(PreviousPaymentIdMigration.class);
     public static final int PROCESS_PAGE_SIZE = 20;
     private final PaymentRepository paymentRepository;
 
-    //    @Autowired
+    @Autowired
     public PreviousPaymentIdMigration(PaymentRepository paymentRepository) {this.paymentRepository = paymentRepository;}
 
-    //    @PostConstruct
+    @PostConstruct
     public void init() {
         insertFieldRetryFromPreviousPaymentId();
     }

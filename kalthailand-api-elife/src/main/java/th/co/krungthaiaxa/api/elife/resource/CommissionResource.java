@@ -54,7 +54,7 @@ public class CommissionResource {
     @ApiResponses({ @ApiResponse(code = 500, message = "If there's any internal error", response = Error.class) })
     @RequestMapping(value = "/commissions/plans", produces = APPLICATION_JSON_VALUE, method = RequestMethod.POST)
     public List<CommissionPlan> saveCommissionsPlans(@RequestBody List<CommissionPlan> savingCommissionPlans) {
-        return commissionPlanService.putCommissions(savingCommissionPlans);
+        return commissionPlanService.saveCommissionPlans(savingCommissionPlans);
     }
 
     //santi : for trigger calculation commission

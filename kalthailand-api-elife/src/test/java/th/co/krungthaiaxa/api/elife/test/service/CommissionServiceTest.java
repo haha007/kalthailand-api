@@ -52,7 +52,7 @@ public class CommissionServiceTest extends ELifeTest {
         List<CommissionPlan> commissionPlans = new ArrayList<>();
         commissionPlans.add(constructCommissionPlan("40001", ProductType.PRODUCT_IPROTECT, CustomerCategory.NEW, new double[][] { { 25, 15, 20, 15, 25 }, { 10, 20, 30, 40, 0 } }));
         commissionPlans.add(constructCommissionPlan("40002", ProductType.PRODUCT_IPROTECT, CustomerCategory.EXISTING, new double[][] { { 25, 15, 20, 15, 25 }, { 10, 20, 30, 40, 0 } }));
-        commissionPlanService.putCommissions(commissionPlans);
+        commissionPlanService.saveCommissionPlans(commissionPlans);
     }
 
     //santi : for start trigger to process
@@ -109,8 +109,7 @@ public class CommissionServiceTest extends ELifeTest {
             try {
                 writeByteArrayToFile(excelFile, content);
             } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                LOGGER.error(e.getMessage(), e);
             }
             assertThat(excelFile.exists()).isTrue();
         }
