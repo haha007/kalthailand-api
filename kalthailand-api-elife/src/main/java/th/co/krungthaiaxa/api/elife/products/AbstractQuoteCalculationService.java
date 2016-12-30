@@ -59,10 +59,10 @@ public abstract class AbstractQuoteCalculationService implements ProductService 
         ProductSpecId productSpecId = new ProductSpecId(productQuotation.getProductType().getLogicName(), productQuotation.getPackageName());
         ProductSpec productSpec = productSpecCache.get(productSpecId);
         if (productSpec == null) {
-            return getProductSpec(productSpecId);
-        } else {
-            return productSpec;
+            productSpec = getProductSpec(productSpecId);
+            productSpecCache.put(productSpecId, productSpec);
         }
+        return productSpec;
     }
 
     @Override
@@ -78,7 +78,6 @@ public abstract class AbstractQuoteCalculationService implements ProductService 
             resetCalculatedStuff(quote);
             return;
         }
-
 
         //Get data from productQuotation
         String packageName = productQuotation.getPackageName();
