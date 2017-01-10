@@ -33,6 +33,33 @@ Reason:
 The artifact "javax.mail" in group "com.sun.mail" package is provided by JavaEE container. So with JBoss, it's already provided. But with Tomcat, we have to include it in libraries.
 (You can see more detail in api-parent/pom.xml)
 
+Note:
+In the first time, you may get error when building admin-elife.
+cd kalthailand-admin-elife
+bower install
+When bower asking for options, select option 1.
+
+Then rebuild the project by maven command line.
+-----------------------------
+
+Update LINE AccessToken in MongoDB:
+Go to database and use the following commandline:
+
+db.getCollection('lineToken').update(
+    // query
+    {},
+
+    // update
+    {$set: {'accessToken': 'NEW_ACCESS_TOKEN', 'refreshToken':'NEW_REFRESH_TOKEN', 'expireDate':'2017/XX/XX'}},
+
+    // options
+    {
+        "multi" : true,  // update only one document
+        "upsert" : false  // insert a new document, if no existing document match the query
+    }
+);
+
+------------------------------
 You can check the information of current API in this link:
 http://localhost:8080/api-elife/project-info
 
