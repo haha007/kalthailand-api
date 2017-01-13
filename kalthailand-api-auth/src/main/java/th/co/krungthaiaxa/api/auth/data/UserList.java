@@ -41,6 +41,12 @@ public class UserList {
     private String user5Password;
     @Value("${kal.api.user.5.role}")
     private String user5Roles;
+    @Value("${kal.api.user.6.name}")
+    private String user6UserName;
+    @Value("${kal.api.user.6.password}")
+    private String user6Password;
+    @Value("${kal.api.user.6.role}")
+    private String user6Roles;
 
     public List<User> getUsers() {
         if (users != null) {
@@ -54,7 +60,7 @@ public class UserList {
         addUser(user3UserName, user3Password, user3Roles);
         addUser(user4UserName, user4Password, user4Roles);
         addUser(user5UserName, user5Password, user5Roles);
-
+        addUser(user6UserName, user6Password, user6Roles);
         return users;
     }
 
