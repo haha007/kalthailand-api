@@ -4,6 +4,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import th.co.krungthaiaxa.api.elife.utils.EmailElifeUtil;
 import th.co.krungthaiaxa.api.elife.utils.EmailSender;
 
 import java.util.Collections;
@@ -25,8 +26,11 @@ public class ElifeEmailService {
     @Autowired
     public ElifeEmailService(EmailSender emailSender) {this.emailSender = emailSender;}
 
-    public void sendEmail(String toEmailAddress, String emailSubject, String emailContent,
-            List<Pair<byte[], String>> attachments) {
+    public void sendEmail(String toEmailAddress, String emailSubject, String emailContent, String attachmentName, byte[] attachmentBytes) {
+        emailSender.sendEmail(fromEmail, toEmailAddress, emailSubject, emailContent, Collections.emptyList(), EmailElifeUtil.initAttachment(attachmentName, attachmentBytes));
+    }
+
+    public void sendEmail(String toEmailAddress, String emailSubject, String emailContent, List<Pair<byte[], String>> attachments) {
         emailSender.sendEmail(fromEmail, toEmailAddress, emailSubject, emailContent, Collections.emptyList(), attachments);
     }
 

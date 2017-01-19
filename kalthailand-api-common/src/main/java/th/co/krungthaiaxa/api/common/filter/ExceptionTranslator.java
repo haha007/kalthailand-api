@@ -3,6 +3,7 @@ package th.co.krungthaiaxa.api.common.filter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.TypeMismatchException;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindingResult;
@@ -22,10 +23,12 @@ import th.co.krungthaiaxa.api.common.exeption.UnauthenticationException;
 import th.co.krungthaiaxa.api.common.model.error.Error;
 import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
 import th.co.krungthaiaxa.api.common.model.error.FieldError;
+import th.co.krungthaiaxa.api.common.utils.ExceptionUtil;
 import th.co.krungthaiaxa.api.common.utils.JsonUtil;
 import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
 
 import javax.inject.Inject;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -105,15 +108,12 @@ public class ExceptionTranslator {
         Error result;
         if (exception instanceof BeanValidationExceptionIfc) {
             result = this.beanValidationExceptionTranslator.toErrorDTO((BeanValidationExceptionIfc) exception);
+        } else if (exception instanceof SQLException || exception instanceof DataAccessException) {
+            result = new Error(ErrorCode.ERROR_CODE_UNKNOWN_ERROR, "SQL Query error. " + ExceptionUtil.getDataExceptionRoot(exception), "SQL Query error " + exception.getMessage());
         } else {
             String message = exception.getMessage();
             if (exception instanceof NullPointerException) {
-                StackTraceElement first = exception.getStackTrace()[0];
-                String fileName = first.getFileName();
-                String methodName = first.getMethodName();
-                int lineNumber = first.getLineNumber();
-                String errorRootCause = String.format("%s#%s():%s", fileName, methodName, lineNumber);
-                message += ". Root: " + errorRootCause;
+                message += ". " + ExceptionUtil.getNullPointerExceptionRoot(exception);
             }
             result = ErrorCode.UNKNOWN_ERROR.apply(message);
         }

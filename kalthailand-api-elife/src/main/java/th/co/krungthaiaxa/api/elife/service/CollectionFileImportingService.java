@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.common.exeption.BadArgumentException;
-import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
 import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
 import th.co.krungthaiaxa.api.elife.data.CollectionFile;
 import th.co.krungthaiaxa.api.elife.data.CollectionFileLine;
@@ -20,18 +19,14 @@ import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 import th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus;
 import th.co.krungthaiaxa.api.elife.products.utils.ProductUtils;
 import th.co.krungthaiaxa.api.elife.repository.CollectionFileRepository;
-import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
-import th.co.krungthaiaxa.api.elife.repository.PolicyRepository;
 import th.co.krungthaiaxa.api.elife.utils.ExcelUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import static org.apache.commons.codec.digest.DigestUtils.sha256Hex;
 import static org.springframework.util.Assert.isTrue;
@@ -45,24 +40,25 @@ public class CollectionFileImportingService {
     private final static Logger LOGGER = LoggerFactory.getLogger(CollectionFileImportingService.class);
 
     private final CollectionFileRepository collectionFileRepository;
-    private final PaymentService paymentService;
     private final PolicyService policyService;
-    private final PaymentRepository paymentRepository;
-    private final PolicyRepository policyRepository;
 
     @Autowired
-    public CollectionFileImportingService(CollectionFileRepository collectionFileRepository, PaymentService paymentService, PolicyService policyService, PaymentRepository paymentRepository, PolicyRepository policyRepository) {
+    public CollectionFileImportingService(CollectionFileRepository collectionFileRepository, PolicyService policyService) {
         this.collectionFileRepository = collectionFileRepository;
-        this.paymentService = paymentService;
         this.policyService = policyService;
-        this.paymentRepository = paymentRepository;
-        this.policyRepository = policyRepository;
     }
 
+    /**
+     * Note:
+     * 1) We must allow duplicate policies number in the collection file because maybe in previous month, that policies was not paid successfully.
+     * 2) Must allow different payment amount because we should accept client to pay for many month at the same time.
+     *
+     * @param inputStream
+     * @return
+     */
     public synchronized CollectionFile importCollectionFile(InputStream inputStream) {
         CollectionFile collectionFile = readCollectionExcelFile(inputStream);
         //We must allow duplicate policies.
-//        validateNotDuplicatePolicies(collectionFile);
         collectionFile.getLines().forEach(this::importCollectionFileLine);
         return collectionFileRepository.save(collectionFile);
     }
@@ -156,42 +152,14 @@ public class CollectionFileImportingService {
         PeriodicityCode policyPeriodicityCode = ProductUtils.validateExistPeriodicityCode(policy);
         String policyPaymentPeriodicityCode = CollectionFileService.PAYMENT_MODE.apply(policyPeriodicityCode);
         if (!policyPaymentPeriodicityCode.equalsIgnoreCase(collectionFileLine.getPaymentMode())) {
-            String msg = String.format("The payment mode in policy and payment mode in collection file is not match: policyID: %s, paymentMode: %s vs. collection's paymentMode: %s", policy.getPolicyId(), policyPaymentPeriodicityCode, collectionFileLine.getPaymentMode());
+            String msg = String.format(
+                    "The payment mode in policy and payment mode in collection file is not match: policyID: %s, paymentMode: %s vs. collection's paymentMode: %s. Please handle this case specially later.",
+                    policy.getPolicyId(), policyPaymentPeriodicityCode, collectionFileLine.getPaymentMode());
             throw new BadArgumentException(msg);
         }
         if (!ProductUtils.isAtpModeEnable(policy)) {
             String msg = String.format("The policy doesn't have ATP mode: policyID: %s, paymentMode: %s", policy.getPolicyId(), policyPaymentPeriodicityCode);
             throw new BadArgumentException(msg);
         }
-    }
-
-    /**
-     * @param collectionFile
-     * @return key: policyNumber, value: counts of duplicated lines
-     */
-    private Map<String, Integer> validateNotDuplicatePolicies(CollectionFile collectionFile) {
-        Map<String, Integer> duplicatedLines = new HashMap<>();
-        CollectionFileLine[] lines = collectionFile.getLines().toArray(new CollectionFileLine[0]);//Convert to Array to improve performance.
-        for (int i = 0; i < lines.length; i++) {
-            CollectionFileLine iline = lines[i];
-            String ipolicyNumber = iline.getPolicyNumber();
-            if (StringUtils.isNotBlank(ipolicyNumber)) {
-                for (int j = i + 1; j < lines.length; j++) {
-                    CollectionFileLine jline = lines[j];
-                    if (ipolicyNumber.equals(jline.getPolicyNumber())) {
-                        Integer count = duplicatedLines.get(ipolicyNumber);
-                        if (count == null) {
-                            count = 1;
-                        }
-                        count++;
-                        duplicatedLines.put(ipolicyNumber, count);
-                    }
-                }
-            }
-        }
-        if (duplicatedLines.size() > 0) {
-            throw new BadArgumentException("Duplicated policies " + duplicatedLines.keySet() + "", duplicatedLines, ErrorCode.DETAILS_TYPE_DUPLICATE);
-        }
-        return duplicatedLines;
     }
 }

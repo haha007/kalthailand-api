@@ -17,6 +17,7 @@
 
     <properties>
         <local.repo.path>${project.basedir}</local.repo.path>
+        <poi.version>3.15</poi.version>
     </properties>
 
     <dependencies>
@@ -54,18 +55,18 @@
         <dependency>
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz</artifactId>
-            <version>2.2.1</version>
+            <version>2.2.3</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
-            <version>3.14</version>
+            <version>${poi.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
-            <version>3.14</version>
+            <version>${poi.version}</version>
         </dependency>
         <dependency>
             <groupId>com.microsoft.sqlserver</groupId>

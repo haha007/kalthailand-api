@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import th.co.krungthaiaxa.api.common.utils.LogUtil;
+import th.co.krungthaiaxa.api.common.log.LogUtil;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
 
@@ -43,7 +43,7 @@ public class EreceiptOldNumberCollectionService {
         logPaymentsWithOldReceiptNumbers(payments);
         receiptFullDisplayNumbers = payments.stream().map(payment -> payment.getReceiptNumber().getFullNumberForDisplay()).collect(Collectors.toCollection(TreeSet<String>::new));
         receiptFullDisplayNumbers = UnmodifiableSet.decorate(receiptFullDisplayNumbers);
-        LogUtil.logRuntime(start, "Collect old receiptNumber of old payments [finish]");
+        LogUtil.logFinishing(start, "Collect old receiptNumber of old payments [finish]");
     }
 
     private void logPaymentsWithOldReceiptNumbers(List<Payment> payments) {

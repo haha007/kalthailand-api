@@ -1,5 +1,7 @@
 package th.co.krungthaiaxa.api.auth.model;
 
+import th.co.krungthaiaxa.api.common.model.error.Error;
+
 import java.util.function.Function;
 
 public class ErrorCode {

@@ -136,6 +136,8 @@
         $scope.productTypeSearch = null;
         $scope.statusSearch = null;
         $scope.nonEmptyAgentCodeSearch = null;
+        $scope.criteriaPeriodicityCode = null;
+        $scope.criteriaAtpModeId = null;
 
         var aMonthAgo = new Date();
         aMonthAgo.setMonth(new Date().getMonth() - 1);
@@ -167,7 +169,14 @@
             event.preventDefault();
             searchForPolicies();
         };
-
+        $scope.clickAtpMode = function () {
+            if ($scope.criteriaAtpModeId == 1) {
+                $scope.criteriaAtpModeId = null;
+            } else {
+                $scope.criteriaAtpModeId = 1;
+            }
+            ;
+        };
 
         function searchForPolicies() {
             $scope.isSearching = true;
@@ -180,7 +189,9 @@
                     status: $scope.statusSearch,
                     nonEmptyAgentCode: $scope.nonEmptyAgentCodeSearch,
                     fromDate: $scope.fromDateSearch,
-                    toDate: $scope.toDateSearch
+                    toDate: $scope.toDateSearch,
+                    atpModeId: $scope.criteriaAtpModeId,
+                    periodicityCode: $scope.criteriaPeriodicityCode
                 },
                 function (successResponse) {
                     $scope.isSearching = null;
@@ -209,6 +220,12 @@
                     }
                     if ($scope.toDateSearch) {
                         $scope.downloadUrl += '&toDate=' + $scope.toDateSearch.toISOString();
+                    }
+                    if ($scope.criteriaPeriodicityCode) {
+                        $scope.downloadUrl += '&periodicityCode=' + $scope.criteriaPeriodicityCode;
+                    }
+                    if ($scope.criteriaAtpModeId == 1) {
+                        $scope.downloadUrl += '&atpModeId=' + $scope.criteriaAtpModeId;
                     }
                 },
                 function (errorResponse) {
@@ -592,8 +609,7 @@
                 if (!hasValue(policy)) {
                     return false;
                 }
-                return policy.premiumsData.financialScheduler.atpMo;
-                de == $scope.AtpMode.AUTOPAY;
+                return policy.premiumsData.financialScheduler.atpMode == $scope.AtpMode.AUTOPAY;
             };
             $scope.clickShowAllPayments = function () {
                 if ($scope.showAllPayments == "checked") {
@@ -887,14 +903,15 @@
             }
         }
     );
-
-    app.controller('CommissionController', function (CommissionService, $scope, $route, $http, $localStorage) {
-        $scope.service = CommissionService;
-    });
     app.controller('HealthCheckController', function (HealthCheckService, $scope, $route, $http, $localStorage) {
         $scope.service = HealthCheckService;
         $scope.service.$scope = $scope;
     });
+
+    app.controller('CommissionController', function (CommissionService, $scope, $route, $http, $localStorage) {
+        $scope.service = CommissionService;
+    });
+    //TODO should move all logic from Controller to Service
     app.controller('CommissionResultController', function (CommissionResultService, $scope, $route, $http, $localStorage) {
         $scope.service = CommissionResultService;
 
@@ -912,24 +929,16 @@
             $scope.calculateButton = true;
             $scope.redNotice = '(Commission  can only be generated before 10<sup>th</sup> day of a month)';
         }
-
         $scope.commissionResultAll = CommissionResultService;
-
-        $scope.callGenerateCommission = function () {
-            var obj = {'createdDateTime': 'Waiting...'};
-            $scope.commissionResultAll.commissionList.splice(0, 0, obj);
-            CommissionResultService.generateCommission();
-            $scope.loadNewFilter();
-        }
-
         $scope.loadNewFilter = function () {
             $scope.commissionResultAll = CommissionResultService;
             $scope.calculateButton = false;
             $scope.redNotice = '';
-//            $scope.redNotice = 'Please wait system is processing for generate reusult ...';
         }
-
-
+    });
+    app.controller('CampaignCustomersController', function (CampaignCustomersService, $scope, $route, $http, $localStorage) {
+        $scope.service = CampaignCustomersService;
+        $scope.service.$scope = $scope;
     });
 })
 ();

@@ -1,9 +1,9 @@
 package th.co.krungthaiaxa.api.elife.client;
 
-import org.apache.commons.lang3.tuple.Triple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import th.co.krungthaiaxa.api.elife.model.PreviousPolicy;
 import th.co.krungthaiaxa.api.elife.repository.cdb.CDBRepository;
 
 import javax.inject.Inject;
@@ -15,9 +15,8 @@ public class CDBClient {
     @Inject
     private CDBRepository cdbRepository;
 
-    public Optional<Triple<String, String, String>> getExistingAgentCode(String id, String insuredDOB) {
-        logger.info("Connecting to CDB");
-        return cdbRepository.getExistingAgentCode(id, insuredDOB);
+    public Optional<PreviousPolicy> getExistingAgentCode(String insuredRegistrationId, String insuredDOB) {
+        return cdbRepository.findLastActivatingPreviousPolicy(insuredRegistrationId, insuredDOB);
     }
 
     public void setCdbRepository(CDBRepository cdbRepository) {

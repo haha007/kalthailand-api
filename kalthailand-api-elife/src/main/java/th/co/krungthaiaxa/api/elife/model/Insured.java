@@ -31,6 +31,20 @@ public class Insured implements Serializable {
     private HealthStatus healthStatus;
     private Integer declaredTaxPercentAtSubscription;
     private String additionalInformationFreeText;
+
+    //TODO Maybe there will be many previous policies, in the future should migrate this field again.
+    /**
+     * This is the last activating previous policy which is updated when process the first payment.
+     * But when processing commission, maybe the data was old. So we need to recheck the previous policy again.
+     */
+    @ApiModelProperty(value = "At the point when this policy is changed from PENDING_PAYMENT to PENDING_VALIDATION, the previous policy is activated and not terminated. But after that, it can be terminated, you have to recheck its status again.")
+    private PreviousPolicy previousPolicy;
+    //This field is applied for data migration only (v1.12.0), after this version, should remove this field.
+    private boolean notSearchedPreviousPolicy = true;
+    /**
+     * @deprecated replaced by previousPolicies
+     */
+    @Deprecated
     private List<String> insuredPreviousInformations = new ArrayList<>();
 
     @ApiModelProperty(value = "Insured's type")
@@ -177,11 +191,13 @@ public class Insured implements Serializable {
         this.additionalInformationFreeText = additionalInformationFreeText;
     }
 
+    @Deprecated
     @ApiModelProperty(value = "List of previous Information of the insured. This is used to calculate commision amount.")
     public List<String> getInsuredPreviousInformations() {
         return insuredPreviousInformations;
     }
 
+    @Deprecated
     public void addInsuredPreviousInformation(String insuredPreviousInformation) {
         insuredPreviousInformations.add(insuredPreviousInformation);
     }
@@ -213,5 +229,21 @@ public class Insured implements Serializable {
     public int hashCode() {
         return Objects.hash(type, mainInsuredIndicator, startDate, endDate, ageAtSubscription, professionName, professionDescription, employerName, annualIncome, incomeSources, person, fatca, healthStatus, declaredTaxPercentAtSubscription, additionalInformationFreeText,
                 insuredPreviousInformations);
+    }
+
+    public PreviousPolicy getPreviousPolicy() {
+        return previousPolicy;
+    }
+
+    public void setPreviousPolicy(PreviousPolicy previousPolicy) {
+        this.previousPolicy = previousPolicy;
+    }
+
+    public boolean isNotSearchedPreviousPolicy() {
+        return notSearchedPreviousPolicy;
+    }
+
+    public void setNotSearchedPreviousPolicy(boolean notSearchedPreviousPolicy) {
+        this.notSearchedPreviousPolicy = notSearchedPreviousPolicy;
     }
 }

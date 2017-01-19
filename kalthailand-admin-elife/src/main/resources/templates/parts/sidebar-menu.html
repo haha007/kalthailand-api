@@ -31,6 +31,12 @@
             </ul>
         </li>
 
+        <li th:if="${user.featuresAvailabilities.campaignCustomersLink}"><a><i class="fa fa-gift"></i> Campaign <span class="fa fa-chevron-down"></span></a>
+            <ul class="nav child_menu">
+                <li><a href="#campaign-customers">Customers Report</a></li>
+            </ul>
+        </li>
+
         <li><a><i class="fa fa-laptop"></i> Monitoring <span class="fa fa-chevron-down"></span></a>
             <ul class="nav child_menu">
                 <li><a href="#health-check">System Health</a></li>

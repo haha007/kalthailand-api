@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
 import th.co.krungthaiaxa.api.common.utils.RequestUtil;
-import th.co.krungthaiaxa.api.signing.model.Error;
 import th.co.krungthaiaxa.api.signing.service.SigningService;
 
 import javax.inject.Inject;
@@ -67,17 +66,13 @@ public class DocumentResource {
             return;
         }
 
-        try {
-            new PdfReader(decodedBase64Pdf);
-        } catch (IOException e) {
-            logger.error("Provided document is not a valid PDF", e);
-            RequestUtil.sendError(ErrorCode.PDF_INVALID.apply(e.getMessage()), NOT_ACCEPTABLE.value(), response);
+        if (!checkCanReadDecodedBase64Pdf(decodedBase64Pdf, "Provided document is not a valid PDF", NOT_ACCEPTABLE.value(), response)) {
             return;
         }
 
         byte[] signedPdfContent;
         try (ByteArrayOutputStream signedPdfOutputStream = new ByteArrayOutputStream()) {
-            signingService.sign(new ByteArrayInputStream(decodedBase64Pdf), signedPdfOutputStream, "Payment received", "Invisible");
+            signingService.sign(new ByteArrayInputStream(decodedBase64Pdf), signedPdfOutputStream, "Payment received: ", "Invisible");
             signedPdfContent = signedPdfOutputStream.toByteArray();
         } catch (IOException | GeneralSecurityException | DocumentException e) {
             logger.error("Unable to sign the PDF", e);
@@ -85,11 +80,7 @@ public class DocumentResource {
             return;
         }
 
-        try {
-            new PdfReader(signedPdfContent);
-        } catch (IOException e) {
-            logger.error("Signed PDF is invalid", e);
-            RequestUtil.sendError(ErrorCode.PDF_INVALID.apply(e.getMessage()), INTERNAL_SERVER_ERROR.value(), response);
+        if (!checkCanReadDecodedBase64Pdf(signedPdfContent, "Signed PDF is invalid: ", INTERNAL_SERVER_ERROR.value(), response)) {
             return;
         }
 
@@ -108,4 +99,14 @@ public class DocumentResource {
         logger.info("Signed PDF has been sent");
     }
 
+    private boolean checkCanReadDecodedBase64Pdf(byte[] decodedBase64Pdf, String message, Integer status, HttpServletResponse response) {
+        try {
+            new PdfReader(decodedBase64Pdf);
+            return true;
+        } catch (IOException e) {
+            logger.error(message + e.getMessage(), e);
+            RequestUtil.sendError(ErrorCode.PDF_INVALID.apply(e.getMessage()), status, response);
+            return false;
+        }
+    }
 }

@@ -113,7 +113,7 @@ public abstract class ELifeTest extends BaseIntegrationResourceTest {
     public static void mockCdbClient(CDBClient cdbClient) {
         CDBRepository cdbRepository = Mockito.mock(CDBRepository.class);
         cdbClient.setCdbRepository(cdbRepository);
-        when(cdbRepository.getExistingAgentCode(anyString(), anyString())).thenAnswer(invocation -> {
+        when(cdbRepository.findLastActivatingPreviousPolicy(anyString(), anyString())).thenAnswer(invocation -> {
             Object[] args = invocation.getArguments();
             String id = (String) args[0];
             String dob = (String) args[1];

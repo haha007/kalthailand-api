@@ -1,14 +1,12 @@
 package th.co.krungthaiaxa.api.elife.filter;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
+import th.co.krungthaiaxa.api.common.log.LogHttpRequestUtil;
 import th.co.krungthaiaxa.api.common.model.authentication.RoleConstants;
 import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
-import th.co.krungthaiaxa.api.common.utils.LogUtil;
 import th.co.krungthaiaxa.api.common.utils.RequestUtil;
 import th.co.krungthaiaxa.api.elife.security.AuthorizationClient;
 
@@ -28,7 +26,6 @@ import java.util.regex.Pattern;
 
 @Component
 public class KalApiTokenFilter implements Filter {
-    private final static Logger logger = LoggerFactory.getLogger(KalApiTokenFilter.class);
     public static final String URI_REGEXP_POLICIES_MAIN_INSURED_PERSON = "^.*/policies/[0-9a-zA-Z\\-]+/main-insured/person.*";
 
     @Value("${kal.api.auth.token.validation.url}")
@@ -41,13 +38,13 @@ public class KalApiTokenFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-
+        //Nothing to do here.
     }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
-        Instant startTime = LogUtil.logRequestStarting(httpServletRequest);
+        Instant startTime = LogHttpRequestUtil.logStarting(httpServletRequest);
         String requestURI = httpServletRequest.getRequestURI();
         // For swagger documentation, we should let any request to UI thing go through
         List<String> publicURIsForGETMethod = Arrays.asList(
@@ -81,12 +78,13 @@ public class KalApiTokenFilter implements Filter {
                 , ".*/loggers"
                 , ".*/metrics"
 //                , ".*/mappings"
+                , ".*/download.*"
                 , ".*/policies/extract/download.*"
                 , ".*/adminwebsocket/policy-numbers/upload/.*"
                 , ".*/RLS/deduction/download/.*"
                 , ".*/session-quotes/all-products-counts/download.*"
                 , ".*/quotes/all-products/download.*"
-                , ".*/commissions/calculation/download/.*"
+                , ".*/commissions/calculation-sessions/download/.*"
                 , ".*/policies/.*/pdf.*"
                 , ".*/policies/.*/download.*"
                 , ".*/documents/.*/download.*"
@@ -108,21 +106,21 @@ public class KalApiTokenFilter implements Filter {
                 authorized = securityService.checkPermission(httpServletRequest, URI_REGEXP_POLICIES_MAIN_INSURED_PERSON, HttpMethod.POST, RoleConstants.UI_ELIFE_ADMIN);
             }
             if (authorized) {
-                LogUtil.logRuntime(startTime, LogUtil.toStringRequestURL(httpServletRequest));
+                LogHttpRequestUtil.logFinishing(startTime, httpServletRequest);
                 chain.doFilter(request, response);
             } else {
-                LogUtil.logRuntime(startTime, LogUtil.toStringRequestURL(httpServletRequest));
+                LogHttpRequestUtil.logFinishing(startTime, httpServletRequest);
                 RequestUtil.sendErrorToResponse(ErrorCode.UI_UNAUTHORIZED.apply("Doesn't have permission to access API "), (HttpServletResponse) response);
             }
         } catch (Exception ex) {
-            LogUtil.logRuntime(startTime, LogUtil.toStringRequestURL(httpServletRequest));
+            LogHttpRequestUtil.logFinishing(startTime, httpServletRequest);
             RequestUtil.sendErrorToResponse(ErrorCode.UI_UNAUTHORIZED.apply("Cannot access API: " + ex.getMessage()), (HttpServletResponse) response);
         }
     }
 
     @Override
     public void destroy() {
-
+        //Nothing to do.
     }
 
 }

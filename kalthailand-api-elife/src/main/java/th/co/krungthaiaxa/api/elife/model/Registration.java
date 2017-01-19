@@ -13,12 +13,11 @@ import java.util.Objects;
         "passport, taxes identification number, insurance company registration, driver license")
 public class Registration implements Serializable {
     public static final int REGISTRATION_ID_PLAIN_TEXT_MAX_LENGTH = 100;
-
+    @ApiModelProperty(value = " The registration identifier assigned by the registration authority. Now it's mostly the ThaiID")
     private String id;
 
     private RegistrationTypeName typeName;
 
-    @ApiModelProperty(value = " The registration identifier assigned by the registration authority")
     public String getId() {
         String result = this.id;
         if (!StringUtil.isBlank(this.id) && isEncrypted(this.id)) {

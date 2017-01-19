@@ -2,6 +2,7 @@ package th.co.krungthaiaxa.api.common.basetest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.icegreen.greenmail.junit.GreenMailRule;
+import com.icegreen.greenmail.store.FolderException;
 import com.icegreen.greenmail.util.ServerSetupTest;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -12,7 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.TestRestTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -31,12 +35,19 @@ public abstract class BaseIntegrationResourceTest {
     public final GreenMailRule greenMail = new GreenMailRule(ServerSetupTest.SMTP_IMAP);
 
     @Autowired
-    ObjectMapper objectMapper;
+    protected ObjectMapper objectMapper;
 
     protected final RestTemplate restTemplate = new TestRestTemplate();
 
     @Value("http://localhost:${local.server.port}")
     protected String baseUrl;
+
+    public HttpEntity<String> createJsonRequestEntity(String jsonString) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> entity = new HttpEntity<>(jsonString, headers);
+        return entity;
+    }
 
     public <T> T assertResponseClass(ResponseEntity<String> responseEntity, HttpStatus expectHttpStatus, Class<T> expectedResponseClass) {
         T result = null;
@@ -57,6 +68,14 @@ public abstract class BaseIntegrationResourceTest {
         }
         Assert.assertEquals(expectHttpStatus, responseEntity.getStatusCode());
         return error;
+    }
+
+    public void clearGreenMail() {
+        try {
+            greenMail.purgeEmailFromAllMailboxes();
+        } catch (FolderException e) {
+            LOGGER.error(e.getMessage(), e);
+        }
     }
 
     //GETTER /////////////////////////////////

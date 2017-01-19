@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "axa-kalthailand-api",
+  "private_key_id": "8f4bf9245bd6cc460c90cb73dcce66c469ec93a3",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC69x5oqxfMnaBf\nnWlxIlxl/y/3F0atcQlWpchGSEre7gRd7IQEvsNmzfBlWKEu1zojsYgZ7JH+fjF8\npRJVtOyEWvbxh4aR5QSj7USX9RIjYHI/lvTI7jBd6xE5bqypA4MlL7oQi306mCck\nEAEJ0l7QkBBqnTm5bHRhh3BHcQBn83TAetq1l5G8aEjsipAXJiUUWp3O5TuOvsUX\naNFbHqMuqLMtrYbuU88T3dZptjVdyhvB2n7TPvgno2v3VTM1yY73UBCbwBfuZcpe\nCnet6DOEH3EzOwsN3vv5Lu/2fDu4MEJD0PMv/LO6GDurexqi65JQsPVyMY1ECDcd\nrOviDLqtAgMBAAECggEBALWt1PrY5zOKKIFBMWkifq8Onsl48NExemWci1TggwDG\nQbATWOZTiQWpMOUKjvY5ZuGwbhTi8atfbS82KO7n9L1Yt4ZUr8utxCiXM4SGPK3r\n1pk8U3m9G3roJcCtb1J9ez7zddcF9RavK7m7Y4bryf7ZP1qalbE9Voo/VjfV8xMO\nsMlmPTj1ALrvndGCn8RoSog7I0Qjo2uV5phsNBoqFnr873vsnjCI6FJBUvd76GlD\nhyHHfSIwnyOpi6ZqCqOAvylOogYhFkWOwV5tEmUhDLFUaj7eaRTfO6SJP30xmjIG\n3IHdiifUBbB5fCZ0iDBy7NahtslOten0CyyIkTLV4IECgYEA86ZFTD1gw/qei/dC\n/cdFsTZLKOs8y7PfPV/Fgjs/fzNJlxHvBLIby7sbvhQVrlkBTKfPAH9QDNBbkdAJ\nW24CAYQPFLB1XZpGg+a/lkOngG10Ph9scys0QNrs/0qYl0lrQZqZgZmTHEm4EwZW\nut6MbVSNcYgVB/xBWg4aC28yLIkCgYEAxHFIdJGkie8x4Z1W8DQXYlKc+S1nBxnR\nlJ6nxuwq53BNnx6rkyVn4MNn+zIEBvEOJEj8dq7zoA5bndLjg/wGH3FdhxVLe2Ib\na6cijNQfJo+pZnxu1zmbX3+t1S6UAOgh7mhwyGDsdKQjdOCyiZXr/qlV7z+VXEJZ\npdNn23+j/AUCgYEAwlsh8D0N0Yc7rb7hy3qIF2KN9eggKQYkz9pzvPzyG8+XplCB\n76b8EToCWU/AM8GADdvWfjkQbAhQ4zGmJS7NntPvC7vvA2mrUlBhB8aT+RhWn6+F\nXSFbn1iDsOmaayP/0Oc4CG+vL+OGWHa3/HzGW/gUlDnPPP12TBXvpKtgxLECgYAB\nxwihzWOQv/JSmUrdF4uSny6+bnO9M7Waw6i++woUWAbLxspEpZUACqSZOEWjDnFT\nULnAFSstKpQXpH3cht5DUJJJE59AOY4H9lYwsgaqIailvcB/AA1w2sXm5On/7BnK\nf3Vtyrq4/3c2qoXTCuE8x6l4ZbnjQNJw1q3c5ZXFRQKBgG1ITNxRm20/a7hU/+zs\nCA9Eer9qTsv8bHRxmm0TmViPZK8yjD3TyStiQtWNPLSDR3nzKufs1t+ccgeFaYcG\nbr04p2almb6B1EoKcXIS5jh7TIGgAzzID67gMgUXegiwzGvwi0mUOO8ZVkYJl2HY\ntm9+U0WLc+OqvrSAiXByelxI\n-----END PRIVATE KEY-----\n",
+  "client_email": "axa-kalthailand-api@appspot.gserviceaccount.com",
+  "client_id": "103873922289994317201",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://accounts.google.com/o/oauth2/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/axa-kalthailand-api%40appspot.gserviceaccount.com"
+}

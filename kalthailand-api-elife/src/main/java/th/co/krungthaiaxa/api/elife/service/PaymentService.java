@@ -8,7 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
-import th.co.krungthaiaxa.api.common.utils.LogUtil;
+import th.co.krungthaiaxa.api.common.log.LogUtil;
 import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
 import th.co.krungthaiaxa.api.elife.exception.PaymentHasNewerCompletedException;
 import th.co.krungthaiaxa.api.elife.exception.PaymentNotFoundException;
@@ -337,7 +337,7 @@ public class PaymentService {
         payment.addPaymentInformation(paymentInformation);
         //NOTE: Never get the regKey from linePayResponse and set to payment because the result from linePayResponse is always null. So it can remove the previous regKey of payment.
         payment = paymentRepository.save(payment);
-        LogUtil.logRuntime(start, "updatePaymentWithLineResponse. paymentId: " + payment.getPaymentId() + ", policyId: " + payment.getPolicyId());
+        LogUtil.logFinishing(start, "updatePaymentWithLineResponse. paymentId: " + payment.getPaymentId() + ", policyId: " + payment.getPolicyId());
         return payment;
     }
 }

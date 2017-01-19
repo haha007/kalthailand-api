@@ -22,27 +22,37 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import th.co.krungthaiaxa.api.common.model.error.Error;
 import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
+import th.co.krungthaiaxa.api.common.utils.IOUtil;
 import th.co.krungthaiaxa.api.common.utils.JsonUtil;
 import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
-import th.co.krungthaiaxa.api.elife.test.ELifeTest;
+import th.co.krungthaiaxa.api.common.utils.RequestUtil;
 import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
-import th.co.krungthaiaxa.api.elife.utils.TestUtil;
 import th.co.krungthaiaxa.api.elife.factory.PolicyFactory;
 import th.co.krungthaiaxa.api.elife.factory.productquotation.ProductQuotationFactory;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.Quote;
+import th.co.krungthaiaxa.api.elife.model.enums.AtpMode;
 import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
 import th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
+import th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus;
+import th.co.krungthaiaxa.api.elife.products.ProductType;
 import th.co.krungthaiaxa.api.elife.repository.PolicyRepository;
 import th.co.krungthaiaxa.api.elife.service.QuoteService;
+import th.co.krungthaiaxa.api.elife.test.ELifeTest;
+import th.co.krungthaiaxa.api.elife.utils.HttpResponseAssertUtil;
+import th.co.krungthaiaxa.api.elife.utils.TestUtil;
 
 import javax.inject.Inject;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -78,7 +88,81 @@ public class PolicyResourceTest extends ELifeTest {
     }
 
     @Test
-    public void should_return_error_when_creating_policy_from_none_existing_quote() throws IOException {
+    public void test_success_queried_policies() {
+        Policy policy = policyFactory.createPolicyWithValidatedStatus(ProductQuotationFactory.constructIGenDefaultWithMonthlyPayment());
+        String urlParameters = createParametersForQueryPolicies(policy);
+        String url = baseUrl + "/policies" + urlParameters;
+        ResponseEntity<String> responseEntity = template.getForEntity(url, String.class);
+
+        List<Policy> policies = HttpResponseAssertUtil.assertResponsePageClass(objectMapper, responseEntity, Policy.class);
+        Assert.assertTrue(!policies.isEmpty());
+        for (Policy ipolicy : policies) {
+            Assert.assertNotNull(ipolicy.getPolicyId());
+            Assert.assertNotNull(ipolicy.getCommonData().getProductId());
+            Assert.assertNotNull(ipolicy.getStatus());
+            Assert.assertNotNull(ipolicy.getInsureds().get(0).getStartDate());
+            Assert.assertNotNull(ipolicy.getInsureds().get(0).getPerson().getLineId());
+        }
+    }
+
+    @Test
+    public void test_success_export_queried_policies() {
+        Policy policy = policyFactory.createPolicyWithValidatedStatus(ProductQuotationFactory.constructIGenDefaultWithMonthlyPayment());
+        String urlParameters = createParametersForQueryPolicies(policy);
+        String url = baseUrl + "/policies/extract/download" + urlParameters;
+        ResponseEntity<byte[]> responseEntity = template.getForEntity(url, byte[].class);
+        IOUtil.writeBytesToRelativeFile(TestUtil.PATH_TEST_RESULT + "/policies/export/" + System.currentTimeMillis() + ".xls", responseEntity.getBody());
+    }
+
+    @Test
+    public void test_success_get_one_policy() {
+        Policy policy = policyFactory.createPolicyWithValidatedStatus(ProductQuotationFactory.constructIGenDefaultWithMonthlyPayment());
+        String url = baseUrl + "/policies/" + policy.getPolicyId();
+        ResponseEntity<String> responseEntity = template.getForEntity(url, String.class);
+        Policy policyResult = HttpResponseAssertUtil.assertResponseClass(objectMapper, responseEntity, Policy.class);
+
+        Assert.assertNotNull(policyResult.getPolicyId());
+        Assert.assertNotNull(policyResult.getCommonData().getProductId());
+        Assert.assertNotNull(policyResult.getStatus());
+        Assert.assertNotNull(policyResult.getInsureds().get(0).getStartDate());
+        Assert.assertNotNull(policyResult.getInsureds().get(0).getPerson().getLineId());
+        Assert.assertTrue(!policyResult.getPayments().isEmpty());
+    }
+
+    private String createParametersForQueryPolicies(Policy policy) {
+        String urlParameters = generateParameters(
+                policy.getPolicyId(),
+                ProductType.PRODUCT_IGEN,
+                LocalDateTime.now(),
+                LocalDateTime.now(),
+                PolicyStatus.VALIDATED,
+                PeriodicityCode.EVERY_MONTH,
+                AtpMode.AUTOPAY.getNumValue(),
+                null,
+                0,
+                1);
+        return urlParameters;
+    }
+
+    private String generateParameters(String policyId, ProductType productType, LocalDateTime fromDate, LocalDateTime toDate, PolicyStatus status, PeriodicityCode periodicityCode, Integer atpModeId, Boolean nonEmptyAgentCode, Integer pageNumber, Integer pageSize) {
+        String fromDateString = fromDate != null ? DateTimeFormatter.ISO_DATE_TIME.format(fromDate) : null;
+        String toDateString = toDate != null ? DateTimeFormatter.ISO_DATE_TIME.format(toDate) : null;
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("pageNumber", pageNumber);
+        parameters.put("pageSize", pageSize);
+        parameters.put("policyId", policyId);
+        parameters.put("productType", productType);
+        parameters.put("status", status);
+        parameters.put("fromDate", fromDateString);
+        parameters.put("toDate", toDateString);
+        parameters.put("periodicityCode", periodicityCode);
+        parameters.put("atpModeId", atpModeId);
+        parameters.put("nonEmptyAgentCode", nonEmptyAgentCode);
+        return RequestUtil.generateRequestParameters(parameters);
+    }
+
+    @Test
+    public void test_should_return_error_when_creating_policy_from_none_existing_quote() throws IOException {
         String jsonQuote = TestUtil.getJSon(TestUtil.quote(TestUtil.product10ECService()));
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(base)
                 .queryParam("sessionId", randomNumeric(20))
@@ -91,7 +175,7 @@ public class PolicyResourceTest extends ELifeTest {
     }
 
     @Test
-    public void should_return_a_policy_object() throws IOException {
+    public void test_should_return_a_policy_object() throws IOException {
         Policy policy = getPolicy();
 
         // check database values
@@ -101,7 +185,7 @@ public class PolicyResourceTest extends ELifeTest {
     }
 
     @Test
-    public void should_return_policy_payment_list() throws IOException, URISyntaxException {
+    public void test_should_return_policy_payment_list() throws IOException, URISyntaxException {
         Policy policy = getPolicy();
 
         URI paymentURI = new URI("http://localhost:" + port + "/policies/" + policy.getPolicyId() + "/payments");
@@ -112,7 +196,7 @@ public class PolicyResourceTest extends ELifeTest {
     }
 
     @Test
-    public void should_update_payment_transaction_id_and_registration_key_but_not_the_status() throws IOException, URISyntaxException {
+    public void test_should_update_payment_transaction_id_and_registration_key_but_not_the_status() throws IOException, URISyntaxException {
         Policy policy = policyFactory.createPolicyWithPendingPaymentStatus(ProductQuotationFactory.constructIGenDefault());
 
         URI paymentURI = new URI("http://localhost:" + port + "/policies/" + policy.getPolicyId() + "/update/status/pendingValidation");
@@ -134,7 +218,7 @@ public class PolicyResourceTest extends ELifeTest {
     }
 
     @Test
-    public void cannot_update_status_policy_to_pendingValidation_when_missing_regKey() throws IOException, URISyntaxException {
+    public void test_cannot_update_status_policy_to_pendingValidation_when_missing_regKey() throws IOException, URISyntaxException {
         Policy policy = policyFactory.createPolicyWithPendingPaymentStatus(ProductQuotationFactory.constructIProtectDefaultWithMonthlyPayment());
 
         URI paymentURI = new URI("http://localhost:" + port + "/policies/" + policy.getPolicyId() + "/update/status/pendingValidation");

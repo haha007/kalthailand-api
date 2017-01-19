@@ -21,14 +21,11 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
-        <kalthailand.version>1.11.0-SNAPSHOT</kalthailand.version>
+        <kalthailand.version>1.13.0-SNAPSHOT</kalthailand.version>
         <!--
         Main features:
-        AKT-1132: 01. LINE notify for Payment (retry & success).
-        AKT-1231: 02. eReceipt: ref2 number
-        AKT-1224: 03. MID dashboard
-        AKT-1242: 04. Shorten URL
-        AKT-1234: 05. Remove mime attachment in email.
+        1) AKT-1256: Customer promotion form for Krungthai-AXA 20th Anniversary.
+        2) Fix bug DAForm doesn't appear.
         -->
         <path.resources>src/main/resources</path.resources>
     </properties>

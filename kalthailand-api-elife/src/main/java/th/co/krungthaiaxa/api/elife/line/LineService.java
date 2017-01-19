@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import th.co.krungthaiaxa.api.common.utils.JsonUtil;
-import th.co.krungthaiaxa.api.common.utils.LogUtil;
+import th.co.krungthaiaxa.api.common.log.LogUtil;
 import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
 import th.co.krungthaiaxa.api.elife.exception.LineNotificationException;
 import th.co.krungthaiaxa.api.elife.exception.LinePaymentException;
@@ -46,6 +46,7 @@ import static th.co.krungthaiaxa.api.common.utils.JsonUtil.getJson;
 public class LineService {
     public final static Logger LOGGER = LoggerFactory.getLogger(LineService.class);
     public static final String RESPONSE_CODE_ERROR_NOT_ALLOWED_TO_ACCESS = "1106";
+    public static final String RESPONSE_CODE_ERROR_MOCK_LINE_FAIL = "9001";
     public static final String RESPONSE_CODE_ERROR_NO_REGKEY = "1190";
     public static final String RESPONSE_CODE_ERROR_INTERNAL_LINEPAY = "9000";
     public static final List<String> RESPONSE_CODES_ERROR_BY_INTERNAL_APP = Collections.unmodifiableList(Arrays.asList(LineService.RESPONSE_CODE_ERROR_INTERNAL_LINEPAY, LineService.RESPONSE_CODE_ERROR_NOT_ALLOWED_TO_ACCESS));
@@ -83,7 +84,7 @@ public class LineService {
         Instant start = LogUtil.logStarting(msg);
         //TODO Should change this, use some mock URL in profile config. Don't need to check like this in code. If the value is null, should throw Exception.
         if (StringUtils.isEmpty(lineAppNotificationUrl)) {
-            LogUtil.logRuntime(start, msg + "LINE push is not sent because there's no lineAppNotificationUrl (used for mock test only)");
+            LogUtil.logFinishing(start, msg + "LINE push is not sent because there's no lineAppNotificationUrl (used for mock test only)");
             return;
         }
 
@@ -116,7 +117,7 @@ public class LineService {
         if (!response.getStatusCode().equals(OK)) {
             throw new LineNotificationException("Line's response for push notification is [" + response.getStatusCode() + "]. Response body is [" + response.getBody() + "]");
         }
-        LogUtil.logRuntime(start, msg);
+        LogUtil.logFinishing(start, msg);
     }
 
     /**
@@ -241,7 +242,7 @@ public class LineService {
             }
             in.close();
             String responseString = response.toString();
-            LogUtil.logRuntime(start, "PreApprovePay [finish]: " + preApprovePayUrlString + "\n\t Response: \n" + responseString);
+            LogUtil.logFinishing(start, "PreApprovePay [finish]: " + preApprovePayUrlString + "\n\t Response: \n" + responseString);
             linePayResponse = JsonUtil.mapper.readValue(responseString, LinePayRecurringResponse.class);
 
         } catch (Exception e) {
@@ -276,7 +277,7 @@ public class LineService {
         String responseBody = response.getBody();
         LOGGER.debug(String.format("capturePayment [response]: transactionId: %s, amount: %s, currency: %s, \t\nresponse: \n%s", transactionId, amount, currency, responseBody));
         LinePayResponse linePayResponse = getBookingResponseFromJSon(responseBody);
-        LogUtil.logRuntime(start, String.format("capturePayment [finish]: transactionId: %s, amount: %s, currency: %s", transactionId, amount, currency));
+        LogUtil.logFinishing(start, String.format("capturePayment [finish]: transactionId: %s, amount: %s, currency: %s", transactionId, amount, currency));
         return linePayResponse;
     }
 

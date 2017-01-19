@@ -14,7 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Version 1.11.0
+ * Version 1.11.0, turn off in 1.12.0, totally remove in 1.13.0.
+ * However, the 1.12.0 was not deployed. So it will be included in 1.13.0
  *
  * @author khoi.tran on 12/1/16.
  */

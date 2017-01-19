@@ -14,6 +14,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,7 +29,7 @@ import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
 import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
 import th.co.krungthaiaxa.api.common.utils.DownloadUtil;
 import th.co.krungthaiaxa.api.common.utils.JsonUtil;
-import th.co.krungthaiaxa.api.common.utils.LogUtil;
+import th.co.krungthaiaxa.api.common.log.LogUtil;
 import th.co.krungthaiaxa.api.common.utils.RequestUtil;
 import th.co.krungthaiaxa.api.elife.exception.ElifeException;
 import th.co.krungthaiaxa.api.elife.model.Document;
@@ -122,7 +123,7 @@ public class PolicyResource {
     })
     @RequestMapping(value = "/policies", produces = APPLICATION_JSON_VALUE, method = GET)
     @ResponseBody
-    public ResponseEntity<byte[]> getAllPolicies(
+    public Page<Policy> getAllPolicies(
             @ApiParam(required = true, value = "Page number (starts at 0)")
             @RequestParam Integer pageNumber,
             @ApiParam(required = true, value = "Number of elements per page")
@@ -138,7 +139,9 @@ public class PolicyResource {
             @ApiParam(value = "To filter Policies starting after the given date")
             @RequestParam(required = false) String fromDate,
             @ApiParam(value = "To filter Policies ending before the given date")
-            @RequestParam(required = false) String toDate) {
+            @RequestParam(required = false) String toDate,
+            @RequestParam(required = false) PeriodicityCode periodicityCode,
+            @RequestParam(required = false) Integer atpModeId) {
 
         LocalDate startDate = null;
         if (StringUtils.isNoneEmpty(fromDate)) {
@@ -149,7 +152,7 @@ public class PolicyResource {
         if (StringUtils.isNoneEmpty(toDate)) {
             endDate = LocalDate.from(DateTimeFormatter.ISO_DATE_TIME.parse(toDate));
         }
-        return new ResponseEntity<>(getJson(policyService.findAll(policyId, productType, status, nonEmptyAgentCode, startDate, endDate, pageNumber, pageSize)), OK);
+        return policyService.findAll(policyId, productType, status, nonEmptyAgentCode, startDate, endDate, periodicityCode, atpModeId, pageNumber, pageSize);
     }
 
     @ApiOperation(value = "Policies extract", notes = "Gets the policy extract for commission calculation. Result is an Excel file", response = Policy.class, responseContainer = "List")
@@ -168,6 +171,8 @@ public class PolicyResource {
             @RequestParam(required = false) String fromDate,
             @ApiParam(value = "To filter Policies ending before the given date")
             @RequestParam(required = false) String toDate,
+            @RequestParam(required = false) PeriodicityCode periodicityCode,
+            @RequestParam(required = false) Integer atpModeId,
             HttpServletResponse response) {
         LocalDate startDate = null;
         if (StringUtils.isNoneEmpty(fromDate)) {
@@ -179,7 +184,7 @@ public class PolicyResource {
             endDate = LocalDate.from(DateTimeFormatter.ISO_DATE_TIME.parse(toDate));
         }
 
-        List<Policy> policies = policyService.findAll(policyId, productType, status, nonEmptyAgentCode, startDate, endDate);
+        List<Policy> policies = policyService.findAll(policyId, productType, status, nonEmptyAgentCode, startDate, endDate, periodicityCode, atpModeId);
 
         String now = ofPattern("yyyyMMdd_HHmmss").format(now());
         Workbook workbook = new XSSFWorkbook();
@@ -224,12 +229,6 @@ public class PolicyResource {
     @ResponseBody
     public Policy getPolicy(@ApiParam(value = "The policy number", required = true) @PathVariable String policyNumber) {
         return policyService.findPolicyWithFullDetailsByPolicyNumber(policyNumber);
-//        Optional<Policy> policy = policyService.findPolicyByPolicyNumber(policyNumber);
-//        if (!policy.isPresent()) {
-//            return new ResponseEntity<>(getJson(ErrorCode.POLICY_DOES_NOT_EXIST), NOT_FOUND);
-//        } else {
-//            return new ResponseEntity<>(getJson(policy.get()), OK);
-//        }
     }
 
     @ApiOperation(value = "Send notifications", notes = "Sends pre-defined notifications to insured on different channels (SMS, eMail, Line Push notification). Content of notification and channels of notifications depends on reminder ID.", response = String.class)
@@ -430,7 +429,7 @@ public class PolicyResource {
         policyService.updatePolicyStatusToPendingValidation(policy);
         //Return policy with updated payment
         policy = policyService.validateExistPolicy(policyId);
-        LogUtil.logRuntime(start, msg);
+        LogUtil.logFinishing(start, msg);
         return new ResponseEntity<>(getJson(policy), OK);
     }
 
@@ -469,7 +468,7 @@ public class PolicyResource {
         }
         String accessToken = RequestUtil.getAccessToken(httpServletRequest);
         paymentRetryService.retryFailedPayment(policyId, paymentId, orderId, transactionId, regKey, accessToken);
-        LogUtil.logRuntime(start, msg);
+        LogUtil.logFinishing(start, msg);
         return new ResponseEntity<>(getJson(policy), OK);
     }
 

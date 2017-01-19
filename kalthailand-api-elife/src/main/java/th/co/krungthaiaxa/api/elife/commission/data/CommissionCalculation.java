@@ -7,20 +7,36 @@ package th.co.krungthaiaxa.api.elife.commission.data;
  */
 
 public class CommissionCalculation {
-
-    private String policyNo;
+    //Same as {@link CDBPolicyCommissionEntity} ////////////
+    private String policyNumber;
     private String policyStatus;
     private String planCode;
     private String paymentCode;
     private String agentCode;
+    private Double firstYearPremium;
+    private Double firstYearCommission;
+
+    //Other fields which are calculated from eLife policy
     private String customerCategory;
     private String previousPolicyNo;
     private String existingAgentCode1;
-    private String existingAgentCode1Status;
+    private String existingAgentStatus1;
     private String existingAgentCode2;
-    private String existingAgentCode2Status;
-    private Double firstYearPremium;
-    private Double firstYearCommission;
+    private String existingAgentStatus2;
+
+    //Same as the rate values in Commission Setting at the time running calculation.
+    private Double fyAffiliateRate;
+    private Double fyDistributionRate;
+    private Double fyTsrRate;
+    private Double fyMarketingRate;
+    private Double fyCompanyRate;
+    private Double ovAffiliateRate;
+    private Double ovDistributionRate;
+    private Double ovTsrRate;
+    private Double ovMarketingRate;
+    private Double ovCompanyRate;
+
+    //Other fields are calculated from commission rate.
     private Double fyAffiliateCommission;
     private Double fyDistribution1Commission;
     private Double fyDistribution2Commission;
@@ -33,24 +49,16 @@ public class CommissionCalculation {
     private Double ovTsrCommission;
     private Double ovMarketingCommission;
     private Double ovCompanyCommission;
-    private Double fyAffiliateRate;
-    private Double fyDistributionRate;
-    private Double fyTsrRate;
-    private Double fyMarketingRate;
-    private Double fyCompanyRate;
-    private Double ovAffiliateRate;
-    //TODO should migrate
-    private Double ovDistributiionRate;
-    private Double ovTsrRate;
-    private Double ovMarketingRate;
-    private Double ovCompanyRate;
 
-    public String getPolicyNo() {
-        return policyNo;
+    private String resultCode;
+    private String resultMessage;
+
+    public String getPolicyNumber() {
+        return policyNumber;
     }
 
-    public void setPolicyNo(String policyNo) {
-        this.policyNo = policyNo;
+    public void setPolicyNumber(String policyNumber) {
+        this.policyNumber = policyNumber;
     }
 
     public String getPolicyStatus() {
@@ -109,12 +117,12 @@ public class CommissionCalculation {
         this.existingAgentCode1 = existingAgentCode1;
     }
 
-    public String getExistingAgentCode1Status() {
-        return existingAgentCode1Status;
+    public String getExistingAgentStatus1() {
+        return existingAgentStatus1;
     }
 
-    public void setExistingAgentCode1Status(String existingAgentCode1Status) {
-        this.existingAgentCode1Status = existingAgentCode1Status;
+    public void setExistingAgentStatus1(String existingAgentStatus1) {
+        this.existingAgentStatus1 = existingAgentStatus1;
     }
 
     public String getExistingAgentCode2() {
@@ -125,12 +133,12 @@ public class CommissionCalculation {
         this.existingAgentCode2 = existingAgentCode2;
     }
 
-    public String getExistingAgentCode2Status() {
-        return existingAgentCode2Status;
+    public String getExistingAgentStatus2() {
+        return existingAgentStatus2;
     }
 
-    public void setExistingAgentCode2Status(String existingAgentCode2Status) {
-        this.existingAgentCode2Status = existingAgentCode2Status;
+    public void setExistingAgentStatus2(String existingAgentStatus2) {
+        this.existingAgentStatus2 = existingAgentStatus2;
     }
 
     public Double getFirstYearPremium() {
@@ -293,12 +301,12 @@ public class CommissionCalculation {
         this.ovAffiliateRate = ovAffiliateRate;
     }
 
-    public Double getOvDistributiionRate() {
-        return ovDistributiionRate;
+    public Double getOvDistributionRate() {
+        return ovDistributionRate;
     }
 
-    public void setOvDistributiionRate(Double ovDistributiionRate) {
-        this.ovDistributiionRate = ovDistributiionRate;
+    public void setOvDistributionRate(Double ovDistributionRate) {
+        this.ovDistributionRate = ovDistributionRate;
     }
 
     public Double getOvTsrRate() {
@@ -325,4 +333,19 @@ public class CommissionCalculation {
         this.ovCompanyRate = ovCompanyRate;
     }
 
+    public String getResultCode() {
+        return resultCode;
+    }
+
+    public void setResultCode(String resultCode) {
+        this.resultCode = resultCode;
+    }
+
+    public String getResultMessage() {
+        return resultMessage;
+    }
+
+    public void setResultMessage(String resultMessage) {
+        this.resultMessage = resultMessage;
+    }
 }

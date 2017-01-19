@@ -17,23 +17,31 @@ public class StringUtilTest {
     public static final Logger LOGGER = LoggerFactory.getLogger(StringUtilTest.class);
 
     @Test
-    public void join_string_with_empty_value() {
+    public void test_join_string_with_empty_value() {
         String[] strings = new String[] { "Aaa", " ", "Bbb", "", null, "Ccc" };
         String fullString = StringUtil.joinNotBlankStrings("1", strings);
         Assert.assertEquals("Aaa1Bbb1Ccc", fullString);
     }
 
     @Test
-    public void join_string_with_empty_values() {
+    public void test_join_string_with_empty_values() {
         String[] strings = new String[] { null, null };
         String fullString = StringUtil.joinNotBlankStrings("1", strings);
         Assert.assertEquals("", fullString);
     }
 
     @Test
-    public void join_string_with_null() {
+    public void test_join_string_with_null() {
         String fullString = StringUtil.joinNotBlankStrings("1", null);
         Assert.assertNull(fullString);
+    }
+
+    @Test
+    public void test_cammel_case() {
+        Assert.assertEquals("Given Name", StringUtil.toCamelCaseWords("givenName"));
+        Assert.assertEquals("Given TMC Name", StringUtil.toCamelCaseWords("givenTMCName"));
+        Assert.assertEquals("Given TMC Name", StringUtil.toCamelCaseWords("givenTMC name"));
+        Assert.assertEquals("Given TM C Name", StringUtil.toCamelCaseWords("givenTM C   name"));
     }
 
     @Test
@@ -46,5 +54,24 @@ public class StringUtilTest {
                 + "0\n"
                 + "10\n"
                 + "]", string);
+    }
+
+    @Test
+    public void test_join_string_many_times() {
+        String fullString = StringUtil.joinStrings(", ", "?", 3);
+        Assert.assertEquals("?, ?, ?", fullString);
+
+        fullString = StringUtil.joinStrings(",", "?", 0);
+        Assert.assertEquals("", fullString);
+
+        fullString = StringUtil.joinStrings(",", null, 3);
+        Assert.assertEquals("null,null,null", fullString);
+
+        fullString = StringUtil.joinStrings(",", "", 3);
+        Assert.assertEquals(",,", fullString);
+
+        fullString = StringUtil.joinStrings(",", " ", 3);
+        Assert.assertEquals(" , , ", fullString);
+
     }
 }

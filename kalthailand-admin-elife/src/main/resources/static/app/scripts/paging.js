@@ -30,8 +30,8 @@ DataTable.prototype.calculateDataInPage = function (data, pager) {
     }
     return dataInPage;
 };
-DataTable.prototype.setPage = function (currentPage) {
-    this.pager.calculatePages(currentPage);
+DataTable.prototype.setPage = function (currentPageIndex) {
+    this.pager.calculatePages(currentPageIndex);
     this.dataInPage = this.calculateDataInPage(this.data, this.pager);
 };
 function Pager(totalItems, pageSize) {
@@ -43,11 +43,9 @@ function Pager(totalItems, pageSize) {
     this.pageSize = pageSize;
 
     this.currentPage = undefined;
-    this.startPage = undefined;
-    this.endPage = undefined;
     this.totalPages = undefined;
-    this.startPage = undefined;
-    this.endPage = undefined;
+    this.startPageIndex = undefined;
+    this.endPageIndex = undefined;
     this.startIndex = undefined;
     this.endIndex = undefined;
     this.pages = undefined;
@@ -70,24 +68,24 @@ Pager.prototype.calculatePages = function (currentPage) {
     // calculate total pages
     var totalPages = Math.ceil(totalItems / pageSize);
 
-    var startPage = undefined;
-    var endPage = undefined;
+    var startPageIndex = undefined;
+    var endPageIndex = undefined;
 
     if (totalPages <= maxPagesToShow) {
         // less than 10 total pages so show all
-        startPage = 0;
-        endPage = totalPages - 1;
+        startPageIndex = 0;
+        endPageIndex = totalPages - 1;
     } else {
         // more than 10 total pages so calculate start and end pages
         if (currentPage <= (maxPagesToShow - maxPagesFromBeginning)) {
-            startPage = 0;
-            endPage = maxPagesToShow - 1;
+            startPageIndex = 0;
+            endPageIndex = maxPagesToShow - 1;
         } else if (currentPage + maxPagesToEnding >= totalPages) {
-            startPage = totalPages - (maxPagesToShow - 1) - 1;
-            endPage = totalPages - 1;
+            startPageIndex = totalPages - (maxPagesToShow - 1) - 1;
+            endPageIndex = totalPages - 1;
         } else {
-            startPage = currentPage - (maxPagesFromBeginning + 1);
-            endPage = currentPage + maxPagesToEnding;
+            startPageIndex = currentPage - (maxPagesFromBeginning + 1);
+            endPageIndex = currentPage + maxPagesToEnding;
         }
     }
 
@@ -97,16 +95,39 @@ Pager.prototype.calculatePages = function (currentPage) {
 
     // create an array of pages to ng-repeat in the pager control
     //var pages = _.range(startPage, endPage + 1);
-    var pages = Array.prototype.newArray(startPage, endPage + 1);
+    var pages = Page.newArray(startPageIndex, endPageIndex);//Array.prototype.newArray(startPage, endPage + 1);
+    if (endPageIndex < totalPages - 2) {
+        pages.push(new Page(totalPages - 2, '...'));
+        pages.push(new Page(totalPages - 1, totalPages));
+    } else if (endPageIndex < totalPages - 1) {
+        pages.push(new Page(totalPages - 1, totalPages));
+    }
+    if (startPageIndex > 1) {
+        pages.unshift(new Page(1, '...'));
+        pages.unshift(new Page(0, 1));
+    } else if (startPageIndex > 0) {
+        pages.unshift(new Page(0, 1));
+    }
 
     // return object with all pager properties required by the view
     this.currentPage = currentPage;
-    this.startPage = startPage;
-    this.endPage = endPage;
+    this.startPage = startPageIndex;
+    this.endPage = endPageIndex;
     this.totalPages = totalPages;
-    this.startPage = startPage;
-    this.endPage = endPage;
+    this.startPage = startPageIndex;
+    this.endPage = endPageIndex;
     this.startIndex = startIndex;
     this.endIndex = endIndex;
     this.pages = pages;
+};
+function Page(index, label) {
+    this.index = index;
+    this.label = label;
+};
+Page.newArray = function (startIndex, endIndex) {
+    var pages = [];
+    for (i = startIndex; i <= endIndex; i++) {
+        pages.push(new Page(i, i + 1));
+    }
+    return pages;
 };

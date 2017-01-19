@@ -1,6 +1,7 @@
 package th.co.krungthaiaxa.api.common.utils;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -12,6 +13,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author khoi.tran on 10/18/16.
@@ -25,7 +28,7 @@ public class RequestUtil {
         return httpServletRequest.getHeader(REQUEST_HEADER_ACCESS_TOKEN);
     }
 
-    public static HttpSession createNewSession(HttpServletRequest httpServletRequest){
+    public static HttpSession createNewSession(HttpServletRequest httpServletRequest) {
         //Disabled the old session (which can be login with different account)
         HttpSession session = httpServletRequest.getSession(false);
         if (session != null) {
@@ -58,5 +61,20 @@ public class RequestUtil {
             LOGGER.error("Unable to send error in response. " + e.getMessage(), e);
             throw new UnexpectedException("Unable to send error in response. " + e.getMessage(), e);
         }
+    }
+
+    public static String generateRequestParameters(Map<String, Object> parameters) {
+        String paramsString = parameters.entrySet().stream().filter(entry -> entry.getValue() != null).map(entry -> generateRequestParameter(entry)).collect(Collectors.joining("&"));
+        if (StringUtils.isNotBlank(paramsString)) {
+            paramsString = "?" + paramsString;
+        }
+        return paramsString;
+    }
+
+    private static String generateRequestParameter(Map.Entry<String, Object> entry) {
+        if (entry.getValue() == null) {
+            return null;
+        }
+        return entry.getKey() + "=" + entry.getValue();
     }
 }

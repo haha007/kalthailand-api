@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import th.co.krungthaiaxa.api.common.utils.LogUtil;
+import th.co.krungthaiaxa.api.common.log.LogUtil;
 import th.co.krungthaiaxa.api.elife.ereceipt.EreceiptService;
 import th.co.krungthaiaxa.api.elife.model.Document;
 import th.co.krungthaiaxa.api.elife.model.Payment;
@@ -67,7 +67,7 @@ public class PolicyDocumentService {
         } else {
             LOGGER.debug("The ATP of this policy is not enable, so the DA Form will not be generated.\n policyId: {}", policy.getPolicyId());
         }
-        LogUtil.logRuntime(start, "generateDocumentsForPendingValidationPolicy [finish]: policyId: " + policy.getPolicyId());
+        LogUtil.logFinishing(start, "generateDocumentsForPendingValidationPolicy [finish]: policyId: " + policy.getPolicyId());
     }
 
     public void generateDocumentsForValidatedPolicy(Policy policy, String token) {
@@ -98,7 +98,7 @@ public class PolicyDocumentService {
         } else {
             LOGGER.debug("Signed ereceipt pdf already exists.");
         }
-        LogUtil.logRuntime(start, "generateDocumentsForValidatedPolicy [finish]: policyId: " + policy.getPolicyId());
+        LogUtil.logFinishing(start, "generateDocumentsForValidatedPolicy [finish]: policyId: " + policy.getPolicyId());
     }
 
 }

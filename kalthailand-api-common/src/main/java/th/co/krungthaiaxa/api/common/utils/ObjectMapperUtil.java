@@ -1,7 +1,9 @@
 package th.co.krungthaiaxa.api.common.utils;
 
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -41,14 +43,23 @@ public final class ObjectMapperUtil {
         }
     }
 
-    public static InputStream toJsonInputStream(ObjectMapper objectMapper, Object object) {
+    public static byte[] toJsonBytes(ObjectMapper objectMapper, Object object) {
         try {
             if (object == null) {
                 return null;
             }
-            byte[] bytes = objectMapper.writeValueAsBytes(object);
-            return new ByteArrayInputStream(bytes);
+            return objectMapper.writeValueAsBytes(object);
         } catch (JsonProcessingException e) {
+            String msg = "Cannot convert object to json: " + toString(object);
+            throw new JsonConverterException(msg, object, e);
+        }
+    }
+
+    public static InputStream toJsonInputStream(ObjectMapper objectMapper, Object object) {
+        try {
+            byte[] bytes = toJsonBytes(objectMapper, object);
+            return new ByteArrayInputStream(bytes);
+        } catch (Exception e) {
             String msg = "Cannot convert object to json: " + toString(object);
             throw new JsonConverterException(msg, object, e);
         }
@@ -60,6 +71,16 @@ public final class ObjectMapperUtil {
             return objectMapper.readValue(jsonString, javaType);
         } catch (Exception e) {
             String msg = String.format("Cannot convert json to object: %s\n\tType:%s\n\tJsonString:\t\n%s", e.getMessage(), type.getTypeName(), jsonString);
+            throw new JsonConverterException(msg, jsonString, e);
+        }
+    }
+
+    public static JsonNode toObject(ObjectMapper objectMapper, String jsonString) {
+        try {
+            JsonParser jsonParser = objectMapper.getFactory().createParser(jsonString);
+            return objectMapper.readTree(jsonParser);
+        } catch (Exception e) {
+            String msg = String.format("Cannot convert json to object: %s\n\tType:%s\n\tJsonString:\t\n%s", e.getMessage(), JsonNode.class.getName(), jsonString);
             throw new JsonConverterException(msg, jsonString, e);
         }
     }

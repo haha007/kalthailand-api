@@ -31,7 +31,7 @@ public class UrlShortenServiceTest {
     public void test_shorten_line_url() {
         String longUrl = "https://line.me/R/ch/1469556370/elife/th/retrypayment?paymentId=123423-a2322&policyId=abc-xyz" + System.currentTimeMillis();
         String shortUrl = urlShortenerService.getShortUrlIfPossible(longUrl);
-        LOGGER.info(shortUrl);
+        LOGGER.info("Shorten URL: " + shortUrl);
         Assert.assertTrue(StringUtils.isNotBlank(shortUrl));
         Assert.assertTrue(shortUrl.length() < longUrl.length());
         Assert.assertNotEquals(shortUrl, longUrl);

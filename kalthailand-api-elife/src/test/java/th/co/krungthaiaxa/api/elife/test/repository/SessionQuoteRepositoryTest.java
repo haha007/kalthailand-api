@@ -8,7 +8,7 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import th.co.krungthaiaxa.api.common.utils.LogUtil;
+import th.co.krungthaiaxa.api.common.log.LogUtil;
 import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
 import th.co.krungthaiaxa.api.elife.repository.SessionQuoteRepository;
@@ -37,9 +37,9 @@ public class SessionQuoteRepositoryTest {
             Instant startTimeForProduct = Instant.now();
             long countForEachProduct = sessionQuoteRepository.countByProductIdAndStartDateInRange(productType.getLogicName(), beforeDay.atStartOfDay(), today.atStartOfDay());
             totalCount += countForEachProduct;
-            LogUtil.logRuntime(startTimeForProduct, String.format("\t[%s]: %s", productType.getLogicName(), countForEachProduct));
+            LogUtil.logFinishing(startTimeForProduct, String.format("\t[%s]: %s", productType.getLogicName(), countForEachProduct));
         }
-        LogUtil.logRuntime(startTime, String.format("Total session quotes: %s", totalCount));
+        LogUtil.logFinishing(startTime, String.format("Total session quotes: %s", totalCount));
     }
 
 }

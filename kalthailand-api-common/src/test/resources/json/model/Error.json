@@ -1,0 +1,21 @@
+{
+  "code": "0010",
+  "details": null,
+  "detailsType": null,
+  "userMessage": "Error in BeanValidator",
+  "developerMessage": "Error in BeanValidator",
+  "fieldErrors": [
+    {
+      "code": "NotBlank",
+      "objectName": "PersonInfo",
+      "field": "email",
+      "message": "email: may not be empty"
+    },
+    {
+      "code": "NotNull",
+      "objectName": "PersonInfo",
+      "field": "mobilePhoneNumber",
+      "message": "mobilePhoneNumber: may not be null"
+    }
+  ]
+}

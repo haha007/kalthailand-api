@@ -40,14 +40,13 @@
         <div class="page-header">
             <h1>Commission Setting</h1>
         </div>
-        <div ng-include="'app/templates/partials/message.html'"></div>
         <table class="table table-bordered table-striped table-hover table-condensed">
             <thead>
             <tr>
                 <th rowspan="2"></th>
-                <th rowspan="2">Unit Code</th>
-                <th rowspan="2">Plan Code</th>
-                <th rowspan="2">Customer Category</th>
+                <th rowspan="2">Unit Code <i ng-click="service.sortCommissionPlans(['unitCode','planCode'])" class="fa fa-sort"></i></th>
+                <th rowspan="2">Plan Code <i ng-click="service.sortCommissionPlans(['planCode','unitCode'])" class="fa fa-sort"></i></th>
+                <th rowspan="2">Customer Category <i ng-click="service.sortCommissionPlans(['customerCategory','unitCode','planCode'])" class="fa fa-sort"></i></th>
                 <th style="text-align: center" ng-repeat="commissionGroupType in service.commissionGroupTypes" colspan="{{service.commissionTargetEntityTypes.length}}">
                     <span>{{commissionGroupType.label}} %</span><span ng-show="!commissionGroupType.isRequired"> (Optional)</span>
                 </th>
@@ -67,19 +66,18 @@
             <tr ng-repeat="commissionPlan in service.commissionPlans" class="form-group" ng-class="commissionPlan.styleClass">
                 <td>
                     <span class="indexnumber" ng-click="service.addCommissionPlan()">{{($index + 1)}}</span>
-                    <!--<button class="btn btn-sm btn-default" ng-click="service.addCommissionPlan()">{{($index + 1)}}</button>-->
                 </td>
                 <td>
                     <input type="text"
                            limit-to="6"
-                           ng-model="commissionPlan.unitCode" class="form-control commission-unitcode" ng-disabled="service.isCommissionPlanReadonly(commissionPlan)" ng-change="service.validateCommissionPlans()"/>
+                           ng-model="commissionPlan.unitCode" class="form-control commission-unitcode" ng-change="service.validateCommissionPlans()"/><!-- ng-disabled="service.isCommissionPlanReadonly(commissionPlan)"-->
                 </td>
                 <td>
                     <input limit-to="7"
-                           type="text" ng-model="commissionPlan.planCode" class="form-control commission-plancode" ng-disabled="service.isCommissionPlanReadonly(commissionPlan)" ng-change="service.validateCommissionPlans()"/>
+                           type="text" ng-model="commissionPlan.planCode" class="form-control commission-plancode" ng-change="service.validateCommissionPlans()"/><!-- ng-disabled="service.isCommissionPlanReadonly(commissionPlan)"-->
                 </td>
                 <td>
-                    <select class="form-control commission-customercategory" ng-disabled="service.isCommissionPlanReadonly(commissionPlan)"
+                    <select class="form-control commission-customercategory"
                             ng-change="service.validateCommissionPlans()"
                             ng-model="commissionPlan.customerCategory"
                             ng-options="customerCategory.value as customerCategory.label for customerCategory in service.customerCategories">
@@ -91,16 +89,18 @@
                 </td>
                 <td ng-repeat-end ng-if="false"><!--Never show this column--></td>
                 <td>
-                    <button ng-class="{'btn-danger': !service.isCommissionPlanReadonly(commissionPlan)}" class="align-middle btn btn-xs btn-default glyphicon glyphicon-minus" ng-click="service.removeCommissionPlan(commissionPlan)"
-                            ng-disabled="service.isCommissionPlanReadonly(commissionPlan)"></button>
-                    <!--ng-disabled="service.isCommissionPlanReadonly(commissionPlan)"-->
+                    <button class="align-middle btn btn-xs btn-danger glyphicon glyphicon-minus" ng-click="service.removeCommissionPlan(commissionPlan)"></button><!--ng-class="{'btn-danger': !service.isCommissionPlanReadonly(commissionPlan)}"-->
                 </td>
             </tr>
             </tbody>
         </table>
+        <div ng-include="'app/templates/partials/message.html'"></div>
+
         <button ng-disabled="!service.isValidateSuccess" ng-class="{'btn-danger': service.isValidateSuccess}" class="btn btn-default" ng-click="service.saveAllCommissionPlans()"
                 title="After saving, you will not be able to remove saved rows. But you can update their percentage numbers.">Save all
         </button>
+
     </div>
+
     <!-- END Page specific stuff -->
 </div>

@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-import th.co.krungthaiaxa.api.common.utils.LogUtil;
+import th.co.krungthaiaxa.api.common.log.LogUtil;
 import th.co.krungthaiaxa.api.elife.exception.ElifeException;
 
 import java.time.Instant;
@@ -46,7 +46,7 @@ public class SigningClient {
         }
 
         logger.info("Got signed document from signing API");
-        LogUtil.logRuntime(start, "EncodedSignedPdf [finished] URL: " + signingApiURL + ", token: " + token);
+        LogUtil.logFinishing(start, "EncodedSignedPdf [finished] URL: " + signingApiURL + ", token: " + token);
         return authResponse.getBody().getBytes();
     }
 

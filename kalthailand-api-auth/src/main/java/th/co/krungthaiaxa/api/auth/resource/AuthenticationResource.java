@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import th.co.krungthaiaxa.api.auth.jwt.JwtTokenUtil;
-import th.co.krungthaiaxa.api.auth.model.Error;
+import th.co.krungthaiaxa.api.auth.model.ErrorCode;
 import th.co.krungthaiaxa.api.auth.model.RequestForToken;
 import th.co.krungthaiaxa.api.auth.service.AuthenticationService;
 import th.co.krungthaiaxa.api.common.model.authentication.AuthenticatedUser;
@@ -32,10 +32,6 @@ import static org.springframework.http.ResponseEntity.badRequest;
 import static org.springframework.http.ResponseEntity.ok;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
-import static th.co.krungthaiaxa.api.auth.model.ErrorCode.NO_ROLE;
-import static th.co.krungthaiaxa.api.auth.model.ErrorCode.ROLE_NOT_ALLOWED;
-import static th.co.krungthaiaxa.api.auth.model.ErrorCode.TOKEN_EMPTY;
-import static th.co.krungthaiaxa.api.auth.model.ErrorCode.TOKEN_EXPIRED;
 import static th.co.krungthaiaxa.api.auth.utils.JsonUtil.getJson;
 
 @RestController
@@ -84,23 +80,23 @@ public class AuthenticationResource {
         String token = request.getHeader(tokenHeader);
         if (isEmpty(token)) {
             logger.error("Token is empty");
-            return badRequest().body(getJson(TOKEN_EMPTY));
+            return badRequest().body(getJson(ErrorCode.TOKEN_EMPTY));
         }
 
         if (jwtTokenUtil.isTokenExpired(token)) {
             logger.error("Token has expired");
-            return badRequest().body(getJson(TOKEN_EXPIRED));
+            return badRequest().body(getJson(ErrorCode.TOKEN_EXPIRED));
         }
 
         Optional<List> roles = jwtTokenUtil.getRolesFromToken(token);
         if (!roles.isPresent()) {
             logger.error("Token has no role");
-            return badRequest().body(getJson(NO_ROLE));
+            return badRequest().body(getJson(ErrorCode.NO_ROLE));
         }
 
         if (!roles.get().contains(roleName)) {
             logger.error("Role [" + roleName + "] is not available in provided token");
-            return new ResponseEntity<>(ROLE_NOT_ALLOWED.apply(roleName), NOT_ACCEPTABLE);
+            return new ResponseEntity<>(ErrorCode.ROLE_NOT_ALLOWED.apply(roleName), NOT_ACCEPTABLE);
         } else {
             logger.info("Role is available in provided token");
             return ok(null);

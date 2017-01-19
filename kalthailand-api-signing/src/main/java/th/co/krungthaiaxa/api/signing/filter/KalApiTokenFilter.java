@@ -11,8 +11,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+import th.co.krungthaiaxa.api.common.log.LogHttpRequestUtil;
 import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
-import th.co.krungthaiaxa.api.common.utils.LogUtil;
 import th.co.krungthaiaxa.api.common.utils.RequestUtil;
 
 import javax.servlet.Filter;
@@ -51,7 +51,7 @@ public class KalApiTokenFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
-        Instant startTime = LogUtil.logRequestStarting(httpRequest);
+        Instant startTime = LogHttpRequestUtil.logStarting(httpRequest);
 
         // Swagger requests shoud always go through
         if (httpRequest.getRequestURI().endsWith("/v2/api-docs") ||
@@ -107,7 +107,7 @@ public class KalApiTokenFilter implements Filter {
             return;
         }
 
-        LogUtil.logRuntime(startTime, LogUtil.toStringRequestURL(httpRequest));
+        LogHttpRequestUtil.logFinishing(startTime, httpRequest);
         chain.doFilter(request, response);
     }
 

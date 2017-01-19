@@ -51,6 +51,7 @@ import static th.co.krungthaiaxa.api.elife.products.utils.ProductUtils.amountTHB
 public class TestUtil {
     public static final String PATH_TEST_RESULT = "target/testresult/";
     public static final String TESTING_EMAIL = "khoi.tran.ags@gmail.com";
+    public static final String TESTING_EMAIL_FAIL_COLLECTION_PAYMENT = "khoi.tran.ags+kalthailand-api.test.fail@gmail.com";
     public static final String TESTING_HOTMAIL_JO = TestUtil.TESTING_EMAIL;
 
     public static ProductQuotation productQuotation(Integer age, PeriodicityCode periodicityCode) {

@@ -18,6 +18,23 @@ public class StringUtil {
         return sb.toString();
     }
 
+    /**
+     * @param delimiter
+     * @param loopedString if loopedString is null, return empty string.
+     * @param loopedTimes  the number of times which loopedString will be appended.
+     * @return
+     */
+    public static String joinStrings(String delimiter, String loopedString, int loopedTimes) {
+        StringBuilder result = new StringBuilder();
+        if (loopedTimes > 0) {
+            result.append(loopedString);
+            for (int i = 1; i < loopedTimes; i++) {
+                result.append(delimiter).append(loopedString);
+            }
+        }
+        return result.toString();
+    }
+
     public static String joinNotBlankStrings(String delimiter, String... strs) {
         if (strs == null) {
             return null;
@@ -107,6 +124,39 @@ public class StringUtil {
         }
         String result = WordUtils.capitalize(string.toLowerCase(), delimiter);
         return result.replace(delimiter.toString(), "");
+    }
+
+    public static String toCamelCaseWords(String string) {
+        String separatedWordsByCamelCase = splitByCamelCase(string);
+        String result = WordUtils.capitalize(separatedWordsByCamelCase);
+        return result;
+    }
+
+    /**
+     * @param string the string with camel case
+     * @return this method will split the camel case string into separated words.
+     * "lowercase",        // [lowercase]
+     * "Class",            // [Class]
+     * "MyClass",          // [My Class]
+     * "HTML",             // [HTML]
+     * "PDFLoader",        // [PDF Loader]
+     * "AString",          // [A String]
+     * "SimpleXMLParser",  // [Simple XML Parser]
+     * "GL11Version",      // [GL 11 Version]
+     * "99Bottles",        // [99 Bottles]
+     * "May5",             // [May 5]
+     * "BFG9000",          // [BFG 9000]
+     */
+    public static String splitByCamelCase(String string) {
+        String result = string.replaceAll(
+                String.format("%s|%s|%s",
+                        "(?<=[A-Z])(?=[A-Z][a-z])",
+                        "(?<=[^A-Z])(?=[A-Z])",
+                        "(?<=[A-Za-z])(?=[^A-Za-z])"
+                ),
+                " "
+        );//separated words
+        return result.replaceAll("[ ]+", " ");
     }
 
     public static String formatNumberLength(long numberString, int length) {

@@ -75,9 +75,9 @@ CommissionService.prototype.addCommissionPlan = function () {
 };
 CommissionService.prototype.removeCommissionPlan = function (commissionPlan) {
     var self = this;
-    if (self.isCommissionPlanReadonly(commissionPlan)) {
-        return;
-    }
+    //if (self.isCommissionPlanReadonly(commissionPlan)) {
+    //    return;
+    //}
     self.commissionPlans.remove(commissionPlan);
     self.validateCommissionPlans();
 };
@@ -136,7 +136,7 @@ CommissionService.prototype.validateCommissionPlan = function (commissionPlan) {
                 break;
             }
             var sumPercentage = self.sumPercentageInCommissionGroup(commissionTargetGroup);
-            if ((commissionGroupType.isRequired || self.hasTargetEntitiesPercentages(commissionTargetGroup)) && sumPercentage != 100) {
+            if ((commissionGroupType.isRequired || self.hasTargetEntitiesPercentages(commissionTargetGroup)) && (Math.abs(sumPercentage - 100) >= 0.0001)) {
                 var msg = "Invalid commission: " + commissionPlan.unitCode + "-" + commissionPlan.planCode + "-" + commissionPlan.customerCategory + ": Group '" + commissionTargetGroup.targetGroupType + "' has totally " + sumPercentage + "%";
                 self.showErrorMessage(msg);
                 isSuccess = false;
@@ -259,5 +259,19 @@ CommissionService.prototype.findCommissionTargetEntityInPlan = function (commiss
     var targetGroup = self.findCommissionGroupInPlan(commissionPlan, groupType);
     if (targetGroup == null) return null;
     return self.findCommissionTargetEntityInGroup(targetGroup, entityType);
+};
+CommissionService.prototype.sortCommissionPlans = function (fieldNames) {
+    var self = this;
+
+    if (hasValue(self.commissionPlansOrder) && self.commissionPlansOrder == 1) {
+        self.commissionPlansOrder = -1;
+    } else {
+        self.commissionPlansOrder = 1;
+    }
+    var fieldSorts = [];
+    for (var i = 0; i < fieldNames.length; i++) {
+        fieldSorts.push(new FieldSort(fieldNames[i], self.commissionPlansOrder));
+    }
+    self.commissionPlans.sortByFields(fieldSorts);
 };
 

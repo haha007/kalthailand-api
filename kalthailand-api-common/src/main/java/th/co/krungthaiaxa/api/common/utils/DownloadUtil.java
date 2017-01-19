@@ -49,7 +49,7 @@ public class DownloadUtil {
      */
     public static void writeBytesToResponse(HttpServletResponse response, byte[] content, String fileName, String mimeType) {
         String fullFileName = fileName;
-        String fileExtension = FileNameUtil.getFileExtensionFromMimeType(mimeType);
+        String fileExtension = MimeTypeUtil.getFileExtensionFromMimeType(mimeType);
         if (fileExtension != null) {
             fullFileName += "." + fileExtension;
         }
