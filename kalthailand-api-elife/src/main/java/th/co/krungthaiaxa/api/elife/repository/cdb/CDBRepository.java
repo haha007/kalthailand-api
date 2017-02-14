@@ -195,4 +195,29 @@ public class CDBRepository {
         }
         return status;
     }
+
+    /**
+     * Get payment due date
+     * @param policyId
+     * @return
+     */
+    public String getPaymentDueDate(String policyId){
+        String paymentDueDate = "";
+        if (!StringUtils.isBlank(policyId)) {
+            String sql = StringUtil.newString(" select pno, pptd from [dbo].[LFKLUDTA_LFPPML] where pno = ? ");
+            LOGGER.trace("sql:" + sql);
+            Object[] parameters = new Object[1];
+            parameters[0] = policyId;
+            Map<String, Object> map = null;
+            try {
+                List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, parameters);
+                if (list.size() != 0) {
+                    paymentDueDate = String.valueOf(list.get(0).get("pptd"));
+                }
+            } catch (Exception e) {
+                LOGGER.error("Unable to query for agent code: " + e.getMessage(), e);
+            }
+        }
+        return paymentDueDate;
+    }
 }
