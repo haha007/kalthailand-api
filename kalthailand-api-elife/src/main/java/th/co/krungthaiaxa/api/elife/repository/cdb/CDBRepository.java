@@ -215,7 +215,7 @@ public class CDBRepository {
                     paymentDueDate = String.valueOf(list.get(0).get("pptd"));
                 }
             } catch (Exception e) {
-                LOGGER.error("Unable to query for agent code: " + e.getMessage(), e);
+                LOGGER.error("Unable to query for policyId: " + e.getMessage(), e);
             }
         }
         return paymentDueDate;
