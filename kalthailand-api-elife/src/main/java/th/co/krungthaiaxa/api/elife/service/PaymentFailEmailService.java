@@ -3,6 +3,7 @@ package th.co.krungthaiaxa.api.elife.service;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.common.exeption.EmailException;
@@ -16,6 +17,7 @@ import th.co.krungthaiaxa.api.elife.model.Person;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
 import th.co.krungthaiaxa.api.elife.products.utils.ProductUtils;
+import th.co.krungthaiaxa.api.elife.repository.cdb.CDBRepository;
 import th.co.krungthaiaxa.api.elife.utils.PersonUtil;
 
 import javax.inject.Inject;
@@ -33,6 +35,10 @@ public class PaymentFailEmailService {
     private final ElifeEmailService emailService;
     private final MessageSource messageSource;
     private final PaymentRetryLinkService paymentRetryLinkService;
+
+    @Autowired
+    private CDBRepository cdbRepository;
+
 
     @Inject
     public PaymentFailEmailService(ElifeEmailService emailService, MessageSource messageSource, PaymentRetryLinkService paymentRetryLinkService) {
@@ -74,7 +80,8 @@ public class PaymentFailEmailService {
             customerName = PersonUtil.getFullName(insuredPerson);
             if (payment != null) {
                 LocalDateTime dueDate = payment.getDueDate();
-                dueDateString = DateTimeUtil.formatThaiDate(dueDate);
+//                dueDateString = DateTimeUtil.formatThaiDate(dueDate);
+                dueDateString = cdbRepository.getPaymentDueDate(policy.getPolicyId());
                 Amount amount = payment.getAmount();
                 paymentAmount = "" + amount.getValue();
             }
