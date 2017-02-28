@@ -19,6 +19,7 @@ public class DateTimeUtil {
     public static final String PATTERN_FILE_PATH = "yyyy-MM-dd_HH-mm-ss";
     private static final String PATTERN_FILE_SHORT_PATH = "yyyyMMdd_HHmmss";
     public static final String PATTERN_THAI_DATE = "dd/MM/yyyy";
+    public static final String PATTERN_CDB_DUEDATE = "yyyyMMdd";
     public static final String PATTERN_THAI_DATE_TIME = "dd/MM/yyyy HH:mm:ss";
 
     public static String formatBuddhistThaiDate(LocalDate localDate) {

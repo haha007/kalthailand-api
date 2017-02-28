@@ -21,7 +21,6 @@ import th.co.krungthaiaxa.api.elife.repository.cdb.CDBRepository;
 import th.co.krungthaiaxa.api.elife.utils.PersonUtil;
 
 import javax.inject.Inject;
-import java.time.LocalDateTime;
 import java.util.Collections;
 
 /**
@@ -67,7 +66,7 @@ public class PaymentFailEmailService {
         String paymentLink = "";
         String productDisplayName = "";
         String customerName = "";
-        String dueDateString = "";
+        String cdbDueDateString = "";
         String paymentAmount = "";
         try {
             paymentLink = paymentRetryLinkService.createPaymentLink(policy.getPolicyId(), payment);
@@ -79,19 +78,22 @@ public class PaymentFailEmailService {
             Person insuredPerson = mainInsured.getPerson();
             customerName = PersonUtil.getFullName(insuredPerson);
             if (payment != null) {
-                LocalDateTime dueDate = payment.getDueDate();
-//                dueDateString = DateTimeUtil.formatThaiDate(dueDate);
-                dueDateString = cdbRepository.getPaymentDueDate(policy.getPolicyId());
+                cdbDueDateString = cdbRepository.getPaymentDueDate(policy.getPolicyId());
                 Amount amount = payment.getAmount();
                 paymentAmount = "" + amount.getValue();
             }
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);
         } finally {
+            //get due-date of policy from CDB first, In case could not get due-date, we will get due-date from MongoDB
+            String thaiDueDate = DateTimeUtil.formatThaiDate(StringUtils.isNotEmpty(cdbDueDateString)
+                    ? DateTimeUtil.toLocalDate(cdbDueDateString, DateTimeUtil.PATTERN_CDB_DUEDATE)
+                    : payment.getDueDate().toLocalDate());
+            
             emailContent = emailContent.replaceAll("%PRODUCT_NAME%", productDisplayName)
                     .replaceAll("%POLICY_NUMBER%", policy.getPolicyId())
                     .replaceAll("%CUSTOMER_NAME%", customerName)
-                    .replaceAll("%PAYMENT_DUE_DATE%", dueDateString)
+                    .replaceAll("%PAYMENT_DUE_DATE%", thaiDueDate)
                     .replaceAll("%PAYMENT_AMOUNT%", "" + paymentAmount)
                     .replaceAll("%PAYMENT_LINK%", paymentLink);
         }

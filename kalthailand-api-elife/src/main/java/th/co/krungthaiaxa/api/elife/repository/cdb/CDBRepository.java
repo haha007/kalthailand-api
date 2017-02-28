@@ -197,7 +197,7 @@ public class CDBRepository {
     }
 
     /**
-     * Get payment due date
+     * Get payment due date by policyId.
      * @param policyId
      * @return
      */
@@ -215,7 +215,7 @@ public class CDBRepository {
                     paymentDueDate = String.valueOf(list.get(0).get("pptd"));
                 }
             } catch (Exception e) {
-                LOGGER.error("Unable to query for policyId: " + e.getMessage(), e);
+                LOGGER.error("Unable to query for policyId: " + policyId, e);
             }
         }
         return paymentDueDate;
