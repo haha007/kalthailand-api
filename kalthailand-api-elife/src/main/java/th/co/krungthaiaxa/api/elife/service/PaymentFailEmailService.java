@@ -38,7 +38,6 @@ public class PaymentFailEmailService {
     @Autowired
     private CDBRepository cdbRepository;
 
-
     @Inject
     public PaymentFailEmailService(ElifeEmailService emailService, MessageSource messageSource, PaymentRetryLinkService paymentRetryLinkService) {
         this.emailService = emailService;
