@@ -36,7 +36,7 @@ public class IGenQuoteCalculationService extends AbstractQuoteCalculationService
         String currency = ProductUtils.CURRENCY_THB;
         ProductSpec productSpec = new ProductSpec();
         productSpec.setDividendInterestRateForAnnual(0.0);
-        productSpec.setDividendInterestRateForEndOfContract(0.02);//2%
+        productSpec.setDividendInterestRateForEndOfContract(0.005);//0.5%
         productSpec.setDividendRateInLastYear(1.8);//180%
         productSpec.setDividendRateInNormalYear(0.02);//2%
         productSpec.setInsuredAgeMax(70);
