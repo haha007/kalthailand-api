@@ -36,6 +36,7 @@
         aDateAgo.setDate(new Date().getDate() - 7);
         $scope.toDateSearch = new Date();
         $scope.fromDateSearch = aDateAgo;
+        $scope.productType = null;
         $scope.responseText = null;
         $scope.sessionQuoteCounts = [];
 
@@ -64,6 +65,15 @@
                 + '/api-elife/quotes/all-products/download?'
                 + 'fromDate=' + $scope.fromDateSearch.toISOString()
                 + '&toDate=' + $scope.toDateSearch.toISOString();
+            window.open(url, "_blank");
+        }
+
+        $scope.downloadMIDExcelFile = function () {
+            var url = window.location.origin
+                + '/api-elife/quotes/all-products/download?'
+                + 'fromDate=' + $scope.fromDateSearch.toISOString()
+                + '&toDate=' + $scope.toDateSearch.toISOString()
+                + '&productType=' + $scope.productType;
             window.open(url, "_blank");
         }
 
