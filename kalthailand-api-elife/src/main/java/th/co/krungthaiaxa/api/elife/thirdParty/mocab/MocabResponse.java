@@ -1,7 +1,6 @@
 package th.co.krungthaiaxa.api.elife.thirdParty.mocab;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import th.co.krungthaiaxa.api.elife.model.MocabStatus;
 
 import java.io.Serializable;
 
@@ -17,7 +16,7 @@ public class MocabResponse implements Serializable {
     private String policyNumber;
 
     @JsonProperty("messageCode")
-    private MocabStatus messageCode;
+    private String messageCode;
 
     public boolean isSuccess() {
         return success;
@@ -35,11 +34,11 @@ public class MocabResponse implements Serializable {
         this.policyNumber = policyNumber;
     }
 
-    public MocabStatus getMessageCode() {
+    public String getMessageCode() {
         return messageCode;
     }
 
-    public void setMessageCode(final MocabStatus messageCode) {
+    public void setMessageCode(final String messageCode) {
         this.messageCode = messageCode;
     }
 }

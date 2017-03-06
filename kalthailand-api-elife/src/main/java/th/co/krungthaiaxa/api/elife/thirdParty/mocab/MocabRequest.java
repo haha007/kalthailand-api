@@ -2,12 +2,10 @@ package th.co.krungthaiaxa.api.elife.thirdParty.mocab;
 
 import th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus;
 
-import java.io.Serializable;
-
 /**
  * Created by tuong.le on 3/6/17.
  */
-public class MocabRequest implements Serializable {
+public class MocabRequest {
 
     private String content;
     private String productType;
@@ -19,70 +17,75 @@ public class MocabRequest implements Serializable {
     private String idCard;
     private PolicyStatus policyStatus;
 
-
-    public MocabRequest() {
-        
+    public String getContent() {
+        return content;
     }
 
-    public MocabRequest(final String content, final String productType, final String mimeType, final String policyNumber, final String documentType, final String customerName, final String customerTel, final String idCard, final PolicyStatus policyStatus) {
+    public void setContent(final String content) {
         this.content = content;
+    }
+
+    public String getProductType() {
+        return productType;
+    }
+
+    public void setProductType(final String productType) {
         this.productType = productType;
+    }
+
+    public String getMimeType() {
+        return mimeType;
+    }
+
+    public void setMimeType(final String mimeType) {
         this.mimeType = mimeType;
+    }
+
+    public String getPolicyNumber() {
+        return policyNumber;
+    }
+
+    public void setPolicyNumber(final String policyNumber) {
         this.policyNumber = policyNumber;
+    }
+
+    public String getDocumentType() {
+        return documentType;
+    }
+
+    public void setDocumentType(final String documentType) {
         this.documentType = documentType;
+    }
+
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(final String customerName) {
         this.customerName = customerName;
+    }
+
+    public String getCustomerTel() {
+        return customerTel;
+    }
+
+    public void setCustomerTel(final String customerTel) {
         this.customerTel = customerTel;
+    }
+
+    public String getIdCard() {
+        return idCard;
+    }
+
+    public void setIdCard(final String idCard) {
         this.idCard = idCard;
+    }
+
+    public PolicyStatus getPolicyStatus() {
+        return policyStatus;
+    }
+
+    public void setPolicyStatus(final PolicyStatus policyStatus) {
         this.policyStatus = policyStatus;
-    }
-
-    public MocabRequest setContent(final String content) {
-        this.content = content;
-        return this;
-    }
-
-    public MocabRequest setProductType(final String productType) {
-        this.productType = productType;
-        return this;
-    }
-
-    public MocabRequest setMimeType(final String mimeType) {
-        this.mimeType = mimeType;
-        return this;
-    }
-
-    public MocabRequest setPolicyNumber(final String policyNumber) {
-        this.policyNumber = policyNumber;
-        return this;
-    }
-
-    public MocabRequest setDocumentType(final String documentType) {
-        this.documentType = documentType;
-        return this;
-    }
-
-    public MocabRequest setCustomerName(final String customerName) {
-        this.customerName = customerName;
-        return this;
-    }
-
-    public MocabRequest setCustomerTel(final String customerTel) {
-        this.customerTel = customerTel;
-        return this;
-    }
-
-    public MocabRequest setIdCard(final String idCard) {
-        this.idCard = idCard;
-        return this;
-    }
-
-    public MocabRequest setPolicyStatus(final PolicyStatus policyStatus) {
-        this.policyStatus = policyStatus;
-        return this;
-    }
-
-    public MocabRequest builder() {
-        return new MocabRequest(content, productType, mimeType, policyNumber, documentType, 
-                customerName, customerTel, idCard, policyStatus);
     }
 }

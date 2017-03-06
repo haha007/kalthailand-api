@@ -29,6 +29,7 @@ import th.co.krungthaiaxa.api.elife.model.PreviousPolicy;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.Registration;
 import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
+import th.co.krungthaiaxa.api.elife.model.enums.DocumentType;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 import th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus;
 import th.co.krungthaiaxa.api.elife.model.enums.RegistrationTypeName;
@@ -303,31 +304,16 @@ public class PolicyService {
             LOGGER.error(String.format("Unable to send LINE push notification for policy booking on policy [%s]: %s", policy.getPolicyId(), e.getMessage()), e);
         }
 
-        // Send Application Form to TMC
-        DocumentDownload applicationFormDocument = documentService.findDocumentDownload(applicationFormPdf.get().getId());
-        try {
-            tmcClient.sendPDFToTMC(policy, applicationFormDocument.getContent(), APPLICATION_FORM);
-        } catch (Exception e) {
-            LOGGER.error("Unable to send application Form to TMC on policy [" + policy.getPolicyId() + "]: " + e.getMessage(), e);
-        }
+        // Send Application Form to Mocab
+        DocumentDownload applicationFormDocument =
+                documentService.findDocumentDownload(applicationFormPdf.get().getId());
+        sendPdfToMocab(policy, applicationFormDocument, APPLICATION_FORM);
 
-        // Send DA Form to MOCAB (DA form may not exist)
+        // Send DA Form to Mocab (DA form may not exist)
         if (daFormPdf.isPresent()) {
-            DocumentDownload daFormDocument = documentService.findDocumentDownload(daFormPdf.get().getId());
-            try {
-                final Optional<MocabResponse> mocabResponse = mocabClient.sendPDFToMocab(policy, daFormDocument.getContent(), DA_FORM);
-                if (mocabResponse.isPresent()) {
-                    //The document status based on mocab response code
-                    final MocabResponse response = mocabResponse.get();
-                    LOGGER.info("Sent {} to Mocab with response status {} for policy {}",
-                            DA_FORM, response.getMessageCode(), response.getPolicyNumber());
-                    documentService.udpateDocumentStatus(daFormPdf.get().getId(),
-                            mocabResponse.get().getMessageCode());
-                }
-            } catch (Exception e) {
-                LOGGER.error("Unable to send DA Form to TMC on policy [{}]: {}",
-                        policy.getPolicyId(), e.getMessage(), e);
-            }
+            DocumentDownload daFormDocument =
+                    documentService.findDocumentDownload(daFormPdf.get().getId());
+            sendPdfToMocab(policy, daFormDocument, DA_FORM);
         }
         return policy;
     }
@@ -405,20 +391,14 @@ public class PolicyService {
             LOGGER.error(String.format("Unable to send LINE push notification for policy validation on policy [%s]: %s", policy.getPolicyId(), e.getMessage()), e);
         }
 
-        // Sign eReceipt and send it to TMC
-        try {
-            tmcClient.sendPDFToTMC(policy, documentDownload.getContent(), ERECEIPT_PDF);
-        } catch (Exception e) {
-            LOGGER.error("Unable to send eReceipt to TMC on policy [" + policy.getPolicyId() + "]:" + e.getMessage(), e);
-        }
+        // Sign eReceipt and send it to Mocab
+        sendPdfToMocab(policy, documentDownload, ERECEIPT_PDF);
 
-        // Send Validated Application Form to TMC
-        DocumentDownload applicationFormValidatedDocument = documentService.findDocumentDownload(applicationFormValidatedPdf.get().getId());
-        try {
-            tmcClient.sendPDFToTMC(policy, applicationFormValidatedDocument.getContent(), APPLICATION_FORM);
-        } catch (Exception e) {
-            LOGGER.error("Unable to send validated application Form to TMC on policy [" + policy.getPolicyId() + "]: " + e.getMessage(), e);
-        }
+        // Send Validated Application Form to Mocab
+        final DocumentDownload applicationFormValidatedDocument =
+                documentService.findDocumentDownload(applicationFormValidatedPdf.get().getId());
+        sendPdfToMocab(policy, applicationFormValidatedDocument, APPLICATION_FORM_VALIDATED);
+
         LogUtil.logFinishing(start, "updatePolicyStatusToValidated [finish]: policyId: " + policy.getPolicyId());
         return policy;
     }
@@ -465,5 +445,27 @@ public class PolicyService {
         BeanUtils.copyProperties(mainInsuredPersonInfo, person);
         policy = policyRepository.save(policy);
         return policy;
+    }
+
+    public void sendPdfToMocab(final Policy policy,
+                               final DocumentDownload documentDownload,
+                               final DocumentType documentType) {
+        try {
+            final Optional<MocabResponse> mocabResponse =
+                    mocabClient.sendPdfToMocab(policy, documentDownload.getContent(), documentType);
+            if (mocabResponse.isPresent()) {
+                //The document status based on Mocab response code
+                final MocabResponse response = mocabResponse.get();
+                LOGGER.info("Sent {} to Mocab with response message code {} on policy {}",
+                        documentType, response.getMessageCode(), response.getPolicyNumber());
+                documentService.udpateDocumentStatus(documentDownload.getDocumentId(),
+                        response.getMessageCode());
+            }
+
+        } catch (Exception e) {
+            LOGGER.error("Unable to send {} to Mocab on policy {}",
+                    documentType.name(), policy.getId(), e);
+        }
+
     }
 }
