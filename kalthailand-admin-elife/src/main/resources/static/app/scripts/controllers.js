@@ -341,7 +341,10 @@
 
         fetchPolicyQuotaInfo();
 
-        $scope.timeTriggerList = [{"value": 3600, "name": "1 Time/Hour"}, {"value": 86400, "name": "1 Time/Day"}];
+        $scope.timeTriggerList = [{"value": 3600, "name": "1 Time/Hour"}, {
+            "value": 86400,
+            "name": "1 Time/Day"
+        }];
 
         $scope.uploadNewPolicyNumbers = function (event) {
             event.preventDefault();
@@ -786,7 +789,11 @@
                 $http({
                     url: '/api-elife/policies/' + policyNumber + '/update/status/validated',
                     method: 'PUT',
-                    data: $.param({agentName: $scope.agentName, agentCode: $scope.agentCode, linePayCaptureMode: $scope.linePayCaptureMode}),
+                    data: $.param({
+                        agentName: $scope.agentName,
+                        agentCode: $scope.agentCode,
+                        linePayCaptureMode: $scope.linePayCaptureMode
+                    }),
                     headers: {'Content-Type': 'application/x-www-form-urlencoded'}
                 }).then(
                     function (successResponse) {
@@ -871,7 +878,10 @@
                         } else {
                             annualPremiumValue = premium;
                         }
-                        $scope.annualPremium = {value: annualPremiumValue, currencyCode: successResponse.premiumsData.financialScheduler.modalAmount.currencyCode};
+                        $scope.annualPremium = {
+                            value: annualPremiumValue,
+                            currencyCode: successResponse.premiumsData.financialScheduler.modalAmount.currencyCode
+                        };
                     },
                     function (errorResponse) {
                         $scope.showErrorMessage(errorResponse.data.userMessage);
@@ -880,6 +890,23 @@
                         $scope.sumInsured = null;
                     });
 
+            }
+
+            $scope.retryUploadToMocab = function (policyId, documentType, documentStatus, index) {
+                if (documentStatus == "SUCCESS") {
+                    alert("Document is ready for approval");
+                } else {
+                    $http.post(window.location.origin + '/api-elife/policies/' + policyId + '/document/' + documentType + '/retry')
+                        .then(
+                            function (successResponse) {
+                                $scope.showSuccessMessage("Retry uploading document to Mocab success! " + successResponse);
+                                $scope.policyDetail.documents[index].mocabStatus = "SUCCESS";
+                            },
+                            function (errorResponse) {
+                                $scope.showErrorMessage("ERR123", "Could not update document to Mocab");
+                                console.log(errorResponse);
+                            });
+                }
             }
 
             $scope.showErrorMessage = function (msg, errorDetails) {

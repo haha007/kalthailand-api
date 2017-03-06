@@ -43,6 +43,8 @@ import th.co.krungthaiaxa.api.elife.repository.PolicyCriteriaRepository;
 import th.co.krungthaiaxa.api.elife.repository.PolicyNumberRepository;
 import th.co.krungthaiaxa.api.elife.repository.PolicyRepository;
 import th.co.krungthaiaxa.api.elife.repository.QuoteRepository;
+import th.co.krungthaiaxa.api.elife.thirdParty.mocab.MocabClient;
+import th.co.krungthaiaxa.api.elife.thirdParty.mocab.MocabResponse;
 import th.co.krungthaiaxa.api.elife.tmc.TMCClient;
 
 import javax.inject.Inject;
@@ -68,7 +70,7 @@ import static th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus.VALIDATED;
 //TODO need to be refactored.
 @Service
 public class PolicyService {
-    private final static Logger logger = LoggerFactory.getLogger(PolicyService.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(PolicyService.class);
 
     private final TMCClient tmcClient;
     private final PaymentRepository paymentRepository;
@@ -84,21 +86,23 @@ public class PolicyService {
     private final ProductServiceFactory productServiceFactory;
     private final CDBClient cdbClient;
     private final BeanValidator beanValidator;
+    private final MocabClient mocabClient;
+
     @Inject
     private PolicyNumberSettingService policyNumberSettingService;
 
     @Inject
     public PolicyService(TMCClient tmcClient,
-            PaymentRepository paymentRepository,
-            PolicyCriteriaRepository policyCriteriaRepository,
-            PolicyRepository policyRepository,
-            PolicyNumberRepository policyNumberRepository,
-            QuoteRepository quoteRepository,
-            EmailService emailService,
-            LineService lineService,
-            DocumentService documentService,
-            PolicyDocumentService policyDocumentService, SMSApiService smsApiService,
-            ProductServiceFactory productServiceFactory, CDBClient cdbClient, BeanValidator beanValidator) {
+                         PaymentRepository paymentRepository,
+                         PolicyCriteriaRepository policyCriteriaRepository,
+                         PolicyRepository policyRepository,
+                         PolicyNumberRepository policyNumberRepository,
+                         QuoteRepository quoteRepository,
+                         EmailService emailService,
+                         LineService lineService,
+                         DocumentService documentService,
+                         PolicyDocumentService policyDocumentService, SMSApiService smsApiService,
+                         ProductServiceFactory productServiceFactory, CDBClient cdbClient, BeanValidator beanValidator, MocabClient mocabClient) {
         this.tmcClient = tmcClient;
         this.policyDocumentService = policyDocumentService;
         this.cdbClient = cdbClient;
@@ -113,15 +117,16 @@ public class PolicyService {
         this.smsApiService = smsApiService;
         this.productServiceFactory = productServiceFactory;
         this.beanValidator = beanValidator;
+        this.mocabClient = mocabClient;
     }
 
     public Page<Policy> findAll(String policyId, ProductType productType, PolicyStatus status, Boolean nonEmptyAgentCode, LocalDate startDate,
-            LocalDate endDate, PeriodicityCode periodicityCode, Integer atpModeId, Integer currentPage, Integer pageSize) {
+                                LocalDate endDate, PeriodicityCode periodicityCode, Integer atpModeId, Integer currentPage, Integer pageSize) {
         return policyCriteriaRepository.findPolicies(policyId, productType, status, nonEmptyAgentCode, startDate, endDate, periodicityCode, atpModeId, new PageRequest(currentPage, pageSize, new Sort(Sort.Direction.DESC, "policyId")));
     }
 
     public List<Policy> findAll(String policyId, ProductType productType, PolicyStatus status, Boolean nonEmptyAgentCode, LocalDate startDate,
-            LocalDate endDate, PeriodicityCode periodicityCode, Integer atpModeId) {
+                                LocalDate endDate, PeriodicityCode periodicityCode, Integer atpModeId) {
         return policyCriteriaRepository.findPolicies(policyId, productType, status, nonEmptyAgentCode, startDate, endDate, periodicityCode, atpModeId);
     }
 
@@ -176,7 +181,7 @@ public class PolicyService {
 
         Policy policy = policyRepository.findByQuoteId(quote.getId());
         if (policy == null) {
-            logger.info("Creating Policy from quote [" + quote.getQuoteId() + "]");
+            LOGGER.info("Creating Policy from quote [" + quote.getQuoteId() + "]");
             policy = new Policy();
             policy.setPolicyId(policyNumber.getPolicyId());
 
@@ -193,7 +198,7 @@ public class PolicyService {
             policyNumberRepository.save(policyNumber);
             quote.setPolicyId(policy.getPolicyId());
             quoteRepository.save(quote);
-            logger.info("Policy has been created with id [" + policy.getPolicyId() + "] from quote [" + quote.getQuoteId() + "]");
+            LOGGER.info("Policy has been created with id [" + policy.getPolicyId() + "] from quote [" + quote.getQuoteId() + "]");
         }
 
         return policy;
@@ -273,7 +278,7 @@ public class PolicyService {
         try {
             emailService.sendPolicyBookedEmail(policy);
         } catch (Exception e) {
-            logger.error(String.format("Unable to send email for booking policy [%s]: %s", policy.getPolicyId(), e.getMessage()), e);
+            LOGGER.error(String.format("Unable to send email for booking policy [%s]: %s", policy.getPolicyId(), e.getMessage()), e);
         }
 
         // Send SMS
@@ -282,10 +287,10 @@ public class PolicyService {
             String fullName = policy.getInsureds().get(0).getPerson().getGivenName() + " " + policy.getInsureds().get(0).getPerson().getSurName();
             SMSResponse m = smsApiService.sendConfirmationMessage(policy, smsContent.replace("%POLICY_ID%", policy.getPolicyId()).replace("%FULL_NAME%", fullName));
             if (!m.getStatus().equals(SMSResponse.STATUS_SUCCESS)) {
-                logger.error(String.format("SMS for policy booking could not be sent on policy [%1$s].", policy.getPolicyId()));
+                LOGGER.error(String.format("SMS for policy booking could not be sent on policy [%1$s].", policy.getPolicyId()));
             }
         } catch (Exception e) {
-            logger.error(String.format("Unable to send policy booking SMS message on policy [%s]: %s", policy.getPolicyId(), e.getMessage()), e);
+            LOGGER.error(String.format("Unable to send policy booking SMS message on policy [%s]: %s", policy.getPolicyId(), e.getMessage()), e);
         }
 
         // Send push notification
@@ -295,7 +300,7 @@ public class PolicyService {
             sendMsg = sendMsg.replace("%FULL_NAME%", policy.getInsureds().get(0).getPerson().getGivenName() + " " + policy.getInsureds().get(0).getPerson().getSurName());
             lineService.sendPushNotificationWithIOException(sendMsg, policy.getInsureds().get(0).getPerson().getLineId());
         } catch (Exception e) {
-            logger.error(String.format("Unable to send LINE push notification for policy booking on policy [%s]: %s", policy.getPolicyId(), e.getMessage()), e);
+            LOGGER.error(String.format("Unable to send LINE push notification for policy booking on policy [%s]: %s", policy.getPolicyId(), e.getMessage()), e);
         }
 
         // Send Application Form to TMC
@@ -303,16 +308,25 @@ public class PolicyService {
         try {
             tmcClient.sendPDFToTMC(policy, applicationFormDocument.getContent(), APPLICATION_FORM);
         } catch (Exception e) {
-            logger.error("Unable to send application Form to TMC on policy [" + policy.getPolicyId() + "]: " + e.getMessage(), e);
+            LOGGER.error("Unable to send application Form to TMC on policy [" + policy.getPolicyId() + "]: " + e.getMessage(), e);
         }
 
-        // Send DA Form to TMC (DA form may not exist)
+        // Send DA Form to MOCAB (DA form may not exist)
         if (daFormPdf.isPresent()) {
             DocumentDownload daFormDocument = documentService.findDocumentDownload(daFormPdf.get().getId());
             try {
-                tmcClient.sendPDFToTMC(policy, daFormDocument.getContent(), DA_FORM);
+                final Optional<MocabResponse> mocabResponse = mocabClient.sendPDFToMocab(policy, daFormDocument.getContent(), DA_FORM);
+                if (mocabResponse.isPresent()) {
+                    //The document status based on mocab response code
+                    final MocabResponse response = mocabResponse.get();
+                    LOGGER.info("Sent {} to Mocab with response status {} for policy {}",
+                            DA_FORM, response.getMessageCode(), response.getPolicyNumber());
+                    documentService.udpateDocumentStatus(daFormPdf.get().getId(),
+                            mocabResponse.get().getMessageCode());
+                }
             } catch (Exception e) {
-                logger.error("Unable to send DA Form to TMC on policy [" + policy.getPolicyId() + "]: " + e.getMessage(), e);
+                LOGGER.error("Unable to send DA Form to TMC on policy [{}]: {}",
+                        policy.getPolicyId(), e.getMessage(), e);
             }
         }
         return policy;
@@ -362,14 +376,14 @@ public class PolicyService {
         policy.setValidationDateTime(now);
         policy.setLastUpdateDateTime(now);
         policy = policyRepository.save(policy);
-        logger.info(String.format("Policy [%1$s] has been updated as Validated.", policy.getPolicyId()));
+        LOGGER.info(String.format("Policy [%1$s] has been updated as Validated.", policy.getPolicyId()));
 
         // Send Email
         DocumentDownload documentDownload = documentService.findDocumentDownload(documentPdf.get().getId());
         try {
             emailService.sendEreceiptEmail(policy, Pair.of(Base64.getDecoder().decode(documentDownload.getContent()), "e-receipt_" + policy.getPolicyId() + ".pdf"));
         } catch (Exception e) {
-            logger.error(String.format("Unable to send email for validation of policy [%s]: %s", policy.getPolicyId(), e.getMessage()), e);
+            LOGGER.error(String.format("Unable to send email for validation of policy [%s]: %s", policy.getPolicyId(), e.getMessage()), e);
         }
 
         // Send SMS
@@ -377,10 +391,10 @@ public class PolicyService {
             String smsContent = IOUtils.toString(this.getClass().getResourceAsStream("/sms-content/policy-purchased-sms.txt"), Charset.forName("UTF-8"));
             SMSResponse m = smsApiService.sendConfirmationMessage(policy, smsContent);
             if (!m.getStatus().equals(SMSResponse.STATUS_SUCCESS)) {
-                logger.error(String.format("SMS for policy validation could not be sent on policy [%1$s].", policy.getPolicyId()));
+                LOGGER.error(String.format("SMS for policy validation could not be sent on policy [%1$s].", policy.getPolicyId()));
             }
         } catch (Exception e) {
-            logger.error(String.format("Unable to send policy validation SMS message on policy [%s]: %s", policy.getPolicyId(), e.getMessage()), e);
+            LOGGER.error(String.format("Unable to send policy validation SMS message on policy [%s]: %s", policy.getPolicyId(), e.getMessage()), e);
         }
 
         // Send push notification
@@ -388,14 +402,14 @@ public class PolicyService {
             String pushContent = IOUtils.toString(this.getClass().getResourceAsStream("/line-notification/policy-purchased-notification.txt"), Charset.forName("UTF-8"));
             lineService.sendPushNotificationWithIOException(pushContent, policy.getInsureds().get(0).getPerson().getLineId());
         } catch (Exception e) {
-            logger.error(String.format("Unable to send LINE push notification for policy validation on policy [%s]: %s", policy.getPolicyId(), e.getMessage()), e);
+            LOGGER.error(String.format("Unable to send LINE push notification for policy validation on policy [%s]: %s", policy.getPolicyId(), e.getMessage()), e);
         }
 
         // Sign eReceipt and send it to TMC
         try {
             tmcClient.sendPDFToTMC(policy, documentDownload.getContent(), ERECEIPT_PDF);
         } catch (Exception e) {
-            logger.error("Unable to send eReceipt to TMC on policy [" + policy.getPolicyId() + "]:" + e.getMessage(), e);
+            LOGGER.error("Unable to send eReceipt to TMC on policy [" + policy.getPolicyId() + "]:" + e.getMessage(), e);
         }
 
         // Send Validated Application Form to TMC
@@ -403,7 +417,7 @@ public class PolicyService {
         try {
             tmcClient.sendPDFToTMC(policy, applicationFormValidatedDocument.getContent(), APPLICATION_FORM);
         } catch (Exception e) {
-            logger.error("Unable to send validated application Form to TMC on policy [" + policy.getPolicyId() + "]: " + e.getMessage(), e);
+            LOGGER.error("Unable to send validated application Form to TMC on policy [" + policy.getPolicyId() + "]: " + e.getMessage(), e);
         }
         LogUtil.logFinishing(start, "updatePolicyStatusToValidated [finish]: policyId: " + policy.getPolicyId());
         return policy;

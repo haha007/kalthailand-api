@@ -24,9 +24,12 @@
             <div class="title_left">
                 <div class="col-md-6 col-xs-12 form-group top_search">
                     <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Policy number..." ng-model="policyID" ng-keyup="$event.keyCode == 13 && search()" required autofocus/>
+                        <input type="text" class="form-control" placeholder="Policy number..."
+                               ng-model="policyID" ng-keyup="$event.keyCode == 13 && search()"
+                               required autofocus/>
                     <span class="input-group-btn">
-                      <button class="btn btn-default" type="button" ng-click="search()"><i class="glyphicon glyphicon-search"></i></button>
+                      <button class="btn btn-default" type="button" ng-click="search()"><i
+                              class="glyphicon glyphicon-search"></i></button>
                     </span>
                     </div>
                 </div>
@@ -59,21 +62,29 @@
                         <ul class="wizard_steps anchor">
                             <!--<li style="width: 33%">-->
                             <li>
-                                <a href="" class="{{stepStatus(1).styleClass}}" isdone="{{stepStatus(1).isdone}}" rel="1">
+                                <a href="" class="{{stepStatus(1).styleClass}}"
+                                   isdone="{{stepStatus(1).isdone}}" rel="1">
                                     <span class="step_no">1</span>
-                                    <span class="step_descr">PENDING_PAYMENT<br/><small>The policy has just created from quote.<br/>There's no payment yet.</small> </span>
+                                    <span class="step_descr">PENDING_PAYMENT<br/><small>The policy
+                                        has just created from quote.<br/>There's no payment yet.
+                                    </small> </span>
                                 </a>
                             </li>
                             <!--<li style="width: 33%">-->
                             <li>
-                                <a href="" class="{{stepStatus(2).styleClass}}" isdone="{{stepStatus(2).isdone}}" rel="2">
+                                <a href="" class="{{stepStatus(2).styleClass}}"
+                                   isdone="{{stepStatus(2).isdone}}" rel="2">
                                     <span class="step_no">2</span>
-                                    <span class="step_descr">PENDING_VALIDATION<br/><small>The customer made the first payment.<br/>It includes the transactionId & orderId.</small></span>
+                                    <span class="step_descr">PENDING_VALIDATION<br/><small>The
+                                        customer made the first payment.<br/>It includes the
+                                        transactionId & orderId.
+                                    </small></span>
                                 </a>
                             </li>
                             <!--<li style="width: 33%">-->
                             <li>
-                                <a href="" class="{{stepStatus(3).styleClass}}" isdone="{{stepStatus(3).isdone}}" rel="3">
+                                <a href="" class="{{stepStatus(3).styleClass}}"
+                                   isdone="{{stepStatus(3).isdone}}" rel="3">
                                     <span class="step_no">3</span>
                                 <span class="step_descr">VALIDATED<br/>
                                     <small>The policy was validated.<br/>
@@ -212,14 +223,19 @@
                         </div>
                         <div class="form-group col-sm-4">
                             <label class="col-sm-4 control-label">Email *
-                                <a ng-show="PROFILE != 'prd'" ng-click="useTestFailEmail()" title="Use 'test fail email' to test retry payment flow. (This link doesn't appear in 'Production' environment.)" style="font-weight: normal; font-style: italic; color: #AEAEAE;"><br/>
+                                <a ng-show="PROFILE != 'prd'" ng-click="useTestFailEmail()"
+                                   title="Use 'test fail email' to test retry payment flow. (This link doesn't appear in 'Production' environment.)"
+                                   style="font-weight: normal; font-style: italic; color: #AEAEAE;"><br/>
                                     <small>Retry email</small>
                                 </a>
                             </label>
 
                             <div class="col-sm-8">
                                 <span class="form-control-static no-role-policy-main-insured-person-editor">{{ policyDetail.insureds[0].person.email }}</span>
-                                <input class="form-control" permission="role-policy-main-insured-person-editor" type="text" ng-model="policyDetail.insureds[0].person.email" ng-change="validateInsuredPerson()" id="orderId" required>
+                                <input class="form-control"
+                                       permission="role-policy-main-insured-person-editor"
+                                       type="text" ng-model="policyDetail.insureds[0].person.email"
+                                       ng-change="validateInsuredPerson()" id="orderId" required>
                                 <span class="help-block red">{{ fieldErrorMessages["mainInsured.email"]}}</span>
                             </div>
 
@@ -243,7 +259,11 @@
 
                             <div class="col-sm-8">
                                 <span class="form-control-static no-role-policy-main-insured-person-editor">{{ policyDetail.insureds[0].person.mobilePhoneNumber.number }}</span>
-                                <input class="form-control" permission="role-policy-main-insured-person-editor" type="text" ng-model="policyDetail.insureds[0].person.mobilePhoneNumber.number" ng-change="validateInsuredPerson()" id="orderId" required>
+                                <input class="form-control"
+                                       permission="role-policy-main-insured-person-editor"
+                                       type="text"
+                                       ng-model="policyDetail.insureds[0].person.mobilePhoneNumber.number"
+                                       ng-change="validateInsuredPerson()" id="orderId" required>
                                 <span class="help-block red">{{ fieldErrorMessages["mainInsured.mobile"]}}</span>
                             </div>
                         </div>
@@ -251,7 +271,10 @@
                     <div class="ln_solid" permission="role-policy-main-insured-person-editor"></div>
                     <div class="form-group" permission="role-policy-main-insured-person-editor">
                         <div class="col-md-3">
-                            <button ng-disabled="isSavingMainInsured" ng-click="saveMainInsuredPerson()" type="button" class=" btn btn-success">Save Insured</button>
+                            <button ng-disabled="isSavingMainInsured"
+                                    ng-click="saveMainInsuredPerson()" type="button"
+                                    class=" btn btn-success">Save Insured
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -267,24 +290,52 @@
                         <div class="clearfix"></div>
                     </div>
                     <div class="x_content">
+                        <table class="table table-striped jambo_table">
+                            <thead>
+                            <tr>
+                                <td>Document name</td>
+                                <td>Status</td>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="document in policyDetail.documents track by $index"
+                                ng-show="policyDetail">
+                                <td>
+                                    <a ng-href="{{apiELifeUrl}}/policies/{{document.policyId}}/document/{{document.typeName}}/download">
+                                        <i class="green fa fa-file-pdf-o"></i>{{document.typeName}}
+                                    </a>
+                                </td>
+                                <td>
+                                    <span ng-class="{'green': document.mocabStatus=='SUCCESS'}">{{document.mocabStatus}} </span>
+                                    <a ng-show="document.mocabStatus!='SUCCESS'"
+                                       ng-click="retryUploadToMocab(document.policyId, document.typeName, document.mocabStatus, $index)">
+                                       <!--ng-href="{{apiELifeUrl}}/policies/{{document.policyId}}/document/{{document.typeName}}/retry"-->
+                                        <i class="red fa fa-repeat"></i>Retry
+                                    </a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+
                         <!-- info row -->
-                        <div class="row fontawesome-icon-list" ng-show="policyDetail">
+                        <!--<div class="row fontawesome-icon-list" ng-show="policyDetail" ng-repeat="document in policyDetail.documents">
                             <div class="fa-hover col-md-3 col-sm-4 col-xs-12">
-                                <a ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/APPLICATION_FORM/download">
-                                    <i class="green fa fa-file-pdf-o"></i>Application Form (not validated)
+                                <a ng-href="{{apiELifeUrl}}/policies/{{document.policyId}}/document/{{document.typeName}}/download">
+                                    <i class="green fa fa-file-pdf-o"></i>{{document.mocabStatus}} {{document.typeName}}
                                 </a>
                             </div>
-                            <div class="fa-hover col-md-3 col-sm-4 col-xs-12" ng-show="policyDetail.status == 'VALIDATED'">
+                            <!--<div class="fa-hover col-md-3 col-sm-4 col-xs-12" ng-show="policyDetail.status == 'VALIDATED'">
                                 <a ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/APPLICATION_FORM_VALIDATED/download">
                                     <i class="green fa fa-file-pdf-o"></i>Application Form (validated)
                                 </a>
                             </div>
                             <div class="fa-hover col-md-3 col-sm-4 col-xs-12" ng-show="isEnabledAutoPay(policyDetail)">
                                 <a ng-href="{{apiELifeUrl}}/policies/{{policyDetail.policyId}}/document/DA_FORM/download">
-                                    <i class="green fa fa-file-pdf-o"></i>DA Form
+                                    <i class="green fa fa-file-pdf-o"></i>{{policyDetail.documents[1].mocabStatus}} DA Form
                                 </a>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
 
@@ -302,34 +353,52 @@
                                 <div class="row">
                                     <form class="form-horizontal">
                                         <div class="form-group">
-                                            <label for="agentName" class="col-md-3 control-label">Agent Name</label>
+                                            <label for="agentName" class="col-md-3 control-label">Agent
+                                                Name</label>
 
                                             <div class="col-md-6">
-                                                <input type="text" class="form-control" id="agentName" ng-model="agentName" required>
+                                                <input type="text" class="form-control"
+                                                       id="agentName" ng-model="agentName" required>
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            <label for="agentCode" class="col-md-3 control-label">Agent code</label>
+                                            <label for="agentCode" class="col-md-3 control-label">Agent
+                                                code</label>
 
                                             <div class="col-md-6">
-                                                <input type="text" class="form-control" id="agentCode" ng-model="agentCode" mask='999999-99-999999' placeholder="______-__-______" required>
+                                                <input type="text" class="form-control"
+                                                       id="agentCode" ng-model="agentCode"
+                                                       mask='999999-99-999999'
+                                                       placeholder="______-__-______" required>
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            <label for="linePayCaptureMode" class="col-md-3 control-label">Line Pay call</label>
+                                            <label for="linePayCaptureMode"
+                                                   class="col-md-3 control-label">Line Pay
+                                                call</label>
 
                                             <div class="col-md-6">
-                                                <select class="form-control" id="linePayCaptureMode" ng-model="linePayCaptureMode">
-                                                    <option value="FAKE_WITH_SUCCESS">Fake (with a success response)</option>
-                                                    <option value="FAKE_WITH_ERROR">Fake (with an error response)</option>
-                                                    <option value="REAL">Real (insured person will be charged)</option>
+                                                <select class="form-control" id="linePayCaptureMode"
+                                                        ng-model="linePayCaptureMode">
+                                                    <option value="FAKE_WITH_SUCCESS">Fake (with a
+                                                        success response)
+                                                    </option>
+                                                    <option value="FAKE_WITH_ERROR">Fake (with an
+                                                        error response)
+                                                    </option>
+                                                    <option value="REAL">Real (insured person will
+                                                        be charged)
+                                                    </option>
                                                 </select>
                                             </div>
                                         </div>
                                         <div class="ln_solid"></div>
                                         <div class="form-group">
                                             <div class="col-md-3 col-md-offset-3">
-                                                <button ng-click="onClickValidate(policyDetail.policyId)" type="button" ng-disabled="isValidating" class="btn btn-default btn-danger">Validate</button>
+                                                <button ng-click="onClickValidate(policyDetail.policyId)"
+                                                        type="button" ng-disabled="isValidating"
+                                                        class="btn btn-default btn-danger">Validate
+                                                </button>
                                             </div>
                                         </div>
                                     </form>
@@ -354,8 +423,11 @@
                                                 <li>
                                                     <div class="block">
                                                         <div class="tags">
-                                                            <a href="" class="tag" ng-click="onClickNotification(1)" ng-disabled="isValidating">
-                                                                <i class="fa fa-bullhorn"></i> Notify
+                                                            <a href="" class="tag"
+                                                               ng-click="onClickNotification(1)"
+                                                               ng-disabled="isValidating">
+                                                                <i class="fa fa-bullhorn"></i>
+                                                                Notify
                                                             </a>
                                                         </div>
                                                         <div class="block_content">
@@ -364,9 +436,11 @@
                                                             </h2>
 
                                                             <div class="byline">
-                                                                <span>notification</span> to <a>insured person</a>
+                                                                <span>notification</span> to <a>insured
+                                                                person</a>
                                                             </div>
-                                                            <p class="excerpt">Send SMS + Email + Line</a>
+                                                            <p class="excerpt">Send SMS + Email +
+                                                                Line</a>
                                                             </p>
                                                         </div>
                                                     </div>
@@ -374,8 +448,11 @@
                                                 <li>
                                                     <div class="block">
                                                         <div class="tags">
-                                                            <a href="" class="tag" ng-click="onClickNotification(2)" ng-disabled="isValidating">
-                                                                <i class="fa fa-bullhorn"></i> Notify
+                                                            <a href="" class="tag"
+                                                               ng-click="onClickNotification(2)"
+                                                               ng-disabled="isValidating">
+                                                                <i class="fa fa-bullhorn"></i>
+                                                                Notify
                                                             </a>
                                                         </div>
                                                         <div class="block_content">
@@ -405,7 +482,8 @@
 
 
             <!-- PAYMENT INPUT -->
-            <div id="role-policy-payment" class="x_panel" ng-show="policyDetail && policyDetail.status == 'PENDING_PAYMENT'">
+            <div id="role-policy-payment" class="x_panel"
+                 ng-show="policyDetail && policyDetail.status == 'PENDING_PAYMENT'">
                 <div class="x_title">
                     <h2>Payment input
                     </h2>
@@ -414,32 +492,40 @@
                 </div>
                 <div class="x_content">
                     <!-- info row -->
-                    <form id="demo-form2" data-parsley-validate="" class="form-horizontal form-label-left" novalidate="" ng-submit="onSubmitPaymentDetails()">
+                    <form id="demo-form2" data-parsley-validate=""
+                          class="form-horizontal form-label-left" novalidate=""
+                          ng-submit="onSubmitPaymentDetails()">
                         <div class="form-group">
                             <label for="regKey" class="col-sm-3 control-label">regKey</label>
 
                             <div class="col-md-6 col-sm-6 col-xs-12">
-                                <input ng-disabled="!isEnabledAutoPay(policyDetail)" class="form-control" type="text" ng-model="payment.regKey" id="regKey" required>
+                                <input ng-disabled="!isEnabledAutoPay(policyDetail)"
+                                       class="form-control" type="text" ng-model="payment.regKey"
+                                       id="regKey" required>
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="orderId" class="col-sm-3 control-label">orderId</label>
 
                             <div class="col-md-6 col-sm-6 col-xs-12">
-                                <input class="form-control" type="text" ng-model="payment.orderId" id="orderId" required>
+                                <input class="form-control" type="text" ng-model="payment.orderId"
+                                       id="orderId" required>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="transactionId" class="col-sm-3 control-label">transactionId</label>
+                            <label for="transactionId"
+                                   class="col-sm-3 control-label">transactionId</label>
 
                             <div class="col-md-6 col-sm-6 col-xs-12">
-                                <input class="form-control" type="text" ng-model="payment.transactionId" id="transactionId" required>
+                                <input class="form-control" type="text"
+                                       ng-model="payment.transactionId" id="transactionId" required>
                             </div>
                         </div>
                         <div class="ln_solid"></div>
                         <div class="form-group">
                             <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
-                                <button type="submit" class="btn btn-success" ng-disabled="paymentForm.$invalid || isFetching">
+                                <button type="submit" class="btn btn-success"
+                                        ng-disabled="paymentForm.$invalid || isFetching">
                                     <span ng-show="isFetching">Updating...</span>
                                     <span ng-show=" ! isFetching">Submit</span>
                                 </button>
@@ -460,7 +546,12 @@
                         <div class="form-group">
                             <div class="checkbox">
                                 <label class="">
-                                    <div class="icheckbox_flat-green" ng-class="showAllPayments" style="position: relative;"><input type="checkbox" class="flat" checked="{{showAllPayments}}" style="position: absolute; opacity: 0;" ng-click="clickShowAllPayments()">
+                                    <div class="icheckbox_flat-green" ng-class="showAllPayments"
+                                         style="position: relative;"><input type="checkbox"
+                                                                            class="flat"
+                                                                            checked="{{showAllPayments}}"
+                                                                            style="position: absolute; opacity: 0;"
+                                                                            ng-click="clickShowAllPayments()">
                                         <ins class="iCheck-helper"></ins>
                                     </div>
                                     Show 'not processed' payments
@@ -478,10 +569,13 @@
                                 <td>Amount</td>
                                 <td>Status</td>
                                 <td style="min-width: 85px">
-                                    Due Date <i ng-click="sortPayments(['dueDate','effectiveDate'])" class="fa fa-sort"></i>
+                                    Due Date <i ng-click="sortPayments(['dueDate','effectiveDate'])"
+                                                class="fa fa-sort"></i>
                                 </td>
                                 <td style="min-width: 85px">
-                                    Effective <i ng-click="sortPayments(['effectiveDate','dueDate'])" class="fa fa-sort"></i>
+                                    Effective <i
+                                        ng-click="sortPayments(['effectiveDate','dueDate'])"
+                                        class="fa fa-sort"></i>
                                 </td>
                                 <td style="min-width: 100px">eReceipt</td>
                                 <td>Order</td>
@@ -493,7 +587,9 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr ng-repeat="payment in policyDetail.payments" title="RegKey: '{{payment.registrationKey}}'" ng-show="showAllPayments == 'checked' || payment.status != 'NOT_PROCESSED'">
+                            <tr ng-repeat="payment in policyDetail.payments"
+                                title="RegKey: '{{payment.registrationKey}}'"
+                                ng-show="showAllPayments == 'checked' || payment.status != 'NOT_PROCESSED'">
 
                                 <td>
                                     <span title="payment.amount.currencyCode">{{ payment.amount.value | number: 2}}</span>
@@ -508,7 +604,8 @@
                                     <span>{{ payment.effectiveDate | date:'yyyy-MM-dd HH:mm:ss'}}</span>
                                 </td>
                                 <td>
-                                    <a ng-show="payment.receiptPdfDocument.id" ng-href="{{apiELifeUrl}}/documents/{{payment.receiptPdfDocument.id}}/download">
+                                    <a ng-show="payment.receiptPdfDocument.id"
+                                       ng-href="{{apiELifeUrl}}/documents/{{payment.receiptPdfDocument.id}}/download">
                                         <span> <i class="green fa fa-file-pdf-o"></i> {{payment.receiptNumber.mainNumberDecimal}}-{{payment.receiptNumber.suffixNumberBase36}}</span>
                                     </a>
                                     <span ng-hide="payment.receiptPdfDocument.id">{{payment.receiptNumber.mainNumberDecimal}}-{{payment.receiptNumber.suffixNumberBase36}}</span>

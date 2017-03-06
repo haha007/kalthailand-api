@@ -20,6 +20,7 @@ public class Document implements Serializable {
     private String policyId;
     private DocumentType typeName;
     private LocalDateTime creationDate;
+    private MocabStatus mocabStatus = MocabStatus.PENDING;
     /**
      * The object which relates to this document.
      * That object can be a payment, a policy, or a quote... (view more in {@link DocumentReferenceType}.
@@ -65,6 +66,17 @@ public class Document implements Serializable {
         this.creationDate = creationDate;
     }
 
+    public MocabStatus getMocabStatus() {
+        return mocabStatus;
+    }
+
+    public void setMocabStatus(final MocabStatus mocabStatus) {
+        this.mocabStatus = mocabStatus;
+    }
+
+    @ApiModelProperty(value = "Indicate document is sent to MOCAB or not")
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -75,12 +87,13 @@ public class Document implements Serializable {
                 Objects.equals(typeName, document.typeName) &&
                 Objects.equals(referenceId, document.referenceId) &&
                 Objects.equals(referenceType, document.referenceType) &&
-                Objects.equals(creationDate, document.creationDate);
+                Objects.equals(creationDate, document.creationDate) &&
+                Objects.equals(mocabStatus, document.mocabStatus);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, policyId, typeName, creationDate);
+        return Objects.hash(id, policyId, typeName, creationDate, mocabStatus);
     }
 
     public String getReferenceId() {
