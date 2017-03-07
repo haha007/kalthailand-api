@@ -11,7 +11,6 @@ import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
 import th.co.krungthaiaxa.api.elife.factory.PolicyFactory;
 import th.co.krungthaiaxa.api.elife.factory.productquotation.ProductQuotationFactory;
 import th.co.krungthaiaxa.api.elife.model.Document;
-import th.co.krungthaiaxa.api.elife.model.MocabStatus;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.enums.DocumentType;
 import th.co.krungthaiaxa.api.elife.service.DocumentService;
@@ -55,7 +54,7 @@ public class MocabClientTest extends ELifeTest {
         Optional<MocabResponse> responseOptional =
                 mocabClient.sendPdfToMocab(policy, documentContent, DocumentType.ERECEIPT_PDF);
         Assert.assertTrue(responseOptional.isPresent()
-                && responseOptional.get().getMessageCode().equals(MocabStatus.SUCCESS));
+                && responseOptional.get().getMessageCode().equals("200"));
     }
 
 
