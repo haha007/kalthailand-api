@@ -130,7 +130,6 @@ public class QuoteCountForAllProductsService {
                 productTypes,
                 startDate, endDate);
 
-
         for (QuoteMid quote : quotes) {
             ExcelUtils.appendRow(sheet,
                     text(quote.getProductId()),
