@@ -36,7 +36,7 @@
         aDateAgo.setDate(new Date().getDate() - 7);
         $scope.toDateSearch = new Date();
         $scope.fromDateSearch = aDateAgo;
-        $scope.productType = null;
+        $scope.productType = "all";
         $scope.responseText = null;
         $scope.sessionQuoteCounts = [];
 
@@ -62,26 +62,28 @@
 
         $scope.downloadExcelFile = function () {
             var url = window.location.origin
-                + '/api-elife/quotes/all-products/download?'
-                + 'fromDate=' + $scope.fromDateSearch.toISOString()
+                + '/api-elife/quotes/download?'
+                + 'productType=' + $scope.productType
+                + '&fromDate=' + $scope.fromDateSearch.toISOString()
                 + '&toDate=' + $scope.toDateSearch.toISOString();
             window.open(url, "_blank");
         }
 
         $scope.downloadMIDExcelFile = function () {
             var url = window.location.origin
-                + '/api-elife/quotes/all-products/download?'
-                + 'fromDate=' + $scope.fromDateSearch.toISOString()
-                + '&toDate=' + $scope.toDateSearch.toISOString()
-                + '&productType=' + $scope.productType;
+                + '/api-elife/quotes/mid/download?'
+                + 'productType=' + $scope.productType
+                + '&fromDate=' + $scope.fromDateSearch.toISOString()
+                + '&toDate=' + $scope.toDateSearch.toISOString();
             window.open(url, "_blank");
         }
 
         function searchForTotalQuoteCount() {
             var fromDate = $scope.fromDateSearch.toISOString();
             var toDate = $scope.toDateSearch.toISOString();
-            $http.get(window.location.origin + '/api-elife/quotes/all-products/counts?'
-                    + 'fromDate=' + fromDate
+            $http.get(window.location.origin + '/api-elife/quotes/counts?'
+                    + 'productType=' + $scope.productType
+                    + '&fromDate=' + fromDate
                     + '&toDate=' + toDate)
                 .then(
                     function (successResponse) {

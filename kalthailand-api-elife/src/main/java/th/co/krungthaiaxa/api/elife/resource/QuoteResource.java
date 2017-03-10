@@ -28,6 +28,7 @@ import th.co.krungthaiaxa.api.elife.model.SessionQuoteCount;
 import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
 import th.co.krungthaiaxa.api.elife.products.ProductEmailService;
 import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
+import th.co.krungthaiaxa.api.elife.products.ProductType;
 import th.co.krungthaiaxa.api.elife.service.QuoteCountForAllProductsService;
 import th.co.krungthaiaxa.api.elife.service.QuoteService;
 
@@ -36,7 +37,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
@@ -196,10 +200,13 @@ public class QuoteResource {
         return new ResponseEntity<>(getJson(updatedQuote), OK);
     }
 
+    //TODO need to refactor
     @ApiOperation(value = "Count sessionQuotes for every product", notes = "Count sessionQuotes for every product", response = SessionQuoteCount.class, responseContainer = "List")
-    @RequestMapping(value = "/quotes/all-products/counts", produces = APPLICATION_JSON_VALUE, method = GET)
+    @RequestMapping(value = "/quotes/counts", produces = APPLICATION_JSON_VALUE, method = GET)
     @ResponseBody
     public List<QuoteCount> getTotalQuoteCount(
+            @ApiParam(value = "Product Type: 'all' - count all quote for given product type", required = true)
+            @RequestParam("productType") String productType,
             @ApiParam(value = "The start searching date", required = true)
             @RequestParam("fromDate") String startDateString,
             @ApiParam(value = "The end searching date", required = true)
@@ -207,14 +214,25 @@ public class QuoteResource {
         LocalDateTime startDate = DateTimeUtil.toLocalDateTimePatternISO(startDateString).toLocalDate().atStartOfDay();
         LocalDateTime endDate = DateTimeUtil.toLocalDateTimePatternISO(endDateString);
         endDate = DateTimeUtil.toEndOfDate(endDate);
-        return quoteCountForAllProductsService.countQuotesOfAllProducts(startDate, endDate);
+        if ("all".equals(productType)) {
+            return quoteCountForAllProductsService.countQuotesOfAllProducts(startDate, endDate);
+        }
+        final ProductType productTypeObj = ProductType.valueOf(productType);
+        if (Objects.isNull(productTypeObj)) {
+            logger.error("Could not found product type {}", productType);
+            return Collections.emptyList();
+        }
+        return Collections.singletonList(
+                quoteCountForAllProductsService.countQuotes(productTypeObj, startDate, endDate));
     }
 
     //TODO need to refactor
     @ApiOperation(value = "Excel report for counting session quotes", notes = "Export Excel report for counting sessionQuotes for every product", response = Quote.class, responseContainer = "List")
-    @RequestMapping(value = "/quotes/all-products/download", method = GET)
+    @RequestMapping(value = "/quotes/download", method = GET)
     @ResponseBody
     public void downloadTotalQuoteCountExcelFile(
+            @ApiParam(value = "Product Type: 'all' - count all quote for given product type", required = true)
+            @RequestParam("productType") String productType,
             @ApiParam(value = "The start searching date", required = true)
             @RequestParam("fromDate") String startDateString,
             @ApiParam(value = "The end searching date", required = true)
@@ -224,7 +242,54 @@ public class QuoteResource {
         LocalDateTime startDate = DateTimeUtil.toLocalDateTimePatternISO(startDateString).toLocalDate().atStartOfDay();
         LocalDateTime endDate = DateTimeUtil.toLocalDateTimePatternISO(endDateString);
         endDate = DateTimeUtil.toEndOfDate(endDate);
-        byte[] content = quoteCountForAllProductsService.exportTotalQuotesCountReport(startDate, endDate);
+        final byte[] content;
+        if ("all".equals(productType)) {
+            content = quoteCountForAllProductsService.exportTotalQuotesCountReport(startDate, endDate);
+            DownloadUtil.writeExcelBytesToResponseWithDateRollFileName(response, content, "quotes-count");
+            return;
+        }
+
+        final ProductType productTypeObj = ProductType.valueOf(productType);
+        if (Objects.isNull(productTypeObj)) {
+            logger.error("Could not found product type {}", productType);
+            return;
+        }
+        content = quoteCountForAllProductsService.exportTotalQuotesByProductTypeReport(productTypeObj, startDate, endDate);
         DownloadUtil.writeExcelBytesToResponseWithDateRollFileName(response, content, "quotes-count");
+    }
+
+    @ApiOperation(value = "Excel report for session quotes including MID",
+            notes = "Export Excel report for sessionQuotes including MID for every product",
+            response = Quote.class, responseContainer = "List")
+    @RequestMapping(value = "/quotes/mid/download", method = GET)
+    @ResponseBody
+    public void downloadSessionQuoteMIDExcelFile(
+            @ApiParam(value = "Product Type: 'all' - count all quote for given product type", required = true)
+            @RequestParam("productType") String productType,
+            @ApiParam(value = "The start searching date", required = true)
+            @RequestParam("fromDate") String startDateString,
+            @ApiParam(value = "The end searching date", required = true)
+            @RequestParam("toDate") String endDateString,
+            HttpServletResponse response) {
+
+        final LocalDateTime startDate = DateTimeUtil.toLocalDateTimePatternISO(startDateString).toLocalDate().atStartOfDay();
+        final LocalDateTime endDate = DateTimeUtil.toEndOfDate(DateTimeUtil.toLocalDateTimePatternISO(endDateString));
+        final byte[] content;
+
+        if ("all".equals(productType)) {
+            content = quoteCountForAllProductsService
+                    .exportSessionQuotesMIDReport(Arrays.asList(ProductType.values()), startDate, endDate);
+            DownloadUtil.writeExcelBytesToResponseWithDateRollFileName(response, content, "quotes-count-mid");
+            return;
+        }
+
+        final ProductType productTypeObj = ProductType.valueOf(productType);
+        if (Objects.isNull(productTypeObj)) {
+            logger.error("Could not found product type {}", productType);
+            return;
+        }
+        content = quoteCountForAllProductsService
+                .exportSessionQuotesMIDReport(Collections.singletonList(productTypeObj), startDate, endDate);
+        DownloadUtil.writeExcelBytesToResponseWithDateRollFileName(response, content, "quotes-count-mid");
     }
 }
