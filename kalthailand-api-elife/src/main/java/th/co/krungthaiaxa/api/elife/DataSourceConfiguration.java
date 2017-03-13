@@ -24,6 +24,18 @@ public class DataSourceConfiguration {
         return new JdbcTemplate(cdbDataSource());
     }
 
+    //CDB DATA VIEW /////////////////////////////////////
+    @Bean
+    @ConfigurationProperties(prefix = "datasource.cdb-view")
+    public DataSource cdbViewDataSource() {
+        return DataSourceBuilder.create().build();
+    }
+
+    @Bean(name = "cdbViewTemplate")
+    public JdbcTemplate cdbViewTemplate() {
+        return new JdbcTemplate(cdbViewDataSource());
+    }
+
     //POLICY-PREMIUM POLICY /////////////////////////////////////
     @Bean
     @ConfigurationProperties(prefix = "datasource.cdb.policy-premium")

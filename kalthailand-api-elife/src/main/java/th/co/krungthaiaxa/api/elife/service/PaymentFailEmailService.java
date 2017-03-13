@@ -17,7 +17,7 @@ import th.co.krungthaiaxa.api.elife.model.Person;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
 import th.co.krungthaiaxa.api.elife.products.utils.ProductUtils;
-import th.co.krungthaiaxa.api.elife.repository.cdb.CDBRepository;
+import th.co.krungthaiaxa.api.elife.repository.cdb.CDBViewRepository;
 import th.co.krungthaiaxa.api.elife.utils.PersonUtil;
 
 import javax.inject.Inject;
@@ -36,7 +36,7 @@ public class PaymentFailEmailService {
     private final PaymentRetryLinkService paymentRetryLinkService;
 
     @Autowired
-    private CDBRepository cdbRepository;
+    private CDBViewRepository cdbViewRepository;
 
     @Inject
     public PaymentFailEmailService(ElifeEmailService emailService, MessageSource messageSource, PaymentRetryLinkService paymentRetryLinkService) {
@@ -77,7 +77,7 @@ public class PaymentFailEmailService {
             Person insuredPerson = mainInsured.getPerson();
             customerName = PersonUtil.getFullName(insuredPerson);
             if (payment != null) {
-                cdbDueDateString = cdbRepository.getPaymentDueDate(policy.getPolicyId());
+                cdbDueDateString = cdbViewRepository.getPaymentDueDate(policy.getPolicyId());
                 Amount amount = payment.getAmount();
                 paymentAmount = "" + amount.getValue();
             }
