@@ -7,10 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import th.co.krungthaiaxa.api.common.utils.StringUtil;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author tuong.le on 3/10/17.
@@ -18,6 +19,10 @@ import java.util.Map;
 @Repository
 public class CDBViewRepository {
     private static final Logger LOGGER = LoggerFactory.getLogger(CDBViewRepository.class);
+    private static final String CDB_VIEW_DUE_DATE_FIELD = "pptd";
+    private static final String QUERY_DUE_DATE_CDB_VIEW =
+            "SELECT " + CDB_VIEW_DUE_DATE_FIELD +
+                    " FROM dbo.DB24_VIEW_LFKLUDTA_LFPPML WHERE pno = ?";
 
     @Autowired
     @Qualifier("cdbViewTemplate")
@@ -26,26 +31,22 @@ public class CDBViewRepository {
     /**
      * Get payment due date by policyId.
      *
-     * @param policyId
-     * @return
+     * @param policyId policy Id
+     * @return payment due date of policy Id
      */
-    public String getPaymentDueDate(String policyId) {
-        String paymentDueDate = "";
+    public String getPaymentDueDate(final String policyId) {
         if (!StringUtils.isBlank(policyId)) {
-            String sql = StringUtil.newString(" select pno, pptd from [dbo].[LFKLUDTA_LFPPML] where pno = ? ");
-            LOGGER.trace("sql:" + sql);
-            Object[] parameters = new Object[1];
-            parameters[0] = policyId;
-            Map<String, Object> map = null;
             try {
-                List<Map<String, Object>> list = cdbViewTemplate.queryForList(sql, parameters);
-                if (list.size() != 0) {
-                    paymentDueDate = String.valueOf(list.get(0).get("pptd"));
+                LOGGER.trace("sql: {}", QUERY_DUE_DATE_CDB_VIEW);
+                final List<Map<String, Object>> list = cdbViewTemplate
+                        .queryForList(QUERY_DUE_DATE_CDB_VIEW, Collections.singletonList(policyId).toArray());
+                if (!Objects.isNull(list) && !list.isEmpty()) {
+                    return String.valueOf(list.get(0).get(CDB_VIEW_DUE_DATE_FIELD));
                 }
-            } catch (Exception e) {
-                LOGGER.error("Unable to query for policyId: " + policyId, e);
+            } catch (final Exception e) {
+                LOGGER.error("Unable to query for policyId: {}" + policyId, e);
             }
         }
-        return paymentDueDate;
+        return StringUtils.EMPTY;
     }
 }

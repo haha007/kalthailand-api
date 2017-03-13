@@ -49,7 +49,7 @@ public class CDBRepository {
         Optional<PreviousPolicy> result;
         if (StringUtils.isBlank(insuredRegistrationId) || StringUtils.isBlank(dateOfBirth)) {
             result = Optional.empty();
-        }else {
+        } else {
             //TODO need to refactor.
             String sql = StringUtil.newString("select top 1 pno as policyNumber, ",
                     " case cast(coalesce(pagt1,0) as varchar) when '0' then 'NULL' else cast(coalesce(pagt1,0) as varchar) end as agentCode1, ",
@@ -183,7 +183,6 @@ public class CDBRepository {
             LOGGER.trace("sql:" + sql);
             Object[] parameters = new Object[1];
             parameters[0] = agentCode;
-            Map<String, Object> map = null;
             try {
                 List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, parameters);
                 if (list.size() != 0) {
@@ -194,30 +193,5 @@ public class CDBRepository {
             }
         }
         return status;
-    }
-
-    /**
-     * Get payment due date by policyId.
-     * @param policyId
-     * @return
-     */
-    public String getPaymentDueDate(String policyId){
-        String paymentDueDate = "";
-        if (!StringUtils.isBlank(policyId)) {
-            String sql = StringUtil.newString(" select pno, pptd from [dbo].[LFKLUDTA_LFPPML] where pno = ? ");
-            LOGGER.trace("sql:" + sql);
-            Object[] parameters = new Object[1];
-            parameters[0] = policyId;
-            Map<String, Object> map = null;
-            try {
-                List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, parameters);
-                if (list.size() != 0) {
-                    paymentDueDate = String.valueOf(list.get(0).get("pptd"));
-                }
-            } catch (Exception e) {
-                LOGGER.error("Unable to query for policyId: " + policyId, e);
-            }
-        }
-        return paymentDueDate;
     }
 }
