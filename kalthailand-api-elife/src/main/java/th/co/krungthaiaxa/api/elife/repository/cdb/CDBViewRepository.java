@@ -44,7 +44,7 @@ public class CDBViewRepository {
                     return String.valueOf(list.get(0).get(CDB_VIEW_DUE_DATE_FIELD));
                 }
             } catch (final Exception e) {
-                LOGGER.error("Unable to query for policyId: {}" + policyId, e);
+                LOGGER.error("Unable to query for policyId: {}", policyId, e);
             }
         }
         return StringUtils.EMPTY;

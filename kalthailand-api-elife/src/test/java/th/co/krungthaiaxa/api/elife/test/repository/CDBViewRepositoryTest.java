@@ -40,7 +40,7 @@ public class CDBViewRepositoryTest {
         } else {
             final String dueDateThaiDate =
                     DateTimeUtil.formatThaiDate(DateTimeUtil.toLocalDate(dueDate, DateTimeUtil.PATTERN_CDB_DUEDATE));
-            LOGGER.info("CDB View DueDate {} as Thai Date for policy {}", dueDateThaiDate.toString(), policyId);
+            LOGGER.info("CDB View DueDate {} as Thai Date for policy {}", dueDateThaiDate, policyId);
             Assert.assertTrue(!Objects.isNull(dueDateThaiDate));
         }
     }
