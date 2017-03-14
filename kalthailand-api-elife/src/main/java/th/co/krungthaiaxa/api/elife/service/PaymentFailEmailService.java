@@ -3,7 +3,6 @@ package th.co.krungthaiaxa.api.elife.service;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.common.exeption.EmailException;
@@ -34,15 +33,17 @@ public class PaymentFailEmailService {
     private final ElifeEmailService emailService;
     private final MessageSource messageSource;
     private final PaymentRetryLinkService paymentRetryLinkService;
-
-    @Autowired
-    private CDBViewRepository cdbViewRepository;
+    private final CDBViewRepository cdbViewRepository;
 
     @Inject
-    public PaymentFailEmailService(ElifeEmailService emailService, MessageSource messageSource, PaymentRetryLinkService paymentRetryLinkService) {
+    public PaymentFailEmailService(ElifeEmailService emailService,
+                                   MessageSource messageSource,
+                                   PaymentRetryLinkService paymentRetryLinkService,
+                                   CDBViewRepository cdbViewRepository) {
         this.emailService = emailService;
         this.messageSource = messageSource;
         this.paymentRetryLinkService = paymentRetryLinkService;
+        this.cdbViewRepository = cdbViewRepository;
     }
 
     public void sendEmail(Policy policy, Payment payment) {
@@ -88,7 +89,7 @@ public class PaymentFailEmailService {
             String thaiDueDate = DateTimeUtil.formatThaiDate(StringUtils.isNotEmpty(cdbDueDateString)
                     ? DateTimeUtil.toLocalDate(cdbDueDateString, DateTimeUtil.PATTERN_CDB_DUEDATE)
                     : payment.getDueDate().toLocalDate());
-            
+
             emailContent = emailContent.replaceAll("%PRODUCT_NAME%", productDisplayName)
                     .replaceAll("%POLICY_NUMBER%", policy.getPolicyId())
                     .replaceAll("%CUSTOMER_NAME%", customerName)
