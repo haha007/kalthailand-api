@@ -41,7 +41,9 @@ public class CDBViewRepository {
                 final List<Map<String, Object>> list = cdbViewTemplate
                         .queryForList(QUERY_DUE_DATE_CDB_VIEW, Collections.singletonList(policyId).toArray());
                 if (!Objects.isNull(list) && !list.isEmpty()) {
-                    return String.valueOf(list.get(0).get(CDB_VIEW_DUE_DATE_FIELD));
+                    final String paymentDueDate = String.valueOf(list.get(0).get(CDB_VIEW_DUE_DATE_FIELD));
+                    LOGGER.info("Payment DueDate in CDBView is {} for policyId {}", paymentDueDate, policyId);
+                    return paymentDueDate;
                 }
             } catch (final Exception e) {
                 LOGGER.error("Unable to query for policyId: {}", policyId, e);
