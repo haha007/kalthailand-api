@@ -23,6 +23,7 @@ public class CDBViewRepository {
     private static final String QUERY_DUE_DATE_CDB_VIEW =
             "SELECT " + CDB_VIEW_DUE_DATE_FIELD +
                     " FROM dbo.DB24_VIEW_LFKLUDTA_LFPPML WHERE pno = ?";
+    public static final String PATTERN_CDB_DUEDATE = "yyyyMMdd";
 
     @Autowired
     @Qualifier("cdbViewTemplate")

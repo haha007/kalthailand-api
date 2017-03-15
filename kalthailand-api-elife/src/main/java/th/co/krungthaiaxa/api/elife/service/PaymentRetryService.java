@@ -150,7 +150,7 @@ public class PaymentRetryService {
 
         //get due-date of policy from CDB first, In case could not get due-date, we will get due-date from MongoDB
         String thaiDueDate = DateTimeUtil.formatThaiDate(StringUtils.isNotEmpty(cdbDueDateString)
-                ? DateTimeUtil.toLocalDate(cdbDueDateString, DateTimeUtil.PATTERN_CDB_DUEDATE)
+                ? DateTimeUtil.toLocalDate(cdbDueDateString, CDBViewRepository.PATTERN_CDB_DUEDATE)
                 : payment.getDueDate().toLocalDate());
 
         emailContent = emailContent
