@@ -32,14 +32,14 @@ public class CDBViewRepositoryTest {
 
     @Test
     public void can_query_payment_dueDate_by_policyId() {
-        String policyId = "505-8031971";
+        String policyId = "502-0000559";
         final String dueDate = cdbViewRepository.getPaymentDueDate(policyId);
         if (StringUtils.isEmpty(dueDate)) {
             LOGGER.info("Could not found policyId {}", policyId);
             Assert.fail();
         } else {
             final String dueDateThaiDate =
-                    DateTimeUtil.formatThaiDate(DateTimeUtil.toLocalDate(dueDate, DateTimeUtil.PATTERN_CDB_DUEDATE));
+                    DateTimeUtil.formatThaiDate(DateTimeUtil.toLocalDate(dueDate, CDBViewRepository.PATTERN_CDB_DUEDATE));
             LOGGER.info("CDB View DueDate {} as Thai Date for policy {}", dueDateThaiDate, policyId);
             Assert.assertTrue(!Objects.isNull(dueDateThaiDate));
         }
