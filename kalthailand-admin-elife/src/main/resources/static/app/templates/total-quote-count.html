@@ -19,17 +19,18 @@
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-md-1  text-right">
-                            <label for="productType" class="control-label">Product Type</label>
+                            <label for="productType" class="control-label">Product</label>
                         </div>
                         <div class="col-md-3">
-                            <select class="form-control" id="productType" ng-model="productType">
-                                <option value="all">All</option>
-                                <option value="PRODUCT_10_EC">10EC</option>
-                                <option value="PRODUCT_IBEGIN">iBegin</option>
-                                <option value="PRODUCT_IFINE">IFine</option>
-                                <option value="PRODUCT_IGEN">IGen</option>
-                                <option value="PRODUCT_IPROTECT">IProtect</option>
-                            </select>
+                            <p>
+                                <select class="form-control" id="productType"
+                                        ng-model="productType">
+                                    <option value="all">All</option>
+                                    <option value="PRODUCT_IFINE">iFine</option>
+                                    <option value="PRODUCT_IGEN">iGen</option>
+                                    <option value="PRODUCT_IPROTECT">iProtect S</option>
+                                </select>
+                            </p>
                         </div>
                     </div>
                     <div class="row">
@@ -38,9 +39,14 @@
                         </div>
                         <div class="col-md-3">
                             <p class="input-group">
-                                <input readonly type="text" id="fromDateSearch" class="form-control" uib-datepicker-popup="dd-MM-yyyy" ng-model="fromDateSearch" ng-required="true" is-open="fromDateSearch.opened" close-text="Close" datepicker-options="dateOptions"/>
+                                <input readonly type="text" id="fromDateSearch" class="form-control"
+                                       uib-datepicker-popup="dd-MM-yyyy" ng-model="fromDateSearch"
+                                       ng-required="true" is-open="fromDateSearch.opened"
+                                       close-text="Close" datepicker-options="dateOptions"/>
                             <span class="input-group-btn">
-                                <button type="button" class="btn btn-default" ng-click="fromDateSearchOpen()"><i class="glyphicon glyphicon-calendar"></i></button>
+                                <button type="button" class="btn btn-default"
+                                        ng-click="fromDateSearchOpen()"><i
+                                        class="glyphicon glyphicon-calendar"></i></button>
                             </span>
                             </p>
                         </div>
@@ -49,9 +55,14 @@
                         </div>
                         <div class="col-md-3">
                             <p class="input-group">
-                                <input readonly type="text" id="toDateSearch" class="form-control" uib-datepicker-popup="dd-MM-yyyy" ng-model="toDateSearch" ng-required="true" is-open="toDateSearch.opened" close-text="Close" datepicker-options="dateOptions"/>
+                                <input readonly type="text" id="toDateSearch" class="form-control"
+                                       uib-datepicker-popup="dd-MM-yyyy" ng-model="toDateSearch"
+                                       ng-required="true" is-open="toDateSearch.opened"
+                                       close-text="Close" datepicker-options="dateOptions"/>
                             <span class="input-group-btn">
-                                <button type="button" class="btn btn-default" ng-click="toDateSearchOpen()"><i class="glyphicon glyphicon-calendar"></i></button>
+                                <button type="button" class="btn btn-default"
+                                        ng-click="toDateSearchOpen()"><i
+                                        class="glyphicon glyphicon-calendar"></i></button>
                             </span>
                             </p>
                         </div>
@@ -79,7 +90,8 @@
         </form>
         <div class="row">
             <div class="col-md-7 col-sm-12 col-xs-12">
-                <div ng-show="sessionQuoteCounts !=null && sessionQuoteCounts.length > 0" class="panel panel-default">
+                <div ng-show="sessionQuoteCounts !=null && sessionQuoteCounts.length > 0"
+                     class="panel panel-default">
                     <div class="panel-heading">
                         <h3 class="panel-title">Counting result</h3>
                     </div>
