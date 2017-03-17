@@ -126,7 +126,7 @@ public class QuoteCountForAllProductsService {
                 text("Product"),
                 text("MID"),
                 text("DateTime"));
-        final List<QuoteMid> quotes = quoteRepositoryExtend.getDistinctQuote(
+        final List<QuoteMid> quotes = quoteRepositoryExtend.getDistinctQuoteMid(
                 productTypes,
                 startDate, endDate);
 

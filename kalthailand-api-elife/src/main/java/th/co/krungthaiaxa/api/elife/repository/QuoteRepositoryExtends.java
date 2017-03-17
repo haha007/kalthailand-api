@@ -50,9 +50,9 @@ public class QuoteRepositoryExtends {
      * @param endDateTime   end date time
      * @return list of Customized Quote include productType, mid, creationDateTime.
      */
-    public List<QuoteMid> getDistinctQuote(final Collection<ProductType> productTypes,
-                                           final LocalDateTime startDateTime,
-                                           final LocalDateTime endDateTime) {
+    public List<QuoteMid> getDistinctQuoteMid(final Collection<ProductType> productTypes,
+                                              final LocalDateTime startDateTime,
+                                              final LocalDateTime endDateTime) {
         final List<String> listProductType =
                 productTypes.stream().map(ProductType::getLogicName).collect(Collectors.toList());
         final Fields groupFields = Fields.from(
