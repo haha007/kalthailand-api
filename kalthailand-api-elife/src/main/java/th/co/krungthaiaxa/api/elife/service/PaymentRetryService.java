@@ -24,7 +24,6 @@ import th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayResponse;
 import th.co.krungthaiaxa.api.elife.products.utils.ProductUtils;
 import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
-import th.co.krungthaiaxa.api.elife.repository.cdb.CDBViewRepository;
 import th.co.krungthaiaxa.api.elife.utils.PersonUtil;
 
 import javax.inject.Inject;
@@ -52,11 +51,10 @@ public class PaymentRetryService {
     private final MessageSource messageSource;
     private final PaymentRepository paymentRepository;
     private final GeneralSettingService generalSettingService;
-    private final CDBViewRepository cdbViewRepository;
 
     @Inject
     public PaymentRetryService(GeneralSettingService generalSettingService, PaymentRepository paymentRepository, PolicyService policyService, LineService lineService, ElifeEmailService emailService, EreceiptService ereceiptService,
-                               MessageSource messageSource, PaymentService paymentService, CDBViewRepository cdbViewRepository) {
+            MessageSource messageSource, PaymentService paymentService) {
         this.paymentService = paymentService;
         this.generalSettingService = generalSettingService;
         this.paymentRepository = paymentRepository;
@@ -65,7 +63,6 @@ public class PaymentRetryService {
         this.emailService = emailService;
         this.ereceiptService = ereceiptService;
         this.messageSource = messageSource;
-        this.cdbViewRepository = cdbViewRepository;
     }
 
     /**
@@ -146,18 +143,11 @@ public class PaymentRetryService {
 
         GeneralSetting generalSetting = generalSettingService.loadGeneralSetting();
         String productDisplayName = ProductUtils.validateExistProductTypeByLogicName(policy.getCommonData().getProductId()).getDisplayName();
-        String cdbDueDateString = cdbViewRepository.getPaymentDueDate(policy.getPolicyId());
-
-        //get due-date of policy from CDB first, In case could not get due-date, we will get due-date from MongoDB
-        String thaiDueDate = DateTimeUtil.formatThaiDate(StringUtils.isNotEmpty(cdbDueDateString)
-                ? DateTimeUtil.toLocalDate(cdbDueDateString, CDBViewRepository.PATTERN_CDB_DUEDATE)
-                : payment.getDueDate().toLocalDate());
-
         emailContent = emailContent
                 .replaceAll("%PAYMENT_ID%", payment.getPaymentId())
                 .replaceAll("%POLICY_NUMBER%", payment.getPolicyId())
                 .replaceAll("%CUSTOMER_NAME%", PersonUtil.getFullName(mainInsured.getPerson()))
-                .replaceAll("%PAYMENT_DATE%", thaiDueDate)
+                .replaceAll("%PAYMENT_DATE%", DateTimeUtil.formatThaiDateTime(payment.getEffectiveDate()))
                 .replaceAll("%PAYMENT_AMOUNT%", String.valueOf(payment.getAmount().getValue()))
                 .replaceAll("%PRODUCT_NAME%", productDisplayName);
         List<String> toEmails = generalSetting.getRetryPaymentSetting().getToSuccessEmails();
