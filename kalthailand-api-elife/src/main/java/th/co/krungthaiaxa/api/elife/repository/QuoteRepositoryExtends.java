@@ -91,7 +91,7 @@ public class QuoteRepositoryExtends {
             final LocalDateTime creationDateTime = DateTimeUtil
                     .toThaiLocalDateTime(((Date) dbObject.get(CREATION_DATE_TIME_FIELD)).toInstant());
             return new QuoteMid(productId, mids.stream().collect(Collectors.joining(", ")), creationDateTime);
-        } catch (ClassCastException ex) {
+        } catch (RuntimeException ex) {
             LOGGER.error("Could not get MID for policy Id {}", String.valueOf(dbObject.get(POLICY_ID)));
             return new QuoteMid();
         }
