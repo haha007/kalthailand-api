@@ -24,11 +24,8 @@
                         <div class="col-md-3">
                             <p>
                                 <select class="form-control" id="productType"
-                                        ng-model="productType">
-                                    <option value="all">All</option>
-                                    <option value="PRODUCT_IFINE">iFine</option>
-                                    <option value="PRODUCT_IGEN">iGen</option>
-                                    <option value="PRODUCT_IPROTECT">iProtect S</option>
+                                        ng-model="productType" ng-options="pdc.value as pdc.name for pdc in productCriteriaList">
+                                    <option value="">All</option>
                                 </select>
                             </p>
                         </div>
