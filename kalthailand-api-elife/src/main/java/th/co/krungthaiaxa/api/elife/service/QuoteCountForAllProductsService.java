@@ -6,8 +6,8 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import th.co.krungthaiaxa.api.elife.model.QuoteMid;
 import th.co.krungthaiaxa.api.elife.model.QuoteCount;
+import th.co.krungthaiaxa.api.elife.model.QuoteMid;
 import th.co.krungthaiaxa.api.elife.model.SessionQuoteCount;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
 import th.co.krungthaiaxa.api.elife.repository.QuoteRepository;
@@ -33,21 +33,25 @@ public class QuoteCountForAllProductsService {
     private final QuoteRepositoryExtends quoteRepositoryExtend;
 
     @Inject
-    public QuoteCountForAllProductsService(QuoteRepository quoteRepository, SessionQuoteService sessionQuoteService,
+    public QuoteCountForAllProductsService(QuoteRepository quoteRepository,
+                                           SessionQuoteService sessionQuoteService,
                                            QuoteRepositoryExtends quoteRepositoryExtend) {
         this.quoteRepository = quoteRepository;
         this.sessionQuoteService = sessionQuoteService;
         this.quoteRepositoryExtend = quoteRepositoryExtend;
     }
 
-    public List<QuoteCount> countQuotesOfAllProducts(LocalDateTime startDate, LocalDateTime endDate) {
+    public List<QuoteCount> countQuotesOfAllProducts(final LocalDateTime startDate,
+                                                     final LocalDateTime endDate) {
         List<QuoteCount> result = Arrays.asList(ProductType.values()).stream()
                 .map(productType -> countQuotes(productType, startDate, endDate))
                 .collect(Collectors.toList());
         return result;
     }
 
-    public QuoteCount countQuotes(ProductType productType, LocalDateTime startDate, LocalDateTime endDate) {
+    public QuoteCount countQuotes(final ProductType productType,
+                                  final LocalDateTime startDate,
+                                  final LocalDateTime endDate) {
         QuoteCount result = new QuoteCount();
         SessionQuoteCount sessionQuoteCount = sessionQuoteService.countSessionQuotes(productType, startDate, endDate);
         long sessionQuoteCountNumber = sessionQuoteCount.getQuoteCount();
@@ -59,7 +63,7 @@ public class QuoteCountForAllProductsService {
     }
 
     //TODO not refactor yet.
-    public byte[] exportTotalQuotesCountReport(LocalDateTime startDate, LocalDateTime endDate) {
+    public byte[] exportTotalQuotesCountReport(final LocalDateTime startDate, final LocalDateTime endDate) {
         List<QuoteCount> listTotalQuoteCount = countQuotesOfAllProducts(startDate, endDate);
 
         Workbook workbook = new XSSFWorkbook();
@@ -84,7 +88,9 @@ public class QuoteCountForAllProductsService {
     }
 
     //TODO not refactor yet.
-    public byte[] exportTotalQuotesByProductTypeReport(ProductType productType, LocalDateTime startDate, LocalDateTime endDate) {
+    public byte[] exportTotalQuotesByProductTypeReport(final ProductType productType,
+                                                       final LocalDateTime startDate,
+                                                       final LocalDateTime endDate) {
         List<QuoteCount> listTotalQuoteCount = Collections.singletonList(countQuotes(productType, startDate, endDate));
 
         Workbook workbook = new XSSFWorkbook();
