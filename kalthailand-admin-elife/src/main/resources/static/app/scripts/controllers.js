@@ -29,15 +29,17 @@
         };
     });
 
-    app.controller('TotalQuoteCountController', function ($scope, $route, $http, $localStorage) {
+    app.controller('TotalQuoteCountController', function ($scope, $route, $http, $localStorage, ProductCriteria) {
         $scope.$route = $route;
 
         var aDateAgo = new Date();
         aDateAgo.setDate(new Date().getDate() - 7);
         $scope.toDateSearch = new Date();
         $scope.fromDateSearch = aDateAgo;
+        $scope.productType = null;
         $scope.responseText = null;
         $scope.sessionQuoteCounts = [];
+        $scope.productCriteriaList = ProductCriteria.query();
 
         $scope.dateOptions = {
             dateDisabled: false,
@@ -60,19 +62,37 @@
         };
 
         $scope.downloadExcelFile = function () {
-            var url = window.location.origin
-                + '/api-elife/quotes/all-products/download?'
+            var downloadQuoteUrl = window.location.origin
+                + '/api-elife/quotes/download?'
                 + 'fromDate=' + $scope.fromDateSearch.toISOString()
                 + '&toDate=' + $scope.toDateSearch.toISOString();
-            window.open(url, "_blank");
+            if($scope.productType) {
+                downloadQuoteUrl += '&productType=' + $scope.productType;
+            }
+            window.open(downloadQuoteUrl, "_blank");
+        }
+
+        $scope.downloadMIDExcelFile = function () {
+            var downloadQuoteMidUrl = window.location.origin
+                + '/api-elife/quotes/mid/download?'
+                + 'fromDate=' + $scope.fromDateSearch.toISOString()
+                + '&toDate=' + $scope.toDateSearch.toISOString();
+            if($scope.productType) {
+                downloadQuoteMidUrl += '&productType=' + $scope.productType;
+            }
+            window.open(downloadQuoteMidUrl, "_blank");
         }
 
         function searchForTotalQuoteCount() {
             var fromDate = $scope.fromDateSearch.toISOString();
             var toDate = $scope.toDateSearch.toISOString();
-            $http.get(window.location.origin + '/api-elife/quotes/all-products/counts?'
-                    + 'fromDate=' + fromDate
-                    + '&toDate=' + toDate)
+            var getCountUrl = window.location.origin + '/api-elife/quotes/counts?'
+                + 'fromDate=' + fromDate
+                + '&toDate=' + toDate
+            if($scope.productType){
+                getCountUrl += '&productType=' + $scope.productType;
+            }
+            $http.get(getCountUrl)
                 .then(
                     function (successResponse) {
                         $scope.sessionQuoteCounts = successResponse.data;

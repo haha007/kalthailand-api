@@ -16,10 +16,10 @@ import th.co.krungthaiaxa.api.elife.model.Person;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
 import th.co.krungthaiaxa.api.elife.products.utils.ProductUtils;
+import th.co.krungthaiaxa.api.elife.repository.cdb.CDBViewRepository;
 import th.co.krungthaiaxa.api.elife.utils.PersonUtil;
 
 import javax.inject.Inject;
-import java.time.LocalDateTime;
 import java.util.Collections;
 
 /**
@@ -33,12 +33,17 @@ public class PaymentFailEmailService {
     private final ElifeEmailService emailService;
     private final MessageSource messageSource;
     private final PaymentRetryLinkService paymentRetryLinkService;
+    private final CDBViewRepository cdbViewRepository;
 
     @Inject
-    public PaymentFailEmailService(ElifeEmailService emailService, MessageSource messageSource, PaymentRetryLinkService paymentRetryLinkService) {
+    public PaymentFailEmailService(ElifeEmailService emailService,
+                                   MessageSource messageSource,
+                                   PaymentRetryLinkService paymentRetryLinkService,
+                                   CDBViewRepository cdbViewRepository) {
         this.emailService = emailService;
         this.messageSource = messageSource;
         this.paymentRetryLinkService = paymentRetryLinkService;
+        this.cdbViewRepository = cdbViewRepository;
     }
 
     public void sendEmail(Policy policy, Payment payment) {
@@ -61,7 +66,7 @@ public class PaymentFailEmailService {
         String paymentLink = "";
         String productDisplayName = "";
         String customerName = "";
-        String dueDateString = "";
+        String cdbDueDateString = "";
         String paymentAmount = "";
         try {
             paymentLink = paymentRetryLinkService.createPaymentLink(policy.getPolicyId(), payment);
@@ -73,18 +78,22 @@ public class PaymentFailEmailService {
             Person insuredPerson = mainInsured.getPerson();
             customerName = PersonUtil.getFullName(insuredPerson);
             if (payment != null) {
-                LocalDateTime dueDate = payment.getDueDate();
-                dueDateString = DateTimeUtil.formatThaiDate(dueDate);
+                cdbDueDateString = cdbViewRepository.getPaymentDueDate(policy.getPolicyId());
                 Amount amount = payment.getAmount();
                 paymentAmount = "" + amount.getValue();
             }
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);
         } finally {
+            //get due-date of policy from CDB first, In case could not get due-date, we will get due-date from MongoDB
+            String thaiDueDate = DateTimeUtil.formatThaiDate(StringUtils.isNotEmpty(cdbDueDateString)
+                    ? DateTimeUtil.toLocalDate(cdbDueDateString, CDBViewRepository.PATTERN_CDB_DUEDATE)
+                    : payment.getDueDate().toLocalDate());
+
             emailContent = emailContent.replaceAll("%PRODUCT_NAME%", productDisplayName)
                     .replaceAll("%POLICY_NUMBER%", policy.getPolicyId())
                     .replaceAll("%CUSTOMER_NAME%", customerName)
-                    .replaceAll("%PAYMENT_DUE_DATE%", dueDateString)
+                    .replaceAll("%PAYMENT_DUE_DATE%", thaiDueDate)
                     .replaceAll("%PAYMENT_AMOUNT%", "" + paymentAmount)
                     .replaceAll("%PAYMENT_LINK%", paymentLink);
         }
