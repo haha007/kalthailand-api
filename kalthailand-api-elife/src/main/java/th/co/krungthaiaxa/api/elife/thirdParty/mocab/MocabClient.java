@@ -75,7 +75,7 @@ public class MocabClient {
         request.setPolicyStatus(policy.getStatus());
         request.setProductType(productType.name());
 
-        disableSslVerification();
+        //disableSslVerification();
         final UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(mocabServiceUrl);
         final HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
