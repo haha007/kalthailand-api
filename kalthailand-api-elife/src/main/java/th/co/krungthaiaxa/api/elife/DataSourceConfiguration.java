@@ -89,7 +89,7 @@ public class DataSourceConfiguration {
     /**
      * Check the data source is valid or not.
      *
-     * @param dataSource
+     * @param dataSource dataSource
      * @return true if it can connect to database with the dataSource,
      * false if can not.
      */
