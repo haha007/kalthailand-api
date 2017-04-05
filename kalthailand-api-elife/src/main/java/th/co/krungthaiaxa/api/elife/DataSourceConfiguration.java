@@ -77,7 +77,7 @@ public class DataSourceConfiguration {
     }
 
     @Bean(name = "linebcTemplate")
-    public JdbcTemplate linebcTemplate() throws Exception {
+    public JdbcTemplate linebcTemplate() throws SQLException {
         final DataSource dataSource = lineBCDataSource();
         if (isValidDataSource(dataSource)) {
             LOGGER.info(CONNECTED_MSG, "Line BC");
@@ -97,8 +97,8 @@ public class DataSourceConfiguration {
         try {
             return dataSource.getConnection().isValid(5);
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.error("Datasource is invalid: ", e);
+            return false;
         }
-        return false;
     }
 }
