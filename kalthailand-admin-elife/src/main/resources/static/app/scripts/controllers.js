@@ -912,23 +912,6 @@
 
             }
 
-            $scope.retryUploadToMocab = function (policyId, documentType, documentStatus, index) {
-                if (documentStatus == "SUCCESS") {
-                    alert("Document is ready for approval");
-                } else {
-                    $http.post(window.location.origin + '/api-elife/policies/' + policyId + '/document/' + documentType + '/retry')
-                        .then(
-                            function (successResponse) {
-                                $scope.showSuccessMessage("Retry uploading document to Mocab success! " + successResponse);
-                                $scope.policyDetail.documents[index].mocabStatus = "SUCCESS";
-                            },
-                            function (errorResponse) {
-                                $scope.showErrorMessage("ERR123", "Could not update document to Mocab");
-                                console.log(errorResponse);
-                            });
-                }
-            }
-
             $scope.showErrorMessage = function (msg, errorDetails) {
                 $scope.successMessage = null;
                 $scope.errorMessage = msg;

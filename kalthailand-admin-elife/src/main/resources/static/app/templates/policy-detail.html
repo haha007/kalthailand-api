@@ -307,11 +307,6 @@
                                 </td>
                                 <td>
                                     <span ng-class="{'green': document.mocabStatus=='SUCCESS'}">{{document.mocabStatus}} </span>
-                                    <a ng-show="document.mocabStatus!='SUCCESS'"
-                                       ng-click="retryUploadToMocab(document.policyId, document.typeName, document.mocabStatus, $index)">
-                                       <!--ng-href="{{apiELifeUrl}}/policies/{{document.policyId}}/document/{{document.typeName}}/retry"-->
-                                        <i class="red fa fa-repeat"></i>Retry
-                                    </a>
                                 </td>
                             </tr>
                             </tbody>
