@@ -49,7 +49,7 @@ public class CDBRepository {
         Optional<PreviousPolicy> result;
         if (StringUtils.isBlank(insuredRegistrationId) || StringUtils.isBlank(dateOfBirth)) {
             result = Optional.empty();
-        }else {
+        } else {
             //TODO need to refactor.
             String sql = StringUtil.newString("select top 1 pno as policyNumber, ",
                     " case cast(coalesce(pagt1,0) as varchar) when '0' then 'NULL' else cast(coalesce(pagt1,0) as varchar) end as agentCode1, ",
@@ -183,7 +183,6 @@ public class CDBRepository {
             LOGGER.trace("sql:" + sql);
             Object[] parameters = new Object[1];
             parameters[0] = agentCode;
-            Map<String, Object> map = null;
             try {
                 List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, parameters);
                 if (list.size() != 0) {
