@@ -23,13 +23,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import th.co.krungthaiaxa.api.common.exeption.BadArgumentException;
+import th.co.krungthaiaxa.api.common.log.LogUtil;
 import th.co.krungthaiaxa.api.common.model.DownloadFile;
 import th.co.krungthaiaxa.api.common.model.error.Error;
 import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
 import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
 import th.co.krungthaiaxa.api.common.utils.DownloadUtil;
 import th.co.krungthaiaxa.api.common.utils.JsonUtil;
-import th.co.krungthaiaxa.api.common.log.LogUtil;
 import th.co.krungthaiaxa.api.common.utils.RequestUtil;
 import th.co.krungthaiaxa.api.elife.exception.ElifeException;
 import th.co.krungthaiaxa.api.elife.model.Document;
@@ -70,7 +70,6 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -293,19 +292,6 @@ public class PolicyResource {
         } catch (IOException e) {
             logger.error("Unable to download the document", e);
         }
-    }
-
-    @ApiOperation(value = "Retry upload document to Mocab", 
-            notes = "retry upload document attached to a policy to Mocab. Response's content-type is 'application/pdf'", 
-            response = String.class)
-    @RequestMapping(value = "/policies/{policyId}/document/{documentType}/retry", 
-            produces = APPLICATION_JSON_VALUE, method = POST)
-    @ResponseBody
-    public ResponseEntity retryUploadDocumentToMocab(@PathVariable final String policyId, 
-                                              @PathVariable final String documentType) {
-        
-        //TODO: Draft code
-        return ResponseEntity.ok(Collections.singletonMap("success", Boolean.TRUE));
     }
 
     @ApiOperation(value = "Creates a policy", notes = "Creates a policy out of a quote. Policy will be created only " +
