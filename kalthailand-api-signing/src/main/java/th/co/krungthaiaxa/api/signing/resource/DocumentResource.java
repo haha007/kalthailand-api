@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PathVariable;
 import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
 import th.co.krungthaiaxa.api.common.utils.RequestUtil;
 import th.co.krungthaiaxa.api.signing.service.SigningService;
@@ -57,14 +58,7 @@ public class DocumentResource {
             @ApiParam(value = "The Base 64 encoded pdf to sign")
             @RequestBody String encodedBase64Pdf,
             HttpServletResponse response) {
-        byte[] decodedBase64Pdf;
-        try {
-            decodedBase64Pdf = Base64.getDecoder().decode(encodedBase64Pdf);
-        } catch (IllegalArgumentException e) {
-            logger.error("Provided document is not Base 64 encoded", e);
-            RequestUtil.sendError(ErrorCode.NOT_BASE_64_ENCODED, NOT_ACCEPTABLE.value(), response);
-            return;
-        }
+        byte[] decodedBase64Pdf = decodeBase64Pdf(encodedBase64Pdf, response);
 
         if (!checkCanReadDecodedBase64Pdf(decodedBase64Pdf, "Provided document is not a valid PDF", NOT_ACCEPTABLE.value(), response)) {
             return;
@@ -99,9 +93,77 @@ public class DocumentResource {
         logger.info("Signed PDF has been sent");
     }
 
+    @ApiOperation(value = "Signs a document with a password", notes = "Signs a document with a password and server configured certificate. Response is Base 64 encoded signed document", response = String.class)
+    @ApiResponses({
+            @ApiResponse(code = 406, message = "If given document is not Base 64 encoded or not a valid PDF", response = Error.class)
+    })
+    @RequestMapping(value = "/documents/signpdf/{password}", produces = APPLICATION_JSON_VALUE, method = POST)
+    @ResponseBody
+    public void signDocumentWithPassword(
+            @PathVariable String password,
+            @ApiParam(value = "The Base 64 encoded pdf to sign")
+            @RequestBody String encodedBase64Pdf,
+            HttpServletResponse response) {
+        byte[] decodedBase64Pdf = decodeBase64Pdf(encodedBase64Pdf, response);
+
+        if (!checkCanReadDecodedBase64Pdf(decodedBase64Pdf, "Provided document is not a valid PDF", NOT_ACCEPTABLE.value(), response)) {
+            return;
+        }
+
+        byte[] signedPdfContent;
+        try (ByteArrayOutputStream signedPdfOutputStream = new ByteArrayOutputStream()) {
+            signingService.signWithPassword(new ByteArrayInputStream(decodedBase64Pdf), signedPdfOutputStream, "Payment received: ", "Invisible", password);
+            signedPdfContent = signedPdfOutputStream.toByteArray();
+        } catch (IOException | GeneralSecurityException | DocumentException e) {
+            logger.error("Unable to sign the PDF", e);
+            RequestUtil.sendError(ErrorCode.UNABLE_TO_SIGN.apply(e.getMessage()), INTERNAL_SERVER_ERROR.value(), response);
+            return;
+        }
+
+        if (!checkCanReadDecodedBase64PdfWithKey(signedPdfContent, "elifeSign".getBytes(), "Signed PDF is invalid: ", INTERNAL_SERVER_ERROR.value(), response)) {
+            return;
+        }
+
+        response.setContentType("application/pdf");
+        response.setStatus(OK.value());
+        String fileName = "signedDocument_" + ofPattern("yyyyMMdd_hhmmss").format(now()) + ".pdf";
+        response.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\"", fileName));
+
+        try (OutputStream outStream = response.getOutputStream()) {
+            IOUtils.write(Base64.getEncoder().encode(signedPdfContent), outStream);
+        } catch (IOException e) {
+            logger.error("Unable to send the signed PDF", e);
+            RequestUtil.sendError(ErrorCode.UNABLE_TO_SIGN.apply(e.getMessage()), INTERNAL_SERVER_ERROR.value(), response);
+        }
+
+        logger.info("Signed PDF has been sent");
+    }
+
+    private byte[] decodeBase64Pdf(String base64String, HttpServletResponse response) {
+        try {
+            byte[] decodedBase64Pdf = Base64.getDecoder().decode(base64String);
+            return decodedBase64Pdf;
+        } catch (IllegalArgumentException e) {
+            logger.error("Provided document is not Base 64 encoded", e);
+            RequestUtil.sendError(ErrorCode.NOT_BASE_64_ENCODED, NOT_ACCEPTABLE.value(), response);
+            return null;
+        }
+    }
+
     private boolean checkCanReadDecodedBase64Pdf(byte[] decodedBase64Pdf, String message, Integer status, HttpServletResponse response) {
         try {
             new PdfReader(decodedBase64Pdf);
+            return true;
+        } catch (IOException e) {
+            logger.error(message + e.getMessage(), e);
+            RequestUtil.sendError(ErrorCode.PDF_INVALID.apply(e.getMessage()), status, response);
+            return false;
+        }
+    }
+
+    private boolean checkCanReadDecodedBase64PdfWithKey(byte[] decodedBase64Pdf, byte[] key, String message, Integer status, HttpServletResponse response) {
+        try {
+            new PdfReader(decodedBase64Pdf, key);
             return true;
         } catch (IOException e) {
             logger.error(message + e.getMessage(), e);
