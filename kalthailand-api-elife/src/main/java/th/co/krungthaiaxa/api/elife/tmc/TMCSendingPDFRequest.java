@@ -1,5 +1,10 @@
 package th.co.krungthaiaxa.api.elife.tmc;
 
+/**
+ * TMC Sending PDF Request
+ * @deprecated Do not use TMC service anymore, change to Mocab service instead
+ */
+@Deprecated
 public class TMCSendingPDFRequest {
     private String content;
     private String productType;
