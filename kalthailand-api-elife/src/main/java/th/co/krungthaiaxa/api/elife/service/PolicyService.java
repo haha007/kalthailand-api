@@ -21,6 +21,7 @@ import th.co.krungthaiaxa.api.elife.line.LineService;
 import th.co.krungthaiaxa.api.elife.model.Document;
 import th.co.krungthaiaxa.api.elife.model.DocumentDownload;
 import th.co.krungthaiaxa.api.elife.model.Insured;
+import th.co.krungthaiaxa.api.elife.model.MocabStatus;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.Person;
 import th.co.krungthaiaxa.api.elife.model.PersonInfo;
@@ -447,24 +448,31 @@ public class PolicyService {
         return policy;
     }
 
-    public void sendPdfToMocab(final Policy policy,
-                               final DocumentDownload documentDownload,
-                               final DocumentType documentType) {
+    private void sendPdfToMocab(final Policy policy,
+                                final DocumentDownload documentDownload,
+                                final DocumentType documentType) {
         try {
-            final Optional<MocabResponse> mocabResponse =
+            final Optional<MocabResponse> mocabResponseOptional =
                     mocabClient.sendPdfToMocab(policy, documentDownload.getContent(), documentType);
-            if (mocabResponse.isPresent()) {
+            MocabStatus mocabStatus = new MocabStatus();
+            mocabStatus.setPolicyNumber(policy.getPolicyId());
+            if (mocabResponseOptional.isPresent()) {
+                final MocabResponse mocabResponse = mocabResponseOptional.get();
+
                 //The document status based on Mocab response code
-                final MocabResponse response = mocabResponse.get();
+                mocabStatus.setSuccess(mocabResponseOptional.get().isSuccess());
+                mocabStatus.setMessageCode(mocabResponse.getMessageCode());
+                mocabStatus.setMessageDetail(mocabResponse.mappingMessageDetail(mocabResponse.getMessageCode()));
                 LOGGER.info("Sent {} to Mocab with response message code {} on policy {}",
-                        documentType, response.getMessageCode(), response.getPolicyNumber());
-                documentService.udpateDocumentStatus(documentDownload.getDocumentId(),
-                        response.getMessageCode());
+                        documentType, mocabStatus.getMessageCode(), mocabStatus.getPolicyNumber());
+                documentService.udpateDocumentStatus(documentDownload.getDocumentId(), mocabStatus);
+                return;
             }
+            documentService.udpateDocumentStatus(documentDownload.getDocumentId(), mocabStatus);
 
         } catch (Exception e) {
             LOGGER.error("Unable to send {} to Mocab on policy {}",
-                    documentType.name(), policy.getId(), e);
+                    documentType.name(), policy.getPolicyId(), e);
         }
 
     }

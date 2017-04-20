@@ -293,8 +293,8 @@
                         <table class="table table-striped jambo_table">
                             <thead>
                             <tr>
-                                <td>Document name</td>
-                                <td>Status</td>
+                                <td>Document Name</td>
+                                <td>Mocab Status</td>
                             </tr>
                             </thead>
                             <tbody>
@@ -306,7 +306,7 @@
                                     </a>
                                 </td>
                                 <td>
-                                    <span ng-class="(document.mocabStatus=='200') ? 'green' : 'red'">{{document.mocabStatus}} </span>
+                                    <span ng-show="document.mocabStatus" ng-class="(document.mocabStatus.success) ? 'green' : 'red'" title="{{document.mocabStatus.messageDetail}}">{{document.mocabStatus.messageCode}}</span>
                                 </td>
                             </tr>
                             </tbody>

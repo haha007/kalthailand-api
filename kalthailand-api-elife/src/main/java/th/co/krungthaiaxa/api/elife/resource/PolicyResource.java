@@ -106,7 +106,7 @@ public class PolicyResource {
 
     @Inject
     public PolicyResource(DocumentService documentService, PolicyService policyService, QuoteService quoteService, PaymentService paymentService, PaymentRetryService paymentRetryService, PolicyValidatedProcessingService policyValidatedProcessingService,
-            PolicyPremiumNotificationService policyPremiumNotificationService, PolicyCDBService policyCDBService) {
+                          PolicyPremiumNotificationService policyPremiumNotificationService, PolicyCDBService policyCDBService) {
         this.documentService = documentService;
         this.policyService = policyService;
         this.quoteService = quoteService;
@@ -250,12 +250,12 @@ public class PolicyResource {
 
         try {
             switch (reminderId) {
-            case 1:
-                policyService.sendNotificationsWhenUserNotRespondingToCalls(policy.get());
-                break;
-            case 2:
-                policyService.sendNotificationsWhenPhoneNumberIsWrong(policy.get());
-                break;
+                case 1:
+                    policyService.sendNotificationsWhenUserNotRespondingToCalls(policy.get());
+                    break;
+                case 2:
+                    policyService.sendNotificationsWhenPhoneNumberIsWrong(policy.get());
+                    break;
             }
         } catch (MessagingException | IOException e) {
             logger.error("Notification has not been sent", e);

@@ -9,6 +9,7 @@ import th.co.krungthaiaxa.api.elife.model.Document;
 import th.co.krungthaiaxa.api.elife.model.DocumentDownload;
 import th.co.krungthaiaxa.api.elife.model.DocumentReferenceType;
 import th.co.krungthaiaxa.api.elife.model.DocumentWithContent;
+import th.co.krungthaiaxa.api.elife.model.MocabStatus;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.enums.DocumentType;
 import th.co.krungthaiaxa.api.elife.repository.DocumentDownloadRepository;
@@ -118,12 +119,10 @@ public class DocumentService {
         return documentWithContent;
     }
 
-    public void udpateDocumentStatus(final String documentId, final String mocabStatus) {
+    public void udpateDocumentStatus(final String documentId, final MocabStatus mocabStatus) {
         final Document currentDocument = documentRepository.findOne(documentId);
-        
-        //Handle mocab status is 200 already
-        LOGGER.info("Mocab status of Document {} is updated {} => {}", documentId, currentDocument.getMocabStatus(), mocabStatus);
         currentDocument.setMocabStatus(mocabStatus);
+        LOGGER.info("Mocab status of Document {} is updated to {}", documentId, mocabStatus.getMessageCode());
         documentRepository.save(currentDocument);
     }
 }

@@ -20,7 +20,7 @@ public class Document implements Serializable {
     private String policyId;
     private DocumentType typeName;
     private LocalDateTime creationDate;
-    private String mocabStatus = "000";
+    private MocabStatus mocabStatus;
     /**
      * The object which relates to this document.
      * That object can be a payment, a policy, or a quote... (view more in {@link DocumentReferenceType}.
@@ -66,11 +66,11 @@ public class Document implements Serializable {
         this.creationDate = creationDate;
     }
 
-    public String getMocabStatus() {
+    public MocabStatus getMocabStatus() {
         return mocabStatus;
     }
 
-    public void setMocabStatus(final String mocabStatus) {
+    public void setMocabStatus(final MocabStatus mocabStatus) {
         this.mocabStatus = mocabStatus;
     }
 

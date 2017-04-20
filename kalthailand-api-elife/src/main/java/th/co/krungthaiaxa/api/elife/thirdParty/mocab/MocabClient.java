@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import th.co.krungthaiaxa.api.common.utils.JsonUtil;
@@ -74,13 +75,16 @@ public class MocabClient {
 
         final HttpEntity<String> requestWrapper =
                 new HttpEntity<>(new String(JsonUtil.getJson(request)), headers);
-        final ResponseEntity<MocabResponse> response =
-                restTemplate.exchange(builder.toUriString(), POST, requestWrapper, MocabResponse.class);
-
-        if (HttpStatus.OK.equals(response.getStatusCode()) && !Objects.isNull(response.getBody())) {
-            return Optional.of(response.getBody());
+        try {
+            final ResponseEntity<MocabResponse> response =
+                    restTemplate.exchange(builder.toUriString(), POST, requestWrapper, MocabResponse.class);
+            if (HttpStatus.OK.equals(response.getStatusCode()) && !Objects.isNull(response.getBody())) {
+                return Optional.of(response.getBody());
+            }
+        } catch (ResourceAccessException exception) {
+            LOGGER.error(exception.getMessage());
         }
-        LOGGER.error("Could not send PDF to Mocab policyId {}", policy.getId());
+        LOGGER.error("Could not send PDF to Mocab policyId {}", policy.getPolicyId());
         return Optional.empty();
     }
 
