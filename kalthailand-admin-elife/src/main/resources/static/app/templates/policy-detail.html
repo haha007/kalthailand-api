@@ -306,7 +306,7 @@
                                     </a>
                                 </td>
                                 <td>
-                                    <span ng-class="{'green': document.mocabStatus=='SUCCESS'}">{{document.mocabStatus}} </span>
+                                    <span ng-class="(document.mocabStatus=='200') ? 'green' : 'red'">{{document.mocabStatus}} </span>
                                 </td>
                             </tr>
                             </tbody>
