@@ -29,7 +29,7 @@ In the first time, you may get error when building admin-elife.
 cd kalthailand-admin-elife
 bower install
 ````
-When bower asking for options, select option 1.
+When bower asking for choosing the angular version , select v.1.5.11 for ng-spring-boot.
 Then rebuild the project by maven command line.
 
 You can check the information of current API in this link
