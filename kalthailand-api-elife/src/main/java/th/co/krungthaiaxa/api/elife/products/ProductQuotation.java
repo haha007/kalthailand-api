@@ -44,7 +44,7 @@ public class ProductQuotation {
     private Integer declaredTaxPercentAtSubscription;
     private String dividendOptionId;
 
-    @ApiModelProperty(value = "The product type")
+    @ApiModelProperty(value = "The product type", required = true)
     public ProductType getProductType() {
         return productType;
     }
@@ -116,7 +116,7 @@ public class ProductQuotation {
         this.occupationId = occupationId;
     }
 
-    @ApiModelProperty(value = "The product name (such as IFINE1, IFINE2, ...")
+    @ApiModelProperty(value = "The product name, If Product Type is **IPROTECT**, this field is mandatory (such as IFINE1, IFINE2, ...)")
     public String getPackageName() {
         return packageName;
     }

@@ -35,7 +35,9 @@ public class ProductResource {
     }
 
     @ApiOperation(value = "Product premiums", notes = "Gets product min and max amounts for sum insured and premium, " +
-            "based on product specific algorithm", response = ProductAmounts.class)
+            "based on product specific algorithm \n" +
+            "- **Note**: If productType is **PRODUCT_IPROTECT**, the packageName is **mandatory**", 
+            response = ProductAmounts.class)
     @RequestMapping(value = "/products/amounts", produces = APPLICATION_JSON_VALUE, method = PUT)
     public ProductAmounts getProductAmounts(
             @ApiParam(value = "The product details for which to get the min and max amounts")
