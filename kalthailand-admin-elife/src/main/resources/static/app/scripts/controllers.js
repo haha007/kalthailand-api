@@ -361,7 +361,10 @@
 
         fetchPolicyQuotaInfo();
 
-        $scope.timeTriggerList = [{"value": 3600, "name": "1 Time/Hour"}, {"value": 86400, "name": "1 Time/Day"}];
+        $scope.timeTriggerList = [{"value": 3600, "name": "1 Time/Hour"}, {
+            "value": 86400,
+            "name": "1 Time/Day"
+        }];
 
         $scope.uploadNewPolicyNumbers = function (event) {
             event.preventDefault();
@@ -806,7 +809,11 @@
                 $http({
                     url: '/api-elife/policies/' + policyNumber + '/update/status/validated',
                     method: 'PUT',
-                    data: $.param({agentName: $scope.agentName, agentCode: $scope.agentCode, linePayCaptureMode: $scope.linePayCaptureMode}),
+                    data: $.param({
+                        agentName: $scope.agentName,
+                        agentCode: $scope.agentCode,
+                        linePayCaptureMode: $scope.linePayCaptureMode
+                    }),
                     headers: {'Content-Type': 'application/x-www-form-urlencoded'}
                 }).then(
                     function (successResponse) {
@@ -891,7 +898,10 @@
                         } else {
                             annualPremiumValue = premium;
                         }
-                        $scope.annualPremium = {value: annualPremiumValue, currencyCode: successResponse.premiumsData.financialScheduler.modalAmount.currencyCode};
+                        $scope.annualPremium = {
+                            value: annualPremiumValue,
+                            currencyCode: successResponse.premiumsData.financialScheduler.modalAmount.currencyCode
+                        };
                     },
                     function (errorResponse) {
                         $scope.showErrorMessage(errorResponse.data.userMessage);

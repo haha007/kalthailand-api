@@ -23,13 +23,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import th.co.krungthaiaxa.api.common.exeption.BadArgumentException;
+import th.co.krungthaiaxa.api.common.log.LogUtil;
 import th.co.krungthaiaxa.api.common.model.DownloadFile;
 import th.co.krungthaiaxa.api.common.model.error.Error;
 import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
 import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
 import th.co.krungthaiaxa.api.common.utils.DownloadUtil;
 import th.co.krungthaiaxa.api.common.utils.JsonUtil;
-import th.co.krungthaiaxa.api.common.log.LogUtil;
 import th.co.krungthaiaxa.api.common.utils.RequestUtil;
 import th.co.krungthaiaxa.api.elife.exception.ElifeException;
 import th.co.krungthaiaxa.api.elife.model.Document;
@@ -106,7 +106,7 @@ public class PolicyResource {
 
     @Inject
     public PolicyResource(DocumentService documentService, PolicyService policyService, QuoteService quoteService, PaymentService paymentService, PaymentRetryService paymentRetryService, PolicyValidatedProcessingService policyValidatedProcessingService,
-            PolicyPremiumNotificationService policyPremiumNotificationService, PolicyCDBService policyCDBService) {
+                          PolicyPremiumNotificationService policyPremiumNotificationService, PolicyCDBService policyCDBService) {
         this.documentService = documentService;
         this.policyService = policyService;
         this.quoteService = quoteService;
@@ -250,12 +250,12 @@ public class PolicyResource {
 
         try {
             switch (reminderId) {
-            case 1:
-                policyService.sendNotificationsWhenUserNotRespondingToCalls(policy.get());
-                break;
-            case 2:
-                policyService.sendNotificationsWhenPhoneNumberIsWrong(policy.get());
-                break;
+                case 1:
+                    policyService.sendNotificationsWhenUserNotRespondingToCalls(policy.get());
+                    break;
+                case 2:
+                    policyService.sendNotificationsWhenPhoneNumberIsWrong(policy.get());
+                    break;
             }
         } catch (MessagingException | IOException e) {
             logger.error("Notification has not been sent", e);

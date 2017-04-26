@@ -93,6 +93,7 @@ public class DocumentResource {
         logger.info("Signed PDF has been sent");
     }
 
+    //TODO: The password should not be PathVariable
     @ApiOperation(value = "Signs a document with a password", notes = "Signs a document with a password and server configured certificate. Response is Base 64 encoded signed document", response = String.class)
     @ApiResponses({
             @ApiResponse(code = 406, message = "If given document is not Base 64 encoded or not a valid PDF", response = Error.class)
