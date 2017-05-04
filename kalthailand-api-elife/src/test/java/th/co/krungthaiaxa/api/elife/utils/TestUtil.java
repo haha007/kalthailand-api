@@ -50,7 +50,7 @@ import static th.co.krungthaiaxa.api.elife.products.utils.ProductUtils.amountTHB
 
 public class TestUtil {
     public static final String PATH_TEST_RESULT = "target/testresult/";
-    public static final String TESTING_EMAIL = "khoi.tran.ags@gmail.com";
+    public static final String TESTING_EMAIL = "tuongle106@gmail.com";
     public static final String TESTING_EMAIL_FAIL_COLLECTION_PAYMENT = "khoi.tran.ags+kalthailand-api.test.fail@gmail.com";
     public static final String TESTING_HOTMAIL_JO = TestUtil.TESTING_EMAIL;
 
@@ -173,7 +173,7 @@ public class TestUtil {
 
         PhoneNumber phoneNumber = new PhoneNumber();
         phoneNumber.setType(PhoneNumberType.MOBILE);
-        phoneNumber.setNumber("0841139301");
+        phoneNumber.setNumber("0970307001");
         phoneNumber.setCountryCode(66);
 
         quote.getInsureds().get(0).getFatca().setBornInUSA(FALSE);

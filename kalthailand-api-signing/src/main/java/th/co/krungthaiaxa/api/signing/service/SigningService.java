@@ -5,6 +5,7 @@ import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfSignatureAppearance;
 import com.itextpdf.text.pdf.PdfStamper;
+import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.pdf.security.*;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.springframework.stereotype.Service;
@@ -59,5 +60,47 @@ public class SigningService {
         ExternalDigest digest = new BouncyCastleDigest();
         ExternalSignature signature = new PrivateKeySignature(pk, DigestAlgorithms.SHA512, provider.getName());
         MakeSignature.signDetached(appearance, digest, signature, chain, null, null, null, 0, MakeSignature.CryptoStandard.CADES);
+    }
+
+    public void signWithPassword(InputStream src, OutputStream dest, String reason, String location, String clientEncryptionCode)
+            throws GeneralSecurityException, IOException, DocumentException {
+        InputStream inputStream = getClass().getResourceAsStream(keystore);
+        if (inputStream == null) {
+            throw new IOException("Unable to find the security settings");
+        }
+
+        KeyStore ks = KeyStore.getInstance("PKCS12");
+        ks.load(inputStream, password);
+        if (!ks.containsAlias(alias)) {
+            throw new IOException("Unable to find configured content");
+        } else if (!ks.isKeyEntry(alias)) {
+            throw new IOException("Configured content is not found");
+        }
+
+        BouncyCastleProvider provider = new BouncyCastleProvider();
+        Security.addProvider(provider);
+
+        PrivateKey pk = (PrivateKey) ks.getKey(alias, password);
+        Certificate[] chain = ks.getCertificateChain(alias);
+
+        // Creating the reader and the stamper
+        PdfReader reader = new PdfReader(src);
+        PdfStamper stamper = PdfStamper.createSignature(reader, dest, '\0');
+
+        //SetEncrypt
+        stamper.setEncryption(clientEncryptionCode.getBytes(), "elifeSign".getBytes(),
+                PdfWriter.ALLOW_PRINTING,PdfWriter.ENCRYPTION_AES_128 | PdfWriter.DO_NOT_ENCRYPT_METADATA);
+
+        // Creating the appearance
+        PdfSignatureAppearance appearance = stamper.getSignatureAppearance();
+        appearance.setReason(reason);
+        appearance.setLocation(location);
+        appearance.setVisibleSignature(new Rectangle(10, 20, 10, 20), 1, "sig");
+
+        // Creating the signature
+        ExternalDigest digest = new BouncyCastleDigest();
+        ExternalSignature signature = new PrivateKeySignature(pk, DigestAlgorithms.SHA512, provider.getName());
+        MakeSignature.signDetached(appearance, digest, signature, chain, null, null, null, 0, MakeSignature.CryptoStandard.CADES);
+
     }
 }

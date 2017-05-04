@@ -1,5 +1,10 @@
 package th.co.krungthaiaxa.api.elife.tmc;
 
+/**
+ * TMC Sending PDF Response
+ * @deprecated Do not use TMC service anymore, change to Mocab service instead
+ */
+@Deprecated
 public class TMCSendingPDFResponse {
     private String status;
     private TMCSendingPDFResponseRemark remark;

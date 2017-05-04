@@ -1,11 +1,12 @@
-package th.co.krungthaiaxa.api.elife.tmc;
+package th.co.krungthaiaxa.api.elife.thirdParty.mocab;
+
+import th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus;
 
 /**
- * TMC Sending PDF Request
- * @deprecated Do not use TMC service anymore, change to Mocab service instead
+ * Created by tuong.le on 3/6/17.
  */
-@Deprecated
-public class TMCSendingPDFRequest {
+public class MocabRequest {
+
     private String content;
     private String productType;
     private String mimeType;
@@ -14,12 +15,13 @@ public class TMCSendingPDFRequest {
     private String customerName;
     private String customerTel;
     private String idCard;
+    private PolicyStatus policyStatus;
 
     public String getContent() {
         return content;
     }
 
-    public void setContent(String content) {
+    public void setContent(final String content) {
         this.content = content;
     }
 
@@ -27,7 +29,7 @@ public class TMCSendingPDFRequest {
         return productType;
     }
 
-    public void setProductType(String productType) {
+    public void setProductType(final String productType) {
         this.productType = productType;
     }
 
@@ -35,7 +37,7 @@ public class TMCSendingPDFRequest {
         return mimeType;
     }
 
-    public void setMimeType(String mimeType) {
+    public void setMimeType(final String mimeType) {
         this.mimeType = mimeType;
     }
 
@@ -43,7 +45,7 @@ public class TMCSendingPDFRequest {
         return policyNumber;
     }
 
-    public void setPolicyNumber(String policyNumber) {
+    public void setPolicyNumber(final String policyNumber) {
         this.policyNumber = policyNumber;
     }
 
@@ -51,7 +53,7 @@ public class TMCSendingPDFRequest {
         return documentType;
     }
 
-    public void setDocumentType(String documentType) {
+    public void setDocumentType(final String documentType) {
         this.documentType = documentType;
     }
 
@@ -59,7 +61,7 @@ public class TMCSendingPDFRequest {
         return customerName;
     }
 
-    public void setCustomerName(String customerName) {
+    public void setCustomerName(final String customerName) {
         this.customerName = customerName;
     }
 
@@ -67,7 +69,7 @@ public class TMCSendingPDFRequest {
         return customerTel;
     }
 
-    public void setCustomerTel(String customerTel) {
+    public void setCustomerTel(final String customerTel) {
         this.customerTel = customerTel;
     }
 
@@ -75,7 +77,15 @@ public class TMCSendingPDFRequest {
         return idCard;
     }
 
-    public void setIdCard(String idCard) {
+    public void setIdCard(final String idCard) {
         this.idCard = idCard;
+    }
+
+    public PolicyStatus getPolicyStatus() {
+        return policyStatus;
+    }
+
+    public void setPolicyStatus(final PolicyStatus policyStatus) {
+        this.policyStatus = policyStatus;
     }
 }

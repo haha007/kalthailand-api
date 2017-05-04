@@ -24,6 +24,11 @@ import java.nio.charset.Charset;
 import static th.co.krungthaiaxa.api.common.utils.JsonUtil.getJson;
 import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.notNull;
 
+/**
+ * TMC Client
+ * @deprecated Do not use TMC service anymore, change to Mocab service instead
+ */
+@Deprecated
 @Component
 public class TMCClient extends WebServiceGatewaySupport {
     private final static Logger logger = LoggerFactory.getLogger(TMCClient.class);
