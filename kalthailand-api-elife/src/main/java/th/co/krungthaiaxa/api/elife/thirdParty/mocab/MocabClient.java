@@ -18,6 +18,7 @@ import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.enums.DocumentType;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
 import th.co.krungthaiaxa.api.elife.products.utils.ProductUtils;
+import th.co.krungthaiaxa.api.elife.utils.SSLUtils;
 
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
@@ -69,6 +70,7 @@ public class MocabClient {
         request.setPolicyStatus(policy.getStatus());
         request.setProductType(productType.name());
 
+        SSLUtils.disableSslVerification();
         final UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(mocabServiceUrl);
         final HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
