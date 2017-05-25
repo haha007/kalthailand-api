@@ -9,14 +9,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.auth.jwt.JwtTokenUtil;
 import th.co.krungthaiaxa.api.auth.model.RequestForToken;
 import th.co.krungthaiaxa.api.common.exeption.UnauthenticationException;
+import th.co.krungthaiaxa.api.common.log.LogUtil;
 import th.co.krungthaiaxa.api.common.model.authentication.AuthenticatedUser;
 import th.co.krungthaiaxa.api.common.model.authentication.AuthenticatedUserMapper;
-import th.co.krungthaiaxa.api.common.log.LogUtil;
 
 import java.time.Instant;
 
@@ -34,7 +33,7 @@ public class AuthenticationService {
     private JwtTokenUtil jwtTokenUtil;
 
     @Autowired
-    private UserDetailsService userDetailsService;
+    private UserDetailsServiceImpl userDetailsServiceImpl;
 
     public AuthenticatedUser authenticate(RequestForToken requestForToken) {
         Instant start = LogUtil.logStarting("Authenticate " + requestForToken.getUserName());
@@ -47,7 +46,7 @@ public class AuthenticationService {
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             // Reload password post-security so we can generate token
-            final UserDetails userDetails = userDetailsService.loadUserByUsername(requestForToken.getUserName());
+            final UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(requestForToken.getUserName());
             final String token = jwtTokenUtil.generateToken(userDetails);
             AuthenticatedUser result = AuthenticatedUserMapper.toAuthenticatedUser(userDetails, token);
             // Return the token

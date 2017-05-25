@@ -5,10 +5,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import th.co.krungthaiaxa.api.auth.data.Role;
 import th.co.krungthaiaxa.api.auth.data.User;
 import th.co.krungthaiaxa.api.auth.data.UserList;
 
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class JwtUserDetailsServiceImpl implements UserDetailsService {
@@ -17,9 +19,12 @@ public class JwtUserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> user = userList.getUsers().stream().filter(tmp -> tmp.getUserName().equals(username)).findFirst();
+        Optional<User> user = userList.getUsers().stream().filter(tmp -> tmp.getUsername().equals(username)).findFirst();
         if (user.isPresent()) {
-            return JwtUserFactory.create(user.get().getUserName(), user.get().getPassword(), user.get().getRoles());
+            return JwtUserFactory.create(
+                    user.get().getUsername(),
+                    user.get().getPassword(),
+                    user.get().getRoles().stream().map(Role::getName).collect(Collectors.toList()));
         } else {
             throw new UsernameNotFoundException(String.format("No user found with username '%s'.", username));
         }

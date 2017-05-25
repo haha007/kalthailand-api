@@ -1,0 +1,11 @@
+[
+  {"_id":"UI_SLC"},
+  {"_id":"API_BLACKLIST"},
+  {"_id":"UI_ELIFE_ADMIN"},
+  {"_id":"UI_AUTOPAY"},
+  {"_id":"API_SIGNING"},
+  {"_id":"UI_VALIDATION"},
+  {"_id":"API_ELIFE"},
+  {"_id":"UI_CAMPAIGN"},
+  {"_id":"UI_USER"} 
+]

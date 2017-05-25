@@ -1,0 +1,24 @@
+[
+  {
+    "username": "elifeadminuser",
+    "password": "$2a$10$eImnj.vqrWA3Qf6djNfWP.6yh5UmLcbQkRp1CFussknZJk.VpVdZ2",
+    "email": "tuongle106@gmail.com",
+    "activated": true,
+    "roles": [
+      {"_id": "UI_SLC"},
+      {"_id": "API_BLACKLIST"},
+      {"_id": "UI_ELIFE_ADMIN"},
+      {"_id": "UI_AUTOPAY"},
+      {"_id": "API_SIGNING"},
+      {"_id": "UI_VALIDATION"},
+      {"_id": "API_ELIFE"},
+      {"_id": "UI_CAMPAIGN"}
+    ],
+    "createdDateTime": {
+      "$date": "2017-05-24T08:49:31.540Z"
+    },
+    "updatedDateTime": {
+      "$date": "2017-05-24T08:49:31.540Z"
+    }
+  }
+]

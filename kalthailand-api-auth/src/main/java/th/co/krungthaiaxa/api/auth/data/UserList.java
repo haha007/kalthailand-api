@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+@Deprecated
 @Component
 public class UserList {
     private List<User> users;
@@ -66,9 +67,9 @@ public class UserList {
 
     private void addUser(String userName, String password, String roles) {
         User user = new User();
-        user.setUserName(userName);
+        user.setUsername(userName);
         user.setPassword(password);
-        getRoles(roles).stream().forEach(user::addRole);
+        //getRoles(roles).stream().forEach(user::addRole);
         users.add(user);
     }
 

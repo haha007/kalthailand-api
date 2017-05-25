@@ -502,6 +502,9 @@
 
     });
 
+    app.controller('UserManagementController', function ($scope, $route, BlackList, BlackListFileUpload) {
+    });
+
     app.controller('BlackListController', function ($scope, $route, BlackList, BlackListFileUpload) {
         $scope.$route = $route;
 

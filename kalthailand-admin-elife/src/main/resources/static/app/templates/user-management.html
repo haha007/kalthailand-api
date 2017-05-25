@@ -1,0 +1,84 @@
+<div class="row">
+
+    <div ng-cloak class="col-md-12 col-sm-12 col-xs-12 main ng-cloak" id="role-user-management">
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="x_panel">
+                    <div class="x_title">
+                        <h2>User Management
+                        </h2>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
+                        <!--SEARCH FORM-->
+                        <div class="title_left">
+                            <div class="col-md-6 col-xs-12 form-group top_search form-inline">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="username"
+                                           ng-model="policyID" ng-keyup="$event.keyCode == 13 && search()"
+                                           required autofocus/>
+                                    <span class="input-group-btn">
+                                      <button class="btn btn-default" type="button" ng-click="search()"><i
+                                              class="glyphicon glyphicon-search"></i></button>
+                                    </span>
+                                </div>
+                                <button class="btn btn-success" type="button" ng-click="addUser()">Add User</button>
+                            </div>
+                        </div>
+
+                        <!--PAGING-->
+                        <div class="row">
+                            <div class="col-md-12 text-center">
+                                <uib-pagination
+                                        total-items="totalItems"
+                                        ng-model="currentPage"
+                                        max-size="15"
+                                        class="pagination-md mx-auto"
+                                        force-ellipses="true"
+                                        boundary-link-numbers="true"
+                                        ng-change="pageChanged()"
+                                        items-per-page="20">
+                                </uib-pagination>
+                            </div>
+                        </div>
+
+                        <!--EXPORT BUTTON-->
+                        <p><a href="{{downloadUrl}}"><i class="green fa fa-file-excel-o"></i> Export data</a>
+                            -
+                            <small>{{ totalItems }} 10 items</small>
+                        </p>
+
+                        <!--USER LIST-->
+                        <div class="table-responsive">
+                            <table class="table table-hover table-bordered jambo_table">
+                                <thead>
+                                <tr class="headings">
+                                    <th>Username</th>
+                                    <th>Name</th>
+                                    <th class="col-md-4">Email</th>
+                                    <th class="col-md-3">Role</th>
+                                    <th>Activated</th>
+                                    <th>Action</th>
+                                </tr>
+                                </thead>
+
+                                <tbody>
+                                <tr>
+                                    <td><a href="#policy-detail?policyID={{ item.policyId }}">elifeadminuser</a>
+                                    </td>
+                                    <td>Tuong Le</td>
+                                    <td>tuong.le@pyramid-consulting.com</td>
+                                    <td>UI_ADMIN_ELIFE, API_ELIFE</td>
+                                    <td>true</td>
+                                    <td><a href="#">Edit</a></td>
+                                </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
