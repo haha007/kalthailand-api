@@ -41,6 +41,7 @@ public class UserServiceTest extends BaseIntegrationResourceTest {
         Set<Role> roles = new HashSet<>();
         for(String s : roleString){
             Role newRole = new Role();
+            newRole.setId(s);
             newRole.setName(s);
             roles.add(newRole);
         }

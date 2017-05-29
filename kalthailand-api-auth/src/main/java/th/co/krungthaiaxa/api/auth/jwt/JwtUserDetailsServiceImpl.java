@@ -24,7 +24,7 @@ public class JwtUserDetailsServiceImpl implements UserDetailsService {
             return JwtUserFactory.create(
                     user.get().getUsername(),
                     user.get().getPassword(),
-                    user.get().getRoles().stream().map(Role::getName).collect(Collectors.toList()));
+                    user.get().getRoles().stream().map(Role::getId).collect(Collectors.toList()));
         } else {
             throw new UsernameNotFoundException(String.format("No user found with username '%s'.", username));
         }

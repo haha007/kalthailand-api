@@ -20,8 +20,8 @@ public class RoleService {
         this.roleRepository = roleRepository;
     }
 
-    public Role getAuthorityByName(final String authorityName) {
-        return roleRepository.findOne(authorityName);
+    public Role getAuthorityById(final String roleId) {
+        return roleRepository.findOne(roleId);
     }
 
     public Role createAuthority(final Role role) {

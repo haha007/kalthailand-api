@@ -23,15 +23,19 @@ public class RoleServiceTest extends BaseIntegrationResourceTest {
 
     @Test
     public void can_create_new_authority() {
-        Role newRole = new Role();
-        newRole.setName("API_SIGNING");                  
-        final Role createdRole = roleService.createAuthority(newRole);
-        Assert.assertTrue(createdRole.equals(newRole));
+        String[] roleString = {"UI_ELIFE_ADMIN","API_ELIFE","API_BLACKLIST","API_SIGNING","UI_AUTOPAY","UI_VALIDATION","UI_SLC","UI_CAMPAIGN"};
+        
+        for(String r : roleString){
+            Role newRole = new Role();
+            newRole.setId(r);
+            newRole.setName(r);
+            roleService.createAuthority(newRole);
+        }
     }
 
     @Test
     public void can_find_authority() {
-        final Role role = roleService.getAuthorityByName("API_SIGNING");
+        final Role role = roleService.getAuthorityById("API_ELIFE");
         Assert.assertFalse(Objects.isNull(role));
     }
 }
