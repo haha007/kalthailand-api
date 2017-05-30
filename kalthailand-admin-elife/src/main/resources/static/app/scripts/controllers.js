@@ -66,7 +66,7 @@
                 + '/api-elife/quotes/download?'
                 + 'fromDate=' + $scope.fromDateSearch.toISOString()
                 + '&toDate=' + $scope.toDateSearch.toISOString();
-            if($scope.productType) {
+            if ($scope.productType) {
                 downloadQuoteUrl += '&productType=' + $scope.productType;
             }
             window.open(downloadQuoteUrl, "_blank");
@@ -77,7 +77,7 @@
                 + '/api-elife/quotes/mid/download?'
                 + 'fromDate=' + $scope.fromDateSearch.toISOString()
                 + '&toDate=' + $scope.toDateSearch.toISOString();
-            if($scope.productType) {
+            if ($scope.productType) {
                 downloadQuoteMidUrl += '&productType=' + $scope.productType;
             }
             window.open(downloadQuoteMidUrl, "_blank");
@@ -89,7 +89,7 @@
             var getCountUrl = window.location.origin + '/api-elife/quotes/counts?'
                 + 'fromDate=' + fromDate
                 + '&toDate=' + toDate
-            if($scope.productType){
+            if ($scope.productType) {
                 getCountUrl += '&productType=' + $scope.productType;
             }
             $http.get(getCountUrl)
@@ -502,9 +502,6 @@
 
     });
 
-    app.controller('UserManagementController', function ($scope, $route, BlackList, BlackListFileUpload) {
-    });
-
     app.controller('BlackListController', function ($scope, $route, BlackList, BlackListFileUpload) {
         $scope.$route = $route;
 
@@ -741,8 +738,7 @@
                     params: data,
                     data: data,
                     headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-                }).
-                then(
+                }).then(
                     function (response) {
                         if (response.data.error) {
                             $scope.isFetching = false;
@@ -973,6 +969,75 @@
         $scope.service = CampaignCustomersService;
         $scope.service.$scope = $scope;
     });
+
+    app.controller('UserManagementController', function ($scope, $route, $http, ModalService) {
+        $scope.users = [
+            {
+                id: '1',
+                username: '1',
+                email: 'qweqweq',
+                firstName: 'ádasasdasdasd',
+                lastName: 'qweqeqwe',
+                activated: true,
+                roles: ['API_SIGNING', 'API_ELIFE']
+            },
+            {
+                id: '2',
+                username: '2',
+                email: '',
+                firstName: '',
+                lastName: '',
+                activated: false,
+                roles: ['API_ELIFE']
+            }];
+        
+        $scope.create = function () {
+            ModalService.showModal({
+                templateUrl: 'user-modal.html',
+                controller: "UserDialogController",
+                inputs: {user: null}
+            }).then(function (modal) {
+                modal.element.modal();
+                modal.close.then(function (result) {
+                    console.log(result);
+                });
+            });
+        };
+
+        $scope.edit = function (user) {
+            ModalService.showModal({
+                templateUrl: 'user-modal.html',
+                controller: "UserDialogController",
+                inputs: {user: user}
+            }).then(function (modal) {
+                modal.element.modal();
+                modal.close.then(function (result) {
+                    console.log(result);
+                });
+            });
+        };
+    });
+
+    app.controller('UserDialogController', ['$scope','user', 'close', function ($scope, user, close) {
+        $scope.isSaving = false;
+        $scope.userModal = user !== null ? user : {
+            id: null,
+            username: null,
+            email: null,
+            firstName: null,
+            lastName: null,
+            activated: false,
+            roles: []
+        };
+        $scope.close = function (result) {
+            close(result, 500);
+        };
+
+        $scope.save = function (userForm) {
+            console.log(userForm);
+            close(userForm, 500);
+        }
+    }]);
 })
 ();
 

@@ -138,6 +138,10 @@
         return new CampaignCustomersService($http, $sce);
     });
 
+    app.factory('UserService', function ($http, $sce) {
+        return new UserService($http, $sce);
+    });
+
 })();
 
 var ErrorHandler = function () {

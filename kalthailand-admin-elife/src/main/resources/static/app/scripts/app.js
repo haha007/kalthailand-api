@@ -8,7 +8,8 @@
         'ngStorage',
         'ngRoute',
         'ui.bootstrap',
-        'ngMask'
+        'ngMask',
+        'angularModalService'
     ]);
 
     app.config(routeConfig);
