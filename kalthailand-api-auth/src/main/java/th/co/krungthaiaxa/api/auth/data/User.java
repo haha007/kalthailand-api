@@ -20,10 +20,9 @@ import java.util.Set;
  */
 @Document(collection = "user")
 public class User extends BaseEntity {
-
     @NotNull
     @Pattern(regexp = Constants.LOGIN_REGEX)
-    @Size(min = 1, max = 100)
+    @Size(min = 10, max = 20)
     @Indexed
     private String username;
 
@@ -52,14 +51,14 @@ public class User extends BaseEntity {
 
     @Size(max = 20)
     @Field("resetKey")
+    @JsonIgnore
     private String resetKey;
 
     @Field("resetDate")
     private LocalDateTime resetDate = null;
 
-    private boolean activated = true;
+    private boolean activated = false;
 
-    @JsonIgnore
     private Set<Role> roles = new HashSet<>();
 
     public String getUsername() {

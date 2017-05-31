@@ -12,8 +12,9 @@ public class UserDTO {
     private String username;
     private String password;
     private String email;
-    private String firstname;
-    private String lastname;
+    private String firstName;
+    private String lastName;
+    private boolean activated;
     private Set<Role> roles;
 
     public String getId() {
@@ -22,6 +23,14 @@ public class UserDTO {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public boolean isActivated() {
+        return activated;
+    }
+
+    public void setActivated(boolean activated) {
+        this.activated = activated;
     }
 
     public String getUsername() {
@@ -48,20 +57,20 @@ public class UserDTO {
         this.email = email;
     }
 
-    public String getFirstname() {
-        return firstname;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setFirstname(String firstname) {
-        this.firstname = firstname;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
-    public String getLastname() {
-        return lastname;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setLastname(String lastname) {
-        this.lastname = lastname;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public Set<Role> getRoles() {

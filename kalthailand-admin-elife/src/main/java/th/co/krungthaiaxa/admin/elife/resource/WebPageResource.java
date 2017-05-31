@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import th.co.krungthaiaxa.admin.elife.model.AuthenticatedFeaturesUser;
@@ -110,4 +111,14 @@ public class WebPageResource {
         return "redirect:/login";
     }
 
+    @RequestMapping(value = "/activate/{activateKey}", method = RequestMethod.GET)
+    public String activateUser(Model model, HttpServletRequest httpServletRequest, @PathVariable final String activateKey) {
+        LOGGER.info(activateKey);
+        AuthenticatedFeaturesUser user = (AuthenticatedFeaturesUser) httpServletRequest.getSession().getAttribute(SESSION_ATTR_USER);
+        if (user != null) {
+            model.addAttribute("activateKey", activateKey);
+            return "index";
+        }
+        return "activation-user";
+    }
 }

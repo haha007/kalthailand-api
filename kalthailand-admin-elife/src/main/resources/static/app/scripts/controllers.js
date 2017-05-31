@@ -970,27 +970,14 @@
         $scope.service.$scope = $scope;
     });
 
-    app.controller('UserManagementController', function ($scope, $route, $http, ModalService) {
-        $scope.users = [
-            {
-                id: '1',
-                username: '1',
-                email: 'qweqweq',
-                firstName: 'ádasasdasdasd',
-                lastName: 'qweqeqwe',
-                activated: true,
-                roles: ['API_SIGNING', 'API_ELIFE']
-            },
-            {
-                id: '2',
-                username: '2',
-                email: '',
-                firstName: '',
-                lastName: '',
-                activated: false,
-                roles: ['API_ELIFE']
-            }];
-        
+    app.controller('UserManagementController', function ($scope, $route, $http, ModalService, UserService) {
+        $scope.currentPage = 1;
+        $scope.itemsPerPage = 20;
+        $scope.totalItems = 0;
+        $scope.users = null;
+
+        getUserList();
+
         $scope.create = function () {
             ModalService.showModal({
                 templateUrl: 'user-modal.html',
@@ -999,45 +986,123 @@
             }).then(function (modal) {
                 modal.element.modal();
                 modal.close.then(function (result) {
+                    var userService = new UserService(result);
+
+                    userService.$save()
+                        .then(function (successResponse) {
+                            $scope.users.push(successResponse);
+                            $scope.isSaving = null;
+                            $scope.errorMessage = null;
+                        })
+                        .catch(function (errorResponse) {
+                            // For error state
+                            $scope.isSaving = null;
+                        });
                     console.log(result);
                 });
             });
         };
 
-        $scope.edit = function (user) {
+        $scope.edit = function (index, user) {
             ModalService.showModal({
                 templateUrl: 'user-modal.html',
                 controller: "UserDialogController",
-                inputs: {user: user}
+                inputs: {user: angular.copy(user)}
             }).then(function (modal) {
                 modal.element.modal();
                 modal.close.then(function (result) {
+                    var userService = new UserService(result);
+
+                    userService.$update()
+                        .then(function (successResponse) {
+                            $scope.isSaving = null;
+                            $scope.errorMessage = null;
+                            $scope.users[index] = successResponse;
+                        })
+                        .catch(function (errorResponse) {
+                            $scope.isSaving = null;
+                        });
+                    console.log(result);
                     console.log(result);
                 });
             });
         };
+        $scope.getRoleName = function (roles) {
+            return roles.map(function (role) {
+                return role.name
+            }).join(", ");
+        };
+        function getUserList() {
+            $scope.isSearching = true;
+            UserService.get(
+                {
+                    pageNumber: $scope.currentPage - 1,
+                    pageSize: $scope.itemsPerPage
+                },
+                function (successResponse) {
+                    $scope.isSearching = null;
+                    $scope.totalPages = successResponse.totalPages;
+                    $scope.totalItems = successResponse.totalElements;
+                    $scope.currentPage = successResponse.number + 1;
+
+                    $scope.users = successResponse.content;
+                    $scope.errorMessage = null;
+                },
+                function (errorResponse) {
+                    $scope.isSearching = null;
+
+                    $scope.users = null;
+                    $scope.errorMessage = errorResponse.data.userMessage;
+                }
+            );
+        }
     });
 
-    app.controller('UserDialogController', ['$scope','user', 'close', function ($scope, user, close) {
-        $scope.isSaving = false;
+    app.controller('UserDialogController', function ($scope, user, RoleService, close) {
+        $scope.roleConst = null;
+        getRoleList();
+        $scope.isCreateDialog = user === null || user.id === null;
+        $scope.isSaving = null;
         $scope.userModal = user !== null ? user : {
-            id: null,
-            username: null,
-            email: null,
-            firstName: null,
-            lastName: null,
-            activated: false,
-            roles: []
-        };
+                id: null,
+                username: null,
+                email: null,
+                firstName: null,
+                lastName: null,
+                activated: false,
+                roles: []
+            };
         $scope.close = function (result) {
             close(result, 500);
         };
 
         $scope.save = function (userForm) {
-            console.log(userForm);
+            $scope.isSaving = true;
             close(userForm, 500);
+        };
+
+        function getRoleList() {
+            $scope.isSearching = true;
+            RoleService.get(
+                {},
+                function (successResponse) {
+                    $scope.isSearching = null;
+                    $scope.totalPages = successResponse.totalPages;
+                    $scope.totalItems = successResponse.totalElements;
+                    $scope.currentPage = successResponse.number + 1;
+
+                    $scope.roleConst = successResponse.content;
+                    $scope.errorMessage = null;
+                },
+                function (errorResponse) {
+                    $scope.isSearching = null;
+
+                    $scope.roleConst = null;
+                    $scope.errorMessage = errorResponse.data.userMessage;
+                }
+            );
         }
-    }]);
+    });
 })
 ();
 

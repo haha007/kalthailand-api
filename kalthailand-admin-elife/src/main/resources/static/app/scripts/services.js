@@ -138,24 +138,31 @@
         return new CampaignCustomersService($http, $sce);
     });
 
-    app.factory('UserService', function ($http, $sce) {
-        return new UserService($http, $sce);
+    app.factory('UserService', function ($resource) {
+        return $resource(window.location.origin + '/api-auth/users', {} ,{
+            update: {
+                method: 'PUT'
+            }
+        });
     });
 
+    app.factory('RoleService', function ($resource) {
+        return $resource(window.location.origin + '/api-auth/roles');
+    });
 })();
 
 var ErrorHandler = function () {
-}
+};
 ErrorHandler.prototype.fieldErrorToMessage = function (fieldError) {
     return fieldError.message;
-}
+};
 ErrorHandler.prototype.fieldErrorsToMessage = function (fieldErrors) {
     var message = "";
     for (i = 0; i < fieldErrors.length; i++) {
         message += this.fieldErrorToMessage(fieldErrors[i]) + ", ";
     }
     return message;
-}
+};
 ErrorHandler.prototype.fieldErrorsToMessages = function (fieldErrors) {
     var messages = [];
     for (i = 0; i < fieldErrors.length; i++) {

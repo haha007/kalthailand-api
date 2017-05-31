@@ -2,6 +2,8 @@ package th.co.krungthaiaxa.api.auth.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.auth.data.User;
@@ -31,12 +33,27 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    public Page<User> getAllUser(final Pageable pageable) {
+        return userRepository.findAll(pageable);
+    }
+
     public User getUserDetailByUsername(final String username) {
         return userRepository.findByUsername(username);
     }
 
-    public User createNewUser(final User user) {
-        return userRepository.save(user);
+    public Optional<User> createNewUser(final UserDTO userModal) {
+        final User userEntity = new User();
+        userEntity.setUsername(userModal.getUsername());
+        userEntity.setActivationKey(RandomUtil.generateActivationKey());
+        userEntity.setResetKey(null);
+        userEntity.setResetDate(null);
+        userEntity.setRoles(userModal.getRoles());
+        userEntity.setLastName(userModal.getLastName());
+        userEntity.setFirstName(userModal.getFirstName());
+        userEntity.setEmail(userModal.getEmail());
+        userEntity.setPassword(null);
+        userEntity.setActivated(Boolean.FALSE);
+        return Optional.of(userRepository.save(userEntity));
     }
 
 
@@ -51,8 +68,8 @@ public class UserService {
         user.setUsername(userDTO.getUsername());
         user.setPassword(passwordEncoder.encode(userDTO.getPassword())); //encode password 
         user.setEmail(userDTO.getEmail());
-        user.setFirstName(userDTO.getFirstname());
-        user.setLastName(userDTO.getLastname());
+        user.setFirstName(userDTO.getFirstName());
+        user.setLastName(userDTO.getLastName());
         user.setRoles(userDTO.getRoles());
         user.setActivated(false); // account need to be verified
         user.setActivationKey(RandomUtil.generateActivationKey()); // verify activationKey
@@ -89,10 +106,11 @@ public class UserService {
     public Optional<User> updateUser(final UserDTO userDTO) {
         //find User by Id
         return Optional.of(userRepository.findOne(userDTO.getId())).map(user -> {
-            user.setFirstName(userDTO.getFirstname());
-            user.setLastName(userDTO.getLastname());
+            user.setFirstName(userDTO.getFirstName());
+            user.setLastName(userDTO.getLastName());
             user.setRoles(userDTO.getRoles());
             user.setEmail(userDTO.getEmail());
+            user.setActivated(userDTO.isActivated());
             return userRepository.save(user);
         });
     }
