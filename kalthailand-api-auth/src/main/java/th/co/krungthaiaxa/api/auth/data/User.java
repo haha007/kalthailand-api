@@ -48,6 +48,11 @@ public class User extends BaseEntity {
     @JsonIgnore
     private String activationKey;
 
+    @Size(max = 20)
+    @Field("resetKey")
+    @JsonIgnore
+    private String resetKey;
+
     private boolean activated = false;
 
     private Set<Role> roles = new HashSet<>();
@@ -100,6 +105,14 @@ public class User extends BaseEntity {
         this.activationKey = activationKey;
     }
 
+    public String getResetKey() {
+        return resetKey;
+    }
+
+    public void setResetKey(String resetKey) {
+        this.resetKey = resetKey;
+    }
+
     public boolean isActivated() {
         return activated;
     }
@@ -141,8 +154,12 @@ public class User extends BaseEntity {
                 "username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 ", email='" + email + '\'' +
-                ", roles=" + roles +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", activationKey='" + activationKey + '\'' +
+                ", resetKey='" + resetKey + '\'' +
                 ", activated=" + activated +
+                ", roles=" + roles +
                 '}';
     }
 }

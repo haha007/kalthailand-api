@@ -23,4 +23,6 @@ public interface UserRepository extends PagingAndSortingRepository<User, String>
     Optional<User> findOneByResetKey(final String resetPasswordKey);
 
     Optional<User> findOneByActivationKey(final String activateKey);
+
+    Optional<User> findByUsername(final String username);
 }

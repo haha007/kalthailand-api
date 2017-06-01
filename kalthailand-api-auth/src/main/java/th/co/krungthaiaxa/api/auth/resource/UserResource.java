@@ -44,14 +44,17 @@ public class UserResource {
     @ApiOperation(value = "Create new user", notes = "Create new user", response = UserDTO.class)
     @RequestMapping(value = "/users", produces = APPLICATION_JSON_VALUE, method = RequestMethod.POST)
     public ResponseEntity<?> createUser(@RequestBody @Valid final UserDTO userModal) {
+        if (userService.getUserByUsername(userModal.getUsername()).isPresent()) {
+            return ResponseEntity.badRequest().body(Collections.singletonMap("userexists", "username already in use"));
+        }
+
         final Optional<User> userOptional = userService.createNewUser(userModal);
         if (userOptional.isPresent()) {
             final User user = userOptional.get();
-            
             //Prepare activation email with activation link inside
-            
+
             //Send email to new user
-            return ResponseEntity.ok(userModal);
+            return ResponseEntity.ok(new UserDTO(user));
         }
         return ResponseEntity.ok(Collections.singletonMap("success", Boolean.FALSE));
     }

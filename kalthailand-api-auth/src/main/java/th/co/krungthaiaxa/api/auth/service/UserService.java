@@ -41,6 +41,10 @@ public class UserService {
         return userRepository.findActiveUsername(username);
     }
 
+    public Optional<User> getUserByUsername(final String username) {
+        return userRepository.findByUsername(username);
+    }
+
     /**
      * Create new user from UserDTO.
      *
