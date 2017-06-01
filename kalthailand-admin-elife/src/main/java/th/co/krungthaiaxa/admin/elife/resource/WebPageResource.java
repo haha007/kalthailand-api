@@ -114,18 +114,7 @@ public class WebPageResource {
     @RequestMapping(value = "/activate/{activateKey}", method = RequestMethod.GET)
     public String activateUser(Model model, HttpServletRequest httpServletRequest, @PathVariable final String activateKey) {
         LOGGER.info(activateKey);
-        AuthenticatedFeaturesUser user = (AuthenticatedFeaturesUser) httpServletRequest.getSession().getAttribute(SESSION_ATTR_USER);
-        if (user != null) {
-            model.addAttribute("activateKey", activateKey);
-            //Turn on security for activation link 
-            
-            //Check activation key
-            
-            //if it correct -> return activation-user 
-            
-            //otherwise -> return expired activation link page
-            return "index";
-        }
+        model.addAttribute("activateKey", activateKey);
         return "activation-user";
     }
 }
