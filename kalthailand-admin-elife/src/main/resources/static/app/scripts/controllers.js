@@ -970,63 +970,78 @@
         $scope.service.$scope = $scope;
     });
 
-    app.controller('UserManagementController', function ($scope, $route, $http, ModalService, UserService) {
+    app.controller('UserManagementController', function ($scope, $route, $http, UserService, RoleService, $uibModal) {
         $scope.currentPage = 1;
         $scope.itemsPerPage = 20;
         $scope.totalItems = 0;
         $scope.users = null;
+        $scope.roleConst = [];
+
+        getRoleList();
+
+        $scope.animationsEnabled = true;
 
         getUserList();
 
         $scope.create = function () {
-            ModalService.showModal({
+            var modalInstance = $uibModal.open({
+                animation: $scope.animationsEnabled,
                 templateUrl: 'user-modal.html',
-                controller: "UserDialogController",
-                inputs: {user: null}
-            }).then(function (modal) {
-                modal.element.modal();
-                modal.close.then(function (result) {
-                    var userService = new UserService(result);
+                controller: 'UserDialogController',
+                resolve: {
+                    roleConst: function () { return $scope.roleConst; },
+                    user: null
+                }
+            });
+            modalInstance.result.then(function (result) {
+                var userService = new UserService(result);
 
-                    userService.$save()
-                        .then(function (successResponse) {
-                            $scope.users.push(successResponse);
-                            $scope.isSaving = null;
-                            $scope.errorMessage = null;
-                        })
-                        .catch(function (errorResponse) {
-                            // For error state
-                            $scope.isSaving = null;
-                        });
-                    console.log(result);
-                });
+                userService.$save()
+                    .then(function (successResponse) {
+                        $scope.users.push(successResponse);
+                        $scope.isSaving = null;
+                        $scope.errorMessage = null;
+                    })
+                    .catch(function (errorResponse) {
+                        // For error state
+                        $scope.isSaving = null;
+                    });
+            }, function () {
+                console.log('Modal dismissed at: ' + new Date());
             });
         };
 
         $scope.edit = function (index, user) {
-            ModalService.showModal({
+            var modalInstance = $uibModal.open({
+                animation: $scope.animationsEnabled,
                 templateUrl: 'user-modal.html',
-                controller: "UserDialogController",
-                inputs: {user: angular.copy(user)}
-            }).then(function (modal) {
-                modal.element.modal();
-                modal.close.then(function (result) {
-                    var userService = new UserService(result);
+                controller: 'UserDialogController',
+                resolve: {
+                    roleConst: function () { return $scope.roleConst; },
+                    user: angular.copy(user)
+                }
+            });
+            modalInstance.result.then(function (result) {
+                var userService = new UserService(result);
 
-                    userService.$update()
-                        .then(function (successResponse) {
-                            $scope.isSaving = null;
-                            $scope.errorMessage = null;
-                            $scope.users[index] = successResponse;
-                        })
-                        .catch(function (errorResponse) {
-                            $scope.isSaving = null;
-                        });
-                    console.log(result);
-                    console.log(result);
-                });
+                userService.$update()
+                    .then(function (successResponse) {
+                        $scope.isSaving = null;
+                        $scope.errorMessage = null;
+                        $scope.users[index] = successResponse;
+                    })
+                    .catch(function (errorResponse) {
+                        $scope.isSaving = null;
+                    });
+            }, function () {
+                console.log('Modal dismissed at: ' + new Date());
             });
         };
+        
+        $scope.toggleAnimation = function () {
+            $scope.animationsEnabled = !$scope.animationsEnabled;
+        };
+
         $scope.getRoleName = function (roles) {
             return roles.map(function (role) {
                 return role.name
@@ -1055,12 +1070,40 @@
                     $scope.errorMessage = errorResponse.data.userMessage;
                 }
             );
+        };
+        function getRoleList() {
+            $scope.isSearching = true;
+            RoleService.get(
+                {},
+                function (successResponse) {
+                    $scope.roleConst = successResponse.content;
+                },
+                function (errorResponse) {
+                    $scope.isSearching = null;
+                    $scope.roleConst = null;
+                    $scope.errorMessage = errorResponse.data.userMessage;
+                }
+            );
         }
     });
+    app.controller('ModalInstanceCtrl', function ($scope, $uibModalInstance, items) {
 
-    app.controller('UserDialogController', function ($scope, user, RoleService, close) {
-        $scope.roleConst = null;
-        getRoleList();
+        $scope.items = items;
+        $scope.selected = {
+            item: $scope.items[0]
+        };
+
+        $scope.ok = function () {
+            $uibModalInstance .close($scope.selected.item);
+        };
+
+        $scope.cancel = function () {
+            $uibModalInstance .dismiss('cancel');
+        };
+    });
+
+    app.controller('UserDialogController', function ($scope, $uibModalInstance, user, roleConst) {
+        $scope.roleConst = roleConst;
         $scope.isCreateDialog = user === null || user.id === null;
         $scope.isSaving = null;
         $scope.userModal = user !== null ? user : {
@@ -1072,36 +1115,15 @@
                 activated: false,
                 roles: []
             };
+            
         $scope.close = function (result) {
-            close(result, 500);
+            $uibModalInstance .dismiss('cancel');
         };
 
         $scope.save = function (userForm) {
             $scope.isSaving = true;
-            close(userForm, 500);
+            $uibModalInstance .close(userForm);
         };
-
-        function getRoleList() {
-            $scope.isSearching = true;
-            RoleService.get(
-                {},
-                function (successResponse) {
-                    $scope.isSearching = null;
-                    $scope.totalPages = successResponse.totalPages;
-                    $scope.totalItems = successResponse.totalElements;
-                    $scope.currentPage = successResponse.number + 1;
-
-                    $scope.roleConst = successResponse.content;
-                    $scope.errorMessage = null;
-                },
-                function (errorResponse) {
-                    $scope.isSearching = null;
-
-                    $scope.roleConst = null;
-                    $scope.errorMessage = errorResponse.data.userMessage;
-                }
-            );
-        }
     });
 })
 ();
