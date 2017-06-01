@@ -1,5 +1,6 @@
 package th.co.krungthaiaxa.api.auth.service;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -12,7 +13,6 @@ import th.co.krungthaiaxa.api.auth.repository.UserRepository;
 import th.co.krungthaiaxa.api.auth.utils.RandomUtil;
 
 import javax.inject.Inject;
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 /**
@@ -37,45 +37,30 @@ public class UserService {
         return userRepository.findAll(pageable);
     }
 
-    public User getUserDetailByUsername(final String username) {
-        return userRepository.findByUsername(username);
+    public Optional<User> getActiveUserDetailByUsername(final String username) {
+        return userRepository.findActiveUsername(username);
     }
-
-    public Optional<User> createNewUser(final UserDTO userModal) {
-        final User userEntity = new User();
-        userEntity.setUsername(userModal.getUsername());
-        userEntity.setActivationKey(RandomUtil.generateActivationKey());
-        userEntity.setResetKey(null);
-        userEntity.setResetDate(null);
-        userEntity.setRoles(userModal.getRoles());
-        userEntity.setLastName(userModal.getLastName());
-        userEntity.setFirstName(userModal.getFirstName());
-        userEntity.setEmail(userModal.getEmail());
-        userEntity.setPassword(null);
-        userEntity.setActivated(Boolean.FALSE);
-        return Optional.of(userRepository.save(userEntity));
-    }
-
 
     /**
      * Create new user from UserDTO.
      *
-     * @param userDTO
-     * @return UserDTO
+     * @param userDTO user data transfer
+     * @return Option User Entity
      */
-    public User addUser(final UserDTO userDTO) {
-        User user = new User();
-        user.setUsername(userDTO.getUsername());
-        user.setPassword(passwordEncoder.encode(userDTO.getPassword())); //encode password 
-        user.setEmail(userDTO.getEmail());
-        user.setFirstName(userDTO.getFirstName());
-        user.setLastName(userDTO.getLastName());
-        user.setRoles(userDTO.getRoles());
-        user.setActivated(false); // account need to be verified
-        user.setActivationKey(RandomUtil.generateActivationKey()); // verify activationKey
-        user.setResetDate(null); // 
-        user.setResetKey(null); // verify resetPasswordKey
-        return userRepository.save(user);
+    public Optional<User> createNewUser(final UserDTO userDTO) {
+        final User userEntity = new User();
+        userEntity.setUsername(userDTO.getUsername());
+        userEntity.setRoles(userDTO.getRoles());
+        userEntity.setLastName(userDTO.getLastName());
+        userEntity.setFirstName(userDTO.getFirstName());
+        userEntity.setEmail(userDTO.getEmail());
+        userEntity.setPassword(StringUtils.EMPTY);
+
+        //generate activation key
+        userEntity.setActivationKey(RandomUtil.generateActivationKey());
+        userEntity.setActivated(Boolean.FALSE);
+
+        return Optional.of(userRepository.save(userEntity));
     }
 
     /**
@@ -113,47 +98,6 @@ public class UserService {
             user.setActivated(userDTO.isActivated());
             return userRepository.save(user);
         });
-    }
-
-    /**
-     * Request password reset with email
-     *
-     * @param email email of user
-     * @return UserDTO
-     */
-    public Optional<User> requestPasswordReset(final String email) {
-        return userRepository.findOneByEmail(email)
-                .filter(User::isActivated)
-                .map(user -> {
-                    user.setResetKey(RandomUtil.generateResetKey());
-                    user.setResetDate(LocalDateTime.now());
-                    userRepository.save(user);
-                    return user;
-                });
-    }
-
-
-    /**
-     * Complete password reset by new password and reset password key
-     *
-     * @param newPassword new password
-     * @param key         reset password key
-     * @return UserDTO
-     */
-    public Optional<User> completePasswordReset(final String newPassword, final String key) {
-        LOGGER.debug("Reset user password for reset key {}", key);
-        return userRepository.findOneByResetKey(key)
-                .filter(user -> {
-                    LocalDateTime oneDayAgo = LocalDateTime.now().minusHours(24);
-                    return user.getResetDate().isAfter(oneDayAgo);
-                })
-                .map(user -> {
-                    user.setPassword(passwordEncoder.encode(newPassword));
-                    user.setResetKey(null);
-                    user.setResetDate(null);
-                    userRepository.save(user);
-                    return user;
-                });
     }
 
 }

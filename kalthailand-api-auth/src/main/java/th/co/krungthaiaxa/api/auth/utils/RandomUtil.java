@@ -1,17 +1,18 @@
 package th.co.krungthaiaxa.api.auth.utils;
 
+import org.apache.commons.lang3.RandomStringUtils;
+
 /**
  * @author tuong.le on 5/24/17.
  */
 public class RandomUtil {
+    private static final int DEF_COUNT = 20;
+
     public static String generateResetKey() {
-        //TODO: generate Random Reset Key
-        return "";
+        return RandomStringUtils.randomAlphanumeric(DEF_COUNT);
     }
 
     public static String generateActivationKey() {
-        //TODO: generate Random Active Key
-        return "";
-        
+        return RandomStringUtils.randomAlphanumeric(DEF_COUNT);
     }
 }

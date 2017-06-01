@@ -2,6 +2,8 @@ package th.co.krungthaiaxa.api.auth.test.service;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,6 +28,7 @@ import java.util.Set;
 
 @SpringApplicationConfiguration(classes = KALApiAuth.class)
 public class UserServiceTest extends BaseIntegrationResourceTest {
+    public static final Logger LOGGER = LoggerFactory.getLogger(UserServiceTest.class);
 
     @Inject
     private PasswordEncoder passwordEncoder;
@@ -36,12 +39,11 @@ public class UserServiceTest extends BaseIntegrationResourceTest {
     @Test
     public void can_create_new_user() {
 
-        String[] roleString = {"API_ELIFE", "API_BLACKLIST"};
+        String[] roleString = {"API_ELIFE", "API_BLACKLIST", "UI_ELIFE_ADMIN"};
 
         UserDTO newUser = new UserDTO();
         newUser.setEmail("tuongle106@gmail.com");
-        newUser.setPassword(passwordEncoder.encode("password"));
-        newUser.setUsername("elifeuser123");
+        newUser.setUsername("elifeadminuser");
         newUser.setFirstName("Tuong");
         newUser.setLastName("Le");
 
@@ -61,8 +63,14 @@ public class UserServiceTest extends BaseIntegrationResourceTest {
 
     @Test
     public void can_find_username() {
-        final User adminUser = userService.getUserDetailByUsername("elifeadminuser");
-        Assert.assertFalse(Objects.isNull(adminUser));
+        final Optional<User> adminUser = userService.getActiveUserDetailByUsername("asdasasfasf");
+        if (adminUser.isPresent()) {
+            LOGGER.info(adminUser.get().getEmail());
+            Assert.assertFalse(Objects.isNull(adminUser));
+            return;
+        }
+
+        LOGGER.info("User 'elifeuser is not '");
     }
 
     @Test

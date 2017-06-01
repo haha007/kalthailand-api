@@ -1,7 +1,13 @@
 package th.co.krungthaiaxa.api.auth.model;
 
+import org.hibernate.validator.constraints.Email;
+import org.hibernate.validator.constraints.NotEmpty;
 import th.co.krungthaiaxa.api.auth.data.Role;
+import th.co.krungthaiaxa.api.auth.utils.Constants;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.util.Set;
 
 /**
@@ -9,12 +15,27 @@ import java.util.Set;
  */
 public class UserDTO {
     private String id;
+    
+    @NotNull
+    @Pattern(regexp = Constants.LOGIN_REGEX)
+    @Size(min = 10, max = 20)
     private String username;
-    private String password;
+    
+    @Email
+    @Size(max = 100)
     private String email;
+
+    @NotNull
+    @Size(min = 1, max = 50)
     private String firstName;
+
+    @NotNull
+    @Size(min = 1, max = 50)
     private String lastName;
+    
     private boolean activated;
+    
+    @NotEmpty
     private Set<Role> roles;
 
     public String getId() {
@@ -39,14 +60,6 @@ public class UserDTO {
 
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public String getEmail() {

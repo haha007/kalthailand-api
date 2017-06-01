@@ -13,12 +13,14 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends PagingAndSortingRepository<User, String> {
-    @Query("{ username : ?0 }")
-    User findByUsername(String username);
 
-    Optional<User> findOneByEmail(String mail);
+    //Check user account that has username and been activated.
+    @Query("{ username: ?0, activated: true, activationKey: {$not: { $exists: true, $ne: ''}}}")
+    Optional<User> findActiveUsername(final String username);
 
-    Optional<User> findOneByResetKey(String resetPasswordKey);
+    Optional<User> findOneByEmail(final String mail);
 
-    Optional<User> findOneByActivationKey(String activateKey);
+    Optional<User> findOneByResetKey(final String resetPasswordKey);
+
+    Optional<User> findOneByActivationKey(final String activateKey);
 }

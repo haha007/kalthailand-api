@@ -989,7 +989,9 @@
                 templateUrl: 'user-modal.html',
                 controller: 'UserDialogController',
                 resolve: {
-                    roleConst: function () { return $scope.roleConst; },
+                    roleConst: function () {
+                        return $scope.roleConst;
+                    },
                     user: null
                 }
             });
@@ -1017,7 +1019,9 @@
                 templateUrl: 'user-modal.html',
                 controller: 'UserDialogController',
                 resolve: {
-                    roleConst: function () { return $scope.roleConst; },
+                    roleConst: function () {
+                        return $scope.roleConst;
+                    },
                     user: angular.copy(user)
                 }
             });
@@ -1037,7 +1041,7 @@
                 console.log('Modal dismissed at: ' + new Date());
             });
         };
-        
+
         $scope.toggleAnimation = function () {
             $scope.animationsEnabled = !$scope.animationsEnabled;
         };
@@ -1094,11 +1098,11 @@
         };
 
         $scope.ok = function () {
-            $uibModalInstance .close($scope.selected.item);
+            $uibModalInstance.close($scope.selected.item);
         };
 
         $scope.cancel = function () {
-            $uibModalInstance .dismiss('cancel');
+            $uibModalInstance.dismiss('cancel');
         };
     });
 
@@ -1115,14 +1119,14 @@
                 activated: false,
                 roles: []
             };
-            
+
         $scope.close = function (result) {
-            $uibModalInstance .dismiss('cancel');
+            $uibModalInstance.dismiss('cancel');
         };
 
         $scope.save = function (userForm) {
             $scope.isSaving = true;
-            $uibModalInstance .close(userForm);
+            $uibModalInstance.close(userForm);
         };
     });
 })

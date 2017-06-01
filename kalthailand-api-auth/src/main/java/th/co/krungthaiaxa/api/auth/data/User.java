@@ -11,7 +11,6 @@ import th.co.krungthaiaxa.api.common.data.BaseEntity;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -48,14 +47,6 @@ public class User extends BaseEntity {
     @Field("activationKey")
     @JsonIgnore
     private String activationKey;
-
-    @Size(max = 20)
-    @Field("resetKey")
-    @JsonIgnore
-    private String resetKey;
-
-    @Field("resetDate")
-    private LocalDateTime resetDate = null;
 
     private boolean activated = false;
 
@@ -107,22 +98,6 @@ public class User extends BaseEntity {
 
     public void setActivationKey(String activationKey) {
         this.activationKey = activationKey;
-    }
-
-    public String getResetKey() {
-        return resetKey;
-    }
-
-    public void setResetKey(String resetKey) {
-        this.resetKey = resetKey;
-    }
-
-    public LocalDateTime getResetDate() {
-        return resetDate;
-    }
-
-    public void setResetDate(LocalDateTime resetDate) {
-        this.resetDate = resetDate;
     }
 
     public boolean isActivated() {

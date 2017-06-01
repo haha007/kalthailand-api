@@ -10,6 +10,7 @@ import th.co.krungthaiaxa.api.auth.jwt.JwtUserFactory;
 
 import javax.inject.Inject;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -22,7 +23,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private final UserService userService;
 
     @Inject
-    public UserDetailsServiceImpl(UserService userService) {
+    public UserDetailsServiceImpl(final UserService userService) {
         this.userService = userService;
     }
 
@@ -34,8 +35,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
      * @throws UsernameNotFoundException default exception
      */
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        final User user = userService.getUserDetailByUsername(username);
+    public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
+        final Optional<User> userOptional = userService.getActiveUserDetailByUsername(username);
+        final User user = userOptional.get();
         List<String> roles = user.getRoles().stream().map(Role::getId).collect(Collectors.toList());
         return JwtUserFactory.create(user.getUsername(), user.getPassword(), roles);
     }

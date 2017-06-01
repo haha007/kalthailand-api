@@ -1,11 +1,34 @@
 [
-  {"_id":"UI_SLC"},
-  {"_id":"API_BLACKLIST"},
-  {"_id":"UI_ELIFE_ADMIN"},
-  {"_id":"UI_AUTOPAY"},
-  {"_id":"API_SIGNING"},
-  {"_id":"UI_VALIDATION"},
-  {"_id":"API_ELIFE"},
-  {"_id":"UI_CAMPAIGN"},
-  {"_id":"UI_USER"} 
+  {
+    "_id": "API_ELIFE",
+    "name": "API_ELIFE"
+  },
+  {
+    "_id": "UI_ELIFE_ADMIN",
+    "name": "UI_ELIFE_ADMIN"
+  },
+  {
+    "_id": "API_SIGNING",
+    "name": "API_SIGNING"
+  },
+  {
+    "_id": "API_BLACKLIST",
+    "name": "API_BLACKLIST"
+  },
+  {
+    "_id": "UI_AUTOPAY",
+    "name": "UI_AUTOPAY"
+  },
+  {
+    "_id": "UI_VALIDATION",
+    "name": "UI_VALIDATION"
+  },
+  {
+    "_id": "UI_SLC",
+    "name": "UI_SLC"
+  },
+  {
+    "_id": "UI_CAMPAIGN",
+    "name": "UI_CAMPAIGN"
+  }
 ]

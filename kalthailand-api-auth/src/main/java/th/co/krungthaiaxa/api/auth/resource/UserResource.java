@@ -9,11 +9,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import th.co.krungthaiaxa.api.auth.data.User;
 import th.co.krungthaiaxa.api.auth.model.UserDTO;
 import th.co.krungthaiaxa.api.auth.service.UserService;
 
 import javax.inject.Inject;
+import javax.validation.Valid;
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -40,8 +43,14 @@ public class UserResource {
 
     @ApiOperation(value = "Create new user", notes = "Create new user", response = UserDTO.class)
     @RequestMapping(value = "/users", produces = APPLICATION_JSON_VALUE, method = RequestMethod.POST)
-    public ResponseEntity<?> createUser(@RequestBody final UserDTO userModal) {
-        if (userService.createNewUser(userModal).isPresent()) {
+    public ResponseEntity<?> createUser(@RequestBody @Valid final UserDTO userModal) {
+        final Optional<User> userOptional = userService.createNewUser(userModal);
+        if (userOptional.isPresent()) {
+            final User user = userOptional.get();
+            
+            //Prepare activation email with activation link inside
+            
+            //Send email to new user
             return ResponseEntity.ok(userModal);
         }
         return ResponseEntity.ok(Collections.singletonMap("success", Boolean.FALSE));
@@ -50,7 +59,6 @@ public class UserResource {
     @ApiOperation(value = "Update user info", notes = "Update user info", response = UserDTO.class)
     @RequestMapping(value = "/users", produces = APPLICATION_JSON_VALUE, method = RequestMethod.PUT)
     public ResponseEntity<?> updateUser(@RequestBody final UserDTO userModal) {
-        
         if (userService.updateUser(userModal).isPresent()) {
             return ResponseEntity.ok(userModal);
         }
