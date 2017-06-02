@@ -35,11 +35,11 @@ public class AuthenticationService {
     @Autowired
     private UserDetailsServiceImpl userDetailsServiceImpl;
 
-    public AuthenticatedUser authenticate(RequestForToken requestForToken) {
+    public AuthenticatedUser authenticate(final RequestForToken requestForToken) {
         Instant start = LogUtil.logStarting("Authenticate " + requestForToken.getUserName());
         try {
             // Perform the security
-            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
+            final UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
                     requestForToken.getUserName(),
                     requestForToken.getPassword());
             final Authentication authentication = authenticationManager.authenticate(usernamePasswordAuthenticationToken);

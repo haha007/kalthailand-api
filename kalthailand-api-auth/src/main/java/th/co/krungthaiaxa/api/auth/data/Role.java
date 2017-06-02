@@ -51,7 +51,7 @@ public class Role implements Serializable {
 
         Role role = (Role) o;
 
-        return name.equals(role.name);
+        return id.equals(role.id);
     }
 
     @Override
