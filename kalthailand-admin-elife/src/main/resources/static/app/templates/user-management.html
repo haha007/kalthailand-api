@@ -78,7 +78,7 @@
                                         <input type="checkbox" class="form-control"
                                                               ng-model="user.activated" ng-hide="true"></td>
                                     <td>
-                                        <button class="btn btn-primary" type="button" ng-click="edit($index, user)">Edit</button>
+                                        <button class="btn btn-primary" ng-disabled="user.username === 'elifeadminuser'" type="button" ng-click="edit($index, user)">Edit</button>
                                     </td>
                                 </tr>
 

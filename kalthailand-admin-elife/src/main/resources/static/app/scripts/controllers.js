@@ -1066,7 +1066,7 @@
         }
     });
 
-    app.controller('UserDialogController', function ($scope, $uibModalInstance, user, roleConst, UserService, RoleService) {
+    app.controller('UserDialogController', function ($scope, $uibModalInstance, user, roleConst, UserService) {
         $scope.roleConst = roleConst;
         $scope.isCreateDialog = user === null || user.id === null;
         $scope.isSaving = null;
