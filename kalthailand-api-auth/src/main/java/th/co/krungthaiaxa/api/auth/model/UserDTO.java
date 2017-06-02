@@ -44,6 +44,7 @@ public class UserDTO {
     }
 
     public UserDTO(final User user) {
+        this.setUsername(user.getUsername());
         this.setId(user.getId());
         this.setEmail(user.getEmail());
         this.setActivated(user.isActivated());

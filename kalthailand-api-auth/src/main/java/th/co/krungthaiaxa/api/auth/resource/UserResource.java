@@ -16,6 +16,8 @@ import th.co.krungthaiaxa.api.auth.data.User;
 import th.co.krungthaiaxa.api.auth.model.UserDTO;
 import th.co.krungthaiaxa.api.auth.service.UserService;
 import th.co.krungthaiaxa.api.auth.utils.EmailSender;
+import th.co.krungthaiaxa.api.common.annotation.RequiredAdminRole;
+import th.co.krungthaiaxa.api.common.utils.IOUtil;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -49,6 +51,7 @@ public class UserResource {
 
     @ApiOperation(value = "Get list of users", notes = "Get list of users", response = UserDTO.class)
     @RequestMapping(value = "/users", produces = APPLICATION_JSON_VALUE, method = RequestMethod.GET)
+    @RequiredAdminRole
     public ResponseEntity<?> getListOfUser() {
         final Pageable pageable = new PageRequest(0, 100);
         return ResponseEntity.ok(userService.getAllUser(pageable));
@@ -56,29 +59,37 @@ public class UserResource {
 
     @ApiOperation(value = "Create new user", notes = "Create new user", response = UserDTO.class)
     @RequestMapping(value = "/users", produces = APPLICATION_JSON_VALUE, method = RequestMethod.POST)
+    @RequiredAdminRole
     public ResponseEntity<?> createUser(@RequestBody @Valid final UserDTO userModal, final HttpServletRequest request) {
 
         if (userService.getUserByUsername(userModal.getUsername()).isPresent()) {
-            return ResponseEntity.badRequest().body(Collections.singletonMap("userexists", "username already in use"));
+            return ResponseEntity.badRequest().body(Collections.singletonMap("user_exists", "Username already in use"));
         }
 
         final Optional<User> userOptional = userService.createNewUser(userModal);
         if (userOptional.isPresent()) {
             final User user = userOptional.get();
-            emailSender.sendEmail(fromEmail, user.getEmail(), "Activation Email",
-                    "Activation Link: " + getActivationLink(request, user.getActivationKey()));
+            LOGGER.info("New User {} has been created", user.getUsername());
+
+            final String emailContent =
+                    getActivationEmailContent(user, getActivationLink(request, user.getActivationKey()));
+            emailSender.sendEmail(fromEmail, user.getEmail(), "Activation Email", emailContent);
+            LOGGER.info("Activation Email has been sent to {}", user.getEmail());
             return ResponseEntity.ok(new UserDTO(user));
         }
-        return ResponseEntity.ok(Collections.singletonMap("success", Boolean.FALSE));
+        LOGGER.error("Could not create user {}", userModal.getUsername());
+        return ResponseEntity.badRequest().body(Collections.singletonMap("internal_error", "Something went wrong"));
     }
 
     @ApiOperation(value = "Update user info", notes = "Update user info", response = UserDTO.class)
     @RequestMapping(value = "/users", produces = APPLICATION_JSON_VALUE, method = RequestMethod.PUT)
+    @RequiredAdminRole
     public ResponseEntity<?> updateUser(@RequestBody final UserDTO userModal) {
         if (userService.updateUser(userModal).isPresent()) {
+            LOGGER.info("User {} has been updated", userModal.getUsername());
             return ResponseEntity.ok(userModal);
         }
-        return ResponseEntity.ok(Collections.singletonMap("success", Boolean.FALSE));
+        return ResponseEntity.badRequest().body(Collections.singletonMap("internal_error", "Something went wrong"));
     }
 
     private String getActivationLink(final HttpServletRequest request, final String activationKey) {
@@ -86,6 +97,14 @@ public class UserResource {
         String uri = request.getRequestURI();
         String host = url.substring(0, url.indexOf(uri));
         return host + "/admin-elife/activate/" + activationKey;
+    }
+
+    private String getActivationEmailContent(final User user, final String activationLink) {
+        String emailContent = IOUtil.loadTextFileInClassPath("/email-content/activation-user.html");
+        emailContent = emailContent.replaceAll("%USERNAME%", user.getUsername())
+                .replaceAll("%ACTIVATION_LINK%", activationLink)
+                .replaceAll("%NAME%", user.getFirstName() + " " + user.getLastName());
+        return emailContent;
     }
 
 }

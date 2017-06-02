@@ -44,7 +44,7 @@
 
                         <div class="title_left">
                             <!--EXPORT BUTTON-->
-                            <p><a href="{{downloadUrl}}"><i class="green fa fa-file-excel-o"></i> Export data</a>
+                            <p><a href=""><i class="green fa fa-file-excel-o"></i> Export data</a>
                                 -
                                 <small>{{ totalItems }} items</small>
                             </p>
@@ -71,10 +71,14 @@
                                     <td>{{user.firstName}} {{user.lastName}}</td>
                                     <td>{{user.email}}</td>
                                     <td>{{getRoleName(user.roles)}}</td>
-                                    <td align="center"><input type="checkbox" class="form-control"
-                                                              ng-model="user.activated" ng-disabled="true"></td>
+                                    <td align="center">
+                                        <i ng-show="user.activated" class="green glyphicon glyphicon-ok-sign"></i>
+                                        <i ng-hide="user.activated"class="red glyphicon glyphicon-ban-circle"></i>
+                                        
+                                        <input type="checkbox" class="form-control"
+                                                              ng-model="user.activated" ng-hide="true"></td>
                                     <td>
-                                        <button class="btn" type="button" ng-click="edit($index, user)">Edit</button>
+                                        <button class="btn btn-primary" type="button" ng-click="edit($index, user)">Edit</button>
                                     </td>
                                 </tr>
 
@@ -94,6 +98,11 @@
         <div class="modal-body">
             <form name="editForm" role="form" novalidate ng-submit="save(userModal)">
                 <div class="modal-body">
+                    <div class="form-group">
+                        <div class="alert alert-danger" ng-show="errorData" ng-repeat="(key, value) in errorData">
+                            <strong>{{key}}</strong> {{value}}
+                        </div>
+                    </div>
                     <div class="form-group ng-hide">
                         <label>ID</label>
                         <input type="text" class="form-control" name="id"
@@ -197,9 +206,13 @@
             </form>
         </div>
         <div class="modal-footer">
-            <button type="submit" ng-disabled="editForm.$invalid || isSaving || editForm.$pristine" class="btn btn-primary"
+            <button type="submit" ng-show="isCreateDialog" ng-disabled="editForm.$invalid || isSaving || editForm.$pristine" class="btn btn-primary"
+                    data-dismiss="modal" ng-click="create(userModal)">
+                <span class="glyphicon glyphicon-save"></span>&nbsp;<span>Create</span>
+            </button>
+            <button type="submit" ng-show="!isCreateDialog" ng-disabled="editForm.$invalid || isSaving || editForm.$pristine" class="btn btn-primary"
                     data-dismiss="modal" ng-click="save(userModal)">
-                <span class="glyphicon glyphicon-save"></span>&nbsp;<span>{{isCreateDialog ? 'Create' : 'Save'}}</span>
+                <span class="glyphicon glyphicon-save"></span>&nbsp;<span>Save</span>
             </button>
             <button type="button" class="btn btn-warning" data-dismiss="modal" ng-click="close()">
                 <span class="glyphicon glyphicon-ban-circle"></span>&nbsp;<span>Cancel</span>

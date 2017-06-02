@@ -996,20 +996,7 @@
                 }
             });
             modalInstance.result.then(function (result) {
-                var userService = new UserService(result);
-
-                userService.$save()
-                    .then(function (successResponse) {
-                        $scope.users.push(successResponse);
-                        $scope.isSaving = null;
-                        $scope.errorMessage = null;
-                    })
-                    .catch(function (errorResponse) {
-                        // For error state
-                        $scope.isSaving = null;
-                    });
-            }, function () {
-                console.log('Modal dismissed at: ' + new Date());
+                $scope.users.push(result);
             });
         };
 
@@ -1026,19 +1013,7 @@
                 }
             });
             modalInstance.result.then(function (result) {
-                var userService = new UserService(result);
-
-                userService.$update()
-                    .then(function (successResponse) {
-                        $scope.isSaving = null;
-                        $scope.errorMessage = null;
-                        $scope.users[index] = successResponse;
-                    })
-                    .catch(function (errorResponse) {
-                        $scope.isSaving = null;
-                    });
-            }, function () {
-                console.log('Modal dismissed at: ' + new Date());
+                $scope.users[index] = result;
             });
         };
 
@@ -1090,26 +1065,12 @@
             );
         }
     });
-    app.controller('ModalInstanceCtrl', function ($scope, $uibModalInstance, items) {
 
-        $scope.items = items;
-        $scope.selected = {
-            item: $scope.items[0]
-        };
-
-        $scope.ok = function () {
-            $uibModalInstance.close($scope.selected.item);
-        };
-
-        $scope.cancel = function () {
-            $uibModalInstance.dismiss('cancel');
-        };
-    });
-
-    app.controller('UserDialogController', function ($scope, $uibModalInstance, user, roleConst) {
+    app.controller('UserDialogController', function ($scope, $uibModalInstance, user, roleConst, UserService, RoleService) {
         $scope.roleConst = roleConst;
         $scope.isCreateDialog = user === null || user.id === null;
         $scope.isSaving = null;
+        $scope.errorData = null;
         $scope.userModal = user !== null ? user : {
                 id: null,
                 username: null,
@@ -1120,13 +1081,38 @@
                 roles: []
             };
 
-        $scope.close = function (result) {
+        $scope.close = function () {
             $uibModalInstance.dismiss('cancel');
         };
 
         $scope.save = function (userForm) {
             $scope.isSaving = true;
-            $uibModalInstance.close(userForm);
+            var userService = new UserService(userForm);
+            userService.$update()
+                .then(function (successResponse) {
+                    $scope.isSaving = null;
+                    $scope.errorMessage = null;
+                    $uibModalInstance.close(successResponse);
+                })
+                .catch(function (errorResponse) {
+                    $scope.isSaving = null;
+                    $scope.errorData = errorResponse.data;
+                });
+        };
+
+        $scope.create = function (userForm) {
+            $scope.isSaving = true;
+            var userService = new UserService(userForm);
+            userService.$save()
+                .then(function (successResponse) {
+                    $scope.isSaving = null;
+                    $scope.errorMessage = null;
+                    $uibModalInstance.close(successResponse);
+                })
+                .catch(function (errorResponse) {
+                    $scope.isSaving = null;
+                    $scope.errorData = errorResponse.data;
+                });
         };
     });
 })
