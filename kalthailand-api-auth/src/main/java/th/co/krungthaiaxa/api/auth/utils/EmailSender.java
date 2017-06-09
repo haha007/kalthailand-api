@@ -40,7 +40,7 @@ public class EmailSender {
                           final String emailContent) {
         String maskFromMail = StringUtil.maskEmail(fromEmailAddress);
         String maskToMail = StringUtil.maskEmail(toEmailAddress);
-        LOGGER.info("Send email [start]: fromEmail: '%s', toEmail: '%s'", maskFromMail, maskToMail);
+        LOGGER.info("Send email [start]: fromEmail: '{}', toEmail: '{}'", maskFromMail, maskToMail);
 
         hasText(smtpHost, "smtpHost is a mandatory value and cannot be null/blank");
         hasText(smtpPort, "smtpPort is a mandatory value and cannot be null/blank");
