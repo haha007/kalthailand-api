@@ -1,7 +1,5 @@
 package th.co.krungthaiaxa.api.auth.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,7 +12,6 @@ import th.co.krungthaiaxa.api.auth.repository.RoleRepository;
  */
 @Service
 public class RoleService {
-    private static final Logger LOGGER = LoggerFactory.getLogger(RoleService.class);
     private final RoleRepository roleRepository;
 
     @Autowired
@@ -30,7 +27,7 @@ public class RoleService {
         return roleRepository.save(role);
     }
 
-    public Page<Role> getAllRoles(Pageable pageable) {
+    public Page<Role> getAllRoles(final Pageable pageable) {
         return roleRepository.findAll(pageable);
     }
 }

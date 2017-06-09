@@ -8,11 +8,10 @@ import org.apache.commons.lang3.RandomStringUtils;
 public class RandomUtil {
     private static final int DEF_COUNT = 20;
 
-    public static String generateResetKey() {
+    public static String generateActivationKey() {
         return RandomStringUtils.randomAlphanumeric(DEF_COUNT);
     }
 
-    public static String generateActivationKey() {
-        return RandomStringUtils.randomAlphanumeric(DEF_COUNT);
+    private RandomUtil() {
     }
 }

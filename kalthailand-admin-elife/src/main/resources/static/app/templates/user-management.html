@@ -41,7 +41,6 @@
                             </div>-->
                         </div>
 
-
                         <div class="title_left">
                             <!--EXPORT BUTTON-->
                             <p><a href=""><i class="green fa fa-file-excel-o"></i> Export data</a>
@@ -73,23 +72,33 @@
                                     <td>{{getRoleName(user.roles)}}</td>
                                     <td align="center">
                                         <i ng-show="user.activated" class="green glyphicon glyphicon-ok-sign"></i>
-                                        <i ng-hide="user.activated"class="red glyphicon glyphicon-ban-circle"></i>
-                                        
+                                        <i ng-hide="user.activated" class="red glyphicon glyphicon-ban-circle"></i>
+
                                         <input type="checkbox" class="form-control"
-                                                              ng-model="user.activated" ng-hide="true"></td>
+                                               ng-model="user.activated" ng-hide="true"></td>
                                     <td>
-                                        <button class="btn btn-primary" ng-disabled="user.username === 'elifeadminuser'" type="button" ng-click="edit($index, user)">Edit</button>
+                                        <button class="btn btn-primary" ng-disabled="user.username === 'elifeadminuser'"
+                                                type="button" ng-click="edit($index, user)">Edit
+                                        </button>
                                     </td>
                                 </tr>
 
                                 </tbody>
                             </table>
+                            <div class="alert alert-success" role="alert" ng-show="successMessage">
+                                {{successMessage}}
+                                <button type="button" class="close" ng-click="closeMessage()">
+                                    <span aria-hidden="true">x</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <!--USER MODAL FORM-->
     <script type="text/ng-template" id="user-modal.html">
         <div class="modal-header">
             <h3 class="modal-title" ng-if="isCreateDialog">Create a User</h3>
@@ -99,9 +108,7 @@
             <form name="editForm" role="form" novalidate ng-submit="save(userModal)">
                 <div class="modal-body">
                     <div class="form-group">
-                        <div class="alert alert-danger" ng-show="errorData" ng-repeat="(key, value) in errorData">
-                            <strong>{{key}}</strong> {{value}}
-                        </div>
+                        <div class="alert alert-danger" ng-show="errorData">{{errorData.userMessage}}</div>
                     </div>
                     <div class="form-group ng-hide">
                         <label>ID</label>
@@ -115,7 +122,7 @@
                                ng-model="userModal.username" ng-required="userModal.id == null" ng-minlength=10
                                ng-maxlength=20 ng-pattern="/^[_'.@A-Za-z0-9-]*$/" ng-disabled="!isCreateDialog">
 
-                        <div ng-show="editForm.username.$invalid">
+                        <div ng-show="editForm.username.$invalid && editForm.username.$dirty" class="has-error">
                             <p class="help-block"
                                ng-show="editForm.username.$error.required">
                                 This field is required.
@@ -139,9 +146,13 @@
                     <div class="form-group">
                         <label class="control-label">First Name</label>
                         <input type="text" class="form-control" name="firstName"
-                               ng-model="userModal.firstName" ng-maxlength="50">
+                               ng-model="userModal.firstName" ng-maxlength="50" required>
 
-                        <div ng-show="editForm.firstName.$invalid">
+                        <div ng-show="editForm.firstName.$invalid && editForm.firstName.$dirty" class="has-error">
+                            <p class="help-block"
+                               ng-show="editForm.firstName.$error.required">
+                                This field is required.
+                            </p>
                             <p class="help-block"
                                ng-show="editForm.firstName.$error.maxlength"
                                translate-value-max="50">
@@ -152,9 +163,13 @@
                     <div class="form-group">
                         <label>Last Name</label>
                         <input type="text" class="form-control" name="lastName"
-                               ng-model="userModal.lastName" ng-maxlength="50">
+                               ng-model="userModal.lastName" ng-maxlength="50" required>
 
-                        <div ng-show="editForm.lastName.$invalid">
+                        <div ng-show="editForm.lastName.$invalid && editForm.lastName.$dirty" class="has-error">
+                            <p class="help-block"
+                               ng-show="editForm.lastName.$error.required">
+                                This field is required.
+                            </p>
                             <p class="help-block" ng-show="editForm.lastName.$error.maxlength"
                                translate-value-max="50">
                                 This field cannot be longer than 50 characters.
@@ -167,7 +182,7 @@
                                required
                                ng-maxlength="100">
 
-                        <div ng-show="editForm.email.$invalid">
+                        <div ng-show="editForm.email.$invalid && editForm.email.$dirty" class="has-error">
                             <p class="help-block"
                                ng-show="editForm.email.$error.required">
                                 This field is required.
@@ -188,7 +203,7 @@
                         <select class="form-control" name="roles" ng-model="userModal.roles" multiple required
                                 ng-options="obj.name for obj in roleConst track by obj.id">
                         </select>
-                        <div ng-show="editForm.roles.$invalid">
+                        <div ng-show="editForm.roles.$invalid && editForm.roles.$dirty" class="has-error">
                             <p class="help-block"
                                ng-show="editForm.roles.$error.required">
                                 Select at least one role.
@@ -206,11 +221,13 @@
             </form>
         </div>
         <div class="modal-footer">
-            <button type="submit" ng-show="isCreateDialog" ng-disabled="editForm.$invalid || isSaving || editForm.$pristine" class="btn btn-primary"
+            <button type="submit" ng-show="isCreateDialog"
+                    ng-disabled="editForm.$invalid || isSaving || editForm.$pristine" class="btn btn-primary"
                     data-dismiss="modal" ng-click="create(userModal)">
                 <span class="glyphicon glyphicon-save"></span>&nbsp;<span>Create</span>
             </button>
-            <button type="submit" ng-show="!isCreateDialog" ng-disabled="editForm.$invalid || isSaving || editForm.$pristine" class="btn btn-primary"
+            <button type="submit" ng-show="!isCreateDialog"
+                    ng-disabled="editForm.$invalid || isSaving || editForm.$pristine" class="btn btn-primary"
                     data-dismiss="modal" ng-click="save(userModal)">
                 <span class="glyphicon glyphicon-save"></span>&nbsp;<span>Save</span>
             </button>

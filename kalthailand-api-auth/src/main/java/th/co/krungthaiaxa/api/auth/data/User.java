@@ -5,8 +5,8 @@ import org.hibernate.validator.constraints.Email;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
-import th.co.krungthaiaxa.api.auth.utils.Constants;
 import th.co.krungthaiaxa.api.common.data.BaseEntity;
+import th.co.krungthaiaxa.api.common.utils.Constants;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -20,7 +20,7 @@ import java.util.Set;
 @Document(collection = "user")
 public class User extends BaseEntity {
     @NotNull
-    @Pattern(regexp = Constants.LOGIN_REGEX)
+    @Pattern(regexp = Constants.USERNAME_REGEX)
     @Size(min = 10, max = 20)
     @Indexed
     private String username;
@@ -152,7 +152,6 @@ public class User extends BaseEntity {
     public String toString() {
         return "User{" +
                 "username='" + username + '\'' +
-                ", password='" + password + '\'' +
                 ", email='" + email + '\'' +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +

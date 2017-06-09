@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
+import th.co.krungthaiaxa.admin.elife.model.ActivationFormData;
 import th.co.krungthaiaxa.admin.elife.model.AuthenticatedFeaturesUser;
 import th.co.krungthaiaxa.admin.elife.model.LoginFormData;
 import th.co.krungthaiaxa.api.common.exeption.JsonConverterException;
@@ -44,7 +45,7 @@ public class AuthenticationClient {
     private final RestTemplate restTemplate = new RestTemplate();
 
     @Autowired
-    public AuthenticationClient(ObjectMapper objectMapper) {this.objectMapper = objectMapper;}
+    public AuthenticationClient(ObjectMapper objectMapper) { this.objectMapper = objectMapper; }
 
     private AuthenticatedUser authenticate(LoginFormData loginFormData) {
         try {
@@ -83,6 +84,12 @@ public class AuthenticationClient {
         BeanUtils.copyProperties(authenticatedUser, authenticatedFeaturesUser);
         setAvailableFunctions(authenticatedFeaturesUser);
         return authenticatedFeaturesUser;
+    }
+
+    public Map activateUser(final ActivationFormData activationFormData) throws HttpClientErrorException {
+        final String url = authContextPath + "/activate";
+        final ResponseEntity<String> responseEntity = restTemplate.postForEntity(url, activationFormData, String.class);
+        return ObjectMapperUtil.toObject(objectMapper, responseEntity.getBody(), Map.class);
     }
 
     private void setAvailableFunctions(AuthenticatedFeaturesUser authenticatedUser) {

@@ -4,7 +4,7 @@ import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
 import th.co.krungthaiaxa.api.auth.data.Role;
 import th.co.krungthaiaxa.api.auth.data.User;
-import th.co.krungthaiaxa.api.auth.utils.Constants;
+import th.co.krungthaiaxa.api.common.utils.Constants;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -18,20 +18,21 @@ public class UserDTO {
     private String id;
 
     @NotNull
-    @Pattern(regexp = Constants.LOGIN_REGEX)
+    @Pattern(regexp = Constants.USERNAME_REGEX)
     @Size(min = 10, max = 20)
     private String username;
 
     @Email
+    @NotNull
     @Size(max = 100)
     private String email;
 
     @NotNull
-    @Size(min = 1, max = 50)
+    @Size(max = 50)
     private String firstName;
 
     @NotNull
-    @Size(min = 1, max = 50)
+    @Size(max = 50)
     private String lastName;
 
     private boolean activated;
@@ -57,23 +58,15 @@ public class UserDTO {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(final String id) {
         this.id = id;
-    }
-
-    public boolean isActivated() {
-        return activated;
-    }
-
-    public void setActivated(boolean activated) {
-        this.activated = activated;
     }
 
     public String getUsername() {
         return username;
     }
 
-    public void setUsername(String username) {
+    public void setUsername(final String username) {
         this.username = username;
     }
 
@@ -81,7 +74,7 @@ public class UserDTO {
         return email;
     }
 
-    public void setEmail(String email) {
+    public void setEmail(final String email) {
         this.email = email;
     }
 
@@ -89,7 +82,7 @@ public class UserDTO {
         return firstName;
     }
 
-    public void setFirstName(String firstName) {
+    public void setFirstName(final String firstName) {
         this.firstName = firstName;
     }
 
@@ -97,15 +90,23 @@ public class UserDTO {
         return lastName;
     }
 
-    public void setLastName(String lastName) {
+    public void setLastName(final String lastName) {
         this.lastName = lastName;
+    }
+
+    public boolean isActivated() {
+        return activated;
+    }
+
+    public void setActivated(final boolean activated) {
+        this.activated = activated;
     }
 
     public Set<Role> getRoles() {
         return roles;
     }
 
-    public void setRoles(Set<Role> roles) {
+    public void setRoles(final Set<Role> roles) {
         this.roles = roles;
     }
 }

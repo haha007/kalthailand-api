@@ -13,16 +13,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import th.co.krungthaiaxa.api.auth.data.User;
+import th.co.krungthaiaxa.api.auth.model.RequestActivateUser;
 import th.co.krungthaiaxa.api.auth.model.UserDTO;
 import th.co.krungthaiaxa.api.auth.service.UserService;
 import th.co.krungthaiaxa.api.auth.utils.EmailSender;
 import th.co.krungthaiaxa.api.common.annotation.RequiredAdminRole;
+import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
 import th.co.krungthaiaxa.api.common.utils.IOUtil;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -35,6 +38,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class UserResource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserResource.class);
+
+    private static final String SUCCESS = "success";
 
     private final UserService userService;
 
@@ -52,7 +57,7 @@ public class UserResource {
     @ApiOperation(value = "Get list of users", notes = "Get list of users", response = UserDTO.class)
     @RequestMapping(value = "/users", produces = APPLICATION_JSON_VALUE, method = RequestMethod.GET)
     @RequiredAdminRole
-    public ResponseEntity<?> getListOfUser() {
+    public ResponseEntity getListOfUser() {
         final Pageable pageable = new PageRequest(0, 100);
         return ResponseEntity.ok(userService.getAllUser(pageable));
     }
@@ -60,10 +65,10 @@ public class UserResource {
     @ApiOperation(value = "Create new user", notes = "Create new user", response = UserDTO.class)
     @RequestMapping(value = "/users", produces = APPLICATION_JSON_VALUE, method = RequestMethod.POST)
     @RequiredAdminRole
-    public ResponseEntity<?> createUser(@RequestBody @Valid final UserDTO userModal, final HttpServletRequest request) {
+    public ResponseEntity createUser(@RequestBody @Valid final UserDTO userModal, final HttpServletRequest request) {
 
         if (userService.getUserByUsername(userModal.getUsername()).isPresent()) {
-            return ResponseEntity.badRequest().body(Collections.singletonMap("user_exists", "Username already in use"));
+            return ResponseEntity.badRequest().body(ErrorCode.USER_EXISTS);
         }
 
         final Optional<User> userOptional = userService.createNewUser(userModal);
@@ -78,29 +83,43 @@ public class UserResource {
             return ResponseEntity.ok(new UserDTO(user));
         }
         LOGGER.error("Could not create user {}", userModal.getUsername());
-        return ResponseEntity.badRequest().body(Collections.singletonMap("internal_error", "Something went wrong"));
+        return ResponseEntity.badRequest().body(ErrorCode.ERROR_CREATE_USER);
     }
 
     @ApiOperation(value = "Update user info", notes = "Update user info", response = UserDTO.class)
     @RequestMapping(value = "/users", produces = APPLICATION_JSON_VALUE, method = RequestMethod.PUT)
     @RequiredAdminRole
-    public ResponseEntity<?> updateUser(@RequestBody final UserDTO userModal) {
+    public ResponseEntity updateUser(@RequestBody @Valid final UserDTO userModal) {
         if (userService.updateUser(userModal).isPresent()) {
             LOGGER.info("User {} has been updated", userModal.getUsername());
             return ResponseEntity.ok(userModal);
         }
-        return ResponseEntity.badRequest().body(Collections.singletonMap("internal_error", "Something went wrong"));
+        return ResponseEntity.badRequest().body(ErrorCode.ERROR_UPDATE_USER);
+    }
+
+    @ApiOperation(value = "Activate user", notes = "Activate user info", response = Map.class)
+    @RequestMapping(value = "/activate", produces = APPLICATION_JSON_VALUE, method = RequestMethod.POST)
+    public ResponseEntity activateUser(@RequestBody @Valid final RequestActivateUser activateUserForm) {
+        if (activateUserForm.getConfirmPassword().equals(activateUserForm.getPassword())) {
+            if (userService
+                    .activateRegistration(activateUserForm.getActivationKey(), activateUserForm.getPassword())
+                    .isPresent()) {
+                return ResponseEntity.ok(Collections.singletonMap(SUCCESS, Boolean.TRUE));
+            }
+            return ResponseEntity.badRequest().body(ErrorCode.INVALID_ACTIVATION_KEY);
+        }
+        return ResponseEntity.badRequest().body(ErrorCode.INVALID_CONFIRM_PASSWORD);
     }
 
     private String getActivationLink(final HttpServletRequest request, final String activationKey) {
-        StringBuffer url = request.getRequestURL();
-        String uri = request.getRequestURI();
-        String host = url.substring(0, url.indexOf(uri));
-        return host + "/admin-elife/activate/" + activationKey;
+        final StringBuffer url = request.getRequestURL();
+        final String uri = request.getRequestURI();
+        final String host = url.substring(0, url.indexOf(uri));
+        return host + "/admin-elife/activate?key=" + activationKey;
     }
 
     private String getActivationEmailContent(final User user, final String activationLink) {
-        String emailContent = IOUtil.loadTextFileInClassPath("/email-content/activation-user.html");
+        String emailContent = IOUtil.loadTextFileInClassPath("/email-content/activation-user-email.html");
         emailContent = emailContent.replaceAll("%USERNAME%", user.getUsername())
                 .replaceAll("%ACTIVATION_LINK%", activationLink)
                 .replaceAll("%NAME%", user.getFirstName() + " " + user.getLastName());

@@ -976,6 +976,7 @@
         $scope.totalItems = 0;
         $scope.users = null;
         $scope.roleConst = [];
+        $scope.successMessage = null;
 
         getRoleList();
 
@@ -997,6 +998,7 @@
             });
             modalInstance.result.then(function (result) {
                 $scope.users.push(result);
+                $scope.successMessage = "User " + result.username + " has been created!";
             });
         };
 
@@ -1014,12 +1016,17 @@
             });
             modalInstance.result.then(function (result) {
                 $scope.users[index] = result;
+                $scope.successMessage = "User " + result.username + " has been updated!";
             });
         };
 
         $scope.toggleAnimation = function () {
             $scope.animationsEnabled = !$scope.animationsEnabled;
         };
+        
+        $scope.closeMessage = function() {
+            $scope.successMessage = null;
+        }
 
         $scope.getRoleName = function (roles) {
             return roles.map(function (role) {

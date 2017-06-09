@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.auth.data.User;
@@ -25,12 +26,11 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    private final PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @Inject
-    public UserService(final UserRepository userRepository, final PasswordEncoder passwordEncoder) {
+    public UserService(final UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
     }
 
     public Page<User> getAllUser(final Pageable pageable) {
@@ -49,7 +49,7 @@ public class UserService {
      * Create new user from UserDTO.
      *
      * @param userDTO user data transfer
-     * @return Option User Entity
+     * @return Optional User Entity
      */
     public Optional<User> createNewUser(final UserDTO userDTO) {
         final User userEntity = new User();
@@ -60,7 +60,6 @@ public class UserService {
         userEntity.setEmail(userDTO.getEmail());
         userEntity.setPassword(StringUtils.EMPTY);
 
-        //generate activation key
         userEntity.setActivationKey(RandomUtil.generateActivationKey());
         userEntity.setActivated(Boolean.FALSE);
 
@@ -68,29 +67,34 @@ public class UserService {
     }
 
     /**
-     * Activate account by activated key that would be sent in registration email
+     * Activate account by activated key that would be sent in registration email.
      *
-     * @param key activated key
-     * @return UserDTO
+     * @param activationKey activation Key
+     * @param password      user password
+     * @return Optional User Entity
      */
-    public Optional<User> activateRegistration(final String key) {
-        LOGGER.debug("Activating user for activation key {}", key);
-        return userRepository.findOneByActivationKey(key)
-                .map(user -> {
-                    // activate given user for the registration key.
-                    user.setActivated(true);
-                    user.setActivationKey(null);
-                    userRepository.save(user);
-                    LOGGER.debug("Activated user: {}", user);
-                    return user;
-                });
+    public Optional<User> activateRegistration(final String activationKey, final String password) {
+        LOGGER.debug("Activating user for activation key {}", activationKey);
+        final Optional<User> userOptional = userRepository.findOneByActivationKey(activationKey);
+        if (userOptional.isPresent()) {
+            return userOptional.map(user -> {
+                user.setActivated(true);
+                user.setActivationKey(null);
+                user.setPassword(passwordEncoder.encode(password));
+                userRepository.save(user);
+                LOGGER.debug("Activated username: {}", user.getUsername());
+                return user;
+            });
+        }
+        LOGGER.debug("Activation key {} is invalid", activationKey);
+        return Optional.empty();
     }
 
     /**
      * Update user information exclude password from UserDTO.
      *
      * @param userDTO user data
-     * @return UserDTO
+     * @return Optional User Entity
      */
     public Optional<User> updateUser(final UserDTO userDTO) {
         //find User by Id

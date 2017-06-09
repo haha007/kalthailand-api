@@ -31,7 +31,7 @@ public class RoleResource {
 
     @ApiOperation(value = "Get list of roles", notes = "Get list of role", response = RoleDTO.class)
     @RequestMapping(value = "/roles", produces = APPLICATION_JSON_VALUE, method = RequestMethod.GET)
-    public ResponseEntity<?> getListOfUser() {
+    public ResponseEntity getListOfUser() {
         final Pageable pageable = new PageRequest(0, 100);
         return ResponseEntity.ok(roleService.getAllRoles(pageable));
     }

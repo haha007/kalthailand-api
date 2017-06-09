@@ -12,6 +12,9 @@ import th.co.krungthaiaxa.api.auth.data.UserList;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * @deprecated will be remove after testing backward compatible 
+ */
 @Deprecated
 @Service
 public class JwtUserDetailsServiceImpl implements UserDetailsService {

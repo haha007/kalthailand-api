@@ -11,7 +11,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 public class JsonUtil {
-    public static ObjectMapper mapper = configureObjectMapper();
+    public static final ObjectMapper mapper = configureObjectMapper();
 
     public static String getJson(Object source) {
         try {
@@ -30,5 +30,8 @@ public class JsonUtil {
         DefaultSerializerProvider.Impl sp = new DefaultSerializerProvider.Impl();
         mapper.setSerializerProvider(sp);
         return mapper;
+    }
+
+    private JsonUtil() {
     }
 }

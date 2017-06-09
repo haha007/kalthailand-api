@@ -1,7 +1,5 @@
 package th.co.krungthaiaxa.api.auth.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,8 +22,6 @@ import java.time.Instant;
  */
 @Service
 public class AuthenticationService {
-    private final static Logger logger = LoggerFactory.getLogger(AuthenticationService.class);
-
     @Autowired
     private AuthenticationManager authenticationManager;
 

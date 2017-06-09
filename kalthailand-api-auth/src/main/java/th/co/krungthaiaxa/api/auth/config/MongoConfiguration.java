@@ -1,5 +1,7 @@
 package th.co.krungthaiaxa.api.auth.config;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.annotation.Bean;
@@ -17,6 +19,7 @@ import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
  */
 @Configuration
 public class MongoConfiguration {
+    private static final Logger LOGGER = LoggerFactory.getLogger(MongoConfiguration.class);
 
     /**
      * This configuration prevents adding extra _class key on all records.
@@ -27,8 +30,9 @@ public class MongoConfiguration {
         MappingMongoConverter mappingConverter = new MappingMongoConverter(dbRefResolver, context);
         try {
             mappingConverter.setCustomConversions(beanFactory.getBean(CustomConversions.class));
+        } catch (NoSuchBeanDefinitionException ignore) {
+            LOGGER.debug("No such bean definition exception: ", ignore);
         }
-        catch (NoSuchBeanDefinitionException ignore) {}
 
         // Don't save _class to mongo
         mappingConverter.setTypeMapper(new DefaultMongoTypeMapper(null));

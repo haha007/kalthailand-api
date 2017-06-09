@@ -27,12 +27,13 @@ public class DataSourceConfiguration {
 
     @Bean(name = "cdbTemplate")
     public JdbcTemplate cdbTemplate() throws SQLException {
-        final DataSource dataSource = cdbDataSource();
+        return  new JdbcTemplate(cdbDataSource());
+        /*final DataSource dataSource = cdbDataSource();
         if (isValidDataSource(dataSource)) {
             LOGGER.info(CONNECTED_MSG, "CDB");
             return new JdbcTemplate(dataSource);
         }
-        throw new SQLException("Could not connect to CDB datasource");
+        throw new SQLException("Could not connect to CDB datasource");*/
     }
 
     //CDB DATA VIEW /////////////////////////////////////
@@ -44,12 +45,13 @@ public class DataSourceConfiguration {
 
     @Bean(name = "cdbViewTemplate")
     public JdbcTemplate cdbViewTemplate() throws SQLException {
-        final DataSource dataSource = cdbViewDataSource();
+        return  new JdbcTemplate(cdbViewDataSource());
+        /*final DataSource dataSource = cdbViewDataSource();
         if (isValidDataSource(dataSource)) {
             LOGGER.info(CONNECTED_MSG, "CDB View");
             return new JdbcTemplate(dataSource);
         }
-        throw new SQLException("Could not connect to CDB View datasource");
+        throw new SQLException("Could not connect to CDB View datasource");*/
     }
 
     //POLICY-PREMIUM POLICY /////////////////////////////////////
@@ -61,12 +63,13 @@ public class DataSourceConfiguration {
 
     @Bean(name = "policyPremiumCdbTemplate")
     public JdbcTemplate policyPremiumCdbTemplate() throws SQLException {
-        final DataSource dataSource = policyPremiumCdbDataSource();
+        return  new JdbcTemplate(policyPremiumCdbDataSource());
+        /*final DataSource dataSource = policyPremiumCdbDataSource();
         if (isValidDataSource(dataSource)) {
             LOGGER.info(CONNECTED_MSG, "CDB Policy-Premium");
             return new JdbcTemplate(dataSource);
         }
-        throw new SQLException("Could not connect to CDB Policy-Premium datasource");
+        throw new SQLException("Could not connect to CDB Policy-Premium datasource");*/
     }
 
     //LINE-CB /////////////////////////////////////
@@ -78,12 +81,13 @@ public class DataSourceConfiguration {
 
     @Bean(name = "linebcTemplate")
     public JdbcTemplate linebcTemplate() throws SQLException {
-        final DataSource dataSource = lineBCDataSource();
+        return  new JdbcTemplate(lineBCDataSource());
+        /*final DataSource dataSource = lineBCDataSource();
         if (isValidDataSource(dataSource)) {
             LOGGER.info(CONNECTED_MSG, "Line BC");
             return new JdbcTemplate(dataSource);
         }
-        throw new SQLException("Could not connect to Line BC datasource");
+        throw new SQLException("Could not connect to Line BC datasource");*/
     }
 
     /**
@@ -95,7 +99,7 @@ public class DataSourceConfiguration {
      */
     private boolean isValidDataSource(final DataSource dataSource) {
         try {
-            return dataSource.getConnection().isValid(5);
+            return true || dataSource.getConnection().isValid(5);
         } catch (SQLException e) {
             LOGGER.error("Datasource is invalid: ", e);
             return false;

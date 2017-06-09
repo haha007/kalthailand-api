@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import th.co.krungthaiaxa.api.common.exeption.EmailException;
 import th.co.krungthaiaxa.api.common.utils.StringUtil;
 
 import javax.activation.DataHandler;
@@ -49,8 +48,8 @@ public class EmailSender {
             send(generateMessage(fromEmailAddress, toEmailAddress, emailSubject, emailContent));
             LOGGER.info("Send email [success]: fromEmail: '{}', toEmail: '{}'", maskFromMail, maskToMail);
         } catch (MessagingException | IOException e) {
-            String msg = String.format("Send email [error]: fromEmail: '%s', toEmail: '%s'", maskFromMail, maskToMail);
-            throw new EmailException(msg, e);
+            LOGGER.error("Send email [error]: fromEmail: {}, toEmail: {}, emailSubject: {}",
+                    maskFromMail, maskToMail, emailSubject, e);
         }
     }
 
@@ -88,7 +87,7 @@ public class EmailSender {
         return message;
     }
 
-    private BodyPart getContentBodyPart(String content, String encoding) throws MessagingException, IOException {
+    private BodyPart getContentBodyPart(final String content, final String encoding) throws MessagingException, IOException {
         BodyPart messageBodyPart = new MimeBodyPart();
         messageBodyPart.setDataHandler(new DataHandler(new ByteArrayDataSource(content, encoding)));
         return messageBodyPart;

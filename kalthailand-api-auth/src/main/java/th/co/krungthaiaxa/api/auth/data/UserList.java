@@ -9,6 +9,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * @deprecated will be remove after testing backward compatible 
+ */
 @Deprecated
 @Component
 public class UserList {

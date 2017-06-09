@@ -18,10 +18,6 @@ public interface UserRepository extends PagingAndSortingRepository<User, String>
     @Query("{ username: ?0, activated: true, activationKey: {$not: { $exists: true, $ne: ''}}}")
     Optional<User> findActiveUsername(final String username);
 
-    Optional<User> findOneByEmail(final String mail);
-
-    Optional<User> findOneByResetKey(final String resetPasswordKey);
-
     Optional<User> findOneByActivationKey(final String activateKey);
 
     Optional<User> findByUsername(final String username);
