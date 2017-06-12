@@ -47,6 +47,9 @@ public class UserResource {
 
     @Value("${email.name}")
     private String fromEmail;
+    
+    @Value("${email.subject.activation}")
+    private String activationEmailSubject;
 
     @Inject
     public UserResource(final UserService userService, final EmailSender emailSender) {
@@ -78,7 +81,7 @@ public class UserResource {
 
             final String emailContent =
                     getActivationEmailContent(user, getActivationLink(request, user.getActivationKey()));
-            emailSender.sendEmail(fromEmail, user.getEmail(), "Activation Email", emailContent);
+            emailSender.sendEmail(fromEmail, user.getEmail(), activationEmailSubject, emailContent);
             LOGGER.info("Activation Email has been sent to {}", user.getEmail());
             return ResponseEntity.ok(new UserDTO(user));
         }
