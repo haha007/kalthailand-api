@@ -66,7 +66,7 @@
                 + '/api-elife/quotes/download?'
                 + 'fromDate=' + $scope.fromDateSearch.toISOString()
                 + '&toDate=' + $scope.toDateSearch.toISOString();
-            if($scope.productType) {
+            if ($scope.productType) {
                 downloadQuoteUrl += '&productType=' + $scope.productType;
             }
             window.open(downloadQuoteUrl, "_blank");
@@ -77,7 +77,7 @@
                 + '/api-elife/quotes/mid/download?'
                 + 'fromDate=' + $scope.fromDateSearch.toISOString()
                 + '&toDate=' + $scope.toDateSearch.toISOString();
-            if($scope.productType) {
+            if ($scope.productType) {
                 downloadQuoteMidUrl += '&productType=' + $scope.productType;
             }
             window.open(downloadQuoteMidUrl, "_blank");
@@ -89,7 +89,7 @@
             var getCountUrl = window.location.origin + '/api-elife/quotes/counts?'
                 + 'fromDate=' + fromDate
                 + '&toDate=' + toDate
-            if($scope.productType){
+            if ($scope.productType) {
                 getCountUrl += '&productType=' + $scope.productType;
             }
             $http.get(getCountUrl)
@@ -738,8 +738,7 @@
                     params: data,
                     data: data,
                     headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-                }).
-                then(
+                }).then(
                     function (response) {
                         if (response.data.error) {
                             $scope.isFetching = false;
@@ -969,6 +968,159 @@
     app.controller('CampaignCustomersController', function (CampaignCustomersService, $scope, $route, $http, $localStorage) {
         $scope.service = CampaignCustomersService;
         $scope.service.$scope = $scope;
+    });
+
+    app.controller('UserManagementController', function ($scope, $route, $http, UserService, RoleService, $uibModal) {
+        $scope.currentPage = 1;
+        $scope.itemsPerPage = 20;
+        $scope.totalItems = 0;
+        $scope.users = null;
+        $scope.roleConst = [];
+        $scope.successMessage = null;
+
+        getRoleList();
+
+        $scope.animationsEnabled = true;
+
+        getUserList();
+
+        $scope.create = function () {
+            var modalInstance = $uibModal.open({
+                animation: $scope.animationsEnabled,
+                templateUrl: 'user-modal.html',
+                controller: 'UserDialogController',
+                resolve: {
+                    roleConst: function () {
+                        return $scope.roleConst;
+                    },
+                    user: null
+                }
+            });
+            modalInstance.result.then(function (result) {
+                $scope.users.push(result);
+                $scope.successMessage = "User " + result.username + " has been created!";
+            });
+        };
+
+        $scope.edit = function (index, user) {
+            var modalInstance = $uibModal.open({
+                animation: $scope.animationsEnabled,
+                templateUrl: 'user-modal.html',
+                controller: 'UserDialogController',
+                resolve: {
+                    roleConst: function () {
+                        return $scope.roleConst;
+                    },
+                    user: angular.copy(user)
+                }
+            });
+            modalInstance.result.then(function (result) {
+                $scope.users[index] = result;
+                $scope.successMessage = "User " + result.username + " has been updated!";
+            });
+        };
+
+        $scope.toggleAnimation = function () {
+            $scope.animationsEnabled = !$scope.animationsEnabled;
+        };
+        
+        $scope.closeMessage = function() {
+            $scope.successMessage = null;
+        }
+
+        $scope.getRoleName = function (roles) {
+            return roles.map(function (role) {
+                return role.name
+            }).join(", ");
+        };
+        function getUserList() {
+            $scope.isSearching = true;
+            UserService.get(
+                {
+                    pageNumber: $scope.currentPage - 1,
+                    pageSize: $scope.itemsPerPage
+                },
+                function (successResponse) {
+                    $scope.isSearching = null;
+                    $scope.totalPages = successResponse.totalPages;
+                    $scope.totalItems = successResponse.totalElements;
+                    $scope.currentPage = successResponse.number + 1;
+
+                    $scope.users = successResponse.content;
+                    $scope.errorMessage = null;
+                },
+                function (errorResponse) {
+                    $scope.isSearching = null;
+
+                    $scope.users = null;
+                    $scope.errorMessage = errorResponse.data.userMessage;
+                }
+            );
+        };
+        function getRoleList() {
+            $scope.isSearching = true;
+            RoleService.get(
+                {},
+                function (successResponse) {
+                    $scope.roleConst = successResponse.content;
+                },
+                function (errorResponse) {
+                    $scope.isSearching = null;
+                    $scope.roleConst = null;
+                    $scope.errorMessage = errorResponse.data.userMessage;
+                }
+            );
+        }
+    });
+
+    app.controller('UserDialogController', function ($scope, $uibModalInstance, user, roleConst, UserService) {
+        $scope.roleConst = roleConst;
+        $scope.isCreateDialog = user === null || user.id === null;
+        $scope.isSaving = null;
+        $scope.errorData = null;
+        $scope.userModal = user !== null ? user : {
+                id: null,
+                username: null,
+                email: null,
+                firstName: null,
+                lastName: null,
+                activated: false,
+                roles: []
+            };
+
+        $scope.close = function () {
+            $uibModalInstance.dismiss('cancel');
+        };
+
+        $scope.save = function (userForm) {
+            $scope.isSaving = true;
+            var userService = new UserService(userForm);
+            userService.$update()
+                .then(function (successResponse) {
+                    $scope.isSaving = null;
+                    $scope.errorMessage = null;
+                    $uibModalInstance.close(successResponse);
+                })
+                .catch(function (errorResponse) {
+                    $scope.isSaving = null;
+                    $scope.errorData = errorResponse.data;
+                });
+        };
+
+        $scope.create = function (userForm) {
+            $scope.isSaving = true;
+            var userService = new UserService(userForm);
+            userService.$save()
+                .then(function (successResponse) {
+                    $scope.isSaving = null;
+                    $scope.errorMessage = null;
+                    $uibModalInstance.close(successResponse);
+                })
+                .catch(function (errorResponse) {
+                    $scope.isSaving = null;
+                    $scope.errorData = errorResponse.data;
+                });
+        };
     });
 })
 ();

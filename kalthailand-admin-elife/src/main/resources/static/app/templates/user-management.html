@@ -1,0 +1,234 @@
+<div class="row">
+    <div ng-cloak class="col-md-12 col-sm-12 col-xs-12 main ng-cloak" id="role-user-management">
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="x_panel">
+                    <div class="x_title">
+                        <h2>User Management
+                        </h2>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
+                        <!--SEARCH FORM-->
+                        <div class="title_left">
+                            <div class="col-md-6 col-xs-12 form-group top_search form-inline">
+                                <!--<div class="input-group">
+                                    <input type="text" class="form-control" placeholder="username"
+                                           ng-model="username" ng-keyup="$event.keyCode == 13 && search()"
+                                           required autofocus/>
+                                    <span class="input-group-btn">
+                                      <button class="btn btn-default" type="button" ng-click="search()"><i
+                                              class="glyphicon glyphicon-search"></i></button>
+                                    </span>
+                                </div>-->
+                                <button class="btn btn-success" type="button" ng-click="create()">Add User</button>
+                            </div>
+                        </div>
+
+                        <!--PAGING-->
+                        <div class="row">
+                            <!--<div class="col-md-12 text-center">
+                                <uib-pagination
+                                        total-items="totalItems"
+                                        ng-model="currentPage"
+                                        max-size="15"
+                                        class="pagination-md mx-auto"
+                                        force-ellipses="true"
+                                        boundary-link-numbers="true"
+                                        ng-change="pageChanged()"
+                                        items-per-page="20">
+                                </uib-pagination>
+                            </div>-->
+                        </div>
+
+                        <div class="title_left">
+                            <!--EXPORT BUTTON-->
+                            <p><!--<a href=""><i class="green fa fa-file-excel-o"></i> Export data</a>- -->
+                                
+                                <small>{{ totalItems }} items</small>
+                            </p>
+                        </div>
+
+                        <!--USER LIST-->
+                        <div class="table-responsive">
+                            <table class="table table-hover table-bordered jambo_table">
+                                <thead>
+                                <tr class="headings">
+                                    <th>Username</th>
+                                    <th>Name</th>
+                                    <th class="col-md-4">Email</th>
+                                    <th class="col-md-3">Role</th>
+                                    <th>Activated</th>
+                                    <th>Action</th>
+                                </tr>
+                                </thead>
+
+                                <tbody>
+                                <tr ng-repeat="user in users track by user.id">
+                                    <td><a href="#policy-detail?policyID={{ item.policyId }}">{{user.username}}</a>
+                                    </td>
+                                    <td>{{user.firstName}} {{user.lastName}}</td>
+                                    <td>{{user.email}}</td>
+                                    <td>{{getRoleName(user.roles)}}</td>
+                                    <td align="center">
+                                        <i ng-show="user.activated" class="green glyphicon glyphicon-ok-sign"></i>
+                                        <i ng-hide="user.activated" class="red glyphicon glyphicon-ban-circle"></i>
+
+                                        <input type="checkbox" class="form-control"
+                                               ng-model="user.activated" ng-hide="true"></td>
+                                    <td>
+                                        <button class="btn btn-primary" ng-disabled="user.username === 'elifeadminuser'"
+                                                type="button" ng-click="edit($index, user)">Edit
+                                        </button>
+                                    </td>
+                                </tr>
+
+                                </tbody>
+                            </table>
+                            <div class="alert alert-success" role="alert" ng-show="successMessage">
+                                {{successMessage}}
+                                <button type="button" class="close" ng-click="closeMessage()">
+                                    <span aria-hidden="true">x</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--USER MODAL FORM-->
+    <script type="text/ng-template" id="user-modal.html">
+        <div class="modal-header">
+            <h3 class="modal-title" ng-if="isCreateDialog">Create a User</h3>
+            <h3 class="modal-title" ng-if="!isCreateDialog">Edit a User <b>{{userModal.username}}</b></h3>
+        </div>
+        <div class="modal-body">
+            <form name="editForm" role="form" novalidate ng-submit="save(userModal)">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <div class="alert alert-danger" ng-show="errorData">{{errorData.userMessage}}</div>
+                    </div>
+                    <div class="form-group ng-hide">
+                        <label>ID</label>
+                        <input type="text" class="form-control" name="id"
+                               ng-model="userModal.id" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label">Username</label>
+                        <input type="text" class="form-control" name="username"
+                               ng-model="userModal.username" ng-required="userModal.id == null" ng-minlength=10
+                               ng-maxlength=100 ng-pattern="/^[_'.@A-Za-z0-9-]*$/" ng-disabled="!isCreateDialog">
+
+                        <div ng-show="editForm.username.$invalid && editForm.username.$dirty" class="has-error">
+                            <p class="help-block"
+                               ng-show="editForm.username.$error.required">
+                                This field is required.
+                            </p>
+                            <p class="help-block"
+                               ng-show="editForm.username.$error.pattern">
+                                Username is incorrect format.
+                            </p>
+                            <p class="help-block"
+                               ng-show="editForm.username.$error.maxlength">
+                                This field cannot be longer than 100 characters.
+                            </p>
+                            <p class="help-block"
+                               ng-show="editForm.username.$error.minlength">
+                                This field cannot be shorter than 10 characters.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">First Name</label>
+                        <input type="text" class="form-control" name="firstName"
+                               ng-model="userModal.firstName" ng-maxlength="50" required>
+
+                        <div ng-show="editForm.firstName.$invalid && editForm.firstName.$dirty" class="has-error">
+                            <p class="help-block"
+                               ng-show="editForm.firstName.$error.required">
+                                This field is required.
+                            </p>
+                            <p class="help-block"
+                               ng-show="editForm.firstName.$error.maxlength">
+                                This field cannot be longer than 50 characters.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Last Name</label>
+                        <input type="text" class="form-control" name="lastName"
+                               ng-model="userModal.lastName" ng-maxlength="50" required>
+
+                        <div ng-show="editForm.lastName.$invalid && editForm.lastName.$dirty" class="has-error">
+                            <p class="help-block"
+                               ng-show="editForm.lastName.$error.required">
+                                This field is required.
+                            </p>
+                            <p class="help-block" ng-show="editForm.lastName.$error.maxlength">
+                                This field cannot be longer than 50 characters.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Email</label>
+                        <input type="email" class="form-control" name="email" ng-model="userModal.email"
+                               required
+                               ng-maxlength="100">
+
+                        <div ng-show="editForm.email.$invalid && editForm.email.$dirty" class="has-error">
+                            <p class="help-block"
+                               ng-show="editForm.email.$error.required">
+                                This field is required.
+                            </p>
+
+                            <p class="help-block" ng-show="editForm.email.$error.maxlength">
+                                This field cannot be longer than 100 characters.
+                            </p>
+                            <p class="help-block"
+                               ng-show="editForm.email.$error.email">
+                                Your e-mail is invalid.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Roles</label>
+                        <select class="form-control" name="roles" ng-model="userModal.roles" multiple required
+                                ng-options="obj.name for obj in roleConst track by obj.id">
+                        </select>
+                        <div ng-show="editForm.roles.$invalid && editForm.roles.$dirty" class="has-error">
+                            <p class="help-block"
+                               ng-show="editForm.roles.$error.required">
+                                Select at least one role.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="form-group" ng-hide="isCreateDialog">
+                        <label for="activated">
+                            <input type="checkbox" id="activated"
+                                   ng-model="userModal.activated">
+                            <span>Activated</span>
+                        </label>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="submit" ng-show="isCreateDialog"
+                    ng-disabled="editForm.$invalid || isSaving || editForm.$pristine" class="btn btn-primary"
+                    data-dismiss="modal" ng-click="create(userModal)">
+                <span class="glyphicon glyphicon-save"></span>&nbsp;<span>Create</span>
+            </button>
+            <button type="submit" ng-show="!isCreateDialog"
+                    ng-disabled="editForm.$invalid || isSaving || editForm.$pristine" class="btn btn-primary"
+                    data-dismiss="modal" ng-click="save(userModal)">
+                <span class="glyphicon glyphicon-save"></span>&nbsp;<span>Save</span>
+            </button>
+            <button type="button" class="btn btn-warning" data-dismiss="modal" ng-click="close()">
+                <span class="glyphicon glyphicon-ban-circle"></span>&nbsp;<span>Cancel</span>
+            </button>
+        </div>
+    </script>
+</div>

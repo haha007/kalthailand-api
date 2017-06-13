@@ -9,13 +9,11 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import th.co.krungthaiaxa.api.auth.data.User;
-import th.co.krungthaiaxa.api.auth.data.UserList;
 import th.co.krungthaiaxa.api.auth.jwt.JwtAuthenticationTokenFilter;
+import th.co.krungthaiaxa.api.auth.service.UserDetailsServiceImpl;
 
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
@@ -26,21 +24,12 @@ import static org.springframework.http.HttpMethod.POST;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired
-    private UserDetailsService userDetailsService;
-    @Autowired
-    private UserList userList;
+    private UserDetailsServiceImpl userDetailsServiceImpl;
 
     @Autowired
     public void configureAuthentication(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
-        for (User user : userList.getUsers()) {
-            authenticationManagerBuilder
-                    .inMemoryAuthentication()
-                    .withUser(user.getUserName()).password(user.getPassword())
-                    .roles(user.getRoles().toArray(new String[user.getRoles().size()]));
-        }
-
         authenticationManagerBuilder
-                .userDetailsService(this.userDetailsService)
+                .userDetailsService(this.userDetailsServiceImpl)
                 .passwordEncoder(passwordEncoder());
     }
 
@@ -65,6 +54,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers(POST, "/auth").permitAll()
                 .antMatchers(POST, "/auth/user").permitAll()
+                .antMatchers(POST, "/activate").permitAll()
                 .antMatchers(GET, "/swagger-ui.html").permitAll()
                 .antMatchers(GET, "/v2/api-docs").permitAll()
                 .antMatchers(GET, "/configuration/security").permitAll()
