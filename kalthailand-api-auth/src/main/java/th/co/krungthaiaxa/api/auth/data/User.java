@@ -21,7 +21,7 @@ import java.util.Set;
 public class User extends BaseEntity {
     @NotNull
     @Pattern(regexp = Constants.USERNAME_REGEX)
-    @Size(min = 10, max = 20)
+    @Size(min = 10, max = 100)
     @Indexed
     private String username;
 

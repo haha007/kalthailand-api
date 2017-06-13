@@ -18,8 +18,8 @@ public class UserDTO {
     private String id;
 
     @NotNull
-    @Pattern(regexp = Constants.USERNAME_REGEX)
-    @Size(min = 10, max = 20)
+    @Pattern(regexp = Constants.USERNAME_REGEX, message = "incorrect format")
+    @Size(min = 10, max = 100)
     private String username;
 
     @Email

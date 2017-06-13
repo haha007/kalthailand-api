@@ -120,7 +120,7 @@
                         <label class="control-label">Username</label>
                         <input type="text" class="form-control" name="username"
                                ng-model="userModal.username" ng-required="userModal.id == null" ng-minlength=10
-                               ng-maxlength=20 ng-pattern="/^[_'.@A-Za-z0-9-]*$/" ng-disabled="!isCreateDialog">
+                               ng-maxlength=100 ng-pattern="/^[_'.@A-Za-z0-9-]*$/" ng-disabled="!isCreateDialog">
 
                         <div ng-show="editForm.username.$invalid && editForm.username.$dirty" class="has-error">
                             <p class="help-block"
@@ -132,13 +132,11 @@
                                 Username is incorrect format.
                             </p>
                             <p class="help-block"
-                               ng-show="editForm.username.$error.maxlength"
-                               translate-value-max="50">
-                                This field cannot be longer than 50 characters.
+                               ng-show="editForm.username.$error.maxlength">
+                                This field cannot be longer than 100 characters.
                             </p>
                             <p class="help-block"
-                               ng-show="editForm.username.$error.minlength"
-                               translate-value-max="50">
+                               ng-show="editForm.username.$error.minlength">
                                 This field cannot be shorter than 10 characters.
                             </p>
                         </div>
@@ -154,8 +152,7 @@
                                 This field is required.
                             </p>
                             <p class="help-block"
-                               ng-show="editForm.firstName.$error.maxlength"
-                               translate-value-max="50">
+                               ng-show="editForm.firstName.$error.maxlength">
                                 This field cannot be longer than 50 characters.
                             </p>
                         </div>
@@ -170,8 +167,7 @@
                                ng-show="editForm.lastName.$error.required">
                                 This field is required.
                             </p>
-                            <p class="help-block" ng-show="editForm.lastName.$error.maxlength"
-                               translate-value-max="50">
+                            <p class="help-block" ng-show="editForm.lastName.$error.maxlength">
                                 This field cannot be longer than 50 characters.
                             </p>
                         </div>
@@ -188,8 +184,7 @@
                                 This field is required.
                             </p>
 
-                            <p class="help-block" ng-show="editForm.email.$error.maxlength"
-                               translate-value-max="100">
+                            <p class="help-block" ng-show="editForm.email.$error.maxlength">
                                 This field cannot be longer than 100 characters.
                             </p>
                             <p class="help-block"
