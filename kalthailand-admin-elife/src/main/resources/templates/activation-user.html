@@ -1,0 +1,103 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta name="context-path" th:content="@{/}"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Activation User</title>
+
+    <!-- Bootstrap core CSS -->
+    <!--<link rel="stylesheet" th:href="@{/bower_components/bootstrap-css-only/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" th:href="@{/bower_components/angular-bootstrap/ui-bootstrap-csp.css}"/>
+    <link rel="stylesheet" th:href="@{/https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css}">-->
+
+    <!-- Bootstrap theme -->
+    <!-- Bootstrap -->
+    <link th:href="@{/libs/bootstrap-gentellena/vendors/bootstrap/dist/css/bootstrap.min.css}" rel="stylesheet"/>
+    <!-- Font Awesome -->
+    <link th:href="@{/libs/bootstrap-gentellena/vendors/font-awesome/css/font-awesome.min.css}" rel="stylesheet"/>
+    <!-- NProgress -->
+    <!--<link th:href="@{/libs/bootstrap-gentellena/vendors/nprogress/nprogress.css}" rel="stylesheet"/>-->
+    <!-- bootstrap-progressbar -->
+    <!--<link th:href="@{/libs/bootstrap-gentellena/vendors/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css}" rel="stylesheet"/>-->
+
+    <!-- Custom Theme Style -->
+    <link th:href="@{/libs/bootstrap-gentellena/build_finish/css/custom.min.css}" rel="stylesheet"/>
+
+    <!-- Animate.css -->
+    <!--<link th:href="@{/../vendors/animate.css/animate.min.css}" rel="stylesheet">-->
+
+
+</head>
+
+<body class="login">
+<div>
+    <a class="hiddenanchor" id="signin"></a>
+
+    <div class="login_wrapper">
+        <div class="animate form login_form">
+            <section class="login_content">
+                <img th:src="@{/images/logo_400x400.gif}" style="width: 200px; height: 200px;"/>
+
+                <div class="alert alert-success" role="alert" th:if="${success}">
+                    <p>Your account has been activated, please <a th:href="@{/login}">login</a></p>
+                </div>
+                <form action="#" th:unless="${success}" th:action="@{/activate}" th:object="${activationForm}"
+                      method="post"
+                      name="activationForm">
+                    <h1>Activation User</h1>
+
+                    <!--ERROR SESSION-->
+                    <div class="has-error" role="alert" th:if="${validationErrorData}"
+                         th:each="errorField : ${validationErrorData}">
+                        <p class="help-block" th:text="${errorField.message}"></p>
+                    </div>
+                    <div class="has-error" role="alert" th:if="${httpErrorData}">
+                        <p class="help-block" th:text="${httpErrorData.userMessage}"></p>
+                    </div>
+
+                    <div >
+                        <p style="text-align: left;">
+                            <b>Your password must be:</b><br/>
+                            - At least 8 characters long<br/>
+                            - Contain at least 1 uppercase<br/>
+                            - Contain alphanumeric<br/>
+                            - Contain 1 special character<br/>
+                            - Cannot be sequential number or alphabet</p>
+                    </div>
+                    <div>
+                        <input type="hidden" class="form-control" required="" th:field="*{activationKey}"/>
+                    </div>
+                    <div>
+                        <input type="password" class="form-control" placeholder="password" maxlength="50" required=""
+                               th:field="*{password}"/>
+                    </div>
+                    <div>
+                        <input type="password" class="form-control" placeholder="confirm password" required=""
+                               maxlength="50"
+                               th:field="*{confirmPassword}"/>
+                    </div>
+                    <div>
+                        <button type="submit" class="btn btn-default submit">Change Password</button>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <div class="separator">
+                        <div>
+                            <h1><i class="fa fa-cogs"></i> Administration</h1>
+
+                            <p>©2016 All Rights Reserved. Krungthai AXA.</p>
+                        </div>
+                    </div>
+                </form>
+            </section>
+        </div>
+    </div>
+</div>
+</body>
+
+</html>

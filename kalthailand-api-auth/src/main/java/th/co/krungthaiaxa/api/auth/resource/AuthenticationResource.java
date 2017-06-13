@@ -37,7 +37,7 @@ import static th.co.krungthaiaxa.api.auth.utils.JsonUtil.getJson;
 @RestController
 @Api(value = "Authentication")
 public class AuthenticationResource {
-    private final static Logger logger = LoggerFactory.getLogger(AuthenticationResource.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(AuthenticationResource.class);
 
     @Value("${jwt.header}")
     private String tokenHeader;
@@ -48,11 +48,13 @@ public class AuthenticationResource {
     private JwtTokenUtil jwtTokenUtil;
 
     @Autowired
-    public AuthenticationResource(AuthenticationService authService) {this.authService = authService;}
+    public AuthenticationResource(AuthenticationService authService) {
+        this.authService = authService;
+    }
 
     @ApiOperation(value = "Creates a token", notes = "Creates a JWT token containing user Roles", response = Token.class)
     @RequestMapping(value = "/auth", produces = APPLICATION_JSON_VALUE, method = POST)
-    public ResponseEntity<?> createAuthenticationToken(
+    public ResponseEntity createAuthenticationToken(
             @ApiParam(value = "The credentials to get token for", required = true)
             @RequestBody RequestForToken requestForToken) {
         AuthenticatedUser authenticatedUser = authService.authenticate(requestForToken);
@@ -73,32 +75,32 @@ public class AuthenticationResource {
             @ApiResponse(code = 406, message = "If token does not give access to the role", response = Error.class)
     })
     @RequestMapping(value = "/auth/validate/{roleName}", produces = APPLICATION_JSON_VALUE, method = GET)
-    public ResponseEntity<?> validateToken(
+    public ResponseEntity validateToken(
             @ApiParam(value = "The role to check the token against on", required = true)
             @PathVariable String roleName,
             HttpServletRequest request) {
         String token = request.getHeader(tokenHeader);
         if (isEmpty(token)) {
-            logger.error("Token is empty");
+            LOGGER.error("Token is empty");
             return badRequest().body(getJson(ErrorCode.TOKEN_EMPTY));
         }
 
         if (jwtTokenUtil.isTokenExpired(token)) {
-            logger.error("Token has expired");
+            LOGGER.error("Token has expired");
             return badRequest().body(getJson(ErrorCode.TOKEN_EXPIRED));
         }
 
         Optional<List> roles = jwtTokenUtil.getRolesFromToken(token);
         if (!roles.isPresent()) {
-            logger.error("Token has no role");
+            LOGGER.error("Token has no role");
             return badRequest().body(getJson(ErrorCode.NO_ROLE));
         }
 
         if (!roles.get().contains(roleName)) {
-            logger.error("Role [" + roleName + "] is not available in provided token");
+            LOGGER.error("Role [" + roleName + "] is not available in provided token");
             return new ResponseEntity<>(ErrorCode.ROLE_NOT_ALLOWED.apply(roleName), NOT_ACCEPTABLE);
         } else {
-            logger.info("Role is available in provided token");
+            LOGGER.info("Role is available in provided token");
             return ok(null);
         }
     }

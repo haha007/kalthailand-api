@@ -47,6 +47,11 @@
                 controller: 'PoliciesController',
                 activeTab: 'policies'
             })
+            .when('/user-management', {
+                templateUrl: 'app/templates/user-management.html',
+                controller: 'UserManagementController',
+                activeTab: 'user-management'
+            })
             .when('/blacklist', {
                 templateUrl: 'app/templates/blacklist.html',
                 controller: 'BlackListController',

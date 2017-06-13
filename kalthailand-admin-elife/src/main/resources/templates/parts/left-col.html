@@ -46,7 +46,9 @@
             <span class="glyphicon" aria-hidden="true" th:text="${projectInfo.gitTag}"></span>
         </a>
         <a data-toggle="tooltip" data-placement="top" href="" style="cursor: default;">
-            <span class="glyphicon" aria-hidden="true" th:text="${#strings.substring(projectInfo.gitRevision,0,7)}"></span>
+            <span class="glyphicon" aria-hidden="true" 
+                  th:if="${projectInfo.gitRevision != null}" 
+                  th:text="${#strings.substring(projectInfo.gitRevision,0,7)}"></span>
         </a>
         <a data-toggle=" tooltip" data-placement="top" href="" style="cursor: default;">
             <span class="glyphicon" aria-hidden="true" th:text="${projectInfo.profiles[0]}"></span>

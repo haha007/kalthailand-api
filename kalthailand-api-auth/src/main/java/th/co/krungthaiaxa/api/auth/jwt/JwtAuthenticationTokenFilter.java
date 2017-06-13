@@ -5,9 +5,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import th.co.krungthaiaxa.api.auth.service.UserDetailsServiceImpl;
 import th.co.krungthaiaxa.api.common.log.LogHttpRequestUtil;
 
 import javax.servlet.FilterChain;
@@ -21,7 +21,7 @@ import java.util.Optional;
 
 public class JwtAuthenticationTokenFilter extends UsernamePasswordAuthenticationFilter {
     @Autowired
-    private UserDetailsService userDetailsService;
+    private UserDetailsServiceImpl userDetailsServiceImpl;
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
     @Value("${jwt.header}")
@@ -36,7 +36,7 @@ public class JwtAuthenticationTokenFilter extends UsernamePasswordAuthentication
         Optional<String> username = jwtTokenUtil.getUsernameFromToken(authToken);
 
         if (username.isPresent() && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(username.get());
+            UserDetails userDetails = this.userDetailsServiceImpl.loadUserByUsername(username.get());
             if (jwtTokenUtil.validateToken(authToken, userDetails)) {
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpRequest));

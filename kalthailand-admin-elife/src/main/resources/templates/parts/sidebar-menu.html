@@ -17,8 +17,10 @@
                 <li><a href="#collection-file">Collection</a></li>
             </ul>
         </li>
-        <li th:if="${user.featuresAvailabilities.blackListLink || user.featuresAvailabilities.policyNumbersLink}"><a><i class="fa fa-cog"></i> Setting <span class="fa fa-chevron-down"></span></a>
+        <li th:if="${user.featuresAvailabilities.blackListLink || user.featuresAvailabilities.policyNumbersLink || user.featuresAvailabilities.userLink}">
+            <a><i class="fa fa-cog"></i> Setting <span class="fa fa-chevron-down"></span></a>
             <ul class="nav child_menu">
+                <li th:if="${user.featuresAvailabilities.userLink}"><a href="#user-management">User Management</a></li>
                 <li th:if="${user.featuresAvailabilities.blackListLink}"><a href="#blacklist">Black List</a></li>
                 <li th:if="${user.featuresAvailabilities.policyNumbersLink}"><a href="#policy-numbers">Policy Numbers</a></li>
             </ul>

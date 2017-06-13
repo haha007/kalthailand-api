@@ -41,7 +41,7 @@ Initiate data
 Before starting the project, you should import some init data into MongoDB:
 Import data inside all *.json files in folder /json into MongoDB (don't import policyNumber_prd_xxx.json to your local machine)' by following command lines:
 ```
-mongoimport --host localhost --db elife --port 27117 -u elifeuser -p password --collection lineToken --file /SourceCode/kalthailand-api/json/lineToken.json --jsonArray --drop
+mongoimport --host localhost --db elife --port 27117 -u elifeuser -p password --collection lineToken --file /SourceCode/kalthailand-api/json/lineToken.json --drop
 mongoimport --host localhost --db elife --port 27117 -u elifeuser -p password --collection occupationType --file /SourceCode/kalthailand-api/json/occupationType.json --jsonArray --drop
 mongoimport --host localhost --db elife --port 27117 -u elifeuser -p password --collection policyNumber --file /SourceCode/kalthailand-api/json/policyNumber.json --jsonArray --drop 
 mongoimport --host localhost --db elife --port 27117 -u elifeuser -p password --collection productIBeginRate --file /SourceCode/kalthailand-api/json/productIBeginRate.json --jsonArray --drop
@@ -50,6 +50,8 @@ mongoimport --host localhost --db elife --port 27117 -u elifeuser -p password --
 mongoimport --host localhost --db elife --port 27117 -u elifeuser -p password --collection productIProtectDiscountRate --file /SourceCode/kalthailand-api/json/productIProtectDiscountRate.json --jsonArray --drop
 mongoimport --host localhost --db elife --port 27117 -u elifeuser -p password --collection productIProtectRate --file /SourceCode/kalthailand-api/json/productIProtectRate.json --jsonArray --drop
 mongoimport --host localhost --db elife --port 27117 -u elifeuser -p password --collection productPremiumRate --file /SourceCode/kalthailand-api/json/productPremiumRate.json --jsonArray --drop
+mongoimport --host localhost --db elife --port 27117 -u elifeuser -p password --collection user --file /SourceCode/kalthailand-api/json/user.json --jsonArray --drop
+mongoimport --host localhost --db elife --port 27117 -u elifeuser -p password --collection role --file /SourceCode/kalthailand-api/json/role.json --jsonArray --drop
 ```
 
 Update LINE AccessToken in MongoDB

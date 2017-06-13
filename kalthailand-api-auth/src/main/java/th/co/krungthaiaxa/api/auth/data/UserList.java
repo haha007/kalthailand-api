@@ -7,7 +7,12 @@ import org.springframework.util.StringUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
+/**
+ * @deprecated will be remove after testing backward compatible 
+ */
+@Deprecated
 @Component
 public class UserList {
     private List<User> users;
@@ -66,9 +71,13 @@ public class UserList {
 
     private void addUser(String userName, String password, String roles) {
         User user = new User();
-        user.setUserName(userName);
+        user.setUsername(userName);
         user.setPassword(password);
-        getRoles(roles).stream().forEach(user::addRole);
+        user.setRoles(getRoles(roles).stream().map(roleString -> {
+            Role tmpRole = new Role();
+            tmpRole.setId(roleString);
+            return tmpRole;
+        }).collect(Collectors.toSet()));
         users.add(user);
     }
 

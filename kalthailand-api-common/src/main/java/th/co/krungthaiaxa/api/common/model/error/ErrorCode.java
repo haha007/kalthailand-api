@@ -111,5 +111,18 @@ public class ErrorCode {
     public static final String ERROR_CODE_AUTHORIZATION = "9001";
     public static final Function<String, Error> UI_UNAUTHORIZED = msg -> new Error(ERROR_CODE_AUTHORIZATION, "You don't have permission to perform the action.", msg);
     public static final Function<String, Error> LINE_NOTIFICATION = msg -> new Error(ERROR_CODE_LINE_NOTIFICATION, "Notification was not sent. Error is: " + msg, "Notification was not sent. Error is: " + msg);
+    
+    //AUTH API
+    public static final String USER_EXISTS_CODE = "9101";
+    public static final String ERROR_CREATE_USER_CODE = "9102";
+    public static final String ERROR_UPDATE_USER_CODE = "9103";
+    public static final String INVALID_ACTIVATION_CODE = "9104";
+    public static final String INVALID_CONFIRM_PASSWORD_CODE = "9105";
+    
+    public static final Error USER_EXISTS = new Error(USER_EXISTS_CODE, "Username already in use.", "Username already in use.");
+    public static final Error ERROR_CREATE_USER = new Error(ERROR_CREATE_USER_CODE, "Internal server error.", "User could not create, something went wrong.");
+    public static final Error ERROR_UPDATE_USER = new Error(ERROR_UPDATE_USER_CODE, "Internal server error.", "User could not update, something went wrong.");
+    public static final Error INVALID_ACTIVATION_KEY = new Error(INVALID_ACTIVATION_CODE, "Activation key is invalid or expired.", "Activation key is invalid or expired.");
+    public static final Error INVALID_CONFIRM_PASSWORD = new Error(INVALID_CONFIRM_PASSWORD_CODE, "Confirm password does not match.", "Confirm password does not match.");
 
 }
