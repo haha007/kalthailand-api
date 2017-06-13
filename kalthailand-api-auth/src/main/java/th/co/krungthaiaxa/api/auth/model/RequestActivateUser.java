@@ -1,19 +1,19 @@
 package th.co.krungthaiaxa.api.auth.model;
 
+import org.hibernate.validator.constraints.NotEmpty;
 import th.co.krungthaiaxa.api.common.utils.Constants;
 
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 /**
  * @author tuong.le on 6/6/17.
  */
 public class RequestActivateUser {
-    @NotNull
+    @NotEmpty
     private String activationKey;
 
-    @NotNull
-    @Pattern(regexp = Constants.PASSWORD_REGEX, 
+    @NotEmpty
+    @Pattern(regexp = Constants.PASSWORD_REGEX,
             message = "At least 8 characters long, " +
                     "Contain at least 1 uppercase, " +
                     "Contain alphanumeric, " +
@@ -21,7 +21,7 @@ public class RequestActivateUser {
                     "Cannot be sequential number or alphabet")
     private String password;
 
-    @NotNull
+    @NotEmpty
     private String confirmPassword;
 
     public String getActivationKey() {

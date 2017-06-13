@@ -14,8 +14,8 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends PagingAndSortingRepository<User, String> {
 
-    //Check user account that has username and been activated.
-    @Query("{ username: ?0, activated: true, activationKey: {$not: { $exists: true, $ne: ''}}}")
+    //Check user account that has username case insensitive and been activated.
+    @Query("{ username: {$regex : '^?0$', $options: 'i'}, activated: true, activationKey: {$not: { $exists: true, $ne: ''}}}")
     Optional<User> findActiveUsername(final String username);
 
     Optional<User> findOneByActivationKey(final String activateKey);

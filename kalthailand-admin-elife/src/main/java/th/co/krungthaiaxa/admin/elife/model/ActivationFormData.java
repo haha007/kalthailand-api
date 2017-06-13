@@ -1,8 +1,8 @@
 package th.co.krungthaiaxa.admin.elife.model;
 
+import org.hibernate.validator.constraints.NotEmpty;
 import th.co.krungthaiaxa.api.common.utils.Constants;
 
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 /**
@@ -10,10 +10,10 @@ import javax.validation.constraints.Pattern;
  */
 public class ActivationFormData {
 
-    @NotNull
+    @NotEmpty
     private String activationKey;
 
-    @NotNull
+    @NotEmpty
     @Pattern(regexp = Constants.PASSWORD_REGEX,
             message = "At least 8 characters long, " +
                     "Contain at least 1 uppercase, " +
@@ -22,7 +22,7 @@ public class ActivationFormData {
                     "Cannot be sequential number or alphabet")
     private String password;
 
-    @NotNull
+    @NotEmpty
     private String confirmPassword;
 
     public String getActivationKey() {
