@@ -80,7 +80,7 @@ public class UserServiceTest extends BaseIntegrationResourceTest {
 
     @Test
     public void can_find_username() {
-        final Optional<User> adminUser = userService.getActiveUserDetailByUsername("asdasasfasf");
+        final Optional<User> adminUser = userService.getOneActiveUserDetailByUsername("asdasasfasf");
         if (adminUser.isPresent()) {
             LOGGER.info(adminUser.get().getEmail());
             Assert.assertFalse(Objects.isNull(adminUser));

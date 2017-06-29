@@ -61,7 +61,7 @@ public class UserResource {
     @RequestMapping(value = "/users", produces = APPLICATION_JSON_VALUE, method = RequestMethod.GET)
     @RequiredAdminRole
     public ResponseEntity getListOfUser() {
-        final Pageable pageable = new PageRequest(0, 100);
+        final Pageable pageable = new PageRequest(0, Integer.MAX_VALUE);
         return ResponseEntity.ok(userService.getAllUser(pageable));
     }
 

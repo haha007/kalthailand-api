@@ -1,5 +1,6 @@
 package th.co.krungthaiaxa.api.auth.jwt;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,7 +18,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.time.Instant;
-import java.util.Optional;
 
 public class JwtAuthenticationTokenFilter extends UsernamePasswordAuthenticationFilter {
     @Autowired
@@ -28,20 +28,22 @@ public class JwtAuthenticationTokenFilter extends UsernamePasswordAuthentication
     private String tokenHeader;
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         Instant startTime = LogHttpRequestUtil.logStarting(httpRequest);
-
         String authToken = httpRequest.getHeader(this.tokenHeader);
-        Optional<String> username = jwtTokenUtil.getUsernameFromToken(authToken);
 
-        if (username.isPresent() && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = this.userDetailsServiceImpl.loadUserByUsername(username.get());
-            if (jwtTokenUtil.validateToken(authToken, userDetails)) {
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpRequest));
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            }
+        if (SecurityContextHolder.getContext().getAuthentication() == null && StringUtils.isNotEmpty(authToken)) {
+            jwtTokenUtil.getUsernameFromToken(authToken).ifPresent(username -> {
+                UserDetails userDetails = this.userDetailsServiceImpl.loadUserByUsername(username);
+                if (jwtTokenUtil.validateToken(authToken, userDetails)) {
+                    UsernamePasswordAuthenticationToken authentication =
+                            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpRequest));
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
+            });
         }
         LogHttpRequestUtil.logFinishing(startTime, httpRequest);
         chain.doFilter(request, response);
