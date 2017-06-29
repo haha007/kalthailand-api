@@ -36,7 +36,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
      */
     @Override
     public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
-        final Optional<User> userOptional = userService.getActiveUserDetailByUsername(username);
+        final Optional<User> userOptional = userService.getOneActiveUserDetailByUsername(username);
         final User user = userOptional.get();
         List<String> roles = user.getRoles().stream().map(Role::getId).collect(Collectors.toList());
         return JwtUserFactory.create(user.getUsername(), user.getPassword(), roles);

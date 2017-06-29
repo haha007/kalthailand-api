@@ -27,7 +27,7 @@ import static java.util.stream.Collectors.toList;
 
 @Component
 public class JwtTokenUtil implements Serializable {
-    public static final Logger LOGGER = LoggerFactory.getLogger(JwtTokenUtil.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JwtTokenUtil.class);
     private static final long serialVersionUID = -3301605591108950415L;
 
     private static final String CLAIM_KEY_USERNAME = "sub";
@@ -52,7 +52,8 @@ public class JwtTokenUtil implements Serializable {
         Map<String, Object> claims = new HashMap<>();
         claims.put(CLAIM_KEY_USERNAME, userDetails.getUsername());
         claims.put(CLAIM_KEY_CREATED, LocalDateTime.now().format(ISO_DATE_TIME));
-        claims.put(CLAIM_KEY_ROLE, userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(toList()));
+        claims.put(CLAIM_KEY_ROLE, 
+                userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(toList()));
         return generateToken(claims);
     }
 
@@ -63,14 +64,11 @@ public class JwtTokenUtil implements Serializable {
         }
 
         Optional<LocalDateTime> expirationDate = getExpirationDateFromToken(token);
-        if (!expirationDate.isPresent()) {
-            return TRUE;
-        }
+        return expirationDate.map(localDateTime -> localDateTime.isBefore(LocalDateTime.now())).orElse(TRUE);
 
-        return expirationDate.get().isBefore(LocalDateTime.now());
     }
 
-    public Optional<String> getUsernameFromToken(String token) {
+    Optional<String> getUsernameFromToken(String token) {
         Optional<Claims> claims = getClaimsFromToken(token);
         if (!claims.isPresent()) {
             return Optional.empty();
@@ -78,7 +76,7 @@ public class JwtTokenUtil implements Serializable {
         return Optional.of(claims.get().getSubject());
     }
 
-    public Boolean validateToken(String token, UserDetails userDetails) {
+    Boolean validateToken(String token, UserDetails userDetails) {
         Optional<LocalDateTime> creationDate = getCreatedDateFromToken(token);
         if (!creationDate.isPresent()) {
             return FALSE;
@@ -105,7 +103,9 @@ public class JwtTokenUtil implements Serializable {
         if (!claims.isPresent()) {
             return Optional.empty();
         }
-        LocalDateTime expiration = Instant.ofEpochMilli(claims.get().getExpiration().getTime()).atZone(ZoneId.systemDefault()).toLocalDateTime();
+        LocalDateTime expiration = Instant.ofEpochMilli(claims.get().getExpiration().getTime())
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
         return Optional.of(expiration);
     }
 

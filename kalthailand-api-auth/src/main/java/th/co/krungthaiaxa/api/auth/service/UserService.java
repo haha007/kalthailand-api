@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -37,8 +38,9 @@ public class UserService {
         return userRepository.findAll(pageable);
     }
 
-    public Optional<User> getActiveUserDetailByUsername(final String username) {
-        return userRepository.findActiveUsername(username);
+    public Optional<User> getOneActiveUserDetailByUsername(final String username) {
+        final Pageable pageable = new PageRequest(0, 1);
+        return userRepository.findActiveUsername(username, pageable).stream().findFirst();
     }
 
     public Optional<User> getUserByUsername(final String username) {
