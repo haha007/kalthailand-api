@@ -26,14 +26,11 @@ import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.Person;
 import th.co.krungthaiaxa.api.elife.model.PersonInfo;
 import th.co.krungthaiaxa.api.elife.model.Policy;
-import th.co.krungthaiaxa.api.elife.model.PreviousPolicy;
 import th.co.krungthaiaxa.api.elife.model.Quote;
-import th.co.krungthaiaxa.api.elife.model.Registration;
 import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
 import th.co.krungthaiaxa.api.elife.model.enums.DocumentType;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 import th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus;
-import th.co.krungthaiaxa.api.elife.model.enums.RegistrationTypeName;
 import th.co.krungthaiaxa.api.elife.model.sms.SMSResponse;
 import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
 import th.co.krungthaiaxa.api.elife.products.ProductService;
@@ -59,7 +56,6 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
-import static java.time.format.DateTimeFormatter.ofPattern;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.notNull;
 import static th.co.krungthaiaxa.api.elife.model.enums.DocumentType.APPLICATION_FORM;
@@ -254,6 +250,7 @@ public class PolicyService {
         }
 
         // Update the policy
+        /* Checking previous policy is no longer needed while validating policy, and prevents CBD issues(not avail 24/24) 
         Insured mainInsured = ProductUtils.getFirstInsured(policy);
         Optional<Registration> insuredRegistrationOptional = mainInsured.getPerson().getRegistrations()
                 .stream()
@@ -270,7 +267,7 @@ public class PolicyService {
                 mainInsured.addInsuredPreviousInformation(previousPolicy.getAgentCode2());
             }
             mainInsured.setNotSearchedPreviousPolicy(false);
-        }
+        }*/
 
         policy.setStatus(PolicyStatus.PENDING_VALIDATION);
         policy.setLastUpdateDateTime(Instant.now());
