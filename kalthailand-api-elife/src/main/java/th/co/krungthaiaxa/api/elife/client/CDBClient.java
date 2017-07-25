@@ -15,6 +15,11 @@ public class CDBClient {
     @Inject
     private CDBRepository cdbRepository;
 
+    /**
+     * @deprecated
+     * Checking previous policy is no longer needed while validating policy, and prevents CBD issues(not avail 24/24) 
+     */
+    @Deprecated
     public Optional<PreviousPolicy> getExistingAgentCode(String insuredRegistrationId, String insuredDOB) {
         return cdbRepository.findLastActivatingPreviousPolicy(insuredRegistrationId, insuredDOB);
     }
