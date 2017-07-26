@@ -256,7 +256,7 @@ public class EreceiptPdfService {
         //2016-11-07, we have option atpMode (view {@link AtpMode}): when the atpMode is NO_AUTOPAY,
         Point posPaymentMethod = POS_PAYMENT_METHOD_OTHER_OPTION;
         writeText(page, "X", posPaymentMethod);
-        writeText(page, "ไลน์เพย์(LINE Pay)", POS_PAYMENT_METHOD_OTHER_TEXT);
+        writeText(page, "แรบบิท ไลน์ เพย์ (Rabbit LINE Pay)", POS_PAYMENT_METHOD_OTHER_TEXT);
     }
 
     private void writePaymentPeriodicity(PdfContentByte page, Policy policy) {
