@@ -5,5 +5,11 @@
   "email": "dummy.testing@gmail.com",
   "mobile": "090818283848",
   "address": "11/22 dummy address",
+  "homeNumber":"123/22",
+  "road": "petchaburi",
+  "district":"district",
+  "subDistrict": "subDistrict",
+  "province": "bangkok",
+  "zipCode": "12345",
   "purchaseReason": "Just for testing. Nothing else."
 }

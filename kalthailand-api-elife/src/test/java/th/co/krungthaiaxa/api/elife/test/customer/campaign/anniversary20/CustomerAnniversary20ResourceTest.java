@@ -34,7 +34,7 @@ public class CustomerAnniversary20ResourceTest extends ELifeTest {
         HttpEntity<String> entity = super.createJsonRequestEntity(jsonString);
         ResponseEntity<String> responseEntity = restTemplate.exchange(super.baseUrl + "/customer/campaign/krungthai-axa-20th-anniversary", HttpMethod.POST, entity, String.class);
         CustomerAnniversary20 result = assertResponseClass(responseEntity, HttpStatus.OK, CustomerAnniversary20.class);
-        Assert.assertNotNull(result.getRegistration());
+        Assert.assertNotNull(result.getThaiID());
     }
 
     @Test
