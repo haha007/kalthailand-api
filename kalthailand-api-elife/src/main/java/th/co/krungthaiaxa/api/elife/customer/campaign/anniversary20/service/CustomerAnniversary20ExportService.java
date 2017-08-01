@@ -11,7 +11,6 @@ import th.co.krungthaiaxa.api.elife.customer.campaign.anniversary20.repository.C
 import th.co.krungthaiaxa.api.elife.export.ExcelExportUtil;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -25,6 +24,9 @@ public class CustomerAnniversary20ExportService {
     //these prefix are used for TH only
     private static final String PREFIX_DISTRICT_TH = "ต.";
     private static final String PREFIX_SUB_DISTRICT_TH = "อ.";
+    private static final String BKK_PROVINCE = "bangkok";
+    private static final String PREFIX_DISTRICT_BKK_TH = "แขวง.";
+    private static final String PREFIX_SUB_DISTRICT_BKK_TH = "เขต.";
     private static final String PREFIX_PROVINCE_TH = "จ.";
     private final CustomerAnniversary20Repository customerAnniversary20Repository;
 
@@ -44,6 +46,21 @@ public class CustomerAnniversary20ExportService {
     }
 
     private CustomerAnniversary20Line parseEntityToReportLine(final CustomerAnniversary20 entity) {
+        final String province = entity.getProvince();
+        String provinceAndZipCode = StringUtils.EMPTY;// = entity.getProvince();
+        String district = StringUtils.EMPTY;
+        String subDistrict = StringUtils.EMPTY;
+        if (StringUtils.isNotEmpty(province)) {
+            provinceAndZipCode = PREFIX_PROVINCE_TH + province + " " + entity.getZipCode();
+            if (BKK_PROVINCE.equalsIgnoreCase(province)) {
+                district = PREFIX_DISTRICT_BKK_TH + entity.getDistrict();
+                subDistrict = PREFIX_SUB_DISTRICT_BKK_TH + entity.getSubDistrict();
+            } else {
+                district = PREFIX_DISTRICT_TH + entity.getDistrict();
+                subDistrict = PREFIX_SUB_DISTRICT_TH + entity.getSubDistrict();
+            }
+        }
+
         final CustomerAnniversary20Line reportLine = new CustomerAnniversary20Line();
         reportLine.setGivenName(entity.getFirstName());
         reportLine.setSurname(entity.getLastName());
@@ -53,12 +70,9 @@ public class CustomerAnniversary20ExportService {
         reportLine.setAddress(entity.getAddress());
         reportLine.setHomeNumber(entity.getHomeNumber());
         reportLine.setRoad(entity.getRoad());
-        reportLine.setDistrict(Objects.isNull(entity.getDistrict())
-                ? StringUtils.EMPTY : PREFIX_DISTRICT_TH + entity.getDistrict());
-        reportLine.setSubDistrict(Objects.isNull(entity.getSubDistrict())
-                ? StringUtils.EMPTY : PREFIX_SUB_DISTRICT_TH + entity.getSubDistrict());
-        reportLine.setProvinceZipCode(Objects.isNull(entity.getProvince())
-                ? StringUtils.EMPTY : PREFIX_PROVINCE_TH + entity.getProvince() + " " + entity.getZipCode());
+        reportLine.setDistrict(district);
+        reportLine.setSubDistrict(subDistrict);
+        reportLine.setProvinceZipCode(provinceAndZipCode);
         reportLine.setPurchaseReason(entity.getPurchaseReason());
         reportLine.setForceChange(entity.isForceChange() ? "Y" : "N");
         return reportLine;
