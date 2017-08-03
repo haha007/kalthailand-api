@@ -38,7 +38,7 @@ public class CustomerAnniversary20Line {
     private String purchaseReason;
 
     @ReportField("Force Change Address")
-    private String forceChange;
+    private String forceChangeAddress;
 
     public String getGivenName() {
         return givenName;
@@ -136,11 +136,11 @@ public class CustomerAnniversary20Line {
         this.purchaseReason = purchaseReason;
     }
 
-    public String getForceChange() {
-        return forceChange;
+    public String getForceChangeAddress() {
+        return forceChangeAddress;
     }
 
-    public void setForceChange(final String forceChange) {
-        this.forceChange = forceChange;
+    public void setForceChangeAddress(final String forceChangeAddress) {
+        this.forceChangeAddress = forceChangeAddress;
     }
 }

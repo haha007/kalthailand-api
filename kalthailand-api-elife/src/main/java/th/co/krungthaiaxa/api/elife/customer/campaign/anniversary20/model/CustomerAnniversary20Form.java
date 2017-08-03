@@ -67,7 +67,7 @@ public class CustomerAnniversary20Form {
     private String purchaseReason;
 
     @ApiModelProperty(value = "Is forced changing the address in RLS", required = true)
-    private boolean forceChange;
+    private boolean forceChangeAddress;
 
     public String getGivenName() {
         return givenName;
@@ -173,11 +173,11 @@ public class CustomerAnniversary20Form {
         this.purchaseReason = purchaseReason;
     }
 
-    public boolean isForceChange() {
-        return forceChange;
+    public boolean isForceChangeAddress() {
+        return forceChangeAddress;
     }
 
-    public void setForceChange(final boolean forceChange) {
-        this.forceChange = forceChange;
+    public void setForceChangeAddress(final boolean forceChangeAddress) {
+        this.forceChangeAddress = forceChangeAddress;
     }
 }
