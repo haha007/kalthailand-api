@@ -55,7 +55,7 @@ public class CustomerAnniversary20 extends BaseEntity {
     private String purchaseReason;
 
     @NotBlank
-    private boolean forceChange;
+    private boolean forceChangeAddress;
 
     public CustomerAnniversary20() {
         //Empty constructor
@@ -74,7 +74,7 @@ public class CustomerAnniversary20 extends BaseEntity {
         this.setProvince(form.getProvince());
         this.setZipCode(form.getZipCode());
         this.setPurchaseReason(form.getPurchaseReason());
-        this.setForceChange(form.isForceChange());
+        this.setForceChangeAddress(form.isForceChangeAddress());
     }
 
     public String getFirstName() {
@@ -173,12 +173,12 @@ public class CustomerAnniversary20 extends BaseEntity {
         this.purchaseReason = purchaseReason;
     }
 
-    public boolean isForceChange() {
-        return forceChange;
+    public boolean isForceChangeAddress() {
+        return forceChangeAddress;
     }
 
-    public void setForceChange(final boolean forceChange) {
-        this.forceChange = forceChange;
+    public void setForceChangeAddress(final boolean forceChangeAddress) {
+        this.forceChangeAddress = forceChangeAddress;
     }
 
     public String getThaiID() {

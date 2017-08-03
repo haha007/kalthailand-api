@@ -24,7 +24,7 @@ public class CustomerAnniversary20ExportService {
     //these prefix are used for TH only
     private static final String PREFIX_DISTRICT_TH = "ต.";
     private static final String PREFIX_SUB_DISTRICT_TH = "อ.";
-    private static final String BKK_PROVINCE = "bangkok";
+    private static final String BKK_PROVINCE = "กรุงเทพมหานคร";
     private static final String PREFIX_DISTRICT_BKK_TH = "แขวง.";
     private static final String PREFIX_SUB_DISTRICT_BKK_TH = "เขต.";
     private static final String PREFIX_PROVINCE_TH = "จ.";
@@ -74,7 +74,7 @@ public class CustomerAnniversary20ExportService {
         reportLine.setSubDistrict(subDistrict);
         reportLine.setProvinceZipCode(provinceAndZipCode);
         reportLine.setPurchaseReason(entity.getPurchaseReason());
-        reportLine.setForceChange(entity.isForceChange() ? "Y" : "N");
+        reportLine.setForceChangeAddress(entity.isForceChangeAddress() ? "Y" : "N");
         return reportLine;
     }
 }
