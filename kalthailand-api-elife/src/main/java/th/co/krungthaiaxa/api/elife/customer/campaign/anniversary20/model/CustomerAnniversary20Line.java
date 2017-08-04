@@ -26,10 +26,11 @@ public class CustomerAnniversary20Line {
     private String homeNumber;
 
     private String road;
-    private String district;
 
     @ReportField("Sub District")
     private String subDistrict;
+    
+    private String district;
 
     @ReportField("Province + Zip Code")
     private String provinceZipCode;
@@ -41,10 +42,11 @@ public class CustomerAnniversary20Line {
     private String forceChangeAddress;
 
     public String getGivenName() {
+        
         return givenName;
     }
 
-    public void setGivenName(final String givenName) {
+    public void setGivenName(String givenName) {
         this.givenName = givenName;
     }
 
@@ -52,7 +54,7 @@ public class CustomerAnniversary20Line {
         return surname;
     }
 
-    public void setSurname(final String surname) {
+    public void setSurname(String surname) {
         this.surname = surname;
     }
 
@@ -60,7 +62,7 @@ public class CustomerAnniversary20Line {
         return thaiId;
     }
 
-    public void setThaiId(final String thaiId) {
+    public void setThaiId(String thaiId) {
         this.thaiId = thaiId;
     }
 
@@ -68,7 +70,7 @@ public class CustomerAnniversary20Line {
         return email;
     }
 
-    public void setEmail(final String email) {
+    public void setEmail(String email) {
         this.email = email;
     }
 
@@ -76,7 +78,7 @@ public class CustomerAnniversary20Line {
         return mobile;
     }
 
-    public void setMobile(final String mobile) {
+    public void setMobile(String mobile) {
         this.mobile = mobile;
     }
 
@@ -84,7 +86,7 @@ public class CustomerAnniversary20Line {
         return address;
     }
 
-    public void setAddress(final String address) {
+    public void setAddress(String address) {
         this.address = address;
     }
 
@@ -92,7 +94,7 @@ public class CustomerAnniversary20Line {
         return homeNumber;
     }
 
-    public void setHomeNumber(final String homeNumber) {
+    public void setHomeNumber(String homeNumber) {
         this.homeNumber = homeNumber;
     }
 
@@ -100,31 +102,31 @@ public class CustomerAnniversary20Line {
         return road;
     }
 
-    public void setRoad(final String road) {
+    public void setRoad(String road) {
         this.road = road;
-    }
-
-    public String getDistrict() {
-        return district;
-    }
-
-    public void setDistrict(final String district) {
-        this.district = district;
     }
 
     public String getSubDistrict() {
         return subDistrict;
     }
 
-    public void setSubDistrict(final String subDistrict) {
+    public void setSubDistrict(String subDistrict) {
         this.subDistrict = subDistrict;
+    }
+
+    public String getDistrict() {
+        return district;
+    }
+
+    public void setDistrict(String district) {
+        this.district = district;
     }
 
     public String getProvinceZipCode() {
         return provinceZipCode;
     }
 
-    public void setProvinceZipCode(final String provinceZipCode) {
+    public void setProvinceZipCode(String provinceZipCode) {
         this.provinceZipCode = provinceZipCode;
     }
 
@@ -132,7 +134,7 @@ public class CustomerAnniversary20Line {
         return purchaseReason;
     }
 
-    public void setPurchaseReason(final String purchaseReason) {
+    public void setPurchaseReason(String purchaseReason) {
         this.purchaseReason = purchaseReason;
     }
 
@@ -140,7 +142,7 @@ public class CustomerAnniversary20Line {
         return forceChangeAddress;
     }
 
-    public void setForceChangeAddress(final String forceChangeAddress) {
+    public void setForceChangeAddress(String forceChangeAddress) {
         this.forceChangeAddress = forceChangeAddress;
     }
 }

@@ -22,11 +22,11 @@ public class CustomerAnniversary20ExportService {
     private static final Logger LOGGER = LoggerFactory.getLogger(CustomerAnniversary20ExportService.class);
 
     //these prefix are used for TH only
-    private static final String PREFIX_DISTRICT_TH = "ต.";
-    private static final String PREFIX_SUB_DISTRICT_TH = "อ.";
+    private static final String PREFIX_DISTRICT_TH = "อ.";
+    private static final String PREFIX_SUB_DISTRICT_TH = "ต.";
     private static final String BKK_PROVINCE = "กรุงเทพมหานคร";
-    private static final String PREFIX_DISTRICT_BKK_TH = "แขวง.";
-    private static final String PREFIX_SUB_DISTRICT_BKK_TH = "เขต.";
+    private static final String PREFIX_DISTRICT_BKK_TH = "เขต ";
+    private static final String PREFIX_SUB_DISTRICT_BKK_TH = "แขวง ";
     private static final String PREFIX_PROVINCE_TH = "จ.";
     private final CustomerAnniversary20Repository customerAnniversary20Repository;
 
@@ -66,7 +66,7 @@ public class CustomerAnniversary20ExportService {
         reportLine.setSurname(entity.getLastName());
         reportLine.setThaiId(entity.getThaiID());
         reportLine.setEmail(entity.getEmail());
-        reportLine.setMobile(entity.getEmail());
+        reportLine.setMobile(entity.getMobile());
         reportLine.setAddress(entity.getAddress());
         reportLine.setHomeNumber(entity.getHomeNumber());
         reportLine.setRoad(entity.getRoad());
