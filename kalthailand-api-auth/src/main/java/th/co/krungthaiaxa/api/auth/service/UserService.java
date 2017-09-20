@@ -3,6 +3,8 @@ package th.co.krungthaiaxa.api.auth.service;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +21,9 @@ import java.util.Optional;
 
 /**
  * @author tuong.le on 5/23/17.
+ * @implNote Please take care the Cachable for any update related to User information, specially update user password
+ * @link updateUser function
+ * @see CacheEvict
  */
 @Service
 public class UserService {
@@ -38,6 +43,12 @@ public class UserService {
         return userRepository.findAll(pageable);
     }
 
+    /**
+     * @param username is unique in system that be used as key for caching
+     * @return User
+     * @implNote This function is used for Authentication only
+     */
+    @Cacheable(cacheNames = "userAuthentication", key = "#username")
     public Optional<User> getOneActiveUserDetailByUsername(final String username) {
         final Pageable pageable = new PageRequest(0, 1);
         return userRepository.findActiveUsername(username, pageable).stream().findFirst();
@@ -98,6 +109,7 @@ public class UserService {
      * @param userDTO user data
      * @return Optional User Entity
      */
+    @CacheEvict(cacheNames = "userAuthentication", key = "#userDTO.username")
     public Optional<User> updateUser(final UserDTO userDTO) {
         //find User by Id
         return Optional.of(userRepository.findOne(userDTO.getId())).map(user -> {
