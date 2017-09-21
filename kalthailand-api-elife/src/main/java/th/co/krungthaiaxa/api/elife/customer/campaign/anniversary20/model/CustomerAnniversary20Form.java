@@ -1,103 +1,103 @@
-package th.co.krungthaiaxa.api.elife.customer.campaign.anniversary20.data;
+package th.co.krungthaiaxa.api.elife.customer.campaign.anniversary20.model;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
-import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.format.annotation.NumberFormat;
-import th.co.krungthaiaxa.api.common.data.BaseEntity;
-import th.co.krungthaiaxa.api.common.utils.EncryptUtil;
-import th.co.krungthaiaxa.api.elife.customer.campaign.anniversary20.model.CustomerAnniversary20Form;
 
 /**
- * @author khoi.tran on 12/26/16.
+ * @author tuong.le on 7/26/17.
  */
-@Document(collection = "customerAnniversary20")
-public class CustomerAnniversary20 extends BaseEntity {
+@ApiModel(description = "Model presents entered data of user on Campaign 20th Anniversary")
+public class CustomerAnniversary20Form {
+    
+    @ApiModelProperty(value = "First Name", required = true)
     @NotBlank
-    private String firstName;
+    private String givenName;
 
+    @ApiModelProperty(value = "Last Name", required = true)
     @NotBlank
-    private String lastName;
+    private String surname;
 
+    @ApiModelProperty(value = "Thai ID", required = true)
     @NotBlank
-    private String thaiID;
+    private String registration;
 
+    @ApiModelProperty(value = "Email", required = true)
     @NotBlank
     @Email
     private String email;
 
+    @ApiModelProperty(value = "Mobile Number", required = true)
     @NotBlank
     @NumberFormat
     private String mobile;
 
+    @ApiModelProperty(value = "Address")
     private String address;
 
+    @ApiModelProperty(value = "Home Number", required = true)
     @NotBlank
     private String homeNumber;
 
+    @ApiModelProperty(value = "Road", required = true)
     @NotBlank
     private String road;
 
+
+    @ApiModelProperty(value = "District", required = true)
     @NotBlank
     private String district;
 
+    @ApiModelProperty(value = "Sub district", required = true)
     @NotBlank
     private String subDistrict;
 
+    @ApiModelProperty(value = "Province", required = true)
     @NotBlank
     private String province;
 
+    @ApiModelProperty(value = "Zip code", required = true)
     @NotBlank
-    @NumberFormat
     private String zipCode;
 
+    @ApiModelProperty(value = "Purchase reason", required = true)
     @NotBlank
     private String purchaseReason;
 
-    @NotBlank
+    @ApiModelProperty(value = "Is forced changing the address in RLS", required = true)
     private boolean forceChangeAddress;
 
-    public CustomerAnniversary20() {
-        //Empty constructor
+    public String getGivenName() {
+        return givenName;
     }
 
-    public CustomerAnniversary20(final CustomerAnniversary20Form form) {
-        this.setFirstName(form.getGivenName());
-        this.setLastName(form.getSurname());
-        this.setThaiID(form.getRegistration());
-        this.setEmail(form.getEmail());
-        this.setMobile(form.getMobile());
-        this.setHomeNumber(form.getHomeNumber());
-        this.setRoad(form.getRoad());
-        this.setDistrict(form.getDistrict());
-        this.setSubDistrict(form.getSubDistrict());
-        this.setProvince(form.getProvince());
-        this.setZipCode(form.getZipCode());
-        this.setPurchaseReason(form.getPurchaseReason());
-        this.setForceChangeAddress(form.isForceChangeAddress());
+    public void setGivenName(final String givenName) {
+        this.givenName = givenName;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getSurname() {
+        return surname;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    public void setSurname(final String surname) {
+        this.surname = surname;
     }
 
-    public String getLastName() {
-        return lastName;
+    public String getRegistration() {
+        return registration;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setRegistration(final String registration) {
+        this.registration = registration;
     }
 
     public String getEmail() {
         return email;
     }
 
-    public void setEmail(String email) {
+    public void setEmail(final String email) {
         this.email = email;
     }
 
@@ -105,7 +105,7 @@ public class CustomerAnniversary20 extends BaseEntity {
         return mobile;
     }
 
-    public void setMobile(String mobile) {
+    public void setMobile(final String mobile) {
         this.mobile = mobile;
     }
 
@@ -113,7 +113,7 @@ public class CustomerAnniversary20 extends BaseEntity {
         return address;
     }
 
-    public void setAddress(String address) {
+    public void setAddress(final String address) {
         this.address = address;
     }
 
@@ -169,7 +169,7 @@ public class CustomerAnniversary20 extends BaseEntity {
         return purchaseReason;
     }
 
-    public void setPurchaseReason(String purchaseReason) {
+    public void setPurchaseReason(final String purchaseReason) {
         this.purchaseReason = purchaseReason;
     }
 
@@ -179,19 +179,5 @@ public class CustomerAnniversary20 extends BaseEntity {
 
     public void setForceChangeAddress(final boolean forceChangeAddress) {
         this.forceChangeAddress = forceChangeAddress;
-    }
-
-    public String getThaiID() {
-        if (this.thaiID == null) {
-            return null;
-        }
-        return EncryptUtil.decrypt(this.thaiID);
-    }
-
-    public void setThaiID(String thaiID) {
-        if (thaiID == null) {
-            this.thaiID = null;
-        }
-        this.thaiID = EncryptUtil.encrypt(thaiID);
     }
 }
