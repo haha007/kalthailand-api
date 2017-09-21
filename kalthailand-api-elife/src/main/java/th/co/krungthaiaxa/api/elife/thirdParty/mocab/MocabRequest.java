@@ -3,7 +3,7 @@ package th.co.krungthaiaxa.api.elife.thirdParty.mocab;
 import th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus;
 
 /**
- * Created by tuong.le on 3/6/17.
+ * @author tuong.le on 3/6/17.
  */
 public class MocabRequest {
 

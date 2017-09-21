@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
 
 /**
- * Created by tuong.le on 3/6/17.
+ * @author tuong.le on 3/6/17.
  */
 public class MocabResponse implements Serializable {
 

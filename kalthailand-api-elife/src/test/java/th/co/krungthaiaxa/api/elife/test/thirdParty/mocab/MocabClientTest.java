@@ -22,10 +22,11 @@ import javax.inject.Inject;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
- * Created by tuong.le on 3/6/17.
+ * @author tuong.le on 3/6/17.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = KalApiElifeApplication.class)
@@ -55,6 +56,13 @@ public class MocabClientTest extends ELifeTest {
                 mocabClient.sendPdfToMocab(policy, documentContent, DocumentType.ERECEIPT_PDF);
         Assert.assertTrue(responseOptional.isPresent()
                 && responseOptional.get().getMessageCode().equals("200"));
+    }
+
+    @Test
+    public void should_send_update_policy_status_in_mocab() {
+        Policy policy = policyFactory
+                .createPolicyWithValidatedStatus(ProductQuotationFactory.constructIGenDefault());
+        Assert.assertTrue(!Objects.isNull(policy));
     }
 
 

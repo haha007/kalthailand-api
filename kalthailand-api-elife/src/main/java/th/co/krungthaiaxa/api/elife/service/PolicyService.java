@@ -397,6 +397,9 @@ public class PolicyService {
                 documentService.findDocumentDownload(applicationFormValidatedPdf.get().getId());
         sendPdfToMocab(policy, applicationFormValidatedDocument, APPLICATION_FORM_VALIDATED);
 
+        // Update policy status in Mocab
+        updatePolicyStatusMocab(policy, token);
+
         LogUtil.logFinishing(start, "updatePolicyStatusToValidated [finish]: policyId: " + policy.getPolicyId());
         return policy;
     }
@@ -472,5 +475,15 @@ public class PolicyService {
                     documentType.name(), policy.getPolicyId(), e);
         }
 
+    }
+
+    private void updatePolicyStatusMocab(final Policy policy, final String accessToken) {
+        final Optional<MocabResponse> mocabResponseOptional =
+                mocabClient.updatePolicyStatusMocab(policy, accessToken);
+        if (mocabResponseOptional.isPresent() && mocabResponseOptional.get().isSuccess()) {
+            LOGGER.info("Status of Policy {} has been updated to {}", policy.getPolicyId(), policy.getStatus());
+            return;
+        }
+        LOGGER.error("Could not update Status of Policy {} has been updated to {}", policy.getPolicyId(), policy.getStatus());
     }
 }
