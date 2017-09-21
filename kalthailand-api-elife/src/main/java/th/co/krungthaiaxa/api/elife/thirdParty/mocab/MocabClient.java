@@ -118,7 +118,7 @@ public class MocabClient {
                 return Optional.of(response.getBody());
             }
         } catch (ResourceAccessException exception) {
-            LOGGER.error("Could not Handle the mocab response exception: ", exception.getMessage());
+            LOGGER.error("Could not Handle the mocab response exception: ", exception);
         }
         return Optional.empty();
 
