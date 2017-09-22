@@ -70,6 +70,21 @@ public class MocabResponse implements Serializable {
             case "605":
                 messageDetail = "Document Type unknown";
                 break;
+            case "500":
+                messageDetail = "Policy Number is blank";
+                break;
+            case "501":
+                messageDetail = "Policy Number not found";
+                break;
+            case "502":
+                messageDetail = "Policy Status unknown";
+                break;
+            case "503":
+                messageDetail = "KeySign for policyStatus VALIDATED only";
+                break;
+            case "504":
+                messageDetail = "Policy status is blank";
+                break;
             default:
                 messageDetail = "Message unknown";
         }

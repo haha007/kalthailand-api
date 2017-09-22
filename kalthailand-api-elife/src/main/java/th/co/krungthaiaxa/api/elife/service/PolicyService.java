@@ -398,7 +398,7 @@ public class PolicyService {
         sendPdfToMocab(policy, applicationFormValidatedDocument, APPLICATION_FORM_VALIDATED);
 
         // Update policy status in Mocab
-        updatePolicyStatusMocab(policy, token);
+        updatePolicyStatusMocab(policy, applicationFormValidatedPdf.get().getId());
 
         LogUtil.logFinishing(start, "updatePolicyStatusToValidated [finish]: policyId: " + policy.getPolicyId());
         return policy;
@@ -462,7 +462,7 @@ public class PolicyService {
                 //The document status based on Mocab response code
                 mocabStatus.setSuccess(mocabResponseOptional.get().isSuccess());
                 mocabStatus.setMessageCode(mocabResponse.getMessageCode());
-                mocabStatus.setMessageDetail(mocabResponse.mappingMessageDetail(mocabResponse.getMessageCode()));
+                mocabStatus.setMessageDetail(MocabResponse.mappingMessageDetail(mocabResponse.getMessageCode()));
                 LOGGER.info("Sent {} to Mocab with response message code {} on policy {}",
                         documentType, mocabStatus.getMessageCode(), mocabStatus.getPolicyNumber());
                 documentService.udpateDocumentStatus(documentDownload.getDocumentId(), mocabStatus);
@@ -477,12 +477,12 @@ public class PolicyService {
 
     }
 
-    private void updatePolicyStatusMocab(final Policy policy, final String accessToken) {
+    private void updatePolicyStatusMocab(final Policy policy, final String applicationFormValidatedId) {
         final Optional<MocabResponse> mocabResponseOptional =
-                mocabClient.updatePolicyStatusMocab(policy, accessToken);
+                mocabClient.updatePolicyStatusMocab(policy, applicationFormValidatedId);
         final String policyId = policy.getPolicyId();
         final PolicyStatus policyStatus = policy.getStatus();
-        if (mocabResponseOptional.isPresent()) {
+        if (!mocabResponseOptional.isPresent()) {
             LOGGER.error("Could not connect to MOCAB to update Status of Policy {}", policyId);
             return;
         }
@@ -490,8 +490,8 @@ public class PolicyService {
             if (mocabResponse.isSuccess()) {
                 LOGGER.info("Status of Policy {} has been updated to {} in MOCAB", policyId, policyStatus);
             } else {
-                LOGGER.error("Could not update Status of Policy {} has beenin MOCAB with Error: {}",
-                        policyId, policyStatus, mocabResponse.getMessageCode());
+                LOGGER.error("Could not update Status of Policy {} in MOCAB with Error: {} - {}",
+                        policyId, mocabResponse.getMessageCode(), MocabResponse.mappingMessageDetail(mocabResponse.getMessageCode()));
             }
         });
     }

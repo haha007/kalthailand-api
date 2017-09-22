@@ -84,7 +84,7 @@ public class MocabClient {
         return requestClient(mocabServiceUrl, requestWrapper, POST);
     }
 
-    public Optional<MocabResponse> updatePolicyStatusMocab(final Policy policy, final String accessToken) {
+    public Optional<MocabResponse> updatePolicyStatusMocab(final Policy policy, final String applicationFormValidatedId) {
         notNull(policy, new ElifeException("Cannot update policy status in Mocab without policy"));
         notNull(policy.getStatus(), new ElifeException("Policy status is invalid"));
 
@@ -92,8 +92,9 @@ public class MocabClient {
         request.setPolicyStatus(policy.getStatus());
 
         if (policy.getStatus().equals(PolicyStatus.VALIDATED)) {
-            notNull(accessToken, new ElifeException("Access token is required for VALIDATED policy"));
-            request.setKeySign(EncryptUtil.encrypt(accessToken));
+            notNull(applicationFormValidatedId,
+                    new ElifeException("ApplicationFormValidatedId is required for VALIDATED policy"));
+            request.setKeySign(EncryptUtil.encrypt(applicationFormValidatedId));
         }
 
         final HttpHeaders headers = new HttpHeaders();
