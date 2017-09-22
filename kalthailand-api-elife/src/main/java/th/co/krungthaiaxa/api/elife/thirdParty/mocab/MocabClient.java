@@ -114,7 +114,7 @@ public class MocabClient {
             SSLUtils.disableSslVerification();
             final UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(url);
             final ResponseEntity<MocabResponse> response =
-                    restTemplate.exchange(builder.toUriString(), PUT, request, MocabResponse.class);
+                    restTemplate.exchange(builder.toUriString(), method, request, MocabResponse.class);
             if (HttpStatus.OK.equals(response.getStatusCode()) && !Objects.isNull(response.getBody())) {
                 return Optional.of(response.getBody());
             }
