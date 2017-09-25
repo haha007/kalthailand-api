@@ -85,6 +85,12 @@ public class MocabResponse implements Serializable {
             case "504":
                 messageDetail = "Policy status is blank";
                 break;
+            case "505":
+                messageDetail = "Policy status updated";
+                break;
+            case "506":
+                messageDetail = "Update PolicyStatus must have keySign";
+                break;
             default:
                 messageDetail = "Message unknown";
         }
