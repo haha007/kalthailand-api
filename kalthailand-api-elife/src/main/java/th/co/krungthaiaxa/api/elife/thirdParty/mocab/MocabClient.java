@@ -10,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import th.co.krungthaiaxa.api.common.utils.EncryptUtil;
@@ -118,7 +117,7 @@ public class MocabClient {
             if (HttpStatus.OK.equals(response.getStatusCode()) && !Objects.isNull(response.getBody())) {
                 return Optional.of(response.getBody());
             }
-        } catch (ResourceAccessException exception) {
+        } catch (Exception exception) {
             LOGGER.error("Could not Handle the mocab response exception: ", exception);
         }
         return Optional.empty();
