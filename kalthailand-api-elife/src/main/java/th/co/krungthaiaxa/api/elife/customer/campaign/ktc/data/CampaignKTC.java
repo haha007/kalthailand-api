@@ -1,9 +1,9 @@
 package th.co.krungthaiaxa.api.elife.customer.campaign.ktc.data;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.format.annotation.DateTimeFormat;
 import th.co.krungthaiaxa.api.common.data.BaseEntity;
 import th.co.krungthaiaxa.api.elife.customer.campaign.ktc.model.CampaignKTCForm;
 
@@ -23,7 +23,7 @@ public class CampaignKTC extends BaseEntity {
     private String surname;
 
     @NotBlank
-    @DateTimeFormat(pattern = "dd/MM/yyyy")
+    @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate dob;
 
     @Email

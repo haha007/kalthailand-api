@@ -1,5 +1,6 @@
 package th.co.krungthaiaxa.api.elife.customer.campaign.ktc.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.hibernate.validator.constraints.Email;
@@ -26,7 +27,8 @@ public class CampaignKTCForm {
     private String surname;
 
     @ApiModelProperty(value = "Date of Birth", required = true)
-    @DateTimeFormat(pattern = "dd/mm/yyyy")
+    @DateTimeFormat(pattern = "dd/MM/yyyy")
+    @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate dob;
 
     @ApiModelProperty(value = "Email")
