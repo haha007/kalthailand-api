@@ -52,6 +52,7 @@ public class CampaignKTCService {
         line.setSurname(campaignKTC.getSurname());
         //TODO: format date
         //line.setDob(campaignKTC.getDob().toString());
+        line.setEmail(campaignKTC.getEmail());
         line.setIdCard(campaignKTC.getIdCard());
         line.setPhoneNumber(campaignKTC.getPhoneNumber());
         line.setBeneficiary(campaignKTC.getBeneficiary());

@@ -19,6 +19,8 @@ public class CampaignKTCLine {
     @NotBlank
     private String dob;
 
+    private String email;
+
     @ReportField("ID Card")
     @NotBlank
     private String idCard;
@@ -59,6 +61,14 @@ public class CampaignKTCLine {
 
     public void setDob(String dob) {
         this.dob = dob;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getIdCard() {

@@ -1,5 +1,6 @@
 package th.co.krungthaiaxa.api.elife.customer.campaign.ktc.data;
 
+import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -25,6 +26,9 @@ public class CampaignKTC extends BaseEntity {
     @DateTimeFormat(pattern = "dd/MM/yyyy")
     private LocalDate dob;
 
+    @Email
+    private String email;
+
     @NotBlank
     private String idCard;
 
@@ -42,6 +46,7 @@ public class CampaignKTC extends BaseEntity {
         this.setName(form.getName());
         this.setSurname(form.getSurname());
         this.setDob(form.getDob());
+        this.setEmail(form.getEmail());
         this.setIdCard(form.getIdCard());
         this.setPhoneNumber(form.getPhoneNumber());
         this.setBeneficiary(form.getBeneficiary());
@@ -77,6 +82,14 @@ public class CampaignKTC extends BaseEntity {
 
     public void setDob(LocalDate dob) {
         this.dob = dob;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getIdCard() {
