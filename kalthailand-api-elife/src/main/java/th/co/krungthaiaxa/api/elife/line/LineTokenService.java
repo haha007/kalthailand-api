@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.common.exeption.BaseException;
 import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
@@ -23,7 +22,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-@Service
+@Service(value = "LineTokenServiceV2")
 public class LineTokenService {
 
     private final static Logger logger = LoggerFactory.getLogger(LineTokenService.class);
@@ -57,7 +56,7 @@ public class LineTokenService {
         lineTokenRepository.save(updateObject);
     }
 
-    @Scheduled(fixedRate = 432000000)
+    //@Scheduled(fixedRate = 432000000)
     public void refreshNewToken() {
         logger.info("Time Trigger to check and re-issue for line token ------->");
         try {
