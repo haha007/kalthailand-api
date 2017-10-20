@@ -40,8 +40,22 @@ public class LineV2TokenServiceTest {
     }
 
     @Test
+    public void should_push_messages_to_user() {
+        final String to = "U807722176490b7a3ee8c6ec820e8c044";
+        final String messageText = "TEsting";
+        Assert.assertTrue(lineService.pushTextMessage(to, messageText));
+    }
+
+    @Test
+    public void could_not_push_messages_to_invalid_user() {
+        final String to = "722176490b7a3ee8c6ec820e8c044";
+        final String messageText = "TEsting";
+        Assert.assertFalse(lineService.pushTextMessage(to, messageText));
+    }
+
+    @Test
     public void should_send_multicast_messages_to_user() {
-        final Set<String> to = Collections.singleton("Ueed6d8caf72f3a4cac40dc84e04f1643");
+        final Set<String> to = Collections.singleton("U807722176490b7a3ee8c6ec820e8c044");
         final MessageObject messageObject = new MessageObject();
         messageObject.setText("TEsting");
         messageObject.setType("text");
