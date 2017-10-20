@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.common.utils.IOUtil;
 import th.co.krungthaiaxa.api.common.utils.NumberUtil;
 import th.co.krungthaiaxa.api.elife.exception.LinePaymentException;
-import th.co.krungthaiaxa.api.elife.line.LineService;
+import th.co.krungthaiaxa.api.elife.line.v2.service.LineService;
 import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.Policy;
@@ -23,6 +23,7 @@ public class PaymentFailLineNotificationService {
     private final static Logger LOGGER = LoggerFactory.getLogger(PaymentFailLineNotificationService.class);
     private static final String NOTIFICATION_PATH = "/line-notification/line-notification-payment-fail.txt";
     public static final String RESPONSE_CODE_SENT_SUCCESS = "0000";
+    //private final LinePayService lineService;
     private final LineService lineService;
     private final PaymentRetryLinkService paymentRetryLinkService;
 
@@ -34,12 +35,21 @@ public class PaymentFailLineNotificationService {
 
     public void sendNotification(Policy policy, Payment payment) {
         Insured mainInsured = ProductUtils.validateExistMainInsured(policy);
-        String mid = mainInsured.getPerson().getLineId();
-        if (StringUtils.isBlank(mid)) {
-            throw new LinePaymentException("Insured customer doesn't have lineId, so cannot send line notification to customer.");
+
+        String lineUserId = mainInsured.getPerson().getLineUserId();
+
+        //Check if lineUserId is Empty --> convert MID to User Id
+        if (StringUtils.isEmpty(lineUserId)) {
+            String mid = mainInsured.getPerson().getLineId();
+            if (StringUtils.isBlank(mid)) {
+                throw new LinePaymentException("Insured customer doesn't have lineId, so cannot send line notification to customer.");
+            }
+            lineUserId = lineService.getLineUserIdFromMid(mid);
         }
+
         String pushContent = getNotificationContent(policy, payment);
-        lineService.sendPushNotification(pushContent, mid);
+        //lineService.sendPushNotification(pushContent, mid);
+        lineService.pushTextMessage(lineUserId, pushContent);
     }
 
     public void sendNotificationIgnoreError(Policy policy, Payment payment) {

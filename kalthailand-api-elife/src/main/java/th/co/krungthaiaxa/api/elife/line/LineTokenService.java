@@ -22,6 +22,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @deprecated {@link th.co.krungthaiaxa.api.elife.line.v2.service.LineService}
+ */
+@Deprecated
 @Service(value = "LineTokenServiceV2")
 public class LineTokenService {
 

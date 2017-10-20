@@ -1,19 +1,19 @@
 package th.co.krungthaiaxa.api.elife.line.v2.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * @author tuong.le on 10/19/17.
  */
-public class LineAccessToken {
+public final class LineAccessToken {
 
-    @JsonProperty("access_token")
+    @SerializedName("access_token")
     private String accessToken;
 
-    @JsonProperty("token_type")
+    @SerializedName("token_type")
     private String tokenType;
 
-    @JsonProperty("expires_in")
+    @SerializedName("expires_in")
     private long expiresIn;
 
     public String getAccessToken() {

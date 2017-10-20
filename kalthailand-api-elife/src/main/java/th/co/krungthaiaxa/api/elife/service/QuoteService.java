@@ -41,7 +41,8 @@ public class QuoteService {
     private final BlackListClient blackListClient;
 
     @Inject
-    public QuoteService(SessionQuoteRepository sessionQuoteRepository,
+    public QuoteService(
+            SessionQuoteRepository sessionQuoteRepository,
             QuoteRepository quoteRepository,
             ProductServiceFactory productServiceFactory,
             OccupationTypeRepository occupationTypeRepository,
@@ -67,12 +68,19 @@ public class QuoteService {
                 .findFirst();
     }
 
+    /**
+     * @param sessionId        Line userId that known as mid in LINE V1 but MID is no longer used.
+     * @param channelType      LINE
+     * @param productQuotation Quotation
+     * @return Quote
+     */
     public Quote createQuote(String sessionId, ChannelType channelType, ProductQuotation productQuotation) {
         ProductService productService = productServiceFactory.getProductService(productQuotation.getProductType().getLogicName());
 
         Person person = new Person();
         if (ChannelType.LINE.equals(channelType)) {
             person.setLineId(sessionId);
+            person.setLineUserId(sessionId);
         }
 
         Insured mainInsured = new Insured();

@@ -17,7 +17,7 @@ import th.co.krungthaiaxa.api.elife.data.PolicyNumber;
 import th.co.krungthaiaxa.api.elife.exception.ElifeException;
 import th.co.krungthaiaxa.api.elife.exception.PolicyNotFoundException;
 import th.co.krungthaiaxa.api.elife.exception.PolicyValidationException;
-import th.co.krungthaiaxa.api.elife.line.LineService;
+import th.co.krungthaiaxa.api.elife.line.v2.service.LineService;
 import th.co.krungthaiaxa.api.elife.model.Document;
 import th.co.krungthaiaxa.api.elife.model.DocumentDownload;
 import th.co.krungthaiaxa.api.elife.model.Insured;
@@ -297,7 +297,7 @@ public class PolicyService {
             String pushContent = IOUtils.toString(this.getClass().getResourceAsStream("/line-notification/policy-booked-notification.txt"), Charset.forName("UTF-8"));
             String sendMsg = pushContent.replace("%POLICY_ID%", policy.getPolicyId());
             sendMsg = sendMsg.replace("%FULL_NAME%", policy.getInsureds().get(0).getPerson().getGivenName() + " " + policy.getInsureds().get(0).getPerson().getSurName());
-            lineService.sendPushNotificationWithIOException(sendMsg, policy.getInsureds().get(0).getPerson().getLineId());
+            lineService.pushTextMessage(policy.getInsureds().get(0).getPerson().getLineUserId(), sendMsg);
         } catch (Exception e) {
             LOGGER.error(String.format("Unable to send LINE push notification for policy booking on policy [%s]: %s", policy.getPolicyId(), e.getMessage()), e);
         }
@@ -384,7 +384,7 @@ public class PolicyService {
         // Send push notification
         try {
             String pushContent = IOUtils.toString(this.getClass().getResourceAsStream("/line-notification/policy-purchased-notification.txt"), Charset.forName("UTF-8"));
-            lineService.sendPushNotificationWithIOException(pushContent, policy.getInsureds().get(0).getPerson().getLineId());
+            lineService.pushTextMessage(policy.getInsureds().get(0).getPerson().getLineUserId(), pushContent);
         } catch (Exception e) {
             LOGGER.error(String.format("Unable to send LINE push notification for policy validation on policy [%s]: %s", policy.getPolicyId(), e.getMessage()), e);
         }
@@ -424,7 +424,7 @@ public class PolicyService {
         // Send push notification
         String pushContent = IOUtils.toString(this.getClass().getResourceAsStream("/line-notification/user-not-responging-notification.txt"), Charset.forName("UTF-8"));
         Insured mainInsured = ProductUtils.validateExistMainInsured(policy);
-        lineService.sendPushNotificationWithIOException(pushContent.replace("%POLICY_ID%", policy.getPolicyId()), mainInsured.getPerson().getLineId());
+        lineService.pushTextMessage(mainInsured.getPerson().getLineUserId(), pushContent.replace("%POLICY_ID%", policy.getPolicyId()));
     }
 
     //TODO change logic: if send email fail, it still continue with line push notification, then after that return error for email.
@@ -435,7 +435,7 @@ public class PolicyService {
         // Send push notification
         String pushContent = IOUtils.toString(this.getClass().getResourceAsStream("/line-notification/phone-number-wrong-notification.txt"), Charset.forName("UTF-8"));
         Insured mainInsured = ProductUtils.validateExistMainInsured(policy);
-        lineService.sendPushNotificationWithIOException(pushContent.replace("%POLICY_ID%", policy.getPolicyId()), mainInsured.getPerson().getLineId());
+        lineService.pushTextMessage(mainInsured.getPerson().getLineUserId(), pushContent.replace("%POLICY_ID%", policy.getPolicyId()));
     }
 
     public Policy updateMainInsuredPerson(String policyId, PersonInfo mainInsuredPersonInfo) {
