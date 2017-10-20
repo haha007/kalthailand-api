@@ -9,6 +9,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
+import static th.co.krungthaiaxa.api.elife.customer.campaign.ktc.service.CampaignKTCService.DATE_FORMAT;
+
 /**
  * @author tuong.le on 7/26/17.
  */
@@ -27,7 +29,7 @@ public class CampaignKTCForm {
     private String surname;
 
     @ApiModelProperty(value = "Date of Birth", required = true)
-    @DateTimeFormat(pattern = "dd/MM/yyyy")
+    @DateTimeFormat(pattern = DATE_FORMAT)
     @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate dob;
 

@@ -1,5 +1,6 @@
 package th.co.krungthaiaxa.api.elife.customer.campaign.ktc.service;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,10 @@ import th.co.krungthaiaxa.api.elife.customer.campaign.ktc.model.CampaignKTCLine;
 import th.co.krungthaiaxa.api.elife.customer.campaign.ktc.repository.CampaignKTCRepository;
 import th.co.krungthaiaxa.api.elife.export.ExcelExportUtil;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -20,6 +24,8 @@ import java.util.stream.Collectors;
 @Service
 public class CampaignKTCService {
     private static final Logger LOGGER = LoggerFactory.getLogger(CampaignKTCService.class);
+    public static final String DATE_FORMAT = "dd/MM/yyyy";
+
     private final BeanValidator beanValidator;
     private final CampaignKTCRepository campaignKTCRepository;
 
@@ -45,13 +51,14 @@ public class CampaignKTCService {
     }
 
     //TODO: Make it as composite pattern
-    protected CampaignKTCLine parseEntityToReportLine(final CampaignKTC campaignKTC) {
+    private CampaignKTCLine parseEntityToReportLine(final CampaignKTC campaignKTC) {
         CampaignKTCLine line = new CampaignKTCLine();
         line.setTitle(campaignKTC.getTitle());
         line.setName(campaignKTC.getName());
         line.setSurname(campaignKTC.getSurname());
-        //TODO: format date
-        //line.setDob(campaignKTC.getDob().toString());
+        final LocalDate dobLocalDate = campaignKTC.getDob();
+        line.setDob(Objects.isNull(dobLocalDate)
+                ? StringUtils.EMPTY : dobLocalDate.format(DateTimeFormatter.ofPattern(DATE_FORMAT)));
         line.setEmail(campaignKTC.getEmail());
         line.setIdCard(campaignKTC.getIdCard());
         line.setPhoneNumber(campaignKTC.getPhoneNumber());

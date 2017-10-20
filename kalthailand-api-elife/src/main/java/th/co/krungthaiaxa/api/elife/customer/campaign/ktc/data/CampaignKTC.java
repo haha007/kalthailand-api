@@ -9,6 +9,9 @@ import th.co.krungthaiaxa.api.elife.customer.campaign.ktc.model.CampaignKTCForm;
 
 import java.time.LocalDate;
 
+import static th.co.krungthaiaxa.api.elife.customer.campaign.ktc.service.CampaignKTCService.DATE_FORMAT;
+
+
 /**
  * @author tuong.le on 10/17/17.
  */
@@ -23,7 +26,7 @@ public class CampaignKTC extends BaseEntity {
     private String surname;
 
     @NotBlank
-    @JsonFormat(pattern = "dd/MM/yyyy")
+    @JsonFormat(pattern = DATE_FORMAT)
     private LocalDate dob;
 
     @Email
