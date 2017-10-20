@@ -8,7 +8,7 @@ import th.co.krungthaiaxa.api.elife.export.ReportField;
  */
 public class CampaignKTCLine {
 
-    private String title;
+    private String gender;
 
     private String name;
 
@@ -19,8 +19,6 @@ public class CampaignKTCLine {
     @NotBlank
     private String dob;
 
-    private String email;
-
     @ReportField("ID Card")
     @NotBlank
     private String idCard;
@@ -30,13 +28,16 @@ public class CampaignKTCLine {
     private String phoneNumber;
 
     private String beneficiary;
+    
+    @ReportField("Submitted Date")
+    private String submittedDate;
 
-    public String getTitle() {
-        return title;
+    public String getGender() {
+        return gender;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 
     public String getName() {
@@ -63,12 +64,12 @@ public class CampaignKTCLine {
         this.dob = dob;
     }
 
-    public String getEmail() {
-        return email;
+    public String getSubmittedDate() {
+        return submittedDate;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setSubmittedDate(String submittedDate) {
+        this.submittedDate = submittedDate;
     }
 
     public String getIdCard() {

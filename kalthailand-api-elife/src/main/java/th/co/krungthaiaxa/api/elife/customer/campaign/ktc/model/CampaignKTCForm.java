@@ -17,8 +17,8 @@ import static th.co.krungthaiaxa.api.elife.customer.campaign.ktc.service.Campaig
 @ApiModel(description = "Model presents entered data of user on KTC Campaign")
 public class CampaignKTCForm {
 
-    @ApiModelProperty(value = "Title")
-    private String title;
+    @ApiModelProperty(value = "Gender")
+    private String gender;
 
     @ApiModelProperty(value = "Name", required = true)
     @NotBlank
@@ -48,12 +48,12 @@ public class CampaignKTCForm {
     @ApiModelProperty(value = "Beneficiary")
     private String beneficiary;
 
-    public String getTitle() {
-        return title;
+    public String getGender() {
+        return gender;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 
     public String getName() {

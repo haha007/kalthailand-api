@@ -50,16 +50,16 @@ public class CampaignKTCService {
         return ExcelExportUtil.exportObjectToRows(exportLines);
     }
 
-    //TODO: Make it as composite pattern
     private CampaignKTCLine parseEntityToReportLine(final CampaignKTC campaignKTC) {
         CampaignKTCLine line = new CampaignKTCLine();
-        line.setTitle(campaignKTC.getTitle());
+        line.setGender(campaignKTC.getGender());
         line.setName(campaignKTC.getName());
         line.setSurname(campaignKTC.getSurname());
         final LocalDate dobLocalDate = campaignKTC.getDob();
         line.setDob(Objects.isNull(dobLocalDate)
                 ? StringUtils.EMPTY : dobLocalDate.format(DateTimeFormatter.ofPattern(DATE_FORMAT)));
-        line.setEmail(campaignKTC.getEmail());
+        line.setSubmittedDate(campaignKTC.getCreatedDateTime()
+                .format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")));
         line.setIdCard(campaignKTC.getIdCard());
         line.setPhoneNumber(campaignKTC.getPhoneNumber());
         line.setBeneficiary(campaignKTC.getBeneficiary());

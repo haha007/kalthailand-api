@@ -17,7 +17,7 @@ import static th.co.krungthaiaxa.api.elife.customer.campaign.ktc.service.Campaig
  */
 @Document(collection = "campaignKTC")
 public class CampaignKTC extends BaseEntity {
-    private String title;
+    private String gender;
 
     @NotBlank
     private String name;
@@ -45,7 +45,7 @@ public class CampaignKTC extends BaseEntity {
     }
 
     public CampaignKTC(final CampaignKTCForm form) {
-        this.setTitle(form.getTitle());
+        this.setGender(form.getGender());
         this.setName(form.getName());
         this.setSurname(form.getSurname());
         this.setDob(form.getDob());
@@ -55,12 +55,12 @@ public class CampaignKTC extends BaseEntity {
         this.setBeneficiary(form.getBeneficiary());
     }
 
-    public String getTitle() {
-        return title;
+    public String getGender() {
+        return gender;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 
     public String getName() {
