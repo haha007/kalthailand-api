@@ -7,6 +7,7 @@ import th.co.krungthaiaxa.api.elife.export.ReportField;
  * @author tuong.le on 10/17/17.
  */
 public class CampaignKTCLine {
+    @NotBlank
     private String name;
 
     @NotBlank
@@ -15,7 +16,8 @@ public class CampaignKTCLine {
     @ReportField("Date of Birth")
     @NotBlank
     private String dob;
-
+    
+    @NotBlank
     private String gender;
 
     @ReportField("ID Card")

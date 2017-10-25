@@ -3,7 +3,6 @@ package th.co.krungthaiaxa.api.elife.customer.campaign.ktc.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -18,6 +17,7 @@ import static th.co.krungthaiaxa.api.elife.customer.campaign.ktc.service.Campaig
 public class CampaignKTCForm {
 
     @ApiModelProperty(value = "Gender")
+    @NotBlank
     private String gender;
 
     @ApiModelProperty(value = "Name", required = true)
@@ -32,10 +32,6 @@ public class CampaignKTCForm {
     @DateTimeFormat(pattern = DATE_FORMAT)
     @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate dob;
-
-    @ApiModelProperty(value = "Email")
-    @Email
-    private String email;
 
     @ApiModelProperty(value = "ID Card", required = true)
     @NotBlank
@@ -78,14 +74,6 @@ public class CampaignKTCForm {
 
     public void setDob(LocalDate dob) {
         this.dob = dob;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public String getIdCard() {

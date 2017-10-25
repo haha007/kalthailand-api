@@ -1,7 +1,6 @@
 package th.co.krungthaiaxa.api.elife.customer.campaign.ktc.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.mongodb.core.mapping.Document;
 import th.co.krungthaiaxa.api.common.data.BaseEntity;
@@ -17,6 +16,8 @@ import static th.co.krungthaiaxa.api.elife.customer.campaign.ktc.service.Campaig
  */
 @Document(collection = "campaignKTC")
 public class CampaignKTC extends BaseEntity {
+    
+    @NotBlank
     private String gender;
 
     @NotBlank
@@ -28,9 +29,6 @@ public class CampaignKTC extends BaseEntity {
     @NotBlank
     @JsonFormat(pattern = DATE_FORMAT)
     private LocalDate dob;
-
-    @Email
-    private String email;
 
     @NotBlank
     private String idCard;
@@ -49,7 +47,6 @@ public class CampaignKTC extends BaseEntity {
         this.setName(form.getName());
         this.setSurname(form.getSurname());
         this.setDob(form.getDob());
-        this.setEmail(form.getEmail());
         this.setIdCard(form.getIdCard());
         this.setPhoneNumber(form.getPhoneNumber());
         this.setBeneficiary(form.getBeneficiary());
@@ -85,14 +82,6 @@ public class CampaignKTC extends BaseEntity {
 
     public void setDob(LocalDate dob) {
         this.dob = dob;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public String getIdCard() {
