@@ -1,5 +1,7 @@
 package th.co.krungthaiaxa.api.elife.line.v2.service;
 
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -10,21 +12,25 @@ import org.springframework.stereotype.Service;
 import retrofit2.Call;
 import th.co.krungthaiaxa.api.elife.data.LineToken;
 import th.co.krungthaiaxa.api.elife.line.v2.client.LineAPI;
-import th.co.krungthaiaxa.api.elife.line.v2.client.model.LineMessage;
 import th.co.krungthaiaxa.api.elife.line.v2.client.model.LineMultiCastMessage;
 import th.co.krungthaiaxa.api.elife.line.v2.client.model.MessageObject;
 import th.co.krungthaiaxa.api.elife.line.v2.http.Client;
 import th.co.krungthaiaxa.api.elife.line.v2.model.LineAccessToken;
+import th.co.krungthaiaxa.api.elife.line.v2.model.LineIdMap;
+import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.repository.LineTokenRepository;
 
 import javax.inject.Inject;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * @author tuong.le on 10/19/17.
@@ -90,27 +96,13 @@ public class LineService {
         messageObject.setType("text");
         messageObject.setText(text);
 
-        LineMessage lineMessage = new LineMessage();
-        lineMessage.setTo(to);
-        lineMessage.setMessages(messageObject);
-        try {
-            // LINE return 200 status and empty JSON object
-            return !Objects.isNull(getClient(t -> t.pushMessage(
-                    this.getAccessToken(), lineMessage)));
-        } catch (RuntimeException ex) {
-            LOGGER.error("Could not reIssueLineToken: ", ex);
-            return false;
-        }
-    }
-
-    public boolean pushMulticastMessage(final Set<String> to, final List<MessageObject> messages) {
-        LineMultiCastMessage multicastMessage = new LineMultiCastMessage();
-        multicastMessage.setTo(to);
-        multicastMessage.setMessages(messages);
+        LineMultiCastMessage lineMessage = new LineMultiCastMessage();
+        lineMessage.setTo(Collections.singleton(to));
+        lineMessage.setMessages(Collections.singletonList(messageObject));
         try {
             // LINE return 200 status and empty JSON object
             return !Objects.isNull(getClient(t -> t.pushMulticastMessage(
-                    this.getAccessToken(), multicastMessage)));
+                    this.getAccessToken(), lineMessage)));
         } catch (RuntimeException ex) {
             LOGGER.error("Could not reIssueLineToken: ", ex);
             return false;
@@ -122,8 +114,45 @@ public class LineService {
             final ResponseBody res = getClient(t -> t.getLineUserIdFromMid(this.getAccessToken(), mid));
             return Objects.isNull(res) ? StringUtils.EMPTY : res.string();
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error("Could not convert MID {} to LINE userId: ", e.getMessage());
             return StringUtils.EMPTY;
+        }
+    }
+
+    public List getMultiplierLineUserIdFromMid(final Set<String> mids) {
+        RequestBody body = RequestBody.create(MediaType.parse("text/plain"), mids.stream().collect(Collectors.joining("\n")));
+        try {
+            final ResponseBody midWithUserIdListRes =
+                    getClient(t -> t.getMultiplierLineUserIdFromMid(this.getAccessToken(), body));
+            if (Objects.isNull(midWithUserIdListRes)) {
+                return Collections.EMPTY_LIST;
+            }
+
+            return Arrays.stream(midWithUserIdListRes.string().split("\n"))
+                    .map(line -> {
+                        final String[] map = line.split(" ");
+                        return new LineIdMap(map[0], map[1]);
+                    }).collect(Collectors.toList());
+        } catch (IOException e) {
+            e.printStackTrace();
+            return Collections.EMPTY_LIST;
+        }
+    }
+
+    /**
+     * get userId (Line V2): if insured have Line userId return it, otherwise convert mid to userId then return it
+     *
+     * @param insured insured
+     * @return LINE userId as String
+     */
+    public String getLineUserIdFromInsure(final Insured insured) {
+        final String lineUserId = insured.getPerson().getLineUserId();
+        if (StringUtils.isNotBlank(lineUserId)) {
+            return lineUserId;
+        } else {
+            final String mid = insured.getPerson().getLineId();
+            LOGGER.warn("Need to convert MID {} to LINE userId", mid);
+            return this.getLineUserIdFromMid(mid);
         }
     }
 
@@ -132,10 +161,6 @@ public class LineService {
     }
 
     private String getAccessToken() {
-        try {
-            return "Bearer " + lineTokenRepository.findByRowId(1).getAccessToken();
-        } catch (Exception e) {
-            throw e;
-        }
+        return "Bearer " + lineTokenRepository.findByRowId(1).getAccessToken();
     }
 }

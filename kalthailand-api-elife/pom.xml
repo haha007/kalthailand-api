@@ -18,7 +18,7 @@
     <properties>
         <local.repo.path>${project.basedir}</local.repo.path>
         <poi.version>3.15</poi.version>
-        <retrofit2.version>2.0.0</retrofit2.version>
+        <retrofit2.version>2.1.0</retrofit2.version>
         <retrofit2.groupId>com.squareup.retrofit2</retrofit2.groupId>
     </properties>
 
@@ -83,7 +83,7 @@
 
         <!--HTTP CLIENT-->
         <dependency>
-            <groupId>${retrofit2.groupId}</groupId>
+            <groupId>com.squareup.retrofit2</groupId>
             <artifactId>retrofit</artifactId>
             <version>${retrofit2.version}</version>
         </dependency>
@@ -92,15 +92,20 @@
             <artifactId>converter-gson</artifactId>
             <version>${retrofit2.version}</version>
         </dependency>
-        <!--<dependency>
+        <dependency>
             <groupId>${retrofit2.groupId}</groupId>
             <artifactId>converter-scalars</artifactId>
             <version>${retrofit2.version}</version>
-        </dependency>-->
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>3.8.0</version>
+        </dependency>
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>logging-interceptor</artifactId>
-            <version>3.2.0</version>
+            <version>3.8.0</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -177,7 +182,8 @@
                         </goals>
                         <configuration>
                             <source>
-                                pom.properties['main.basedir'] = project.basedir.absolutePath.replace(File.separator, '/');
+                                pom.properties['main.basedir'] = project.basedir.absolutePath.replace(File.separator,
+                                '/');
                             </source>
                         </configuration>
                     </execution>

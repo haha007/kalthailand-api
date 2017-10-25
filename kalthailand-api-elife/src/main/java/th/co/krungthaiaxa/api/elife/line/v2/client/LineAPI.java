@@ -15,6 +15,7 @@
  */
 package th.co.krungthaiaxa.api.elife.line.v2.client;
 
+import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -25,7 +26,6 @@ import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
-import th.co.krungthaiaxa.api.elife.line.v2.client.model.LineMessage;
 import th.co.krungthaiaxa.api.elife.line.v2.client.model.LineMultiCastMessage;
 import th.co.krungthaiaxa.api.elife.line.v2.model.LineAccessToken;
 
@@ -45,12 +45,6 @@ public interface LineAPI {
             @Field("client_secret") String client_secret);
 
     @Headers("Content-Type: application/json")
-    @POST("v2/bot/message/push")
-    Call<Map> pushMessage(
-            @Header("Authorization") String accessToken,
-            @Body LineMessage lineMessage);
-
-    @Headers("Content-Type: application/json")
     @POST("v2/bot/message/multicast")
     Call<Map> pushMulticastMessage(
             @Header("Authorization") String accessToken,
@@ -61,6 +55,12 @@ public interface LineAPI {
     Call<ResponseBody> getLineUserIdFromMid(
             @Header("Authorization") String accessToken,
             @Query("mid") String mid);
+
+    @Headers("Content-Type: text/plain")
+    @POST("v2/bot/dedisco/migration/userId/getbulk")
+    Call<ResponseBody> getMultiplierLineUserIdFromMid(
+            @Header("Authorization") String accessToken,
+            @Body RequestBody mids);
 
 }
 

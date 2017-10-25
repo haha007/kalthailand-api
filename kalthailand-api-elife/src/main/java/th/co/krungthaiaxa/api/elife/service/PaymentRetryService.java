@@ -172,7 +172,8 @@ public class PaymentRetryService {
     }
 
     private void sendRetryPaymentSuccessLineNotificationToInsuredPerson(Policy policy) {
-        final String lineUserId = ProductUtils.getLineUserId(policy);
+        Insured mainInsured = ProductUtils.validateMainInsured(policy);
+        String lineUserId = lineService.getLineUserIdFromInsure(mainInsured);
         String notificationMessage = IOUtil.loadTextFileInClassPath("/line-notification/line-notification-payment-retry-success.txt");
         notificationMessage = notificationMessage.replaceAll("%POLICY_NUMBER%", policy.getPolicyId());
         lineService.pushTextMessage(lineUserId, notificationMessage);

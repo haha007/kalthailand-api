@@ -79,7 +79,7 @@ public class QuoteService {
 
         Person person = new Person();
         if (ChannelType.LINE.equals(channelType)) {
-            person.setLineId(sessionId);
+            //person.setLineId(sessionId);
             person.setLineUserId(sessionId);
         }
 

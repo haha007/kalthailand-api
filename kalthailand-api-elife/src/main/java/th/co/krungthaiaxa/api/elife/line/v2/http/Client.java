@@ -21,6 +21,7 @@ import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 import java.io.IOException;
 import java.util.function.Function;
@@ -44,8 +45,9 @@ public final class Client {
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(url)
-                .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(ScalarsConverterFactory.create())
+                .client(client)
                 .build();
         T t = retrofit.create(service);
         Call<R> call = function.apply(t);
