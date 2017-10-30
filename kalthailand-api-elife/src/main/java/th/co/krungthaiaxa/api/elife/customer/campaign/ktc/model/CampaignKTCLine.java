@@ -10,9 +10,6 @@ public class CampaignKTCLine {
     @NotBlank
     private String name;
 
-    @NotBlank
-    private String surname;
-
     @ReportField("Date of Birth")
     @NotBlank
     private String dob;
@@ -47,14 +44,6 @@ public class CampaignKTCLine {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getSurname() {
-        return surname;
-    }
-
-    public void setSurname(String surname) {
-        this.surname = surname;
     }
 
     public String getDob() {

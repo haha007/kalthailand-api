@@ -24,9 +24,6 @@ public class CampaignKTC extends BaseEntity {
     private String name;
 
     @NotBlank
-    private String surname;
-
-    @NotBlank
     @JsonFormat(pattern = DATE_FORMAT)
     private LocalDate dob;
 
@@ -45,7 +42,6 @@ public class CampaignKTC extends BaseEntity {
     public CampaignKTC(final CampaignKTCForm form) {
         this.setGender(form.getGender());
         this.setName(form.getName());
-        this.setSurname(form.getSurname());
         this.setDob(form.getDob());
         this.setIdCard(form.getIdCard());
         this.setPhoneNumber(form.getPhoneNumber());
@@ -66,14 +62,6 @@ public class CampaignKTC extends BaseEntity {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getSurname() {
-        return surname;
-    }
-
-    public void setSurname(String surname) {
-        this.surname = surname;
     }
 
     public LocalDate getDob() {

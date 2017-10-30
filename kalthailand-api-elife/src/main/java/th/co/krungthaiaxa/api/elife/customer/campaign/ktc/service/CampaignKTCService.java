@@ -54,7 +54,6 @@ public class CampaignKTCService {
         CampaignKTCLine line = new CampaignKTCLine();
         line.setGender(campaignKTC.getGender());
         line.setName(campaignKTC.getName());
-        line.setSurname(campaignKTC.getSurname());
         final LocalDate dobLocalDate = campaignKTC.getDob();
         line.setDob(Objects.isNull(dobLocalDate)
                 ? StringUtils.EMPTY : dobLocalDate.format(DateTimeFormatter.ofPattern(DATE_FORMAT)));

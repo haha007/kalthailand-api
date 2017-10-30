@@ -24,10 +24,6 @@ public class CampaignKTCForm {
     @NotBlank
     private String name;
 
-    @ApiModelProperty(value = "Surname", required = true)
-    @NotBlank
-    private String surname;
-
     @ApiModelProperty(value = "Date of Birth", required = true)
     @DateTimeFormat(pattern = DATE_FORMAT)
     @JsonFormat(pattern = "dd/MM/yyyy")
@@ -58,14 +54,6 @@ public class CampaignKTCForm {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getSurname() {
-        return surname;
-    }
-
-    public void setSurname(String surname) {
-        this.surname = surname;
     }
 
     public LocalDate getDob() {
