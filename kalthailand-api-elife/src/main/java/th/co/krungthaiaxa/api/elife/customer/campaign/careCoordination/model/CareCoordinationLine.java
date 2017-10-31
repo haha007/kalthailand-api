@@ -1,0 +1,65 @@
+package th.co.krungthaiaxa.api.elife.customer.campaign.careCoordination.model;
+
+import org.hibernate.validator.constraints.NotBlank;
+import th.co.krungthaiaxa.api.elife.export.ReportField;
+
+/**
+ * @author tuong.le on 10/31/17.
+ */
+public class CareCoordinationLine {
+    @NotBlank
+    private String name;
+
+    @ReportField(value = "Policy Id")
+    @NotBlank
+    private String policyId;
+
+    @NotBlank
+    private String phone;
+
+    @NotBlank
+    private String email;
+
+    @ReportField("Submitted Date")
+    private String submittedDate;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getPolicyId() {
+        return policyId;
+    }
+
+    public void setPolicyId(String policyId) {
+        this.policyId = policyId;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getSubmittedDate() {
+        return submittedDate;
+    }
+
+    public void setSubmittedDate(String submittedDate) {
+        this.submittedDate = submittedDate;
+    }
+}
