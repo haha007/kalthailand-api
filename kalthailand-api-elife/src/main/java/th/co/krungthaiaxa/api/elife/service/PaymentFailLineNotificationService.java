@@ -1,14 +1,12 @@
 package th.co.krungthaiaxa.api.elife.service;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.common.utils.IOUtil;
 import th.co.krungthaiaxa.api.common.utils.NumberUtil;
-import th.co.krungthaiaxa.api.elife.exception.LinePaymentException;
-import th.co.krungthaiaxa.api.elife.line.LineService;
+import th.co.krungthaiaxa.api.elife.line.v2.service.LineService;
 import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.Policy;
@@ -22,7 +20,6 @@ import th.co.krungthaiaxa.api.elife.utils.PersonUtil;
 public class PaymentFailLineNotificationService {
     private final static Logger LOGGER = LoggerFactory.getLogger(PaymentFailLineNotificationService.class);
     private static final String NOTIFICATION_PATH = "/line-notification/line-notification-payment-fail.txt";
-    public static final String RESPONSE_CODE_SENT_SUCCESS = "0000";
     private final LineService lineService;
     private final PaymentRetryLinkService paymentRetryLinkService;
 
@@ -34,12 +31,9 @@ public class PaymentFailLineNotificationService {
 
     public void sendNotification(Policy policy, Payment payment) {
         Insured mainInsured = ProductUtils.validateExistMainInsured(policy);
-        String mid = mainInsured.getPerson().getLineId();
-        if (StringUtils.isBlank(mid)) {
-            throw new LinePaymentException("Insured customer doesn't have lineId, so cannot send line notification to customer.");
-        }
+        String lineUserId = lineService.getLineUserIdFromInsure(mainInsured);
         String pushContent = getNotificationContent(policy, payment);
-        lineService.sendPushNotification(pushContent, mid);
+        lineService.pushTextMessage(lineUserId, pushContent);
     }
 
     public void sendNotificationIgnoreError(Policy policy, Payment payment) {

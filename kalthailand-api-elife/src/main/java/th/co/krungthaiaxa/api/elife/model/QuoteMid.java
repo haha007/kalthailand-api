@@ -9,15 +9,17 @@ public class QuoteMid {
 
     private String productId;
     private String mid;
+    private String lineUserId;
     private LocalDateTime creationDate;
 
     public QuoteMid() {
         //Empty constructor
     }
 
-    public QuoteMid(final String productId, final String mid, final LocalDateTime creationDate) {
+    public QuoteMid(final String productId, final String mid, final String lineUserId, final LocalDateTime creationDate) {
         this.productId = productId;
         this.mid = mid;
+        this.lineUserId = lineUserId;
         this.creationDate = creationDate;
     }
 
@@ -35,6 +37,14 @@ public class QuoteMid {
 
     public void setMid(final String mid) {
         this.mid = mid;
+    }
+
+    public String getLineUserId() {
+        return lineUserId;
+    }
+
+    public void setLineUserId(String lineUserId) {
+        this.lineUserId = lineUserId;
     }
 
     public LocalDateTime getCreationDate() {

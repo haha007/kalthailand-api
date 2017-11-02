@@ -47,7 +47,58 @@ import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.isFalse;
 import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.isNotEqual;
 import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.isTrue;
 import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.notNull;
-import static th.co.krungthaiaxa.api.elife.exception.PolicyValidationException.*;
+import static th.co.krungthaiaxa.api.elife.exception.PolicyValidationException.addressWithNoDistrict;
+import static th.co.krungthaiaxa.api.elife.exception.PolicyValidationException.addressWithNoPostCode;
+import static th.co.krungthaiaxa.api.elife.exception.PolicyValidationException.addressWithNoStreetAddress1;
+import static th.co.krungthaiaxa.api.elife.exception.PolicyValidationException.addressWithNoStreetAddress2;
+import static th.co.krungthaiaxa.api.elife.exception.PolicyValidationException.addressWithNoSubCountry;
+import static th.co.krungthaiaxa.api.elife.exception.PolicyValidationException.addressWithNoSubDistrict;
+import static th.co.krungthaiaxa.api.elife.exception.PolicyValidationException.beneficiariesAgeAtSubscriptionEmpty;
+import static th.co.krungthaiaxa.api.elife.exception.PolicyValidationException.beneficiariesIdIqualToInsuredId;
+import static th.co.krungthaiaxa.api.elife.exception.PolicyValidationException.beneficiariesNone;
+import static th.co.krungthaiaxa.api.elife.exception.PolicyValidationException.beneficiariesPercentSumNot100;
+import static th.co.krungthaiaxa.api.elife.exception.PolicyValidationException.beneficiariesTooMany;
+import static th.co.krungthaiaxa.api.elife.exception.PolicyValidationException.beneficiariesWithSameId;
+import static th.co.krungthaiaxa.api.elife.exception.PolicyValidationException.beneficiariesWithWrongIDNumber;
+import static th.co.krungthaiaxa.api.elife.exception.PolicyValidationException.coverageExpected;
+import static th.co.krungthaiaxa.api.elife.exception.PolicyValidationException.coverageMoreThanOne;
+import static th.co.krungthaiaxa.api.elife.exception.PolicyValidationException.insuredFatcaInvalid1;
+import static th.co.krungthaiaxa.api.elife.exception.PolicyValidationException.insuredFatcaInvalid2;
+import static th.co.krungthaiaxa.api.elife.exception.PolicyValidationException.insuredFatcaInvalid3;
+import static th.co.krungthaiaxa.api.elife.exception.PolicyValidationException.insuredFatcaInvalid4;
+import static th.co.krungthaiaxa.api.elife.exception.PolicyValidationException.insuredMoreThanOne;
+import static th.co.krungthaiaxa.api.elife.exception.PolicyValidationException.insuredNoFatca;
+import static th.co.krungthaiaxa.api.elife.exception.PolicyValidationException.insuredWithNoPerson;
+import static th.co.krungthaiaxa.api.elife.exception.PolicyValidationException.insuredWithNoType;
+import static th.co.krungthaiaxa.api.elife.exception.PolicyValidationException.mainInsuredWithInvalidEmail;
+import static th.co.krungthaiaxa.api.elife.exception.PolicyValidationException.mainInsuredWithNoDOB;
+import static th.co.krungthaiaxa.api.elife.exception.PolicyValidationException.mainInsuredWithNoDeniedOrCounterOfferStatus;
+import static th.co.krungthaiaxa.api.elife.exception.PolicyValidationException.mainInsuredWithNoDisableStatus;
+import static th.co.krungthaiaxa.api.elife.exception.PolicyValidationException.mainInsuredWithNoEmail;
+import static th.co.krungthaiaxa.api.elife.exception.PolicyValidationException.mainInsuredWithNoEndDate;
+import static th.co.krungthaiaxa.api.elife.exception.PolicyValidationException.mainInsuredWithNoGenderCode;
+import static th.co.krungthaiaxa.api.elife.exception.PolicyValidationException.mainInsuredWithNoHeight;
+import static th.co.krungthaiaxa.api.elife.exception.PolicyValidationException.mainInsuredWithNoHospitalizedStatus;
+import static th.co.krungthaiaxa.api.elife.exception.PolicyValidationException.mainInsuredWithNoMaritalStatus;
+import static th.co.krungthaiaxa.api.elife.exception.PolicyValidationException.mainInsuredWithNoProfessionId;
+import static th.co.krungthaiaxa.api.elife.exception.PolicyValidationException.mainInsuredWithNoProfessionName;
+import static th.co.krungthaiaxa.api.elife.exception.PolicyValidationException.mainInsuredWithNoStartDate;
+import static th.co.krungthaiaxa.api.elife.exception.PolicyValidationException.mainInsuredWithNoWeight;
+import static th.co.krungthaiaxa.api.elife.exception.PolicyValidationException.mainInsuredWithNoWeightChange;
+import static th.co.krungthaiaxa.api.elife.exception.PolicyValidationException.mainInsuredWithNoWeightChangeReason;
+import static th.co.krungthaiaxa.api.elife.exception.PolicyValidationException.noInsured;
+import static th.co.krungthaiaxa.api.elife.exception.PolicyValidationException.personWithInvalidThaiIdNumber;
+import static th.co.krungthaiaxa.api.elife.exception.PolicyValidationException.personWithNoGivenName;
+import static th.co.krungthaiaxa.api.elife.exception.PolicyValidationException.personWithNoSurname;
+import static th.co.krungthaiaxa.api.elife.exception.PolicyValidationException.personWithNoTitle;
+import static th.co.krungthaiaxa.api.elife.exception.PolicyValidationException.premiumnsCalculatedAmountDateInThePast;
+import static th.co.krungthaiaxa.api.elife.exception.PolicyValidationException.premiumnsCalculatedAmountEmpty;
+import static th.co.krungthaiaxa.api.elife.exception.PolicyValidationException.premiumnsCalculatedAmountNoAmount;
+import static th.co.krungthaiaxa.api.elife.exception.PolicyValidationException.premiumnsCalculatedAmountNoCurrency;
+import static th.co.krungthaiaxa.api.elife.exception.PolicyValidationException.premiumnsCalculatedAmountNoDate;
+import static th.co.krungthaiaxa.api.elife.exception.PolicyValidationException.premiumsCalculatedAmountInvalidDate;
+import static th.co.krungthaiaxa.api.elife.exception.PolicyValidationException.premiumsCalculatedNotEnoughCoverageYears;
+import static th.co.krungthaiaxa.api.elife.exception.PolicyValidationException.startDateNotServerDate;
 import static th.co.krungthaiaxa.api.elife.exception.QuoteCalculationException.ageIsEmptyException;
 import static th.co.krungthaiaxa.api.elife.exception.QuoteCalculationException.ageIsTooHighException;
 import static th.co.krungthaiaxa.api.elife.exception.QuoteCalculationException.ageIsTooLowException;
@@ -60,16 +111,16 @@ public class ProductUtils {
      */
     public static Function<PeriodicityCode, Double> modalFactor = periodicityCode -> {
         switch (periodicityCode) {
-        case EVERY_MONTH:
-            return 0.09;
-        case EVERY_QUARTER:
-            return 0.27;
-        case EVERY_HALF_YEAR:
-            return 0.52;
-        case EVERY_YEAR:
-            return 1.0;
-        default:
-            throw new UnexpectedException("The periodicity [" + periodicityCode.name() + "] is invalid to get modal factor");
+            case EVERY_MONTH:
+                return 0.09;
+            case EVERY_QUARTER:
+                return 0.27;
+            case EVERY_HALF_YEAR:
+                return 0.52;
+            case EVERY_YEAR:
+                return 1.0;
+            default:
+                throw new UnexpectedException("The periodicity [" + periodicityCode.name() + "] is invalid to get modal factor");
         }
     };
 
@@ -571,12 +622,19 @@ public class ProductUtils {
     }
 
     /**
-     * @param quotable
+     * @param quotable Quotable
      * @return mid. At this moment, mid is equals to lineId;
+     * @link getLineUserId
+     * @deprecated the MID is no longer used since LINE V2 - should use LINE userId
      */
+    @Deprecated
     public static String getMid(Quotable quotable) {
         Insured mainInsured = validateMainInsured(quotable);
         return mainInsured.getPerson().getLineId();
+    }
 
+    public static String getLineUserId(Quotable quotable) {
+        Insured mainInsured = validateMainInsured(quotable);
+        return mainInsured.getPerson().getLineUserId();
     }
 }

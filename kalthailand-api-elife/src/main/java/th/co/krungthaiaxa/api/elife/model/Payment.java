@@ -55,7 +55,7 @@ public class Payment implements Serializable {
     @ApiModelProperty(required = true, value = "The payment due date. Can be in future. If this payment is the retry payment, its dueDate will be equals to original's dueDate")
     private LocalDateTime dueDate;
     /**
-     * This field only have value after checking with LineService and get response (can fail or not)!
+     * This field only have value after checking with LinePayService and get response (can fail or not)!
      */
     private LocalDateTime effectiveDate;
     private Amount amount;

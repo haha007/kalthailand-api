@@ -12,19 +12,35 @@ import java.time.LocalDate;
 
 @ApiModel(description = "Data concerning specific properties to a Person")
 public class Person extends PersonInfo implements Serializable {
-    @ApiModelProperty(value = "The person's line mid (if any). At this moment, this field is also the mid.")
+
+    @ApiModelProperty(value = "Deprecated - The person's line mid (if any). At this moment, this field is also the mid. " +
+            "Should use lineUserId sice Line V2")
+    @Deprecated
     private String lineId;
+
+    @ApiModelProperty(value = "The User LINE ID that used for LINE V2")
+    private String lineUserId;
 
     private MaritalStatus maritalStatus;
     private LocalDate birthDate;
     private GenderCode genderCode;
 
+    @Deprecated
     public String getLineId() {
         return lineId;
     }
 
+    @Deprecated
     public void setLineId(String lineId) {
         this.lineId = lineId;
+    }
+
+    public String getLineUserId() {
+        return lineUserId;
+    }
+
+    public void setLineUserId(String lineUserId) {
+        this.lineUserId = lineUserId;
     }
 
     @ApiModelProperty(value = "The person's marital status")

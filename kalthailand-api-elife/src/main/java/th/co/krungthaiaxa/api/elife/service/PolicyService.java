@@ -1,5 +1,8 @@
 package th.co.krungthaiaxa.api.elife.service;
 
+import com.mongodb.BulkWriteResult;
+import org.apache.commons.collections.MultiMap;
+import org.apache.commons.collections.map.MultiValueMap;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
@@ -17,7 +20,9 @@ import th.co.krungthaiaxa.api.elife.data.PolicyNumber;
 import th.co.krungthaiaxa.api.elife.exception.ElifeException;
 import th.co.krungthaiaxa.api.elife.exception.PolicyNotFoundException;
 import th.co.krungthaiaxa.api.elife.exception.PolicyValidationException;
-import th.co.krungthaiaxa.api.elife.line.LineService;
+import th.co.krungthaiaxa.api.elife.line.v2.model.LineIdMap;
+import th.co.krungthaiaxa.api.elife.line.v2.model.PolicyIdLineUserIdMap;
+import th.co.krungthaiaxa.api.elife.line.v2.service.LineService;
 import th.co.krungthaiaxa.api.elife.model.Document;
 import th.co.krungthaiaxa.api.elife.model.DocumentDownload;
 import th.co.krungthaiaxa.api.elife.model.Insured;
@@ -41,10 +46,10 @@ import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
 import th.co.krungthaiaxa.api.elife.repository.PolicyCriteriaRepository;
 import th.co.krungthaiaxa.api.elife.repository.PolicyNumberRepository;
 import th.co.krungthaiaxa.api.elife.repository.PolicyRepository;
+import th.co.krungthaiaxa.api.elife.repository.PolicyRepositoryExtends;
 import th.co.krungthaiaxa.api.elife.repository.QuoteRepository;
 import th.co.krungthaiaxa.api.elife.thirdParty.mocab.MocabClient;
 import th.co.krungthaiaxa.api.elife.thirdParty.mocab.MocabResponse;
-import th.co.krungthaiaxa.api.elife.tmc.TMCClient;
 
 import javax.inject.Inject;
 import javax.mail.MessagingException;
@@ -53,8 +58,11 @@ import java.nio.charset.Charset;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Base64;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static th.co.krungthaiaxa.api.elife.exception.ExceptionUtils.notNull;
@@ -70,11 +78,11 @@ import static th.co.krungthaiaxa.api.elife.model.enums.PolicyStatus.VALIDATED;
 public class PolicyService {
     private final static Logger LOGGER = LoggerFactory.getLogger(PolicyService.class);
 
-    private final TMCClient tmcClient;
     private final PaymentRepository paymentRepository;
     private final PolicyCriteriaRepository policyCriteriaRepository;
     private final PolicyRepository policyRepository;
     private final PolicyNumberRepository policyNumberRepository;
+    private final PolicyRepositoryExtends policyRepositoryExtends;
     private final QuoteRepository quoteRepository;
     private final EmailService emailService;
     private final LineService lineService;
@@ -82,28 +90,25 @@ public class PolicyService {
     private final PolicyDocumentService policyDocumentService;
     private final SMSApiService smsApiService;
     private final ProductServiceFactory productServiceFactory;
-    private final CDBClient cdbClient;
     private final BeanValidator beanValidator;
     private final MocabClient mocabClient;
 
     @Inject
-    private PolicyNumberSettingService policyNumberSettingService;
-
-    @Inject
-    public PolicyService(TMCClient tmcClient,
-                         PaymentRepository paymentRepository,
-                         PolicyCriteriaRepository policyCriteriaRepository,
-                         PolicyRepository policyRepository,
-                         PolicyNumberRepository policyNumberRepository,
-                         QuoteRepository quoteRepository,
-                         EmailService emailService,
-                         LineService lineService,
-                         DocumentService documentService,
-                         PolicyDocumentService policyDocumentService, SMSApiService smsApiService,
-                         ProductServiceFactory productServiceFactory, CDBClient cdbClient, BeanValidator beanValidator, MocabClient mocabClient) {
-        this.tmcClient = tmcClient;
+    public PolicyService(
+            PaymentRepository paymentRepository,
+            PolicyCriteriaRepository policyCriteriaRepository,
+            PolicyRepository policyRepository,
+            PolicyNumberRepository policyNumberRepository,
+            PolicyRepositoryExtends policyRepositoryExtends,
+            QuoteRepository quoteRepository,
+            EmailService emailService,
+            LineService lineService,
+            DocumentService documentService,
+            PolicyDocumentService policyDocumentService,
+            SMSApiService smsApiService,
+            ProductServiceFactory productServiceFactory,
+            CDBClient cdbClient, BeanValidator beanValidator, MocabClient mocabClient) {
         this.policyDocumentService = policyDocumentService;
-        this.cdbClient = cdbClient;
         this.paymentRepository = paymentRepository;
         this.policyCriteriaRepository = policyCriteriaRepository;
         this.policyRepository = policyRepository;
@@ -116,6 +121,7 @@ public class PolicyService {
         this.productServiceFactory = productServiceFactory;
         this.beanValidator = beanValidator;
         this.mocabClient = mocabClient;
+        this.policyRepositoryExtends = policyRepositoryExtends;
     }
 
     public Page<Policy> findAll(String policyId, ProductType productType, PolicyStatus status, Boolean nonEmptyAgentCode, LocalDate startDate,
@@ -297,7 +303,7 @@ public class PolicyService {
             String pushContent = IOUtils.toString(this.getClass().getResourceAsStream("/line-notification/policy-booked-notification.txt"), Charset.forName("UTF-8"));
             String sendMsg = pushContent.replace("%POLICY_ID%", policy.getPolicyId());
             sendMsg = sendMsg.replace("%FULL_NAME%", policy.getInsureds().get(0).getPerson().getGivenName() + " " + policy.getInsureds().get(0).getPerson().getSurName());
-            lineService.sendPushNotificationWithIOException(sendMsg, policy.getInsureds().get(0).getPerson().getLineId());
+            lineService.pushTextMessage(lineService.getLineUserIdFromInsure(policy.getInsureds().get(0)), sendMsg);
         } catch (Exception e) {
             LOGGER.error(String.format("Unable to send LINE push notification for policy booking on policy [%s]: %s", policy.getPolicyId(), e.getMessage()), e);
         }
@@ -384,7 +390,7 @@ public class PolicyService {
         // Send push notification
         try {
             String pushContent = IOUtils.toString(this.getClass().getResourceAsStream("/line-notification/policy-purchased-notification.txt"), Charset.forName("UTF-8"));
-            lineService.sendPushNotificationWithIOException(pushContent, policy.getInsureds().get(0).getPerson().getLineId());
+            lineService.pushTextMessage(lineService.getLineUserIdFromInsure(policy.getInsureds().get(0)), pushContent);
         } catch (Exception e) {
             LOGGER.error(String.format("Unable to send LINE push notification for policy validation on policy [%s]: %s", policy.getPolicyId(), e.getMessage()), e);
         }
@@ -424,7 +430,7 @@ public class PolicyService {
         // Send push notification
         String pushContent = IOUtils.toString(this.getClass().getResourceAsStream("/line-notification/user-not-responging-notification.txt"), Charset.forName("UTF-8"));
         Insured mainInsured = ProductUtils.validateExistMainInsured(policy);
-        lineService.sendPushNotificationWithIOException(pushContent.replace("%POLICY_ID%", policy.getPolicyId()), mainInsured.getPerson().getLineId());
+        lineService.pushTextMessage(lineService.getLineUserIdFromInsure(mainInsured), pushContent.replace("%POLICY_ID%", policy.getPolicyId()));
     }
 
     //TODO change logic: if send email fail, it still continue with line push notification, then after that return error for email.
@@ -435,7 +441,7 @@ public class PolicyService {
         // Send push notification
         String pushContent = IOUtils.toString(this.getClass().getResourceAsStream("/line-notification/phone-number-wrong-notification.txt"), Charset.forName("UTF-8"));
         Insured mainInsured = ProductUtils.validateExistMainInsured(policy);
-        lineService.sendPushNotificationWithIOException(pushContent.replace("%POLICY_ID%", policy.getPolicyId()), mainInsured.getPerson().getLineId());
+        lineService.pushTextMessage(lineService.getLineUserIdFromInsure(mainInsured), pushContent.replace("%POLICY_ID%", policy.getPolicyId()));
     }
 
     public Policy updateMainInsuredPerson(String policyId, PersonInfo mainInsuredPersonInfo) {
@@ -446,6 +452,42 @@ public class PolicyService {
         BeanUtils.copyProperties(mainInsuredPersonInfo, person);
         policy = policyRepository.save(policy);
         return policy;
+    }
+
+    public Optional<Integer> updateLineUserIdOfPolicyId() {
+        //find policy by mid
+        final List<Policy> policyListWithoutUserId = policyRepository.findAllUserHaveNoLineUserId();
+
+        //MultiMap <mid, List<policyID>>
+        MultiMap policyIdMidsMap = new MultiValueMap();
+
+        for (final Policy policy : policyListWithoutUserId) {
+            final String mid = policy.getInsureds().get(0).getPerson().getLineId();
+            policyIdMidsMap.put(mid, policy.getPolicyId());
+        }
+        final Set<String> mids = policyIdMidsMap.keySet();
+
+        // convert mid to userId
+        final List<LineIdMap> convertedLineIdMap = lineService.getMultiplierLineUserIdFromMid(mids);
+        if (convertedLineIdMap.size() == 0) {
+            LOGGER.info("Don't have any policies need to update");
+            return Optional.empty();
+        }
+
+        final List policyIdVsNewUserIdMap = convertedLineIdMap.stream()
+                .map(lineUserIdVsMid -> {
+                    final String newUserId = lineUserIdVsMid.getLineUserId();
+                    final List<String> policyIds = (List<String>) policyIdMidsMap.get(lineUserIdVsMid.getMid());
+                    return policyIds.stream()
+                            .map(policyId -> new PolicyIdLineUserIdMap(policyId, newUserId))
+                            .collect(Collectors.toList());
+                })
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+        LOGGER.info("Preparing {} policy ready for update line userId", policyIdVsNewUserIdMap.size());
+        final BulkWriteResult result = policyRepositoryExtends.bulkUpdateLineUserIdByPolicyId(policyIdVsNewUserIdMap);
+        LOGGER.info("Updated {} policy(s) the line userId", result.getModifiedCount());
+        return Optional.of(result.getModifiedCount());
     }
 
     private void sendPdfToMocab(final Policy policy,

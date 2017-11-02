@@ -36,6 +36,7 @@ public class QuoteRepositoryExtends {
     private static final String CREATION_DATE_TIME_FIELD = "creationDateTime";
     private static final String PRODUCT_ID_FIELD = "productId";
     private static final String LINE_ID_FIELD = "lineId";
+    private static final String LINE_USER_ID_FIELD = "lineUserId";
     private static final String POLICY_ID = "policyId";
 
     @Inject
@@ -57,7 +58,8 @@ public class QuoteRepositoryExtends {
                 productTypes.stream().map(ProductType::getLogicName).collect(Collectors.toList());
         final Fields groupFields = Fields.from(
                 Fields.field(PRODUCT_ID_FIELD, "commonData.productId"),
-                Fields.field(LINE_ID_FIELD, "insureds.person.lineId"));
+                Fields.field(LINE_ID_FIELD, "insureds.person.lineId"),
+                Fields.field(LINE_USER_ID_FIELD, "insureds.person.lineUserId"));
 
         final Aggregation agg = newAggregation(
                 group(groupFields)
@@ -87,10 +89,14 @@ public class QuoteRepositoryExtends {
     private QuoteMid parseDbObjectToQuoteMid(final DBObject dbObject) {
         try {
             final List<String> mids = (List<String>) dbObject.get(LINE_ID_FIELD);
+            final List<String> lineUserIds = (List<String>) dbObject.get(LINE_USER_ID_FIELD);
             final String productId = String.valueOf(dbObject.get(PRODUCT_ID_FIELD));
             final LocalDateTime creationDateTime = DateTimeUtil
                     .toThaiLocalDateTime(((Date) dbObject.get(CREATION_DATE_TIME_FIELD)).toInstant());
-            return new QuoteMid(productId, mids.stream().collect(Collectors.joining(", ")), creationDateTime);
+            return new QuoteMid(productId,
+                    mids.stream().collect(Collectors.joining(", ")),
+                    lineUserIds.stream().collect(Collectors.joining(", ")),
+                    creationDateTime);
         } catch (RuntimeException ex) {
             LOGGER.error("Could not get MID for policy Id {}", String.valueOf(dbObject.get(POLICY_ID)));
             return new QuoteMid();

@@ -25,7 +25,7 @@ import th.co.krungthaiaxa.api.elife.factory.PaymentFactory;
 import th.co.krungthaiaxa.api.elife.factory.PolicyFactory;
 import th.co.krungthaiaxa.api.elife.factory.RequestFactory;
 import th.co.krungthaiaxa.api.elife.factory.productquotation.ProductQuotationFactory;
-import th.co.krungthaiaxa.api.elife.line.LineService;
+import th.co.krungthaiaxa.api.elife.line.LinePayService;
 import th.co.krungthaiaxa.api.elife.model.Document;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.PaymentInformation;
@@ -64,7 +64,7 @@ public class PaymentRetryServiceCDBViewTest extends ELifeTest {
     private CollectionFileProcessingService rlsService;
     @Inject
     private CollectionFileImportingService collectionFileImportingService;
-    private LineService lineService;
+    private LinePayService linePayService;
 
     @Inject
     private CollectionFileFactory collectionFileFactory;
@@ -123,7 +123,7 @@ public class PaymentRetryServiceCDBViewTest extends ELifeTest {
         Assert.assertNull(paymentNewerCompletedResult.getNewerCompletedPayment());
 
         //03 -  Retry payment
-        setupLineServiceWithResponseCode(LineService.RESPONSE_CODE_SUCCESS);
+        setupLineServiceWithResponseCode(LinePayService.RESPONSE_CODE_SUCCESS);
         testRetryFailedPaymentInCollection(policyWithFirstFailPayment.collectionFile, policyWithFirstFailPayment.policy);
 
         GreenMailUtil.writeReceiveMessagesToFiles(greenMail, TestUtil.PATH_TEST_RESULT + "/emails");
@@ -240,10 +240,10 @@ public class PaymentRetryServiceCDBViewTest extends ELifeTest {
     }
 
     private void setupLineServiceWithResponseCode(String lineResponseCode) {
-        lineService = LineServiceMockFactory.initServiceWithResponseCode(lineResponseCode);
-        paymentService.setLineService(lineService);
-        paymentRetryService.setLineService(lineService);
-        rlsService.setLineService(lineService);
+        linePayService = LineServiceMockFactory.initServiceWithResponseCode(lineResponseCode);
+        paymentService.setLinePayService(linePayService);
+        paymentRetryService.setLinePayService(linePayService);
+        rlsService.setLinePayService(linePayService);
     }
 
     private DeductionFileLine getDeductionFileLineByPolicyNumber(CollectionFile collectionFile, String policyNumber) {

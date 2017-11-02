@@ -196,7 +196,8 @@ public class PolicyResource {
                 text("Agent Code 1"),
                 text("Agent Code 2"),
                 text("Product Type"),
-                text("MID"));
+                text("MID"),
+                text("Line UserId"));
         policies.stream().forEach(tmp -> createPolicyExtractExcelFileLine(sheet, tmp));
         ExcelUtils.autoWidthAllColumns(workbook);
 
@@ -584,6 +585,7 @@ public class PolicyResource {
         String agentCode02 = null;
         String productType = ProductUtils.getProductLogicName(policy);
         String mid = firstInsured.getPerson().getLineId();
+        String lineUserId = firstInsured.getPerson().getLineUserId();
         if (!firstInsured.getInsuredPreviousInformations().isEmpty()) {
             previousPolicyId = firstInsured.getInsuredPreviousInformations().get(0);
             agentCode01 = firstInsured.getInsuredPreviousInformations().get(1);
@@ -595,7 +597,8 @@ public class PolicyResource {
                 text(agentCode01),
                 text(agentCode02),
                 text(productType),
-                text(mid));
+                text(mid),
+                text(lineUserId));
     }
 
 }

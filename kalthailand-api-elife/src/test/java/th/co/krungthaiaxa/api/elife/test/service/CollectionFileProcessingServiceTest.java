@@ -24,7 +24,7 @@ import th.co.krungthaiaxa.api.elife.factory.LineServiceMockFactory;
 import th.co.krungthaiaxa.api.elife.factory.PolicyFactory;
 import th.co.krungthaiaxa.api.elife.factory.QuoteFactory;
 import th.co.krungthaiaxa.api.elife.factory.productquotation.ProductQuotationFactory;
-import th.co.krungthaiaxa.api.elife.line.LineService;
+import th.co.krungthaiaxa.api.elife.line.LinePayService;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.enums.ChannelType;
@@ -84,7 +84,7 @@ public class CollectionFileProcessingServiceTest extends ELifeTest {
     @Inject
     private CollectionFileRepository collectionFileRepository;
     @Inject
-    private LineService lineService;
+    private LinePayService linePayService;
     @Inject
     private MongoTemplate mongoTemplate;
     @Inject
@@ -96,8 +96,8 @@ public class CollectionFileProcessingServiceTest extends ELifeTest {
 
     @Before
     public void setup() throws IOException {
-        lineService = LineServiceMockFactory.initServiceDefault();
-        collectionFileProcessingService.setLineService(lineService);
+        linePayService = LineServiceMockFactory.initServiceDefault();
+        collectionFileProcessingService.setLinePayService(linePayService);
         testingCollectionFiles = new ArrayList<>();
     }
 
@@ -325,7 +325,7 @@ public class CollectionFileProcessingServiceTest extends ELifeTest {
 
     @Test
     public void should_create_a_deduction_file_line_with_error_when_no_registration_key() throws IOException {
-        when(lineService.capturePayment(anyString(), anyDouble(), anyString())).thenReturn(TestUtil.linePayResponse("0000", "success"));
+        when(linePayService.capturePayment(anyString(), anyDouble(), anyString())).thenReturn(TestUtil.linePayResponse("0000", "success"));
 
         Policy policy = createValidatedIGenPolicyWithDefaultPayment(EVERY_MONTH);
         policy.getPayments().stream().forEach(payment -> payment.setRegistrationKey(null));
@@ -347,7 +347,7 @@ public class CollectionFileProcessingServiceTest extends ELifeTest {
         assertThat(firstDeductionFileLine.getPaymentMode()).isEqualTo(firstCollectionFileLine.getPaymentMode());
         assertThat(firstDeductionFileLine.getPolicyNumber()).isEqualTo(policy.getPolicyId());
         assertThat(firstDeductionFileLine.getProcessDate()).isEqualToIgnoringMinutes(LocalDateTime.now());
-        assertThat(firstDeductionFileLine.getRejectionCode()).isEqualTo(LineService.RESPONSE_CODE_ERROR_INTERNAL_LINEPAY);
+        assertThat(firstDeductionFileLine.getRejectionCode()).isEqualTo(LinePayService.RESPONSE_CODE_ERROR_INTERNAL_LINEPAY);
 
         Payment payment = paymentRepository.findOne(collectionFileResult.getLines().get(0).getPaymentId());
         Assertions.assertThat(payment.getStatus()).isEqualTo(PaymentStatus.INCOMPLETE);
@@ -359,14 +359,14 @@ public class CollectionFileProcessingServiceTest extends ELifeTest {
         assertThat(payment.getPaymentInformations().get(0).getCreditCardName()).isNull();
         assertThat(payment.getPaymentInformations().get(0).getDate()).isEqualTo(LocalDate.now());
         assertThat(payment.getPaymentInformations().get(0).getMethod()).isNull();
-        assertThat(payment.getPaymentInformations().get(0).getRejectionErrorCode()).isEqualTo(LineService.RESPONSE_CODE_ERROR_INTERNAL_LINEPAY);
+        assertThat(payment.getPaymentInformations().get(0).getRejectionErrorCode()).isEqualTo(LinePayService.RESPONSE_CODE_ERROR_INTERNAL_LINEPAY);
         Assert.assertNotNull(payment.getPaymentInformations().get(0).getRejectionErrorMessage());
     }
 
     /*
         @Test
         public void should_create_a_deduction_file_line_with_success() throws IOException {
-            when(lineService.capturePayment(anyString(), anyDouble(), anyString())).thenReturn(TestUtil.linePayResponse("0000", "success"));
+            when(linePayService.capturePayment(anyString(), anyDouble(), anyString())).thenReturn(TestUtil.linePayResponse("0000", "success"));
 
             Policy policy = getValidatedPolicy(EVERY_MONTH);
             CollectionFileLine collectionFileLine = collectionFileLine(policy, 100.0);
@@ -399,7 +399,7 @@ public class CollectionFileProcessingServiceTest extends ELifeTest {
     /*
     @Test
     public void should_mark_collection_file_as_processed() throws IOException {
-        when(lineService.capturePayment(anyString(), anyDouble(), anyString())).thenReturn(TestUtil.linePayResponse("0000", "success"));
+        when(linePayService.capturePayment(anyString(), anyDouble(), anyString())).thenReturn(TestUtil.linePayResponse("0000", "success"));
         Policy policy = getValidatedPolicy(EVERY_MONTH);
 
         CollectionFile collectionFile = getValidatedCollectionFile(
@@ -417,7 +417,7 @@ public class CollectionFileProcessingServiceTest extends ELifeTest {
     /*
     @Test
     public void should_process_collection_file() throws IOException {
-        when(lineService.capturePayment(anyString(), anyDouble(), anyString())).thenReturn(TestUtil.linePayResponse("0000", "success"));
+        when(linePayService.capturePayment(anyString(), anyDouble(), anyString())).thenReturn(TestUtil.linePayResponse("0000", "success"));
 
         Policy policy1 = getValidatedPolicy(EVERY_MONTH);
         Policy policy2 = getValidatedPolicy(EVERY_MONTH);
@@ -452,13 +452,13 @@ public class CollectionFileProcessingServiceTest extends ELifeTest {
         List<CollectionFile> collectionFiles = collectionFileProcessingService.processLatestCollectionFiles();
         CollectionFile collectionFile = collectionFiles.get(0);
         assertCollectionFileAndDeductionFileIsEquals(collectionFile);
-        assertDeductionStatus(collectionFile, LineService.RESPONSE_CODE_SUCCESS, LineService.RESPONSE_CODE_SUCCESS, LineService.RESPONSE_CODE_ERROR_MOCK_LINE_FAIL);
+        assertDeductionStatus(collectionFile, LinePayService.RESPONSE_CODE_SUCCESS, LinePayService.RESPONSE_CODE_SUCCESS, LinePayService.RESPONSE_CODE_ERROR_MOCK_LINE_FAIL);
     }
 
     /*
         @Test
         public void should_create_deduction_file_with_proper_header() throws IOException, InvalidFormatException {
-            when(lineService.capturePayment(anyString(), anyDouble(), anyString())).thenReturn(TestUtil.linePayResponse("0000", "success"));
+            when(linePayService.capturePayment(anyString(), anyDouble(), anyString())).thenReturn(TestUtil.linePayResponse("0000", "success"));
             Policy policy = getValidatedPolicy(EVERY_MONTH);
 
             CollectionFile collectionFile = getValidatedCollectionFile(
