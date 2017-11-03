@@ -10,11 +10,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import retrofit2.Call;
+import th.co.krungthaiaxa.api.common.client.Client;
 import th.co.krungthaiaxa.api.elife.data.LineToken;
 import th.co.krungthaiaxa.api.elife.line.v2.client.LineAPI;
 import th.co.krungthaiaxa.api.elife.line.v2.client.model.LineMultiCastMessage;
 import th.co.krungthaiaxa.api.elife.line.v2.client.model.MessageObject;
-import th.co.krungthaiaxa.api.elife.line.v2.http.Client;
 import th.co.krungthaiaxa.api.elife.line.v2.model.LineAccessToken;
 import th.co.krungthaiaxa.api.elife.line.v2.model.LineIdMap;
 import th.co.krungthaiaxa.api.elife.model.Insured;
@@ -45,8 +45,6 @@ public class LineService {
     private String channelId;
     @Value("${line.v2.app.client.secret}")
     private String channelSecret;
-    @Value("${line.v2.app.reissue.url}")
-    private String lineAppReIssueUrl;
 
     private final LineTokenRepository lineTokenRepository;
 
