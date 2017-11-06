@@ -4,7 +4,10 @@ import io.swagger.annotations.ApiModelProperty;
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.mongodb.core.mapping.Document;
 import th.co.krungthaiaxa.api.common.data.BaseEntity;
+import th.co.krungthaiaxa.api.common.utils.Constants;
 import th.co.krungthaiaxa.api.elife.customer.campaign.careCoordination.model.CareCoordinationForm;
+
+import javax.validation.constraints.Pattern;
 
 /**
  * @author tuong.le on 10/31/17.
@@ -17,11 +20,12 @@ public class CareCoordinationEntity extends BaseEntity {
 
     @ApiModelProperty(value = "Policy Id", required = true)
     @NotBlank
+    @Pattern(regexp = Constants.POLICY_REGEX, message = "incorrect policy format")
     private String policyId;
 
     @ApiModelProperty(value = "Mobile Phone", required = true)
     @NotBlank
-    private String phone;
+    private String phoneNumber;
 
     @ApiModelProperty(value = "Email", required = true)
     @NotBlank
@@ -34,7 +38,7 @@ public class CareCoordinationEntity extends BaseEntity {
     public CareCoordinationEntity(final CareCoordinationForm form) {
         this.setName(form.getName());
         this.setPolicyId(form.getPolicyId());
-        this.setPhone(form.getPhone());
+        this.setPhoneNumber(form.getPhoneNumber());
         this.setEmail(form.getEmail());
     }
 
@@ -54,12 +58,12 @@ public class CareCoordinationEntity extends BaseEntity {
         this.policyId = policyId;
     }
 
-    public String getPhone() {
-        return phone;
+    public String getPhoneNumber() {
+        return phoneNumber;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
     public String getEmail() {

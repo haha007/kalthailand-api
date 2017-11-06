@@ -44,7 +44,7 @@ public class CampaignCareCoordinationService {
         CareCoordinationLine line = new CareCoordinationLine();
         line.setName(entity.getName());
         line.setPolicyId(entity.getPolicyId());
-        line.setPhone(entity.getPhone());
+        line.setPhoneNumber(entity.getPhoneNumber());
         line.setEmail(entity.getEmail());
         line.setSubmittedDate(entity.getCreatedDateTime()
                 .format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")));

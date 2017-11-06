@@ -14,8 +14,9 @@ public class CareCoordinationLine {
     @NotBlank
     private String policyId;
 
+    @ReportField("Phone Number")
     @NotBlank
-    private String phone;
+    private String phoneNumber;
 
     @NotBlank
     private String email;
@@ -39,12 +40,12 @@ public class CareCoordinationLine {
         this.policyId = policyId;
     }
 
-    public String getPhone() {
-        return phone;
+    public String getPhoneNumber() {
+        return phoneNumber;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
     public String getEmail() {
