@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package th.co.krungthaiaxa.api.common.client;
+package th.co.krungthaiaxa.api.elife.client;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;

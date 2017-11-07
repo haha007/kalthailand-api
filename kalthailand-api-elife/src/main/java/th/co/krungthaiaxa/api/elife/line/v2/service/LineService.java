@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import retrofit2.Call;
-import th.co.krungthaiaxa.api.common.client.Client;
+import th.co.krungthaiaxa.api.elife.client.Client;
 import th.co.krungthaiaxa.api.elife.data.LineToken;
 import th.co.krungthaiaxa.api.elife.line.v2.client.LineAPI;
 import th.co.krungthaiaxa.api.elife.line.v2.client.model.LineMultiCastMessage;
