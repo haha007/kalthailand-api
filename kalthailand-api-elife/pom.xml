@@ -19,8 +19,6 @@
         <local.repo.path>${project.basedir}</local.repo.path>
         <poi.version>3.15</poi.version>
         <jackson.version>2.6.0</jackson.version>
-        <retrofit2.version>2.1.0</retrofit2.version>
-        <retrofit2.groupId>com.squareup.retrofit2</retrofit2.groupId>
     </properties>
 
     <dependencies>
@@ -101,38 +99,6 @@
             <groupId>com.fasterxml.jackson.jaxrs</groupId>
             <artifactId>jackson-jaxrs-json-provider</artifactId>
             <version>${jackson.version}</version>
-        </dependency>
-
-        <!--HTTP CLIENT-->
-        <dependency>
-            <groupId>com.squareup.retrofit2</groupId>
-            <artifactId>retrofit</artifactId>
-            <version>${retrofit2.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${retrofit2.groupId}</groupId>
-            <artifactId>converter-gson</artifactId>
-            <version>${retrofit2.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${retrofit2.groupId}</groupId>
-            <artifactId>converter-scalars</artifactId>
-            <version>${retrofit2.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.squareup.okhttp3</groupId>
-            <artifactId>okhttp</artifactId>
-            <version>3.8.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.squareup.okhttp3</groupId>
-            <artifactId>logging-interceptor</artifactId>
-            <version>3.8.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.6.2</version>
         </dependency>
 
         <!-- provided stuff -->
