@@ -20,4 +20,9 @@ public interface PolicyRepository extends MongoRepository<Policy, String> {
 
     @Query("{'insureds.insuredPreviousInformations': { $gt: [] }}")
     List<Policy> findByInsuredPreviousPolicyNotNull(Pageable pageRequest);
+
+    @Query(value = "{$and:[{'insureds.person.lineId': {$exists: true, $ne: ''}}," +
+            "{$or:[{'insureds.person.lineUserId': {$exists: false}}, {'insureds.person.lineUserId': {$eq:''}}]}]}",
+            fields = "{'policyId': 1,'insureds.person.lineId': 1}")
+    List<Policy> findAllUserHaveNoLineUserId();
 }

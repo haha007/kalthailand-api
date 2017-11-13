@@ -22,7 +22,7 @@ import th.co.krungthaiaxa.api.elife.data.DeductionFile;
 import th.co.krungthaiaxa.api.elife.data.DeductionFileLine;
 import th.co.krungthaiaxa.api.elife.ereceipt.EreceiptNumber;
 import th.co.krungthaiaxa.api.elife.ereceipt.EreceiptService;
-import th.co.krungthaiaxa.api.elife.line.LineService;
+import th.co.krungthaiaxa.api.elife.line.LinePayService;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.enums.PaymentStatus;
@@ -48,8 +48,8 @@ import java.util.stream.Collectors;
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static org.springframework.util.Assert.isTrue;
 import static org.springframework.util.Assert.notNull;
-import static th.co.krungthaiaxa.api.elife.line.LineService.RESPONSE_CODE_ERROR_INTERNAL_LINEPAY;
-import static th.co.krungthaiaxa.api.elife.line.LineService.RESPONSE_CODE_SUCCESS;
+import static th.co.krungthaiaxa.api.elife.line.LinePayService.RESPONSE_CODE_ERROR_INTERNAL_LINEPAY;
+import static th.co.krungthaiaxa.api.elife.line.LinePayService.RESPONSE_CODE_SUCCESS;
 import static th.co.krungthaiaxa.api.elife.model.enums.ChannelType.LINE;
 import static th.co.krungthaiaxa.api.elife.utils.ExcelUtils.appendRow;
 import static th.co.krungthaiaxa.api.elife.utils.ExcelUtils.text;
@@ -83,14 +83,14 @@ public class CollectionFileProcessingService {
     /**
      * Don't put final here because we need inject mock test dependency
      */
-    private LineService lineService;
+    private LinePayService linePayService;
     private final PaymentFailEmailService paymentRetryEmailService;
     private final PaymentFailLineNotificationService paymentRetryLineNotificationService;
     private final ProfileHelper profileHelper;
 
     @Inject
     public CollectionFileProcessingService(CollectionFileRepository collectionFileRepository, PaymentRepository paymentRepository, PolicyRepository policyRepository, PolicyService policyService, PaymentService paymentService, EreceiptService ereceiptService,
-            LineService lineService,
+            LinePayService linePayService,
             PaymentFailEmailService paymentRetryEmailService, PaymentFailLineNotificationService paymentRetryLineNotificationService, ProfileHelper profileHelper) {
         this.collectionFileRepository = collectionFileRepository;
         this.paymentRepository = paymentRepository;
@@ -99,7 +99,7 @@ public class CollectionFileProcessingService {
         this.paymentService = paymentService;
         this.ereceiptService = ereceiptService;
 //        this.deductionFileRepository = deductionFileRepository;
-        this.lineService = lineService;
+        this.linePayService = linePayService;
         this.paymentRetryEmailService = paymentRetryEmailService;
         this.paymentRetryLineNotificationService = paymentRetryLineNotificationService;
         this.profileHelper = profileHelper;
@@ -208,10 +208,10 @@ public class CollectionFileProcessingService {
             LinePayRecurringResponse linePayResponse;
             if (mockFailPayment(policy)) {
                 linePayResponse = new LinePayRecurringResponse();
-                linePayResponse.setReturnCode(LineService.RESPONSE_CODE_ERROR_MOCK_LINE_FAIL);
+                linePayResponse.setReturnCode(LinePayService.RESPONSE_CODE_ERROR_MOCK_LINE_FAIL);
                 linePayResponse.setReturnMessage("MockFailTest");
             } else {
-                linePayResponse = lineService.preApproved(lastRegistrationKey, paymentAmountFromCollection, currencyCode, productId, orderId);
+                linePayResponse = linePayService.preApproved(lastRegistrationKey, paymentAmountFromCollection, currencyCode, productId, orderId);
             }
             resultCode = linePayResponse.getReturnCode();
             resultMessage = linePayResponse.getReturnMessage();
@@ -219,7 +219,7 @@ public class CollectionFileProcessingService {
             //We should allow to process any money because user may want to pay more or less.
             payment.getAmount().setValue(paymentAmountFromCollection);
             payment.setOrderId(orderId);
-            if (LineService.RESPONSE_CODE_SUCCESS.equals(resultCode)) {
+            if (RESPONSE_CODE_SUCCESS.equals(resultCode)) {
                 //Only generate new ereceiptNumber when payment success.
                 EreceiptNumber ereceiptNumber = ereceiptService.generateEreceiptFullNumber(newBusiness);
                 payment.setReceiptNumber(ereceiptNumber);
@@ -305,7 +305,7 @@ public class CollectionFileProcessingService {
 
     //TODO need to update the list of internal error. E.g: 1106: our server cannot connect to LINE server: should not send email to client.
     private boolean hasErrorButNotInternalErrorWhenCallLinePay(String resultCode) {
-        return !resultCode.equals(RESPONSE_CODE_SUCCESS) && !LineService.RESPONSE_CODES_ERROR_BY_INTERNAL_APP.contains(resultCode);
+        return !resultCode.equals(RESPONSE_CODE_SUCCESS) && !LinePayService.RESPONSE_CODES_ERROR_BY_INTERNAL_APP.contains(resultCode);
     }
 
     private void setResultOfFailPaymentNotificationToDeductionFileLine(DeductionFileLine deductionFileLine, Policy policy, Payment payment) {
@@ -359,8 +359,8 @@ public class CollectionFileProcessingService {
                 text((deductionFileLine.getRejectionCode().equals("0000") ? "" : deductionFileLine.getRejectionCode())));
     }
 
-    public void setLineService(LineService lineService) {
-        this.lineService = lineService;
+    public void setLinePayService(LinePayService linePayService) {
+        this.linePayService = linePayService;
     }
 
 }
