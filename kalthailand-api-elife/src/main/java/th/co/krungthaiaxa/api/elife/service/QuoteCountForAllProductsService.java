@@ -131,6 +131,7 @@ public class QuoteCountForAllProductsService {
         ExcelUtils.appendRow(sheet,
                 text("Product"),
                 text("MID"),
+                text("LINE UserId (V2)"),
                 text("DateTime"));
         final List<QuoteMid> quotes = quoteRepositoryExtend.getDistinctQuoteMid(
                 productTypes,
@@ -140,6 +141,7 @@ public class QuoteCountForAllProductsService {
             ExcelUtils.appendRow(sheet,
                     text(quote.getProductId()),
                     text(quote.getMid()),
+                    text(quote.getLineUserId()),
                     text(quote.getCreationDate())
             );
         }

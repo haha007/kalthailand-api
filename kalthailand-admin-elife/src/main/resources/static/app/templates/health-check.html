@@ -7,16 +7,10 @@
 
     .maxMem {
         text-align: left;
-        /*box-shadow: inset 0 -1px 0 rgba(0, 0, 0, .15);*/
     }
 
     .totalMem {
         text-align: left;
-        /*background-color: #e1e5e6;*/
-        /*background-image: linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);*/
-        /*background-size: 40px 40px;*/
-        /*box-shadow: inset 0 -1px 0 rgba(0, 0, 0, .15);*/
-
     }
 
     .usedMem {
@@ -34,9 +28,7 @@
     }
 
     .unallocatedMem {
-        background-color: #73879C;
-        /*background-color: #2A3F54;*/
-        background-image: linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);
+        background: #73879C linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);
         background-size: 40px 40px;
         box-shadow: inset 0 1px 2px rgba(0, 0, 0, .1);
         color: #2A3F54;
@@ -50,7 +42,6 @@
     .vertical-line:after {
         content: "";
         position: absolute;
-        /*z-index: -1;*/
         top: 0;
         bottom: 0;
         left: -2px;
@@ -60,7 +51,6 @@
     .arrow-up:after {
         content: "";
         position: absolute;
-        /*z-index: -1;*/
         top: 0;
         bottom: 0;
         left: -5px;
@@ -74,8 +64,6 @@
     .arrow-down:after {
         content: "";
         position: absolute;
-        /*z-index: -1;*/
-        /*top: 0;*/
         bottom: 0;
         left: -5px;
         border-left: 3px solid transparent;
@@ -92,7 +80,9 @@
     <div ng-cloak class="col-md-12 col-sm-12 col-xs-12 main ng-cloak">
         <div class="row">
             <div class="col-md-12 col-sm-12 col-xs-12">
-                <button class="btn btn-default" ng-click="service.showHealth()"><i class="fa fa-refresh"></i> Load status</button>
+                <button class="btn btn-default" ng-click="service.showHealth()"><i class="fa fa-refresh"></i> Load
+                    status
+                </button>
             </div>
             <!-- JVM MEMORY -->
             <div class="col-md-6 col-sm-12 col-xs-12">
@@ -109,7 +99,8 @@
                                 <div class="col-md-3 col-sm-12">
                                     <table class="mem" style="width: 100%; height: 250px;">
                                         <tr>
-                                            <td class="freeMem" style="height: {{service.metrics.jvmFreeMemory / service.metrics.jvmMaxMemory * 100}}%; width: 33%">
+                                            <td class="freeMem"
+                                                style="height: {{service.metrics.jvmFreeMemory / service.metrics.jvmMaxMemory * 100}}%; width: 33%">
                                                 Free
                                             </td>
                                             <td class="totalMem vertical-line" rowspan="2" style="width: 33%">
@@ -127,7 +118,8 @@
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td class="usedMem" style="height: {{service.metrics.jvmUsedMemory / service.metrics.jvmMaxMemory * 100}}%">
+                                            <td class="usedMem"
+                                                style="height: {{service.metrics.jvmUsedMemory / service.metrics.jvmMaxMemory * 100}}%">
                                                 Used
                                             </td>
                                             <td></td>
@@ -147,7 +139,8 @@
                                         <span class="col-md-4">{{(service.metrics.jvmMaxMemory / 1073741824).toFixed(2)}} GB</span>
                                     </div>
                                     <div class="input-group col-md-12">
-                                        <label class="text-center col-md-4 mem" style="color: #73879C;" title="Total memory allocated from the system">Total</label>
+                                        <label class="text-center col-md-4 mem" style="color: #73879C;"
+                                               title="Total memory allocated from the system">Total</label>
                                         <span class="col-md-2 ">{{(service.metrics.jvmTotalMemory / service.metrics.jvmMaxMemory * 100).toFixed(2)}}%</span>
                                         <span class="col-md-4">{{(service.metrics.jvmTotalMemory / 1073741824).toFixed(2)}} GB</span>
                                     </div>
@@ -157,12 +150,14 @@
                                         <span class="col-md-4">{{(service.metrics.jvmUsedMemory / 1073741824).toFixed(2)}} GB</span>
                                     </div>
                                     <div class="input-group col-md-12">
-                                        <label class="text-center col-md-4 freeMem" style="color: #73879C;" title="Free memory within the total memory">Free</label>
+                                        <label class="text-center col-md-4 freeMem" style="color: #73879C;"
+                                               title="Free memory within the total memory">Free</label>
                                         <span class="col-md-2 ">{{(service.metrics.jvmFreeMemory / service.metrics.jvmMaxMemory * 100).toFixed(2)}}%</span>
                                         <span class="col-md-4">{{(service.metrics.jvmFreeMemory / 1073741824).toFixed(2)}} GB</span>
                                     </div>
                                     <div class="input-group col-md-12">
-                                        <label class="text-center col-md-4 unallocatedMem" style="color: #2A3F54;" title="When necessary, JVM will automatically uses unallocated memory to add up into total memory">Unallocated</label>
+                                        <label class="text-center col-md-4 unallocatedMem" style="color: #2A3F54;"
+                                               title="When necessary, JVM will automatically uses unallocated memory to add up into total memory">Unallocated</label>
                                         <span class="col-md-2">{{((1 - (service.metrics.jvmTotalMemory / service.metrics.jvmMaxMemory)) * 100).toFixed(2)}}%</span>
                                         <span class="col-md-4">{{((service.metrics.jvmMaxMemory - service.metrics.jvmTotalMemory) / 1073741824).toFixed(2)}} GB</span>
                                     </div>
@@ -188,7 +183,8 @@
                                 <div class="block">
                                     <div class="tags">
                                         <a href="" class="tag">
-                                            <i class="fa fa-hdd-o"></i> {{(diskSpace.totalSpace / 1073741824).toFixed(1)}}GB
+                                            <i class="fa fa-hdd-o"></i> {{(diskSpace.totalSpace /
+                                            1073741824).toFixed(1)}}GB
                                         </a>
                                     </div>
                                     <div class="block_content">
@@ -197,16 +193,24 @@
                                         </h2>
 
                                         <div class="byline">
-                                            <span>Used </span><a>{{((diskSpace.totalSpace - diskSpace.usableSpace) / 1073741824).toFixed(2)}} GB </a><span>-</span><a> {{((1 - diskSpace.usableSpace / diskSpace.totalSpace) * 100).toFixed(2)}}%</a>
+                                            <span>Used </span><a>{{((diskSpace.totalSpace - diskSpace.usableSpace) /
+                                            1073741824).toFixed(2)}} GB </a><span>-</span><a> {{((1 -
+                                            diskSpace.usableSpace / diskSpace.totalSpace) * 100).toFixed(2)}}%</a>
                                         </div>
                                         <div class="byline">
-                                            <span>Free </span><a>{{(diskSpace.usableSpace / 1073741824).toFixed(2)}} GB </a><span>-</span><a> {{(diskSpace.usableSpace / diskSpace.totalSpace * 100).toFixed(2)}}%</a>
+                                            <span>Free </span><a>{{(diskSpace.usableSpace / 1073741824).toFixed(2)}}
+                                            GB </a><span>-</span><a> {{(diskSpace.usableSpace / diskSpace.totalSpace *
+                                            100).toFixed(2)}}%</a>
                                         </div>
                                         <div class="byline">
-                                            <span>Unallocated</span><a>{{((diskSpace.unallocatedSpace) / 1073741824).toFixed(2)}} GB </a><span>-</span><a> {{(diskSpace.unallocatedSpace / diskSpace.totalSpace * 100).toFixed(2)}}%</a>
+                                            <span>Unallocated</span><a>{{((diskSpace.unallocatedSpace) /
+                                            1073741824).toFixed(2)}} GB </a><span>-</span><a>
+                                            {{(diskSpace.unallocatedSpace / diskSpace.totalSpace *
+                                            100).toFixed(2)}}%</a>
                                         </div>
                                         <div class="progress progress-striped">
-                                            <div class="progress-bar progress-bar-success" style="width:{{diskSpace.usedSpacePercentage.toFixed(0)}}%;"></div>
+                                            <div class="progress-bar progress-bar-success"
+                                                 style="width:{{diskSpace.usedSpacePercentage.toFixed(0)}}%;"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -242,33 +246,49 @@
                         <form name="systemHealthSettingForm" class="form-horizontal form-label-left">
 
                             <div class="form-group">
-                                <label class="control-label col-md-3 col-sm-3 col-xs-12">Notify for used memory (%) <span class="required">*</span>
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12">Notify for used memory (%)
+                                    <span class="required">*</span>
                                 </label>
 
                                 <div class="col-md-6 col-sm-6 col-xs-12">
-                                    <input name="usedMemoryPercentageWarning" ng-model="service.systemHealthSetting.usedMemoryPercentageWarning" required="required" type="number" min="0" max="100" class="form-control col-md-7 col-xs-12">
+                                    <input name="usedMemoryPercentageWarning"
+                                           ng-model="service.systemHealthSetting.usedMemoryPercentageWarning"
+                                           required="required" type="number" min="0" max="100"
+                                           class="form-control col-md-7 col-xs-12">
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="control-label col-md-3 col-sm-3 col-xs-12">Notify for used space (%) <span class="required">*</span>
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12">Notify for used space (%) <span
+                                        class="required">*</span>
                                 </label>
 
                                 <div class="col-md-6 col-sm-6 col-xs-12">
-                                    <input name="usedSpacePercentageWarning" ng-model="service.systemHealthSetting.usedSpacePercentageWarning" required="required" type="number" min="0" max="100" class="form-control col-md-7 col-xs-12">
+                                    <input name="usedSpacePercentageWarning"
+                                           ng-model="service.systemHealthSetting.usedSpacePercentageWarning"
+                                           required="required" type="number" min="0" max="100"
+                                           class="form-control col-md-7 col-xs-12">
                                 </div>
                             </div>
                             <!--<div class="divider-dashed"></div>-->
                             <div class="form-group">
-                                <label class="control-label col-md-3 col-sm-3 col-xs-12">Notify to emails <span class="required">*</span>
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12">Notify to emails <span
+                                        class="required">*</span>
                                 </label>
 
                                 <div class="col-md-6 col-sm-6 col-xs-12">
-                                    <input name="warningEmailsString" ng-model="service.systemHealthSetting.warningEmailsString" rows="5" required="required" class="form-control col-md-7 col-xs-12"/>
+                                    <input name="warningEmailsString"
+                                           ng-model="service.systemHealthSetting.warningEmailsString" rows="5"
+                                           required="required" class="form-control col-md-7 col-xs-12"/>
                                 </div>
                             </div>
                             <div class="ln_solid"></div>
                             <div>
-                                <button type="submit" class="btn btn-default" ng-click="service.saveSetting()">Save Setting</button>
+                                <button type="submit" class="btn btn-default" ng-click="service.saveSetting()">Save
+                                    Setting
+                                </button>
+                                <button class="btn btn-default" ng-click="service.migrateMidToUserId()"><i
+                                        class="fa fa-refresh"></i> Convert LINE V2 MID
+                                </button>
                             </div>
                         </form>
                     </div>

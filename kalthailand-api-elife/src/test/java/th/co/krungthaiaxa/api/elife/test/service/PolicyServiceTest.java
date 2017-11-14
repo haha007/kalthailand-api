@@ -4,6 +4,7 @@ import com.icegreen.greenmail.junit.GreenMailRule;
 import com.icegreen.greenmail.store.FolderException;
 import com.icegreen.greenmail.util.ServerSetupTest;
 import org.assertj.core.api.Assertions;
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,6 +31,7 @@ import th.co.krungthaiaxa.api.elife.test.ELifeTest;
 import th.co.krungthaiaxa.api.elife.utils.TestUtil;
 
 import javax.inject.Inject;
+import java.util.Optional;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -280,6 +282,12 @@ public class PolicyServiceTest extends ELifeTest {
         assertThatThrownBy(() -> policyFactory.updateFromPendingValidationToValidated(policy))
                 .isInstanceOf(PolicyValidatedProcessException.class);
         Assertions.assertThat(policy.getDocuments()).hasSize(0);
+    }
+
+    @Test
+    public void should_get_all_policy_without_line_userId() {
+        final Optional<Integer> updatedResult = policyService.updateLineUserIdOfPolicyId();
+        Assert.assertNotNull(updatedResult);
     }
 
     private Policy getPolicy() {

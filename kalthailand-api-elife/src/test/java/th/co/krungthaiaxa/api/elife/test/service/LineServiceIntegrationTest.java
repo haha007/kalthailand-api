@@ -1,6 +1,6 @@
 package th.co.krungthaiaxa.api.elife.test.service;
 
-import th.co.krungthaiaxa.api.elife.line.LineService;
+import th.co.krungthaiaxa.api.elife.line.LinePayService;
 
 import java.io.IOException;
 
@@ -11,11 +11,11 @@ import java.io.IOException;
 public class LineServiceIntegrationTest {
 
     //    @Inject
-    private LineService lineService;
+    private LinePayService linePayService;
 
     //    @Test
     public void should_send_sms() throws IOException {
-        lineService.sendPushNotificationWithIOException("testnotification", "B6861355");
+        linePayService.sendPushNotificationWithIOException("testnotification", "B6861355");
     }
 
 }

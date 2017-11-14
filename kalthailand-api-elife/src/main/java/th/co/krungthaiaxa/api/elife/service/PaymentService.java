@@ -12,7 +12,7 @@ import th.co.krungthaiaxa.api.common.log.LogUtil;
 import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
 import th.co.krungthaiaxa.api.elife.exception.PaymentHasNewerCompletedException;
 import th.co.krungthaiaxa.api.elife.exception.PaymentNotFoundException;
-import th.co.krungthaiaxa.api.elife.line.LineService;
+import th.co.krungthaiaxa.api.elife.line.LinePayService;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.PaymentInformation;
 import th.co.krungthaiaxa.api.elife.model.PaymentNewerCompletedResult;
@@ -49,13 +49,13 @@ public class PaymentService {
     /**
      * Need getter-setter for mocking.
      */
-    private LineService lineService;
+    private LinePayService linePayService;
     private final PaymentRepository paymentRepository;
 
     @Inject
-    public PaymentService(PaymentRepository paymentRepository, LineService lineService) {
+    public PaymentService(PaymentRepository paymentRepository, LinePayService linePayService) {
         this.paymentRepository = paymentRepository;
-        this.lineService = lineService;
+        this.linePayService = linePayService;
     }
 
     //TODO should move to {@link PaymentQueryService}
@@ -182,7 +182,7 @@ public class PaymentService {
         PaymentInformation paymentInformation = new PaymentInformation();
         paymentInformation.setRejectionErrorCode(linePayResponse.getReturnCode());
         paymentInformation.setRejectionErrorMessage(linePayResponse.getReturnMessage());
-        if (linePayResponse.getReturnCode().equals(LineService.RESPONSE_CODE_SUCCESS)) {
+        if (linePayResponse.getReturnCode().equals(LinePayService.RESPONSE_CODE_SUCCESS)) {
             String msg = "Success payment " + ObjectMapperUtil.toString(payment) + ". Response: " + ObjectMapperUtil.toString(linePayResponse);
             paymentInformation.setStatus(SuccessErrorStatus.SUCCESS);
             paymentInformation.setMethod(msg);
@@ -243,7 +243,7 @@ public class PaymentService {
         if (!currencyCode.equals(payment.getAmount().getCurrencyCode())) {
             paymentInformationStatus = SuccessErrorStatus.ERROR;
             errorMessage = "Currencies are different";
-            errorCode = LineService.RESPONSE_CODE_ERROR_INTERNAL_LINEPAY;
+            errorCode = LinePayService.RESPONSE_CODE_ERROR_INTERNAL_LINEPAY;
         } else if (!isEmpty(errorCode) && !errorCode.equals("0000")) {
             paymentInformationStatus = SuccessErrorStatus.ERROR;
         } else {
@@ -293,12 +293,12 @@ public class PaymentService {
         }
     }
 
-    public LineService getLineService() {
-        return lineService;
+    public LinePayService getLinePayService() {
+        return linePayService;
     }
 
-    public void setLineService(LineService lineService) {
-        this.lineService = lineService;
+    public void setLinePayService(LinePayService linePayService) {
+        this.linePayService = linePayService;
     }
 
     /**
@@ -325,7 +325,7 @@ public class PaymentService {
         //Same as {@link PaymentService#updateByLinePayResponse(Payment, BaseLineResponse)}
         paymentInformation.setRejectionErrorCode(linePayResponse.getReturnCode());
         paymentInformation.setRejectionErrorMessage(linePayResponse.getReturnMessage());
-        if (LineService.RESPONSE_CODE_SUCCESS.equals(linePayResponse.getReturnCode())) {
+        if (LinePayService.RESPONSE_CODE_SUCCESS.equals(linePayResponse.getReturnCode())) {
             String msg = "Success payment " + ObjectMapperUtil.toString(payment) + ". Response: " + ObjectMapperUtil.toString(linePayResponse);
             paymentInformation.setStatus(SuccessErrorStatus.SUCCESS);
             paymentInformation.setRejectionErrorMessage(msg);

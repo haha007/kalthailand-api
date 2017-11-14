@@ -5,7 +5,8 @@ function HealthCheckService($http, $sce, $scope) {
     this.metrics = undefined;//Will be loaded from server
     this.showHealth();
     this.loadSetting();
-};
+}
+
 HealthCheckService.prototype.showHealth = function () {
     var self = this;
     self.$http.get(window.location.origin + '/api-elife/system-health', {}).then(
@@ -17,7 +18,19 @@ HealthCheckService.prototype.showHealth = function () {
             self.showErrorMessage(errorResponse.data);
         }
     );
+};
 
+HealthCheckService.prototype.migrateMidToUserId = function () {
+    var self = this;
+    self.$http.get(window.location.origin + '/api-elife/migrate-mid-user-id', {}).then(
+        function (successResponse) {
+            var modifiedCount = successResponse.data.modifiedCount;
+            self.showSuccessMessage(modifiedCount + " policy(s) converted!!");
+        },
+        function (errorResponse) {
+            self.showErrorMessage(errorResponse.data.userMessage);
+        }
+    );
 };
 
 HealthCheckService.prototype.addWarningEmail = function ($event) {

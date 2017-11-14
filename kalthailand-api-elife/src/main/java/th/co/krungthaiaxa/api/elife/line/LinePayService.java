@@ -11,8 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
-import th.co.krungthaiaxa.api.common.utils.JsonUtil;
 import th.co.krungthaiaxa.api.common.log.LogUtil;
+import th.co.krungthaiaxa.api.common.utils.JsonUtil;
 import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
 import th.co.krungthaiaxa.api.elife.exception.LineNotificationException;
 import th.co.krungthaiaxa.api.elife.exception.LinePaymentException;
@@ -43,13 +43,13 @@ import static org.springframework.http.HttpStatus.OK;
 import static th.co.krungthaiaxa.api.common.utils.JsonUtil.getJson;
 
 @Service
-public class LineService {
-    public final static Logger LOGGER = LoggerFactory.getLogger(LineService.class);
+public class LinePayService {
+    public final static Logger LOGGER = LoggerFactory.getLogger(LinePayService.class);
     public static final String RESPONSE_CODE_ERROR_NOT_ALLOWED_TO_ACCESS = "1106";
     public static final String RESPONSE_CODE_ERROR_MOCK_LINE_FAIL = "9001";
     public static final String RESPONSE_CODE_ERROR_NO_REGKEY = "1190";
     public static final String RESPONSE_CODE_ERROR_INTERNAL_LINEPAY = "9000";
-    public static final List<String> RESPONSE_CODES_ERROR_BY_INTERNAL_APP = Collections.unmodifiableList(Arrays.asList(LineService.RESPONSE_CODE_ERROR_INTERNAL_LINEPAY, LineService.RESPONSE_CODE_ERROR_NOT_ALLOWED_TO_ACCESS));
+    public static final List<String> RESPONSE_CODES_ERROR_BY_INTERNAL_APP = Collections.unmodifiableList(Arrays.asList(LinePayService.RESPONSE_CODE_ERROR_INTERNAL_LINEPAY, LinePayService.RESPONSE_CODE_ERROR_NOT_ALLOWED_TO_ACCESS));
     public static final String RESPONSE_CODE_SUCCESS = "0000";
 
     public static final int LINE_PUSH_NOTIFICATION_CHANNEL = 1383378250;
@@ -75,10 +75,16 @@ public class LineService {
     private RestTemplate restTemplate = new RestTemplate();
 
     @Inject
-    public LineService(LineTokenService lineTokenService) {
+    public LinePayService(LineTokenService lineTokenService) {
         this.lineTokenService = lineTokenService;
     }
 
+    /**
+     * @param messageContent message text
+     * @param mids           multiple mid
+     * @deprecated #link LinePayService V2
+     */
+    @Deprecated
     public void sendPushNotification(String messageContent, String... mids) {
         String msg = "LINE push [start]: mids: " + Arrays.toString(mids);
         Instant start = LogUtil.logStarting(msg);

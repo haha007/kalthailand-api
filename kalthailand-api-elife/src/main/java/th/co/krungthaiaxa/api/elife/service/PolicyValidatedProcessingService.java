@@ -13,7 +13,7 @@ import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
 import th.co.krungthaiaxa.api.common.validator.BeanValidator;
 import th.co.krungthaiaxa.api.elife.exception.LinePaymentException;
 import th.co.krungthaiaxa.api.elife.exception.PolicyValidatedProcessException;
-import th.co.krungthaiaxa.api.elife.line.LineService;
+import th.co.krungthaiaxa.api.elife.line.LinePayService;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayCaptureMode;
@@ -50,15 +50,15 @@ public class PolicyValidatedProcessingService {
     private final PaymentService paymentService;
     private final PolicyService policyService;
     private final BeanValidator beanValidator;
-    private LineService lineService;
+    private LinePayService linePayService;
     private final EreceiptService ereceiptService;
 
     @Autowired
-    public PolicyValidatedProcessingService(PaymentService paymentService, PolicyService policyService, LineService lineService, BeanValidator beanValidator, EreceiptService ereceiptService) {
+    public PolicyValidatedProcessingService(PaymentService paymentService, PolicyService policyService, LinePayService linePayService, BeanValidator beanValidator, EreceiptService ereceiptService) {
         this.paymentService = paymentService;
         this.policyService = policyService;
         this.beanValidator = beanValidator;
-        this.lineService = lineService;
+        this.linePayService = linePayService;
         this.ereceiptService = ereceiptService;
     }
 
@@ -86,7 +86,7 @@ public class PolicyValidatedProcessingService {
         LinePayResponse linePayResponse = null;
         if (linePayCaptureMode.equals(REAL)) {
             LOGGER.info("Will try to confirm payment with ID [" + paymentHasTransaction.getPaymentId() + "] and transation ID [" + paymentHasTransaction.getTransactionId() + "] on the policy with ID [" + policyId + "]");
-            linePayResponse = lineService.capturePayment(paymentHasTransaction.getTransactionId(), paymentHasTransaction.getAmount().getValue(), paymentHasTransaction.getAmount().getCurrencyCode());
+            linePayResponse = linePayService.capturePayment(paymentHasTransaction.getTransactionId(), paymentHasTransaction.getAmount().getValue(), paymentHasTransaction.getAmount().getCurrencyCode());
         } else if (linePayCaptureMode.equals(FAKE_WITH_ERROR)) {
             linePayResponse = new LinePayResponse();
             linePayResponse.setReturnCode("9999");
@@ -101,21 +101,21 @@ public class PolicyValidatedProcessingService {
             info.addPayInfo(payResponsePaymentInfo);
 
             linePayResponse = new LinePayResponse();
-            linePayResponse.setReturnCode(LineService.RESPONSE_CODE_SUCCESS);
+            linePayResponse.setReturnCode(LinePayService.RESPONSE_CODE_SUCCESS);
             linePayResponse.setReturnMessage("This is a fake call to Line Pay API with success");
             linePayResponse.setInfo(info);
         }
 
         if (linePayResponse == null) {
             throw new LinePaymentException("No way to call Line Pay capture API has been provided");
-        } else if (!LineService.RESPONSE_CODE_SUCCESS.equals(linePayResponse.getReturnCode())) {
+        } else if (!LinePayService.RESPONSE_CODE_SUCCESS.equals(linePayResponse.getReturnCode())) {
             String msg = "Confirming payment didn't go through. Error code is [" + linePayResponse.getReturnCode() + "], error message is [" + linePayResponse.getReturnMessage() + "]";
             throw new LinePaymentException(msg);
         }
 
         // Update the payment if confirm is success
         //TODO should put in some common method: update payment after recap success from linePay.
-        if (LineService.RESPONSE_CODE_SUCCESS.equals(linePayResponse.getReturnCode())) {
+        if (LinePayService.RESPONSE_CODE_SUCCESS.equals(linePayResponse.getReturnCode())) {
             EreceiptNumber ereceiptNumber = ereceiptService.generateEreceiptFullNumber(newBusiness);
             paymentHasTransaction.setReceiptNumber(ereceiptNumber);
             paymentHasTransaction.setNewBusiness(newBusiness);
@@ -194,7 +194,7 @@ public class PolicyValidatedProcessingService {
         }
     }
 
-    public void setLineService(LineService lineService) {
-        this.lineService = lineService;
+    public void setLinePayService(LinePayService linePayService) {
+        this.linePayService = linePayService;
     }
 }

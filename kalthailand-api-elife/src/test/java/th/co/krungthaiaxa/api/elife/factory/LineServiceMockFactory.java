@@ -3,10 +3,10 @@ package th.co.krungthaiaxa.api.elife.factory;
 import org.mockito.exceptions.misusing.MockitoConfigurationException;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import th.co.krungthaiaxa.api.elife.line.LinePayService;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayRecurringResponse;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayRecurringResponseInfo;
 import th.co.krungthaiaxa.api.elife.model.line.LinePayResponse;
-import th.co.krungthaiaxa.api.elife.line.LineService;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -20,27 +20,27 @@ import static org.mockito.Mockito.when;
  * @author khoi.tran on 8/27/16.
  */
 public class LineServiceMockFactory {
-    public static LineService initServiceDefault() {
-        return initServiceWithResponseCode(LineService.RESPONSE_CODE_SUCCESS);
+    public static LinePayService initServiceDefault() {
+        return initServiceWithResponseCode(LinePayService.RESPONSE_CODE_SUCCESS);
     }
 
     /**
-     * @param responseCode view more in {@link LineService#RESPONSE_CODE_SUCCESS}
+     * @param responseCode view more in {@link LinePayService#RESPONSE_CODE_SUCCESS}
      * @return
      */
-    public static LineService initServiceWithResponseCode(String responseCode) {
-        LineService lineService = mock(LineService.class);
+    public static LinePayService initServiceWithResponseCode(String responseCode) {
+        LinePayService linePayService = mock(LinePayService.class);
         try {
-            preApproveWithResponseCode(lineService, responseCode);
-            capturePayment(lineService, responseCode);
+            preApproveWithResponseCode(linePayService, responseCode);
+            capturePayment(linePayService, responseCode);
         } catch (IOException e) {
             throw new MockitoConfigurationException("Cannot create mock", e);
         }
-        return lineService;
+        return linePayService;
     }
 
-    private static void preApproveWithResponseCode(LineService lineService, String responseCode) throws IOException {
-        when(lineService.preApproved(anyString(), anyDouble(), anyString(), anyString(), anyString())).thenAnswer(new Answer<LinePayRecurringResponse>() {
+    private static void preApproveWithResponseCode(LinePayService linePayService, String responseCode) throws IOException {
+        when(linePayService.preApproved(anyString(), anyDouble(), anyString(), anyString(), anyString())).thenAnswer(new Answer<LinePayRecurringResponse>() {
 
             @Override
             public LinePayRecurringResponse answer(InvocationOnMock invocationOnMock) throws Throwable {
@@ -63,8 +63,8 @@ public class LineServiceMockFactory {
         });
     }
 
-    private static void capturePayment(LineService lineService, String responseCode) throws IOException {
-        when(lineService.capturePayment(anyString(), anyDouble(), anyString())).thenAnswer(new Answer<LinePayResponse>() {
+    private static void capturePayment(LinePayService linePayService, String responseCode) throws IOException {
+        when(linePayService.capturePayment(anyString(), anyDouble(), anyString())).thenAnswer(new Answer<LinePayResponse>() {
 
             @Override
             public LinePayResponse answer(InvocationOnMock invocationOnMock) throws Throwable {

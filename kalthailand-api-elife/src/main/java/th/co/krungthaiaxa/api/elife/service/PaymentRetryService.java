@@ -15,7 +15,8 @@ import th.co.krungthaiaxa.api.elife.ereceipt.EreceiptService;
 import th.co.krungthaiaxa.api.elife.exception.LinePaymentException;
 import th.co.krungthaiaxa.api.elife.generalsetting.GeneralSetting;
 import th.co.krungthaiaxa.api.elife.generalsetting.GeneralSettingService;
-import th.co.krungthaiaxa.api.elife.line.LineService;
+import th.co.krungthaiaxa.api.elife.line.LinePayService;
+import th.co.krungthaiaxa.api.elife.line.v2.service.LineService;
 import th.co.krungthaiaxa.api.elife.model.Document;
 import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.model.Payment;
@@ -43,7 +44,8 @@ public class PaymentRetryService {
     /**
      * Need getter-setter for mocking.
      */
-    private LineService lineService;
+    private final LineService lineService;
+    private LinePayService linePayService;
     private final EreceiptService ereceiptService;
     private final PolicyService policyService;
     private final PaymentService paymentService;
@@ -53,13 +55,22 @@ public class PaymentRetryService {
     private final GeneralSettingService generalSettingService;
 
     @Inject
-    public PaymentRetryService(GeneralSettingService generalSettingService, PaymentRepository paymentRepository, PolicyService policyService, LineService lineService, ElifeEmailService emailService, EreceiptService ereceiptService,
-            MessageSource messageSource, PaymentService paymentService) {
+    public PaymentRetryService(
+            GeneralSettingService generalSettingService,
+            PaymentRepository paymentRepository,
+            PolicyService policyService,
+            LineService lineService,
+            ElifeEmailService emailService,
+            EreceiptService ereceiptService,
+            MessageSource messageSource,
+            PaymentService paymentService,
+            LinePayService linePayService) {
         this.paymentService = paymentService;
         this.generalSettingService = generalSettingService;
         this.paymentRepository = paymentRepository;
         this.policyService = policyService;
         this.lineService = lineService;
+        this.linePayService = linePayService;
         this.emailService = emailService;
         this.ereceiptService = ereceiptService;
         this.messageSource = messageSource;
@@ -102,11 +113,11 @@ public class PaymentRetryService {
         LinePayResponse linePayResponse = null;
         try {
             LOGGER.debug("Will try to confirm payment with transation ID [" + transactionId + "] on the policy with ID [" + policyId + "]");
-            linePayResponse = lineService.capturePayment(transactionId, retryPayment.getAmount().getValue(), retryPayment.getAmount().getCurrencyCode());
+            linePayResponse = linePayService.capturePayment(transactionId, retryPayment.getAmount().getValue(), retryPayment.getAmount().getCurrencyCode());
         } catch (Exception e) {
             throw new LinePaymentException("Unable to confirm the payment in the policy with ID [" + policyId + "]", e);
         } finally {
-            if (linePayResponse != null && LineService.RESPONSE_CODE_SUCCESS.equals(linePayResponse.getReturnCode())) {
+            if (linePayResponse != null && LinePayService.RESPONSE_CODE_SUCCESS.equals(linePayResponse.getReturnCode())) {
                 EreceiptNumber ereceiptNumber = ereceiptService.generateEreceiptFullNumber(newBusiness);
                 retryPayment.setReceiptNumber(ereceiptNumber);
                 retryPayment.setNewBusiness(newBusiness);
@@ -157,18 +168,19 @@ public class PaymentRetryService {
         }
         Pair<byte[], String> ereceiptAttachment = policyService.findEreceiptAttachmentByDocumentId(policy.getPolicyId(), ereceiptPdfDocument.getId());
         emailService.sendEmails(toEmails, emailSubject, emailContent
-                //EmailElifeUtil.initImagePairs("logo")
                 , Arrays.asList(ereceiptAttachment));
     }
 
     private void sendRetryPaymentSuccessLineNotificationToInsuredPerson(Policy policy) {
-        String mid = ProductUtils.getMid(policy);
+        Insured mainInsured = ProductUtils.validateMainInsured(policy);
+        String lineUserId = lineService.getLineUserIdFromInsure(mainInsured);
         String notificationMessage = IOUtil.loadTextFileInClassPath("/line-notification/line-notification-payment-retry-success.txt");
         notificationMessage = notificationMessage.replaceAll("%POLICY_NUMBER%", policy.getPolicyId());
-        lineService.sendPushNotification(notificationMessage, mid);
+        lineService.pushTextMessage(lineUserId, notificationMessage);
     }
 
-    public void setLineService(LineService lineService) {
-        this.lineService = lineService;
+    public void setLinePayService(LinePayService linePayService) {
+        this.linePayService = linePayService;
     }
+
 }

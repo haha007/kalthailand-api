@@ -28,7 +28,7 @@ import th.co.krungthaiaxa.api.elife.factory.PolicyFactory;
 import th.co.krungthaiaxa.api.elife.factory.QuoteFactory;
 import th.co.krungthaiaxa.api.elife.factory.RequestFactory;
 import th.co.krungthaiaxa.api.elife.factory.productquotation.ProductQuotationFactory;
-import th.co.krungthaiaxa.api.elife.line.LineService;
+import th.co.krungthaiaxa.api.elife.line.LinePayService;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.PaymentInformation;
 import th.co.krungthaiaxa.api.elife.model.PaymentNewerCompletedResult;
@@ -61,7 +61,7 @@ public class PaymentRetryServiceTest extends ELifeTest {
     private CollectionFileProcessingService rlsService;
     @Inject
     private CollectionFileImportingService collectionFileImportingService;
-    private LineService lineService;
+    private LinePayService linePayService;
 
     @Inject
     private CollectionFileFactory collectionFileFactory;
@@ -100,7 +100,7 @@ public class PaymentRetryServiceTest extends ELifeTest {
         Assert.assertNull(paymentNewerCompletedResult.getNewerCompletedPayment());
 
         //02 -  Retry payment
-        setupLineServiceWithResponseCode(LineService.RESPONSE_CODE_SUCCESS);
+        setupLineServiceWithResponseCode(LinePayService.RESPONSE_CODE_SUCCESS);
         testRetryFailedPaymentInCollection(policyWithFirstFailPayment.collectionFile, policyWithFirstFailPayment.policy);
 
         GreenMailUtil.writeReceiveMessagesToFiles(greenMail, TestUtil.PATH_TEST_RESULT + "/emails");
@@ -178,7 +178,7 @@ public class PaymentRetryServiceTest extends ELifeTest {
             test01_iProtect_payment_fail_should_has_result_in_collection();
         }
         //Retry the fail payment:
-        setupLineServiceWithResponseCode(LineService.RESPONSE_CODE_SUCCESS);
+        setupLineServiceWithResponseCode(LinePayService.RESPONSE_CODE_SUCCESS);
         RetryPaymentResult retryPaymentResult = testRetryFailedPaymentInCollection(COLLECTION_FILE, POLICY);
         PAYMENT_02_RETRY = retryPaymentResult.retryPayment;
 
@@ -281,10 +281,10 @@ public class PaymentRetryServiceTest extends ELifeTest {
     }
 
     private void setupLineServiceWithResponseCode(String lineResponseCode) {
-        lineService = LineServiceMockFactory.initServiceWithResponseCode(lineResponseCode);
-        paymentService.setLineService(lineService);
-        paymentRetryService.setLineService(lineService);
-        rlsService.setLineService(lineService);
+        linePayService = LineServiceMockFactory.initServiceWithResponseCode(lineResponseCode);
+        paymentService.setLinePayService(linePayService);
+        paymentRetryService.setLinePayService(linePayService);
+        rlsService.setLinePayService(linePayService);
     }
 
     private DeductionFileLine getDeductionFileLineByPolicyNumber(CollectionFile collectionFile, String policyNumber) {
