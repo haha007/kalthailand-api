@@ -3,10 +3,6 @@ package th.co.krungthaiaxa.api.elife.customer.campaign.careCoordination.model;
 import io.swagger.annotations.ApiModelProperty;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
-import th.co.krungthaiaxa.api.common.utils.Constants;
-
-import javax.annotation.RegEx;
-import javax.validation.constraints.Pattern;
 
 /**
  * @author tuong.le on 10/31/17.
@@ -17,10 +13,7 @@ public class CareCoordinationForm {
     @NotBlank
     private String name;
 
-    @ApiModelProperty(value = "Policy Id", required = true)
-    @NotBlank
-    @RegEx
-    @Pattern(regexp = Constants.POLICY_REGEX, message = "incorrect policy format")
+    @ApiModelProperty(value = "Policy Id/National Id", required = true)
     private String policyId;
 
     @ApiModelProperty(value = "Mobile Phone", required = true)
@@ -28,7 +21,6 @@ public class CareCoordinationForm {
     private String phoneNumber;
 
     @ApiModelProperty(value = "Email", required = true)
-    @NotBlank
     @Email
     private String email;
 
