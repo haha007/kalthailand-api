@@ -9,14 +9,19 @@ import th.co.krungthaiaxa.api.elife.client.SigningClient;
 import th.co.krungthaiaxa.api.elife.exception.EreceiptDocumentException;
 import th.co.krungthaiaxa.api.elife.model.Document;
 import th.co.krungthaiaxa.api.elife.model.DocumentReferenceType;
+import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.enums.DocumentType;
+import th.co.krungthaiaxa.api.elife.products.utils.ProductUtils;
 import th.co.krungthaiaxa.api.elife.repository.PaymentRepository;
 import th.co.krungthaiaxa.api.elife.service.DocumentService;
 
 import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 import java.util.Base64;
+
+import static th.co.krungthaiaxa.api.elife.client.SigningClient.PASSWORD_DOB_PATTERN;
 
 /**
  * @author khoi.tran on 10/25/16.
@@ -55,16 +60,22 @@ public class EreceiptService {
      * @return
      * @throws EreceiptDocumentException if there's something wrong while creating ereceipt pdf.
      */
-    public Document addEreceiptPdf(Policy policy, Payment payment, boolean newBusiness, String accessToken) {
+    public Document addEReceiptPdf(Policy policy, Payment payment, boolean newBusiness, String accessToken) {
+        final Insured mainInsured = ProductUtils.validateMainInsured(policy);
+        final String passwordProtected =
+                mainInsured.getPerson().getBirthDate().format(DateTimeFormatter.ofPattern(PASSWORD_DOB_PATTERN));
         byte[] decodedNonSignedPdf = ereceiptPdfService.createEreceiptPdf(policy, payment, newBusiness);
         byte[] encodedNonSignedPdf = Base64.getEncoder().encode(decodedNonSignedPdf);
-        byte[] encodedSignedPdf = signingClient.getEncodedSignedPdfDocument(encodedNonSignedPdf, accessToken);
+        byte[] encodedSignedPdf =
+                signingClient.getEncodedSignedPdfWithPassword(encodedNonSignedPdf, passwordProtected, accessToken);
         byte[] decodedSignedPdf = Base64.getDecoder().decode(encodedSignedPdf);
-        return addEreceiptPdf(policy, payment, decodedSignedPdf, "application/pdf");
+        return addEReceiptPdf(policy, payment, decodedSignedPdf, "application/pdf");
     }
 
-    public Document addEreceiptPdf(Policy policy, Payment payment, byte[] decodedContent, String mimeType) {
-        Document document = documentService.addDocument(policy, decodedContent, mimeType, DocumentType.ERECEIPT_PDF, DocumentReferenceType.PAYMENT, payment.getPaymentId());
+    private Document addEReceiptPdf(Policy policy, Payment payment, byte[] decodedContent, String mimeType) {
+        Document document = documentService.addDocument(
+                policy, decodedContent, mimeType, DocumentType.ERECEIPT_PDF,
+                DocumentReferenceType.PAYMENT, payment.getPaymentId());
         payment.setReceiptPdfDocument(document);
         paymentRepository.save(payment);
         return document;

@@ -94,7 +94,7 @@ public class PolicyDocumentService {
         Payment firstPayment = paymentQueryService.validateExistFirstPaymentOrderById(policy.getPolicyId());
         Optional<Document> ereceiptPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(ERECEIPT_PDF)).findFirst();
         if (!ereceiptPdf.isPresent()) {
-            ereceiptService.addEreceiptPdf(policy, firstPayment, newBusiness, token);
+            ereceiptService.addEReceiptPdf(policy, firstPayment, newBusiness, token);
         } else {
             LOGGER.debug("Signed ereceipt pdf already exists.");
         }

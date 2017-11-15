@@ -148,7 +148,7 @@ public class PaymentRetryService {
     private void sendRetryPaymentSuccessEmailToInsuredPersonAndMarketingTeam(Policy policy, Payment payment, String accessToken) {
         Insured mainInsured = ProductUtils.validateExistMainInsured(policy);
 
-        Document ereceiptPdfDocument = ereceiptService.addEreceiptPdf(policy, payment, false, accessToken);
+        Document ereceiptPdfDocument = ereceiptService.addEReceiptPdf(policy, payment, false, accessToken);
         String emailSubject = messageSource.getMessage("email.payment.retry.success.title", null, LocaleUtil.THAI_LOCALE);
         String emailContent = IOUtil.loadTextFileInClassPath("/email-content/email-retrypayment-success.html");
 
