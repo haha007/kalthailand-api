@@ -27,10 +27,8 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 
 /**
  * @deprecated should use {@link th.co.krungthaiaxa.api.elife.products.ProductEmailService} or {@link ElifeEmailService}
@@ -43,6 +41,7 @@ public class EmailService {
     private final SaleIllustration10ECService saleIllustration10ECService;
     private final SaleIllustrationiFineService saleIllustrationiFineService;
     private final IProtectQuoteEmailService iProtectEmailService;
+    private final SigningDocumentService signingDocumentService;
     @Value("${email.name}")
     private String emailName;
     @Value("${email.subject.quote}")
@@ -57,11 +56,12 @@ public class EmailService {
     private Locale thLocale = new Locale("th", "");
 
     @Inject
-    public EmailService(EmailSender emailSender, SaleIllustration10ECService saleIllustration10ECService, SaleIllustrationiFineService saleIllustrationiFineService, IProtectQuoteEmailService iProtectEmailService) {
+    public EmailService(EmailSender emailSender, SaleIllustration10ECService saleIllustration10ECService, SaleIllustrationiFineService saleIllustrationiFineService, IProtectQuoteEmailService iProtectEmailService, SigningDocumentService signingDocumentService) {
         this.emailSender = emailSender;
         this.saleIllustration10ECService = saleIllustration10ECService;
         this.saleIllustrationiFineService = saleIllustrationiFineService;
         this.iProtectEmailService = iProtectEmailService;
+        this.signingDocumentService = signingDocumentService;
     }
 
 //
@@ -74,7 +74,7 @@ public class EmailService {
 //        logger.debug("The email was sent to {}", toEmail);
 //    }
 
-    public void sendQuote10ECEmail(Quote quote, String base64Image) {
+    public void sendQuote10ECEmail(Quote quote, String base64Image, String accessToken) {
         logger.info("Sending quote 10EC email");
         List<Pair<byte[], String>> base64ImgFileNames = new ArrayList<>();
         base64ImgFileNames.add(Pair.of(Base64.getDecoder().decode(base64Image), "<imageElife2>"));
@@ -82,19 +82,22 @@ public class EmailService {
         base64ImgFileNames.add(Pair.of(IOUtil.loadBinaryFileInClassPath("/images/email/benefitBlue.jpg"), "<benefitRed>"));
         base64ImgFileNames.add(Pair.of(IOUtil.loadBinaryFileInClassPath("/images/email/benefitGreen.jpg"), "<benefitGreen>"));
         base64ImgFileNames.add(Pair.of(IOUtil.loadBinaryFileInClassPath("/images/email/benefitPoint.jpg"), "<benefitPoint>"));
-        //generate sale illustration 10EC pdf file
-        List<Pair<byte[], String>> attachments = new ArrayList<>();
-        attachments.add(saleIllustration10ECService.generatePDF(quote, base64Image));
+
+        Pair<byte[], String> attachmentPDFFile = saleIllustration10ECService.generatePDF(quote, base64Image);
+        byte[] signedPdf = signingDocumentService.signPDFFile(attachmentPDFFile.getLeft(), accessToken);
+        List<Pair<byte[], String>> attachments = Collections.singletonList(Pair.of(signedPdf, attachmentPDFFile.getRight()));
         emailSender.sendEmail(emailName, quote.getInsureds().get(0).getPerson().getEmail(), subject, getQuote10ECEmailContent(quote), base64ImgFileNames, attachments);
         logger.info("Quote email sent");
     }
 
-    public void sendQuoteiFineEmail(Quote quote) {
+    public void sendQuoteiFineEmail(Quote quote, String accessToken) {
         logger.info("Sending quote iFine email");
-        List<Pair<byte[], String>> base64ImgFileNames = new ArrayList<>();
-//        base64ImgFileNames.add(Pair.of(IOUtil.loadBinaryFileInClassPath("/images/email/logo.png"), "<imageLogo>"));
-        List<Pair<byte[], String>> attachments = new ArrayList<>();
-        attachments.add(saleIllustrationiFineService.generatePDF(quote));
+
+        Pair<byte[], String> attachmentPDFFile = saleIllustrationiFineService.generatePDF(quote);
+        byte[] signedPdf = signingDocumentService.signPDFFile(attachmentPDFFile.getLeft(), accessToken);
+
+        final List<Pair<byte[], String>> attachments = Collections.singletonList(Pair.of(signedPdf, attachmentPDFFile.getRight()));
+        final List<Pair<byte[], String>> base64ImgFileNames = Collections.singletonList(Pair.of(IOUtil.loadBinaryFileInClassPath("/images/email/logo.png"), "<imageLogo>"));
         emailSender.sendEmail(emailName, quote.getInsureds().get(0).getPerson().getEmail(), subject, getQuoteiFineEmailContent(quote), base64ImgFileNames, attachments);
     }
 
@@ -252,7 +255,7 @@ public class EmailService {
         return "https://line.me/R/ch/" + lineId + "/elife/th/";
     }
 
-    public void sendQuoteIProtect(Quote quote) {
-        iProtectEmailService.sendQuoteEmail(quote);
+    public void sendQuoteIProtect(Quote quote, String accessToken) {
+        iProtectEmailService.sendQuoteEmail(quote, accessToken);
     }
 }

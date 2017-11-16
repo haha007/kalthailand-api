@@ -16,6 +16,7 @@ import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
 import th.co.krungthaiaxa.api.elife.exception.PolicyValidatedProcessException;
 import th.co.krungthaiaxa.api.elife.exception.PolicyValidationException;
 import th.co.krungthaiaxa.api.elife.factory.PolicyFactory;
+import th.co.krungthaiaxa.api.elife.factory.RequestFactory;
 import th.co.krungthaiaxa.api.elife.factory.productquotation.ProductQuotationFactory;
 import th.co.krungthaiaxa.api.elife.model.Payment;
 import th.co.krungthaiaxa.api.elife.model.Policy;
@@ -253,8 +254,9 @@ public class PolicyServiceTest extends ELifeTest {
     @Test
     public void should_update_policy_status_to_pending_validation_and_attach_2_documents() {
         Policy policy = getPolicy();
+        final String accessToken = RequestFactory.generateAccessToken();
 
-        policyService.updatePolicyStatusToPendingValidation(policy);
+        policyService.updatePolicyStatusToPendingValidation(policy, accessToken);
 
         Assertions.assertThat(policy.getStatus()).isEqualTo(PolicyStatus.PENDING_VALIDATION);
         Assertions.assertThat(policy.getDocuments()).hasSize(2);
@@ -262,9 +264,10 @@ public class PolicyServiceTest extends ELifeTest {
 
     @Test
     public void should_send_one_email_when_policy_status_is_set_to_pending_validation() {
+        final String accessToken = RequestFactory.generateAccessToken();
         Policy policy = getPolicy();
 
-        policyService.updatePolicyStatusToPendingValidation(policy);
+        policyService.updatePolicyStatusToPendingValidation(policy, accessToken);
 
         assertThat(greenMail.getReceivedMessages()).hasSize(1);
     }

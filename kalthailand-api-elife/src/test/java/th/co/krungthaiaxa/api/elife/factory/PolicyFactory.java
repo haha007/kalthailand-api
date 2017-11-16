@@ -74,7 +74,7 @@ public class PolicyFactory {
         String regKey = PaymentFactory.generatePaymentRegKey();
         //Change status to PendingValidation
         paymentService.updatePayment(payment, orderId, transactionId, regKey);
-        policyService.updatePolicyStatusToPendingValidation(policy);
+        policyService.updatePolicyStatusToPendingValidation(policy, RequestFactory.generateAccessToken());
         return policy;
     }
 
