@@ -9,14 +9,13 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
 import th.co.krungthaiaxa.api.elife.client.SigningClient;
 import th.co.krungthaiaxa.api.elife.factory.PolicyFactory;
+import th.co.krungthaiaxa.api.elife.factory.RequestFactory;
 import th.co.krungthaiaxa.api.elife.factory.productquotation.ProductQuotationFactory;
 import th.co.krungthaiaxa.api.elife.model.Document;
 import th.co.krungthaiaxa.api.elife.model.DocumentDownload;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.service.DocumentService;
 import th.co.krungthaiaxa.api.elife.service.PolicyDocumentService;
-import th.co.krungthaiaxa.api.elife.service.PolicyService;
-import th.co.krungthaiaxa.api.elife.service.QuoteService;
 import th.co.krungthaiaxa.api.elife.test.ELifeTest;
 
 import javax.inject.Inject;
@@ -36,21 +35,18 @@ public class SigningClientTest extends ELifeTest {
     @Inject
     private PolicyDocumentService policyDocumentService;
     @Inject
-    private PolicyService policyService;
-    @Inject
-    private QuoteService quoteService;
-    @Inject
     private SigningClient signingClient;
     @Inject
     private PolicyFactory policyFactory;
 
     @Test
     public void should_get_signed_application_form() throws IOException {
+        final String accessToken = RequestFactory.generateAccessToken();
         Policy policy = policyFactory.createPolicyWithPendingValidationStatus(ProductQuotationFactory.constructIGenDefault());
-        policyDocumentService.generateDocumentsForPendingValidationPolicy(policy);
+        policyDocumentService.generateDocumentsForPendingValidationPolicy(policy, accessToken);
         Optional<Document> applicationFormPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(APPLICATION_FORM)).findFirst();
         DocumentDownload documentDownload = documentService.findDocumentDownload(applicationFormPdf.get().getId());
-        byte[] encodedSignedDocument = signingClient.getEncodedSignedPdfDocument(documentDownload.getContent().getBytes(), "token");
+        byte[] encodedSignedDocument = signingClient.getEncodedSignedPdfDocument(documentDownload.getContent().getBytes(), accessToken);
         assertThat(encodedSignedDocument).isNotNull();
     }
 

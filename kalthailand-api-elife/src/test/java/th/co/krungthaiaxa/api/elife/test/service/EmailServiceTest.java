@@ -22,6 +22,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
 import th.co.krungthaiaxa.api.elife.factory.PolicyFactory;
 import th.co.krungthaiaxa.api.elife.factory.QuoteFactory;
+import th.co.krungthaiaxa.api.elife.factory.RequestFactory;
 import th.co.krungthaiaxa.api.elife.factory.productquotation.ProductQuotationFactory;
 import th.co.krungthaiaxa.api.elife.model.Amount;
 import th.co.krungthaiaxa.api.elife.model.Document;
@@ -128,7 +129,7 @@ public class EmailServiceTest extends ELifeTest {
     @Test
     public void should_send_quote_iprotect_email_monthly_with_proper_from_address() throws Exception {
         Quote quote = quoteFactory.createDefaultIProtectQuoteForLine(55, TestUtil.TESTING_EMAIL);
-        emailService.sendQuoteIProtect(quote);
+        emailService.sendQuoteIProtect(quote, RequestFactory.generateAccessToken());
         assertThat(greenMail.getReceivedMessages()).hasSize(1);
         MimeMessage email = greenMail.getReceivedMessages()[0];
         assertThat(email.getFrom()).containsOnly(new InternetAddress(emailName));
@@ -152,7 +153,7 @@ public class EmailServiceTest extends ELifeTest {
         periodicity.setCode(PeriodicityCode.EVERY_YEAR);
         quote.getPremiumsData().getFinancialScheduler().setPeriodicity(periodicity);
 
-        emailService.sendQuoteIProtect(quote);
+        emailService.sendQuoteIProtect(quote, RequestFactory.generateAccessToken());
         assertThat(greenMail.getReceivedMessages()).hasSize(1);
         MimeMessage email = greenMail.getReceivedMessages()[0];
         assertThat(email.getFrom()).containsOnly(new InternetAddress(emailName));
@@ -165,7 +166,7 @@ public class EmailServiceTest extends ELifeTest {
         quote = quoteService.updateProfessionNameAndCheckBlackList(quote, "token");
         quote.getInsureds().get(0).getPerson().setEmail(TestUtil.TESTING_EMAIL);
         //quote.getInsureds().get(0).getPerson().setEmail(TestUtil.TESTING_EMAIL);
-        emailService.sendQuoteiFineEmail(quote);
+        emailService.sendQuoteiFineEmail(quote, RequestFactory.generateAccessToken());
         assertThat(greenMail.getReceivedMessages()).hasSize(1);
         MimeMessage email = greenMail.getReceivedMessages()[0];
         assertThat(email.getFrom()).containsOnly(new InternetAddress(emailName));
@@ -177,7 +178,7 @@ public class EmailServiceTest extends ELifeTest {
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateProfessionNameAndCheckBlackList(quote, "token");
 
-        emailService.sendQuote10ECEmail(quote, base64Graph);
+        emailService.sendQuote10ECEmail(quote, base64Graph, RequestFactory.generateAccessToken());
 
         assertThat(greenMail.getReceivedMessages()).hasSize(1);
         MimeMessage email = greenMail.getReceivedMessages()[0];
@@ -293,7 +294,7 @@ public class EmailServiceTest extends ELifeTest {
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateProfessionNameAndCheckBlackList(quote, "token");
 
-        emailService.sendQuote10ECEmail(quote, base64Graph);
+        emailService.sendQuote10ECEmail(quote, base64Graph, RequestFactory.generateAccessToken());
 
         assertThat(greenMail.getReceivedMessages()).hasSize(1);
         MimeMessage email = greenMail.getReceivedMessages()[0];
@@ -306,7 +307,7 @@ public class EmailServiceTest extends ELifeTest {
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateProfessionNameAndCheckBlackList(quote, "token");
 
-        emailService.sendQuote10ECEmail(quote, base64Graph);
+        emailService.sendQuote10ECEmail(quote, base64Graph, RequestFactory.generateAccessToken());
 
         assertThat(greenMail.getReceivedMessages()).hasSize(1);
         MimeMessage email = greenMail.getReceivedMessages()[0];
@@ -323,7 +324,7 @@ public class EmailServiceTest extends ELifeTest {
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateProfessionNameAndCheckBlackList(quote, "token");
 
-        emailService.sendQuote10ECEmail(quote, base64Graph);
+        emailService.sendQuote10ECEmail(quote, base64Graph, RequestFactory.generateAccessToken());
 
         assertThat(greenMail.getReceivedMessages()).hasSize(1);
         MimeMessage email = greenMail.getReceivedMessages()[0];
@@ -340,7 +341,7 @@ public class EmailServiceTest extends ELifeTest {
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateProfessionNameAndCheckBlackList(quote, "token");
 
-        emailService.sendQuote10ECEmail(quote, base64Graph);
+        emailService.sendQuote10ECEmail(quote, base64Graph, RequestFactory.generateAccessToken());
 
         assertThat(greenMail.getReceivedMessages()).hasSize(1);
         MimeMessage email = greenMail.getReceivedMessages()[0];
@@ -357,7 +358,7 @@ public class EmailServiceTest extends ELifeTest {
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateProfessionNameAndCheckBlackList(quote, "token");
 
-        emailService.sendQuote10ECEmail(quote, base64Graph);
+        emailService.sendQuote10ECEmail(quote, base64Graph, RequestFactory.generateAccessToken());
 
         assertThat(greenMail.getReceivedMessages()).hasSize(1);
         MimeMessage email = greenMail.getReceivedMessages()[0];
@@ -384,7 +385,7 @@ public class EmailServiceTest extends ELifeTest {
         quote(quote, beneficiary(100.0));
         quote = quoteService.updateProfessionNameAndCheckBlackList(quote, "token");
 
-        emailService.sendQuote10ECEmail(quote, base64Graph);
+        emailService.sendQuote10ECEmail(quote, base64Graph, RequestFactory.generateAccessToken());
 
         assertThat(greenMail.getReceivedMessages()).hasSize(1);
         MimeMessage email = greenMail.getReceivedMessages()[0];

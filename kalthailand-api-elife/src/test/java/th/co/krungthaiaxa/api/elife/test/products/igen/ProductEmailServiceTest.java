@@ -16,6 +16,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
 import th.co.krungthaiaxa.api.elife.factory.QuoteFactory;
+import th.co.krungthaiaxa.api.elife.factory.RequestFactory;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.products.ProductEmailService;
 import th.co.krungthaiaxa.api.elife.service.QuoteService;
@@ -72,7 +73,7 @@ public class ProductEmailServiceTest extends ELifeTest {
     private void test_send_quote_email(QuoteFactory.QuoteResult quoteResult) throws IOException, MessagingException {
         Quote quote = quoteResult.getQuote();
         Date date = new Date();
-        productEmailService.sendQuoteEmail(quote.getQuoteId(), quoteResult.getSessionId(), quoteResult.getChannelType(), null);
+        productEmailService.sendQuoteEmail(quote.getQuoteId(), quoteResult.getSessionId(), quoteResult.getChannelType(), null, RequestFactory.generateAccessToken());
         GreenMailUtil.writeReceiveMessagesToFiles(greenMail, TestUtil.PATH_TEST_RESULT + "emails");
         assertSentEmail(greenMail);
     }
