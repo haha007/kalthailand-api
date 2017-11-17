@@ -127,4 +127,19 @@ public class SigningDocumentServiceTest extends ELifeTest {
         FileUtils.writeByteArrayToFile(new File(TestUtil.PATH_TEST_RESULT + "10ec-sale-illustration_" + pair.getRight()), signedPDF);
 
     }
+
+    @Test
+    public void should_generate_eReceipt_with_password_protected() throws Exception {
+        Quote quote = quoteService.createQuote(randomNumeric(20), LINE, productQuotation());
+        quote(quote, beneficiary(100.0));
+        quote = quoteService.updateProfessionNameAndCheckBlackList(quote, RequestFactory.generateAccessToken());
+
+        Pair<byte[], String> pair = saleIllustration10ECService.generatePDF(quote, "");
+        assertThat(pair.getLeft()).isNotEmpty();
+        assertThat(pair.getRight()).isNotEmpty();
+
+        byte[] signedPDF = signingDocumentService.signPDFFileWithPassword(pair.getLeft(), "10061992", RequestFactory.generateAccessToken());
+        FileUtils.writeByteArrayToFile(new File(TestUtil.PATH_TEST_RESULT + "10ec-sale-illustration_with_password_10061992" + pair.getRight()), signedPDF);
+
+    }
 }
