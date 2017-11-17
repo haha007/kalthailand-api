@@ -98,17 +98,18 @@ public class DocumentServiceTest extends ELifeTest {
     public void should_have_2_documents_generated_when_policy_is_waiting_for_payment() throws Exception {
         ProductQuotation productQuotation = ProductQuotationFactory.constructIGenDefaultWithMonthlyPayment();
         Policy policy = policyFactory.createPolicyWithPendingValidationStatus(productQuotation);
-        policyDocumentService.generateDocumentsForPendingValidationPolicy(policy);
+        policyDocumentService.generateDocumentsForPendingValidationPolicy(policy, RequestFactory.generateAccessToken());
         assertThat(policy.getDocuments()).extracting("typeName").containsExactly(APPLICATION_FORM, DA_FORM);
     }
 
     @Test
     public void should_still_have_only_2_documents_even_after_generating_more_than_once() throws Exception {
+        final String accessToken = RequestFactory.generateAccessToken();
         ProductQuotation productQuotation = ProductQuotationFactory.constructIGenDefaultWithMonthlyPayment();
         Policy policy = policyFactory.createPolicyWithPendingValidationStatus(productQuotation);
-        policyDocumentService.generateDocumentsForPendingValidationPolicy(policy);
-        policyDocumentService.generateDocumentsForPendingValidationPolicy(policy);
-        policyDocumentService.generateDocumentsForPendingValidationPolicy(policy);
+        policyDocumentService.generateDocumentsForPendingValidationPolicy(policy, accessToken);
+        policyDocumentService.generateDocumentsForPendingValidationPolicy(policy, accessToken);
+        policyDocumentService.generateDocumentsForPendingValidationPolicy(policy, accessToken);
         assertThat(policy.getDocuments()).extracting("typeName").containsExactly(APPLICATION_FORM, DA_FORM);
     }
 

@@ -10,6 +10,7 @@ import th.co.krungthaiaxa.api.common.utils.IOUtil;
 import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
 import th.co.krungthaiaxa.api.elife.client.SigningClient;
 import th.co.krungthaiaxa.api.elife.factory.PolicyFactory;
+import th.co.krungthaiaxa.api.elife.factory.RequestFactory;
 import th.co.krungthaiaxa.api.elife.factory.productquotation.ProductQuotationFactory;
 import th.co.krungthaiaxa.api.elife.model.Document;
 import th.co.krungthaiaxa.api.elife.model.DocumentDownload;
@@ -47,18 +48,19 @@ public class SigningClientTest extends ELifeTest {
 
     @Test
     public void should_get_signed_application_form() throws IOException {
+        final String accessToken = RequestFactory.generateAccessToken();
         Policy policy = policyFactory.createPolicyWithPendingValidationStatus(ProductQuotationFactory.constructIGenDefault());
-        policyDocumentService.generateDocumentsForPendingValidationPolicy(policy);
+        policyDocumentService.generateDocumentsForPendingValidationPolicy(policy, accessToken);
         Optional<Document> applicationFormPdf = policy.getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(APPLICATION_FORM)).findFirst();
         DocumentDownload documentDownload = documentService.findDocumentDownload(applicationFormPdf.get().getId());
-        byte[] encodedSignedDocument = signingClient.getEncodedSignedPdfDocument(documentDownload.getContent().getBytes(), "token");
+        byte[] encodedSignedDocument = signingClient.getEncodedSignedPdfDocument(documentDownload.getContent().getBytes(), accessToken);
         assertThat(encodedSignedDocument).isNotNull();
     }
 
     @Test
     public void should_get_signed_application_with_password() throws IOException {
         Policy policy = policyFactory.createPolicyWithPendingValidationStatus(ProductQuotationFactory.constructIGenDefault());
-        policyDocumentService.generateDocumentsForPendingValidationPolicy(policy);
+        policyDocumentService.generateDocumentsForPendingValidationPolicy(policy, RequestFactory.generateAccessToken());
         Optional<Document> applicationFormPdf = policy
                 .getDocuments().stream().filter(tmp -> tmp.getTypeName().equals(APPLICATION_FORM)).findFirst();
         DocumentDownload documentDownload = documentService.findDocumentDownload(applicationFormPdf.get().getId());
@@ -68,7 +70,7 @@ public class SigningClientTest extends ELifeTest {
         final String passwordProtected =
                 mainInssured.getPerson().getBirthDate().format(DateTimeFormatter.ofPattern(PASSWORD_DOB_PATTERN));
         byte[] encodedSignedDocument = signingClient.getEncodedSignedPdfWithPassword(
-                documentDownload.getContent().getBytes(), passwordProtected, "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJlbGlmZWFkbWludXNlciIsInJvbGUiOlsiVUlfU0xDIiwiQVBJX0JMQUNLTElTVCIsIlVJX0VMSUZFX0FETUlOIiwiVUlfQVVUT1BBWSIsIkFQSV9TSUdOSU5HIiwiVUlfVkFMSURBVElPTiIsIkFQSV9FTElGRSJdLCJjcmVhdGVkIjoiMjAxNy0xMS0xNVQxNjoxMDo0MC42NjIiLCJleHAiOjE1MTA3NDA2NDB9._aP7gvuT1NyMIT4Z2iE79u-NCFJlCO52fZYOCfPeARP3_qjpCBxk2JbNv7gfApRxIf2SYF9KZSL7vhv2Ol_jGg");
+                documentDownload.getContent().getBytes(), passwordProtected, RequestFactory.generateAccessToken());
         byte[] decodedSignedPdf = Base64.getDecoder().decode(encodedSignedDocument);
         final String fileName = TestUtil.PATH_TEST_RESULT + System.currentTimeMillis()
                 + "_ereceipt_password_" + policy.getPolicyId() + ".pdf";

@@ -33,23 +33,23 @@ public class ProductEmailService {
         this.quoteService = quoteService;
     }
 
-    public void sendQuoteEmail(String quoteId, String sessionId, ChannelType channelType, String base64Image) {
+    public void sendQuoteEmail(String quoteId, String sessionId, ChannelType channelType, String base64Image, String accessToken) {
         Quote quote = quoteService.validateExistQuote(quoteId, sessionId, channelType);
-        sendQuoteEmail(quote, base64Image);
+        sendQuoteEmail(quote, base64Image, accessToken);
     }
 
-    public void sendQuoteEmail(Quote quote, String base64Image) {
+    public void sendQuoteEmail(Quote quote, String base64Image, String accessToken) {
 
         String productId = quote.getCommonData().getProductId();
 
         if (productId.equals(ProductType.PRODUCT_10_EC.getLogicName())) {
-            emailService.sendQuote10ECEmail(quote, base64Image);
+            emailService.sendQuote10ECEmail(quote, base64Image, accessToken);
         } else if (productId.equals(ProductType.PRODUCT_IFINE.getLogicName())) {
-            emailService.sendQuoteiFineEmail(quote);
+            emailService.sendQuoteiFineEmail(quote, accessToken);
         } else if (productId.equals(ProductType.PRODUCT_IPROTECT.getLogicName())) {
-            iProtectEmailService.sendQuoteEmail(quote);
+            iProtectEmailService.sendQuoteEmail(quote, accessToken);
         } else if (productId.equals(ProductType.PRODUCT_IGEN.getLogicName())) {
-            iGenEmailService.sendQuoteEmail(quote);
+            iGenEmailService.sendQuoteEmail(quote, accessToken);
         } else {
             throw new EmailException("This function is not yet supported for product " + productId);
         }

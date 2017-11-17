@@ -8,23 +8,26 @@ import th.co.krungthaiaxa.api.elife.model.product.PremiumDetail;
 import th.co.krungthaiaxa.api.elife.products.AbstractQuoteEmailService;
 import th.co.krungthaiaxa.api.elife.service.ElifeEmailHelper;
 import th.co.krungthaiaxa.api.elife.service.ElifeEmailService;
+import th.co.krungthaiaxa.api.elife.service.SigningDocumentService;
 
 @Service
 public class IGenQuoteEmailService extends AbstractQuoteEmailService {
 
     @Autowired
-    public IGenQuoteEmailService(ElifeEmailService axaEmailService, ElifeEmailHelper axaEmailHelper, IGenSaleIllustrationService saleIllustrationService) {
-        super(axaEmailService, axaEmailHelper, saleIllustrationService);
+    public IGenQuoteEmailService(ElifeEmailService axaEmailService,
+                                 ElifeEmailHelper axaEmailHelper,
+                                 IGenSaleIllustrationService saleIllustrationService,
+                                 SigningDocumentService signingDocumentService) {
+        super(axaEmailService, axaEmailHelper, saleIllustrationService, signingDocumentService);
     }
 
     @Override
-    public String getEmailContent(String emailTemplate, Quote quote) {
+    public String getEmailContent(final String emailTemplate, final Quote quote) {
         String productId = quote.getCommonData().getProductId();
-        String emailContent = emailTemplate;
         Insured insured = quote.getInsureds().stream().reduce((first, second) -> second).get();
         PremiumDetail premium = quote.getPremiumsData().getPremiumDetail();
         Integer taxDeclared = (insured.getDeclaredTaxPercentAtSubscription() == null ? 0 : insured.getDeclaredTaxPercentAtSubscription());
-        return emailContent.replace("%CREATE_DATE_TIME%", getAxaEmailHelper().toThaiYear(quote.getCreationDateTime()))
+        return emailTemplate.replace("%CREATE_DATE_TIME%", getAxaEmailHelper().toThaiYear(quote.getCreationDateTime()))
                 .replace("%FATCA_QUESTION_LINK%", "'" + getLineURL() + "fatca-questions/" + quote.getQuoteId() + "'")
                 .replace("%PREMIUM_PERIODICITY%", getAxaEmailHelper().toThaiPaymentMode(quote.getPremiumsData().getFinancialScheduler().getPeriodicity()))
                 .replace("%PREMIUM_VALUE%", getAxaEmailHelper().toCurrencyValue(getVal(quote.getPremiumsData().getFinancialScheduler().getModalAmount())))

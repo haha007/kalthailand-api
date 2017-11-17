@@ -235,10 +235,10 @@ public class PolicyService {
      *
      * @param policy
      */
-    public Policy updatePolicyStatusToPendingValidation(Policy policy) {
+    public Policy updatePolicyStatusToPendingValidation(Policy policy, final String accessToken) {
         // Generate documents
         try {
-            policyDocumentService.generateDocumentsForPendingValidationPolicy(policy);
+            policyDocumentService.generateDocumentsForPendingValidationPolicy(policy, accessToken);
         } catch (Exception e) {
             throw new ElifeException("Can't generate documents for the policy [" + policy.getPolicyId() + "]");
         }

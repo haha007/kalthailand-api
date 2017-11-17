@@ -20,6 +20,7 @@ import th.co.krungthaiaxa.api.common.model.error.ErrorCode;
 import th.co.krungthaiaxa.api.common.utils.DateTimeUtil;
 import th.co.krungthaiaxa.api.common.utils.DownloadUtil;
 import th.co.krungthaiaxa.api.common.utils.JsonUtil;
+import th.co.krungthaiaxa.api.common.utils.RequestUtil;
 import th.co.krungthaiaxa.api.elife.exception.ElifeException;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.QuoteCount;
@@ -86,8 +87,10 @@ public class QuoteResource {
             @ApiParam(value = "The session id the quote is in", required = true)
             @RequestParam String sessionId,
             @ApiParam(value = "The channel being used to create the quote.", required = true)
-            @RequestParam ChannelType channelType) {
-        productEmailService.sendQuoteEmail(quoteId, sessionId, channelType, base64Image);
+            @RequestParam ChannelType channelType,
+            HttpServletRequest httpServletRequest) {
+        final String accessToken = RequestUtil.getAccessToken(httpServletRequest);
+        productEmailService.sendQuoteEmail(quoteId, sessionId, channelType, base64Image, accessToken);
     }
 
     @ApiOperation(value = "Get latest Quote", notes = "Returns the latest quote attached to the given sessionId. " +
