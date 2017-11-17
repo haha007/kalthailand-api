@@ -10,12 +10,12 @@ public class CareCoordinationLine {
     @NotBlank
     private String name;
 
-    @ReportField(value = "Policy Id/National Id")
-    private String policyId;
-
-    @ReportField("Phone Number")
+    @ReportField("Mobile Phone")
     @NotBlank
     private String phoneNumber;
+    
+    @ReportField(value = "Policy Number/Id Card Number")
+    private String policyId;
 
     private String email;
 
