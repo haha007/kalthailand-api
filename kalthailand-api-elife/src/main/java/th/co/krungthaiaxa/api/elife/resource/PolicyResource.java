@@ -395,7 +395,8 @@ public class PolicyResource {
             @ApiParam(value = "The transaction id to use to confirm the payment. Must be sent of status id SUCCESS", required = false)
             @RequestParam(required = false) Optional<String> transactionId,
             @ApiParam(value = "The RegKey is optional. If AtpMode is disabled, the regKey is null because there's no payment from user yet. But if AtpMode is enabled, the regKey must be not null.", required = false)
-            @RequestParam(required = false) String regKey) {
+            @RequestParam(required = false) String regKey,
+            HttpServletRequest httpServletRequest) {
         String msg = String.format("Policy update status to PendingValidation. policyId: %s, paymentId: %s, orderId: %s, transId: %s, regKey: %s", policyId, paymentId, orderId, transactionId, regKey);
         Instant start = LogUtil.logStarting(msg);
         if (isEmpty(orderId)) {
@@ -426,8 +427,9 @@ public class PolicyResource {
         }
         paymentService.updatePayment(payment, orderId, transactionId.get(), (regKey == null ? "" : regKey));
 
+        final String accessToken = RequestUtil.getAccessToken(httpServletRequest);
         // Update the policy status
-        policyService.updatePolicyStatusToPendingValidation(policy);
+        policyService.updatePolicyStatusToPendingValidation(policy, accessToken);
         //Return policy with updated payment
         policy = policyService.validateExistPolicy(policyId);
         LogUtil.logFinishing(start, msg);

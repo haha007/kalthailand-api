@@ -16,10 +16,10 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import th.co.krungthaiaxa.api.elife.KalApiElifeApplication;
-import th.co.krungthaiaxa.api.elife.utils.TestUtil;
 import th.co.krungthaiaxa.api.elife.factory.PolicyFactory;
-import th.co.krungthaiaxa.api.elife.factory.productquotation.ProductQuotationFactory;
 import th.co.krungthaiaxa.api.elife.factory.QuoteFactory;
+import th.co.krungthaiaxa.api.elife.factory.RequestFactory;
+import th.co.krungthaiaxa.api.elife.factory.productquotation.ProductQuotationFactory;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
 import th.co.krungthaiaxa.api.elife.model.enums.ProductDividendOption;
@@ -30,6 +30,7 @@ import th.co.krungthaiaxa.api.elife.service.PolicyDocumentService;
 import th.co.krungthaiaxa.api.elife.service.PolicyService;
 import th.co.krungthaiaxa.api.elife.test.ELifeTest;
 import th.co.krungthaiaxa.api.elife.utils.GreenMailUtil;
+import th.co.krungthaiaxa.api.elife.utils.TestUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -76,7 +77,7 @@ public class IGenApplicationFormTest extends ELifeTest {
     public void test_generate_applicationForm_for_not_validated_quote() throws IOException {
         QuoteFactory.QuoteResult quoteResult = quoteFactory.createDefaultIGen();
         Policy policy = policyService.createPolicy(quoteResult.getQuote());
-        policyDocumentService.generateDocumentsForPendingValidationPolicy(policy);
+        policyDocumentService.generateDocumentsForPendingValidationPolicy(policy, RequestFactory.generateAccessToken());
 
         byte[] pdfContent = applicationFormService.generateNotValidatedApplicationForm(policy);
         File file = new File(TestUtil.PATH_TEST_RESULT + System.currentTimeMillis() + "_applicationform_" + policy.getPolicyId() + ".pdf");
