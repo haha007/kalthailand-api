@@ -193,7 +193,6 @@ public class PolicyResource {
         ExcelUtils.appendRow(sheet,
                 text("Policy ID"),
                 text("Product Type"),
-                text("MID"),
                 text("Line UserId"));
         policies.stream().forEach(tmp -> createPolicyExtractExcelFileLine(sheet, tmp));
         ExcelUtils.autoWidthAllColumns(workbook);
@@ -580,12 +579,10 @@ public class PolicyResource {
 
         Insured firstInsured = ProductUtils.validateExistFirstInsured(policy);
         String productType = ProductUtils.getProductLogicName(policy);
-        String mid = firstInsured.getPerson().getLineId();
         String lineUserId = firstInsured.getPerson().getLineUserId();
         ExcelUtils.appendRow(sheet,
                 text(policy.getPolicyId()),
                 text(productType),
-                text(mid),
                 text(lineUserId));
     }
 
