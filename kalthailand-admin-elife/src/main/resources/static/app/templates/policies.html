@@ -52,13 +52,15 @@
                                 </div>
                                 <div class="col-md-4  col-xs-12  form-group">
                                     <div class="col-md-6 col-xs-12 text-right">
-                                        <label for="nonEmptyAgentCodeSearch" class="control-label">Agent code</label>
+                                        <label for="policyID" class="control-label">Periodicity</label>
                                     </div>
                                     <div class="col-md-6 col-xs-12">
-                                        <select class="form-control" id="nonEmptyAgentCodeSearch" ng-model="nonEmptyAgentCodeSearch">
+                                        <select class="form-control" ng-model="criteriaPeriodicityCode">
                                             <option value=""></option>
-                                            <option value="true">Not empty</option>
-                                            <option value="false">Empty</option>
+                                            <option value="EVERY_MONTH">Monthly</option>
+                                            <option value="EVERY_QUARTER">Quarterly</option>
+                                            <option value="EVERY_HALF_YEAR">Half Yearly</option>
+                                            <option value="EVERY_YEAR">Yearly</option>
                                         </select>
                                     </div>
                                 </div>
@@ -87,21 +89,6 @@
                                 <button type="button" class="btn btn-default" ng-click="toDateSearchOpen()"><i class="glyphicon glyphicon-calendar"></i></button>
                             </span>
                                         </p>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-4 col-xs-12 form-group">
-                                    <div class="col-md-6 col-xs-12 text-right">
-                                        <label for="policyID" class="control-label">Periodicity</label>
-                                    </div>
-                                    <div class="col-md-6 col-xs-12">
-                                        <select class="form-control" ng-model="criteriaPeriodicityCode">
-                                            <option value=""></option>
-                                            <option value="EVERY_MONTH">Monthly</option>
-                                            <option value="EVERY_QUARTER">Quarterly</option>
-                                            <option value="EVERY_HALF_YEAR">Half Yearly</option>
-                                            <option value="EVERY_YEAR">Yearly</option>
-                                        </select>
                                     </div>
                                 </div>
                                 <div class="col-md-4 col-xs-12 form-group">
@@ -157,13 +144,9 @@
                                 <thead>
                                 <tr class="headings">
                                     <th style="min-width: 100px">Policy ID</th>
-                                    <th>Previous Policy ID</th>
                                     <th>Product</th>
                                     <th>Premium</th>
                                     <th>Status</th>
-                                    <th>Start Date</th>
-                                    <th>Agent code 1</th>
-                                    <th>Agent code 2</th>
                                     <th>Validation Agent code</th>
                                     <th>Creation time</th>
                                     <th>Validation time</th>
@@ -175,13 +158,9 @@
                                 <tbody>
                                 <tr ng-repeat="item in policies.content">
                                     <td><a href="#policy-detail?policyID={{ item.policyId }}">{{ item.policyId }}</a></td>
-                                    <td>{{ item.insureds[0].insuredPreviousInformations[0]}}</td>
                                     <td>{{ item.commonData.productId }}</td>
                                     <td>{{ item.premiumsData.financialScheduler.modalAmount.value }} {{ item.premiumsData.financialScheduler.modalAmount.currencyCode }}</td>
                                     <td>{{ item.status }}</td>
-                                    <td>{{ item.insureds[0].startDate | date:'yyyy-MM-dd' }}</td>
-                                    <td>{{ item.insureds[0].insuredPreviousInformations[1] }}</td>
-                                    <td>{{ item.insureds[0].insuredPreviousInformations[2] }}</td>
                                     <td>{{ item.validationAgentCode }}</td>
                                     <td>{{ item.creationDateTime | date:'yyyy-MM-dd HH:mm:ss'}}</td>
                                     <td>{{ item.validationDateTime | date:'yyyy-MM-dd HH:mm:ss'}}</td>
