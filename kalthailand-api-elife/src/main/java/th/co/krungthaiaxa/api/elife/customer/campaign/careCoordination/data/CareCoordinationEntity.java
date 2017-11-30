@@ -4,10 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.mongodb.core.mapping.Document;
 import th.co.krungthaiaxa.api.common.data.BaseEntity;
-import th.co.krungthaiaxa.api.common.utils.Constants;
 import th.co.krungthaiaxa.api.elife.customer.campaign.careCoordination.model.CareCoordinationForm;
-
-import javax.validation.constraints.Pattern;
 
 /**
  * @author tuong.le on 10/31/17.
@@ -18,17 +15,14 @@ public class CareCoordinationEntity extends BaseEntity {
     @NotBlank
     private String name;
 
-    @ApiModelProperty(value = "Policy Id", required = true)
-    @NotBlank
-    @Pattern(regexp = Constants.POLICY_REGEX, message = "incorrect policy format")
+    @ApiModelProperty(value = "Policy Id or National Id")
     private String policyId;
 
     @ApiModelProperty(value = "Mobile Phone", required = true)
     @NotBlank
     private String phoneNumber;
 
-    @ApiModelProperty(value = "Email", required = true)
-    @NotBlank
+    @ApiModelProperty(value = "Email")
     private String email;
 
     public CareCoordinationEntity() {

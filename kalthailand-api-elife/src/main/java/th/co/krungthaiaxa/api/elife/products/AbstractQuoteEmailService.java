@@ -11,9 +11,9 @@ import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.products.utils.ProductUtils;
 import th.co.krungthaiaxa.api.elife.service.ElifeEmailHelper;
 import th.co.krungthaiaxa.api.elife.service.ElifeEmailService;
+import th.co.krungthaiaxa.api.elife.service.SigningDocumentService;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -21,7 +21,7 @@ import java.util.List;
  * @author khoi.tran on 8/31/16.
  */
 public abstract class AbstractQuoteEmailService {
-    private final static Logger logger = LoggerFactory.getLogger(AbstractQuoteEmailService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractQuoteEmailService.class);
 
     @Value("${email.subject.quote}")
     private String emailQuoteSubject;
@@ -32,31 +32,27 @@ public abstract class AbstractQuoteEmailService {
     private final ElifeEmailService axaEmailService;
     private final ElifeEmailHelper axaEmailHelper;
     private final SaleIllustrationService saleIllustrationService;
+    private final SigningDocumentService signingDocumentService;
 
     @Inject
-    public AbstractQuoteEmailService(ElifeEmailService axaEmailService, ElifeEmailHelper axaEmailHelper, SaleIllustrationService saleIllustrationService) {
+    public AbstractQuoteEmailService(ElifeEmailService axaEmailService, ElifeEmailHelper axaEmailHelper, SaleIllustrationService saleIllustrationService, SigningDocumentService signingDocumentService) {
         this.axaEmailService = axaEmailService;
         this.axaEmailHelper = axaEmailHelper;
         this.saleIllustrationService = saleIllustrationService;
+        this.signingDocumentService = signingDocumentService;
     }
 
-    public void sendQuoteEmail(Quote quote) {
-        logger.info("Sending quote iProtect email...");
+    public void sendQuoteEmail(Quote quote, String accessToken) {
+        LOGGER.info("Sending quote iProtect email...");
         String emailTemplate = IOUtil.loadTextFileInClassPath(getEmailTemplatePath(quote));
-        List<Pair<byte[], String>> attachments = new ArrayList<>();
-        attachments.add(saleIllustrationService.generatePDF(quote));
+        Pair<byte[], String> rawAttachment = saleIllustrationService.generatePDF(quote);
+        byte[] signedPdf = signingDocumentService.signPDFFile(rawAttachment.getLeft(), accessToken);
+        List<Pair<byte[], String>> attachments = Collections.singletonList(Pair.of(signedPdf, rawAttachment.getRight()));
+
         Insured mainInsured = ProductUtils.validateExistMainInsured(quote);
         String emailContent = getEmailContent(emailTemplate, quote);
-        axaEmailService.sendEmail(mainInsured.getPerson().getEmail(), emailQuoteSubject, emailContent
-//                , loadImagePairs()
-                , attachments);
-        logger.info("Quote iProtect email sent!");
-    }
-
-    protected List<Pair<byte[], String>> loadImagePairs() {
-        List<Pair<byte[], String>> base64ImgFileNames = Collections.emptyList();
-//        EmailElifeUtil.initImagePairs("logo");
-        return base64ImgFileNames;
+        axaEmailService.sendEmail(mainInsured.getPerson().getEmail(), emailQuoteSubject, emailContent, attachments);
+        LOGGER.info("Quote iProtect email sent!");
     }
 
     protected String getEmailTemplatePath(Quote quote) {

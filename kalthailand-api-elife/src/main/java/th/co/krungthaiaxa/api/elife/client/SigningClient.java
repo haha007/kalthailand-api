@@ -25,6 +25,7 @@ public class SigningClient {
     @Value("${kal.api.signing.url}")
     private String signingApiURL;
     private RestTemplate template = new RestTemplate();
+    public static final String PASSWORD_DOB_PATTERN = "ddMMyyyy";
 
     public byte[] getEncodedSignedPdfDocument(byte[] encodedNonSignedPdf, String token) {
         Instant start = LogUtil.logStarting("EncodedSignedPdf [start] URL: " + signingApiURL + ", token: " + token);
@@ -48,6 +49,30 @@ public class SigningClient {
         logger.info("Got signed document from signing API");
         LogUtil.logFinishing(start, "EncodedSignedPdf [finished] URL: " + signingApiURL + ", token: " + token);
         return authResponse.getBody().getBytes();
+    }
+
+    public byte[] getEncodedSignedPdfWithPassword(byte[] encodedNonSignedPdf, String password, String token) {
+        Instant start = LogUtil.logStarting("EncodedSignedPdfWithPassword [start] URL: " + signingApiURL + ", token: " + token);
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add("Content-Type", "application/json");
+        httpHeaders.add(tokenHeader, token);
+
+        HttpEntity<byte[]> entity = new HttpEntity<>(encodedNonSignedPdf, httpHeaders);
+
+        ResponseEntity<String> signingResponse;
+        try {
+            signingResponse = template.exchange(signingApiURL + "/" + password, POST, entity, String.class);
+        } catch (RestClientException e) {
+            throw new ElifeException("Unable to sign PDF document:" + e.getMessage(), e);
+        }
+
+        if (signingResponse.getStatusCode() != HttpStatus.OK) {
+            throw new ElifeException("Unable to create token. Response is [" + signingResponse.getBody() + "]");
+        }
+
+        logger.info("Got signed document from signing API");
+        LogUtil.logFinishing(start, "EncodedSignedPdfWithPassword [finished] URL: " + signingApiURL + ", token: " + token);
+        return signingResponse.getBody().getBytes();
     }
 
     public void setTemplate(RestTemplate template) {

@@ -1,7 +1,5 @@
 package th.co.krungthaiaxa.api.elife.products.iprotect;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import th.co.krungthaiaxa.api.common.utils.LocaleUtil;
 import th.co.krungthaiaxa.api.elife.model.Insured;
@@ -10,6 +8,7 @@ import th.co.krungthaiaxa.api.elife.products.AbstractQuoteEmailService;
 import th.co.krungthaiaxa.api.elife.products.utils.ProductUtils;
 import th.co.krungthaiaxa.api.elife.service.ElifeEmailHelper;
 import th.co.krungthaiaxa.api.elife.service.ElifeEmailService;
+import th.co.krungthaiaxa.api.elife.service.SigningDocumentService;
 
 import javax.inject.Inject;
 import java.text.DecimalFormat;
@@ -20,25 +19,25 @@ import java.time.format.DateTimeFormatter;
  */
 @Service
 public class IProtectQuoteEmailService extends AbstractQuoteEmailService {
-    private final static Logger LOGGER = LoggerFactory.getLogger(IProtectQuoteEmailService.class);
-
     @Inject
-    public IProtectQuoteEmailService(ElifeEmailService axaEmailService, ElifeEmailHelper axaEmailHelper, IProtectSaleIllustrationService iProtectSaleIllustrationService) {
-        super(axaEmailService, axaEmailHelper, iProtectSaleIllustrationService);
+    public IProtectQuoteEmailService(ElifeEmailService axaEmailService,
+                                     ElifeEmailHelper axaEmailHelper,
+                                     IProtectSaleIllustrationService iProtectSaleIllustrationService,
+                                     SigningDocumentService signingDocumentService) {
+        super(axaEmailService, axaEmailHelper, iProtectSaleIllustrationService, signingDocumentService);
     }
 
     @Override
-    protected String getEmailContent(String emailTemplate, Quote quote) {
+    protected String getEmailContent(final String emailTemplate, final Quote quote) {
         String dcFormat = "#,##0.00";
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         DecimalFormat dcf = new DecimalFormat(dcFormat);
-        String emailContent = emailTemplate;
         Insured mainInsured = ProductUtils.validateExistMainInsured(quote);
         Integer taxDeclared = mainInsured.getDeclaredTaxPercentAtSubscription();
         if (taxDeclared == null) {
             taxDeclared = 0;
         }
-        return emailContent.replace("%1$s", quote.getCreationDateTime().plusYears(543).format(formatter))
+        return emailTemplate.replace("%1$s", quote.getCreationDateTime().plusYears(543).format(formatter))
                 .replace("%2$s", "'" + getLineURL() + "fatca-questions/" + quote.getQuoteId() + "'")
                 .replace("%3$s", dcf.format(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()))
                 .replace("%4$s", dcf.format(quote.getPremiumsData().getProductIProtectPremium().getDeathBenefit().getValue()))
