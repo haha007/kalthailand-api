@@ -134,6 +134,10 @@ public class PolicyService {
         return policyCriteriaRepository.findPolicies(policyId, productType, status, nonEmptyAgentCode, startDate, endDate, periodicityCode, atpModeId);
     }
 
+    public List<Policy> findAllPolicyByStatusOnDate(final PolicyStatus policyStatus, final LocalDate onDate) {
+        return policyRepository.findAllPolicyByStatusOnDate(policyStatus, onDate);
+    }
+
     public Optional<Policy> findPolicyByPolicyNumber(String policyNumber) {
         Policy policy = policyRepository.findByPolicyId(policyNumber);
         return policy != null ? Optional.of(policy) : Optional.empty();
