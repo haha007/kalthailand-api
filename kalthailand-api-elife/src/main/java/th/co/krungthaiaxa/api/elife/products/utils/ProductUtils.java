@@ -25,10 +25,12 @@ import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.Registration;
 import th.co.krungthaiaxa.api.elife.model.enums.AtpMode;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
+import th.co.krungthaiaxa.api.elife.model.product.PremiumsData;
 import th.co.krungthaiaxa.api.elife.products.ProductAmounts;
 import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
 import th.co.krungthaiaxa.api.elife.products.ProductType;
 
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -619,6 +621,23 @@ public class ProductUtils {
 
     public static String getRegistrationId(Insured insured) {
         return insured.getPerson().getRegistrations().get(0).getId();
+    }
+
+    public static String getSumInsureAsString(Policy policy) {
+        final PremiumsData premiumsData = policy.getPremiumsData();
+        final CommonData commonData = policy.getCommonData();
+        final DecimalFormat money = new DecimalFormat("#,##0");
+        String sumInsure = StringUtils.EMPTY;
+        if (commonData.getProductId().equals(ProductType.PRODUCT_10_EC.getLogicName())) {
+            sumInsure = money.format(premiumsData.getProduct10ECPremium().getSumInsured().getValue());
+        } else if (commonData.getProductId().equals(ProductType.PRODUCT_IFINE.getLogicName())) {
+            sumInsure = money.format(premiumsData.getProductIFinePremium().getSumInsured().getValue());
+        } else if (commonData.getProductId().equals(ProductType.PRODUCT_IGEN.getLogicName())) {
+            sumInsure = money.format(premiumsData.getPremiumDetail().getSumInsured().getValue());
+        } else if (commonData.getProductId().equals(ProductType.PRODUCT_IPROTECT.getLogicName())) {
+            sumInsure = money.format(premiumsData.getProductIProtectPremium().getSumInsured().getValue());
+        }
+        return sumInsure;
     }
 
     /**
