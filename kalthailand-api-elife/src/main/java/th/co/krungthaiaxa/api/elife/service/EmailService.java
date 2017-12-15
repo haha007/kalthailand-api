@@ -14,7 +14,6 @@ import th.co.krungthaiaxa.api.elife.model.Person;
 import th.co.krungthaiaxa.api.elife.model.Policy;
 import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.product.ProductIFinePremium;
-import th.co.krungthaiaxa.api.elife.products.ProductType;
 import th.co.krungthaiaxa.api.elife.products.iprotect.IProtectQuoteEmailService;
 import th.co.krungthaiaxa.api.elife.products.utils.ProductUtils;
 import th.co.krungthaiaxa.api.elife.utils.EmailSender;
@@ -191,17 +190,8 @@ public class EmailService {
     private String getBookedEmailContent(Policy pol) throws IOException {
         String emailContent = IOUtils.toString(this.getClass().getResourceAsStream("/email-content/email-booked-policy.html"), Charset.forName("UTF-8"));
         Person person = pol.getInsureds().get(0).getPerson();
-        DecimalFormat money = new DecimalFormat("#,##0");
-        String sumInsure = "";
-        if (pol.getCommonData().getProductId().equals(ProductType.PRODUCT_10_EC.getLogicName())) {
-            sumInsure = money.format(pol.getPremiumsData().getProduct10ECPremium().getSumInsured().getValue());
-        } else if (pol.getCommonData().getProductId().equals(ProductType.PRODUCT_IFINE.getLogicName())) {
-            sumInsure = money.format(pol.getPremiumsData().getProductIFinePremium().getSumInsured().getValue());
-        } else if (pol.getCommonData().getProductId().equals(ProductType.PRODUCT_IGEN.getLogicName())) {
-            sumInsure = money.format(pol.getPremiumsData().getPremiumDetail().getSumInsured().getValue());
-        } else if (pol.getCommonData().getProductId().equals(ProductType.PRODUCT_IPROTECT.getLogicName())) {
-            sumInsure = money.format(pol.getPremiumsData().getProductIProtectPremium().getSumInsured().getValue());
-        }
+        final String sumInsure = ProductUtils.getSumInsureAsString(pol);
+        
         return emailContent.replace("%FULL_NAME%", person.getGivenName() + " " + person.getSurName())
                 .replace("%POLICY_ID%", pol.getPolicyId())
                 .replace("%PLAN%", messageSource.getMessage("product.id." + pol.getCommonData().getProductId(), null, thLocale) + " (" + messageSource.getMessage("product.id." + pol.getCommonData().getProductId(), null, null) + ")")
