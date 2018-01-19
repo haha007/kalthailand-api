@@ -72,9 +72,9 @@ public class PolicyValidatedProcessingService {
         String accessToken = policyValidationRequest.getAccessToken();
         LinePayCaptureMode linePayCaptureMode = policyValidationRequest.getLinePayCaptureMode();
 
-        if (environmentName.equals("PRD") && !linePayCaptureMode.equals(REAL)) {
-            throw new BaseException(ErrorCode.ERROR_CODE_REAL_CAPTURE_API_HAS_TO_BE_USED, "The environment is production, so you have to choose the real payment option.");
-        }
+        // if (environmentName.equals("PRD") && !linePayCaptureMode.equals(REAL)) {
+        //     throw new BaseException(ErrorCode.ERROR_CODE_REAL_CAPTURE_API_HAS_TO_BE_USED, "The environment is production, so you have to choose the real payment option.");
+        // }
 
         Policy policy = policyService.validateExistPolicy(policyId);
 
