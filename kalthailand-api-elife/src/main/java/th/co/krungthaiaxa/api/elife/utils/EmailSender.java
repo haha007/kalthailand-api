@@ -57,6 +57,25 @@ public class EmailSender {
         }
     }
 
+    public void sendEmailCC(String fromEmailAddress, String toEmailAddress, String ccEmailAddress, 
+            String emailSubject, String emailContent) {
+        String maskFromMail = StringUtil.maskEmail(fromEmailAddress);
+        String maskToMail = StringUtil.maskEmail(toEmailAddress);
+        String msg = String.format("Send email [start]: fromEmail: '%s', toEmail: '%s'", maskFromMail, maskToMail);
+        LOGGER.info(msg);
+
+        hasText(smtpHost, "smtpHost is a mandatory value and cannot be null/blank");
+        hasText(smtpPort, "smtpPort is a mandatory value and cannot be null/blank");
+        try {
+            send(generateMessageCC(fromEmailAddress, toEmailAddress, ccEmailAddress, emailSubject, emailContent));
+            msg = String.format("Send email [success]: fromEmail: '%s', toEmail: '%s'", maskFromMail, maskToMail);
+            LOGGER.info(msg);
+        } catch (MessagingException | IOException e) {
+            msg = String.format("Send email [error]: fromEmail: '%s', toEmail: '%s'", maskFromMail, maskToMail);
+            throw new EmailException(msg, e);
+        }
+    }
+
     private MimeMessage generateMessage(String fromEmailAddress, String toEmailAddress, String emailSubject,
             String emailContent, List<Pair<byte[], String>> images,
             List<Pair<byte[], String>> attachments)
@@ -89,6 +108,39 @@ public class EmailSender {
         message.setHeader("Content-Type", "text/html; charset=UTF-8");
         message.setHeader("Content-Transfer-Encoding", "quoted-printable");
         message.setRecipients(Message.RecipientType.TO, toEmailAddress);
+
+        // Set Subject: header field
+        message.setSubject(MimeUtility.encodeText(emailSubject, "UTF-8", "Q"));
+
+        message.setContent(multipart);
+        message.setSentDate(new Date());
+        return message;
+    }
+
+    private MimeMessage generateMessageCC(String fromEmailAddress, String toEmailAddress, String ccEmailAddress, 
+            String emailSubject, String emailContent)
+            throws MessagingException, IOException {
+
+        notNull(fromEmailAddress, "email from is required");
+        notNull(toEmailAddress, "At least one 'to' email address required");
+        hasText(emailSubject, "emailSubject is required");
+        hasText(emailContent, "emailContent is required");
+
+        Multipart multipart = new MimeMultipart();
+        multipart.addBodyPart(getContentBodyPart(emailContent, "text/html;charset=UTF-8"));
+
+        // Get an SMTP Session Object based on the properties defined
+        Session session = getSession(fromEmailAddress);
+
+        // Create a default MimeMessage object.
+        MimeMessage message = new MimeMessage(session);
+
+        // Set From: header field of the header.
+        message.setFrom(new InternetAddress(fromEmailAddress));
+        message.setHeader("Content-Type", "text/html; charset=UTF-8");
+        message.setHeader("Content-Transfer-Encoding", "quoted-printable");
+        message.setRecipients(Message.RecipientType.TO, toEmailAddress);
+        message.setRecipients(Message.RecipientType.CC, ccEmailAddress);
 
         // Set Subject: header field
         message.setSubject(MimeUtility.encodeText(emailSubject, "UTF-8", "Q"));
