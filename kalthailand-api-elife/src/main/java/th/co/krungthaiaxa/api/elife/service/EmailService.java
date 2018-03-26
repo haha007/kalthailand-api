@@ -212,7 +212,7 @@ public class EmailService {
 
     private String getTeleBookedEmailContentSubject(Policy policy) throws IOException {
       String emailContent = IOUtils.toString(this.getClass().getResourceAsStream("/email-content/email-tele-booked-policy-subject.txt"), Charset.forName("UTF-8"));
-      return emailContent.replace("%PRODUCT%", messageSource.getMessage(policy.getCommonData().getProductId(), null, thLocale))
+      return emailContent.replace("%PRODUCT%", messageSource.getMessage("product.id." + policy.getCommonData().getProductId(), null, thLocale))
               .replace("%POLICY_ID%", policy.getId());
     }
 
@@ -222,7 +222,7 @@ public class EmailService {
       final String sumInsure = ProductUtils.getSumInsureAsString(pol);
       
       return emailContent.replace("%POLICY_ID%", pol.getPolicyId())
-              .replace("%PRODUCT%", messageSource.getMessage(pol.getCommonData().getProductId(), null, thLocale));
+              .replace("%PRODUCT%", messageSource.getMessage("product.id." + pol.getCommonData().getProductId(), null, thLocale));
     }
 
     private String getQuoteiFineEmailContent(Quote quote) {
