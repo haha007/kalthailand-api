@@ -25,4 +25,10 @@ public class EmailSenderTest {
         String emailContent = IOUtil.loadTextFileInClassPath("/products/iprotect/email-quote.html");
         emailSender.sendEmail("khoi.tran.ags@gmail.com", TestUtil.TESTING_HOTMAIL_JO, "Test email iProtect", emailContent, Collections.emptyList(), Collections.emptyList());
     }
+
+    //    @Test
+    public void sendEmailCC() {
+        String emailContent = IOUtil.loadTextFileInClassPath("/email-content/email-tele-booked-policy-content.html");
+        emailSender.sendEmailCC("test@krungthai-axax.co.th", TestUtil.TESTING_HOTMAIL_JO, "tossaphol.chi@krungthai-axa.co.th", "Test email iFine", emailContent);
+    }
 }
