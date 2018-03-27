@@ -213,7 +213,7 @@ public class EmailService {
     private String getTeleBookedEmailContentSubject(Policy policy) throws IOException {
       String emailContent = IOUtils.toString(this.getClass().getResourceAsStream("/email-content/email-tele-booked-policy-subject.txt"), Charset.forName("UTF-8"));
       return emailContent.replace("%PRODUCT%", messageSource.getMessage("product.id." + policy.getCommonData().getProductId(), null, thLocale))
-              .replace("%POLICY_ID%", policy.getId());
+              .replace("%POLICY_ID%", policy.getPolicyId());
     }
 
     private String getTeleBookedEmailContent(Policy pol) throws IOException {
