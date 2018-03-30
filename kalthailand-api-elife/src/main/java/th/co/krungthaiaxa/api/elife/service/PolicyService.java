@@ -290,6 +290,13 @@ public class PolicyService {
             LOGGER.error(String.format("Unable to send email for booking policy [%s]: %s", policy.getPolicyId(), e.getMessage()), e);
         }
 
+        // Send Email to MOCAP and eCommerce Team
+        try {
+            emailService.sendTeleBookedEmail(policy);
+        } catch (Exception e) {
+            LOGGER.error(String.format("Unable to send email for booking policy to MOCAP and eCommerce [%s]: %s", policy.getPolicyId(), e.getMessage()), e);
+        }
+
         // Send SMS
         try {
             String smsContent = IOUtils.toString(this.getClass().getResourceAsStream("/sms-content/policy-booked-sms.txt"), Charset.forName("UTF-8"));

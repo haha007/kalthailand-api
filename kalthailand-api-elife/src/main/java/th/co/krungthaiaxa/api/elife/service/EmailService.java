@@ -49,6 +49,10 @@ public class EmailService {
     private String lineId;
     @Value("${button.url.ereceipt.mail}")
     private String uploadDocURL;
+    @Value("${email.to.mocap}")
+    private String emailToMocap;
+    @Value("${email.cc.ecommerce}")
+    private String emailCCeCommmerce;
 
     @Inject
     private MessageSource messageSource;
@@ -108,6 +112,11 @@ public class EmailService {
 //        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/twitter-logo.png")), "<imgT>"));
 //        base64ImgFileNames.add(Pair.of(toByteArray(this.getClass().getResourceAsStream("/images/email/youtube-logo.png")), "<imgY>"));
         emailSender.sendEmail(emailName, policy.getInsureds().get(0).getPerson().getEmail(), getBookedEmailContentSubject(), getBookedEmailContent(policy), base64ImgFileNames, new ArrayList<>());
+    }
+
+    public void sendTeleBookedEmail(Policy policy) throws IOException, MessagingException {
+      logger.info("Sending policy booked email to Telesales");
+      emailSender.sendEmailCC(emailName, emailToMocap, emailCCeCommmerce, getTeleBookedEmailContentSubject(policy), getTeleBookedEmailContent(policy));
     }
 
     public void sendUserNotRespondingEmail(Policy policy) throws IOException, MessagingException {
@@ -199,6 +208,21 @@ public class EmailService {
                 .replace("%PAYMENT_MODE%", messageSource.getMessage("payment.mode." + pol.getPremiumsData().getFinancialScheduler().getPeriodicity().getCode().toString(), null, thLocale))
                 .replace("%SUM_INSURE%", sumInsure)
                 .replace("%PREMIUM%", (new DecimalFormat("#,##0.00")).format(pol.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()));
+    }
+
+    private String getTeleBookedEmailContentSubject(Policy policy) throws IOException {
+      String emailContent = IOUtils.toString(this.getClass().getResourceAsStream("/email-content/email-tele-booked-policy-subject.txt"), Charset.forName("UTF-8"));
+      return emailContent.replace("%PRODUCT%", messageSource.getMessage("product.id." + policy.getCommonData().getProductId(), null, thLocale))
+              .replace("%POLICY_ID%", policy.getPolicyId());
+    }
+
+    private String getTeleBookedEmailContent(Policy pol) throws IOException {
+      String emailContent = IOUtils.toString(this.getClass().getResourceAsStream("/email-content/email-tele-booked-policy-content.html"), Charset.forName("UTF-8"));
+      Person person = pol.getInsureds().get(0).getPerson();
+      final String sumInsure = ProductUtils.getSumInsureAsString(pol);
+      
+      return emailContent.replace("%POLICY_ID%", pol.getPolicyId())
+              .replace("%PRODUCT%", messageSource.getMessage("product.id." + pol.getCommonData().getProductId(), null, thLocale));
     }
 
     private String getQuoteiFineEmailContent(Quote quote) {
