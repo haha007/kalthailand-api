@@ -26,8 +26,9 @@ public class PaymentRetryLinkService {
         String retryLink = generalSetting.getRetryPaymentSetting().getRetryLink();
         if (payment != null) {
             String originalLink = String.format("%s?policyNumber=%s&paymentId=%s", retryLink, policyNumber, payment.getPaymentId());
-            String shortenedUrl = urlShortenerService.getShortUrlIfPossible(originalLink);
-            return shortenedUrl;
+            // String shortenedUrl = urlShortenerService.getShortUrlIfPossible(originalLink);
+            // return shortenedUrl;
+            return originalLink;
         } else {
             //We terrible sorry but cannot help user to payment again by himself: cannot generate payment link without payment and policyNumber. We need to contact and handle this case manually.
             return "";
