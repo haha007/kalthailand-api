@@ -66,7 +66,8 @@ public class CronPaymentReminder {
             
             // get shorten url
             final String remindLink = elifeUrl + "remind-payment/" + policy.getPolicyId();
-            final String shortenUrl = urlShortenerService.getShortUrl(remindLink);
+            //final String shortenUrl = urlShortenerService.getShortUrl(remindLink);
+            final String shortenUrl = remindLink;
 
             final Person person = ProductUtils.validateExistFirstInsured(policy).getPerson();
             final String fullName = person.getGivenName() + " " + person.getSurName();
