@@ -55,9 +55,11 @@ public class CronPaymentReminder {
 
 
     @Scheduled(cron = "0 0 12 * * *")
+    // @Scheduled(cron = "0 15 * * * *")
     public void cronPaymentReminder() {
         LOGGER.info("Start Sending Payment Reminder to customer ------->");
         final LocalDate policiesDate = LocalDate.now().minusDays(3);
+        // final LocalDate policiesDate = LocalDate.now(); // TOday
         LOGGER.info("Retrieve all pending payment policies on {}", policiesDate);
         final List<Policy> pendingPaymentPolicies = policyService.findAllPolicyByStatusOnDate(PolicyStatus.PENDING_PAYMENT, policiesDate);
         LOGGER.info("Processing {} policies", pendingPaymentPolicies.size());
