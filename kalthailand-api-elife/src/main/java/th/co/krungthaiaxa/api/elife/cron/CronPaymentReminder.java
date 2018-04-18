@@ -55,9 +55,11 @@ public class CronPaymentReminder {
 
 
     @Scheduled(cron = "0 0 12 * * *")
+    // @Scheduled(cron = "0 15 * * * *")
     public void cronPaymentReminder() {
         LOGGER.info("Start Sending Payment Reminder to customer ------->");
         final LocalDate policiesDate = LocalDate.now().minusDays(3);
+        // final LocalDate policiesDate = LocalDate.now(); // TOday
         LOGGER.info("Retrieve all pending payment policies on {}", policiesDate);
         final List<Policy> pendingPaymentPolicies = policyService.findAllPolicyByStatusOnDate(PolicyStatus.PENDING_PAYMENT, policiesDate);
         LOGGER.info("Processing {} policies", pendingPaymentPolicies.size());
@@ -66,7 +68,8 @@ public class CronPaymentReminder {
             
             // get shorten url
             final String remindLink = elifeUrl + "remind-payment/" + policy.getPolicyId();
-            final String shortenUrl = urlShortenerService.getShortUrl(remindLink);
+            //final String shortenUrl = urlShortenerService.getShortUrl(remindLink);
+            final String shortenUrl = remindLink;
 
             final Person person = ProductUtils.validateExistFirstInsured(policy).getPerson();
             final String fullName = person.getGivenName() + " " + person.getSurName();
