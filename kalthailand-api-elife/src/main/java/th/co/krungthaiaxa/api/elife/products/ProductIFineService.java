@@ -119,11 +119,13 @@ public class ProductIFineService implements ProductService {
 
         // calculates rates
         ProductIFineRate productIFineRate = productIFineRateRepository.findByPlanNameAndGender(productQuotation.getPackageName(), mainInsured.getPerson().getGenderCode().name());
-        Double taxDeductibleRate = productIFineRate.getTaxDeductibleRate().get(age - 18);
-        Double nonTaxDeductibleRate = productIFineRate.getNonTaxDeductibleRate().get(age - 18);
+        
+		// KDP-265 Product IFine new rate will start for age 20, so it changes to subtract 20 instead for taxDeductibleRate, nonTaxDeductibleRate and nonTaxDeductibleRiskRate.  
+        Double taxDeductibleRate = productIFineRate.getTaxDeductibleRate().get(age - 20);
+        Double nonTaxDeductibleRate = productIFineRate.getNonTaxDeductibleRate().get(age - 20);
         Double riskOccupationCharge = 0.0;
         if (occupationType.getOccRisk()) {
-            riskOccupationCharge = productIFineRate.getNonTaxDeductibleRiskRate().get(age - 18);
+            riskOccupationCharge = productIFineRate.getNonTaxDeductibleRiskRate().get(age - 20);
         }
         productIFinePremium.setBasicPremiumRate(taxDeductibleRate);
         productIFinePremium.setRiderPremiumRate(nonTaxDeductibleRate);
