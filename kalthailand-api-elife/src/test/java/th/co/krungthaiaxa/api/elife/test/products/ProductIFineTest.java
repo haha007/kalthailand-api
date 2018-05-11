@@ -211,7 +211,7 @@ public class ProductIFineTest {
 		assertThat(productIFinePremium.getTaxDeductible().getValue()).isEqualTo(438.0);
 		assertThat(productIFinePremium.getNonTaxDeductible().getValue()).isEqualTo(2599.0);
 	}
-	
+
 	@Test
 	public void should_calculate_from_yearly_male_age_20_risky_package_ifine1() throws Exception {
 		// given
@@ -249,7 +249,7 @@ public class ProductIFineTest {
 		assertThat(productIFinePremium.getTaxDeductible().getValue()).isEqualTo(227.76);
 		assertThat(productIFinePremium.getNonTaxDeductible().getValue()).isEqualTo(1351.48);
 	}
-	
+
 	@Test
 	public void should_calculate_from_semiannualy_male_age_20_risky_package_ifine1() throws Exception {
 		// given
@@ -268,8 +268,7 @@ public class ProductIFineTest {
 		assertThat(productIFinePremium.getTaxDeductible().getValue()).isEqualTo(227.76);
 		assertThat(productIFinePremium.getNonTaxDeductible().getValue()).isEqualTo(3378.96);
 	}
-	
-	
+
 	@Test
 	public void should_calculate_from_quarterly_male_age_20_not_risky_package_ifine1() throws Exception {
 		// given
@@ -288,8 +287,7 @@ public class ProductIFineTest {
 		assertThat(productIFinePremium.getTaxDeductible().getValue()).isEqualTo(118.26);
 		assertThat(productIFinePremium.getNonTaxDeductible().getValue()).isEqualTo(701.73);
 	}
-	
-	
+
 	@Test
 	public void should_calculate_from_quarterly_male_age_20_risky_package_ifine1() throws Exception {
 		// given
@@ -308,7 +306,7 @@ public class ProductIFineTest {
 		assertThat(productIFinePremium.getTaxDeductible().getValue()).isEqualTo(118.26);
 		assertThat(productIFinePremium.getNonTaxDeductible().getValue()).isEqualTo(1754.46);
 	}
-	
+
 	@Test
 	public void should_calculate_from_monthly_male_age_20_not_risky_package_ifine1() throws Exception {
 		// given
@@ -327,7 +325,7 @@ public class ProductIFineTest {
 		assertThat(productIFinePremium.getTaxDeductible().getValue()).isEqualTo(39.42);
 		assertThat(productIFinePremium.getNonTaxDeductible().getValue()).isEqualTo(233.91);
 	}
-	
+
 	@Test
 	public void should_calculate_from_monthly_male_age_20_risky_package_ifine1() throws Exception {
 		// given
@@ -346,5 +344,308 @@ public class ProductIFineTest {
 		assertThat(productIFinePremium.getTaxDeductible().getValue()).isEqualTo(39.42);
 		assertThat(productIFinePremium.getNonTaxDeductible().getValue()).isEqualTo(584.82);
 	}
-	
+
+	@Test
+	public void should_calculate_from_yearly_female_age_58_not_risky_package_ifine2() throws Exception {
+		// given
+		ProductQuotation productQuotation = ProductQuotationFactory.constructIFine(IFINE2, 58, EVERY_YEAR,
+				GenderCode.FEMALE, false);
+
+		// under test
+		Quote quote = quoteService.createQuote(RequestFactory.generateSession(), ChannelType.LINE, productQuotation);
+		ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
+
+		// assert
+		assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(5860.5);
+		assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(14.47);
+		assertThat(productIFinePremium.getRiderPremiumRate()).isEqualTo(24.6);
+		assertThat(productIFinePremium.getRiskOccupationCharge()).isEqualTo(0.0);
+		assertThat(productIFinePremium.getTaxDeductible().getValue()).isEqualTo(2170.5);
+		assertThat(productIFinePremium.getNonTaxDeductible().getValue()).isEqualTo(3690.0);
+	}
+
+	@Test
+	public void should_calculate_from_yearly_female_age_58_risky_package_ifine2() throws Exception {
+		// given
+		ProductQuotation productQuotation = ProductQuotationFactory.constructIFine(IFINE2, 58, EVERY_YEAR,
+				GenderCode.FEMALE, true);
+
+		// under test
+		Quote quote = quoteService.createQuote(RequestFactory.generateSession(), ChannelType.LINE, productQuotation);
+		ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
+
+		// assert
+		assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(11395.5);
+		assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(14.47);
+		assertThat(productIFinePremium.getRiderPremiumRate()).isEqualTo(24.6);
+		assertThat(productIFinePremium.getRiskOccupationCharge()).isEqualTo(36.9);
+		assertThat(productIFinePremium.getTaxDeductible().getValue()).isEqualTo(2170.5);
+		assertThat(productIFinePremium.getNonTaxDeductible().getValue()).isEqualTo(9225.0);
+	}
+
+	@Test
+	public void should_calculate_from_semiannualy_female_age_58_not_risky_package_ifine2() throws Exception {
+		// given
+		ProductQuotation productQuotation = ProductQuotationFactory.constructIFine(IFINE2, 58, EVERY_HALF_YEAR,
+				GenderCode.FEMALE, false);
+
+		// under test
+		Quote quote = quoteService.createQuote(RequestFactory.generateSession(), ChannelType.LINE, productQuotation);
+		ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
+
+		// assert
+		assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(3047.46);
+		assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(14.47);
+		assertThat(productIFinePremium.getRiderPremiumRate()).isEqualTo(24.6);
+		assertThat(productIFinePremium.getRiskOccupationCharge()).isEqualTo(0.0);
+		assertThat(productIFinePremium.getTaxDeductible().getValue()).isEqualTo(1128.66);
+		assertThat(productIFinePremium.getNonTaxDeductible().getValue()).isEqualTo(1918.8);
+	}
+
+	@Test
+	public void should_calculate_from_semiannualy_female_age_58_risky_package_ifine2() throws Exception {
+		// given
+		ProductQuotation productQuotation = ProductQuotationFactory.constructIFine(IFINE2, 58, EVERY_HALF_YEAR,
+				GenderCode.FEMALE, true);
+
+		// under test
+		Quote quote = quoteService.createQuote(RequestFactory.generateSession(), ChannelType.LINE, productQuotation);
+		ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
+
+		// assert
+		assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(5925.66);
+		assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(14.47);
+		assertThat(productIFinePremium.getRiderPremiumRate()).isEqualTo(24.6);
+		assertThat(productIFinePremium.getRiskOccupationCharge()).isEqualTo(36.9);
+		assertThat(productIFinePremium.getTaxDeductible().getValue()).isEqualTo(1128.66);
+		assertThat(productIFinePremium.getNonTaxDeductible().getValue()).isEqualTo(4797.0);
+	}
+
+	@Test
+	public void should_calculate_from_quarterly_female_age_58_not_risky_package_ifine2() throws Exception {
+		// given
+		ProductQuotation productQuotation = ProductQuotationFactory.constructIFine(IFINE2, 58, EVERY_QUARTER,
+				GenderCode.FEMALE, false);
+
+		// under test
+		Quote quote = quoteService.createQuote(RequestFactory.generateSession(), ChannelType.LINE, productQuotation);
+		ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
+
+		// assert
+		assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(1582.34);
+		assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(14.47);
+		assertThat(productIFinePremium.getRiderPremiumRate()).isEqualTo(24.6);
+		assertThat(productIFinePremium.getRiskOccupationCharge()).isEqualTo(0.0);
+		assertThat(productIFinePremium.getTaxDeductible().getValue()).isEqualTo(586.04);
+		assertThat(productIFinePremium.getNonTaxDeductible().getValue()).isEqualTo(996.3);
+	}
+
+	@Test
+	public void should_calculate_from_quarterly_female_age_58_risky_package_ifine2() throws Exception {
+		// given
+		ProductQuotation productQuotation = ProductQuotationFactory.constructIFine(IFINE2, 58, EVERY_QUARTER,
+				GenderCode.FEMALE, true);
+
+		// under test
+		Quote quote = quoteService.createQuote(RequestFactory.generateSession(), ChannelType.LINE, productQuotation);
+		ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
+
+		// assert
+		assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(3076.79);
+		assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(14.47);
+		assertThat(productIFinePremium.getRiderPremiumRate()).isEqualTo(24.6);
+		assertThat(productIFinePremium.getRiskOccupationCharge()).isEqualTo(36.9);
+		assertThat(productIFinePremium.getTaxDeductible().getValue()).isEqualTo(586.04);
+		assertThat(productIFinePremium.getNonTaxDeductible().getValue()).isEqualTo(2490.75);
+	}
+
+	@Test
+	public void should_calculate_from_monthly_female_age_58_not_risky_package_ifine2() throws Exception {
+		// given
+		ProductQuotation productQuotation = ProductQuotationFactory.constructIFine(IFINE2, 58, EVERY_MONTH,
+				GenderCode.FEMALE, false);
+
+		// under test
+		Quote quote = quoteService.createQuote(RequestFactory.generateSession(), ChannelType.LINE, productQuotation);
+		ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
+
+		// assert
+		assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(527.44);
+		assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(14.47);
+		assertThat(productIFinePremium.getRiderPremiumRate()).isEqualTo(24.6);
+		assertThat(productIFinePremium.getRiskOccupationCharge()).isEqualTo(0.0);
+		assertThat(productIFinePremium.getTaxDeductible().getValue()).isEqualTo(195.35);
+		assertThat(productIFinePremium.getNonTaxDeductible().getValue()).isEqualTo(332.1);
+	}
+
+	@Test
+	public void should_calculate_from_monthly_female_age_58_risky_package_ifine2() throws Exception {
+		// given
+		ProductQuotation productQuotation = ProductQuotationFactory.constructIFine(IFINE2, 58, EVERY_MONTH,
+				GenderCode.FEMALE, true);
+
+		// under test
+		Quote quote = quoteService.createQuote(RequestFactory.generateSession(), ChannelType.LINE, productQuotation);
+		ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
+
+		// assert
+		assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(1025.60);
+		assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(14.47);
+		assertThat(productIFinePremium.getRiderPremiumRate()).isEqualTo(24.6);
+		assertThat(productIFinePremium.getRiskOccupationCharge()).isEqualTo(36.9);
+		assertThat(productIFinePremium.getTaxDeductible().getValue()).isEqualTo(195.35);
+		assertThat(productIFinePremium.getNonTaxDeductible().getValue()).isEqualTo(830.25);
+	}
+
+	@Test
+	public void should_calculate_from_yearly_male_age_44_not_risky_package_ifine3() throws Exception {
+		// given
+		ProductQuotation productQuotation = ProductQuotationFactory.constructIFine(IFINE3, 44, EVERY_YEAR,
+				GenderCode.MALE, false);
+
+		// under test
+		Quote quote = quoteService.createQuote(RequestFactory.generateSession(), ChannelType.LINE, productQuotation);
+		ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
+
+		// assert
+		assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(6654.0);
+		assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(9.36);
+		assertThat(productIFinePremium.getRiderPremiumRate()).isEqualTo(23.91);
+		assertThat(productIFinePremium.getRiskOccupationCharge()).isEqualTo(0.0);
+		assertThat(productIFinePremium.getTaxDeductible().getValue()).isEqualTo(1872.0);
+		assertThat(productIFinePremium.getNonTaxDeductible().getValue()).isEqualTo(4782.0);
+	}
+
+	@Test
+	public void should_calculate_from_yearly_male_age_44_risky_package_ifine3() throws Exception {
+		// given
+		ProductQuotation productQuotation = ProductQuotationFactory.constructIFine(IFINE3, 44, EVERY_YEAR,
+				GenderCode.MALE, true);
+
+		// under test
+		Quote quote = quoteService.createQuote(RequestFactory.generateSession(), ChannelType.LINE, productQuotation);
+		ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
+
+		// assert
+		assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(13824.0);
+		assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(9.36);
+		assertThat(productIFinePremium.getRiderPremiumRate()).isEqualTo(23.91);
+		assertThat(productIFinePremium.getRiskOccupationCharge()).isEqualTo(35.85);
+		assertThat(productIFinePremium.getTaxDeductible().getValue()).isEqualTo(1872.0);
+		assertThat(productIFinePremium.getNonTaxDeductible().getValue()).isEqualTo(11952.0);
+	}
+
+	@Test
+	public void should_calculate_from_semiannualy_male_age_44_not_risky_package_ifine3() throws Exception {
+		// given
+		ProductQuotation productQuotation = ProductQuotationFactory.constructIFine(IFINE3, 44, EVERY_HALF_YEAR,
+				GenderCode.MALE, false);
+
+		// under test
+		Quote quote = quoteService.createQuote(RequestFactory.generateSession(), ChannelType.LINE, productQuotation);
+		ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
+
+		// assert
+		assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(3460.08);
+		assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(9.36);
+		assertThat(productIFinePremium.getRiderPremiumRate()).isEqualTo(23.91);
+		assertThat(productIFinePremium.getRiskOccupationCharge()).isEqualTo(0.0);
+		assertThat(productIFinePremium.getTaxDeductible().getValue()).isEqualTo(973.44);
+		assertThat(productIFinePremium.getNonTaxDeductible().getValue()).isEqualTo(2486.64);
+	}
+
+	@Test
+	public void should_calculate_from_semiannualy_male_age_44_risky_package_ifine3() throws Exception {
+		// given
+		ProductQuotation productQuotation = ProductQuotationFactory.constructIFine(IFINE3, 44, EVERY_HALF_YEAR,
+				GenderCode.MALE, true);
+
+		// under test
+		Quote quote = quoteService.createQuote(RequestFactory.generateSession(), ChannelType.LINE, productQuotation);
+		ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
+
+		// assert
+		assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(7188.48);
+		assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(9.36);
+		assertThat(productIFinePremium.getRiderPremiumRate()).isEqualTo(23.91);
+		assertThat(productIFinePremium.getRiskOccupationCharge()).isEqualTo(35.85);
+		assertThat(productIFinePremium.getTaxDeductible().getValue()).isEqualTo(973.44);
+		assertThat(productIFinePremium.getNonTaxDeductible().getValue()).isEqualTo(6215.04);
+	}
+
+	@Test
+	public void should_calculate_from_quarterly_male_age_44_not_risky_package_ifine3() throws Exception {
+		// given
+		ProductQuotation productQuotation = ProductQuotationFactory.constructIFine(IFINE3, 44, EVERY_QUARTER,
+				GenderCode.MALE, false);
+
+		// under test
+		Quote quote = quoteService.createQuote(RequestFactory.generateSession(), ChannelType.LINE, productQuotation);
+		ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
+
+		// assert
+		assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(1796.58);
+		assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(9.36);
+		assertThat(productIFinePremium.getRiderPremiumRate()).isEqualTo(23.91);
+		assertThat(productIFinePremium.getRiskOccupationCharge()).isEqualTo(0.0);
+		assertThat(productIFinePremium.getTaxDeductible().getValue()).isEqualTo(505.44);
+		assertThat(productIFinePremium.getNonTaxDeductible().getValue()).isEqualTo(1291.14);
+	}
+
+	@Test
+	public void should_calculate_from_quarterly_male_age_44_risky_package_ifine3() throws Exception {
+		// given
+		ProductQuotation productQuotation = ProductQuotationFactory.constructIFine(IFINE3, 44, EVERY_QUARTER,
+				GenderCode.MALE, true);
+
+		// under test
+		Quote quote = quoteService.createQuote(RequestFactory.generateSession(), ChannelType.LINE, productQuotation);
+		ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
+
+		// assert
+		assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(3732.48);
+		assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(9.36);
+		assertThat(productIFinePremium.getRiderPremiumRate()).isEqualTo(23.91);
+		assertThat(productIFinePremium.getRiskOccupationCharge()).isEqualTo(35.85);
+		assertThat(productIFinePremium.getTaxDeductible().getValue()).isEqualTo(505.44);
+		assertThat(productIFinePremium.getNonTaxDeductible().getValue()).isEqualTo(3227.04);
+	}
+
+	@Test
+	public void should_calculate_from_monthly_male_age_44_not_risky_package_ifine3() throws Exception {
+		// given
+		ProductQuotation productQuotation = ProductQuotationFactory.constructIFine(IFINE3, 44, EVERY_MONTH,
+				GenderCode.MALE, false);
+
+		// under test
+		Quote quote = quoteService.createQuote(RequestFactory.generateSession(), ChannelType.LINE, productQuotation);
+		ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
+
+		// assert
+		assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(598.86);
+		assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(9.36);
+		assertThat(productIFinePremium.getRiderPremiumRate()).isEqualTo(23.91);
+		assertThat(productIFinePremium.getRiskOccupationCharge()).isEqualTo(0.0);
+		assertThat(productIFinePremium.getTaxDeductible().getValue()).isEqualTo(168.48);
+		assertThat(productIFinePremium.getNonTaxDeductible().getValue()).isEqualTo(430.38);
+	}
+
+	@Test
+	public void should_calculate_from_monthly_male_age_44_risky_package_ifine3() throws Exception {
+		// given
+		ProductQuotation productQuotation = ProductQuotationFactory.constructIFine(IFINE3, 44, EVERY_MONTH,
+				GenderCode.MALE, true);
+
+		// under test
+		Quote quote = quoteService.createQuote(RequestFactory.generateSession(), ChannelType.LINE, productQuotation);
+		ProductIFinePremium productIFinePremium = quote.getPremiumsData().getProductIFinePremium();
+
+		// assert
+		assertThat(quote.getPremiumsData().getFinancialScheduler().getModalAmount().getValue()).isEqualTo(1244.16);
+		assertThat(productIFinePremium.getBasicPremiumRate()).isEqualTo(9.36);
+		assertThat(productIFinePremium.getRiderPremiumRate()).isEqualTo(23.91);
+		assertThat(productIFinePremium.getRiskOccupationCharge()).isEqualTo(35.85);
+		assertThat(productIFinePremium.getTaxDeductible().getValue()).isEqualTo(168.48);
+		assertThat(productIFinePremium.getNonTaxDeductible().getValue()).isEqualTo(1075.68);
+	}
 }
