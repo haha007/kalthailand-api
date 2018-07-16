@@ -73,7 +73,7 @@ public class PaymentServiceTest {
     }
     
 	@Test
-	public void shouldFindLastestCompletedPaymentByPolicyNumberAndRegKeyNotNull() {
+	public void shouldFindLastestCompletedPaymentByPolicyNumberAndRegKeyNotNull_WhenThereAreMultiplePaymentRecordsOnSameDueDate() {
 		List<Payment> payments = new ArrayList<>();
 
 		String testingPolicyId = "000-000000A";
