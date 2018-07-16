@@ -75,7 +75,6 @@ public class PaymentServiceTest {
 	@Test
 	public void shouldFindLastestCompletedPaymentByPolicyNumberAndRegKeyNotNull_WhenThereAreMultiplePaymentRecordsOnSameDueDate() {
 		List<Payment> payments = new ArrayList<>();
-
 		String testingPolicyId = "000-000000A";
 		LocalDateTime payment2DueDate = LocalDateTime.now();
 		payments.add(createSamplePayment(testingPolicyId, "regKey1", PaymentStatus.INCOMPLETE, payment2DueDate));
@@ -89,31 +88,29 @@ public class PaymentServiceTest {
 				.findLastestCompletedPaymentByPolicyNumberAndRegKeyNotNull(testingPolicyId);
 		logger.debug(ObjectMapperUtil.toStringMultiLine(paymentOptional.get()));
 		paymentRepository.delete(payments);
-		
+
 		Assert.assertEquals(PaymentStatus.COMPLETED, paymentOptional.get().getStatus());
 		Assert.assertEquals("regKey2", paymentOptional.get().getRegistrationKey());
 	}
-	
+
 	@Test
-	public void shouldGetNull_WhenFindLastestCompletedPaymentByPolicyNumberAndRegKeyNotNull_ThenNull(){
+	public void shouldGetNull_WhenFindLastestCompletedPaymentByPolicyNumberAndRegKeyNotNull_ThenNull() {
 		PaymentService fakePaymentService = Mockito.spy(paymentService);
 		doReturn(null).when(fakePaymentService).findLastestCompletedPaymentByPolicyNumberAndRegKeyNotNull(anyString());
-		
-		// assert
+
 		Assert.assertEquals(null, paymentService.findLastRegistrationKey("12345"));
 	}
-	
-	
+
 	@Test
 	public void shouldGetRegistrationKey_WhenFindLastestCompletedPaymentByPolicyNumberAndRegKeyNotNull_ThenNotNull() {
 		Payment payment = new Payment();
 		payment.setRegistrationKey("regKey1234");
 		Optional<Payment> paymentOptional = Optional.of(payment);
-		
+
 		PaymentService fakePaymentService = Mockito.spy(paymentService);
-		doReturn(paymentOptional).when(fakePaymentService).findLastestCompletedPaymentByPolicyNumberAndRegKeyNotNull(anyString());
-		
-		// assert
+		doReturn(paymentOptional).when(fakePaymentService)
+				.findLastestCompletedPaymentByPolicyNumberAndRegKeyNotNull(anyString());
+
 		Assert.assertEquals("regKey1234", fakePaymentService.findLastRegistrationKey("12345"));
 	}
 
