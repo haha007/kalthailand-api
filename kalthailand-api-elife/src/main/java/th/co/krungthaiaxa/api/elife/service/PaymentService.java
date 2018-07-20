@@ -70,14 +70,14 @@ public class PaymentService {
         }
     }
 
-    public String findLastRegistrationKey(String policyNumber) {
-        Optional<Payment> paymentOptional = findLastestPaymentByPolicyNumberAndRegKeyNotNull(policyNumber);
-        if (paymentOptional.isPresent()) {
-            return paymentOptional.get().getRegistrationKey();
-        } else {
-            return null;
-        }
-    }
+	public String findLastRegistrationKey(String policyNumber) {
+		Optional<Payment> paymentOptional = findLastestCompletedPaymentByPolicyNumberAndRegKeyNotNull(policyNumber);
+		if (paymentOptional.isPresent()) {
+			return paymentOptional.get().getRegistrationKey();
+		} else {
+			return null;
+		}
+	}
 
     public List<Payment> findPaymentsByPolicyNumber(String policyNumber) {
         return paymentRepository.findByPolicyId(policyNumber);
@@ -86,6 +86,11 @@ public class PaymentService {
     public Optional<Payment> findLastestPaymentByPolicyNumberAndRegKeyNotNull(String policyNumber) {
         return paymentRepository.findOneByRegKeyNotNullAndPolicyId(policyNumber, new Sort(Sort.Direction.DESC, "dueDate"));
     }
+    
+	public Optional<Payment> findLastestCompletedPaymentByPolicyNumberAndRegKeyNotNull(String policyNumber) {
+		return paymentRepository.findOneByPolicyIdAndStatusAndRegKeyNotNullBySorting(policyNumber,
+				PaymentStatus.COMPLETED, new Sort(Sort.Direction.DESC, "dueDate"));
+	}
 
     public Payment findPaymentById(String paymentId) {
         return paymentRepository.findOne(paymentId);

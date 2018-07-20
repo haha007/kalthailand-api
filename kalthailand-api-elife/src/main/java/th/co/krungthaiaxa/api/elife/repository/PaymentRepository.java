@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+
 @Repository
 public interface PaymentRepository extends MongoRepository<Payment, String> {
     List<Payment> findByPolicyId(String policyId);
@@ -36,7 +37,11 @@ public interface PaymentRepository extends MongoRepository<Payment, String> {
             + " ]"
             + "}")
     Optional<Payment> findOneByRegKeyNotNullAndPolicyId(String policyNumber, Sort sort);
-
+    
+	@Query(value = "{ $and: [ {policyId: ?0}, {status: ?1}, {registrationKey: {$ne: null}} ] }")
+	Optional<Payment> findOneByPolicyIdAndStatusAndRegKeyNotNullBySorting(String policyId, PaymentStatus status,
+			Sort sort);
+    
     @Query(value = "{'$and': [{'registrationKey':{'$ne': null}}, {'registrationKey':{'$ne': ''}}]}")
     List<Payment> findByRegKeyNotEmpty(Sort sort);
 
