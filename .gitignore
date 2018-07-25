@@ -10,11 +10,12 @@ build.properties
 sample.jasper
 kalthailand-api-elife/regKey*.csv
 *.log
+.sonar
+.DS_Store
 kalthailand-api-elife/logs/*.*
 kalthailand-api-elife/test
 kalthailand-api-elife/testresult
 kalthailand-admin-elife/bin/
-.sonar
-
 kalthailand-admin-elife/src/main/resources/static/libs/bootstrap-gentellena/*/.gitignore
 kalthailand-admin-elife/src/main/resources/static/libs/**/*.json
+kalthailand-api-signing/src/main/resources/elife_krungthai-axa_co_th.p12
