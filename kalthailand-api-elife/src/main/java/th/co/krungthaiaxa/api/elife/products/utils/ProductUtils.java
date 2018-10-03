@@ -25,6 +25,7 @@ import th.co.krungthaiaxa.api.elife.model.Quote;
 import th.co.krungthaiaxa.api.elife.model.Registration;
 import th.co.krungthaiaxa.api.elife.model.enums.AtpMode;
 import th.co.krungthaiaxa.api.elife.model.enums.PeriodicityCode;
+import th.co.krungthaiaxa.api.elife.model.enums.RegistrationTypeName;
 import th.co.krungthaiaxa.api.elife.model.product.PremiumsData;
 import th.co.krungthaiaxa.api.elife.products.ProductAmounts;
 import th.co.krungthaiaxa.api.elife.products.ProductQuotation;
@@ -425,7 +426,9 @@ public class ProductUtils {
                     isValid = isValid && checkThaiIDNumber(registration.getId());
                 }
             } else {
-                isValid = isValid && checkThaiIDNumber(registration.getId());
+            	if(registration.getTypeName().equals(RegistrationTypeName.THAI_ID_NUMBER)) {
+            		 isValid = isValid && checkThaiIDNumber(registration.getId());
+            	}               
             }
         }
         return isValid;
