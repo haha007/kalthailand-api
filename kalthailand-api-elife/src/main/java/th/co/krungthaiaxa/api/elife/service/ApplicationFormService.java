@@ -16,7 +16,6 @@ import th.co.krungthaiaxa.api.common.utils.ObjectMapperUtil;
 import th.co.krungthaiaxa.api.common.utils.PdfUtil;
 import th.co.krungthaiaxa.api.elife.model.CoverageBeneficiary;
 import th.co.krungthaiaxa.api.elife.model.GeographicalAddress;
-import th.co.krungthaiaxa.api.elife.model.HealthStatus;
 import th.co.krungthaiaxa.api.elife.model.Insured;
 import th.co.krungthaiaxa.api.elife.model.Person;
 import th.co.krungthaiaxa.api.elife.model.Policy;
@@ -387,7 +386,6 @@ public class ApplicationFormService {
             //benefit age
             writeText(pdfContentByte, baseFont, String.valueOf(benefit.getAgeAtSubscription()), 188, listY.get(a), MEDIUM_SIZE);
             //benefit relation
-            System.out.println((messageSource == null)+"-------->"+benefit.getRelationship());
             //writeText(pdfContentByte, baseFont, "FATHER", 228, listY.get(a), MEDIUM_SIZE);
             writeText(pdfContentByte, baseFont, messageSource.getMessage("relationship." + String.valueOf(benefit.getRelationship()), null, thLocale), 228, listY.get(a), MEDIUM_SIZE);
             
