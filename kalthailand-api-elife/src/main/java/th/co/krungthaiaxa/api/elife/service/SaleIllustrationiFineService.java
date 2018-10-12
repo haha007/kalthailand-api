@@ -180,7 +180,7 @@ public class SaleIllustrationiFineService {
         pdfPTable.addCell(addData("คุ้มครอง 2 เท่า กรณีเสียชีวิตจากอุบัติเหตุ", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
         pdfPTable.addCell(addData("1) อุบัติเหตุที่เกิดขึ้นจากยานพาหนะสาธารณะทางบก", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
         pdfPTable.addCell(addData("2) ขณะที่อยู่ในลิฟท์", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
-        pdfPTable.addCell(addData("3) การเสียชีวิตที่เกิดขึ้น เนื่องจากไฟไหม้โรงมหรศพ โรงแรม หรืออาคารสาธารณะ", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
+        pdfPTable.addCell(addData("3) การเสียชีวิตที่เกิดขึ้น เนื่องจากไฟไหม้โรงมหรสพ โรงแรม หรืออาคารสาธารณะ", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
         pdfPTable.addCell(addLine(false, tbCols));
         pdfPTable.addCell(addData("อุบัติเหตุสาธารณะ ได้แก่", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));
         pdfPTable.addCell(addData("1) ผู้เอาประกันภัยโดยสารในฐานะผู้โดยสารในยานพาหนะสาธารณะที่ขับเคลื่อนด้วยเครื่องจักรกล ซึ่งผู้ทำการขนส่งสาธารณะเป็นผู้รับจ้างทำการขนส่งบนเส้นทางขนส่งทางบกที่ได้กำหนดไว้ หรือ", getFontNormalStyle(), tbCols, TB_HORIZONTAL_ALIGN_LEFT, null));

@@ -39,83 +39,84 @@ public class DAFormService {
     private static final float MEDIUM_SIZE = 13f;
     private final BaseFont baseFont = PdfUtil.loadBaseFont();
 
-    public byte[] generateDAFormPdf(Policy policy) {
-        try (ByteArrayOutputStream content = new ByteArrayOutputStream()) {
-            InputStream inputStream = getClass().getClassLoader().getResourceAsStream(DA_FORM_PDF_PATH);
+    public byte[] generateDAFormPdf(Policy policy) {    	
+    	try (ByteArrayOutputStream content = new ByteArrayOutputStream()) {
+            InputStream inputStream = getClass().getClassLoader().getResourceAsStream(DA_FORM_PDF_PATH);        	
             PdfReader pdfReader = new PdfReader(inputStream);
+            pdfReader.selectPages("1");
             PdfStamper pdfStamper = new PdfStamper(pdfReader, content);
             fillData(pdfStamper.getOverContent(1), policy);
             pdfStamper.close();
-            content.close();
+            content.close();            
             return content.toByteArray();
         } catch (DocumentException | IOException e) {
             throw new FileIOException(String.format("Generate eReceipt pdf [error]: \n\t policyId: %s. Error: %s", policy.getPolicyId(), e.getMessage()), e);
         }
     }
 
-    private void fillData(PdfContentByte page, Policy policy) {
-
+    private void fillData(PdfContentByte page, Policy policy) {    	 	
         Insured insured = ProductUtils.validateExistMainInsured(policy);
         Person person = insured.getPerson();
 
+        String citizenIds [] =  person.getRegistrations().get(0).getId().split("");
         ThaiBuddhistDate thaiDateOfNow = ThaiBuddhistDate.from(LocalDate.now());
 
-        PdfUtil.writeText(page, baseFont, thaiDateOfNow.format(ofPattern("dd")), 392, 716, MEDIUM_SIZE);
+        PdfUtil.writeText(page, baseFont, thaiDateOfNow.format(ofPattern("dd")), 342, 694, MEDIUM_SIZE); //Y = 716 X = 392
 
-        PdfUtil.writeText(page, baseFont, thaiDateOfNow.format(ofPattern("MMMM", new Locale("th", "TH"))), 454, 716, MEDIUM_SIZE);
+        PdfUtil.writeText(page, baseFont, thaiDateOfNow.format(ofPattern("MMMM", new Locale("th", "TH"))), 404, 694, MEDIUM_SIZE);
 
-        PdfUtil.writeText(page, baseFont, thaiDateOfNow.format(ofPattern("yyyy")), 542, 716, MEDIUM_SIZE);
+        PdfUtil.writeText(page, baseFont, thaiDateOfNow.format(ofPattern("yyyy")), 492, 694, MEDIUM_SIZE);
 
-        PdfUtil.writeText(page, baseFont, person.getGivenName() + " " + person.getSurName(), 130, 676, MEDIUM_SIZE);
-
-        PdfUtil.writeText(page, baseFont, person.getRegistrations().get(0).getId(), 454, 676, MEDIUM_SIZE);
+        PdfUtil.writeText(page, baseFont, person.getGivenName() + " " + person.getSurName(), 150, 666, MEDIUM_SIZE);
+               
+        if(citizenIds != null && citizenIds.length == 13) {        	
+        	PdfUtil.writeText(page, baseFont, citizenIds[0], 417, 666, MEDIUM_SIZE);    
+        	PdfUtil.writeText(page, baseFont, citizenIds[1], 429, 666, MEDIUM_SIZE);  
+        	PdfUtil.writeText(page, baseFont, citizenIds[2], 438, 666, MEDIUM_SIZE);  
+        	PdfUtil.writeText(page, baseFont, citizenIds[3], 447, 666, MEDIUM_SIZE);  
+        	PdfUtil.writeText(page, baseFont, citizenIds[4], 457, 666, MEDIUM_SIZE);  
+        	PdfUtil.writeText(page, baseFont, citizenIds[5], 470, 666, MEDIUM_SIZE);  
+        	PdfUtil.writeText(page, baseFont, citizenIds[6], 480, 666, MEDIUM_SIZE);  
+        	PdfUtil.writeText(page, baseFont, citizenIds[7], 489, 666, MEDIUM_SIZE);  
+        	PdfUtil.writeText(page, baseFont, citizenIds[8], 499, 666, MEDIUM_SIZE);  
+        	PdfUtil.writeText(page, baseFont, citizenIds[9], 508, 666, MEDIUM_SIZE);  
+        	PdfUtil.writeText(page, baseFont, citizenIds[10], 520, 666, MEDIUM_SIZE);  
+        	PdfUtil.writeText(page, baseFont, citizenIds[11], 529, 666, MEDIUM_SIZE);  
+        	PdfUtil.writeText(page, baseFont, citizenIds[12], 541, 666, MEDIUM_SIZE);  
+        }               
 
         if (person.getHomePhoneNumber() != null && person.getHomePhoneNumber().getNumber() != null) {
-            PdfUtil.writeText(page, baseFont, person.getHomePhoneNumber().getNumber(), 70, 654, MEDIUM_SIZE);
+            PdfUtil.writeText(page, baseFont, person.getHomePhoneNumber().getNumber(), 110, 651, MEDIUM_SIZE);
         }
 
         if (person.getWorkPhoneNumber() != null && person.getWorkPhoneNumber().getNumber() != null) {
-            PdfUtil.writeText(page, baseFont, person.getWorkPhoneNumber().getNumber(), 199, 654, MEDIUM_SIZE);
+            PdfUtil.writeText(page, baseFont, person.getWorkPhoneNumber().getNumber(), 224, 651, MEDIUM_SIZE);
         }
 
         if (person.getMobilePhoneNumber() != null && person.getMobilePhoneNumber().getNumber() != null) {
-            PdfUtil.writeText(page, baseFont, person.getMobilePhoneNumber().getNumber(), 326, 654, MEDIUM_SIZE);
+            PdfUtil.writeText(page, baseFont, person.getMobilePhoneNumber().getNumber(), 350, 651, MEDIUM_SIZE);
         }
 
-        PdfUtil.writeText(page, baseFont, person.getEmail(), 452, 654, MEDIUM_SIZE);
+        PdfUtil.writeText(page, baseFont, person.getEmail(), 435, 651, MEDIUM_SIZE);
 
-        char[] numberPNO = policy.getPolicyId().toCharArray();
-        PdfUtil.writeText(page, baseFont, String.valueOf(numberPNO[0]), 100, 618, MEDIUM_SIZE);
-        PdfUtil.writeText(page, baseFont, String.valueOf(numberPNO[1]), 112, 618, MEDIUM_SIZE);
-        PdfUtil.writeText(page, baseFont, String.valueOf(numberPNO[2]), 128, 618, MEDIUM_SIZE);
-        PdfUtil.writeText(page, baseFont, String.valueOf(numberPNO[4]), 148, 618, MEDIUM_SIZE);
-        PdfUtil.writeText(page, baseFont, String.valueOf(numberPNO[5]), 162, 618, MEDIUM_SIZE);
-        PdfUtil.writeText(page, baseFont, String.valueOf(numberPNO[6]), 178, 618, MEDIUM_SIZE);
-        PdfUtil.writeText(page, baseFont, String.valueOf(numberPNO[7]), 192, 618, MEDIUM_SIZE);
-        PdfUtil.writeText(page, baseFont, String.valueOf(numberPNO[8]), 206, 618, MEDIUM_SIZE);
-        PdfUtil.writeText(page, baseFont, String.valueOf(numberPNO[9]), 222, 618, MEDIUM_SIZE);
-        PdfUtil.writeText(page, baseFont, String.valueOf(numberPNO[10]), 236, 618, MEDIUM_SIZE);
+        PdfUtil.writeText(page, baseFont, policy.getPolicyId(), 160, 622, MEDIUM_SIZE);
+        PdfUtil.writeText(page, baseFont, person.getGivenName() + " " + person.getSurName(), 317, 622, MEDIUM_SIZE);
+        PdfUtil.writeText(page, baseFont, "ผู้เอาประกัน", 480, 622, MEDIUM_SIZE);
 
-        PdfUtil.writeText(page, baseFont, person.getGivenName() + " " + person.getSurName(), 328, 616, MEDIUM_SIZE);
+        PdfUtil.writeText(page, baseFont, "111", 231, 540, MEDIUM_SIZE); 
+        PdfUtil.writeText(page, baseFont, "000", 430, 540, MEDIUM_SIZE);
 
-        PdfUtil.writeText(page, baseFont, "ผู้เอาประกัน", 528, 616, MEDIUM_SIZE);
-
-        PdfUtil.writeText(page, baseFont, "111", 226, 512, MEDIUM_SIZE);
-
-        PdfUtil.writeText(page, baseFont, "000", 430, 512, MEDIUM_SIZE);
-
-        PdfUtil.writeText(page, baseFont, "LINE PAY", 60, 488, MEDIUM_SIZE);
-
-        PdfUtil.writeText(page, baseFont, "0", 338, 488, MEDIUM_SIZE);
-        PdfUtil.writeText(page, baseFont, "0", 356, 488, MEDIUM_SIZE);
-        PdfUtil.writeText(page, baseFont, "0", 374, 488, MEDIUM_SIZE);
-        PdfUtil.writeText(page, baseFont, "0", 394, 488, MEDIUM_SIZE);
-        PdfUtil.writeText(page, baseFont, "0", 418, 488, MEDIUM_SIZE);
-        PdfUtil.writeText(page, baseFont, "0", 436, 488, MEDIUM_SIZE);
-        PdfUtil.writeText(page, baseFont, "0", 454, 488, MEDIUM_SIZE);
-        PdfUtil.writeText(page, baseFont, "0", 472, 488, MEDIUM_SIZE);
-        PdfUtil.writeText(page, baseFont, "0", 490, 488, MEDIUM_SIZE);
-        PdfUtil.writeText(page, baseFont, "0", 512, 488, MEDIUM_SIZE);
+        PdfUtil.writeText(page, baseFont, "LINE PAY", 90, 520, MEDIUM_SIZE);
+        PdfUtil.writeText(page, baseFont, "0", 323, 520, MEDIUM_SIZE);
+        PdfUtil.writeText(page, baseFont, "0", 334, 520, MEDIUM_SIZE);
+        PdfUtil.writeText(page, baseFont, "0", 346, 520, MEDIUM_SIZE);
+        PdfUtil.writeText(page, baseFont, "0", 361, 520, MEDIUM_SIZE);
+        PdfUtil.writeText(page, baseFont, "0", 380, 520, MEDIUM_SIZE);
+        PdfUtil.writeText(page, baseFont, "0", 392, 520, MEDIUM_SIZE);
+        PdfUtil.writeText(page, baseFont, "0", 402, 520, MEDIUM_SIZE);
+        PdfUtil.writeText(page, baseFont, "0", 414, 520, MEDIUM_SIZE);
+        PdfUtil.writeText(page, baseFont, "0", 426, 520, MEDIUM_SIZE);
+        PdfUtil.writeText(page, baseFont, "0", 442, 520, MEDIUM_SIZE);
 
     }
 }
