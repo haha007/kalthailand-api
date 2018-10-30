@@ -21,7 +21,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
-        <kalthailand.version>1.13.26</kalthailand.version>
+        <kalthailand.version>1.13.28</kalthailand.version>
         <!--
         Main features:
         1) AKT-1256: Customer promotion form for Krungthai-AXA 20th Anniversary.
