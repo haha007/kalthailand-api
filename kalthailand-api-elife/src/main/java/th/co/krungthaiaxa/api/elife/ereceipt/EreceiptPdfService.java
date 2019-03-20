@@ -46,9 +46,8 @@ public class EreceiptPdfService {
     /**
      * Open the template file, use inspect tool (Preview) to see the position of the first line.
      */
-    //private static final float Y_TOP_INSPECT = 97.48f;
+    
     private static final float Y_TOP_INSPECT = 51f;
-
     
     private static final float X_TOP_INSPECT = 55f;
 
