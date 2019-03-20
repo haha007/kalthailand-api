@@ -2,6 +2,7 @@ package th.co.krungthaiaxa.api.elife.test.service;
 
 import com.icegreen.greenmail.junit.GreenMailRule;
 import com.icegreen.greenmail.util.ServerSetupTest;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -74,5 +75,28 @@ public class EreceiptPdfServiceTest extends ELifeTest {
         IOUtil.writeBytesToRelativeFile(TestUtil.PATH_TEST_RESULT + "/pdf/ereceipt_" + DateTimeUtil.formatNowForFilePath() + "_" + policy.getPolicyId() + "_halfyear.pdf", pdfBytes);
 
     }
+    
+    @Test
+    public void GivenNewYearlyProductRequest_WhenCreateReciept_ThanPDFCreate() {
+        ProductQuotation productQuotation = ProductQuotationFactory.constructIGen(30, PeriodicityCode.EVERY_YEAR, 1000000.0, true, 35, ProductDividendOption.ANNUAL_PAY_BACK_CASH);
+        QuoteFactory.QuoteResult quoteResult = quoteFactory.createQuote(productQuotation, "dummy@gmail.com");
+        Policy policy = policyFactory.createPolicyWithValidatedStatus(quoteResult.getQuote());
+        Payment payment = paymentService.findFirstPaymentHasTransactionId(policy.getPolicyId());
+        byte[] pdfBytes = ereceiptPdfService.createEreceiptPdf(policy, payment, true);
+        IOUtil.writeBytesToRelativeFile(TestUtil.PATH_TEST_RESULT + "/pdf/ereceipt_" + DateTimeUtil.formatNowForFilePath() + "_" + policy.getPolicyId() + "_year.pdf", pdfBytes);
 
+    }
+
+    @Test
+    public void GivenRenewalYearlyProductRequest_WhenCreateReciept_ThanPDFCreate() {
+        ProductQuotation productQuotation = ProductQuotationFactory.constructIGen(30, PeriodicityCode.EVERY_YEAR, 1500000.0, true, 35, ProductDividendOption.ANNUAL_PAY_BACK_CASH);
+        QuoteFactory.QuoteResult quoteResult = quoteFactory.createQuote(productQuotation, "dummy@gmail.com");
+        Policy policy = policyFactory.createPolicyWithValidatedStatus(quoteResult.getQuote());
+        // payment is not correct payment according to business logic. It is a mock up for test position
+        Payment payment = paymentService.findFirstPaymentHasTransactionId(policy.getPolicyId());
+        byte[] pdfBytes = ereceiptPdfService.createEreceiptPdf(policy, payment, false);
+        IOUtil.writeBytesToRelativeFile(TestUtil.PATH_TEST_RESULT + "/pdf/ereceipt_" + DateTimeUtil.formatNowForFilePath() + "_" + policy.getPolicyId() + "_year_renewal.pdf", pdfBytes);
+
+    }
+    
 }
