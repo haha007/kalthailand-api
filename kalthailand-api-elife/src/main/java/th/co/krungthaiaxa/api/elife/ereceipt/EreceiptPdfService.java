@@ -46,30 +46,34 @@ public class EreceiptPdfService {
     /**
      * Open the template file, use inspect tool (Preview) to see the position of the first line.
      */
-    private static final float Y_TOP_INSPECT = 97.48f;
+    //private static final float Y_TOP_INSPECT = 97.48f;
+    private static final float Y_TOP_INSPECT = 51f;
+
+    
+    private static final float X_TOP_INSPECT = 55f;
 
     //PAGE 01 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //LEFT ...................................................................
     //line 1:
-    private static final Point POS_MAIN_INSURED_FULL_NAME = new Point(156, 249);//line 1: 240
-    private static final Point POS_MAIN_INSURED_MOBILE_PHONE = new Point(362, 249);
+    private static final Point POS_MAIN_INSURED_FULL_NAME = new Point(156, 248);//line 1: 240
+    private static final Point POS_MAIN_INSURED_MOBILE_PHONE = new Point(362, 248);
 
     //line 2:
 
     //line 3:
-    private static final Point POS_PRODUCT_NAME = new Point(135, 274);
-    private static final Point POS_SUM_INSURED = new Point(315, 274);
+    private static final Point POS_PRODUCT_NAME = new Point(135, 272);
+    private static final Point POS_SUM_INSURED = new Point(337, 272);
 
     //line 4:
-    private static final Point POS_PAYMENT_PERIODICITY_YEARLY = new Point(193, 284);
+    private static final Point POS_PAYMENT_PERIODICITY_YEARLY = new Point(194, 284);
     private static final Point POS_PAYMENT_PERIODICITY_HAFTYEAR = new Point(246, 284);
-    private static final Point POS_PAYMENT_PERIODICITY_QUARTER = new Point(320, 284);
+    private static final Point POS_PAYMENT_PERIODICITY_QUARTER = new Point(321, 284);
     private static final Point POS_PAYMENT_PERIODICITY_MONTHLY = new Point(396, 284);
 
     //line 6:
-    private static final Point POS_PAYMENT_MODE_NEW_BUSINESS = new Point(95, 316);
+    private static final Point POS_PAYMENT_MODE_NEW_BUSINESS = new Point(95, 317);
     //line 7:
-    private static final Point POS_PAYMENT_MODE_RENEWAL = new Point(95, 328);
+    private static final Point POS_PAYMENT_MODE_RENEWAL = new Point(95, 329);
     //line 8: don't use it yet
     private static final Point POS_PAYMENT_MODE_AUTO_PREMIUM_LOAN = new Point(95, 340);//Not used yet (2016-10-26)
     //line 9: don't use it yet
@@ -77,8 +81,8 @@ public class EreceiptPdfService {
 
     //line 10:
     private static final Point POS_PAYMENT_METHOD_CASH_OPTION = new Point(213, 371);//Not used yet (2016-10-26)
-    private static final Point POS_PAYMENT_METHOD_OTHER_OPTION = new Point(304, 370);
-    private static final Point POS_PAYMENT_METHOD_OTHER_TEXT = new Point(335, 371);
+    private static final Point POS_PAYMENT_METHOD_OTHER_OPTION = new Point(243, 370);
+    private static final Point POS_PAYMENT_METHOD_OTHER_TEXT = new Point(285, 370);
 
     //line 11:
     private static final Point POS_PAYMENT_DATE = new Point(155, 0);//Not sure what the date is. //Not used yet (2016-10-26)
@@ -96,15 +100,15 @@ public class EreceiptPdfService {
     private static final Point POS_PAYMENT_EFFECTIVE_DATE = new Point(547, 279);
 
     //line 2:
-    private static final Point POS_REF1_POLICY_NUMBER_PREFIX = new Point(525, 312);
-    private static final Point POS_REF1_POLICY_NUMBER_SUFFIX = new Point(581, 312);
+    private static final Point POS_REF1_POLICY_NUMBER_PREFIX = new Point(551, 312);
+    private static final Point POS_REF1_POLICY_NUMBER_SUFFIX = new Point(596, 312);
 
     //line 3:
-    private static final Point POS_REF1_ID_CARD = new Point(497, 343);
+    private static final Point POS_REF1_ID_CARD = new Point(528, 343);
 
     //line 4:
-    private static final Point POS_REF2_RECEIPT_NUMBER_01 = new Point(561, 383);
-    private static final Point POS_REF2_RECEIPT_NUMBER_02 = new Point(653, 383);
+    private static final Point POS_REF2_RECEIPT_NUMBER_01 = new Point(540, 380);
+    private static final Point POS_REF2_RECEIPT_NUMBER_02 = new Point(653, 380);
 
     //line 5: Should on the same line of POS_PREMIUM_VALUE_IN_THAI_LETTERS
     private static final Point POS_PREMIUM_VALUE_IN_NUMBERS = new Point(560, 417);
@@ -114,9 +118,9 @@ public class EreceiptPdfService {
     private static final Point POS_TMC_AGENCY_NAME_02 = new Point(475, 498);
 
     //line 8:
-    private static final Point POS_TMC_AGENCY_CODE_PART01 = new Point(475, 541);
-    private static final Point POS_TMC_AGENCY_CODE_PART02 = new Point(563, 541);
-    private static final Point POS_TMC_AGENCY_CODE_PART03 = new Point(595, 541);
+    private static final Point POS_TMC_AGENCY_CODE_PART01 = new Point(478, 540);
+    private static final Point POS_TMC_AGENCY_CODE_PART02 = new Point(565, 540);
+    private static final Point POS_TMC_AGENCY_CODE_PART03 = new Point(599, 540);
 
     /**
      * For eReceipt number which is generated from eLife, the prefix is always 'M'
@@ -181,7 +185,7 @@ public class EreceiptPdfService {
         writePolicyNumber(page, policy);
 
         String mainInsuredRegistrationIdCard = ProductUtils.getRegistrationId(mainInsured);
-        writeChars(page, POS_REF1_ID_CARD, 13.94, 13, mainInsuredRegistrationIdCard.toCharArray());
+        writeChars(page, POS_REF1_ID_CARD, 11.25, 13, mainInsuredRegistrationIdCard.toCharArray());
 
         writeReceiptNumber(page, payment);
 
@@ -201,20 +205,20 @@ public class EreceiptPdfService {
             String msg = String.format("Cannot find ereceiptNumber for the payment %s, policyId: %s", payment.getPaymentId(), payment.getPolicyId());
             throw new UnexpectedException(msg);
         }
-        String ereceiptFullDisplayNumber = StringUtil.formatNumberLength(ereceiptNumber.getFullNumberForDisplay(), 9);
+        String ereceiptFullDisplayNumber = StringUtil.formatNumberLength(ereceiptNumber.getFullNumberForDisplay(), 11);
         String ereceiptNumberPart01 = ereceiptFullDisplayNumber.substring(0, ereceiptFullDisplayNumber.length() - 2);
         String ereceiptNumberPart02 = ereceiptFullDisplayNumber.substring(ereceiptFullDisplayNumber.length() - 2);
 
-        writeChars(page, POS_REF2_RECEIPT_NUMBER_01, 11.45, 7, ereceiptNumberPart01.toUpperCase().toCharArray());
-        writeChars(page, POS_REF2_RECEIPT_NUMBER_02, 11.45, 2, ereceiptNumberPart02.toUpperCase().toCharArray());
+        writeChars(page, POS_REF2_RECEIPT_NUMBER_01, 11.25, 9, ereceiptNumberPart01.toUpperCase().toCharArray());
+        writeChars(page, POS_REF2_RECEIPT_NUMBER_02, 11.25, 2, ereceiptNumberPart02.toUpperCase().toCharArray());
     }
 
     private void writeAgentCode(PdfContentByte page, Policy policy) {
         String agentCode = policy.getValidationAgentCode();
         String[] parts = agentCode.split("-");
-        writeChars(page, POS_TMC_AGENCY_CODE_PART01, 13.94, 6, parts[0].toCharArray());
-        writeChars(page, POS_TMC_AGENCY_CODE_PART02, 13.94, 2, parts[1].toCharArray());
-        writeChars(page, POS_TMC_AGENCY_CODE_PART03, 13.94, 6, parts[2].toCharArray());
+        writeChars(page, POS_TMC_AGENCY_CODE_PART01, 13.24, 6, parts[0].toCharArray());
+        writeChars(page, POS_TMC_AGENCY_CODE_PART02, 13.24, 2, parts[1].toCharArray());
+        writeChars(page, POS_TMC_AGENCY_CODE_PART03, 13.24, 6, parts[2].toCharArray());
     }
 
     private void writePolicyNumber(PdfContentByte page, Policy policy) {
@@ -222,8 +226,8 @@ public class EreceiptPdfService {
         String[] policyNumberParts = policyNumber.split("-");
         char[] policyNumberPrefixChars = policyNumberParts[0].toCharArray();
         char[] policyNumberSuffixChars = policyNumberParts[1].toCharArray();
-        writeChars(page, POS_REF1_POLICY_NUMBER_PREFIX, 13.94, 3, policyNumberPrefixChars);
-        writeChars(page, POS_REF1_POLICY_NUMBER_SUFFIX, 13.94, 7, policyNumberSuffixChars);
+        writeChars(page, POS_REF1_POLICY_NUMBER_PREFIX, 11.25, 3, policyNumberPrefixChars);
+        writeChars(page, POS_REF1_POLICY_NUMBER_SUFFIX, 11.25, 7, policyNumberSuffixChars);
     }
 
     private void writeThaiDateIfExist(PdfContentByte page, LocalDateTime localDateTime, Point point) {
@@ -292,7 +296,8 @@ public class EreceiptPdfService {
 
     private void writeText(PdfContentByte page, String text, Point point) {
         float actualYInTemplate = Y_TOP_WHICH_DRAWN_IN_NORMAL_POSITION + Y_TOP_INSPECT - point.y;
-        PdfUtil.writeText(page, baseFont, text, (float) point.getX(), actualYInTemplate, PdfUtil.MEDIUM_SIZE);
+        float actualXInTemplate = X_TOP_INSPECT + point.x;
+        PdfUtil.writeText(page, baseFont, text, actualXInTemplate, actualYInTemplate, PdfUtil.MEDIUM_SIZE);
     }
 
     private String getThaiDate(LocalDateTime localDate) {
